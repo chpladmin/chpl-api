@@ -128,6 +128,11 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         ret.append("Email body has current statistics as of " + currDateCal.getTime());
         ret.append("<br/>");
         ret.append("Email attachment has weekly statistics ending " + endDateCal.getTime());
+        ret.append("<br/>");
+        ret.append("In the attached CSV file: <br/>");
+        ret.append("<ul>");
+        ret.append("<li>Total Closed Non-Conformities - Some Non-Conformities may be closed that are not counted in these statistics</li>");
+        ret.append("</ul>");
         return ret.toString();
     }
 }

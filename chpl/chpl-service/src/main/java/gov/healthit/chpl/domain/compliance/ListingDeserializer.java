@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -15,13 +15,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 
+@Component
 public class ListingDeserializer extends JsonDeserializer<List<DeveloperAssociatedListing>> {
     @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
-
-    public ListingDeserializer() {
-        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-    }
 
     @Override
     public List<DeveloperAssociatedListing> deserialize(JsonParser jsonParser, DeserializationContext context)

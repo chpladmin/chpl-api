@@ -24,7 +24,6 @@ import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.auth.User;
@@ -113,7 +112,6 @@ public class PendingCertifiedProductManager extends SecuredManager {
         PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(pendingCp);
         pcpDetails.setCuresUpdate(curesUpdateService.isCuresUpdate(pcpDetails));
         addAllVersionsToCmsCriterion(pcpDetails);
-        addAllMeasuresToCertificationCriteria(pcpDetails);
         addAvailableTestFunctionalities(pcpDetails);
         return pcpDetails;
     }
@@ -289,12 +287,6 @@ public class PendingCertifiedProductManager extends SecuredManager {
                     certResult.setG2Success(Boolean.FALSE);
                 }
 
-                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.G1_MACRA)) {
-                    certResult.setG1MacraMeasures(null);
-                }
-                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.G2_MACRA)) {
-                    certResult.setG2MacraMeasures(null);
-                }
                 if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
                     certResult.setApiDocumentation(null);
                 } else if (certResult.getApiDocumentation() == null) {
@@ -423,17 +415,6 @@ public class PendingCertifiedProductManager extends SecuredManager {
                     result.getAllVersions().add(cqm.getCqmVersion());
                     result.setTypeId(cqm.getCqmCriterionTypeId());
                     pcpDetails.getCqmResults().add(result);
-                }
-            }
-        }
-    }
-
-    public void addAllMeasuresToCertificationCriteria(final PendingCertifiedProductDetails pcpDetails) {
-        // now add allMeasures for criteria
-        for (CertificationResult cert : pcpDetails.getCertificationResults()) {
-            for (MacraMeasure measure : dimensionalDataManager.getMacraMeasures()) {
-                if (measure.getCriteria().getId().equals(cert.getCriterion().getId())) {
-                    cert.getAllowedMacraMeasures().add(measure);
                 }
             }
         }

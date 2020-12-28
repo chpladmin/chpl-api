@@ -13,7 +13,6 @@ import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -105,16 +104,6 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
             updatedListing.getErrorMessages().add(
                     msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
                             Util.formatCriteriaNumber(updatedCert.getCriterion()), "Functionality Tested"));
-        }
-        if (isG1MacraMeasuresChanged(existingCert, updatedCert)) {
-            updatedListing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
-                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "G1 Macra Measures"));
-        }
-        if (isG2MacraMeasuresChanged(existingCert, updatedCert)) {
-            updatedListing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
-                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "G2 Macra Measures"));
         }
         if (isTestStandardsChanged(existingCert, updatedCert)) {
             updatedListing.getErrorMessages().add(
@@ -212,52 +201,6 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
                 boolean isInUpdatedCert =
                         updatedCert.getTestFunctionality().stream()
                         .anyMatch(updatedTestFunctionality -> updatedTestFunctionality.matches(existingTestFunctionality));
-                if (!isInUpdatedCert) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private boolean isG1MacraMeasuresChanged(CertificationResult existingCert, CertificationResult updatedCert) {
-        if (certResultRules.hasCertOption(updatedCert.getNumber(), CertificationResultRules.G1_MACRA)) {
-            for (MacraMeasure updatedMacra : updatedCert.getG1MacraMeasures()) {
-                boolean isInExistingCert =
-                        existingCert.getG1MacraMeasures().stream()
-                        .anyMatch(existingMacra -> existingMacra.matches(updatedMacra));
-                if (!isInExistingCert) {
-                    return true;
-                }
-            }
-
-            for (MacraMeasure existingMacra : existingCert.getG1MacraMeasures()) {
-                boolean isInUpdatedCert =
-                        updatedCert.getG1MacraMeasures().stream()
-                        .anyMatch(updatedMacra -> updatedMacra.matches(existingMacra));
-                if (!isInUpdatedCert) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private boolean isG2MacraMeasuresChanged(CertificationResult existingCert, CertificationResult updatedCert) {
-        if (certResultRules.hasCertOption(updatedCert.getNumber(), CertificationResultRules.G2_MACRA)) {
-            for (MacraMeasure updatedMacra : updatedCert.getG2MacraMeasures()) {
-                boolean isInExistingCert =
-                        existingCert.getG2MacraMeasures().stream()
-                        .anyMatch(existingMacra -> existingMacra.matches(updatedMacra));
-                if (!isInExistingCert) {
-                    return true;
-                }
-            }
-
-            for (MacraMeasure existingMacra : existingCert.getG2MacraMeasures()) {
-                boolean isInUpdatedCert =
-                        updatedCert.getG2MacraMeasures().stream()
-                        .anyMatch(updatedMacra -> updatedMacra.matches(existingMacra));
                 if (!isInUpdatedCert) {
                     return true;
                 }

@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
 
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
-
 public class Validator2014 extends Validator {
 
     private int inpatientCqmCount = 0;
@@ -134,7 +132,6 @@ public class Validator2014 extends Validator {
             valid = true;
         }
         if (!valid) {
-            System.out.println(valid);
             if (this.counts.get("cqmsInpatientRequiredMet") < this.counts.get("cqmsInpatientRequired")) {
                 String needed = String.valueOf((this.counts.get("cqmsInpatientRequired") - inpatientCqmCount));
                 TreeMap<String, ArrayList<String>> missingInpatient = new TreeMap<String, ArrayList<String>>();
