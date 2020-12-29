@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
@@ -50,6 +51,7 @@ import gov.healthit.chpl.upload.listing.handler.ListingDetailsUploadHandler;
 import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -362,6 +364,7 @@ public class ListingUploadManager {
                         .withIgnoreEmptyLines()
                         .withIgnoreSurroundingSpaces())) {
             records = parser.getRecords();
+            trimTailingEmptyLines(records);
             if (records.size() <= 1) {
                 throw new ValidationException(
                         msgUtil.getMessage("listing.upload.emptyRows"));
@@ -373,5 +376,16 @@ public class ListingUploadManager {
         }
 
         return records;
+    }
+
+    private void trimTailingEmptyLines(List<CSVRecord> records) {
+        ListIterator<CSVRecord> recordsIter = records.listIterator();
+        while (recordsIter.hasNext()) {
+            CSVRecord currRecord = recordsIter.next();
+            List<String> recordValues = Util.getListFromIterator(currRecord.iterator());
+            if (StringUtils.isAllBlank(recordValues.toArray(new String[0]))) {
+                recordsIter.remove();
+            }
+        }
     }
 }

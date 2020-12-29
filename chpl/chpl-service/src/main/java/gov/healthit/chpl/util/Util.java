@@ -5,6 +5,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
@@ -82,6 +86,14 @@ public final class Util {
             result += CURES_SUFFIX;
         }
         return result;
+    }
+
+    public static <T> List<T> getListFromIterator(Iterator<T> iterator) {
+        Iterable<T> iterable = () -> iterator;
+
+        return StreamSupport
+                  .stream(iterable.spliterator(), false)
+                  .collect(Collectors.toList());
     }
 
 }
