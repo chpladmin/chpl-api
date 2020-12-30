@@ -113,7 +113,7 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
                 //the user update activity with one permission removal
                 UserDTO updatedUser = getUser(userId);
                 String message = "Removed " + permissionToRemove.getCertificationBody().getName() + " from "
-                            + permissionToRemove.getUser().getSubjectName();
+                            + permissionToRemove.getUser().getUsername();
                 activityManager.addActivity(ActivityConcept.USER, userId, message, originalUser, updatedUser);
             }
             LOGGER.info("Deleted ACB: " + acb.getId() + " for user: " + userId);
@@ -175,7 +175,7 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
                 //the user update activity with one permission removal
                 UserDTO updatedUser = getUser(userId);
                 String message = "Removed " + permissionToRemove.getTestingLab().getName() + " from "
-                            + permissionToRemove.getUser().getSubjectName();
+                            + permissionToRemove.getUser().getUsername();
                 activityManager.addActivity(ActivityConcept.USER, userId, message, originalUser, updatedUser);
             }
             LOGGER.info("Deleted ATL: " + atl.getId() + " for user: " + userId);
@@ -236,7 +236,7 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
                 //the user update activity with one permission removal
                 UserDTO updatedUser = getUser(userId);
                 String message = "Removed " + permissionToRemove.getDeveloper().getName() + " from "
-                            + permissionToRemove.getUser().getSubjectName();
+                            + permissionToRemove.getUser().getUsername();
                 activityManager.addActivity(ActivityConcept.USER, userId, message, originalUser, updatedUser);
             }
             LOGGER.info("Deleted Developer: " + permissionToRemove.getDeveloper().getName() + " for user: " + userId);
@@ -316,7 +316,7 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
 
             userDAO.delete(user.getId());
 
-            String message = "Deleted user " + user.getSubjectName();
+            String message = "Deleted user " + user.getUsername();
             activityManager.addActivity(ActivityConcept.USER, user.getId(), message, user, null);
         } catch (UserRetrievalException ex) {
             LOGGER.error("Could not delete the user " + user, ex);

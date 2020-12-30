@@ -34,6 +34,7 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserPermissionDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -82,7 +83,13 @@ public class ResourcePermissions {
     @Deprecated
     @Transactional(readOnly = true)
     public UserDTO getUserByName(String userName) throws UserRetrievalException {
-        return userDAO.getByName(userName);
+        UserDTO user = null;
+        try {
+            user = userDAO.getByNameOrEmail(userName);
+        } catch (MultipleUserAccountsException ex) {
+            throw new UserRetrievalException(ex.getMessage());
+        }
+        return user;
     }
 
     @Transactional(readOnly = true)

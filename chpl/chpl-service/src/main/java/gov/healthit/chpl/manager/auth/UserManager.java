@@ -128,7 +128,6 @@ public class UserManager extends SecuredManager {
                 .permission(before.getPermission())
                 .phoneNumber(user.getPhoneNumber())
                 .signatureDate(before.getSignatureDate())
-                .subjectName(before.getSubjectName())
                 .title(user.getTitle())
                 .lastLoggedInDate(before.getLastLoggedInDate())
                 .build();
@@ -150,13 +149,7 @@ public class UserManager extends SecuredManager {
         }
 
         UserDTO before = getById(user.getId());
-        if (ObjectUtils.notEqual(before.getSubjectName(), user.getSubjectName())) {
-            UserDTO existingUser = userDAO.getByNameOrEmail(user.getSubjectName());
-            if (existingUser != null) {
-                throw new UserAccountExistsException(
-                        errorMessageUtil.getMessage("user.accountAlreadyExists", user.getSubjectName()));
-            }
-        } else if (ObjectUtils.notEqual(before.getEmail(), user.getEmail())) {
+        if (ObjectUtils.notEqual(before.getEmail(), user.getEmail())) {
             try {
                 UserDTO existingUser = userDAO.getByNameOrEmail(user.getEmail());
                 if (existingUser != null) {
@@ -169,7 +162,7 @@ public class UserManager extends SecuredManager {
         }
 
         UserDTO updated = userDAO.update(user);
-        String activityDescription = "User " + user.getSubjectName() + " was updated.";
+        String activityDescription = "User " + user.getUsername() + " was updated.";
         activityManager.addActivity(ActivityConcept.USER, before.getId(), activityDescription, before,
                 updated);
 
@@ -210,19 +203,19 @@ public class UserManager extends SecuredManager {
     }
 
     public void updateFailedLoginCount(UserDTO userToUpdate) throws UserRetrievalException, MultipleUserAccountsException {
-        userDAO.updateFailedLoginCount(userToUpdate.getSubjectName(), userToUpdate.getFailedLoginCount());
+        userDAO.updateFailedLoginCount(userToUpdate.getUsername(), userToUpdate.getFailedLoginCount());
         String maxLoginsStr = env.getProperty("authMaximumLoginAttempts");
         int maxLogins = Integer.parseInt(maxLoginsStr);
 
         if (userToUpdate.getFailedLoginCount() >= maxLogins) {
             userToUpdate.setAccountLocked(true);
             try {
-                userDAO.updateAccountLockedStatus(userToUpdate.getSubjectName(), userToUpdate.isAccountLocked());
+                userDAO.updateAccountLockedStatus(userToUpdate.getUsername(), userToUpdate.isAccountLocked());
                 if (userToUpdate.getFailedLoginCount() == maxLogins) {
                     sendAccountLockedEmail(userToUpdate);
                 }
             } catch (Exception ex) {
-                LOGGER.error("Unable to set account " + userToUpdate.getSubjectName() + " as locked.", ex);
+                LOGGER.error("Unable to set account " + userToUpdate.getUsername() + " as locked.", ex);
             }
         }
     }
@@ -288,35 +281,12 @@ public class UserManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME)")
     @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME, returnObject)")
-    public UserDTO getByName(String userName) throws UserRetrievalException {
-        return getByNameUnsecured(userName);
-    }
-
-    public UserDTO getByNameUnsecured(String userName) throws UserRetrievalException {
-        return userDAO.getByName(userName);
-    }
-
-    @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
-            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME)")
-    @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
-            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME, returnObject)")
     public UserDTO getByNameOrEmail(String username) throws MultipleUserAccountsException, UserRetrievalException {
         return getByNameOrEmailUnsecured(username);
     }
 
     public UserDTO getByNameOrEmailUnsecured(String username) throws MultipleUserAccountsException, UserRetrievalException {
         return userDAO.getByNameOrEmail(username);
-    }
-
-    @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
-            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME)")
-    @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
-            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME, returnObject)")
-    public User getUserInfoByName(String userName) throws UserRetrievalException {
-        UserDTO user = getByNameUnsecured(userName);
-        return new User(user);
     }
 
     @Transactional
@@ -351,7 +321,7 @@ public class UserManager extends SecuredManager {
 
     private void sendAccountLockedEmail(UserDTO user) throws AddressException, MessagingException {
         String subject = "CHPL Account Locked";
-        String htmlMessage = "<p>The account associated with " + user.getSubjectName()
+        String htmlMessage = "<p>The account associated with " + user.getUsername()
                 + " has exceeded the maximum number of failed login attempts and is locked. "
                 + "You will need to reset your account by selecting the \"Forgot Password\" option "
                 + "during Log In, or by contacting your local administrator.</p>";
