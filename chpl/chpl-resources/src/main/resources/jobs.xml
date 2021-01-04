@@ -353,7 +353,7 @@
             <name>mergeDeveloperJob</name>
             <group>chplBackgroundJobs</group>
             <description>Complete the work of merging developers and send an email notification to indicate if the operation was successful.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.MergeDeveloperJob</job-class>
+            <job-class>gov.healthit.chpl.scheduler.job.developer.MergeDeveloperJob</job-class>
             <durability>true</durability>
             <recover>true</recover>
             <job-data-map>
