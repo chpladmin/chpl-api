@@ -108,17 +108,17 @@ public class ListingUploadManager {
         checkRequiredHeadings(headingRecord);
 
         List<ListingUpload> uploadedListings = new ArrayList<ListingUpload>();
-        List<List<CSVRecord>> groupedListingRecords = new ArrayList<List<CSVRecord>>();
+        List<List<CSVRecord>> recordsGroupedByListing = new ArrayList<List<CSVRecord>>();
         int fileStartIndex = 0;
         while (fileStartIndex < allListingRecords.size()) {
             List<CSVRecord> currListingRecords = getNextListingRecordGroup(fileStartIndex, headingRecord, allListingRecords);
-            groupedListingRecords.add(currListingRecords);
+            recordsGroupedByListing.add(currListingRecords);
             fileStartIndex += currListingRecords.size();
         }
-        for (List<CSVRecord> listingRecords : groupedListingRecords) {
+        for (List<CSVRecord> listingRecords : recordsGroupedByListing) {
             checkRequiredFields(headingRecord, listingRecords);
         }
-        groupedListingRecords.stream()
+        recordsGroupedByListing.stream()
                 .map(listingRecords -> createListingUploadMetadata(headingRecord, listingRecords))
                 .forEach(listingUploadMetadata -> {
                     uploadedListings.add(listingUploadMetadata);
