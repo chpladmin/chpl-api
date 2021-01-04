@@ -106,23 +106,14 @@ public class ListingUploadManager {
             throw new ValidationException(msgUtil.getMessage("listing.upload.noHeadingFound"));
         }
         checkRequiredHeadings(headingRecord);
-
-        List<ListingUpload> uploadedListings = new ArrayList<ListingUpload>();
-        List<List<CSVRecord>> recordsGroupedByListing = new ArrayList<List<CSVRecord>>();
-        int fileStartIndex = 0;
-        while (fileStartIndex < allListingRecords.size()) {
-            List<CSVRecord> currListingRecords = getNextListingRecordGroup(fileStartIndex, headingRecord, allListingRecords);
-            recordsGroupedByListing.add(currListingRecords);
-            fileStartIndex += currListingRecords.size();
-        }
+        List<List<CSVRecord>> recordsGroupedByListing = groupRecordsByListing(headingRecord, allListingRecords);
         for (List<CSVRecord> listingRecords : recordsGroupedByListing) {
             checkRequiredFields(headingRecord, listingRecords);
         }
-        recordsGroupedByListing.stream()
+
+        List<ListingUpload> uploadedListings = recordsGroupedByListing.stream()
                 .map(listingRecords -> createListingUploadMetadata(headingRecord, listingRecords))
-                .forEach(listingUploadMetadata -> {
-                    uploadedListings.add(listingUploadMetadata);
-                });
+                .collect(Collectors.toList());
         return uploadedListings;
     }
 
@@ -227,6 +218,17 @@ public class ListingUploadManager {
             return true;
         }
 
+    }
+
+    private List<List<CSVRecord>> groupRecordsByListing(CSVRecord headingRecord, List<CSVRecord> allRecords) {
+        List<List<CSVRecord>> recordsGroupedByListing = new ArrayList<List<CSVRecord>>();
+        int fileStartIndex = 0;
+        while (fileStartIndex < allRecords.size()) {
+            List<CSVRecord> currListingRecords = getNextListingRecordGroup(fileStartIndex, headingRecord, allRecords);
+            recordsGroupedByListing.add(currListingRecords);
+            fileStartIndex += currListingRecords.size();
+        }
+        return recordsGroupedByListing;
     }
 
     private void checkRequiredHeadings(CSVRecord headingRecord) throws ValidationException {
