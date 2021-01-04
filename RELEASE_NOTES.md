@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 26.1.0
+_28 December 2020_
+
+### Features
+* Update statistics history to use certification status history table
+
+---
+
 ## Version 26.0.0
 _14 December 2020_
 
