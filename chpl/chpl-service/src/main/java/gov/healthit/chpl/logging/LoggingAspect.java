@@ -19,16 +19,17 @@ public class LoggingAspect {
 
         MethodSignature signature = (MethodSignature) proceedingJoinPoint.getSignature();
         Method method = signature.getMethod();
-        Loggable loggableMethod = method.getAnnotation(Loggable.class);
+        //Loggable loggableMethod = method.getAnnotation(Loggable.class);
 
-        Loggable loggableClass = proceedingJoinPoint.getTarget().getClass().getAnnotation(Loggable.class);
+        //Loggable loggableClass = proceedingJoinPoint.getTarget().getClass().getAnnotation(Loggable.class);
 
         StringBuilder sb = new StringBuilder();
         sb.append("Start Execution of " + Modifier.toString(method.getModifiers()) + " "
                 + method.getDeclaringClass().getSimpleName() + "." + method.getName() + "()");
 
         //show params
-        boolean showParams = loggableMethod != null ? loggableMethod.params() : loggableClass.params();
+        //boolean showParams = loggableMethod != null ? loggableMethod.params() : loggableClass.params();
+        boolean showParams = false;
         if (showParams) {
             if (proceedingJoinPoint.getArgs() != null && proceedingJoinPoint.getArgs().length > 0) {
                 sb.append("[");
@@ -53,7 +54,8 @@ public class LoggingAspect {
         //show results
         StringBuilder value = new StringBuilder();
         if (result != null) {
-            boolean showResults = loggableMethod != null ? loggableMethod.result() : loggableClass.result();
+            //boolean showResults = loggableMethod != null ? loggableMethod.result() : loggableClass.result();
+            boolean showResults = false;
             if (showResults) {
                 value.append("Result : " + result.toString());
             }
