@@ -3,10 +3,12 @@ package gov.healthit.chpl.service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -104,7 +106,47 @@ public class DirectReviewService {
                 dr.getNonConformities().addAll(ncs);
             }
         }
+
+        CacheManager manager = CacheManager.getInstance();
+        Cache drCache = manager.getCache(CacheNames.DIRECT_REVIEWS);
+        System.out.println("# keys: " + drCache.getKeys().size());
+        System.out.println(drCache.getKeys().stream().map(val -> val.toString()).collect(Collectors.joining(",")));
         return drs;
+    }
+
+    @Cacheable(CacheNames.DIRECT_REVIEWS)
+    public List<DirectReview> getDeveloperDirectReviewsFromCache(Long developerId) {
+        try {
+            return getDirectReviews(developerId);
+        } catch (JiraRequestFailedException ex) {
+            LOGGER.error("Could not fetch DRs from Jira.", ex);
+        }
+        return new ArrayList<DirectReview>();
+    }
+
+    public List<DirectReview> getListingDirectReviewsFromCache(Long listingId) {
+        CacheManager manager = CacheManager.getInstance();
+        Cache drCache = manager.getCache(CacheNames.DIRECT_REVIEWS);
+        //drCache has key = developerId and value = list of direct reviews
+        List<?> developerIdsWithDirectReviews = drCache.getKeys();
+        List<DirectReview> allDirectReviews = developerIdsWithDirectReviews.stream()
+            .map(key -> drCache.get(key))
+            .map(cacheElement -> cacheElement.getObjectValue())
+            .filter(cacheObject -> cacheObject instanceof List<?>)
+            .map(cacheObject -> (List<DirectReview>) cacheObject)
+            .flatMap(List::stream)
+            .collect(Collectors.toList());
+
+        return allDirectReviews.stream()
+                .filter(dr -> isAssociatedWithListing(dr, listingId))
+                .collect(Collectors.toList());
+    }
+
+    private boolean isAssociatedWithListing(DirectReview dr, Long listingId) {
+        return dr.getNonConformities().stream()
+            .flatMap(nc -> nc.getDeveloperAssociatedListings().stream())
+            .filter(devAssocListing -> devAssocListing.getId().equals(listingId))
+            .findAny().isPresent();
     }
 
     private String fetchDirectReviews() throws JiraRequestFailedException {
