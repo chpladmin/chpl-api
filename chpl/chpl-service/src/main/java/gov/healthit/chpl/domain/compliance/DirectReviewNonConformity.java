@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -17,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -52,6 +54,7 @@ public class DirectReviewNonConformity implements Serializable {
     @JsonDeserialize(using = DateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlElement(required = false, nillable = true)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate dateOfDetermination;
 
     @JsonProperty(value = "nonConformitySummary")
@@ -84,6 +87,7 @@ public class DirectReviewNonConformity implements Serializable {
     @JsonDeserialize(using = DateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlElement(required = false, nillable = true)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate capApprovalDate;
 
     @JsonProperty(value = "capStartDate")
@@ -91,6 +95,7 @@ public class DirectReviewNonConformity implements Serializable {
     @JsonDeserialize(using = DateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlElement(required = false, nillable = true)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate capStartDate;
 
     @JsonProperty(value = "capMustCompleteDate")
@@ -98,6 +103,7 @@ public class DirectReviewNonConformity implements Serializable {
     @JsonDeserialize(using = DateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlElement(required = false, nillable = true)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate capMustCompleteDate;
 
     @JsonProperty(value = "capEndDate")
@@ -105,6 +111,7 @@ public class DirectReviewNonConformity implements Serializable {
     @JsonDeserialize(using = DateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlElement(required = false, nillable = true)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate capEndDate;
 
     @JsonProperty(value = "lastUpdated")

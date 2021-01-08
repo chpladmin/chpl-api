@@ -20,7 +20,8 @@ public class DeveloperAssociatedListingXmlGenerator extends XmlGenerator {
 
     public static void add(DeveloperAssociatedListing dal, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         sw.writeStartElement(rootNodeName);
-        //TODO
+        createSimpleElement(dal.getChplProductNumber(), "chplProductNumber", sw);
+        createSimpleElement(dal.getId(), "id", sw);
         sw.writeEndElement();
     }
 }
