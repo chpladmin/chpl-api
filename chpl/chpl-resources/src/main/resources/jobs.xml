@@ -513,5 +513,21 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
+        
+        <!-- Create the Listing Validation Report Data -->
+        <job>
+            <name>listingValidationReportCreator</name>
+            <group>systemJobs</group>
+            <description>Create the listing validation report data</description>
+            <job-class>gov.healthit.chpl.scheduler.job.listingvalidation.ListingValidationCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+            </job-data-map>
+        </job>
     </schedule>
 </job-scheduling-data>

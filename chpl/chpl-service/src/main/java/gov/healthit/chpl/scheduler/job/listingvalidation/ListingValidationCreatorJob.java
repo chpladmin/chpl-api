@@ -9,6 +9,7 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
@@ -31,6 +32,8 @@ public class ListingValidationCreatorJob implements Job {
     @Autowired
     private ListingValidatorFactory validatorFactory;
 
+    @Autowired ListingValidationReportDAO listingValidationReportDAO;
+
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
@@ -42,6 +45,9 @@ public class ListingValidationCreatorJob implements Job {
                     .filter(detail -> detail.getErrorMessages().size() > 0)
                     .collect(Collectors.toList());
 
+            for (CertifiedProductSearchDetails listing : listingsWithErrors) {
+                createListingValidationReport(listing);
+            }
         } catch (Exception e) {
             LOGGER.catching(e);
         }
@@ -49,12 +55,20 @@ public class ListingValidationCreatorJob implements Job {
     }
 
     private List<CertifiedProductDetailsDTO> getAll2015CertifiedProducts() {
-        return certifiedProductDAO.findByEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.toString());
+        LOGGER.info("Retrieving all 2015 listings");
+        List<CertifiedProductDetailsDTO> listings = certifiedProductDAO.findByEdition(
+                CertificationEditionConcept.CERTIFICATION_EDITION_2015.toString());
+        LOGGER.info("Completed retreiving all 2015 listings");
+        return listings;
     }
 
     private CertifiedProductSearchDetails getCertifiedProductSearchDetails(Long certifiedProductId) {
+
         try {
-            return certifiedProductDetailsManager.getCertifiedProductDetails(certifiedProductId);
+            LOGGER.info("Retrieving details for listing: " + certifiedProductId);
+            CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetails(certifiedProductId);
+            LOGGER.info("Completed details for listing: " + certifiedProductId);
+            return listing;
         } catch (EntityRetrievalException e) {
             LOGGER.catching(e);
             return null;
@@ -62,8 +76,25 @@ public class ListingValidationCreatorJob implements Job {
     }
 
     private CertifiedProductSearchDetails validateListing(CertifiedProductSearchDetails listing) {
+        LOGGER.info("Starting validation of listing: " + listing.getId());
         Validator validator = validatorFactory.getValidator(listing);
         validator.validate(listing);
+        LOGGER.info("Completed validation of listing: " + listing.getId());
         return listing;
+    }
+
+    private List<ListingValidationReport> createListingValidationReport(CertifiedProductSearchDetails listing) {
+        LOGGER.info("Starting save of report data for: " + listing.getId());
+        List<ListingValidationReport> reports = listing.getErrorMessages().stream()
+                .map(error -> listingValidationReportDAO.create(ListingValidationReport.builder()
+                    .chplProductNumber(listing.getChplProductNumber())
+                    .productName(listing.getProduct().getName())
+                    .certificationStatusName(listing.getCurrentStatus().getStatus().getName())
+                    .errorMessage(error)
+                    .lastModifiedUser(User.SYSTEM_USER_ID)
+                    .build()))
+                .collect(Collectors.toList());
+        LOGGER.info("Completed save of report data for: " + listing.getId());
+        return reports;
     }
 }
