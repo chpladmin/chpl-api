@@ -106,22 +106,18 @@ public class DirectReviewService {
                 dr.getNonConformities().addAll(ncs);
             }
         }
-
-        CacheManager manager = CacheManager.getInstance();
-        Cache drCache = manager.getCache(CacheNames.DIRECT_REVIEWS);
-        System.out.println("# keys: " + drCache.getKeys().size());
-        System.out.println(drCache.getKeys().stream().map(val -> val.toString()).collect(Collectors.joining(",")));
         return drs;
     }
 
     @Cacheable(CacheNames.DIRECT_REVIEWS)
     public List<DirectReview> getDeveloperDirectReviewsFromCache(Long developerId) {
+        List<DirectReview> developerDrs = new ArrayList<DirectReview>();
         try {
-            return getDirectReviews(developerId);
+            developerDrs = getDirectReviews(developerId);
         } catch (JiraRequestFailedException ex) {
             LOGGER.error("Could not fetch DRs from Jira.", ex);
         }
-        return new ArrayList<DirectReview>();
+        return developerDrs;
     }
 
     public List<DirectReview> getListingDirectReviewsFromCache(Long listingId) {
@@ -205,7 +201,9 @@ public class DirectReviewService {
                         JsonNode fields = issueNode.get(JIRA_FIELDS_FIELD);
                         DirectReview dr = mapper.readValue(fields.toString(), DirectReview.class);
                         dr.setJiraKey(jiraKey);
-                        drs.add(dr);
+                        if (dr.getStartDate() != null) {
+                            drs.add(dr);
+                        }
                     } catch (IOException ex) {
                         LOGGER.error("Cannot map issue JSON to DirectReview class", ex);
                     }

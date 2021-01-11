@@ -21,10 +21,13 @@ import org.apache.logging.log4j.Logger;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 
 public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, AutoCloseable {
+    private static final String OPEN_STATUS = "open";
+
     private Logger logger;
     private List<CertificationCriterionDTO> applicableCriteria = new ArrayList<CertificationCriterionDTO>();
     private OutputStreamWriter writer = null;
@@ -104,6 +107,9 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         result.add("Total Surveillance Activities");
         result.add("Total Surveillance Non-conformities");
         result.add("Open Surveillance Non-conformities");
+        result.add("Total Direct Review Activities");
+        result.add("Total Direct Review Non-conformities");
+        result.add("Open Direct Review Non-conformities");
 
         if (applicableCriteria != null) {
             for (CertificationCriterionDTO criteria : applicableCriteria) {
@@ -144,6 +150,9 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         result.add(listing.getCountSurveillance().toString());
         result.add((listing.getCountOpenNonconformities() + listing.getCountClosedNonconformities()) + "");
         result.add(listing.getCountOpenNonconformities().toString());
+        result.add(listing.getDirectReviews().size() + "");
+        result.add(getCountOfDirectReviewNonconformitiesForListing(listing) + "");
+        result.add(getCountOfOpenDirectReviewNonconformitiesForListing(listing) + "");
         List<String> criteria = generateCriteriaValues(listing);
         result.addAll(criteria);
         return result;
@@ -201,6 +210,31 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
     protected String formatDate(Long dateInMillis) {
         LocalDateTime localDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(dateInMillis), ZoneId.systemDefault());
         return DateTimeFormatter.ISO_LOCAL_DATE.format(localDate);
+    }
+
+    private long getCountOfDirectReviewNonconformitiesForListing(CertifiedProductSearchDetails listing) {
+        long count = 0;
+        count = listing.getDirectReviews().stream()
+                    .flatMap(dr -> dr.getNonConformities().stream())
+                    .filter(nc -> isNonconformityAssociatedWithListing(listing, nc))
+                    .count();
+        return count;
+    }
+
+    private long getCountOfOpenDirectReviewNonconformitiesForListing(CertifiedProductSearchDetails listing) {
+        long count = 0;
+        count = listing.getDirectReviews().stream()
+                .flatMap(dr -> dr.getNonConformities().stream())
+                .filter(nc -> isNonconformityAssociatedWithListing(listing, nc))
+                .filter(nc -> nc.getNonConformityStatus() != null && nc.getNonConformityStatus().equalsIgnoreCase(OPEN_STATUS))
+                .count();
+        return count;
+    }
+
+    private boolean isNonconformityAssociatedWithListing(CertifiedProductSearchDetails listing, DirectReviewNonConformity nc) {
+        return nc.getDeveloperAssociatedListings().stream()
+                .filter(dal -> dal.getId().equals(listing.getId()))
+                .findAny().isPresent();
     }
 
     protected List<String> getDeveloperAddressCells(CertifiedProductSearchDetails listing) {
