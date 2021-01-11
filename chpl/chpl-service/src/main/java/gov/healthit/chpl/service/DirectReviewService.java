@@ -17,8 +17,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import gov.healthit.chpl.DirectReviewDeserializingObjectMapper;
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
+import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.exception.JiraRequestFailedException;
 import lombok.extern.log4j.Log4j2;
 import net.sf.ehcache.Cache;
@@ -44,11 +46,14 @@ public class DirectReviewService {
     @Value("${jira.nonconformityUrl}")
     private String jiraNonconformityUrl;
 
+    private DeveloperDAO developerDao;
     private RestTemplate jiraAuthenticatedRestTemplate;
     private DirectReviewDeserializingObjectMapper mapper;
 
     @Autowired
-    public DirectReviewService(RestTemplate jiraAuthenticatedRestTemplate, DirectReviewDeserializingObjectMapper mapper) {
+    public DirectReviewService(DeveloperDAO developerDao, RestTemplate jiraAuthenticatedRestTemplate,
+            DirectReviewDeserializingObjectMapper mapper) {
+        this.developerDao = developerDao;
         this.jiraAuthenticatedRestTemplate = jiraAuthenticatedRestTemplate;
         this.mapper = mapper;
     }
@@ -71,7 +76,15 @@ public class DirectReviewService {
             Cache drCache = manager.getCache(CacheNames.DIRECT_REVIEWS);
             LOGGER.info("Clearing the Direct Review cache.");
             drCache.removeAll();
+
+            //insert an entry in the cache for every developer ID
+            List<DeveloperDTO> allDeveloperIds = developerDao.findAllIdsAndNames();
+            LOGGER.info("Adding " + allDeveloperIds.size() + " keys to the Direct Review cache.");
+            allDeveloperIds.stream()
+                .forEach(dev -> drCache.put(new Element(dev.getId(), new ArrayList<DirectReview>())));
+
             //insert each direct review into the right place in our cache
+            LOGGER.info("Inserting " + allDirectReviews.size() + " values into the Direct Review cache.");
             for (DirectReview dr : allDirectReviews) {
                 if (dr.getDeveloperId() != null) {
                     if (drCache.get(dr.getDeveloperId()) != null) {
