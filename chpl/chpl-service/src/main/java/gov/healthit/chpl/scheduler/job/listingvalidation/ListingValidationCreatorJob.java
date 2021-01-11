@@ -43,7 +43,7 @@ public class ListingValidationCreatorJob implements Job {
             List<CertifiedProductSearchDetails> listingsWithErrors = getAll2015CertifiedProducts().parallelStream()
                     .map(listing -> getCertifiedProductSearchDetails(listing.getId()))
                     .map(detail -> validateListing(detail))
-                    .filter(detail -> detail.getErrorMessages().size() > 0)
+                    .filter(detail -> doValidationErrorsExist(detail))
                     .collect(Collectors.toList());
 
             for (CertifiedProductSearchDetails listing : listingsWithErrors) {
@@ -82,6 +82,13 @@ public class ListingValidationCreatorJob implements Job {
         validator.validate(listing);
         LOGGER.info("Completed validation of listing: " + listing.getId());
         return listing;
+    }
+
+    private boolean doValidationErrorsExist(CertifiedProductSearchDetails listing) {
+        LOGGER.info("Starting check of errors of listing: " + listing.getId());
+        boolean errorsExist = listing.getErrorMessages().size() > 0;
+        LOGGER.info("Completed check of errors of listing: " + listing.getId());
+        return errorsExist;
     }
 
     private List<ListingValidationReport> createListingValidationReport(CertifiedProductSearchDetails listing) {
