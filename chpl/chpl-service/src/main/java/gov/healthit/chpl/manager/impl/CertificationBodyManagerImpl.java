@@ -24,18 +24,19 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
-import gov.healthit.chpl.util.AuthUtil;
 
 /**
  * Business logic for accessing and updating ACBs.
- * 
+ *
  * @author kekey
  *
  */
+@Loggable
 @Service("certificationBodyManager")
 public class CertificationBodyManagerImpl extends SecuredManager implements CertificationBodyManager {
     private static final Logger LOGGER = LogManager.getLogger(CertificationBodyManagerImpl.class);
