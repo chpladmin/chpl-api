@@ -3,9 +3,11 @@ package gov.healthit.chpl.manager.rules.developer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
+@Loggable
 @Component
 public class DeveloperValidationFactory {
     public static final String NAME = "NAME";
