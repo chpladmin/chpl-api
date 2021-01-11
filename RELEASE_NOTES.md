@@ -1,5 +1,17 @@
 # Release Notes
 
+## Version 26.2.0
+_11 January 2021_
+
+### Features
+* Add scheduled job that allows audit data to be archived
+
+### Bug Fixes
+* Able to add and remove nonconformity in a single action
+* Add null check for surveillance requirement comparison
+
+---
+
 ## Version 26.1.0
 _28 December 2020_
 
