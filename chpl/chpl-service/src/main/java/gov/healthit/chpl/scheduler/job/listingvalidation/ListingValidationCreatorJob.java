@@ -32,7 +32,8 @@ public class ListingValidationCreatorJob implements Job {
     @Autowired
     private ListingValidatorFactory validatorFactory;
 
-    @Autowired ListingValidationReportDAO listingValidationReportDAO;
+    @Autowired
+    private ListingValidationReportDAO listingValidationReportDAO;
 
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
@@ -57,7 +58,7 @@ public class ListingValidationCreatorJob implements Job {
     private List<CertifiedProductDetailsDTO> getAll2015CertifiedProducts() {
         LOGGER.info("Retrieving all 2015 listings");
         List<CertifiedProductDetailsDTO> listings = certifiedProductDAO.findByEdition(
-                CertificationEditionConcept.CERTIFICATION_EDITION_2015.toString());
+                CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
         LOGGER.info("Completed retreiving all 2015 listings");
         return listings;
     }
