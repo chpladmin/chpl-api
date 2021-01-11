@@ -139,17 +139,6 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         LOGGER.info("Finding all listings for edition " + edition + ".");
         Date start = new Date();
         List<CertifiedProductDetailsDTO> listingsForEdition = getCertifiedProductDao().findByEdition(edition);
-        //TODO: remove later
-        listingsForEdition = listingsForEdition.stream()
-            .filter(listing -> listing.getDeveloper().getName().equals("Becton Dickinson and Company")
-                    || listing.getDeveloper().getName().equals("Acmeware, Inc")
-                    || listing.getDeveloper().getName().equals("AdvancedMD")
-                    || listing.getDeveloper().getName().equals("VIPA Health Solutions, LLC")
-                    || listing.getDeveloper().getName().equals("Agastha, Inc.")
-                    || listing.getDeveloper().getName().equals("Ankhos Oncology Software")
-                    || listing.getDeveloper().getName().equals("Aprima, an eMDs Company"))
-            .collect(Collectors.toList());
-
         Date end = new Date();
         LOGGER.info("Found the " + listingsForEdition.size() + " listings from " + edition + " in "
                 + ((end.getTime() - start.getTime()) / MILLIS_PER_SECOND) + " seconds");
