@@ -102,8 +102,8 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         result.add("Real World Testing Plans URL");
         result.add("Real World Testing Results URL");
         result.add("Total Surveillance Activities");
-        result.add("Total Nonconformities");
-        result.add("Open Nonconformities");
+        result.add("Total Surveillance Non-conformities");
+        result.add("Open Surveillance Non-conformities");
 
         if (applicableCriteria != null) {
             for (CertificationCriterionDTO criteria : applicableCriteria) {
