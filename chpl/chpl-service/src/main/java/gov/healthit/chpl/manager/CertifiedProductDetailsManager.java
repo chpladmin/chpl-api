@@ -78,6 +78,7 @@ import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.MeaningfulUseUserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.impl.CertifiedProductDetailsManagerAsync;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.DirectReviewService;
@@ -89,6 +90,7 @@ import lombok.extern.log4j.Log4j2;
 import one.util.streamex.StreamEx;
 
 @Log4j2
+@Loggable
 @Service("certifiedProductDetailsManager")
 public class CertifiedProductDetailsManager {
 
