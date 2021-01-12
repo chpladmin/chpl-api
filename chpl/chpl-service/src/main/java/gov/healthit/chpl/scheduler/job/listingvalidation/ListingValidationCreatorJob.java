@@ -1,16 +1,19 @@
 package gov.healthit.chpl.scheduler.job.listingvalidation;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -43,24 +46,50 @@ public class ListingValidationCreatorJob implements Job {
     @Autowired
     private ListingValidationReportDAO listingValidationReportDAO;
 
+    @Value("${executorThreadCountForQuartzJobs}")
+    private Integer threadCount;
+
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        LOGGER.info("********* Starting the Cache Status Age job. *********");
+        LOGGER.info("********* Starting the Listing Validation Creator job. *********");
         try {
-            List<CertifiedProductSearchDetails> listingsWithErrors = getAll2015CertifiedProducts().parallelStream()
-                    .map(listing -> getCertifiedProductSearchDetails(listing.getId()))
-                    .map(detail -> validateListing(detail))
-                    .filter(detail -> doValidationErrorsExist(detail))
-                    .collect(Collectors.toList());
+            // We need to manually create a transaction in this case because of how AOP works. When a method is
+            // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
+            // The object's proxy is not called when the method is called from within this class. The object's proxy
+            // is called when the method is public and is called from a different object.
+            // https://stackoverflow.com/questions/3037006/starting-new-transaction-in-spring-bean
+            TransactionTemplate txTemplate = new TransactionTemplate(txManager);
+            txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+            txTemplate.execute(new TransactionCallbackWithoutResult() {
+                @Override
+                protected void doInTransactionWithoutResult(TransactionStatus status) {
+                    try {
+                        //This will control how many threads are used by the parallelStream.  By default parallelStream
+                        //will use the # of processors - 1 threads.  We want to be able to limit this.
+                        ForkJoinPool pool = new ForkJoinPool(threadCount);
+                        List<CertifiedProductSearchDetails> listingsWithErrors = pool.submit(() -> getListingsWithErrors()).get();
 
-            for (CertifiedProductSearchDetails listing : listingsWithErrors) {
-                createListingValidationReport(listing);
-            }
+                        listingsWithErrors.stream()
+                                .forEach(listing -> createListingValidationReport(listing));
+                    } catch (Exception e) {
+                        LOGGER.error("Error inserting listing validation errors. Rolling back transaction.", e);
+                        status.setRollbackOnly();
+                    }
+                }
+            });
         } catch (Exception e) {
             LOGGER.catching(e);
         }
-        LOGGER.info("********* Completed the Cache Status Age job. *********");
+        LOGGER.info("********* Completed the Listing Validation Creator job. *********");
+    }
+
+    private List<CertifiedProductSearchDetails> getListingsWithErrors() {
+        return getAll2015CertifiedProducts().parallelStream()
+                .map(listing -> getCertifiedProductSearchDetails(listing.getId()))
+                .map(detail -> validateListing(detail))
+                .filter(detail -> doValidationErrorsExist(detail))
+                .collect(Collectors.toList());
     }
 
     private List<CertifiedProductDetailsDTO> getAll2015CertifiedProducts() {
@@ -72,11 +101,11 @@ public class ListingValidationCreatorJob implements Job {
     }
 
     private CertifiedProductSearchDetails getCertifiedProductSearchDetails(Long certifiedProductId) {
-
         try {
+            long start = (new Date()).getTime();
             LOGGER.info("Retrieving details for listing: " + certifiedProductId);
             CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetails(certifiedProductId);
-            LOGGER.info("Completed details for listing: " + certifiedProductId);
+            LOGGER.info("Completed details for listing(" + ((new Date()).getTime() - start) + "ms): " + certifiedProductId);
             return listing;
         } catch (EntityRetrievalException e) {
             LOGGER.catching(e);
@@ -100,33 +129,19 @@ public class ListingValidationCreatorJob implements Job {
     }
 
     private List<ListingValidationReport> createListingValidationReport(CertifiedProductSearchDetails listing) {
-        // We need to manually create a transaction in this case because of how AOP works. When a method is
-        // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
-        // The object's proxy is not called when the method is called from within this class. The object's proxy
-        // is called when the method is public and is called from a different object.
-        // https://stackoverflow.com/questions/3037006/starting-new-transaction-in-spring-bean
-        TransactionTemplate txTemplate = new TransactionTemplate(txManager);
-        txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-        return txTemplate.execute(status -> {
-                try {
-                    LOGGER.info("Starting save of report data for: " + listing.getId());
-                    List<ListingValidationReport> reports = listing.getErrorMessages().stream()
-                            .map(error -> listingValidationReportDAO.create(ListingValidationReport.builder()
-                                .chplProductNumber(listing.getChplProductNumber())
-                                .productName(listing.getProduct().getName())
-                                .certificationStatusName(listing.getCurrentStatus().getStatus().getName())
-                                .errorMessage(error)
-                                .reportDate(new Date())
-                                .lastModifiedUser(User.SYSTEM_USER_ID)
-                                .build()))
-                            .collect(Collectors.toList());
-                    LOGGER.info("Completed save of report data for: " + listing.getId());
-                    return reports;
-                } catch (Exception e) {
-                    LOGGER.error("Error inserting listing validation errors. Rolling back transaction.", e);
-                    status.setRollbackOnly();
-                    return new ArrayList<ListingValidationReport>();
-                }
-        });
+
+        LOGGER.info("Starting save of report data for: " + listing.getId());
+        List<ListingValidationReport> reports = listing.getErrorMessages().stream()
+                .map(error -> listingValidationReportDAO.create(ListingValidationReport.builder()
+                    .chplProductNumber(listing.getChplProductNumber())
+                    .productName(listing.getProduct().getName())
+                    .certificationStatusName(listing.getCurrentStatus().getStatus().getName())
+                    .errorMessage(error)
+                    .reportDate(new Date())
+                    .lastModifiedUser(User.SYSTEM_USER_ID)
+                    .build()))
+                .collect(Collectors.toList());
+        LOGGER.info("Completed save of report data for: " + listing.getId());
+        return reports;
     }
 }

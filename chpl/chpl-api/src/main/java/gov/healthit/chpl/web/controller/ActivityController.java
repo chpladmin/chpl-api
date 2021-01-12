@@ -66,7 +66,8 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "activity")
 @RestController
 @RequestMapping("/activity")
-@Loggablepublic class ActivityController {
+@Loggable
+public class ActivityController {
     private static final Logger LOGGER = LogManager.getLogger(ActivityController.class);
     public static final int DEFAULT_MAX_ACTIVITY_RANGE_DAYS = 30;
 
