@@ -751,7 +751,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                             }
                             listing.getMeasures().add(measureEntity);
                         }
-                        addAssociatedCriterionToMeasure(measureEntity, cert);
+                        addAssociatedCriteriaToMeasure(measureEntity, cert);
                     }
                 }
             }
@@ -765,6 +765,16 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
             criterionMap.setCriterion(certDao.getEntityById(criterionMap.getCertificationCriterionId()));
         } catch (EntityRetrievalException ignore) { }
         mmEntity.getAssociatedCriteria().add(criterionMap);
+    }
+
+    private void addAssociatedCriteriaToMeasure(PendingListingMeasureEntity mmEntity, PendingCertificationResultEntity cert) {
+        List<CertificationCriterionEntity> allCriterionWithNumber = certDao.getEntitiesByNumber(cert.getMappedCriterion().getNumber());
+        for (CertificationCriterionEntity criterion : allCriterionWithNumber) {
+            PendingListingMeasureCriterionMapEntity criterionMap = new PendingListingMeasureCriterionMapEntity();
+            criterionMap.setCertificationCriterionId(criterion.getId());
+            criterionMap.setCriterion(criterion);
+            mmEntity.getAssociatedCriteria().add(criterionMap);
+        }
     }
 
     private PendingListingMeasureEntity getMeasureEntityFromListing(PendingCertifiedProductEntity listing,
