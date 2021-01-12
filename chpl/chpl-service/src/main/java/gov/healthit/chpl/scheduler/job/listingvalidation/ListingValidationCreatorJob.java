@@ -100,7 +100,7 @@ public class ListingValidationCreatorJob implements Job {
     }
 
     private List<ListingValidationReport> createListingValidationReport(CertifiedProductSearchDetails listing) {
-     // We need to manually create a transaction in this case because of how AOP works. When a method is
+        // We need to manually create a transaction in this case because of how AOP works. When a method is
         // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
         // The object's proxy is not called when the method is called from within this class. The object's proxy
         // is called when the method is public and is called from a different object.
@@ -128,7 +128,5 @@ public class ListingValidationCreatorJob implements Job {
                     return new ArrayList<ListingValidationReport>();
                 }
         });
-
-
     }
 }

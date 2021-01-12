@@ -13,6 +13,7 @@ import gov.healthit.chpl.caching.CacheInitializor;
 import gov.healthit.chpl.domain.status.CacheStatus;
 import gov.healthit.chpl.domain.status.CacheStatusName;
 import gov.healthit.chpl.domain.status.SystemStatus;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.domain.status.ServerStatus;
 import gov.healthit.chpl.domain.status.ServerStatusName;
 
@@ -28,6 +29,7 @@ import net.sf.ehcache.CacheManager;
  */
 @Api
 @RestController
+@Loggable
 public class StatusController {
     private static final Logger LOGGER = LogManager.getLogger(StatusController.class);
 

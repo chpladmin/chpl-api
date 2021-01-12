@@ -62,6 +62,7 @@ import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.ComplaintManager;
 import gov.healthit.chpl.manager.DeveloperManager;
@@ -89,6 +90,7 @@ import io.swagger.annotations.ApiOperation;
  */
 @Api
 @RestController
+@Loggable
 public class SearchViewController {
     private static final int MAX_PAGE_SIZE = 100;
 
