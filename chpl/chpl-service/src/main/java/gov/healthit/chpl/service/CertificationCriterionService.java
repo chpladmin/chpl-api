@@ -50,7 +50,7 @@ public class CertificationCriterionService {
     }
 
     public CertificationCriterion get(Long certificationCriterionId) {
-        return criteriaByIdMap.containsKey(certificationCriterionId) ? criteriaByIdMap.get(certificationCriterionId) : null;
+        return criteriaByIdMap.get(certificationCriterionId);
     }
 
     public CertificationCriterion get(String certificationCriterionDescriptor) {
