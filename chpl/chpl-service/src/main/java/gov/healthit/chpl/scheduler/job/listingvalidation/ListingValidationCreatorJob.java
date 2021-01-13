@@ -22,6 +22,7 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
@@ -86,6 +87,7 @@ public class ListingValidationCreatorJob implements Job {
 
     private List<CertifiedProductSearchDetails> getListingsWithErrors() {
         return getAll2015CertifiedProducts().parallelStream()
+                .filter(listing -> isListingActive(listing))
                 .map(listing -> getCertifiedProductSearchDetails(listing.getId()))
                 .map(detail -> validateListing(detail))
                 .filter(detail -> doValidationErrorsExist(detail))
@@ -143,5 +145,12 @@ public class ListingValidationCreatorJob implements Job {
                 .collect(Collectors.toList());
         LOGGER.info("Completed save of report data for: " + listing.getId());
         return reports;
+    }
+
+    private boolean isListingActive(CertifiedProductDetailsDTO listing) {
+        return CertificationStatusType.getActiveAndSuspendedNames().stream()
+                .filter(statusName -> listing.getCertificationStatusName().equals(statusName))
+                .findAny()
+                .isPresent();
     }
 }

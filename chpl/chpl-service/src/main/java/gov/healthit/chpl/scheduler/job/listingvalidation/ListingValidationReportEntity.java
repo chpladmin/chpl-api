@@ -13,12 +13,14 @@ import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "listing_validation_report")
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class ListingValidationReportEntity {
 
     @Id
