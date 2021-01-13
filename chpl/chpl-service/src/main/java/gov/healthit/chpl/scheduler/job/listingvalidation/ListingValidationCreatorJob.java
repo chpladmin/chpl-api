@@ -66,6 +66,8 @@ public class ListingValidationCreatorJob implements Job {
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
                     try {
+                        listingValidationReportDAO.deleteAll();
+
                         //This will control how many threads are used by the parallelStream.  By default parallelStream
                         //will use the # of processors - 1 threads.  We want to be able to limit this.
                         ForkJoinPool pool = new ForkJoinPool(threadCount);
