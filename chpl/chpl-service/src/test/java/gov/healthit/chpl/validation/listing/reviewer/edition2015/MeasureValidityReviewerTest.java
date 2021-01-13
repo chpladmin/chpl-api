@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.text.ParseException;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,19 +20,24 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
 public class MeasureValidityReviewerTest {
+    private CertificationCriterionService criterionService;
     private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
     private MeasureValidityReviewer reviewer;
 
     @Before
     public void setup() {
+        criterionService = Mockito.mock(CertificationCriterionService.class);
+        Mockito.when(criterionService.getByNumber(ArgumentMatchers.anyString()))
+            .thenReturn(Stream.of(buildCriterion(1L, "170.315 (a)(1)")).collect(Collectors.toList()));
         validationUtils = Mockito.mock(ValidationUtils.class);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        reviewer = new MeasureValidityReviewer(validationUtils, msgUtil);
+        reviewer = new MeasureValidityReviewer(criterionService, validationUtils, msgUtil);
     }
 
     @Test
@@ -344,12 +351,46 @@ public class MeasureValidityReviewerTest {
         assertEquals(0, listing.getErrorMessages().size());
     }
 
+    //TODO: add unit tests for missing cures/original criteria
+    @Test
+    public void review_listingHasValidMeasures_noErrorMessage() throws ParseException {
+        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
+        CertificationResult g1Result = CertificationResult.builder()
+                .id(1L)
+                .criterion(CertificationCriterion.builder()
+                        .id(1L)
+                        .number("170.315 (g)(1)")
+                        .build())
+                .success(true)
+                .build();
+        listing.getCertificationResults().add(g1Result);
+        listing.getMeasures().add(ListingMeasure.builder()
+                .measure(Measure.builder()
+                        .id(1L)
+                        .name("Test")
+                        .allowedCriteria(buildCriterionSet(1L, "170.315 (a)(1)"))
+                        .build())
+                .measureType(MeasureType.builder()
+                        .id(1L)
+                        .name("G1")
+                        .build())
+                .associatedCriteria(buildCriterionSet(1L, "170.315 (a)(1)"))
+                .build());
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
     private Set<CertificationCriterion> buildCriterionSet(Long id, String number) {
         Set<CertificationCriterion> critSet = new LinkedHashSet<CertificationCriterion>();
-        critSet.add(CertificationCriterion.builder()
-                .id(id)
-                .number(number)
-                .build());
+        critSet.add(buildCriterion(id, number));
         return critSet;
+    }
+
+    private CertificationCriterion buildCriterion(Long id, String number) {
+        return CertificationCriterion.builder()
+        .id(id)
+        .number(number)
+        .build();
     }
 }
