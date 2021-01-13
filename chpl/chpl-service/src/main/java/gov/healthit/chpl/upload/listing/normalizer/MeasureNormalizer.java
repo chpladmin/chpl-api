@@ -3,6 +3,7 @@ package gov.healthit.chpl.upload.listing.normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -11,11 +12,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
 
@@ -24,16 +28,20 @@ public class MeasureNormalizer {
     private MacraMeasureDAO legacyMacraMeasureDao;
     private MeasureDAO measureDao;
     private ListingMeasureDAO listingMeasureDao;
+    //TODO: replace with method in CertificationCriterionService when OCD-3582 is merged
+    private CertificationCriterionDAO criterionDao;
 
     private Set<MeasureType> measureTypes;
 
     @Autowired
     public MeasureNormalizer(MacraMeasureDAO legacyMacraMeasureDao,
             MeasureDAO measureDao,
-            ListingMeasureDAO listingMeasureDao) {
+            ListingMeasureDAO listingMeasureDao,
+            CertificationCriterionDAO criterionDao) {
         this.legacyMacraMeasureDao = legacyMacraMeasureDao;
         this.measureDao = measureDao;
         this.listingMeasureDao = listingMeasureDao;
+        this.criterionDao = criterionDao;
     }
 
     @PostConstruct
@@ -52,7 +60,7 @@ public class MeasureNormalizer {
             combineListingMeasures(combinedListingMeasures, listing.getMeasures());
             combinedListingMeasures.stream()
                 .filter(listingMeasure -> listingMeasure.getMeasure() != null && listingMeasure.getMeasure().getId() != null)
-                .forEach(listingMeasure -> setAssociatedCriteriaIfCriteriaSelectionNotRequired(listingMeasure));
+                .forEach(listingMeasure -> populateMissingAssociatedCriteria(listingMeasure));
             listing.setMeasures(combinedListingMeasures);
         }
     }
@@ -86,12 +94,32 @@ public class MeasureNormalizer {
         }
     }
 
-    private void setAssociatedCriteriaIfCriteriaSelectionNotRequired(ListingMeasure listingMeasure) {
+    private void populateMissingAssociatedCriteria(ListingMeasure listingMeasure) {
+        associateAllowedCriteriaIfCriteriaSelectionNotRequired(listingMeasure);
+        associateCuresAndOriginalCriteria(listingMeasure);
+    }
+
+    private void associateAllowedCriteriaIfCriteriaSelectionNotRequired(ListingMeasure listingMeasure) {
         if (!listingMeasure.getMeasure().getRequiresCriteriaSelection()) {
             //if the user can't select the criteria add all the allowed as associated
             listingMeasure.getMeasure().getAllowedCriteria().stream()
                 .forEach(allowedCriterion -> listingMeasure.getAssociatedCriteria().add(allowedCriterion));
         }
+    }
+
+    private void associateCuresAndOriginalCriteria(ListingMeasure listingMeasure) {
+        Set<CertificationCriterion> associatedCriteriaCopy = listingMeasure.getAssociatedCriteria().stream().collect(Collectors.toSet());
+
+        listingMeasure.getAssociatedCriteria().stream()
+            .forEach(associatedCriterion -> {
+                //TODO: replace with method in CertificationCriterionService when OCD-3582 is merged
+                List<CertificationCriterionDTO> criteriaWithNumber = criterionDao.getAllByNumber(associatedCriterion.getNumber());
+                if (criteriaWithNumber.size() > 1) {
+                    associatedCriteriaCopy.addAll(
+                            criteriaWithNumber.stream().map(criterionDto -> new CertificationCriterion(criterionDto)).collect(Collectors.toList()));
+                }
+            });
+        listingMeasure.setAssociatedCriteria(associatedCriteriaCopy);
     }
 
     private MeasureType getMeasureTypeByName(String name) {
