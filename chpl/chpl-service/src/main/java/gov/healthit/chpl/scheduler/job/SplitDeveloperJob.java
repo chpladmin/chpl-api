@@ -15,6 +15,7 @@ import javax.mail.internet.AddressException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -47,6 +48,7 @@ import gov.healthit.chpl.service.DirectReviewUpdateEmailService;
 import gov.healthit.chpl.util.EmailBuilder;
 import net.sf.ehcache.CacheManager;
 
+@DisallowConcurrentExecution
 public class SplitDeveloperJob implements Job {
     public static final String JOB_NAME = "splitDeveloperJob";
     public static final String OLD_DEVELOPER_KEY = "oldDeveloper";

@@ -12,10 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.healthit.chpl.caching.CacheInitializor;
 import gov.healthit.chpl.domain.status.CacheStatus;
 import gov.healthit.chpl.domain.status.CacheStatusName;
-import gov.healthit.chpl.domain.status.SystemStatus;
 import gov.healthit.chpl.domain.status.ServerStatus;
 import gov.healthit.chpl.domain.status.ServerStatusName;
-
+import gov.healthit.chpl.domain.status.SystemStatus;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import net.sf.ehcache.Cache;
@@ -96,6 +95,11 @@ public class StatusController {
         for (int i = 0; i < cacheNames.size(); i++) {
             Cache currCache = manager.getCache(cacheNames.get(i));
             if (currCache == null || currCache.getKeysNoDuplicateCheck().size() == 0) {
+                if (currCache != null) {
+                    LOGGER.warn("Cache " + currCache.getName() + " is not yet initialized.");
+                } else {
+                    LOGGER.warn("Cache " + cacheNames.get(i) + " is null and not initialized.");
+                }
                 anyPending = true;
             }
         }
