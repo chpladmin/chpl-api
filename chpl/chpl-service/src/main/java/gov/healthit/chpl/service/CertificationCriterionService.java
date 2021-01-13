@@ -28,7 +28,8 @@ public class CertificationCriterionService {
     private CertificationCriterionDAO certificationCriterionDAO;
     private Environment environment;
 
-    private Map<Long, CertificationCriterion> criteriaMap = new HashMap<Long, CertificationCriterion>();
+    private Map<Long, CertificationCriterion> criteriaByIdMap = new HashMap<Long, CertificationCriterion>();
+    private Map<String, List<CertificationCriterion>> criteriaByNumberMap = new HashMap<String, List<CertificationCriterion>>();
     private List<String> referenceSortingCriteriaList = new ArrayList<String>();
 
     @Autowired
@@ -39,14 +40,16 @@ public class CertificationCriterionService {
 
     @PostConstruct
     public void postConstruct() {
-        criteriaMap = certificationCriterionDAO.findAll().stream()
+        criteriaByIdMap = certificationCriterionDAO.findAll().stream()
                 .map(criterion -> new CertificationCriterion(criterion))
                 .collect(Collectors.toMap(CertificationCriterion::getId, cc -> cc));
+        criteriaByIdMap.values().stream()
+            .forEach(criterion -> insertCriterionIntoNumberMap(criterion));
         referenceSortingCriteriaList = getReferenceSortingCriteriaList();
     }
 
     public CertificationCriterion get(Long certificationCriterionId) {
-        return criteriaMap.containsKey(certificationCriterionId) ? criteriaMap.get(certificationCriterionId) : null;
+        return criteriaByIdMap.containsKey(certificationCriterionId) ? criteriaByIdMap.get(certificationCriterionId) : null;
     }
 
     public CertificationCriterion get(String certificationCriterionDescriptor) {
@@ -55,6 +58,11 @@ public class CertificationCriterionService {
         } catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    public List<CertificationCriterion> getByNumber(String certificationCriterionNumber) {
+        return criteriaByNumberMap.containsKey(certificationCriterionNumber)
+                ? criteriaByNumberMap.get(certificationCriterionNumber) : null;
     }
 
     public int sortCriteria(CertificationCriterionDTO c1, CertificationCriterionDTO c2) {
@@ -139,6 +147,16 @@ public class CertificationCriterionService {
             index = Integer.MAX_VALUE;
         }
         return index;
+    }
+
+    private void insertCriterionIntoNumberMap(CertificationCriterion criterion) {
+        if (criteriaByNumberMap.containsKey(criterion.getNumber())) {
+            criteriaByNumberMap.get(criterion.getNumber()).add(criterion);
+        } else {
+            List<CertificationCriterion> criteriaWithNumber = new ArrayList<CertificationCriterion>();
+            criteriaWithNumber.add(criterion);
+            criteriaByNumberMap.put(criterion.getNumber(), criteriaWithNumber);
+        }
     }
 
     private List<String> getReferenceSortingCriteriaList() {

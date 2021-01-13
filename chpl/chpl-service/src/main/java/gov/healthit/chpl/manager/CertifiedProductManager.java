@@ -67,6 +67,7 @@ import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
@@ -1629,8 +1630,14 @@ public class CertifiedProductManager extends SecuredManager {
 
         numChanges = measuresToAdd.size() + idsToRemove.size();
 
-        for (ListingMeasure toAdd : measuresToAdd) {
-            cpMeasureDao.createCertifiedProductMeasureMapping(listingId, toAdd);
+        for (ListingMeasure measure : measuresToAdd) {
+            for (CertificationCriterion associatedCriterion : measure.getAssociatedCriteria()) {
+                List<CertificationCriterionDTO> allCriterionWithNumber = certCriterionDao.getAllByNumber(associatedCriterion.getNumber());
+                for (CertificationCriterionDTO criterion : allCriterionWithNumber) {
+                    measure.getAssociatedCriteria().add(new CertificationCriterion(criterion));
+                }
+            }
+            cpMeasureDao.createCertifiedProductMeasureMapping(listingId, measure);
         }
 
         for (MeasurePair toUpdate : measuresToUpdate) {
@@ -1640,7 +1647,14 @@ public class CertifiedProductManager extends SecuredManager {
             }
 
             if (hasChanged) {
-                cpMeasureDao.updateCertifiedProductMeasureMapping(toUpdate.getUpdated());
+                ListingMeasure measure = toUpdate.getUpdated();
+                for (CertificationCriterion associatedCriterion : measure.getAssociatedCriteria()) {
+                    List<CertificationCriterionDTO> allCriterionWithNumber = certCriterionDao.getAllByNumber(associatedCriterion.getNumber());
+                    for (CertificationCriterionDTO criterion : allCriterionWithNumber) {
+                        measure.getAssociatedCriteria().add(new CertificationCriterion(criterion));
+                    }
+                }
+                cpMeasureDao.updateCertifiedProductMeasureMapping(measure);
                 numChanges++;
             }
         }
