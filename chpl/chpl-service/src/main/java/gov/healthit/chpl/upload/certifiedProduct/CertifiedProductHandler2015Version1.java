@@ -704,13 +704,13 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                     //no macra measure could be found - save entered values so we can make an error msg
                     PendingListingMeasureEntity measureEntity = getNotFoundMeasureEntityFromListing(listing, measureVal, type);
                     if (measureEntity != null) {
-                        addAssociatedCriterionToMeasure(measureEntity, cert);
+                        associateCertCriterionToMeasure(measureEntity, cert);
                     } else {
                         measureEntity = new PendingListingMeasureEntity();
                         measureEntity.setUploadedValue(measureVal);
                         measureEntity.setMeasureTypeId(type.getId());
                         measureEntity.setType(type);
-                        addAssociatedCriterionToMeasure(measureEntity, cert);
+                        associateCertCriterionToMeasure(measureEntity, cert);
                         listing.getMeasures().add(measureEntity);
                     }
                 } else {
@@ -720,13 +720,13 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                         PendingListingMeasureEntity measureEntity
                             = getNotFoundMeasureEntityFromListing(listing, measureVal, type);
                         if (measureEntity != null) {
-                            addAssociatedCriterionToMeasure(measureEntity, cert);
+                            associateCertCriterionToMeasure(measureEntity, cert);
                         } else {
                             measureEntity = new PendingListingMeasureEntity();
                             measureEntity.setUploadedValue(measureVal);
                             measureEntity.setMeasureTypeId(type.getId());
                             measureEntity.setType(type);
-                            addAssociatedCriterionToMeasure(measureEntity, cert);
+                            associateCertCriterionToMeasure(measureEntity, cert);
                             listing.getMeasures().add(measureEntity);
                         }
                     } else {
@@ -751,14 +751,14 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                             }
                             listing.getMeasures().add(measureEntity);
                         }
-                        addAssociatedCriteriaToMeasure(measureEntity, cert);
+                        associateAllCriteriaWithCertNumberToMeasure(measureEntity, cert);
                     }
                 }
             }
         }
     }
 
-    private void addAssociatedCriterionToMeasure(PendingListingMeasureEntity mmEntity, PendingCertificationResultEntity cert) {
+    private void associateCertCriterionToMeasure(PendingListingMeasureEntity mmEntity, PendingCertificationResultEntity cert) {
         PendingListingMeasureCriterionMapEntity criterionMap = new PendingListingMeasureCriterionMapEntity();
         criterionMap.setCertificationCriterionId(cert.getMappedCriterion().getId());
         try {
@@ -767,7 +767,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
         mmEntity.getAssociatedCriteria().add(criterionMap);
     }
 
-    private void addAssociatedCriteriaToMeasure(PendingListingMeasureEntity mmEntity, PendingCertificationResultEntity cert) {
+    private void associateAllCriteriaWithCertNumberToMeasure(PendingListingMeasureEntity mmEntity, PendingCertificationResultEntity cert) {
         List<CertificationCriterionEntity> allCriterionWithNumber = certDao.getEntitiesByNumber(cert.getMappedCriterion().getNumber());
         for (CertificationCriterionEntity criterion : allCriterionWithNumber) {
             PendingListingMeasureCriterionMapEntity criterionMap = new PendingListingMeasureCriterionMapEntity();

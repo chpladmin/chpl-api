@@ -43,8 +43,9 @@ public class CertificationCriterionService {
         criteriaByIdMap = certificationCriterionDAO.findAll().stream()
                 .map(criterion -> new CertificationCriterion(criterion))
                 .collect(Collectors.toMap(CertificationCriterion::getId, cc -> cc));
-        criteriaByIdMap.values().stream()
-            .forEach(criterion -> insertCriterionIntoNumberMap(criterion));
+        criteriaByNumberMap = criteriaByIdMap.values().stream()
+                .collect(Collectors.groupingBy(CertificationCriterion::getNumber));
+
         referenceSortingCriteriaList = getReferenceSortingCriteriaList();
     }
 
@@ -61,8 +62,7 @@ public class CertificationCriterionService {
     }
 
     public List<CertificationCriterion> getByNumber(String certificationCriterionNumber) {
-        return criteriaByNumberMap.containsKey(certificationCriterionNumber)
-                ? criteriaByNumberMap.get(certificationCriterionNumber) : null;
+        return criteriaByNumberMap.get(certificationCriterionNumber);
     }
 
     public int sortCriteria(CertificationCriterionDTO c1, CertificationCriterionDTO c2) {
@@ -147,16 +147,6 @@ public class CertificationCriterionService {
             index = Integer.MAX_VALUE;
         }
         return index;
-    }
-
-    private void insertCriterionIntoNumberMap(CertificationCriterion criterion) {
-        if (criteriaByNumberMap.containsKey(criterion.getNumber())) {
-            criteriaByNumberMap.get(criterion.getNumber()).add(criterion);
-        } else {
-            List<CertificationCriterion> criteriaWithNumber = new ArrayList<CertificationCriterion>();
-            criteriaWithNumber.add(criterion);
-            criteriaByNumberMap.put(criterion.getNumber(), criteriaWithNumber);
-        }
     }
 
     private List<String> getReferenceSortingCriteriaList() {
