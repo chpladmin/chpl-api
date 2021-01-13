@@ -35,9 +35,11 @@ import gov.healthit.chpl.dto.auth.UserPermissionDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
+@Loggable
 @Component
 public class ResourcePermissions {
     private PermissionEvaluator permissionEvaluator;
@@ -79,9 +81,15 @@ public class ResourcePermissions {
         }
     }
 
+    @Deprecated
     @Transactional(readOnly = true)
     public UserDTO getUserByName(String userName) throws UserRetrievalException {
         return userDAO.getByName(userName);
+    }
+
+    @Transactional(readOnly = true)
+    public UserDTO getUserById(Long userId) throws UserRetrievalException {
+        return userDAO.getById(userId);
     }
 
     @Transactional(readOnly = true)
@@ -331,9 +339,9 @@ public class ResourcePermissions {
 
     /**
      * Determines if the current user has permissions to access the account of the passed-in user. Rules are: Admin and
-     * Onc can access all users. Acb can access any other ROLE_ACB user who is also on their ACB. Atl can access any
-     * other ROLE_ATL user who is also on their ATL. Developer Admin can access any other ROLE_DEVELOPER user who is
-     * also on their developer. All users can access themselves.
+     * Onc can access all users. Onc_Staff can access any other Onc_Staff. Acb can access any other ROLE_ACB user who
+     * is also on their ACB. Atl can access any other ROLE_ATL user who is also on their ATL. Developer Admin can
+     * access any other ROLE_DEVELOPER user who is also on their developer. All users can access themselves.
      *
      * @param user
      *            user to check permissions on
@@ -346,6 +354,8 @@ public class ResourcePermissions {
             return true;
         } else if (isUserRoleOnc()) {
             return !getRoleByUserId(user.getId()).getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN);
+        } else if (isUserRoleOncStaff()) {
+            return getRoleByUserId(user.getId()).getAuthority().equalsIgnoreCase(Authority.ROLE_ONC_STAFF);
         } else if (isUserRoleAcbAdmin()) {
             // is the user being checked on any of the same ACB(s) that the
             // current user is on?
@@ -400,6 +410,10 @@ public class ResourcePermissions {
 
     public boolean isUserRoleOnc() {
         return doesUserHaveRole(Authority.ROLE_ONC);
+    }
+
+    public boolean isUserRoleOncStaff() {
+        return doesUserHaveRole(Authority.ROLE_ONC_STAFF);
     }
 
     public boolean isUserRoleCmsStaff() {

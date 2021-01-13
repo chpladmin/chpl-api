@@ -60,6 +60,7 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
@@ -88,6 +89,7 @@ import lombok.extern.log4j.Log4j2;
 /**
  * Certified Product Controller.
  */
+@Loggable
 @Api(value = "certified-products")
 @RestController
 @RequestMapping("/certified_products")
@@ -667,7 +669,6 @@ public class CertifiedProductController {
         for (PendingCertifiedProductDTO product : pcps) {
             PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(product);
             pcpManager.addAllVersionsToCmsCriterion(pcpDetails);
-            pcpManager.addAllMeasuresToCertificationCriteria(pcpDetails);
             pcpManager.addAvailableTestFunctionalities(pcpDetails);
             result.add(pcpDetails);
         }

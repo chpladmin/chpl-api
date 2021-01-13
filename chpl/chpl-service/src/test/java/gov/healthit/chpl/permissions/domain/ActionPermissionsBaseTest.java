@@ -14,9 +14,9 @@ import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
 public abstract class ActionPermissionsBaseTest extends TestingUsers {
-    public final static Long ROLE_ONC_ID = 8l;
-    public final static Long ROLE_ADMIN_ID = -2l;
-    public final static Long ROLE_ACB_ID = 2l;
+    public static final Long ROLE_ONC_ID = 8L;
+    public static final Long ROLE_ADMIN_ID = -2L;
+    public static final Long ROLE_ACB_ID = 2L;
 
     public abstract void hasAccess_Admin() throws Exception;
 

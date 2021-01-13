@@ -7,12 +7,12 @@ import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.TriggerKey.triggerKey;
 import static org.quartz.impl.matchers.GroupMatcher.groupEquals;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.quartz.CronTrigger;
@@ -38,6 +38,7 @@ import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
 import gov.healthit.chpl.domain.schedule.ScheduledSystemJob;
 import gov.healthit.chpl.domain.schedule.TriggerSchedule;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
@@ -49,6 +50,7 @@ import gov.healthit.chpl.util.AuthUtil;
  * @author alarned
  *
  */
+@Loggable
 @Service
 public class SchedulerManager extends SecuredManager {
 
@@ -446,8 +448,6 @@ public class SchedulerManager extends SecuredManager {
     }
 
     private String createTriggerName(ChplOneTimeTrigger trigger) {
-        Date toFormat = new Date(trigger.getRunDateMillis());
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
-        return sdf.format(toFormat);
+        return UUID.randomUUID().toString();
     }
 }

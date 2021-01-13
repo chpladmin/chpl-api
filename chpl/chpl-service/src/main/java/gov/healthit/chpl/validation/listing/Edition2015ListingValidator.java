@@ -30,7 +30,8 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.AttestedCriteri
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.CqmAttestedCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.GapAllowedReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.InvalidCriteriaCombinationReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.MacraMeasureComparisonReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.MeasureComparisonReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.MeasureValidityReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.OldCriteriaWithoutIcsReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaComparisonReviewer;
@@ -121,8 +122,8 @@ public class Edition2015ListingValidator extends Validator {
     private ChplNumberComparisonReviewer chplNumberComparisonReviewer;
 
     @Autowired
-    @Qualifier("macraMeasureComparisonReviewer")
-    private MacraMeasureComparisonReviewer macraComparisonReviewer;
+    @Qualifier("measureComparisonReviewer")
+    private MeasureComparisonReviewer measureComparisonReviewer;
 
     @Autowired
     @Qualifier("oldCriteriaWithoutIcsReviewer")
@@ -172,6 +173,10 @@ public class Edition2015ListingValidator extends Validator {
     @Qualifier("gapAllowedReviewer")
     private GapAllowedReviewer gapAllowedReviewer;
 
+    @Autowired
+    @Qualifier("measureValidityReviewer")
+    private MeasureValidityReviewer measureReviewer;
+
     private List<Reviewer> reviewers;
     private List<ComparisonReviewer> comparisonReviewers;
 
@@ -201,6 +206,7 @@ public class Edition2015ListingValidator extends Validator {
             reviewers.add(cqmAttestedCriteriaReviewer);
             reviewers.add(duplicateDataReviewer);
             reviewers.add(gapAllowedReviewer);
+            reviewers.add(measureReviewer);
         }
         return reviewers;
     }
@@ -211,7 +217,7 @@ public class Edition2015ListingValidator extends Validator {
             comparisonReviewers = new ArrayList<ComparisonReviewer>();
             comparisonReviewers.add(chplNumberComparisonReviewer);
             comparisonReviewers.add(devBanComparisonReviewer);
-            comparisonReviewers.add(macraComparisonReviewer);
+            comparisonReviewers.add(measureComparisonReviewer);
             comparisonReviewers.add(criteriaComparisonReviewer);
             comparisonReviewers.add(testTaskCriteriaComparisonReviewer);
             comparisonReviewers.add(ucdCriteriaComparisonReviewer);

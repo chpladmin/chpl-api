@@ -43,7 +43,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
     protected static final String CRITERIA_COL_HEADING_BEGIN = "CRITERIA_";
     protected static final String CURES_TITLE_KEY = "Cures Update";
 
-    private ErrorMessageUtil msgUtil;
+    protected ErrorMessageUtil msgUtil;
 
     @Autowired
     public CertifiedProductHandler(final ErrorMessageUtil msgUtil) {

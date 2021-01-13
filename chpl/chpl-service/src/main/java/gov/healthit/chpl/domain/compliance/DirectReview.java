@@ -19,6 +19,11 @@ import lombok.NoArgsConstructor;
 public class DirectReview implements Serializable {
     private static final long serialVersionUID = 7018071377912371691L;
 
+    @JsonProperty(value = "developerId")
+    @JsonAlias("customfield_10900")
+    @JsonDeserialize(using = DeveloperIdDeserializer.class)
+    private Long developerId;
+
     @JsonProperty(value = "startDate")
     @JsonAlias("customfield_11016")
     @JsonDeserialize(using = TimestampDeserializer.class)
