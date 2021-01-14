@@ -21,12 +21,14 @@ import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductSummaryEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.scheduler.job.urlStatus.UrlType;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
+@Loggable
 @Log4j2
 @NoArgsConstructor
 @Repository(value = "certifiedProductDAO")
@@ -195,13 +197,30 @@ public class CertifiedProductDAO extends BaseDAOImpl {
     }
 
     @Transactional(readOnly = true)
-    public List<CertifiedProductDetailsDTO> findByDeveloperId(final Long developerId) {
+    public List<CertifiedProductDetailsDTO> findByDeveloperId(Long developerId) {
         Query query = entityManager.createQuery("SELECT cpd "
                 + "FROM CertifiedProductDetailsEntity cpd "
                 + "WHERE cpd.deleted = false "
                 + "AND cpd.developerId = :developerId ",
                 CertifiedProductDetailsEntity.class);
         query.setParameter("developerId", developerId);
+        List<CertifiedProductDetailsEntity> entities = query.getResultList();
+        List<CertifiedProductDetailsDTO> products = new ArrayList<CertifiedProductDetailsDTO>(entities.size());
+        for (CertifiedProductDetailsEntity entity : entities) {
+            CertifiedProductDetailsDTO product = new CertifiedProductDetailsDTO(entity);
+            products.add(product);
+        }
+        return products;
+    }
+
+    @Transactional(readOnly = true)
+    public List<CertifiedProductDetailsDTO> findByProductId(Long productId) {
+        Query query = entityManager.createQuery("SELECT cpd "
+                + "FROM CertifiedProductDetailsEntity cpd "
+                + "WHERE cpd.deleted = false "
+                + "AND cpd.productId = :productId ",
+                CertifiedProductDetailsEntity.class);
+        query.setParameter("productId", productId);
         List<CertifiedProductDetailsEntity> entities = query.getResultList();
         List<CertifiedProductDetailsDTO> products = new ArrayList<CertifiedProductDetailsDTO>(entities.size());
         for (CertifiedProductDetailsEntity entity : entities) {

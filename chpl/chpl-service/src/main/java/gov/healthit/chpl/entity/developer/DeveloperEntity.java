@@ -20,6 +20,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.entity.AddressEntity;
@@ -27,6 +28,7 @@ import gov.healthit.chpl.entity.ContactEntity;
 import gov.healthit.chpl.util.Util;
 
 @Entity
+@DynamicUpdate
 @Table(name = "vendor")
 public class DeveloperEntity implements Serializable {
 

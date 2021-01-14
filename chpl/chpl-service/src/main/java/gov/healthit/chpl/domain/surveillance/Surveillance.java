@@ -133,7 +133,8 @@ public class Surveillance implements Serializable {
             for (SurveillanceRequirement thisReq : this.requirements) {
                 boolean foundInOtherSurveillance = false;
                 for (SurveillanceRequirement otherReq : anotherSurveillance.requirements) {
-                    if (thisReq.getId().longValue() == otherReq.getId().longValue()) {
+                    if (thisReq.getId() != null && otherReq.getId() != null
+                            && thisReq.getId().longValue() == otherReq.getId().longValue()) {
                         foundInOtherSurveillance = true;
                     }
                 }
