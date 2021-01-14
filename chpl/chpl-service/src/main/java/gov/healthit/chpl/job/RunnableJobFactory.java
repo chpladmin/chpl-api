@@ -55,7 +55,7 @@ public class RunnableJobFactory {
             jobUser.setFullName(job.getUser().getFullName());
             jobUser.setId(job.getUser().getId());
             jobUser.setFriendlyName(job.getUser().getFriendlyName());
-            jobUser.setSubjectName(job.getUser().getSubjectName());
+            jobUser.setSubjectName(job.getUser().getUsername());
 
             //add granted authorities which are like ROLE_ACB, ROLE_ADMIN, etc.
             //so that the jobs can make calls to methods with security on them

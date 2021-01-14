@@ -804,9 +804,12 @@ public class DeveloperDAO extends BaseDAOImpl {
 
     @Loggable
     private DeveloperACBMapEntity getTransparencyMappingEntity(final Long developerId, final Long acbId) {
-        Query query = entityManager.createQuery("FROM DeveloperACBMapEntity map "
-                + "LEFT OUTER JOIN FETCH map.certificationBody where " + "(NOT map.deleted = true) "
-                + "AND map.developerId = :developerId " + "AND map.certificationBodyId = :acbId",
+        Query query = entityManager.createQuery("SELECT map "
+                + "FROM DeveloperACBMapEntity map "
+                + "LEFT OUTER JOIN FETCH map.certificationBody "
+                + "WHERE (NOT map.deleted = true) "
+                + "AND map.developerId = :developerId "
+                + "AND map.certificationBodyId = :acbId",
                 DeveloperACBMapEntity.class);
         query.setParameter("developerId", developerId);
         query.setParameter("acbId", acbId);

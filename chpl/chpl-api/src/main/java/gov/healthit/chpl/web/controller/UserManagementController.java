@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -350,7 +351,7 @@ public class UserManagementController {
         userManager.delete(toDelete);
         //db soft delete trigger takes care of deleting things associated with this user.
 
-        String activityDescription = "Deleted user " + toDelete.getSubjectName() + ".";
+        String activityDescription = "Deleted user " + toDelete.getUsername() + ".";
         activityManager.addActivity(ActivityConcept.USER, toDelete.getId(), activityDescription,
                 toDelete, null);
 
@@ -383,9 +384,12 @@ public class UserManagementController {
     @RequestMapping(value = "/{userName}/details", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody User getUserByUsername(@PathVariable("userName") String userName)
-            throws UserRetrievalException {
-
-        return userManager.getUserInfoByName(userName);
+            throws UserRetrievalException, MultipleUserAccountsException {
+        UserDTO user = userManager.getByNameOrEmail(userName);
+        if (user != null && user.getId() != null) {
+            return userManager.getUserInfo(user.getId());
+        }
+        throw new UsernameNotFoundException("The user " + userName + " was not found.");
     }
 
     @ApiOperation(value = "View a specific user's details.",

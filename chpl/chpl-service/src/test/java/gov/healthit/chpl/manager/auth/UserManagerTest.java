@@ -229,19 +229,6 @@ public class UserManagerTest {
     }
 
     @Test(expected = UserAccountExistsException.class)
-    public void update_DuplicateSubjectName_UserAccountExistsThrown()
-            throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
-            ValidationException, MultipleUserAccountsException, UserAccountExistsException {
-        UserManager userManager = new UserManager(null, userDAO, null, null, null, errorMessageUtil, null);
-
-        UserDTO user = getUserDTO(1L);
-        user.setSubjectName("A different username");
-        userManager.update(user);
-
-        fail();
-    }
-
-    @Test(expected = UserAccountExistsException.class)
     public void update_DuplicateEmailAddress_UserAccountExistsThrown()
             throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
             ValidationException, MultipleUserAccountsException, UserAccountExistsException {
@@ -383,7 +370,6 @@ public class UserManagerTest {
                 .lastLoggedInDate(new Date())
                 .phoneNumber("555-555-5555")
                 .signatureDate(new Date())
-                .subjectName("user_a")
                 .title("Sr Eng")
                 .build();
     }

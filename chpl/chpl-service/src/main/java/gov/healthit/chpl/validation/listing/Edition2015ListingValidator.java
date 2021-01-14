@@ -37,6 +37,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.PrivacyAndSecur
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaTestTaskComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaUcdComparisonReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionality2015Reviewer;
@@ -64,6 +65,10 @@ public class Edition2015ListingValidator extends Validator {
     @Autowired
     @Qualifier("requiredData2015Reviewer")
     private RequiredData2015Reviewer requiredDataReviewer;
+
+    @Autowired
+    @Qualifier("requiredAndRelatedCriteriaReviewer")
+    private RequiredAndRelatedCriteriaReviewer requiredAndRelatedCriteriaReviewer;
 
     @Autowired
     @Qualifier("testingLabReviewer")
@@ -189,6 +194,7 @@ public class Edition2015ListingValidator extends Validator {
             reviewers.add(unsupportedCharacterReviewer);
             reviewers.add(fieldLengthReviewer);
             reviewers.add(requiredDataReviewer);
+            reviewers.add(requiredAndRelatedCriteriaReviewer);
             reviewers.add(testingLabReviewer);
             reviewers.add(validDataReviewer);
             reviewers.add(sedG3Reviewer);
