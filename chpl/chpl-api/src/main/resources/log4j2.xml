@@ -342,6 +342,17 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="listingValidationReportCreatorJob"
+            fileName="${logDir}/scheduler/listingValidationReportCreatorJob.log"
+            filePattern="${logDir}/scheduler/history/listingValidationReportCreatorJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
     </Appenders>
     <Loggers>
         <Logger name="org.jose4j" level="ERROR" additivity="false">
@@ -479,6 +490,10 @@
         <Logger name="auditDataRetentionJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="auditDataRetentionJob" />
+        </Logger>
+        <Logger name="listingValidationReportCreatorJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="listingValidationReportCreatorJob" />
         </Logger>
     </Loggers>
 </Configuration>

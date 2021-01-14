@@ -29,7 +29,7 @@ import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.Validator;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "listingValidationReportCreatorJobLogger")
 public class ListingValidationCreatorJob implements Job {
 
     @Autowired
