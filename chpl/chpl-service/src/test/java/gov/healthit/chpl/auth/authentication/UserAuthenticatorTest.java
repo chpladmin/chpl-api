@@ -42,22 +42,6 @@ public class UserAuthenticatorTest {
         userDetailsChecker = Mockito.mock(ChplAccountStatusChecker.class);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
 
-        Mockito.when(userDAO.getByName(ArgumentMatchers.anyString()))
-                .thenReturn(UserDTO.builder()
-                        .id(1L)
-                        .fullName("User Name")
-                        .accountEnabled(true)
-                        .accountExpired(false)
-                        .accountLocked(false)
-                        .credentialsExpired(false)
-                        .email("abc@def.com")
-                        .failedLoginCount(0)
-                        .passwordResetRequired(false)
-                        .phoneNumber("555-555-5555")
-                        .subjectName("userName")
-                        .signatureDate(new Date())
-                        .build());
-
         Mockito.when(userDAO.getByNameOrEmail(ArgumentMatchers.anyString()))
         .thenReturn(UserDTO.builder()
                 .id(1L)
@@ -70,7 +54,6 @@ public class UserAuthenticatorTest {
                 .failedLoginCount(0)
                 .passwordResetRequired(false)
                 .phoneNumber("555-555-5555")
-                .subjectName("userName")
                 .signatureDate(new Date())
                 .build());
 
@@ -131,7 +114,6 @@ public class UserAuthenticatorTest {
                         .failedLoginCount(0)
                         .passwordResetRequired(false)
                         .phoneNumber("555-555-5555")
-                        .subjectName("userName")
                         .signatureDate(null)
                         .build());
 

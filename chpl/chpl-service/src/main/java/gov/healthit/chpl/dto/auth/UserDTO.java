@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -25,8 +26,8 @@ public class UserDTO implements UserDetails {
     private static final long serialVersionUID = -5792083881606731413L;
 
     private Long id;
-    private String subjectName;
     private UserPermissionDTO permission;
+    private String subjectName;
     private String fullName;
     private String friendlyName;
     private String email;
@@ -58,7 +59,8 @@ public class UserDTO implements UserDetails {
 
     @Override
     public String getUsername() {
-        return subjectName;
+        //TODO: replace this with "email" when eventually removing user_name column.
+        return StringUtils.isEmpty(subjectName) ? email : subjectName;
     }
 
     @Override

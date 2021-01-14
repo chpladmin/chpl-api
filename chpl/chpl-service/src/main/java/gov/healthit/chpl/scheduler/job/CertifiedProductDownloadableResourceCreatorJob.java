@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -45,6 +46,9 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
 
     @Autowired
     private CertificationCriterionService criterionService;
+
+    @Autowired
+    private FF4j ff4j;
 
     @Autowired
     private Environment env;
@@ -126,6 +130,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         xmlPresenter.open(tempXmlFile);
 
         csvPresenter.setLogger(LOGGER);
+        csvPresenter.setFf4j(ff4j);
         List<CertificationCriterionDTO> criteria = getCriteriaDao().findByCertificationEditionYear(edition)
                 .stream()
                 .filter(cr -> !cr.getRemoved())
