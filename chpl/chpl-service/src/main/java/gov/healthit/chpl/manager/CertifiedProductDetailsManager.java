@@ -645,7 +645,7 @@ public class CertifiedProductDetailsManager {
         // set allowed svap for criteria
         result.setAllowedSvaps(getAvailableSvapForCriteria(result));
 
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.SVAP)) {
+        if (result.getAllowedSvaps().size() > 0) {
             result.setSvaps(certResultManager.getSvapsForCertificationResult(result.getId()));
         } else {
             result.setSvaps(null);
