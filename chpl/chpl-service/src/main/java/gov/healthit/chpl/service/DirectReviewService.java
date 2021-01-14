@@ -140,8 +140,9 @@ public class DirectReviewService {
         List<?> developerIdsWithDirectReviews = drCache.getKeys();
         List<DirectReview> allDirectReviews = developerIdsWithDirectReviews.stream()
             .map(key -> drCache.get(key))
+            .filter(cacheElement -> cacheElement != null)
             .map(cacheElement -> cacheElement.getObjectValue())
-            .filter(cacheObject -> cacheObject instanceof List<?>)
+            .filter(cacheObject -> cacheObject != null && cacheObject instanceof List<?>)
             .map(cacheObject -> (List<DirectReview>) cacheObject)
             .flatMap(List::stream)
             .collect(Collectors.toList());
@@ -152,7 +153,12 @@ public class DirectReviewService {
     }
 
     private boolean isAssociatedWithListing(DirectReview dr, Long listingId) {
+        if (dr.getNonConformities() == null || dr.getNonConformities().size() == 0) {
+            return false;
+        }
+
         return dr.getNonConformities().stream()
+            .filter(nc -> nc.getDeveloperAssociatedListings() != null && nc.getDeveloperAssociatedListings().size() > 0)
             .flatMap(nc -> nc.getDeveloperAssociatedListings().stream())
             .filter(devAssocListing -> devAssocListing.getId().equals(listingId))
             .findAny().isPresent();

@@ -2,6 +2,7 @@ package gov.healthit.chpl.domain.compliance;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class DirectReviewNonConformity implements Serializable {
     @JsonDeserialize(using = ListingDeserializer.class)
     @XmlElementWrapper(name = "developerAssociatedListings", nillable = true, required = false)
     @XmlElement(name = "listing")
-    private List<DeveloperAssociatedListing> developerAssociatedListings;
+    private List<DeveloperAssociatedListing> developerAssociatedListings = new ArrayList<DeveloperAssociatedListing>();
 
     @JsonProperty(value = "nonConformityType")
     @JsonAlias("customfield_11036")
