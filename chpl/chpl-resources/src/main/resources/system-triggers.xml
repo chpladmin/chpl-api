@@ -23,8 +23,7 @@
                 <job-name>downloadFileJob2014</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 45 10 ? * 1#1</cron-expression> <!-- At 1045 UTC on the first Sunday of the month -->
-                <!--<cron-expression>0 45 10 ? JAN,APR,JUL,OCT 1#1</cron-expression> At 1045 UTC on the first Saturday of the quarter -->
+                <cron-expression>0 45 12 ? JAN,APR,JUL,OCT 7#1</cron-expression> <!-- At 1245 UTC on the first Saturday of the quarter -->
             </cron>
         </trigger>
 
@@ -157,6 +156,17 @@
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
                 <cron-expression>0 0 0,3,6,9,12,15,18,21 ? * *</cron-expression> <!-- Every three hours -->
+            </cron>
+        </trigger>
+        
+        <trigger>
+            <cron>
+                <name>auditDataRotation</name>
+                <group>auditDataRotationTrigger</group>
+                <job-name>AuditDataRetention</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 45 10 ? * 7#2</cron-expression> <!-- At 1045 UTC on the second Saturday of the month -->
             </cron>
         </trigger>
     </schedule>

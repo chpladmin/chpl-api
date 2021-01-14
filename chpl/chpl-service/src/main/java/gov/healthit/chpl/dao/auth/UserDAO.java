@@ -48,7 +48,7 @@ public class UserDAO extends BaseDAOImpl {
                 userEntity.setUserPermissionId(user.getPermission().getId());
                 userEntity.setPermission(entityManager.find(UserPermissionEntity.class, user.getPermission().getId()));
             } else {
-                throw new UserCreationException(msgUtil.getMessage("user.missingPermission", user.getSubjectName()));
+                throw new UserCreationException(msgUtil.getMessage("user.missingPermission", user.getUsername()));
             }
             userEntity.setPassword(encodedPassword);
             userEntity.setFailedLoginCount(0);
@@ -105,15 +105,6 @@ public class UserDAO extends BaseDAOImpl {
     }
 
     @Transactional
-    public void delete(String uname) throws UserRetrievalException {
-        UserEntity toDelete = getEntityByName(uname);
-        if (toDelete == null) {
-            throw new UserRetrievalException(msgUtil.getMessage("user.notFound"));
-        }
-        delete(toDelete);
-    }
-
-    @Transactional
     public void delete(Long userId) throws UserRetrievalException {
         UserEntity toDelete = getEntityById(userId);
         if (toDelete == null) {
@@ -158,42 +149,6 @@ public class UserDAO extends BaseDAOImpl {
         return foundUser;
     }
 
-    public UserDTO findUser(UserDTO toSearch) {
-        UserDTO foundUser = null;
-
-        String userQuery = "from UserEntity u "
-                + " JOIN FETCH u.permission "
-                + " JOIN FETCH u.contact "
-                + " WHERE (NOT u.deleted = true) "
-                + " AND (u.subjectName = :subjectName) "
-                + " AND (u.contact.fullName = :fullName)"
-                + " AND (u.contact.friendlyName = :friendlyName)"
-                + " AND (u.contact.email = :email)"
-                + " AND (u.contact.phoneNumber = :phoneNumber)";
-        if (toSearch.getTitle() != null) {
-            userQuery += " AND (u.contact.title = :title)";
-        } else {
-            userQuery += " AND (u.contact.title IS NULL)";
-        }
-        Query query = entityManager.createQuery(userQuery, UserEntity.class);
-        query.setParameter("subjectName", toSearch.getSubjectName());
-        query.setParameter("fullName", toSearch.getFullName());
-        query.setParameter("friendlyName", toSearch.getFriendlyName());
-        query.setParameter("email", toSearch.getEmail());
-        query.setParameter("phoneNumber", toSearch.getPhoneNumber());
-        if (toSearch.getTitle() != null) {
-            query.setParameter("title", toSearch.getTitle());
-        }
-
-        List<UserEntity> result = query.getResultList();
-        if (result.size() >= 1) {
-            UserEntity entity = result.get(0);
-            foundUser = userMapper.from(entity);
-        }
-
-        return foundUser;
-    }
-
     private List<UserEntity> getAllEntities() {
         List<UserEntity> result = entityManager.createQuery("from UserEntity u "
                 + "JOIN FETCH u.contact "
@@ -227,26 +182,6 @@ public class UserDAO extends BaseDAOImpl {
         return result.get(0);
     }
 
-    private UserEntity getEntityByName(String uname) throws UserRetrievalException {
-        Query query = entityManager
-                .createQuery("from UserEntity u "
-                        + "JOIN FETCH u.contact "
-                        + "JOIN FETCH u.permission "
-                        + "where ((NOT u.deleted = true) "
-                        + "AND (u.subjectName = (:uname))) ",
-                        UserEntity.class);
-        query.setParameter("uname", uname);
-        List<UserEntity> result = query.getResultList();
-
-        if (result == null || result.size() == 0) {
-            String msg = msgUtil.getMessage("user.notFound");
-            throw new UserRetrievalException(msg);
-        } else if (result.size() > 1) {
-            throw new UserRetrievalException("Data error. Duplicate user name in database.");
-        }
-        return result.get(0);
-    }
-
     private UserEntity getEntityByNameOrEmail(String email) throws MultipleUserAccountsException, UserRetrievalException {
         Query query = entityManager
                 .createQuery("SELECT DISTINCT u "
@@ -270,14 +205,6 @@ public class UserDAO extends BaseDAOImpl {
 
     public UserDTO getById(Long userId) throws UserRetrievalException {
         UserEntity userEntity = this.getEntityById(userId);
-        if (userEntity == null) {
-            return null;
-        }
-        return userMapper.from(userEntity);
-    }
-
-    public UserDTO getByName(String uname) throws UserRetrievalException {
-        UserEntity userEntity = this.getEntityByName(uname);
         if (userEntity == null) {
             return null;
         }
@@ -311,26 +238,26 @@ public class UserDAO extends BaseDAOImpl {
     }
 
     @Transactional
-    public void updatePassword(String uname, String encodedPassword) throws UserRetrievalException,
+    public void updatePassword(String usernameOrEmail, String encodedPassword) throws UserRetrievalException,
     MultipleUserAccountsException {
-        UserEntity userEntity = this.getEntityByNameOrEmail(uname);
+        UserEntity userEntity = this.getEntityByNameOrEmail(usernameOrEmail);
         userEntity.setPassword(encodedPassword);
         userEntity.setPasswordResetRequired(false);
         super.update(userEntity);
     }
 
     @Transactional
-    public void updateFailedLoginCount(String uname, int failedLoginCount) throws UserRetrievalException,
+    public void updateFailedLoginCount(String usernameOrEmail, int failedLoginCount) throws UserRetrievalException,
     MultipleUserAccountsException {
-        UserEntity userEntity = this.getEntityByNameOrEmail(uname);
+        UserEntity userEntity = this.getEntityByNameOrEmail(usernameOrEmail);
         userEntity.setFailedLoginCount(failedLoginCount);
         super.update(userEntity);
     }
 
     @Transactional
-    public void updateAccountLockedStatus(String uname, boolean locked) throws UserRetrievalException,
+    public void updateAccountLockedStatus(String usernameOrEmail, boolean locked) throws UserRetrievalException,
     MultipleUserAccountsException {
-        UserEntity userEntity = this.getEntityByNameOrEmail(uname);
+        UserEntity userEntity = this.getEntityByNameOrEmail(usernameOrEmail);
         userEntity.setAccountLocked(locked);
         super.update(userEntity);
     }

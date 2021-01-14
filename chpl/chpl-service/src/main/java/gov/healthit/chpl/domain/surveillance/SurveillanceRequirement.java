@@ -86,7 +86,8 @@ public class SurveillanceRequirement implements Serializable {
             for (SurveillanceNonconformity thisNc : this.nonconformities) {
                 boolean foundInOtherRequirement = false;
                 for (SurveillanceNonconformity otherNc : anotherRequirement.nonconformities) {
-                    if (thisNc.getId().longValue() == otherNc.getId().longValue()) {
+                    if (thisNc.getId() != null && otherNc.getId() != null
+                            && thisNc.getId().longValue() == otherNc.getId().longValue()) {
                         foundInOtherRequirement = true;
                     }
                 }
