@@ -1,0 +1,144 @@
+{
+	"info": {
+		"name": "product-version-controller",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "PUT /versions - merge request permission restriction validation - anonymous",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"merge request attempt by anonymous user should return Status code 401\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"anonymous user should be denied access to merge versions\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "API-KEY",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"version\":{\"versionId\":4123,\"version\":\"6.2\",\"details\":null,\"lastModifiedDate\":\"1556310823010\"},\"versionIds\":[4123,6614],\"newProductId\":3077}"
+				},
+				"url": {
+					"raw": "{{url}}/rest/versions",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"versions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT /versions - merge request permission restriction validation - ACB",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "a35aabbc-c49c-41e4-af52-7971fac83fde",
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"usernameACB\"),password:pm.environment.get(\"passwordACB\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "de8dc888-e261-417b-9c0b-acbf6b0da19d",
+						"exec": [
+							"pm.test(\"merge request attempt by ACB user should return Status code 401\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"ACB user should be denied access to merge versions\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "API-KEY",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"version\":{\"versionId\":4123,\"version\":\"6.2\",\"details\":null,\"lastModifiedDate\":\"1556310823010\"},\"versionIds\":[4123,6614],\"newProductId\":3077}"
+				},
+				"url": {
+					"raw": "{{url}}/rest/versions",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"versions"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

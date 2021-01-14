@@ -197,13 +197,30 @@ public class CertifiedProductDAO extends BaseDAOImpl {
     }
 
     @Transactional(readOnly = true)
-    public List<CertifiedProductDetailsDTO> findByDeveloperId(final Long developerId) {
+    public List<CertifiedProductDetailsDTO> findByDeveloperId(Long developerId) {
         Query query = entityManager.createQuery("SELECT cpd "
                 + "FROM CertifiedProductDetailsEntity cpd "
                 + "WHERE cpd.deleted = false "
                 + "AND cpd.developerId = :developerId ",
                 CertifiedProductDetailsEntity.class);
         query.setParameter("developerId", developerId);
+        List<CertifiedProductDetailsEntity> entities = query.getResultList();
+        List<CertifiedProductDetailsDTO> products = new ArrayList<CertifiedProductDetailsDTO>(entities.size());
+        for (CertifiedProductDetailsEntity entity : entities) {
+            CertifiedProductDetailsDTO product = new CertifiedProductDetailsDTO(entity);
+            products.add(product);
+        }
+        return products;
+    }
+
+    @Transactional(readOnly = true)
+    public List<CertifiedProductDetailsDTO> findByProductId(Long productId) {
+        Query query = entityManager.createQuery("SELECT cpd "
+                + "FROM CertifiedProductDetailsEntity cpd "
+                + "WHERE cpd.deleted = false "
+                + "AND cpd.productId = :productId ",
+                CertifiedProductDetailsEntity.class);
+        query.setParameter("productId", productId);
         List<CertifiedProductDetailsEntity> entities = query.getResultList();
         List<CertifiedProductDetailsDTO> products = new ArrayList<CertifiedProductDetailsDTO>(entities.size());
         for (CertifiedProductDetailsEntity entity : entities) {
