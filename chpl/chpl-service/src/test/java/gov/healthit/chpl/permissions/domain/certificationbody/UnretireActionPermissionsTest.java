@@ -16,7 +16,7 @@ import gov.healthit.chpl.permissions.domains.certificationbody.UnretireActionPer
 
 public class UnretireActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
-    private ResourcePermissions resourcePermissions;;
+    private ResourcePermissions resourcePermissions;
 
     @InjectMocks
     private UnretireActionPermissions permissions;
@@ -49,6 +49,15 @@ public class UnretireActionPermissionsTest extends ActionPermissionsBaseTest {
         assertTrue(permissions.hasAccess());
 
         // Not used
+        assertFalse(permissions.hasAccess(new Object()));
+    }
+
+    @Override
+    @Test
+    public void hasAccess_OncStaff() throws Exception {
+        setupForOncStaffUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
         assertFalse(permissions.hasAccess(new Object()));
     }
 

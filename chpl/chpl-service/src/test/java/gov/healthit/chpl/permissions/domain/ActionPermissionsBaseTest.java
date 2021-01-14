@@ -22,6 +22,8 @@ public abstract class ActionPermissionsBaseTest extends TestingUsers {
 
     public abstract void hasAccess_Onc() throws Exception;
 
+    public abstract void hasAccess_OncStaff() throws Exception;
+
     public abstract void hasAccess_Acb() throws Exception;
 
     public abstract void hasAccess_Atl() throws Exception;
@@ -81,6 +83,7 @@ public abstract class ActionPermissionsBaseTest extends TestingUsers {
         SecurityContextHolder.getContext().setAuthentication(null);
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleOncStaff()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleAtlAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleCmsStaff()).thenReturn(false);

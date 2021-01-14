@@ -17,7 +17,7 @@ import gov.healthit.chpl.permissions.domains.certificationbody.GetByIdActionPerm
 
 public class GetByIdActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
-    private ResourcePermissions resourcePermissions;;
+    private ResourcePermissions resourcePermissions;
 
     @InjectMocks
     private GetByIdActionPermissions permissions;
@@ -55,6 +55,15 @@ public class GetByIdActionPermissionsTest extends ActionPermissionsBaseTest {
         CertificationBodyDTO dto = new CertificationBodyDTO();
         dto.setId(1l);
         assertTrue(permissions.hasAccess(dto));
+    }
+
+    @Override
+    @Test
+    public void hasAccess_OncStaff() throws Exception {
+        setupForOncStaffUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
+        assertFalse(permissions.hasAccess(new Object()));
     }
 
     @Override

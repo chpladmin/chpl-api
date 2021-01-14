@@ -53,6 +53,17 @@ public class UpdateAcbNameActionPermissionsTest extends ActionPermissionsBaseTes
 
     @Override
     @Test
+    public void hasAccess_OncStaff() throws Exception {
+        setupForOncStaffUser(resourcePermissions);
+
+        assertTrue(permissions.hasAccess());
+
+        // Not used
+        assertFalse(permissions.hasAccess(new Object()));
+    }
+
+    @Override
+    @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
 

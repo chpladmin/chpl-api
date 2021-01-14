@@ -17,7 +17,7 @@ import gov.healthit.chpl.permissions.domains.testinglab.UpdateActionPermissions;
 
 public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
-    private ResourcePermissions resourcePermissions;;
+    private ResourcePermissions resourcePermissions;
 
     @InjectMocks
     private UpdateActionPermissions permissions;
@@ -53,6 +53,17 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         TestingLabDTO dto = new TestingLabDTO();
         dto.setId(1L);
         assertTrue(permissions.hasAccess(dto));
+    }
+
+    @Override
+    @Test
+    public void hasAccess_OncStaff() throws Exception {
+        setupForOncStaffUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
+        TestingLabDTO dto = new TestingLabDTO();
+        dto.setId(1L);
+        assertFalse(permissions.hasAccess(dto));
     }
 
     @Override

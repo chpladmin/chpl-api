@@ -108,6 +108,22 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
+    public void hasAccess_OncStaff() throws Exception {
+        setupForOncStaffUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
+     // Check where authority matches the user's role
+        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
+                .thenReturn(getPendingSurveillanceEntity(1l, 1l, 1l, ROLE_ONC_ID));
+
+        Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
+                .thenReturn(getUserPermissionDTO("ROLE_ONC", "", ""));
+
+        assertFalse(permissions.hasAccess(1L));
+    }
+
+    @Override
+    @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
 

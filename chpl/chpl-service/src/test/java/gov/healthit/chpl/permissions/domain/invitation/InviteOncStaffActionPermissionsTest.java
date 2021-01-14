@@ -1,4 +1,4 @@
-package gov.healthit.chpl.permissions.domain.scheduler;
+package gov.healthit.chpl.permissions.domain.invitation;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -12,15 +12,14 @@ import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
-import gov.healthit.chpl.permissions.domains.scheduler.UpdateJobActionPermissions;
+import gov.healthit.chpl.permissions.domains.invitation.InviteOncStaffActionPermissions;
 
-public class UpdateJobActionPermissionsTest extends ActionPermissionsBaseTest {
-
+public class InviteOncStaffActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
     private ResourcePermissions resourcePermissions;
 
     @InjectMocks
-    private UpdateJobActionPermissions permissions;
+    private InviteOncStaffActionPermissions permissions;
 
     @Before
     public void setup() {
@@ -34,10 +33,12 @@ public class UpdateJobActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Admin() throws Exception {
         setupForAdminUser(resourcePermissions);
 
+        // Only ROLE_ADMIN and ROLE_ONC has access
         assertTrue(permissions.hasAccess());
 
-        // Not used
+        // This should always be false
         assertFalse(permissions.hasAccess(new Object()));
+
     }
 
     @Override
@@ -45,9 +46,10 @@ public class UpdateJobActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Onc() throws Exception {
         setupForOncUser(resourcePermissions);
 
+        // Only ROLE_ADMIN and ROLE_ONC has access
         assertTrue(permissions.hasAccess());
 
-        // Not used
+        // This should always be false
         assertFalse(permissions.hasAccess(new Object()));
     }
 
@@ -57,8 +59,6 @@ public class UpdateJobActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForOncStaffUser(resourcePermissions);
 
         assertTrue(permissions.hasAccess());
-
-        // Not used
         assertFalse(permissions.hasAccess(new Object()));
     }
 
@@ -67,9 +67,10 @@ public class UpdateJobActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
 
-        assertTrue(permissions.hasAccess());
+        // Only ROLE_ADMIN and ROLE_ONC has access
+        assertFalse(permissions.hasAccess());
 
-        // Not used
+        // This should always be false
         assertFalse(permissions.hasAccess(new Object()));
     }
 
@@ -78,9 +79,10 @@ public class UpdateJobActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Atl() throws Exception {
         setupForAtlUser(resourcePermissions);
 
+        // Only ROLE_ADMIN and ROLE_ONC has access
         assertFalse(permissions.hasAccess());
 
-        // Not used
+        // This should always be false
         assertFalse(permissions.hasAccess(new Object()));
     }
 
@@ -89,9 +91,10 @@ public class UpdateJobActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Cms() throws Exception {
         setupForCmsUser(resourcePermissions);
 
+        // Only ROLE_ADMIN and ROLE_ONC has access
         assertFalse(permissions.hasAccess());
 
-        // Not used
+        // This should always be false
         assertFalse(permissions.hasAccess(new Object()));
     }
 
@@ -100,9 +103,11 @@ public class UpdateJobActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Anon() throws Exception {
         setupForAnonUser(resourcePermissions);
 
+        // Only ROLE_ADMIN and ROLE_ONC has access
         assertFalse(permissions.hasAccess());
 
-        // Not used
+        // This should always be false
         assertFalse(permissions.hasAccess(new Object()));
     }
+
 }

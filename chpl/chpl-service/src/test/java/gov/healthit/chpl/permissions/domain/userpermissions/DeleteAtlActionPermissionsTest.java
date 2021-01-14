@@ -57,6 +57,17 @@ public class DeleteAtlActionPermissionsTest extends ActionPermissionsBaseTest {
     }
 
     @Override
+    @Test
+    public void hasAccess_OncStaff() throws Exception {
+        setupForOncStaffUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
+        TestingLabDTO dto = new TestingLabDTO();
+        dto.setId(1L);
+        assertFalse(permissions.hasAccess(dto));
+    }
+
+    @Override
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
 

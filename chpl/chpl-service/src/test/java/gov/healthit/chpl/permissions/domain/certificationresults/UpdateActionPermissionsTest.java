@@ -18,7 +18,7 @@ import gov.healthit.chpl.permissions.domains.certificationresults.UpdatePermissi
 
 public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
-    private ResourcePermissions resourcePermissions;;
+    private ResourcePermissions resourcePermissions;
 
     @Mock
     private CertifiedProductDAO cpDAO;
@@ -57,6 +57,15 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         // Since it is ONC it has access to all - parm value does not matter.
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         assertTrue(permissions.hasAccess(listing));
+    }
+
+    @Override
+    @Test
+    public void hasAccess_OncStaff() throws Exception {
+        setupForOncStaffUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
+        assertFalse(permissions.hasAccess(new CertifiedProductSearchDetails()));
     }
 
     @Override

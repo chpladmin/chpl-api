@@ -70,6 +70,22 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
+    public void hasAccess_OncStaff() throws Exception {
+        setupForOncStaffUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
+
+        FilterDTO dto = getFilterDTO(1l, 3l);
+        Mockito.when(filterDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getFilterDTO(1l, 3l));
+        assertTrue(permissions.hasAccess(dto));
+
+        FilterDTO dto2 = getFilterDTO(1l, 3l);
+        Mockito.when(filterDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getFilterDTO(1l, -5l));
+        assertFalse(permissions.hasAccess(dto2));
+    }
+
+    @Override
+    @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
 

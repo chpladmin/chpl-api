@@ -13,7 +13,6 @@ import org.mockito.MockitoAnnotations;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.realworldtesting.UploadActionPermissions;
-import gov.healthit.chpl.permissions.domains.scheduler.GetAllTriggersActionPermissions;
 
 public class UploadActionPermissionsTest extends ActionPermissionsBaseTest {
 
@@ -48,6 +47,15 @@ public class UploadActionPermissionsTest extends ActionPermissionsBaseTest {
         assertTrue(permissions.hasAccess());
 
         // Not used
+        assertFalse(permissions.hasAccess(new Object()));
+    }
+
+    @Override
+    @Test
+    public void hasAccess_OncStaff() throws Exception {
+        setupForOncStaffUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
         assertFalse(permissions.hasAccess(new Object()));
     }
 

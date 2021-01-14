@@ -16,7 +16,7 @@ import gov.healthit.chpl.permissions.domains.certificationbody.CreateActionPermi
 
 public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
-    private ResourcePermissions resourcePermissions;;
+    private ResourcePermissions resourcePermissions;
 
     @InjectMocks
     private CreateActionPermissions permissions;
@@ -49,6 +49,15 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertTrue(permissions.hasAccess());
 
         // Not used
+        assertFalse(permissions.hasAccess(new Object()));
+    }
+
+    @Override
+    @Test
+    public void hasAccess_OncStaff() throws Exception {
+        setupForOncStaffUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
         assertFalse(permissions.hasAccess(new Object()));
     }
 
