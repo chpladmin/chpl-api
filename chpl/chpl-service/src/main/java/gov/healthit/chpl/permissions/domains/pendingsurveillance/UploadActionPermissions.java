@@ -35,7 +35,6 @@ public class UploadActionPermissions extends ActionPermissions {
                 return isAcbValidForCurrentUser(dto.getCertificationBodyId());
             } else {
                 return getResourcePermissions().isUserRoleOnc()
-                        || getResourcePermissions().isUserRoleOncStaff()
                         || getResourcePermissions().isUserRoleAdmin();
             }
         } catch (Exception e) {
