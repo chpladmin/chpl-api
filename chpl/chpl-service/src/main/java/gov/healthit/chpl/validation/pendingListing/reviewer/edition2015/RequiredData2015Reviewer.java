@@ -163,13 +163,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 Arrays.asList(A_RELATED_CERTS_EXCEPTION), Arrays.asList(A_CERT_EXCEPTIONS));
         addListingWarningsByPermission(listing, warnings);
 
-        errors = validationUtils.checkClassOfCriteriaForErrors("170.315 (b)", attestedCriteria,
-                Arrays.asList(B_RELATED_CERTS));
-        listing.getErrorMessages().addAll(errors);
-        warnings = validationUtils.checkClassOfCriteriaForWarnings("170.315 (b)", attestedCriteria,
-                Arrays.asList(B_RELATED_CERTS));
-        addListingWarningsByPermission(listing, warnings);
-
         errors = validationUtils.checkClassOfCriteriaForErrors("170.315 (c)", attestedCriteria,
                 Arrays.asList(C_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
@@ -599,21 +592,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         validateG3Inverse(listing);
         validateG6(listing);
         validateG6Inverse(listing);
-
-        // g4 check
-        boolean hasG4 = validationUtils.hasCert("170.315 (g)(4)", attestedCriteria);
-        if (!hasG4) {
-            listing.getErrorMessages().add("170.315 (g)(4) is required but was not found.");
-        }
-
-        // g5 check
-        boolean hasG5 = validationUtils.hasCert("170.315 (g)(5)", attestedCriteria);
-        if (!hasG5) {
-            listing.getErrorMessages().add("170.315 (g)(5) is required but was not found.");
-        }
-
-        // TODO: detailed G6 check; waiting on rule from ONC
-
         validateH1PlusB1(listing);
 
         if (listing.getQmsStandards() == null || listing.getQmsStandards().size() == 0) {
