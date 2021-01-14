@@ -66,12 +66,12 @@ public class ListingValidationCreatorJob implements Job {
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
                     try {
-                        listingValidationReportDAO.deleteAll();
-
-                        //This will control how many threads are used by the parallelStream.  By default parallelStream
-                        //will use the # of processors - 1 threads.  We want to be able to limit this.
+                        // This will control how many threads are used by the parallelStream.  By default parallelStream
+                        // will use the # of processors - 1 threads.  We want to be able to limit this.
                         ForkJoinPool pool = new ForkJoinPool(threadCount);
                         List<CertifiedProductSearchDetails> listingsWithErrors = pool.submit(() -> getListingsWithErrors()).get();
+
+                        deleteAllExistingListingValidationReports();
 
                         listingsWithErrors.stream()
                                 .forEach(listing -> createListingValidationReport(listing));
@@ -107,7 +107,6 @@ public class ListingValidationCreatorJob implements Job {
     private CertifiedProductSearchDetails getCertifiedProductSearchDetails(Long certifiedProductId) {
         try {
             long start = (new Date()).getTime();
-            LOGGER.info("Retrieving details for listing: " + certifiedProductId);
             CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetails(certifiedProductId);
             LOGGER.info("Completed details for listing(" + ((new Date()).getTime() - start) + "ms): " + certifiedProductId);
             return listing;
@@ -118,23 +117,25 @@ public class ListingValidationCreatorJob implements Job {
     }
 
     private CertifiedProductSearchDetails validateListing(CertifiedProductSearchDetails listing) {
-        LOGGER.info("Starting validation of listing: " + listing.getId());
         Validator validator = validatorFactory.getValidator(listing);
         validator.validate(listing);
         LOGGER.info("Completed validation of listing: " + listing.getId());
         return listing;
     }
 
+    private void deleteAllExistingListingValidationReports() {
+        LOGGER.info("Started deletion of all existing listing validation reports");
+        listingValidationReportDAO.deleteAll();
+        LOGGER.info("Completed deletion of all existing listing validation reports");
+    }
+
     private boolean doValidationErrorsExist(CertifiedProductSearchDetails listing) {
-        LOGGER.info("Starting check of errors of listing: " + listing.getId());
         boolean errorsExist = listing.getErrorMessages().size() > 0;
-        LOGGER.info("Completed check of errors of listing: " + listing.getId());
         return errorsExist;
     }
 
     private List<ListingValidationReport> createListingValidationReport(CertifiedProductSearchDetails listing) {
 
-        LOGGER.info("Starting save of report data for: " + listing.getId());
         List<ListingValidationReport> reports = listing.getErrorMessages().stream()
                 .map(error -> listingValidationReportDAO.create(ListingValidationReport.builder()
                     .chplProductNumber(listing.getChplProductNumber())
