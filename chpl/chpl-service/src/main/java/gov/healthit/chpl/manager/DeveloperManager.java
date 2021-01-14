@@ -1,7 +1,6 @@
 package gov.healthit.chpl.manager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -51,7 +50,6 @@ import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventPair;
 import gov.healthit.chpl.dto.ProductDTO;
-import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.TransparencyAttestationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
@@ -60,6 +58,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.DeveloperStatusEventsHelper;
 import gov.healthit.chpl.manager.impl.SecuredManager;
@@ -68,6 +67,7 @@ import gov.healthit.chpl.manager.rules.developer.DeveloperValidationContext;
 import gov.healthit.chpl.manager.rules.developer.DeveloperValidationFactory;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
+import gov.healthit.chpl.scheduler.job.developer.MergeDeveloperJob;
 import gov.healthit.chpl.service.DirectReviewUpdateEmailService;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
@@ -78,6 +78,7 @@ import lombok.extern.log4j.Log4j2;
 @Lazy
 @Service
 @Log4j2
+@Loggable
 public class DeveloperManager extends SecuredManager {
     public static final String NEW_DEVELOPER_CODE = "XXXX";
     private static final Integer DELAY_BEFORE_JOB_START = 5000;
@@ -366,11 +367,10 @@ public class DeveloperManager extends SecuredManager {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS
     }, allEntries = true)
-    public DeveloperDTO merge(List<Long> developerIdsToMerge, DeveloperDTO developerToCreate)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
-
-        // merging doesn't require developer address so runUpdateValidations is
-        // used here
+    public ChplOneTimeTrigger merge(List<Long> developerIdsToMerge, DeveloperDTO developerToCreate)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            SchedulerException, ValidationException {
+        // merging doesn't require developer address so runUpdateValidations is used here
         Set<String> errors = runUpdateValidations(developerToCreate);
         if (errors != null && errors.size() > 0) {
             throw new ValidationException(errors);
@@ -417,70 +417,27 @@ public class DeveloperManager extends SecuredManager {
             }
         }
 
-        DeveloperDTO createdDeveloper = create(developerToCreate);
-
-        Map<Long, CertifiedProductSearchDetails> preMergeListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
-        Map<Long, CertifiedProductSearchDetails> postMergeListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
-        // search for any products assigned to the list of developers passed in
-        List<ProductDTO> developerProducts = productManager.getByDevelopers(developerIdsToMerge);
-        for (ProductDTO product : developerProducts) {
-            List<CertifiedProductDetailsDTO> affectedListings = certifiedProductDao.getDetailsByProductId(product.getId());
-
-            for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
-                CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(affectedListing.getId());
-                LOGGER.info("Complete retrieving details for id: " + details.getId());
-                preMergeListingDetails.put(details.getId(), details);
-            }
-
-            // add an item to the ownership history of each product
-            ProductOwnerDTO historyToAdd = new ProductOwnerDTO();
-            historyToAdd.setProductId(product.getId());
-            DeveloperDTO prevOwner = new DeveloperDTO();
-            prevOwner.setId(product.getOwner().getId());
-            historyToAdd.setDeveloper(prevOwner);
-            historyToAdd.setTransferDate(System.currentTimeMillis());
-            product.getOwnerHistory().add(historyToAdd);
-            // reassign those products to the new developer
-            product.getOwner().setId(createdDeveloper.getId());
-            productManager.update(product);
-
-            // get the listing details again - this time they will have the new developer code
-            for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
-                CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(affectedListing.getId());
-                LOGGER.info("Complete retrieving details for id: " + details.getId());
-                postMergeListingDetails.put(details.getId(), details);
-            }
+        UserDTO jobUser = null;
+        try {
+            jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
+        } catch (UserRetrievalException ex) {
+            LOGGER.error("Could not find user to execute job.");
         }
 
-        // - mark the passed in developers as deleted
-        for (Long developerId : developerIdsToMerge) {
-            List<CertificationBodyDTO> availableAcbs = resourcePermissions.getAllAcbsForCurrentUser();
-            if (availableAcbs != null && availableAcbs.size() > 0) {
-                for (CertificationBodyDTO acb : availableAcbs) {
-                    developerDao.deleteTransparencyMapping(developerId, acb.getId());
-                }
-            }
-            developerDao.delete(developerId);
-        }
+        ChplOneTimeTrigger mergeDeveloperTrigger = new ChplOneTimeTrigger();
+        ChplJob mergeDeveloperJob = new ChplJob();
+        mergeDeveloperJob.setName(MergeDeveloperJob.JOB_NAME);
+        mergeDeveloperJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put(MergeDeveloperJob.OLD_DEVELOPERS_KEY, beforeDevelopers);
+        jobDataMap.put(MergeDeveloperJob.NEW_DEVELOPER_KEY, developerToCreate);
+        jobDataMap.put(MergeDeveloperJob.USER_KEY, jobUser);
+        mergeDeveloperJob.setJobDataMap(jobDataMap);
+        mergeDeveloperTrigger.setJob(mergeDeveloperJob);
+        mergeDeveloperTrigger.setRunDateMillis(System.currentTimeMillis() + DELAY_BEFORE_JOB_START);
+        mergeDeveloperTrigger = schedulerManager.createBackgroundJobTrigger(mergeDeveloperTrigger);
+        return mergeDeveloperTrigger;
 
-        LOGGER.info("Logging listing activity for developer merge.");
-        for (Long id : postMergeListingDetails.keySet()) {
-            CertifiedProductSearchDetails preMergeListing = preMergeListingDetails.get(id);
-            CertifiedProductSearchDetails postMergeListing = postMergeListingDetails.get(id);
-            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, preMergeListing.getId(),
-                    "Updated certified product " + postMergeListing.getChplProductNumber() + ".", preMergeListing,
-                    postMergeListing);
-        }
-
-        directReviewEmailService.sendEmail(beforeDevelopers, Arrays.asList(createdDeveloper),
-                preMergeListingDetails, postMergeListingDetails);
-
-        activityManager.addActivity(
-                ActivityConcept.DEVELOPER, createdDeveloper.getId(), "Merged " + developerIdsToMerge.size()
-                        + " developers into new developer '" + createdDeveloper.getName() + "'.",
-                beforeDevelopers, createdDeveloper);
-
-        return createdDeveloper;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
