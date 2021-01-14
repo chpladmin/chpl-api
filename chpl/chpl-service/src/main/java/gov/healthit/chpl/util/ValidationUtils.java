@@ -4,7 +4,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.validator.routines.UrlValidator;
@@ -138,10 +137,10 @@ public class ValidationUtils {
 
     public boolean hasAnyCriteria(List<CertificationCriterion> criteriaToFind,
             List<CertificationCriterion> allCriteria) {
-        Optional<CertificationCriterion> foundCriterion = criteriaToFind.stream()
+        return criteriaToFind.stream()
                 .filter(criterionToFind -> hasCriterion(criterionToFind, allCriteria))
-                .findAny();
-        return foundCriterion.isPresent();
+                .findAny()
+                .isPresent();
     }
 
     public CertificationCriterion getCert(String certNumber, List<CertificationCriterion> allCerts) {
