@@ -33,7 +33,8 @@ public class CreateBackgroundJobTriggerActionPermissions extends ActionPermissio
     @Override
     public boolean hasAccess(Object obj) {
         if (getResourcePermissions().isUserRoleAdmin()
-                || getResourcePermissions().isUserRoleOnc()) {
+                || getResourcePermissions().isUserRoleOnc()
+                || getResourcePermissions().isUserRoleOncStaff()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             if (obj instanceof ChplOneTimeTrigger) {

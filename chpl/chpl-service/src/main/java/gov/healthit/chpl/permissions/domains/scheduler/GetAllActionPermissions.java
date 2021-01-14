@@ -30,7 +30,9 @@ public class GetAllActionPermissions extends ActionPermissions {
         try {
             if (!(obj instanceof ChplJob)) {
                 return false;
-            } else if (getResourcePermissions().isUserRoleAcbAdmin() || getResourcePermissions().isUserRoleOnc()) {
+            } else if (getResourcePermissions().isUserRoleAcbAdmin()
+                    || getResourcePermissions().isUserRoleOnc()
+                    || getResourcePermissions().isUserRoleOncStaff()) {
                 ChplJob job = (ChplJob) obj;
                 return doesUserHavePermissionToJob(job);
             } else {
