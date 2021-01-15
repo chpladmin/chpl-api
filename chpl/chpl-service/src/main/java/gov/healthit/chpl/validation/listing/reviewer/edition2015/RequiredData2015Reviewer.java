@@ -51,11 +51,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
             "170.315 (d)(4)"
     };
 
-    private static final String[] B_RELATED_CERTS = {
-            "170.315 (d)(1)", "170.315 (d)(2)", "170.315 (d)(3)", "170.315 (d)(5)", "170.315 (d)(6)", "170.315 (d)(7)",
-            "170.315 (d)(8)"
-    };
-
     private static final String[] C_RELATED_CERTS = {
             "170.315 (d)(1)", "170.315 (d)(2)", "170.315 (d)(3)", "170.315 (d)(5)"
     };
@@ -156,13 +151,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         listing.getErrorMessages().addAll(errors);
         warnings = validationUtils.checkClassSubsetOfCriteriaForWarnings("170.315 (a)", attestedCriteria,
                 Arrays.asList(A_RELATED_CERTS_EXCEPTION), Arrays.asList(A_CERT_EXCEPTIONS));
-        addListingWarningsByPermission(listing, warnings);
-
-        errors = validationUtils.checkClassOfCriteriaForErrors("170.315 (b)", attestedCriteria,
-                Arrays.asList(B_RELATED_CERTS));
-        listing.getErrorMessages().addAll(errors);
-        warnings = validationUtils.checkClassOfCriteriaForWarnings("170.315 (b)", attestedCriteria,
-                Arrays.asList(B_RELATED_CERTS));
         addListingWarningsByPermission(listing, warnings);
 
         errors = validationUtils.checkClassOfCriteriaForErrors("170.315 (c)", attestedCriteria,
@@ -363,19 +351,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         validateG3(listing);
         validateG3Inverse(listing);
         validateG6(listing);
-
-        // g4 check
-        boolean hasG4 = validationUtils.hasCert("170.315 (g)(4)", attestedCriteria);
-        if (!hasG4) {
-            listing.getErrorMessages().add("170.315 (g)(4) is required but was not found.");
-        }
-
-        // g5 check
-        boolean hasG5 = validationUtils.hasCert("170.315 (g)(5)", attestedCriteria);
-        if (!hasG5) {
-            listing.getErrorMessages().add("170.315 (g)(5) is required but was not found.");
-        }
-
         validateH1PlusB1(listing);
 
         if (listing.getQmsStandards() == null || listing.getQmsStandards().size() == 0) {
