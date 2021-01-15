@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,6 +57,7 @@ import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.TransparencyAttestation;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.domain.compliance.DirectReview;
+import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
@@ -357,7 +359,8 @@ public class CertifiedProductDetailsManager {
         List<DirectReview> drs = new ArrayList<DirectReview>();
         drs.addAll(drService.getListingDirectReviewsFromCache(listing.getId()));
         if (listing.getDeveloper() != null && listing.getDeveloper().getDeveloperId() != null) {
-            drs.addAll(drService.getDeveloperDirectReviewsFromCache(listing.getDeveloper().getDeveloperId()));
+            drs.addAll(getDeveloperDirectReviewsWithoutAssociatedListing(
+                    listing.getDeveloper().getDeveloperId(), listing.getId()));
         }
 
         drs = StreamEx.of(drs)
@@ -366,6 +369,38 @@ public class CertifiedProductDetailsManager {
 
         listing.setDirectReviews(drs);
         return listing;
+    }
+
+    private List<DirectReview> getDeveloperDirectReviewsWithoutAssociatedListing(Long developerId, Long listingId) {
+        List<DirectReview> drsWithoutAssociatedListings = drService.getDeveloperDirectReviewsFromCache(developerId);
+        return Stream.of(
+            drsWithoutAssociatedListings.stream()
+                .filter(dr -> dr.getNonConformities() == null || dr.getNonConformities().size() == 0)
+                .collect(Collectors.toList()),
+            drsWithoutAssociatedListings.stream()
+                .filter(dr -> hasNoDeveloperAssociatedListings(dr.getNonConformities()))
+                .collect(Collectors.toList()),
+           drsWithoutAssociatedListings.stream()
+               .filter(dr -> hasNoAssociationWithListing(dr.getNonConformities(), listingId))
+               .collect(Collectors.toList()))
+          .flatMap(List::stream)
+          .collect(Collectors.toList());
+    }
+
+    private boolean hasNoDeveloperAssociatedListings(List<DirectReviewNonConformity> ncs) {
+        return ncs.stream()
+            .filter(nc -> nc.getDeveloperAssociatedListings() == null || nc.getDeveloperAssociatedListings().size() == 0)
+            .findAny()
+            .isPresent();
+    }
+
+    private boolean hasNoAssociationWithListing(List<DirectReviewNonConformity> ncs, Long listingId) {
+        return !ncs.stream()
+                .filter(nc -> nc.getDeveloperAssociatedListings() != null && nc.getDeveloperAssociatedListings().size() > 0)
+                .flatMap(nc -> nc.getDeveloperAssociatedListings().stream())
+                .filter(dal -> dal.getId() != null && dal.getId().equals(listingId))
+                .findAny()
+                .isPresent();
     }
 
     private List<CertifiedProduct> populateParents(Future<List<CertifiedProductDTO>> parentsFuture,
