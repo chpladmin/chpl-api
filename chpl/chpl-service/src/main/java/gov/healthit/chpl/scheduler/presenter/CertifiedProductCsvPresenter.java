@@ -235,6 +235,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
     private long getCountOfOpenDirectReviewNonconformitiesForListing(CertifiedProductSearchDetails listing) {
         long count = 0;
         count = listing.getDirectReviews().stream()
+                .filter(dr -> dr.getNonConformities() != null && dr.getNonConformities().size() > 0)
                 .flatMap(dr -> dr.getNonConformities().stream())
                 .filter(nc -> isNonconformityAssociatedWithListing(listing, nc))
                 .filter(nc -> nc.getNonConformityStatus() != null && nc.getNonConformityStatus().equalsIgnoreCase(OPEN_STATUS))
@@ -243,8 +244,13 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
     }
 
     private boolean isNonconformityAssociatedWithListing(CertifiedProductSearchDetails listing, DirectReviewNonConformity nc) {
+        if (nc == null || nc.getDeveloperAssociatedListings() == null
+                || nc.getDeveloperAssociatedListings().size() == 0) {
+            return false;
+        }
+
         return nc.getDeveloperAssociatedListings().stream()
-                .filter(dal -> dal.getId().equals(listing.getId()))
+                .filter(dal -> dal.getId() != null && dal.getId().equals(listing.getId()))
                 .findAny().isPresent();
     }
 
