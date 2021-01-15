@@ -359,7 +359,7 @@ public class CertifiedProductDetailsManager {
         List<DirectReview> drs = new ArrayList<DirectReview>();
         drs.addAll(drService.getListingDirectReviewsFromCache(listing.getId()));
         if (listing.getDeveloper() != null && listing.getDeveloper().getDeveloperId() != null) {
-            drs.addAll(getDeveloperDirectReviewsWithoutAssociatedListing(
+            drs.addAll(getDeveloperDirectReviewsWithoutAssociatedListings(
                     listing.getDeveloper().getDeveloperId(), listing.getId()));
         }
 
@@ -371,7 +371,7 @@ public class CertifiedProductDetailsManager {
         return listing;
     }
 
-    private List<DirectReview> getDeveloperDirectReviewsWithoutAssociatedListing(Long developerId, Long listingId) {
+    private List<DirectReview> getDeveloperDirectReviewsWithoutAssociatedListings(Long developerId, Long listingId) {
         List<DirectReview> drsWithoutAssociatedListings = drService.getDeveloperDirectReviewsFromCache(developerId);
         return Stream.of(
             drsWithoutAssociatedListings.stream()
@@ -379,10 +379,7 @@ public class CertifiedProductDetailsManager {
                 .collect(Collectors.toList()),
             drsWithoutAssociatedListings.stream()
                 .filter(dr -> hasNoDeveloperAssociatedListings(dr.getNonConformities()))
-                .collect(Collectors.toList()),
-           drsWithoutAssociatedListings.stream()
-               .filter(dr -> hasNoAssociationWithListing(dr.getNonConformities(), listingId))
-               .collect(Collectors.toList()))
+                .collect(Collectors.toList()))
           .flatMap(List::stream)
           .collect(Collectors.toList());
     }
@@ -392,15 +389,6 @@ public class CertifiedProductDetailsManager {
             .filter(nc -> nc.getDeveloperAssociatedListings() == null || nc.getDeveloperAssociatedListings().size() == 0)
             .findAny()
             .isPresent();
-    }
-
-    private boolean hasNoAssociationWithListing(List<DirectReviewNonConformity> ncs, Long listingId) {
-        return !ncs.stream()
-                .filter(nc -> nc.getDeveloperAssociatedListings() != null && nc.getDeveloperAssociatedListings().size() > 0)
-                .flatMap(nc -> nc.getDeveloperAssociatedListings().stream())
-                .filter(dal -> dal.getId() != null && dal.getId().equals(listingId))
-                .findAny()
-                .isPresent();
     }
 
     private List<CertifiedProduct> populateParents(Future<List<CertifiedProductDTO>> parentsFuture,
