@@ -60,8 +60,6 @@ public class ListingValidatorEmailJob  implements Job {
     }
 
     private String getReportDateAsString(List<ListingValidationReport> rows) {
-
-
         if (rows.size() > 0) {
             SimpleDateFormat etDf = new SimpleDateFormat("MM/dd/yyyy 'at' hh:mma 'ET'");
             TimeZone etTimeZone = TimeZone.getTimeZone("America/New_York");
