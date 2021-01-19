@@ -188,6 +188,17 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="mergeDeveloperJob"
+            fileName="${logDir}/scheduler/mergeDeveloperJob.log"
+            filePattern="${logDir}/scheduler/history/mergeDeveloperJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
         <RollingFile name="apiKeyWarningEmailJob"
             fileName="${logDir}/scheduler/apiKeyWarningEmailJob.log"
             filePattern="${logDir}/scheduler/history/apiKeyWarningEmailJob-%d{yyyy-MM-dd}.log">
@@ -364,6 +375,17 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="realWorldTestingReportEmailJob"
+            fileName="${logDir}/scheduler/realWorldTestingReportEmailJob.log"
+            filePattern="${logDir}/scheduler/history/realWorldTestingReportEmailJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
     </Appenders>
     <Loggers>
         <Logger name="org.jose4j" level="ERROR" additivity="false">
@@ -450,6 +472,10 @@
             additivity="false">
             <AppenderRef ref="splitDeveloperJob" />
         </Logger>
+        <Logger name="mergeDeveloperJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="mergeDeveloperJob" />
+        </Logger>
         <Logger name="apiKeyWarningEmailJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="apiKeyWarningEmailJob" />
@@ -497,6 +523,10 @@
         <Logger name="realWorldTestingUploadJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="realWorldTestingUploadJob" />
+        </Logger>
+        <Logger name="realWorldTestingReportEmailJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="realWorldTestingReportEmailJob" />
         </Logger>
         <Logger name="auditDataRetentionJobLogger" level="INFO"
             additivity="false">

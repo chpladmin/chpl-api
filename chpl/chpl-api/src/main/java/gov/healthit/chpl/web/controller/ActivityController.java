@@ -953,7 +953,8 @@ public class ActivityController {
         return activityManager.getApiKeyActivity(startDate, endDate);
     }
 
-    @ApiOperation(value = "Get auditable data for all API keys",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Get auditable data for all API keys",
         notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
             + "Security Restrictions: Only ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/metadata/api-keys", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
@@ -963,6 +964,18 @@ public class ActivityController {
         Date endDate = new Date(end);
         validateActivityDatesAndDateRange(start, end);
         return activityMetadataManager.getApiKeyManagementMetadata(startDate, endDate);
+    }
+
+    @ApiOperation(value = "Get metadata about auditable records in the system for API Keys.",
+            notes = "All parameters are optional and will default to the first page of API Key activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first.")
+    @RequestMapping(value = "/metadata/beta/api-keys", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForApiKeys(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        return pagedMetadataManager.getApiKeyManagementMetadata(start, end, pageNum, pageSize);
     }
 
     @Deprecated
@@ -978,9 +991,8 @@ public class ActivityController {
         return getActivityEventsForCertifiedProducts(startDate, endDate);
     }
 
-    //this is left undeprecated intentionally because
-    //the UI uses it on the details page to load the "eye" data
-    @ApiOperation(value = "Get auditable data for a specific certified product.",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED. Get auditable data for a specific certified product.",
             notes = "A start and end date may optionally be provided to limit activity results.")
     @RequestMapping(value = "/certified_products/{id:^-?\\d+$}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
