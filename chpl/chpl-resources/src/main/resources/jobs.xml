@@ -607,7 +607,7 @@
                     <key>frequency</key>
                     <value>DAILY</value>
                 </entry>
-			</job-data-map>
+            </job-data-map>
         </job>	            
         
     </schedule>
