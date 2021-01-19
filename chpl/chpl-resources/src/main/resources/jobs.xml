@@ -537,5 +537,25 @@
                 </entry>
             </job-data-map>
         </job>
+        
+        <!-- Generate email report for Listing Validation  -->
+        <job>
+            <name>Listing Validation Email Report</name>
+            <group>chplJobs</group>
+            <description>Sends a report providing information about Listing Validation errors</description>
+            <job-class>gov.healthit.chpl.scheduler.job.listingvalidation.ListingValidatorEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+            </job-data-map>
+        </job>
     </schedule>
 </job-scheduling-data>
