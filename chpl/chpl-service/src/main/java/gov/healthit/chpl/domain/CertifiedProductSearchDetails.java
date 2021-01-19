@@ -13,11 +13,11 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -362,7 +362,7 @@ public class CertifiedProductSearchDetails implements Serializable {
     /**
      * URL where the listing's Real World Testing Plan is located
      */
-    @XmlElement(name = "rwt_plans_url", nillable = true, required = false)
+    @XmlElement(name = "rwtPlansUrl", nillable = true, required = false)
     private String rwtPlansUrl;
 
     /**
@@ -371,13 +371,13 @@ public class CertifiedProductSearchDetails implements Serializable {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
-    @XmlElement(name = "rwt_plans_check_date", nillable = true, required = false)
+    @XmlElement(name = "rwtPlansCheckDate", nillable = true, required = false)
     private LocalDate rwtPlansCheckDate;
 
     /**
      * URL where the listing's Real World Testing Results is located
      */
-    @XmlElement(name = "rwt_results_url", nillable = true, required = false)
+    @XmlElement(name = "rwtResultsUrl", nillable = true, required = false)
     private String rwtResultsUrl;
 
     /**
@@ -386,13 +386,13 @@ public class CertifiedProductSearchDetails implements Serializable {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
-    @XmlElement(name = "rwt_results_check_date", nillable = true, required = false)
+    @XmlElement(name = "rwtResultsCheckDate", nillable = true, required = false)
     private LocalDate rwtResultsCheckDate;
 
     /**
      * First year that the listing is eligible for Real World Testing data
      */
-    @XmlElement(name = "rwt_eligibility_year", nillable = true, required = false)
+    @XmlElement(name = "rwtEligibilityYear", nillable = true, required = false)
     private Integer rwtEligibilityYear;
 
     @Builder.Default
