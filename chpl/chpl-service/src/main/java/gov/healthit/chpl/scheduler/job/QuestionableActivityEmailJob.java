@@ -508,7 +508,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         currRow.set(STATUS_COL, activity.getListing().getCertificationStatusName());
         currRow.set(LINK_COL, env.getProperty("chplUrlBegin") + env.getProperty("listingReportsUrlPart") + "/"
                 + activity.getListing().getId());
-        currRow.set(ACTIVITY_USER_COL, activity.getUser().getUsername());
+        currRow.set(ACTIVITY_USER_COL, activity.getUser().getSubjectName());
 
         if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G1_SUCCESS_EDITED.getName())) {
             String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
@@ -518,14 +518,46 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": from " + activity.getBefore()
             + " to " + activity.getAfter();
             currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-        } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G2_SUCCESS_EDITED
-                .getName())) {
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.G1_MEASURE_ADDED.getName())) {
+            String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
+            if (!StringUtils.isEmpty(currActivityRowValue)) {
+                currActivityRowValue += "; ";
+            }
+            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": " + activity.getAfter();
+            currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.G1_MEASURE_REMOVED.getName())) {
+            String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
+            if (!StringUtils.isEmpty(currActivityRowValue)) {
+                currActivityRowValue += "; ";
+            }
+            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": " + activity.getBefore();
+            currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.G2_SUCCESS_EDITED.getName())) {
             String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
             if (!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; ";
             }
             currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": from " + activity.getBefore()
             + " to " + activity.getAfter();
+            currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.G2_MEASURE_ADDED.getName())) {
+            String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
+            if (!StringUtils.isEmpty(currActivityRowValue)) {
+                currActivityRowValue += "; ";
+            }
+            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": " + activity.getAfter();
+            currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.G2_MEASURE_REMOVED.getName())) {
+            String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
+            if (!StringUtils.isEmpty(currActivityRowValue)) {
+                currActivityRowValue += "; ";
+            }
+            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": " + activity.getBefore();
             currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
         } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.GAP_EDITED.getName())) {
             String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
