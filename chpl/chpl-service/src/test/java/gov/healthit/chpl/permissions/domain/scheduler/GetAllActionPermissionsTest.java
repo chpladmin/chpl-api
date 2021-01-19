@@ -17,7 +17,7 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.scheduler.GetAllActionPermissions;
 
-public class GetAllJobsActionPermissionsTest extends ActionPermissionsBaseTest {
+public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Mock
     private ResourcePermissions resourcePermissions;
