@@ -389,7 +389,8 @@
                 <TimeBasedTriggeringPolicy
                     interval="1" modulate="true" />
             </Policies>
-        </RollingFile>    </Appenders>
+        </RollingFile>    
+    </Appenders>
     <Loggers>
         <Logger name="org.jose4j" level="ERROR" additivity="false">
             <AppenderRef ref="FILE" />
