@@ -2,6 +2,7 @@ package gov.healthit.chpl.scheduler.job.summarystatistics;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -125,14 +126,23 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         Calendar endDateCal = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
         endDateCal.setTime(endDate);
         StringBuilder ret = new StringBuilder();
-        ret.append("Email body has current statistics as of " + currDateCal.getTime());
+        ret.append("Email body has current statistics as of " + getReportDateAsString(currDateCal.getTime()));
         ret.append("<br/>");
-        ret.append("Email attachment has weekly statistics ending " + endDateCal.getTime());
+        ret.append("Email attachment has weekly statistics ending " + getReportDateAsString(endDateCal.getTime()));
         ret.append("<br/>");
         ret.append("In the attached CSV file: <br/>");
         ret.append("<ul>");
         ret.append("<li>Total Closed Non-Conformities - Some Non-Conformities may be closed that are not counted in these statistics</li>");
         ret.append("</ul>");
         return ret.toString();
+    }
+
+    private String getReportDateAsString(Date date) {
+        if (date != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+            return sdf.format(date);
+        } else {
+            return "UNKNOWN";
+        }
     }
 }

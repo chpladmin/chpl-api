@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
-import java.util.TimeZone;
 
 import javax.mail.MessagingException;
 
@@ -61,10 +60,9 @@ public class ListingValidatorEmailJob  implements Job {
 
     private String getReportDateAsString(List<ListingValidationReport> rows) {
         if (rows.size() > 0) {
-            SimpleDateFormat etDf = new SimpleDateFormat("MM/dd/yyyy 'at' hh:mma 'ET'");
-            TimeZone etTimeZone = TimeZone.getTimeZone("America/New_York");
-            etDf.setTimeZone(etTimeZone);
-            return etDf.format(rows.get(0).getReportDate().getTime());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+            //sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return sdf.format(rows.get(0).getReportDate());
         } else {
             return "UNKNOWN";
         }
