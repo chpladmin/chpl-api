@@ -1,5 +1,5 @@
 name: Run java checkstyle
-on: [push]
+on: pull_request
 jobs:
   checkstyle_job:
     runs-on: ubuntu-latest
