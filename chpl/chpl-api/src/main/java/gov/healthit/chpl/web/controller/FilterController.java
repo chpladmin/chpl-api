@@ -54,8 +54,7 @@ public class FilterController {
     @ApiOperation(value = "List all filters based on the filter type for the current user.",
             notes = "Security Restrictions: Only filters owned by the current user will be returned")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody FilterResults getFiltersByFilterType(@RequestParam() final Long filterTypeId)
-    		throws EntityRetrievalException {
+    public @ResponseBody FilterResults getFiltersByFilterType(@RequestParam() final Long filterTypeId) throws EntityRetrievalException {
         FilterResults results = new FilterResults();
         FilterTypeDTO filterTypeDTO = filterManager.getFilterType(filterTypeId);
         List<Filter> filters = new ArrayList<Filter>();
@@ -70,8 +69,7 @@ public class FilterController {
     @ApiOperation(value = "Save filter for the current user.",
             notes = "")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public @ResponseBody Filter create(@RequestBody final Filter filter)
-    		throws EntityRetrievalException, UserRetrievalException, ValidationException {
+    public @ResponseBody Filter create(@RequestBody final Filter filter) throws EntityRetrievalException, UserRetrievalException, ValidationException {
         FilterDTO dto = new FilterDTO();
         UserDTO userDTO = userManager.getById(AuthUtil.getCurrentUser().getId());
         FilterTypeDTO filterTypeDTO = filterManager.getFilterType(filter.getFilterType().getId());
