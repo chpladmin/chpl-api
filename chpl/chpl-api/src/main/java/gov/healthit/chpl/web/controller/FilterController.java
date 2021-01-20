@@ -87,8 +87,7 @@ public class FilterController {
             notes = "")
     @RequestMapping(value = "/{filterId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
-    public @ResponseBody String deleteFilter(@PathVariable("filterId") final Long filterId)
-    		throws EntityRetrievalException, ValidationException {
+    public @ResponseBody String deleteFilter(@PathVariable("filterId") final Long filterId) throws EntityRetrievalException, ValidationException {
         FilterDTO filterDTO = filterManager.getByFilterId(filterId);
         filterManager.delete(filterDTO);
         return "{\"success\" : true}";
