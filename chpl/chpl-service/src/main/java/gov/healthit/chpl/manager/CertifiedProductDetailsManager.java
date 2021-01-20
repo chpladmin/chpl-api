@@ -360,7 +360,7 @@ public class CertifiedProductDetailsManager {
         drs.addAll(drService.getListingDirectReviewsFromCache(listing.getId()));
         if (listing.getDeveloper() != null && listing.getDeveloper().getDeveloperId() != null) {
             drs.addAll(getDeveloperDirectReviewsWithoutAssociatedListings(
-                    listing.getDeveloper().getDeveloperId(), listing.getId()));
+                    listing.getDeveloper().getDeveloperId()));
         }
 
         drs = StreamEx.of(drs)
@@ -371,7 +371,7 @@ public class CertifiedProductDetailsManager {
         return listing;
     }
 
-    private List<DirectReview> getDeveloperDirectReviewsWithoutAssociatedListings(Long developerId, Long listingId) {
+    private List<DirectReview> getDeveloperDirectReviewsWithoutAssociatedListings(Long developerId) {
         List<DirectReview> drsWithoutAssociatedListings = drService.getDeveloperDirectReviewsFromCache(developerId);
         return Stream.of(
             drsWithoutAssociatedListings.stream()
