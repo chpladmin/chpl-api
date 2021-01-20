@@ -1,184 +1,184 @@
 <?xml version="1.0" encoding="utf-8"?>
 <job-scheduling-data
-	xmlns="http://www.quartz-scheduler.org/xml/JobSchedulingData"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData http://www.quartz-scheduler.org/xml/job_scheduling_data_2_0.xsd"
-	version="2.0">
-	<schedule>
-		<trigger>
-			<cron>
-				<name>generate2015</name>
-				<group>downloadFileTrigger</group>
-				<job-name>downloadFileJob2015</job-name>
-				<job-group>systemJobs</job-group>
-				<misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-				<cron-expression>0 0 9 * * ?</cron-expression> <!-- At 0900 UTC every day -->
-			</cron>
-		</trigger>
+    xmlns="http://www.quartz-scheduler.org/xml/JobSchedulingData"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData http://www.quartz-scheduler.org/xml/job_scheduling_data_2_0.xsd"
+    version="2.0">
+    <schedule>
+        <trigger>
+            <cron>
+                <name>generate2015</name>
+                <group>downloadFileTrigger</group>
+                <job-name>downloadFileJob2015</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 0 9 * * ?</cron-expression> <!-- At 0900 UTC every day -->
+            </cron>
+        </trigger>
 
-		<trigger>
-			<cron>
-				<name>generate2014</name>
-				<group>downloadFileTrigger</group>
-				<job-name>downloadFileJob2014</job-name>
-				<job-group>systemJobs</job-group>
-				<misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-				<cron-expression>0 45 12 ? JAN,APR,JUL,OCT 7#1</cron-expression> <!-- At 1245 UTC on the first Saturday of the quarter -->
-			</cron>
-		</trigger>
+        <trigger>
+            <cron>
+                <name>generate2014</name>
+                <group>downloadFileTrigger</group>
+                <job-name>downloadFileJob2014</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 45 12 ? JAN,APR,JUL,OCT 7#1</cron-expression> <!-- At 1245 UTC on the first Saturday of the quarter -->
+            </cron>
+        </trigger>
 
-		<trigger>
-			<cron>
-				<name>generate2011</name>
-				<group>downloadFileTrigger</group>
-				<job-name>downloadFileJob2011</job-name>
-				<job-group>systemJobs</job-group>
-				<misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
-				<cron-expression>0 45 9 ? JAN,APR,JUL,OCT 7#1</cron-expression> <!-- At 0945 UTC on the first Saturday of the quarter -->
-			</cron>
-		</trigger>
+        <trigger>
+            <cron>
+                <name>generate2011</name>
+                <group>downloadFileTrigger</group>
+                <job-name>downloadFileJob2011</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <cron-expression>0 45 9 ? JAN,APR,JUL,OCT 7#1</cron-expression> <!-- At 0945 UTC on the first Saturday of the quarter -->
+            </cron>
+        </trigger>
 
-		<trigger>
-			<cron>
-				<name>g3Sed2015DownloadFileJob</name>
-				<group>downloadFileTrigger</group>
-				<job-name>g3Sed2015DownloadFileJob</job-name>
-				<job-group>systemJobs</job-group>
-				<misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-				<cron-expression>0 0 1 * * ?</cron-expression> <!-- At 0100 UTC every day -->
-			</cron>
-		</trigger>
+        <trigger>
+            <cron>
+                <name>g3Sed2015DownloadFileJob</name>
+                <group>downloadFileTrigger</group>
+                <job-name>g3Sed2015DownloadFileJob</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 0 1 * * ?</cron-expression> <!-- At 0100 UTC every day -->
+            </cron>
+        </trigger>
 
-		<trigger>
-			<cron>
-				<name>surveillanceDownloadFileJob</name>
-				<group>downloadFileTrigger</group>
-				<job-name>surveillanceDownloadFileJob</job-name>
-				<job-group>systemJobs</job-group>
-				<misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-				<cron-expression>0 0 5 * * ?</cron-expression> <!-- At 0500 UTC every day -->
-			</cron>
-		</trigger>
+        <trigger>
+            <cron>
+                <name>surveillanceDownloadFileJob</name>
+                <group>downloadFileTrigger</group>
+                <job-name>surveillanceDownloadFileJob</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 0 5 * * ?</cron-expression> <!-- At 0500 UTC every day -->
+            </cron>
+        </trigger>
 
-		<trigger>
-			<cron>
-				<name>generateDirectReviewFile</name>
-				<group>downloadFileTrigger</group>
-				<job-name>directReviewDownloadFileGeneration</job-name>
-				<job-group>systemJobs</job-group>
-				<misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-				<cron-expression>0 0 8 * * ?</cron-expression> <!-- At 0800 UTC every day -->
-			</cron>
-		</trigger>
+        <trigger>
+            <cron>
+                <name>generateDirectReviewFile</name>
+                <group>downloadFileTrigger</group>
+                <job-name>directReviewDownloadFileGeneration</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 0 8 * * ?</cron-expression> <!-- At 0800 UTC every day -->
+            </cron>
+        </trigger>
 
-		<trigger>
-			<cron>
-				<name>generateSummaryStatistics</name>
-				<group>summaryStatisticsTrigger</group>
-				<job-name>summaryStatisticsCreator</job-name>
-				<job-group>systemJobs</job-group>
-				<misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-				<cron-expression>0 0 3 * * ?</cron-expression> <!-- At 0300 UTC every day -->
-			</cron>
-		</trigger>
+        <trigger>
+            <cron>
+                <name>generateSummaryStatistics</name>
+                <group>summaryStatisticsTrigger</group>
+                <job-name>summaryStatisticsCreator</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 0 3 * * ?</cron-expression> <!-- At 0300 UTC every day -->
+            </cron>
+        </trigger>
 
-		<trigger>
-			<cron>
-				<name>generateInheritanceErrorsReport</name>
-				<group>inheritanceErrorsReportTrigger</group>
-				<job-name>inheritanceErrorsReportCreator</job-name>
-				<job-group>systemJobs</job-group>
-				<misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-				<cron-expression>0 30 10 * * ?</cron-expression> <!-- At 1030 UTC every day -->
-			</cron>
-		</trigger>
+        <trigger>
+            <cron>
+                <name>generateInheritanceErrorsReport</name>
+                <group>inheritanceErrorsReportTrigger</group>
+                <job-name>inheritanceErrorsReportCreator</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 30 10 * * ?</cron-expression> <!-- At 1030 UTC every day -->
+            </cron>
+        </trigger>
 
-		<trigger>
-			<cron>
-				<name>generateBrokenSurveillanceRules</name>
-				<group>brokenSurveillanceRulesTrigger</group>
-				<job-name>brokenSurveillanceRulesCreator</job-name>
-				<job-group>systemJobs</job-group>
-				<misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-				<cron-expression>0 0 2 * * ?</cron-expression> <!-- At 0200 UTC every day -->
-			</cron>
-		</trigger>
+        <trigger>
+            <cron>
+                <name>generateBrokenSurveillanceRules</name>
+                <group>brokenSurveillanceRulesTrigger</group>
+                <job-name>brokenSurveillanceRulesCreator</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 0 2 * * ?</cron-expression> <!-- At 0200 UTC every day -->
+            </cron>
+        </trigger>
 
-		<trigger>
-			<cron>
-				<name>generateChartData</name>
-				<group>chartDataCreatorTrigger</group>
-				<job-name>chartDataCreator</job-name>
-				<job-group>systemJobs</job-group>
-				<misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-				<cron-expression>0 10 01 * * ?</cron-expression> <!-- At 0110 UTC every day -->
-			</cron>
-		</trigger>
+        <trigger>
+            <cron>
+                <name>generateChartData</name>
+                <group>chartDataCreatorTrigger</group>
+                <job-name>chartDataCreator</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 10 01 * * ?</cron-expression> <!-- At 0110 UTC every day -->
+            </cron>
+        </trigger>
 
-		<trigger>
-			<cron>
-				<name>apiKeyDeleteWarningEmail</name>
-				<group>apiKeyDeleteWarningEmailTrigger</group>
-				<job-name>apiKeyDeleteWarningEmailJob</job-name>
-				<job-group>systemJobs</job-group>
-				<misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
-				<cron-expression>0 0 1 1/1 * ? *</cron-expression> <!-- At 0100 UTC every day -->
-			</cron>
-		</trigger>
+        <trigger>
+            <cron>
+                <name>apiKeyDeleteWarningEmail</name>
+                <group>apiKeyDeleteWarningEmailTrigger</group>
+                <job-name>apiKeyDeleteWarningEmailJob</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <cron-expression>0 0 1 1/1 * ? *</cron-expression> <!-- At 0100 UTC every day -->
+            </cron>
+        </trigger>
 
-		<trigger>
-			<cron>
-				<name>apiKeyDeleteEmail</name>
-				<group>apiKeyDeleteTrigger</group>
-				<job-name>apiKeyDeleteJob</job-name>
-				<job-group>systemJobs</job-group>
-				<misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
-				<cron-expression>0 05 1 1/1 * ? *</cron-expression> <!-- At 0105 UTC every day -->
-			</cron>
-		</trigger>
+        <trigger>
+            <cron>
+                <name>apiKeyDeleteEmail</name>
+                <group>apiKeyDeleteTrigger</group>
+                <job-name>apiKeyDeleteJob</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <cron-expression>0 05 1 1/1 * ? *</cron-expression> <!-- At 0105 UTC every day -->
+            </cron>
+        </trigger>
 
-		<trigger>
-			<cron>
-				<name>generateUrlStatusData</name>
-				<group>urlStatusDataCollectorTrigger</group>
-				<job-name>urlStatusDataCollector</job-name>
-				<job-group>systemJobs</job-group>
-				<misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-				<cron-expression>0 30 3 * * ?</cron-expression> <!-- At 0330 UTC every day -->
-			</cron>
-		</trigger>
+        <trigger>
+            <cron>
+                <name>generateUrlStatusData</name>
+                <group>urlStatusDataCollectorTrigger</group>
+                <job-name>urlStatusDataCollector</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 30 3 * * ?</cron-expression> <!-- At 0330 UTC every day -->
+            </cron>
+        </trigger>
 
-		<trigger>
-			<cron>
-				<name>refreshDirectReviews</name>
-				<group>refreshDirectReviewsTrigger</group>
-				<job-name>directReviewCacheRefresh</job-name>
-				<job-group>systemJobs</job-group>
-				<misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
-				<cron-expression>0 0 0,3,6,9,12,15,18,21 ? * *</cron-expression> <!-- Every three hours -->
-			</cron>
-		</trigger>
+        <trigger>
+            <cron>
+                <name>refreshDirectReviews</name>
+                <group>refreshDirectReviewsTrigger</group>
+                <job-name>directReviewCacheRefresh</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <cron-expression>0 0 0,3,6,9,12,15,18,21 ? * *</cron-expression> <!-- Every three hours -->
+            </cron>
+        </trigger>
 
-		<trigger>
-			<cron>
-				<name>auditDataRotation</name>
-				<group>auditDataRotationTrigger</group>
-				<job-name>AuditDataRetention</job-name>
-				<job-group>systemJobs</job-group>
-				<misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-				<cron-expression>0 45 10 ? * 7#2</cron-expression> <!-- At 1045 UTC on the second Saturday of the month -->
-			</cron>
-		</trigger>
+        <trigger>
+            <cron>
+                <name>auditDataRotation</name>
+                <group>auditDataRotationTrigger</group>
+                <job-name>AuditDataRetention</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 45 10 ? * 7#2</cron-expression> <!-- At 1045 UTC on the second Saturday of the month -->
+            </cron>
+        </trigger>
 
-		<trigger>
-			<cron>
-				<name>listingValidationReportCreator</name>
-				<group>listingValidationReportCreatorTrigger</group>
-				<job-name>listingValidationReportCreator</job-name>
-				<job-group>systemJobs</job-group>
-				<misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-				<cron-expression>0 0 0 * * ?</cron-expression> <!-- At 0000 UTC every day -->
-			</cron>
-		</trigger>
-	</schedule>
+        <trigger>
+            <cron>
+                <name>listingValidationReportCreator</name>
+                <group>listingValidationReportCreatorTrigger</group>
+                <job-name>listingValidationReportCreator</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 0 0 * * ?</cron-expression> <!-- At 0000 UTC every day -->
+            </cron>
+        </trigger>
+    </schedule>
 </job-scheduling-data>
