@@ -61,7 +61,6 @@ public class ListingValidatorEmailJob  implements Job {
     private String getReportDateAsString(List<ListingValidationReport> rows) {
         if (rows.size() > 0) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
-            //sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
             return sdf.format(rows.get(0).getReportDate());
         } else {
             return "UNKNOWN";
