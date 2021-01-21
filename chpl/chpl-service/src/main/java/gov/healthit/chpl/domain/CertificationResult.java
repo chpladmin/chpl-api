@@ -168,7 +168,6 @@ public class CertificationResult implements Serializable {
      * This variable indicates if any additional software is relied upon by the Health IT Module to demonstrate its
      * compliance with a certification criterion or criteria. It is applicable for 2014 and 2015 Edition.
      */
-    @SuppressWarnings("checkstyle:linelength")
     @XmlElementWrapper(name = "additionalSoftwareList", nillable = true, required = false)
     @XmlElement(name = "additionalSoftware")
     private List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
