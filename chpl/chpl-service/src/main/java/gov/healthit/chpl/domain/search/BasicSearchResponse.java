@@ -5,13 +5,16 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
 public class BasicSearchResponse implements Serializable {
     private static final long serialVersionUID = 2569559170265522799L;
 
     private List<CertifiedProductFlatSearchResult> results;
-
-    public BasicSearchResponse() {
-    }
+    private boolean directReviewsAvailable;
 
     @JsonView({
             SearchViews.Default.class

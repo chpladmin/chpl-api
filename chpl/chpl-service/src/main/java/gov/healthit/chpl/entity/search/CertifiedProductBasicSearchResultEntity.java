@@ -87,13 +87,13 @@ public class CertifiedProductBasicSearchResultEntity {
     private Long closedSurveillanceCount;
 
     @Column(name = "open_nonconformity_count")
-    private Long openNonconformityCount;
+    private Long openSurveillanceNonconformityCount;
 
     @Column(name = "closed_nonconformity_count")
-    private Long closedNonconformityCount;
+    private Long closedSurveillanceNonconformityCount;
 
     @Column(name = "surv_dates")
-    private String survDates;
+    private String surveillanceDates;
 
     @Column(name = "meaningful_use_users")
     private Long meaningfulUseUserCount;

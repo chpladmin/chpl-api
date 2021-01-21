@@ -129,9 +129,6 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
     }
 
     public Collection<CertifiedProductBasicSearchResult> search(final SearchRequest searchRequest) {
-        //        List<CertifiedProductBasicSearchResult> results =
-        //                new ArrayList<CertifiedProductBasicSearchResult>();
-
         //this is always the beginning of the query
         String sql = "SELECT row_number() OVER() as \"unique_id\", certified_product_search_result.* "
                 + "FROM "
@@ -172,7 +169,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         return listingResultsMap.values();
     }
 
-    private String createFilterQuery(final SearchRequest searchRequest) {
+    private String createFilterQuery(SearchRequest searchRequest) {
         String sql = "(SELECT DISTINCT "
                 + "cp.certified_product_id, "
                 //all fields that can be ordered by need to go here
@@ -586,8 +583,8 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         listing.setProduct(queryResult.getProduct());
         listing.setDeveloper(queryResult.getDeveloper());
         listing.setSurveillanceCount(queryResult.getCountSurveillance().longValue());
-        listing.setOpenNonconformityCount(queryResult.getCountOpenNonconformities().longValue());
-        listing.setClosedNonconformityCount(queryResult.getCountClosedNonconformities().longValue());
+        listing.setOpenSurveillanceNonconformityCount(queryResult.getCountOpenSurveillanceNonconformities().longValue());
+        listing.setClosedSurveillanceNonconformityCount(queryResult.getCountClosedSurveillanceNonconformities().longValue());
 
         if (queryResult.getCertificationDate() != null) {
             listing.setCertificationDate(queryResult.getCertificationDate().getTime());
@@ -639,9 +636,10 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
             result.setSurveillanceCount(dbResult.getSurveillanceCount());
             result.setOpenSurveillanceCount(dbResult.getOpenSurveillanceCount());
             result.setClosedSurveillanceCount(dbResult.getClosedSurveillanceCount());
-            result.setOpenNonconformityCount(dbResult.getOpenNonconformityCount());
-            result.setClosedNonconformityCount(dbResult.getClosedNonconformityCount());
-            result.setSurveillanceDates(dbResult.getSurvDates());
+            result.setOpenSurveillanceNonconformityCount(dbResult.getOpenSurveillanceNonconformityCount());
+            result.setClosedSurveillanceNonconformityCount(dbResult.getClosedSurveillanceNonconformityCount());
+            result.setSurveillanceDates(dbResult.getSurveillanceDates());
+            //TODO: set direct review values here from cache
             result.setCriteriaMet(dbResult.getCerts());
             result.setCqmsMet(dbResult.getCqms());
             result.setPreviousDevelopers(dbResult.getPreviousDevelopers());

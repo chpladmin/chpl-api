@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.exception.JiraRequestFailedException;
 import gov.healthit.chpl.service.DirectReviewService;
 
 @DisallowConcurrentExecution
@@ -32,8 +31,6 @@ public class DirectReviewCacheRefreshJob extends DownloadableResourceCreatorJob 
         LOGGER.info("********* Starting the Direct Review Cache Refresh job. *********");
         try {
             directReviewService.populateDirectReviewsCache();
-        } catch (JiraRequestFailedException ex) {
-            LOGGER.error("Request to Jira to populate all direct reviews failed.", ex);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         } finally {

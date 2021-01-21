@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -15,12 +16,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import gov.healthit.chpl.DirectReviewDeserializingObjectMapper;
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.caching.HttpStatusAwareCache;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.exception.JiraRequestFailedException;
 import lombok.extern.log4j.Log4j2;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
 @Component("directReviewService")
@@ -51,16 +54,26 @@ public class DirectReviewService {
         this.mapper = mapper;
     }
 
-    public void populateDirectReviewsCache() throws JiraRequestFailedException {
+    public void populateDirectReviewsCache() {
         LOGGER.info("Fetching all direct review data.");
         //Could this response ever be too big? Maybe we would just do it per developer at that point?
-        String directReviewsJson = fetchDirectReviews();
-        List<DirectReview> allDirectReviews = convertDirectReviewsFromJira(directReviewsJson);
-        for (DirectReview dr : allDirectReviews) {
-            String nonConformitiesJson = fetchNonConformities(dr.getJiraKey());
-            List<DirectReviewNonConformity> ncs = convertNonConformitiesFromJira(nonConformitiesJson);
-            if (ncs != null && ncs.size() > 0) {
-                dr.getNonConformities().addAll(ncs);
+        List<DirectReview> allDirectReviews = new ArrayList<DirectReview>();
+        try {
+            String directReviewsJson = fetchDirectReviews();
+            allDirectReviews = convertDirectReviewsFromJira(directReviewsJson);
+            for (DirectReview dr : allDirectReviews) {
+                String nonConformitiesJson = fetchNonConformities(dr.getJiraKey());
+                List<DirectReviewNonConformity> ncs = convertNonConformitiesFromJira(nonConformitiesJson);
+                if (ncs != null && ncs.size() > 0) {
+                    dr.getNonConformities().addAll(ncs);
+                }
+            }
+        } catch (JiraRequestFailedException ex) {
+            CacheManager manager = CacheManager.getInstance();
+            Ehcache drCache = manager.getEhcache(CacheNames.DIRECT_REVIEWS);
+            if (drCache instanceof HttpStatusAwareCache) {
+                HttpStatusAwareCache drStatusAwareCache = (HttpStatusAwareCache) drCache;
+                drStatusAwareCache.setHttpStatus(ex.getStatusCode());
             }
         }
 
@@ -115,7 +128,8 @@ public class DirectReviewService {
             response = jiraAuthenticatedRestTemplate.getForEntity(url, String.class);
             LOGGER.debug("Response: " + response.getBody());
         } catch (Exception ex) {
-            throw new JiraRequestFailedException(ex.getMessage());
+            HttpStatus statusCode =  (response != null ? response.getStatusCode() : null);
+            throw new JiraRequestFailedException(ex.getMessage(), ex, statusCode);
         }
         return response == null ? "" : response.getBody();
     }
@@ -128,7 +142,8 @@ public class DirectReviewService {
             response = jiraAuthenticatedRestTemplate.getForEntity(url, String.class);
             LOGGER.debug("Response: " + response.getBody());
         } catch (Exception ex) {
-            throw new JiraRequestFailedException(ex.getMessage());
+            HttpStatus statusCode =  (response != null ? response.getStatusCode() : null);
+            throw new JiraRequestFailedException(ex.getMessage(), ex, statusCode);
         }
         return response == null ? "" : response.getBody();
     }
@@ -141,7 +156,8 @@ public class DirectReviewService {
             response = jiraAuthenticatedRestTemplate.getForEntity(url, String.class);
             LOGGER.debug("Response: " + response.getBody());
         } catch (Exception ex) {
-            throw new JiraRequestFailedException(ex.getMessage());
+            HttpStatus statusCode =  (response != null ? response.getStatusCode() : null);
+            throw new JiraRequestFailedException(ex.getMessage(), ex, statusCode);
         }
         return response.getBody();
     }

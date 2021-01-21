@@ -22,8 +22,8 @@ import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.DeveloperManager;
 import lombok.extern.log4j.Log4j2;
-import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
 @Log4j2
@@ -42,7 +42,7 @@ public class DirectReviewCsvPresenter {
 
     public void presentAsFile(File file) {
         CacheManager manager = CacheManager.getInstance();
-        Cache drCache = manager.getCache(CacheNames.DIRECT_REVIEWS);
+        Ehcache drCache = manager.getEhcache(CacheNames.DIRECT_REVIEWS);
 
         try (FileWriter writer = new FileWriter(file);
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
