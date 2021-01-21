@@ -94,6 +94,26 @@ const searchviewControllerTests = {
 	        },
 	    },
 	};
+	
+const jobControllerTests = {
+	    ...commonOptions,
+	    collection: collection_path + '/job-controller.postman_collection.json',
+	    reporter: {
+	        junit: {
+	            export: reports_path + '/job-controller-tests.xml',
+	        },
+	    },
+	};
+	
+const schedulerControllerTests = {
+	    ...commonOptions,
+	    collection: collection_path + '/scheduler-controller.postman_collection.json',
+	    reporter: {
+	        junit: {
+	            export: reports_path + '/scheduler-controller-tests.xml',
+	        },
+	    },
+	};		
 
 const jobs = [
     cb => newman.run(acbControllerTests,cb),
@@ -104,6 +124,8 @@ const jobs = [
     cb => newman.run(statusControllerTests,cb),
     cb => newman.run(testinglabControllerTests,cb),
     cb => newman.run(searchviewControllerTests,cb),
+    cb => newman.run(jobControllerTests,cb),
+    cb => newman.run(schedulerControllerTests,cb),
 ];
 
 const responseCallback = (err) => {
