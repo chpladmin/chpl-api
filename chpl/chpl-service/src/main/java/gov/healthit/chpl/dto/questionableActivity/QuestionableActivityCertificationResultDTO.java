@@ -27,6 +27,7 @@ public class QuestionableActivityCertificationResultDTO extends QuestionableActi
         }
     }
 
+    @Override
     public Class<?> getActivityObjectClass() {
         return CertificationResultDetailsDTO.class;
     }
