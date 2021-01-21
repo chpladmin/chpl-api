@@ -2,7 +2,6 @@ package gov.healthit.chpl.scheduler.job.summarystatistics;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -37,6 +36,7 @@ import gov.healthit.chpl.scheduler.job.summarystatistics.email.ListingStatistics
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.NonConformityStatisticsSectionCreator;
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.ProductStatisticsSectionCreator;
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.SurveillanceStatisticsSectionCreator;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.EmailBuilder;
 
 public class SummaryStatisticsEmailJob extends QuartzJob {
@@ -139,8 +139,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
     private String getReportDateAsString(Date date) {
         if (date != null) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
-            return sdf.format(date);
+             return DateUtil.formatInEasternTime(date);
         } else {
             return "UNKNOWN";
         }

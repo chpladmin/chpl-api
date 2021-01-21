@@ -1,7 +1,6 @@
 package gov.healthit.chpl.scheduler.job.listingvalidation;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.EmailBuilder;
 import lombok.extern.log4j.Log4j2;
 
@@ -34,7 +34,6 @@ public class ListingValidatorEmailJob  implements Job {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Listing Validation Report Email job for " + context.getMergedJobDataMap().getString("email") + " *********");
         try {
-
             sendEmail(context, getReportData());
         } catch (Exception e) {
             LOGGER.catching(e);
@@ -60,8 +59,7 @@ public class ListingValidatorEmailJob  implements Job {
 
     private String getReportDateAsString(List<ListingValidationReport> rows) {
         if (rows.size() > 0) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
-            return sdf.format(rows.get(0).getReportDate());
+            return DateUtil.formatInEasternTime(rows.get(0).getReportDate());
         } else {
             return "UNKNOWN";
         }

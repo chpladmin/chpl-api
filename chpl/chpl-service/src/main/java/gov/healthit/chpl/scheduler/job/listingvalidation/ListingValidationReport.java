@@ -1,5 +1,6 @@
 package gov.healthit.chpl.scheduler.job.listingvalidation;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 import lombok.AllArgsConstructor;
@@ -15,7 +16,7 @@ public class ListingValidationReport {
     private String productName;
     private String certificationStatusName;
     private String errorMessage;
-    private Date reportDate;
+    private ZonedDateTime reportDate;
     private Date creationDate;
     private Date lastModifiedDate;
     private Long lastModifiedUser;

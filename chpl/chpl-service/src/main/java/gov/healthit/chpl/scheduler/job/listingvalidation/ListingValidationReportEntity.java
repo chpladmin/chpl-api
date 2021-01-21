@@ -1,5 +1,6 @@
 package gov.healthit.chpl.scheduler.job.listingvalidation;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -47,7 +48,7 @@ public class ListingValidationReportEntity {
 
     @Basic(optional = false)
     @Column(name = "report_date", nullable = false)
-    private Date reportDate;
+    private ZonedDateTime reportDate;
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)

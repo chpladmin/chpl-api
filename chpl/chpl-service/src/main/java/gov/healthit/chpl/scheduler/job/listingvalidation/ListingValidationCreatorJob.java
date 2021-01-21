@@ -1,5 +1,7 @@
 package gov.healthit.chpl.scheduler.job.listingvalidation;
 
+import java.time.Clock;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
@@ -142,7 +144,7 @@ public class ListingValidationCreatorJob implements Job {
                     .productName(listing.getProduct().getName())
                     .certificationStatusName(listing.getCurrentStatus().getStatus().getName())
                     .errorMessage(error)
-                    .reportDate(new Date())
+                    .reportDate(ZonedDateTime.now(Clock.systemUTC()))
                     .lastModifiedUser(User.SYSTEM_USER_ID)
                     .build()))
                 .collect(Collectors.toList());
