@@ -320,6 +320,16 @@ public class QuestionableActivityManager implements EnvironmentAware {
                         activityUser, QuestionableActivityTriggerConcept.GAP_EDITED, activityReason);
             }
         }
+        if (isSvapAllowedForCriteria(origCertResult)) {
+            certResultQuestionableActivityProvider.checkReplacedSvapAdded(origCertResult, newCertResult).stream()
+                    .forEach(dto -> createCertificationActivity(dto, origCertResult.getId(), activityDate, activityUser,
+                            QuestionableActivityTriggerConcept.REPLACED_SVAP_ADDED, activityReason));
+        }
+
+    }
+
+    private boolean isSvapAllowedForCriteria(CertificationResult certResult) {
+        return certResult.getAllowedSvaps() != null && certResult.getAllowedSvaps().size() > 0;
     }
 
     private void createListingActivity(QuestionableActivityListingDTO activity, Long listingId, Date activityDate,
