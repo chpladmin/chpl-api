@@ -173,6 +173,7 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.2.6</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -221,11 +222,6 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-oxm</artifactId>
             <version>4.2.2.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>com.thoughtworks.xstream</groupId>
-            <artifactId>xstream</artifactId>
-            <version>1.4.10</version>
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
@@ -373,6 +369,20 @@
             <artifactId>lombok</artifactId>
             <version>1.18.10</version>
             <scope>provided</scope>
+        </dependency>
+        
+        <!-- Needed to get a PGConnection from the connection pool (AuditDataRetentionService) -->
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-dbcp</artifactId>
+            <version>8.5.59</version>
+        </dependency>
+                
+        <!-- Enhanced stream functions -->
+        <dependency>
+            <groupId>one.util</groupId> 
+            <artifactId>streamex</artifactId> 
+            <version>0.7.3</version> 
         </dependency>
     </dependencies>
 

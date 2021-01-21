@@ -1,5 +1,38 @@
 # Release Notes
 
+## Version 26.2.0
+_11 January 2021_
+
+### Features
+* Add scheduled job that allows audit data to be archived
+
+### Bug Fixes
+* Able to add and remove nonconformity in a single action
+* Add null check for surveillance requirement comparison
+
+---
+
+## Version 26.1.0
+_28 December 2020_
+
+### Features
+* Update statistics history to use certification status history table
+
+---
+
+## Version 26.0.0
+_14 December 2020_
+
+### Breaking Change
+* Move G1/G2 macra measures to measures at listing level
+
+### Features
+* Generate direct review download file and manage DR cache
+* Enable ROLE_ONC_STAFF user type
+* Make "username" not required for new users
+
+---
+
 ## Version 25.17.0
 _30 November 2020_
 
