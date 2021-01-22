@@ -161,6 +161,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CuresUpdateService;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -214,6 +215,7 @@ public class CertifiedProductManager extends SecuredManager {
     private ActivityManager activityManager;
     private ListingValidatorFactory validatorFactory;
     private CuresUpdateService curesUpdateService;
+    private CertificationCriterionService criteriaService;
 
     private static final int PROD_CODE_LOC = 4;
     private static final int VER_CODE_LOC = 5;
@@ -250,7 +252,8 @@ public class CertifiedProductManager extends SecuredManager {
             CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
             ActivityManager activityManager, ListingValidatorFactory validatorFactory,
-            CuresUpdateService curesUpdateService) {
+            CuresUpdateService curesUpdateService,
+            CertificationCriterionService criteriaService) {
 
         this.msgUtil = msgUtil;
         this.cpDao = cpDao;
@@ -294,6 +297,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.activityManager = activityManager;
         this.validatorFactory = validatorFactory;
         this.curesUpdateService = curesUpdateService;
+        this.criteriaService = criteriaService;
     }
 
     @Transactional(readOnly = true)
@@ -1583,6 +1587,10 @@ public class CertifiedProductManager extends SecuredManager {
 
         // figure out which measures to add
         if (updatedMeasures != null && updatedMeasures.size() > 0) {
+            for (ListingMeasure updatedItem : updatedMeasures) {
+                associateMeasureWithCuresAndOriginalCriteria(updatedItem);
+            }
+
             if (existingMeasures == null || existingMeasures.size() == 0) {
                 // existing listing has none, add all from the update
                 for (ListingMeasure updatedItem : updatedMeasures) {
@@ -1631,12 +1639,6 @@ public class CertifiedProductManager extends SecuredManager {
         numChanges = measuresToAdd.size() + idsToRemove.size();
 
         for (ListingMeasure measure : measuresToAdd) {
-            for (CertificationCriterion associatedCriterion : measure.getAssociatedCriteria()) {
-                List<CertificationCriterionDTO> allCriterionWithNumber = certCriterionDao.getAllByNumber(associatedCriterion.getNumber());
-                for (CertificationCriterionDTO criterion : allCriterionWithNumber) {
-                    measure.getAssociatedCriteria().add(new CertificationCriterion(criterion));
-                }
-            }
             cpMeasureDao.createCertifiedProductMeasureMapping(listingId, measure);
         }
 
@@ -1663,6 +1665,14 @@ public class CertifiedProductManager extends SecuredManager {
             cpMeasureDao.deleteCertifiedProductMeasure(idToRemove);
         }
         return numChanges;
+    }
+
+    private void associateMeasureWithCuresAndOriginalCriteria(ListingMeasure measure) {
+        for (CertificationCriterion associatedCriterion : measure.getAssociatedCriteria()) {
+            List<CertificationCriterion> allCriteriaWithNumber = criteriaService.getByNumber(associatedCriterion.getNumber());
+            allCriteriaWithNumber.stream()
+                .forEach(criterion -> measure.getAssociatedCriteria().add(criterion));
+        }
     }
 
     private int updateTargetedUsers(Long listingId,
