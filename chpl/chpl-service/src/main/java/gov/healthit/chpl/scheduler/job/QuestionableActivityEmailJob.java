@@ -496,8 +496,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         currRow.set(ACTIVITY_REASON_COL, activity.getReason());
     }
 
-    private void putCertResultActivityInRow(final QuestionableActivityCertificationResultDTO activity,
-            final List<String> currRow) {
+    private void putCertResultActivityInRow(QuestionableActivityCertificationResultDTO activity, List<String> currRow) {
         // fill in info about the listing that will be the same for every
         // activity found in this date bucket
         currRow.set(ACB_COL, activity.getListing().getCertificationBodyName());
@@ -506,8 +505,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         currRow.set(VERSION_COL, activity.getListing().getVersion().getVersion());
         currRow.set(LISTING_COL, activity.getListing().getChplProductNumber());
         currRow.set(STATUS_COL, activity.getListing().getCertificationStatusName());
-        currRow.set(LINK_COL, env.getProperty("chplUrlBegin") + env.getProperty("listingReportsUrlPart") + "/"
-                + activity.getListing().getId());
+        currRow.set(LINK_COL, env.getProperty("chplUrlBegin") + env.getProperty("listingReportsUrlPart") + "/" + activity.getListing().getId());
         currRow.set(ACTIVITY_USER_COL, activity.getUser().getSubjectName());
 
         String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
@@ -515,42 +513,20 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             currActivityRowValue += "; ";
         } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G1_SUCCESS_EDITED.getName())
                 || activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G2_SUCCESS_EDITED.getName())) {
-            if (!StringUtils.isEmpty(currActivityRowValue)) {
-                currActivityRowValue += "; ";
-            }
-            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": from " + activity.getBefore()
-            + " to " + activity.getAfter();
-            currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
+            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": from " + activity.getBefore() + " to " + activity.getAfter();
         } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G1_MEASURE_ADDED.getName())
                 || activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G2_MEASURE_ADDED.getName())) {
-            if (!StringUtils.isEmpty(currActivityRowValue)) {
-                currActivityRowValue += "; ";
-            }
             currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": " + activity.getAfter();
-            currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
         } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G1_MEASURE_REMOVED.getName())
                 || activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G2_MEASURE_REMOVED.getName())) {
-            if (!StringUtils.isEmpty(currActivityRowValue)) {
-                currActivityRowValue += "; ";
-            }
             currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": " + activity.getBefore();
-            currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
         } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.GAP_EDITED.getName())) {
-            if (!StringUtils.isEmpty(currActivityRowValue)) {
-                currActivityRowValue += "; ";
-            }
-            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + " from " + activity.getBefore()
-            + " to " + activity.getAfter();
-            currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-        }
-
-        if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G1_SUCCESS_EDITED.getName())
+            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + " from " + activity.getBefore() + " to " + activity.getAfter();
+        } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G1_SUCCESS_EDITED.getName())
                 || activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G2_SUCCESS_EDITED.getName())
                 || activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.GAP_EDITED.getName())) {
-
             currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": from " + activity.getBefore() + " to " + activity.getAfter();
         } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.REPLACED_SVAP_ADDED.getName())) {
-
             currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": added " + activity.getAfter();
         }
         currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
