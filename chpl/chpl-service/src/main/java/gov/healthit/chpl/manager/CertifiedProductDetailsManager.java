@@ -9,6 +9,8 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,6 +86,9 @@ import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.impl.CertifiedProductDetailsManagerAsync;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.DirectReviewService;
+import gov.healthit.chpl.svap.dao.SvapDAO;
+import gov.healthit.chpl.svap.domain.Svap;
+import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
@@ -119,6 +124,8 @@ public class CertifiedProductDetailsManager {
     private ResourcePermissions resourcePermissions;
     private DimensionalDataManager dimensionalDataManager;
     private DirectReviewService drService;
+    private SvapDAO svapDao;
+    private List<SvapCriteriaMap> svapCriteriaMap;
 
     @SuppressWarnings({"checkstyle:parameternumber"})
     @Autowired
@@ -145,7 +152,8 @@ public class CertifiedProductDetailsManager {
             ChplProductNumberUtil chplProductNumberUtil,
             ResourcePermissions resourcePermissions,
             DimensionalDataManager dimensionalDataManager,
-            DirectReviewService drService) {
+            DirectReviewService drService,
+            SvapDAO svapDao) {
 
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
         this.cqmResultDetailsDAO = cqmResultDetailsDAO;
@@ -170,6 +178,12 @@ public class CertifiedProductDetailsManager {
         this.resourcePermissions = resourcePermissions;
         this.dimensionalDataManager = dimensionalDataManager;
         this.drService = drService;
+        this.svapDao = svapDao;
+    }
+
+    @PostConstruct
+    public void init() throws EntityRetrievalException {
+        svapCriteriaMap = svapDao.getAllSvapCriteriaMap();
     }
 
     @Transactional
@@ -675,7 +689,24 @@ public class CertifiedProductDetailsManager {
         }
 
         result.setAllowedTestFunctionalities(getAvailableTestFunctionalities(result, searchDetails));
+
+        // set allowed svap for criteria
+        result.setAllowedSvaps(getAvailableSvapForCriteria(result));
+
+        if (result.getAllowedSvaps().size() > 0) {
+            result.setSvaps(certResultManager.getSvapsForCertificationResult(result.getId()));
+        } else {
+            result.setSvaps(null);
+        }
+
         return result;
+    }
+
+    private List<Svap> getAvailableSvapForCriteria(CertificationResult result) {
+        return svapCriteriaMap.stream()
+                .filter(scm -> scm.getCriterion().getId().equals(result.getCriterion().getId()))
+                .map(scm -> scm.getSvap())
+                .collect(Collectors.toList());
     }
 
     private List<TestFunctionality> getAvailableTestFunctionalities(CertificationResult cr, CertifiedProductSearchDetails cp) {
