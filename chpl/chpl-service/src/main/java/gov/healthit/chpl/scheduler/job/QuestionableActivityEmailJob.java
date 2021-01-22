@@ -535,25 +535,6 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             }
             currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": " + activity.getBefore();
             currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-        //} else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G2_SUCCESS_EDITED.getName())) {
-        //    if (!StringUtils.isEmpty(currActivityRowValue)) {
-        //        currActivityRowValue += "; ";
-        //    }
-        //    currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": from " + activity.getBefore()
-        //    + " to " + activity.getAfter();
-        //    currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-        //} else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G2_MEASURE_ADDED.getName())) {
-        //    if (!StringUtils.isEmpty(currActivityRowValue)) {
-        //        currActivityRowValue += "; ";
-        //    }
-        //    currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": " + activity.getAfter();
-        //    currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-        //} else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G2_MEASURE_REMOVED.getName())) {
-        //    if (!StringUtils.isEmpty(currActivityRowValue)) {
-        //        currActivityRowValue += "; ";
-        //    }
-        //    currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": " + activity.getBefore();
-        //    currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
         } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.GAP_EDITED.getName())) {
             if (!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; ";
