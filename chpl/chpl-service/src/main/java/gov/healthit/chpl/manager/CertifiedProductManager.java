@@ -1085,6 +1085,18 @@ public class CertifiedProductManager extends SecuredManager {
                 }
             }
         }
+
+        listing.getMeasures().stream()
+            .forEach(measure -> associateMeasureWithCuresAndOriginalCriteria(measure));
+    }
+
+    private void associateMeasureWithCuresAndOriginalCriteria(ListingMeasure measure) {
+        List<CertificationCriterion> expectedAssociatedCriteriaForMeasure = new ArrayList<CertificationCriterion>();
+        for (CertificationCriterion associatedCriterion : measure.getAssociatedCriteria()) {
+            List<CertificationCriterion> allCriteriaWithNumber = criteriaService.getByNumber(associatedCriterion.getNumber());
+            expectedAssociatedCriteriaForMeasure.addAll(allCriteriaWithNumber);
+        }
+        measure.getAssociatedCriteria().addAll(expectedAssociatedCriteriaForMeasure);
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
@@ -1587,10 +1599,6 @@ public class CertifiedProductManager extends SecuredManager {
 
         // figure out which measures to add
         if (updatedMeasures != null && updatedMeasures.size() > 0) {
-            for (ListingMeasure updatedItem : updatedMeasures) {
-                associateMeasureWithCuresAndOriginalCriteria(updatedItem);
-            }
-
             if (existingMeasures == null || existingMeasures.size() == 0) {
                 // existing listing has none, add all from the update
                 for (ListingMeasure updatedItem : updatedMeasures) {
@@ -1649,14 +1657,7 @@ public class CertifiedProductManager extends SecuredManager {
             }
 
             if (hasChanged) {
-                ListingMeasure measure = toUpdate.getUpdated();
-                for (CertificationCriterion associatedCriterion : measure.getAssociatedCriteria()) {
-                    List<CertificationCriterionDTO> allCriterionWithNumber = certCriterionDao.getAllByNumber(associatedCriterion.getNumber());
-                    for (CertificationCriterionDTO criterion : allCriterionWithNumber) {
-                        measure.getAssociatedCriteria().add(new CertificationCriterion(criterion));
-                    }
-                }
-                cpMeasureDao.updateCertifiedProductMeasureMapping(measure);
+                cpMeasureDao.updateCertifiedProductMeasureMapping(toUpdate.getUpdated());
                 numChanges++;
             }
         }
@@ -1665,14 +1666,6 @@ public class CertifiedProductManager extends SecuredManager {
             cpMeasureDao.deleteCertifiedProductMeasure(idToRemove);
         }
         return numChanges;
-    }
-
-    private void associateMeasureWithCuresAndOriginalCriteria(ListingMeasure measure) {
-        for (CertificationCriterion associatedCriterion : measure.getAssociatedCriteria()) {
-            List<CertificationCriterion> allCriteriaWithNumber = criteriaService.getByNumber(associatedCriterion.getNumber());
-            allCriteriaWithNumber.stream()
-                .forEach(criterion -> measure.getAssociatedCriteria().add(criterion));
-        }
     }
 
     private int updateTargetedUsers(Long listingId,
