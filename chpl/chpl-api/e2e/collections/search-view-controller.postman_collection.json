@@ -1,0 +1,204 @@
+{
+	"info": {
+		"name": "search-view-controller",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET /data/svap- 200 response for valid API Key header",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Valid api key header should return 200 status for SVAP\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    });\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/data/svap",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"data",
+						"svap"
+					]
+				},
+				"description": "Valid api key header should return 200 status for SVAP"
+			},
+			"response": []
+		},
+		{
+			"name": "GET/data/svap - test for correct schema",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const schema = {\r",
+							"  \"results\": [\r",
+							"    {\r",
+							"      \"criterion\": {\r",
+							"        \"certificationEdition\": \"string\",\r",
+							"        \"certificationEditionId\": 0,\r",
+							"        \"description\": \"string\",\r",
+							"        \"id\": 0,\r",
+							"        \"number\": \"string\",\r",
+							"        \"removed\": false,\r",
+							"        \"title\": \"string\"\r",
+							"      },\r",
+							"      \"id\": 0,\r",
+							"      \"svap\": {\r",
+							"        \"approvedStandardVersion\": \"string\",\r",
+							"        \"regulatoryTextCitation\": \"string\",\r",
+							"        \"svapId\": 0\r",
+							"      }\r",
+							"    }\r",
+							"  ]\r",
+							"};\r",
+							"pm.test(\"Validate that svap end point has correct schema\", () => {\r",
+							"            pm.response.to.have.jsonSchema(schema);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/data/svap",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"data",
+						"svap"
+					]
+				},
+				"description": "Validate that svap response has correct schema"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /data/svap - Invalid API Key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Invalid api key header should return 401 status for SVAP\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"    });\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "atest123cg",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/data/svap",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"data",
+						"svap"
+					]
+				},
+				"description": "Invalid api key header should return 401 status for SVAP"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /data/svap - without API Key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Requests without API Key should return 400 status for SVAP\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"    });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/data/svap",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"data",
+						"svap"
+					]
+				},
+				"description": "Requests without API Key should return 400 status for SVAP"
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
