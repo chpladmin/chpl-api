@@ -15,14 +15,13 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.core.env.Environment;
 
-import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.service.DirectReviewService;
 import lombok.extern.log4j.Log4j2;
-import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
@@ -32,17 +31,19 @@ public class DirectReviewCsvPresenter {
     private DateTimeFormatter dateFormatter;
     private DateTimeFormatter dateTimeFormatter;
     private DeveloperManager developerManager;
+    private DirectReviewService drService;
 
-    public DirectReviewCsvPresenter(Environment env, DeveloperManager developerManager) {
+    public DirectReviewCsvPresenter(Environment env, DeveloperManager developerManager,
+            DirectReviewService drService) {
         dateFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd");
         dateTimeFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm");
         this.env = env;
         this.developerManager = developerManager;
+        this.drService = drService;
     }
 
     public void presentAsFile(File file) {
-        CacheManager manager = CacheManager.getInstance();
-        Ehcache drCache = manager.getEhcache(CacheNames.DIRECT_REVIEWS);
+        Ehcache drCache = drService.getDirectReviewsCache();
 
         try (FileWriter writer = new FileWriter(file);
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {

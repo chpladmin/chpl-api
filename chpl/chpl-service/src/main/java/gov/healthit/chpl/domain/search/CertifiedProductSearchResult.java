@@ -99,17 +99,20 @@ public class CertifiedProductSearchResult implements Serializable {
     @JsonView({
         SearchViews.Default.class
     })
-    private Long directReviewCount;
+    @Builder.Default
+    private Long directReviewCount = 0L;
 
     @JsonView({
             SearchViews.Default.class
     })
-    private Long openDirectReviewNonconformityCount;
+    @Builder.Default
+    private Long openDirectReviewNonconformityCount = 0L;
 
     @JsonView({
             SearchViews.Default.class
     })
-    private Long closedDirectReviewNonconformityCount;
+    @Builder.Default
+    private Long closedDirectReviewNonconformityCount = 0L;
 
     private Long openSurveillanceCount;
     private Long closedSurveillanceCount;

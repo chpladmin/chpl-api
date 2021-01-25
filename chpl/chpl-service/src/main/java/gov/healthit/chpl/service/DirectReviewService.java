@@ -21,7 +21,6 @@ import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.exception.JiraRequestFailedException;
 import lombok.extern.log4j.Log4j2;
-import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
@@ -54,10 +53,15 @@ public class DirectReviewService {
         this.mapper = mapper;
     }
 
-    public boolean getDirectReviewsAvailable() {
-        boolean directReviewsAvailable = false;
+    public Ehcache getDirectReviewsCache() {
         CacheManager manager = CacheManager.getInstance();
         Ehcache drCache = manager.getEhcache(CacheNames.DIRECT_REVIEWS);
+        return drCache;
+    }
+
+    public boolean getDirectReviewsAvailable() {
+        boolean directReviewsAvailable = false;
+        Ehcache drCache = getDirectReviewsCache();
         if (drCache instanceof HttpStatusAwareCache) {
             HttpStatusAwareCache drStatusAwareCache = (HttpStatusAwareCache) drCache;
             directReviewsAvailable = drStatusAwareCache.getHttpStatus() != null
@@ -67,8 +71,7 @@ public class DirectReviewService {
     }
 
     private void setDirectReviewsAvailable(HttpStatus httpStatus) {
-        CacheManager manager = CacheManager.getInstance();
-        Ehcache drCache = manager.getEhcache(CacheNames.DIRECT_REVIEWS);
+        Ehcache drCache = getDirectReviewsCache();
         if (drCache instanceof HttpStatusAwareCache) {
             HttpStatusAwareCache drStatusAwareCache = (HttpStatusAwareCache) drCache;
             drStatusAwareCache.setHttpStatus(httpStatus);
@@ -95,8 +98,7 @@ public class DirectReviewService {
         }
 
         if (allDirectReviews != null && allDirectReviews.size() > 0) {
-            CacheManager manager = CacheManager.getInstance();
-            Cache drCache = manager.getCache(CacheNames.DIRECT_REVIEWS);
+            Ehcache drCache = getDirectReviewsCache();
             LOGGER.info("Clearing the Direct Review cache.");
             drCache.removeAll();
             //insert each direct review into the right place in our cache

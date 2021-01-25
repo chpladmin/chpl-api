@@ -13,12 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.HttpStatusAwareCache;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.scheduler.presenter.DirectReviewCsvPresenter;
 import gov.healthit.chpl.service.DirectReviewService;
-import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 
 @DisallowConcurrentExecution
@@ -43,8 +41,7 @@ public class DirectReviewDownloadableResourceCreatorJob extends DownloadableReso
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Direct Review Downloadable Resource Creator job. *********");
         try {
-            CacheManager manager = CacheManager.getInstance();
-            Ehcache drCache = manager.getEhcache(CacheNames.DIRECT_REVIEWS);
+            Ehcache drCache = directReviewService.getDirectReviewsCache();
 
             //re-populate the DR cache
             try {
@@ -78,7 +75,7 @@ public class DirectReviewDownloadableResourceCreatorJob extends DownloadableReso
                     + getFilenameTimestampFormat().format(new Date())
                     + ".csv";
             File csvFile = getFile(csvFilename);
-            DirectReviewCsvPresenter csvPresenter = new DirectReviewCsvPresenter(env, devManager);
+            DirectReviewCsvPresenter csvPresenter = new DirectReviewCsvPresenter(env, devManager, directReviewService);
             csvPresenter.presentAsFile(csvFile);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);

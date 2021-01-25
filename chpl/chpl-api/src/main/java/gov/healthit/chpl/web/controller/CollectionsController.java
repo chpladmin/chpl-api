@@ -71,9 +71,7 @@ public class CollectionsController {
     public @ResponseBody String getAllCertifiedProducts(
             @RequestParam(value = "fields", required = false) final String delimitedFieldNames)
             throws JsonProcessingException {
-        List<CertifiedProductFlatSearchResult> cachedSearchResults = certifiedProductSearchManager.search()
-                //TODO: remove
-                .subList(0, 10);
+        List<CertifiedProductFlatSearchResult> cachedSearchResults = certifiedProductSearchManager.search();
 
         String result = "";
         if (!StringUtils.isEmpty(delimitedFieldNames)) {
