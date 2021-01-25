@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.caching.HttpStatusAwareCache;
 import lombok.extern.log4j.Log4j2;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Ehcache;
@@ -57,7 +58,12 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.CQM_CRITERION));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.CQM_CRITERION_NUMBERS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.DEVELOPER_NAMES));
-        backingManager.addDecoratedCacheIfAbsent(createDirectReviewCache(CacheNames.DIRECT_REVIEWS));
+
+        Ehcache drCache = createEternalCache(CacheNames.DIRECT_REVIEWS);
+        backingManager.addCacheIfAbsent(drCache);
+        Ehcache decoratedDrCache = createDirectReviewCache(drCache, CacheNames.DIRECT_REVIEWS);
+        backingManager.replaceCacheWithDecoratedCache(drCache, decoratedDrCache);
+
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.EDITIONS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.EDITION_NAMES));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.FIND_SURVEILLANCE_NONCONFORMITY_STATUS_TYPE));
@@ -83,13 +89,12 @@ public class ChplCacheConfig {
         return cacheManager;
     }
 
-    private Ehcache createDirectReviewCache(String name) {
-        return createCache(name, SIX_HOURS_IN_SECONDS);
+    private Ehcache createDirectReviewCache(Ehcache drCache, String name) {
+        //return createCache(name, SIX_HOURS_IN_SECONDS);
         //TODO: not sure if we need to change maxEntriesLocalDisk for this cache.
         //Setting it to 0 could cause us to run out of space IF there were tons of DRs
         //but setting to any other number might not make the cache work in the way we want to use it.
-//        Ehcache drCache = createCache(name, SIX_HOURS_IN_SECONDS);
-//        return new HttpStatusAwareCache(drCache);
+        return new HttpStatusAwareCache(drCache);
     }
 
     private Ehcache createEternalCache(String name) {

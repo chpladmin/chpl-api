@@ -59,8 +59,7 @@ public class DirectReviewDownloadableResourceCreatorJob extends DownloadableReso
 
             if (drCache instanceof HttpStatusAwareCache) {
                 HttpStatusAwareCache drStatusAwareCache = (HttpStatusAwareCache) drCache;
-                if (drStatusAwareCache.getHttpStatus() == null
-                        || !drStatusAwareCache.getHttpStatus().is2xxSuccessful()) {
+                if (!directReviewService.getDirectReviewsAvailable()) {
                     LOGGER.fatal("Direct Reviews cache status is not successful. Cache status code "
                             + "value is "
                             + (drStatusAwareCache.getHttpStatus() != null ? drStatusAwareCache.getHttpStatus().name() : " ?"));

@@ -54,6 +54,27 @@ public class DirectReviewService {
         this.mapper = mapper;
     }
 
+    public boolean getDirectReviewsAvailable() {
+        boolean directReviewsAvailable = false;
+        CacheManager manager = CacheManager.getInstance();
+        Ehcache drCache = manager.getEhcache(CacheNames.DIRECT_REVIEWS);
+        if (drCache instanceof HttpStatusAwareCache) {
+            HttpStatusAwareCache drStatusAwareCache = (HttpStatusAwareCache) drCache;
+            directReviewsAvailable = drStatusAwareCache.getHttpStatus() != null
+                    && drStatusAwareCache.getHttpStatus().is2xxSuccessful();
+        }
+        return directReviewsAvailable;
+    }
+
+    private void setDirectReviewsAvailable(HttpStatus httpStatus) {
+        CacheManager manager = CacheManager.getInstance();
+        Ehcache drCache = manager.getEhcache(CacheNames.DIRECT_REVIEWS);
+        if (drCache instanceof HttpStatusAwareCache) {
+            HttpStatusAwareCache drStatusAwareCache = (HttpStatusAwareCache) drCache;
+            drStatusAwareCache.setHttpStatus(httpStatus);
+        }
+    }
+
     public void populateDirectReviewsCache() {
         LOGGER.info("Fetching all direct review data.");
         //Could this response ever be too big? Maybe we would just do it per developer at that point?
@@ -68,13 +89,9 @@ public class DirectReviewService {
                     dr.getNonConformities().addAll(ncs);
                 }
             }
+            setDirectReviewsAvailable(HttpStatus.OK);
         } catch (JiraRequestFailedException ex) {
-            CacheManager manager = CacheManager.getInstance();
-            Ehcache drCache = manager.getEhcache(CacheNames.DIRECT_REVIEWS);
-            if (drCache instanceof HttpStatusAwareCache) {
-                HttpStatusAwareCache drStatusAwareCache = (HttpStatusAwareCache) drCache;
-                drStatusAwareCache.setHttpStatus(ex.getStatusCode());
-            }
+            setDirectReviewsAvailable(ex.getStatusCode());
         }
 
         if (allDirectReviews != null && allDirectReviews.size() > 0) {

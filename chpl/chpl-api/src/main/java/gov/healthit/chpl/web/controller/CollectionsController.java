@@ -8,8 +8,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,11 +29,13 @@ import gov.healthit.chpl.domain.search.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.search.SearchViews;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.service.DirectReviewService;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * Controller for getting collections of Listings and Developer.
@@ -44,12 +44,19 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "collections")
 @RestController
 @RequestMapping("/collections")
+@Log4j2
 public class CollectionsController {
-    private static final Logger LOGGER = LogManager.getLogger(CollectionsController.class);
-    @Autowired
     private CertifiedProductSearchManager certifiedProductSearchManager;
-    @Autowired
     private DeveloperManager developerManager;
+    private DirectReviewService drService;
+
+    @Autowired
+    public CollectionsController(CertifiedProductSearchManager certifiedProductSearchManager,
+            DeveloperManager developerManager, DirectReviewService drService) {
+        this.certifiedProductSearchManager = certifiedProductSearchManager;
+        this.developerManager = developerManager;
+        this.drService = drService;
+    }
 
     /**
      * Get basic data about all listings in the system.
@@ -64,8 +71,9 @@ public class CollectionsController {
     public @ResponseBody String getAllCertifiedProducts(
             @RequestParam(value = "fields", required = false) final String delimitedFieldNames)
             throws JsonProcessingException {
-
-        List<CertifiedProductFlatSearchResult> cachedSearchResults = certifiedProductSearchManager.search();
+        List<CertifiedProductFlatSearchResult> cachedSearchResults = certifiedProductSearchManager.search()
+                //TODO: remove
+                .subList(0, 10);
 
         String result = "";
         if (!StringUtils.isEmpty(delimitedFieldNames)) {
@@ -144,12 +152,14 @@ public class CollectionsController {
             }
             BasicSearchResponse response = new BasicSearchResponse();
             response.setResults(mutableSearchResults);
+            response.setDirectReviewsAvailable(drService.getDirectReviewsAvailable());
             result = nonNullJsonMapper.writeValueAsString(response);
         } else {
             ObjectMapper viewMapper = new ObjectMapper();
             viewMapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false);
             BasicSearchResponse response = new BasicSearchResponse();
             response.setResults(cachedSearchResults);
+            response.setDirectReviewsAvailable(drService.getDirectReviewsAvailable());
             result = viewMapper.writerWithView(SearchViews.Default.class).writeValueAsString(response);
         }
 
