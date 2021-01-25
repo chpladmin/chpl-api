@@ -18,7 +18,9 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
@@ -29,6 +31,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
     private List<CertificationCriterionDTO> applicableCriteria = new ArrayList<CertificationCriterionDTO>();
     private OutputStreamWriter writer = null;
     private CSVPrinter csvPrinter = null;
+    private FF4j ff4j;
 
     /**
      * Required to setCriteriaNames before calling this function.
@@ -71,6 +74,10 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         return logger;
     }
 
+    public void setFf4j(FF4j ff4j) {
+        this.ff4j = ff4j;
+    }
+
     protected List<String> generateHeaderValues() {
         List<String> result = new ArrayList<String>();
         result.add("Certification Edition");
@@ -98,9 +105,11 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         result.add("Product Database ID");
         result.add("Version");
         result.add("Version Database ID");
-        result.add("Real World Testing Eligibility Year");
-        result.add("Real World Testing Plans URL");
-        result.add("Real World Testing Results URL");
+        if (ff4j.check(FeatureList.RWT_ENABLED)) {
+            result.add("Real World Testing Eligibility Year");
+            result.add("Real World Testing Plans URL");
+            result.add("Real World Testing Results URL");
+        }
         result.add("Total Surveillance Activities");
         result.add("Total Nonconformities");
         result.add("Open Nonconformities");
@@ -138,9 +147,11 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         result.add(listing.getProduct().getProductId().toString());
         result.add(listing.getVersion().getVersion());
         result.add(listing.getVersion().getVersionId().toString());
-        result.add(Objects.nonNull(listing.getRwtEligibilityYear()) ? listing.getRwtEligibilityYear().toString() : "");
-        result.add(listing.getRwtPlansUrl());
-        result.add(listing.getRwtResultsUrl());
+        if (ff4j.check(FeatureList.RWT_ENABLED)) {
+            result.add(Objects.nonNull(listing.getRwtEligibilityYear()) ? listing.getRwtEligibilityYear().toString() : "");
+            result.add(listing.getRwtPlansUrl());
+            result.add(listing.getRwtResultsUrl());
+        }
         result.add(listing.getCountSurveillance().toString());
         result.add((listing.getCountOpenNonconformities() + listing.getCountClosedNonconformities()) + "");
         result.add(listing.getCountOpenNonconformities().toString());

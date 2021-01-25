@@ -24,9 +24,6 @@ Product Name,Yes,<string>,The name of the product listed on the CHPL.
 Product Database ID,Yes,<int>,The unique database ID of the product.
 Version,Yes,<string>,The version of the product listed on the CHPL.
 Version Database ID,Yes,<int>,The unique database ID of the version.
-Real World Testing Eligibility Year,No,<int>,The first year the listing is eligible for Real World Testing
-Real World Testing Plans URL,No,<string>,The URL where the Real World Testing plans exists
-Real World Testing Results URL,No,<string>,The URL where the Real World Testing results exists
 Total Surveillance Activities,Yes,<int>,"The total number of surveillance activities that were conducted for the corresponding listing, regardless of whether or not a non-conformity was found.  For additional information, please see 'Understanding Surveillance Information in the CHPL', available in the CHPL Public User Guide"
 Total Nonconformities,Yes,<int>,"The total number of non-conformities found for the corresponding listing, regardless of whether or not the non-conformity has been resolved. For additional information, please see 'Understanding Surveillance Information in the CHPL', available in the CHPL Public User Guide"
 Open Nonconformities,Yes,<int>,"The total number of open (unresolved) non-conformities found for the corresponding listing. For additional information, please see 'Understanding Surveillance Information in the CHPL', available in the CHPL Public User Guide"

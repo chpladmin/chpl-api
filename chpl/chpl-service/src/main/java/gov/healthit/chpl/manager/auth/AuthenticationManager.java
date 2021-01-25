@@ -161,11 +161,6 @@ public class AuthenticationManager {
 
     }
 
-    private UserDTO getUserByName(String userName) throws UserRetrievalException {
-        UserDTO user = userDAO.getByName(userName);
-        return user;
-    }
-
     private UserDTO getUserByNameOrEmail(String usernameOrEmail)
             throws MultipleUserAccountsException, UserRetrievalException {
         UserDTO user = userDAO.getByNameOrEmail(usernameOrEmail);
@@ -196,8 +191,14 @@ public class AuthenticationManager {
         if (user.getImpersonatingUser() != null) {
             throw new UserManagementException(msgUtil.getMessage("user.impersonate.alreadyImpersonating"));
         }
-        UserDTO impersonatingUser = getUserByName(user.getSubjectName());
-        UserDTO impersonatedUser = getUserByName(username);
+        UserDTO impersonatingUser = null;
+        UserDTO impersonatedUser = null;
+        try {
+            impersonatingUser = getUserByNameOrEmail(user.getSubjectName());
+            impersonatedUser = getUserByNameOrEmail(username);
+        } catch (MultipleUserAccountsException ex) {
+            throw new UserRetrievalException(ex.getMessage());
+        }
 
         impersonatedUser.setImpersonatedBy(impersonatingUser);
         return getJWT(impersonatedUser);

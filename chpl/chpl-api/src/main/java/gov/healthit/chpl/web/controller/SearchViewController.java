@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Lazy;
@@ -33,6 +34,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -69,12 +71,14 @@ import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.manager.FilterManager;
 import gov.healthit.chpl.manager.FuzzyChoicesManager;
 import gov.healthit.chpl.manager.SurveillanceReportManager;
+import gov.healthit.chpl.svap.manager.SvapManager;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.results.CertificationCriterionResults;
 import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
+import gov.healthit.chpl.web.controller.results.SvapResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -123,7 +127,13 @@ public class SearchViewController {
     @Autowired
     private ChangeRequestManager changeRequestManager;
 
+    @Autowired
+    private FF4j ff4j;
+
     @Autowired private FileUtils fileUtils;
+
+    @Autowired
+    private SvapManager svapManager;
 
     private static final Logger LOGGER = LogManager.getLogger(SearchViewController.class);
 
@@ -183,7 +193,11 @@ public class SearchViewController {
             } else if (edition.equals("2014")) {
                 toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2014Name"));
             } else if (edition.equals("2015")) {
-                toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015Name"));
+                if (ff4j.check(FeatureList.RWT_ENABLED)) {
+                    toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015NameWithRWT"));
+                } else {
+                    toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015Name"));
+                }
                 filenameToStream = env.getProperty("schemaCsv2015Name");
             }
 
@@ -1368,5 +1382,13 @@ public class SearchViewController {
         result.setExpandable(false);
         result.setData(data);
         return result;
+    }
+
+    @ApiOperation(value = "Get all possible SVAP and associated criteria in the CHPL")
+    @RequestMapping(value = "/data/svap", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody SvapResults getSvapCriteriaMaps() throws EntityRetrievalException {
+        return new SvapResults(svapManager.getAllSvapCriteriaMaps());
     }
 }

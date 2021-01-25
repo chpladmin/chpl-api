@@ -20,6 +20,7 @@ import gov.healthit.chpl.validation.listing.reviewer.InheritedCertificationStatu
 import gov.healthit.chpl.validation.listing.reviewer.ListingStatusAndUserRoleReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.RealWorldTestingReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.SvapReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestToolReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestingLabReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnattestedCriteriaWithDataReviewer;
@@ -37,6 +38,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.PrivacyAndSecur
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaTestTaskComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaUcdComparisonReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionality2015Reviewer;
@@ -64,6 +66,10 @@ public class Edition2015ListingValidator extends Validator {
     @Autowired
     @Qualifier("requiredData2015Reviewer")
     private RequiredData2015Reviewer requiredDataReviewer;
+
+    @Autowired
+    @Qualifier("requiredAndRelatedCriteriaReviewer")
+    private RequiredAndRelatedCriteriaReviewer requiredAndRelatedCriteriaReviewer;
 
     @Autowired
     @Qualifier("testingLabReviewer")
@@ -166,6 +172,10 @@ public class Edition2015ListingValidator extends Validator {
     private ListingStatusAndUserRoleReviewer listingStatusAndUserRoleReviewer;
 
     @Autowired
+    @Qualifier("svapReviewer")
+    private SvapReviewer svapReviewer;
+
+    @Autowired
     @Qualifier("realWorldTestingReviewer")
     private RealWorldTestingReviewer realWorldTestingReviewer;
 
@@ -189,6 +199,7 @@ public class Edition2015ListingValidator extends Validator {
             reviewers.add(unsupportedCharacterReviewer);
             reviewers.add(fieldLengthReviewer);
             reviewers.add(requiredDataReviewer);
+            reviewers.add(requiredAndRelatedCriteriaReviewer);
             reviewers.add(testingLabReviewer);
             reviewers.add(validDataReviewer);
             reviewers.add(sedG3Reviewer);
@@ -225,6 +236,7 @@ public class Edition2015ListingValidator extends Validator {
             comparisonReviewers.add(listingStatusAndUserRoleReviewer);
             comparisonReviewers.add(privacyAndSecurityCriteriaReviewer);
             comparisonReviewers.add(realWorldTestingReviewer);
+            comparisonReviewers.add(svapReviewer);
         }
         return comparisonReviewers;
     }

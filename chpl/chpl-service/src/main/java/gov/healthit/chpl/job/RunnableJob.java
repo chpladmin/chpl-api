@@ -7,10 +7,8 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 
-import gov.healthit.chpl.caching.CacheNames;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.annotations.Cache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.env.Environment;
@@ -20,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.JobDAO;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.dto.job.JobMessageDTO;
@@ -65,7 +64,7 @@ public class RunnableJob implements Runnable {
     @Transactional
     protected void start() {
         SecurityContextHolder.getContext().setAuthentication(this.user);
-        LOGGER.info("Starting " + job.getJobType().getName() + " job for " + job.getUser().getSubjectName());
+        LOGGER.info("Starting " + job.getJobType().getName() + " job for " + job.getUser().getUsername());
         try {
             jobDao.markStarted(this.job);
         } catch (Exception ex) {
@@ -131,7 +130,7 @@ public class RunnableJob implements Runnable {
         };
         String subject = this.job.getJobType().getSuccessMessage();
         StringBuilder htmlMessage = new StringBuilder();
-        htmlMessage.append("<h3>Job Details:</h3><ul><li>Started: ") 
+        htmlMessage.append("<h3>Job Details:</h3><ul><li>Started: ")
         .append(this.job.getStartTime())
         .append("</li><li>Ended: ")
         .append(this.job.getEndTime())
@@ -160,7 +159,7 @@ public class RunnableJob implements Runnable {
         } catch (final MessagingException ex) {
             LOGGER.error("Error sending email " + ex.getMessage(), ex);
         } finally {
-            LOGGER.info("Completed " + job.getJobType().getName() + " job for " + job.getUser().getSubjectName());
+            LOGGER.info("Completed " + job.getJobType().getName() + " job for " + job.getUser().getUsername());
             SecurityContextHolder.getContext().setAuthentication(null);
         }
     }

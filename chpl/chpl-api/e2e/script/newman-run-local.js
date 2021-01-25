@@ -55,6 +55,16 @@ const productsControllerTests = {
     },
 };
 
+const productVersionControllerTests = {
+    ...commonOptions,
+    collection: collection_path + '/product-version-controller.postman_collection.json',
+    reporter: {
+        junit: {
+            export: reports_path + '/product-version-controller-tests.xml',
+        },
+    },
+};
+
 const statusControllerTests = {
     ...commonOptions,
     collection: collection_path + '/status-controller.postman_collection.json',
@@ -75,13 +85,25 @@ const testinglabControllerTests = {
     },
 };
 
+const searchviewControllerTests = {
+	    ...commonOptions,
+	    collection: collection_path + '/search-view-controller.postman_collection.json',
+	    reporter: {
+	        junit: {
+	            export: reports_path + '/search-view-controller-tests.xml',
+	        },
+	    },
+	};
+
 const jobs = [
     cb => newman.run(acbControllerTests,cb),
     cb => newman.run(developerControllerDataTests,cb),
     cb => newman.run(developerControllerNoDataTests,cb),
     cb => newman.run(productsControllerTests,cb),
+    cb => newman.run(productVersionControllerTests,cb),
     cb => newman.run(statusControllerTests,cb),
     cb => newman.run(testinglabControllerTests,cb),
+    cb => newman.run(searchviewControllerTests,cb),
 ];
 
 const responseCallback = (err) => {
