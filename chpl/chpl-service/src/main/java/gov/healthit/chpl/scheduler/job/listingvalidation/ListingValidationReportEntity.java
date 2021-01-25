@@ -35,6 +35,10 @@ public class ListingValidationReportEntity {
     private String chplProductNumber;
 
     @Basic(optional = false)
+    @Column(name = "certification_body_id", nullable = false)
+    private Long certificationBodyId;
+
+    @Basic(optional = false)
     @Column(name = "product_name", nullable = false)
     private String productName;
 

@@ -137,10 +137,10 @@ public class ListingValidationCreatorJob implements Job {
     }
 
     private List<ListingValidationReport> createListingValidationReport(CertifiedProductSearchDetails listing) {
-
         List<ListingValidationReport> reports = listing.getErrorMessages().stream()
                 .map(error -> listingValidationReportDAO.create(ListingValidationReport.builder()
                     .chplProductNumber(listing.getChplProductNumber())
+                    .certificationBodyId(Long.parseLong(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()))
                     .productName(listing.getProduct().getName())
                     .certificationStatusName(listing.getCurrentStatus().getStatus().getName())
                     .errorMessage(error)

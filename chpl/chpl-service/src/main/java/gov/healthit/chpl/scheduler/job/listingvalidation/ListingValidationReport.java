@@ -13,6 +13,7 @@ import lombok.Data;
 public class ListingValidationReport {
     private Long id;
     private String chplProductNumber;
+    private Long certificationBodyId;
     private String productName;
     private String certificationStatusName;
     private String errorMessage;
@@ -25,6 +26,7 @@ public class ListingValidationReport {
     public ListingValidationReport(ListingValidationReportEntity entity) {
         this.id = entity.getId();
         this.chplProductNumber = entity.getChplProductNumber();
+        this.certificationBodyId = entity.getCertificationBodyId();
         this.productName = entity.getProductName();
         this.certificationStatusName = entity.getCertificationStatusName();
         this.errorMessage = entity.getErrorMessage();
