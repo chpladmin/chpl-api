@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -79,6 +82,9 @@ import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.impl.CertifiedProductDetailsManagerAsync;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.svap.dao.SvapDAO;
+import gov.healthit.chpl.svap.domain.Svap;
+import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
@@ -110,6 +116,9 @@ public class CertifiedProductDetailsManager {
     private ChplProductNumberUtil chplProductNumberUtil;
     private ResourcePermissions resourcePermissions;
     private DimensionalDataManager dimensionalDataManager;
+    private SvapDAO svapDao;
+
+    private List<SvapCriteriaMap> svapCriteriaMap;
 
     @SuppressWarnings({"checkstyle:parameternumber"})
     @Autowired
@@ -135,7 +144,8 @@ public class CertifiedProductDetailsManager {
             PropertyUtil propUtil,
             ChplProductNumberUtil chplProductNumberUtil,
             ResourcePermissions resourcePermissions,
-            DimensionalDataManager dimensionalDataManager) {
+            DimensionalDataManager dimensionalDataManager,
+            SvapDAO svapDao) {
 
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
         this.cqmResultDetailsDAO = cqmResultDetailsDAO;
@@ -159,6 +169,12 @@ public class CertifiedProductDetailsManager {
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.resourcePermissions = resourcePermissions;
         this.dimensionalDataManager = dimensionalDataManager;
+        this.svapDao = svapDao;
+    }
+
+    @PostConstruct
+    public void init() throws EntityRetrievalException {
+        svapCriteriaMap = svapDao.getAllSvapCriteriaMap();
     }
 
     @Transactional
@@ -627,7 +643,24 @@ public class CertifiedProductDetailsManager {
         }
 
         result.setAllowedTestFunctionalities(getAvailableTestFunctionalities(result, searchDetails));
+
+        // set allowed svap for criteria
+        result.setAllowedSvaps(getAvailableSvapForCriteria(result));
+
+        if (result.getAllowedSvaps().size() > 0) {
+            result.setSvaps(certResultManager.getSvapsForCertificationResult(result.getId()));
+        } else {
+            result.setSvaps(null);
+        }
+
         return result;
+    }
+
+    private List<Svap> getAvailableSvapForCriteria(CertificationResult result) {
+        return svapCriteriaMap.stream()
+                .filter(scm -> scm.getCriterion().getId().equals(result.getCriterion().getId()))
+                .map(scm -> scm.getSvap())
+                .collect(Collectors.toList());
     }
 
     private List<TestFunctionality> getAvailableTestFunctionalities(CertificationResult cr, CertifiedProductSearchDetails cp) {
