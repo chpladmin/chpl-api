@@ -15,6 +15,13 @@
             <name>splitDeveloperJob</name>
             <group>chplBackgroundJobs</group>
         </delete-job>
+        
+        <!--  OCD-3563 -->
+        <delete-job>
+            <name>Listing Validation Email Report</name>
+            <group>chplJobs</group>
+        </delete-job>
+        <!--  END OCD-3563 -->
         <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
