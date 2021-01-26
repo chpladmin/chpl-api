@@ -91,12 +91,12 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
 
         Surveillance surv = new Surveillance();
         surv.setCertifiedProduct(new CertifiedProduct());
-        surv.getCertifiedProduct().setId(1l);
+        surv.getCertifiedProduct().setId(1L);
 
-        Mockito.when(certifiedProductDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getListing(1l));
+        Mockito.when(certifiedProductDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getListing(1L));
         assertFalse(permissions.hasAccess(surv));
 
-        Mockito.when(certifiedProductDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getListing(2l));
+        Mockito.when(certifiedProductDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getListing(2L));
         assertTrue(permissions.hasAccess(surv));
     }
 

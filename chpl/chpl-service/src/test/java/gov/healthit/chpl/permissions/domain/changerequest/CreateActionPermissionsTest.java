@@ -28,7 +28,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(resourcePermissions.getAllDevelopersForCurrentUser()).thenReturn(getAllDeveloperForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllDevelopersForCurrentUser()).thenReturn(getAllDeveloperForUser(2L, 4L));
     }
 
     @Override
@@ -38,7 +38,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         assertTrue(permissions.hasAccess(ChangeRequest.builder()
-                .developer(Developer.builder().developerId(2l).build())
+                .developer(Developer.builder().developerId(2L).build())
                 .build()));
 
         assertFalse(permissions.hasAccess(ChangeRequest.builder()

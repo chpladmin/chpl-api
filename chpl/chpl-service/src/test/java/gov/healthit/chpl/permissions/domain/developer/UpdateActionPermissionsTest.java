@@ -34,7 +34,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }
 
     @Override
@@ -72,9 +72,9 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         DeveloperDTO dto = new DeveloperDTO();
-        dto.setId(1l);
+        dto.setId(1L);
         DeveloperStatusEventDTO statusEvent = new DeveloperStatusEventDTO();
-        statusEvent.setDeveloperId(1l);
+        statusEvent.setDeveloperId(1L);
         DeveloperStatusDTO status = new DeveloperStatusDTO();
         status.setStatusName("Active");
         statusEvent.setStatus(status);

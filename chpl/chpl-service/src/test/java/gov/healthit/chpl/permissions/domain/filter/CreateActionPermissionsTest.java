@@ -39,16 +39,16 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         FilterDTO filterDTO = new FilterDTO();
         filterDTO.setFilter("{}");
         filterDTO.setFilterType(new FilterTypeDTO());
-        filterDTO.getFilterType().setId(1l);
+        filterDTO.getFilterType().setId(1L);
         filterDTO.getFilterType().setName("SAMPLE_FILTER");
         filterDTO.setUser(new UserDTO());
-        filterDTO.getUser().setId(-2l);
+        filterDTO.getUser().setId(-2L);
         assertTrue(permissions.hasAccess(filterDTO));
 
         filterDTO = new FilterDTO();
         filterDTO.setFilter("{}");
         filterDTO.setFilterType(new FilterTypeDTO());
-        filterDTO.getFilterType().setId(1l);
+        filterDTO.getFilterType().setId(1L);
         filterDTO.getFilterType().setName("SAMPLE_FILTER");
         filterDTO.setUser(new UserDTO());
         filterDTO.getUser().setId(-3l);
@@ -65,7 +65,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         FilterDTO filterDTO = new FilterDTO();
         filterDTO.setFilter("{}");
         filterDTO.setFilterType(new FilterTypeDTO());
-        filterDTO.getFilterType().setId(1l);
+        filterDTO.getFilterType().setId(1L);
         filterDTO.getFilterType().setName("SAMPLE_FILTER");
         filterDTO.setUser(new UserDTO());
         filterDTO.getUser().setId(3l);
@@ -74,7 +74,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         filterDTO = new FilterDTO();
         filterDTO.setFilter("{}");
         filterDTO.setFilterType(new FilterTypeDTO());
-        filterDTO.getFilterType().setId(1l);
+        filterDTO.getFilterType().setId(1L);
         filterDTO.getFilterType().setName("SAMPLE_FILTER");
         filterDTO.setUser(new UserDTO());
         filterDTO.getUser().setId(-3l);
@@ -91,7 +91,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         FilterDTO filterDTO = new FilterDTO();
         filterDTO.setFilter("{}");
         filterDTO.setFilterType(new FilterTypeDTO());
-        filterDTO.getFilterType().setId(1l);
+        filterDTO.getFilterType().setId(1L);
         filterDTO.getFilterType().setName("SAMPLE_FILTER");
         filterDTO.setUser(new UserDTO());
         filterDTO.getUser().setId(3l);
@@ -100,7 +100,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         filterDTO = new FilterDTO();
         filterDTO.setFilter("{}");
         filterDTO.setFilterType(new FilterTypeDTO());
-        filterDTO.getFilterType().setId(1l);
+        filterDTO.getFilterType().setId(1L);
         filterDTO.getFilterType().setName("SAMPLE_FILTER");
         filterDTO.setUser(new UserDTO());
         filterDTO.getUser().setId(-3l);
@@ -117,7 +117,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         FilterDTO filterDTO = new FilterDTO();
         filterDTO.setFilter("{}");
         filterDTO.setFilterType(new FilterTypeDTO());
-        filterDTO.getFilterType().setId(1l);
+        filterDTO.getFilterType().setId(1L);
         filterDTO.getFilterType().setName("SAMPLE_FILTER");
         filterDTO.setUser(new UserDTO());
         filterDTO.getUser().setId(3l);
@@ -126,7 +126,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         filterDTO = new FilterDTO();
         filterDTO.setFilter("{}");
         filterDTO.setFilterType(new FilterTypeDTO());
-        filterDTO.getFilterType().setId(1l);
+        filterDTO.getFilterType().setId(1L);
         filterDTO.getFilterType().setName("SAMPLE_FILTER");
         filterDTO.setUser(new UserDTO());
         filterDTO.getUser().setId(-3l);
@@ -142,7 +142,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         FilterDTO filterDTO = new FilterDTO();
         filterDTO.setFilter("{}");
         filterDTO.setFilterType(new FilterTypeDTO());
-        filterDTO.getFilterType().setId(1l);
+        filterDTO.getFilterType().setId(1L);
         filterDTO.getFilterType().setName("SAMPLE_FILTER");
         filterDTO.setUser(new UserDTO());
         filterDTO.getUser().setId(3l);
@@ -151,7 +151,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         filterDTO = new FilterDTO();
         filterDTO.setFilter("{}");
         filterDTO.setFilterType(new FilterTypeDTO());
-        filterDTO.getFilterType().setId(1l);
+        filterDTO.getFilterType().setId(1L);
         filterDTO.getFilterType().setName("SAMPLE_FILTER");
         filterDTO.setUser(new UserDTO());
         filterDTO.getUser().setId(-3l);
@@ -167,7 +167,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         FilterDTO filterDTO = new FilterDTO();
         filterDTO.setFilter("{}");
         filterDTO.setFilterType(new FilterTypeDTO());
-        filterDTO.getFilterType().setId(1l);
+        filterDTO.getFilterType().setId(1L);
         filterDTO.getFilterType().setName("SAMPLE_FILTER");
         filterDTO.setUser(new UserDTO());
         filterDTO.getUser().setId(3l);
@@ -176,7 +176,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         filterDTO = new FilterDTO();
         filterDTO.setFilter("{}");
         filterDTO.setFilterType(new FilterTypeDTO());
-        filterDTO.getFilterType().setId(1l);
+        filterDTO.getFilterType().setId(1L);
         filterDTO.getFilterType().setName("SAMPLE_FILTER");
         filterDTO.setUser(new UserDTO());
         filterDTO.getUser().setId(-3l);
@@ -190,7 +190,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         FilterDTO filterDTO = new FilterDTO();
         filterDTO.setFilter("{}");
         filterDTO.setFilterType(new FilterTypeDTO());
-        filterDTO.getFilterType().setId(1l);
+        filterDTO.getFilterType().setId(1L);
         filterDTO.getFilterType().setName("SAMPLE_FILTER");
         filterDTO.setUser(new UserDTO());
         filterDTO.getUser().setId(-3l);

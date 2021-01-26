@@ -26,7 +26,7 @@ public class GetPendingListingActivityActionPermissionsTest extends ActionPermis
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }
 
     @Override

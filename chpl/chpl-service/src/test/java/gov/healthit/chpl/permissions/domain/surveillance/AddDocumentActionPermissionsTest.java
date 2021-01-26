@@ -35,7 +35,7 @@ public class AddDocumentActionPermissionsTest extends ActionPermissionsBaseTest 
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }
 
     @Override
@@ -84,11 +84,11 @@ public class AddDocumentActionPermissionsTest extends ActionPermissionsBaseTest 
         // This should always be false
         assertFalse(permissions.hasAccess());
 
-        Mockito.when(survDAO.getSurveillanceByNonconformityId(ArgumentMatchers.anyLong())).thenReturn(getSurveillanceEntity(2l));
-        assertTrue(permissions.hasAccess(1l));
+        Mockito.when(survDAO.getSurveillanceByNonconformityId(ArgumentMatchers.anyLong())).thenReturn(getSurveillanceEntity(2L));
+        assertTrue(permissions.hasAccess(1L));
 
-        Mockito.when(survDAO.getSurveillanceByNonconformityId(ArgumentMatchers.anyLong())).thenReturn(getSurveillanceEntity(1l));
-        assertFalse(permissions.hasAccess(1l));
+        Mockito.when(survDAO.getSurveillanceByNonconformityId(ArgumentMatchers.anyLong())).thenReturn(getSurveillanceEntity(1L));
+        assertFalse(permissions.hasAccess(1L));
     }
 
     @Override
@@ -143,7 +143,7 @@ public class AddDocumentActionPermissionsTest extends ActionPermissionsBaseTest 
 
         SurveillanceRequirementEntity req = new SurveillanceRequirementEntity();
         SurveillanceNonconformityEntity nc = new SurveillanceNonconformityEntity();
-        nc.setId(1l);
+        nc.setId(1L);
         req.getNonconformities().add(nc);
         entity.getSurveilledRequirements().add(req);
 

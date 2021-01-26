@@ -33,7 +33,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }
 
     @Override
@@ -71,11 +71,11 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         ProductVersionDTO version = new ProductVersionDTO();
-        version.setId(1l);
-        version.setDeveloperId(2l);
+        version.setId(1L);
+        version.setDeveloperId(2L);
 
         DeveloperDTO dto = new DeveloperDTO();
-        dto.setId(1l);
+        dto.setId(1L);
 
         Mockito.when(productVersionDAO.getById(ArgumentMatchers.anyLong())).thenReturn(version);
 

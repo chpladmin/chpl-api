@@ -30,7 +30,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }
 
     @Override
@@ -77,11 +77,11 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        listing.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_ID_KEY, 1l);
+        listing.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_ID_KEY, 1L);
         assertFalse(permissions.hasAccess(listing));
 
         listing = new CertifiedProductSearchDetails();
-        listing.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_ID_KEY, 2l);
+        listing.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_ID_KEY, 2L);
 
         assertTrue(permissions.hasAccess(listing));
     }

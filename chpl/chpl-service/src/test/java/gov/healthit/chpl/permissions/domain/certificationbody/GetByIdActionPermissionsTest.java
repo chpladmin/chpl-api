@@ -26,7 +26,7 @@ public class GetByIdActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }
 
     @Override
@@ -39,7 +39,7 @@ public class GetByIdActionPermissionsTest extends ActionPermissionsBaseTest {
 
         // Role admin has permissions to all
         CertificationBodyDTO dto = new CertificationBodyDTO();
-        dto.setId(1l);
+        dto.setId(1L);
         assertTrue(permissions.hasAccess(dto));
     }
 
@@ -53,7 +53,7 @@ public class GetByIdActionPermissionsTest extends ActionPermissionsBaseTest {
 
         // Role onc has permissions to all
         CertificationBodyDTO dto = new CertificationBodyDTO();
-        dto.setId(1l);
+        dto.setId(1L);
         assertTrue(permissions.hasAccess(dto));
     }
 
@@ -76,10 +76,10 @@ public class GetByIdActionPermissionsTest extends ActionPermissionsBaseTest {
 
         // Role acb has access based on permissions
         CertificationBodyDTO dto = new CertificationBodyDTO();
-        dto.setId(1l);
+        dto.setId(1L);
         assertFalse(permissions.hasAccess(dto));
 
-        dto.setId(2l);
+        dto.setId(2L);
         assertTrue(permissions.hasAccess(dto));
     }
 
@@ -93,7 +93,7 @@ public class GetByIdActionPermissionsTest extends ActionPermissionsBaseTest {
 
         // Role atl does not have access
         CertificationBodyDTO dto = new CertificationBodyDTO();
-        dto.setId(1l);
+        dto.setId(1L);
         assertFalse(permissions.hasAccess(dto));
     }
 
@@ -107,7 +107,7 @@ public class GetByIdActionPermissionsTest extends ActionPermissionsBaseTest {
 
         // Role cms does not have access
         CertificationBodyDTO dto = new CertificationBodyDTO();
-        dto.setId(1l);
+        dto.setId(1L);
         assertFalse(permissions.hasAccess(dto));
     }
 
@@ -121,7 +121,7 @@ public class GetByIdActionPermissionsTest extends ActionPermissionsBaseTest {
 
         // Role atl does not have access
         CertificationBodyDTO dto = new CertificationBodyDTO();
-        dto.setId(1l);
+        dto.setId(1L);
         assertFalse(permissions.hasAccess(dto));
     }
 }
