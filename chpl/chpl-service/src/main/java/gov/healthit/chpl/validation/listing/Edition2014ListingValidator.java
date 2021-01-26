@@ -19,6 +19,7 @@ import gov.healthit.chpl.validation.listing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ListingStatusAndUserRoleReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.RealWorldTestingReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.SvapReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestToolReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestingLabReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnattestedCriteriaWithDataReviewer;
@@ -118,6 +119,10 @@ public abstract class Edition2014ListingValidator extends Validator {
     @Qualifier("realWorldTestingReviewer")
     private RealWorldTestingReviewer realWorldTestingReviewer;
 
+    @Autowired
+    @Qualifier("svapReviewer")
+    private SvapReviewer svapReviewer;
+
     private List<Reviewer> reviewers;
     private List<ComparisonReviewer> comparisonReviewers;
 
@@ -153,6 +158,7 @@ public abstract class Edition2014ListingValidator extends Validator {
             comparisonReviewers.add(devBanComparisonReviewer);
             comparisonReviewers.add(listingStatusAndUserRoleReviewer);
             comparisonReviewers.add(realWorldTestingReviewer);
+            comparisonReviewers.add(svapReviewer);
         }
         return comparisonReviewers;
     }

@@ -40,6 +40,8 @@ import gov.healthit.chpl.entity.listing.CertificationResultUcdProcessEntity;
 import gov.healthit.chpl.entity.listing.TestTaskParticipantMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.svap.domain.CertificationResultSvap;
+import gov.healthit.chpl.svap.entity.CertificationResultSvapEntity;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -1099,4 +1101,79 @@ public class CertificationResultDAO extends BaseDAOImpl {
             entityManager.flush();
         }
     }
+
+    /******************************************************
+     * SVAP
+     *
+     *******************************************************/
+    public List<CertificationResultSvap> getSvapForCertificationResult(Long certificationResultId) {
+        List<CertificationResultSvapEntity> entities = getSvapForCertification(certificationResultId);
+        return entities.stream()
+                .map(e -> new CertificationResultSvap(e))
+                .collect(Collectors.toList());
+    }
+
+
+    public CertificationResultSvap addCertificationResultSvap(CertificationResultSvap certificationResultSvapToAdd,
+            Long certificationResultId) {
+
+        CertificationResultSvapEntity entity = new CertificationResultSvapEntity();
+        entity.setCertificationResultId(certificationResultId);
+        entity.setSvapId(certificationResultSvapToAdd.getSvapId());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
+        entity.setLastModifiedDate(new Date());
+        entity.setCreationDate(new Date());
+        entity.setDeleted(false);
+        entityManager.persist(entity);
+        entityManager.flush();
+        entityManager.refresh(entity);
+
+        return new CertificationResultSvap(getCertificationResultSvapEntityById(entity.getId()));
+    }
+
+    public void deleteCertificationResultSvap(CertificationResultSvap certificationResultSvapToDelete) {
+        CertificationResultSvapEntity entity = getCertificationResultSvapEntityById(certificationResultSvapToDelete.getId());
+        entity.setDeleted(true);
+        entityManager.persist(entity);
+        entityManager.flush();
+        entityManager.refresh(entity);
+    }
+
+    private CertificationResultSvapEntity getCertificationResultSvapEntityById(Long certificationResultSvapId) {
+        Query query = entityManager.createQuery(
+                "SELECT s "
+                        + "FROM CertificationResultSvapEntity s "
+                        + "JOIN FETCH s.svap "
+                        + "WHERE s.deleted <> true "
+                        + "AND s.id = :certificationResultSvapId ",
+                CertificationResultSvapEntity.class);
+        query.setParameter("certificationResultSvapId", certificationResultSvapId);
+
+        List<CertificationResultSvapEntity> result = query.getResultList();
+
+        if (result.size() > 0) {
+            return result.get(0);
+        } else {
+            return null;
+        }
+    }
+
+    private List<CertificationResultSvapEntity> getSvapForCertification(Long certificationResultId) {
+        Query query = entityManager.createQuery(
+                "SELECT s "
+                        + "FROM CertificationResultSvapEntity s "
+                        + "JOIN FETCH s.svap "
+                        + "WHERE s.deleted <> true "
+                        + "AND s.certificationResultId = :certificationResultId ",
+                CertificationResultSvapEntity.class);
+        query.setParameter("certificationResultId", certificationResultId);
+
+        List<CertificationResultSvapEntity> result = query.getResultList();
+        if (result == null) {
+            return null;
+        }
+        return result;
+    }
+
+
 }
