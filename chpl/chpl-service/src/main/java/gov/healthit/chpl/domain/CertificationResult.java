@@ -16,6 +16,8 @@ import org.apache.commons.lang.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
+import gov.healthit.chpl.svap.domain.CertificationResultSvap;
+import gov.healthit.chpl.svap.domain.Svap;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Singular;
@@ -133,6 +135,9 @@ public class CertificationResult implements Serializable {
     @XmlTransient
     private List<TestFunctionality> allowedTestFunctionalities;
 
+    @XmlTransient
+    private List<Svap> allowedSvaps;
+
     /**
      * Any optional, alternative, ambulatory (2015 only), or inpatient (2015 only) capabilities within a certification
      * criterion to which the Health IT module was tested and certified. For example, within the 2015 certification
@@ -189,6 +194,17 @@ public class CertificationResult implements Serializable {
     @XmlElementWrapper(name = "testTools", nillable = true, required = false)
     @XmlElement(name = "testTool")
     private List<CertificationResultTestTool> testToolsUsed = new ArrayList<CertificationResultTestTool>();
+
+    /**
+     * ONC has established the Standards Version Advancement Process (SVAP) to enable health IT developers’
+     * ability to incorporate newer versions of Secretary-adopted standards and implementation specifications,
+     * as part of the "Real World Testing" Condition and Maintenance of Certification requirement (§170.405)
+     * of the 21st Century Cures Act
+     */
+    @XmlElementWrapper(name = "svaps", nillable = true, required = false)
+    @XmlElement(name = "svap")
+    @Singular
+    private List<CertificationResultSvap> svaps = new ArrayList<CertificationResultSvap>();
 
     /**
      * Detailed information about the relevant certification criterion.
@@ -411,5 +427,21 @@ public class CertificationResult implements Serializable {
             result.append(frameworks[i].trim());
         }
         return result.toString();
+    }
+
+    public List<Svap> getAllowedSvaps() {
+        return allowedSvaps;
+    }
+
+    public void setAllowedSvaps(List<Svap> allowedSvaps) {
+        this.allowedSvaps = allowedSvaps;
+    }
+
+    public List<CertificationResultSvap> getSvaps() {
+        return svaps;
+    }
+
+    public void setSvaps(List<CertificationResultSvap> svaps) {
+        this.svaps = svaps;
     }
 }

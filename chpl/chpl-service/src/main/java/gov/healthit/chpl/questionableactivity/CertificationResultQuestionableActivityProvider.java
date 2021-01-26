@@ -1,9 +1,15 @@
 package gov.healthit.chpl.questionableactivity;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityCertificationResultDTO;
+import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 
 /**
  * Checker for certification criteria questionable activity.
@@ -11,14 +17,8 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityCertificat
 @Component
 public class CertificationResultQuestionableActivityProvider {
 
-    /**
-     * Check for QA re: change to G1 success value.
-     * @param origCertResult original certification criteria result
-     * @param newCertResult new certification criteria result
-     * @return DTO iff there was questionable activity
-     */
-    public QuestionableActivityCertificationResultDTO checkG1SuccessUpdated(
-            final CertificationResult origCertResult, final CertificationResult newCertResult) {
+    public QuestionableActivityCertificationResultDTO checkG1SuccessUpdated(CertificationResult origCertResult,
+            CertificationResult newCertResult) {
 
         QuestionableActivityCertificationResultDTO activity = null;
         if (origCertResult.isG1Success() != null || newCertResult.isG1Success() != null) {
@@ -39,14 +39,8 @@ public class CertificationResultQuestionableActivityProvider {
         return activity;
     }
 
-    /**
-     * Check for QA re: change to G2 success value.
-     * @param origCertResult original certification criteria result
-     * @param newCertResult new certification criteria result
-     * @return DTO iff there was questionable activity
-     */
-    public QuestionableActivityCertificationResultDTO checkG2SuccessUpdated(
-            final CertificationResult origCertResult, final CertificationResult newCertResult) {
+    public QuestionableActivityCertificationResultDTO checkG2SuccessUpdated(CertificationResult origCertResult,
+            CertificationResult newCertResult) {
 
         QuestionableActivityCertificationResultDTO activity = null;
         if (origCertResult.isG2Success() != null || newCertResult.isG2Success() != null) {
@@ -68,14 +62,8 @@ public class CertificationResultQuestionableActivityProvider {
         return activity;
     }
 
-    /**
-     * Check for QA re: change to gap value.
-     * @param origCertResult original certification criteria result
-     * @param newCertResult new certification criteria result
-     * @return DTO iff there was questionable activity
-     */
-    public QuestionableActivityCertificationResultDTO checkGapUpdated(
-            final CertificationResult origCertResult, final CertificationResult newCertResult) {
+    public QuestionableActivityCertificationResultDTO checkGapUpdated(CertificationResult origCertResult,
+            CertificationResult newCertResult) {
 
         QuestionableActivityCertificationResultDTO activity = null;
         if (origCertResult.isGap() != null || newCertResult.isGap() != null) {
@@ -94,5 +82,34 @@ public class CertificationResultQuestionableActivityProvider {
             }
         }
         return activity;
+    }
+
+    public List<QuestionableActivityCertificationResultDTO> checkReplacedSvapAdded(CertificationResult origCertResult,
+            CertificationResult newCertResult) {
+
+        //Get the added SVAPs
+        List<CertificationResultSvap> addedSvaps = subtractCertificationResultSvapLists(
+                newCertResult.getSvaps() == null ? new ArrayList<CertificationResultSvap>() : newCertResult.getSvaps(),
+                origCertResult.getSvaps() == null ? new ArrayList<CertificationResultSvap>() : origCertResult.getSvaps());
+
+        return addedSvaps.stream()
+                .filter(crs -> crs.getReplaced())
+                .map(crs -> {
+                    QuestionableActivityCertificationResultDTO dto = new QuestionableActivityCertificationResultDTO();
+                    dto.setAfter(crs.getRegulatoryTextCitation() + ": " + crs.getApprovedStandardVersion());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    private List<CertificationResultSvap> subtractCertificationResultSvapLists(List<CertificationResultSvap> listA,
+            List<CertificationResultSvap> listB) {
+
+        Predicate<CertificationResultSvap> notInListB = svapFromA -> !listB.stream()
+                .anyMatch(svap -> svapFromA.getSvapId().equals(svap.getSvapId()));
+
+        return listA.stream()
+                .filter(notInListB)
+                .collect(Collectors.toList());
     }
 }

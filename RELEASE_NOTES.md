@@ -1,5 +1,25 @@
 # Release Notes
 
+## Version 27.0.0
+_25 January 2021_
+
+### Breaking Changes
+* Developer PUT endpoint for developer updates and merges was modified
+
+### Features
+* Add reports on missing / soon-to-be-missing RWT Plans & Results
+* Update validation for b10 and g10 criteria
+* Execute developer merge as background quartz job
+* Change 2014 Download file generation to be quarterly
+* Ensure email is used when username does not exist
+* Add /activity/metadata/beta/api-keys endpoint for paged API Key activity
+* Allow edit of SVAP information for listings
+
+### Flagged Features
+* Only put RWT data in downloadable CSV files when flag is enabled
+
+---
+
 ## Version 26.2.0
 _11 January 2021_
 

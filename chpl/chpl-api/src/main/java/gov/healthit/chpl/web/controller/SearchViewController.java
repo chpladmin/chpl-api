@@ -72,12 +72,14 @@ import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.manager.FilterManager;
 import gov.healthit.chpl.manager.FuzzyChoicesManager;
 import gov.healthit.chpl.manager.SurveillanceReportManager;
+import gov.healthit.chpl.svap.manager.SvapManager;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.results.CertificationCriterionResults;
 import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
+import gov.healthit.chpl.web.controller.results.SvapResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -131,6 +133,9 @@ public class SearchViewController {
     private FF4j ff4j;
 
     @Autowired private FileUtils fileUtils;
+
+    @Autowired
+    private SvapManager svapManager;
 
     private static final Logger LOGGER = LogManager.getLogger(SearchViewController.class);
 
@@ -1379,5 +1384,13 @@ public class SearchViewController {
         result.setExpandable(false);
         result.setData(data);
         return result;
+    }
+
+    @ApiOperation(value = "Get all possible SVAP and associated criteria in the CHPL")
+    @RequestMapping(value = "/data/svap", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody SvapResults getSvapCriteriaMaps() throws EntityRetrievalException {
+        return new SvapResults(svapManager.getAllSvapCriteriaMaps());
     }
 }
