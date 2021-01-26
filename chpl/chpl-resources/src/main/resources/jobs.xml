@@ -7,13 +7,6 @@
     <pre-processing-commands>
         <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
-        <!-- REMOVE after PROD push of OCD-3531-->
-        <!-- need to delete this job so it gets re-added later with the recover boolean set to true; fixes existing bug -->
-        <delete-job>
-            <name>splitDeveloperJob</name>
-            <group>chplBackgroundJobs</group>
-        </delete-job>
-        <!-- END remove after PROD push of OCD-3531-->
         <!-- REMOVE after PROD push of OCD-3584-->
         <delete-job>
             <name>Summary Statistics Email</name>
@@ -73,6 +66,10 @@
         </delete-job>
         <delete-job>
             <name>Pending "Change Request" Report</name>
+            <group>chplJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>Real World Testing Email Report</name>
             <group>chplJobs</group>
         </delete-job>
         <!-- END remove after PROD push of OCD-3584-->
@@ -610,7 +607,7 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
-        
+
         <!-- Generate email report for Real World Testing  -->
         <job>
             <name>Real World Testing Email Report</name>
@@ -622,7 +619,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF;ROLE_ACB</value>
                 </entry>
                 <entry>
                     <key>frequency</key>
@@ -634,6 +631,5 @@
                 </entry>
             </job-data-map>
         </job>
-        
     </schedule>
 </job-scheduling-data>
