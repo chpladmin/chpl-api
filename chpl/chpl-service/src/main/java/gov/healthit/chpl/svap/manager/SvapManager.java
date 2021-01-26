@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.svap.dao.SvapDAO;
+import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
 
 @Component
@@ -20,5 +21,15 @@ public class SvapManager {
 
     public List<SvapCriteriaMap> getAllSvapCriteriaMaps() throws EntityRetrievalException {
         return svapDao.getAllSvapCriteriaMap();
+    }
+
+    //TODO - add permissions
+    public List<Svap> getAll() {
+        return svapDao.getAll();
+    }
+
+    //TODO - add permissions
+    public Svap update(Svap svap) throws EntityRetrievalException {
+        return svapDao.update(svap);
     }
 }

@@ -11,6 +11,7 @@ import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
 import gov.healthit.chpl.svap.entity.SvapCriteriaMapEntity;
 import gov.healthit.chpl.svap.entity.SvapEntity;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Repository
 public class SvapDAO extends BaseDAOImpl {
@@ -27,6 +28,25 @@ public class SvapDAO extends BaseDAOImpl {
         return getAllSvapCriteriaMapEntities().stream()
                 .map(e -> new SvapCriteriaMap(e))
                 .collect(Collectors.toList());
+    }
+
+    public List<Svap> getAll() {
+        return getAllEntities().stream()
+                .map(entity -> new Svap(entity))
+                .collect(Collectors.toList());
+    }
+
+    public Svap update(Svap svap) throws EntityRetrievalException {
+        SvapEntity entity = getSvapEntityById(svap.getSvapId());
+
+        entity.setApprovedStandardVersion(svap.getApprovedStandardVersion());
+        entity.setRegulatoryTextCitation(svap.getRegulatoryTextCitation());
+        entity.setReplaced(svap.isReplaced());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
+
+        update(entity);
+
+        return new Svap(entity);
     }
 
     private SvapEntity getSvapEntityById(Long id) throws EntityRetrievalException {
@@ -56,4 +76,11 @@ public class SvapDAO extends BaseDAOImpl {
                 .getResultList();
     }
 
+    private List<SvapEntity> getAllEntities() {
+        return entityManager.createQuery("SELECT svap "
+                + "FROM SvapEntity svap "
+                + "WHERE svap.deleted <> true ",
+                SvapEntity.class)
+        .getResultList();
+    }
 }
