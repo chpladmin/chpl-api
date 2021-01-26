@@ -509,6 +509,10 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         currRow.set(ACTIVITY_USER_COL, activity.getUser().getSubjectName());
 
         String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
+        if (!StringUtils.isEmpty(currActivityRowValue)) {
+            currActivityRowValue += "; ";
+        }
+
         if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G1_SUCCESS_EDITED.getName())
                 || activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.G2_SUCCESS_EDITED.getName())) {
             currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": from " + activity.getBefore() + " to " + activity.getAfter();
@@ -528,9 +532,6 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": added " + activity.getAfter();
         }
 
-        if (!StringUtils.isEmpty(currActivityRowValue)) {
-            currActivityRowValue += "; ";
-        }
         currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
         currRow.set(ACTIVITY_REASON_COL, activity.getReason());
     }
