@@ -28,7 +28,6 @@ public class CertifiedProductSearchManager {
     @Transactional(readOnly = true)
     @Cacheable(value = CacheNames.COLLECTIONS_LISTINGS, key = "'listings'")
     public List<CertifiedProductFlatSearchResult> search() {
-        System.out.println("Not getting listings from cache");
         List<CertifiedProductFlatSearchResult> results = searchDao.getAllCertifiedProducts();
         return results;
     }
@@ -37,7 +36,6 @@ public class CertifiedProductSearchManager {
     @Cacheable(value = CacheNames.COLLECTIONS_LISTINGS, key = "'legacyListings'")
     @Deprecated
     public List<CertifiedProductFlatSearchResultLegacy> searchLegacy() {
-        System.out.println("Not getting listings from legacy cache");
         List<CertifiedProductFlatSearchResultLegacy> results = searchDao.getAllCertifiedProductsLegacy();
         return results;
     }
