@@ -14,7 +14,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.ListingCountStatisticsDAO;
-import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResultLegacy;
+import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.dto.ListingCountStatisticsDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -53,10 +53,10 @@ public class ListingCountStatisticsCalculator {
      *            incoming listings
      * @return list of listingCountStatisticsDTOs
      */
-    public List<ListingCountStatisticsDTO> getCounts(final List<CertifiedProductFlatSearchResultLegacy> listings) {
+    public List<ListingCountStatisticsDTO> getCounts(List<CertifiedProductFlatSearchResult> listings) {
         HashMap<String, HashSet<String>> developers = new HashMap<String, HashSet<String>>();
         HashMap<String, HashSet<String>> products = new HashMap<String, HashSet<String>>();
-        for (CertifiedProductFlatSearchResultLegacy listing : listings) {
+        for (CertifiedProductFlatSearchResult listing : listings) {
             String devKey = listing.getEdition() + "\u263A" + listing.getDeveloper();
             String prodKey = listing.getEdition() + "\u263A" + listing.getDeveloper() + "\u263A" + listing.getProduct();
             if (!developers.containsKey(devKey)) {
