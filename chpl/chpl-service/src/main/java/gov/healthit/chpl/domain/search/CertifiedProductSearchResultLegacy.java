@@ -13,8 +13,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Data
-public class CertifiedProductSearchResult implements Serializable {
-    private static final long serialVersionUID = -2547390525592841123L;
+@Deprecated
+public class CertifiedProductSearchResultLegacy implements Serializable {
+    private static final long serialVersionUID = -2547390525592841034L;
 
     @JsonView({
             SearchViews.Default.class
@@ -89,30 +90,12 @@ public class CertifiedProductSearchResult implements Serializable {
     @JsonView({
             SearchViews.Default.class
     })
-    private Long openSurveillanceNonconformityCount;
+    private Long openNonconformityCount;
 
     @JsonView({
             SearchViews.Default.class
     })
-    private Long closedSurveillanceNonconformityCount;
-
-    @JsonView({
-        SearchViews.Default.class
-    })
-    @Builder.Default
-    private Long directReviewCount = 0L;
-
-    @JsonView({
-            SearchViews.Default.class
-    })
-    @Builder.Default
-    private Long openDirectReviewNonconformityCount = 0L;
-
-    @JsonView({
-            SearchViews.Default.class
-    })
-    @Builder.Default
-    private Long closedDirectReviewNonconformityCount = 0L;
+    private Long closedNonconformityCount;
 
     private Long openSurveillanceCount;
     private Long closedSurveillanceCount;
@@ -121,7 +104,7 @@ public class CertifiedProductSearchResult implements Serializable {
     private Long numMeaningfulUseDate;
     private String transparencyAttestationUrl;
 
-    public CertifiedProductSearchResult(CertifiedProductSearchResult other) {
+    public CertifiedProductSearchResultLegacy(final CertifiedProductSearchResultLegacy other) {
         this.id = other.getId();
         this.chplProductNumber = other.getChplProductNumber();
         this.edition = other.getEdition();
@@ -139,11 +122,8 @@ public class CertifiedProductSearchResult implements Serializable {
         this.surveillanceCount = other.getSurveillanceCount();
         this.openSurveillanceCount = other.getOpenSurveillanceCount();
         this.closedSurveillanceCount = other.getClosedSurveillanceCount();
-        this.openSurveillanceNonconformityCount = other.getOpenSurveillanceNonconformityCount();
-        this.closedSurveillanceNonconformityCount = other.getClosedSurveillanceNonconformityCount();
-        this.directReviewCount = other.getDirectReviewCount();
-        this.openDirectReviewNonconformityCount = other.getOpenDirectReviewNonconformityCount();
-        this.closedDirectReviewNonconformityCount = other.getClosedDirectReviewNonconformityCount();
+        this.openNonconformityCount = other.getOpenNonconformityCount();
+        this.closedNonconformityCount = other.getClosedNonconformityCount();
         this.numMeaningfulUse = other.getNumMeaningfulUse();
         this.numMeaningfulUseDate = other.getNumMeaningfulUseDate();
         this.transparencyAttestationUrl = other.getTransparencyAttestationUrl();

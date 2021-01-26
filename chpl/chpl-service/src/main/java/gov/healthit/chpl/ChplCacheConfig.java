@@ -84,11 +84,6 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.TEST_FUNCTIONALITY_MAPS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.UPLOAD_TEMPLATE_VERSIONS));
 
-        backingManager.addCacheIfAbsent(createEternalCache(CacheNames.PREFETCHED_COLLECTIONS_LISTINGS));
-        backingManager.addCacheIfAbsent(createEternalCache(CacheNames.PREFETCHED_ALL_CERT_IDS));
-        backingManager.addCacheIfAbsent(createEternalCache(CacheNames.PREFETCHED_ALL_CERT_IDS_WITH_PRODUCTS));
-        backingManager.addCacheIfAbsent(createEternalCache(CacheNames.PREFETCHED_PRODUCT_NAMES));
-        backingManager.addCacheIfAbsent(createEternalCache(CacheNames.PREFETCHED_DEVELOPER_NAMES));
         return cacheManager;
     }
 
@@ -105,8 +100,7 @@ public class ChplCacheConfig {
     }
 
     private Ehcache createCache(String name, long ttl) {
-        int maxEntriesLocalHeap = (name.equals(CacheNames.COLLECTIONS_LISTINGS)
-                || name.equals(CacheNames.PREFETCHED_COLLECTIONS_LISTINGS))
+        int maxEntriesLocalHeap = name.equals(CacheNames.COLLECTIONS_LISTINGS)
                 ? MAX_ENTRIES_LOCAL_HEAP_LISTING_COLLECTION : MAX_ENTRIES_LOCAL_HEAP;
         Cache cache = new Cache(
                 new CacheConfiguration(name, maxEntriesLocalHeap)

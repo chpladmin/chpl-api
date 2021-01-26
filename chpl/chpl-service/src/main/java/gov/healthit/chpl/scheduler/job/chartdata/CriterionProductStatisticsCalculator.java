@@ -14,7 +14,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CriterionProductStatisticsDAO;
-import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResultLegacy;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CriterionProductStatisticsDTO;
 import gov.healthit.chpl.entity.CriterionProductStatisticsEntity;
@@ -52,12 +52,12 @@ public class CriterionProductStatisticsCalculator {
      *            listings to parse
      * @return map of criteria to counts
      */
-    public Map<String, Long> getCounts(final List<CertifiedProductFlatSearchResult> listings) {
+    public Map<String, Long> getCounts(final List<CertifiedProductFlatSearchResultLegacy> listings) {
         Map<String, Long> criterionMap = new HashMap<String, Long>();
         HashSet<String> uniqueProductSet = new HashSet<String>();
-        for (CertifiedProductFlatSearchResult listing : listings) {
+        for (CertifiedProductFlatSearchResultLegacy listing : listings) {
             if (listing.getCriteriaMet() != null && !listing.getCriteriaMet().isEmpty()) {
-                for (String certId : listing.getCriteriaMet().split(CertifiedProductFlatSearchResult.CERTS_SPLIT_CHAR)) {
+                for (String certId : listing.getCriteriaMet().split(CertifiedProductFlatSearchResultLegacy.CERTS_SPLIT_CHAR)) {
                     String key = certId + "-" + listing.getDeveloper() + '-' + listing.getProduct();
                     if (!uniqueProductSet.contains(key)) {
                         if (!criterionMap.containsKey(certId)) {

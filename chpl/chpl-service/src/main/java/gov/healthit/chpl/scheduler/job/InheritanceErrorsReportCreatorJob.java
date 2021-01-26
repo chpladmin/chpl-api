@@ -32,7 +32,7 @@ import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.scheduler.InheritanceErrorsReportDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResultLegacy;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.scheduler.InheritanceErrorsReportDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -98,8 +98,8 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
             return;
         }
 
-        List<CertifiedProductFlatSearchResult> listings = certifiedProductSearchDAO.getAllCertifiedProducts();
-        List<CertifiedProductFlatSearchResult> certifiedProducts = filterData(listings);
+        List<CertifiedProductFlatSearchResultLegacy> listings = certifiedProductSearchDAO.getAllCertifiedProductsLegacy();
+        List<CertifiedProductFlatSearchResultLegacy> certifiedProducts = filterData(listings);
 
         ExecutorService executorService = null;
         try {
@@ -108,7 +108,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
             List<InheritanceErrorsReportDTO> allInheritanceErrors = new ArrayList<InheritanceErrorsReportDTO>();
 
             List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
-            for (CertifiedProductFlatSearchResult result : certifiedProducts) {
+            for (CertifiedProductFlatSearchResultLegacy result : certifiedProducts) {
                 futures.add(CompletableFuture.supplyAsync(() -> getCertifiedProductSearchDetails(result.getId()), executorService)
                         .thenApply(cp -> check(cp))
                         .thenAccept(error -> {
@@ -201,7 +201,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
         });
     }
 
-    private List<CertifiedProductFlatSearchResult> filterData(List<CertifiedProductFlatSearchResult> certifiedProducts) {
+    private List<CertifiedProductFlatSearchResultLegacy> filterData(List<CertifiedProductFlatSearchResultLegacy> certifiedProducts) {
         return certifiedProducts.stream()
                 .filter(cp -> cp.getEdition().equalsIgnoreCase(EDITION_2015))
                 .collect(Collectors.toList());

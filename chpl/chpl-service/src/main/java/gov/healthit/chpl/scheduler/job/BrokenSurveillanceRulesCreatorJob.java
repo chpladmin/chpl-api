@@ -33,7 +33,7 @@ import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.dao.scheduler.BrokenSurveillanceRulesDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.OversightRuleResult;
-import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResultLegacy;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityStatus;
@@ -87,13 +87,13 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         ExecutorService executorService = null;
         try {
             executorService = Executors.newFixedThreadPool(getThreadCountForJob());
-            List<CertifiedProductFlatSearchResult> listingsForReport = getListingsForReport();
+            List<CertifiedProductFlatSearchResultLegacy> listingsForReport = getListingsForReport();
             LOGGER.info(String.format("Found %s listings to process", listingsForReport.size()));
 
             List<BrokenSurveillanceRulesDTO> allBrokenRules = new ArrayList<BrokenSurveillanceRulesDTO>();
 
             List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
-            for (CertifiedProductFlatSearchResult listing : listingsForReport) {
+            for (CertifiedProductFlatSearchResultLegacy listing : listingsForReport) {
                 futures.add(CompletableFuture.supplyAsync(() ->
                     processListing(listing.getId()), executorService)
                         .thenAccept(result -> allBrokenRules.addAll(result)));
@@ -116,23 +116,23 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         LOGGER.info("********* Completed the Broken Surveillance Rules Creator job. *********");
     }
 
-    private List<CertifiedProductFlatSearchResult> getListingsForReport() {
-        return certifiedProductSearchDAO.getAllCertifiedProducts().stream()
+    private List<CertifiedProductFlatSearchResultLegacy> getListingsForReport() {
+        return certifiedProductSearchDAO.getAllCertifiedProductsLegacy().stream()
                 .filter(listing -> !isEdition2011(listing)
                         && (isCertificationStatusSuspendedByAcb(listing)
                                 || hasSurveillances(listing)))
                 .collect(Collectors.toList());
     }
 
-    private boolean isEdition2011(CertifiedProductFlatSearchResult listing) {
+    private boolean isEdition2011(CertifiedProductFlatSearchResultLegacy listing) {
         return listing.getEdition().equals(EDITION_2011);
     }
 
-    private boolean isCertificationStatusSuspendedByAcb(CertifiedProductFlatSearchResult listing) {
+    private boolean isCertificationStatusSuspendedByAcb(CertifiedProductFlatSearchResultLegacy listing) {
         return listing.getCertificationStatus().equalsIgnoreCase(CertificationStatusType.SuspendedByAcb.getName());
     }
 
-    private boolean hasSurveillances(CertifiedProductFlatSearchResult listing) {
+    private boolean hasSurveillances(CertifiedProductFlatSearchResultLegacy listing) {
         return listing.getSurveillanceCount() > 0;
     }
 

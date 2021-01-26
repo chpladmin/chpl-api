@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public class BasicSearchResponse implements Serializable {
-    private static final long serialVersionUID = 2569559170265522799L;
+    private static final long serialVersionUID = 2569559170265522788L;
 
     private List<CertifiedProductFlatSearchResult> results;
     private boolean directReviewsAvailable;

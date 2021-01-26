@@ -28,6 +28,7 @@ import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResultLegacy;
 import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
 import gov.healthit.chpl.domain.search.SearchRequest;
 import gov.healthit.chpl.domain.search.SearchSetOperator;
@@ -109,6 +110,27 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
 
         try {
             domainResults = convertToFlatListings(results);
+        } catch (Exception ex) {
+            LOGGER.error("Could not convert to flat listings " + ex.getMessage(), ex);
+        }
+        return domainResults;
+    }
+
+    @Deprecated
+    public List<CertifiedProductFlatSearchResultLegacy> getAllCertifiedProductsLegacy() {
+        LOGGER.info("Starting basic search query.");
+        Query query = entityManager.createQuery("SELECT cps "
+                + "FROM CertifiedProductBasicSearchResultEntity cps ",
+                CertifiedProductBasicSearchResultEntity.class);
+
+        Date startDate = new Date();
+        List<CertifiedProductBasicSearchResultEntity> results = query.getResultList();
+        Date endDate = new Date();
+        LOGGER.info("Got query results in " + (endDate.getTime() - startDate.getTime()) + " millis");
+        List<CertifiedProductFlatSearchResultLegacy> domainResults = null;
+
+        try {
+            domainResults = convertToFlatListingsLegacy(results);
         } catch (Exception ex) {
             LOGGER.error("Could not convert to flat listings " + ex.getMessage(), ex);
         }
@@ -565,50 +587,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         query.setParameter("lastResult", lastResult);
     }
 
-    private void convertToListing(final CertifiedProductListingSearchResultEntity queryResult,
-            final CertifiedProductBasicSearchResult listing) {
-        listing.setId(queryResult.getId());
-        listing.setChplProductNumber(queryResult.getChplProductNumber());
-        listing.setCertificationStatus(queryResult.getCertificationStatus());
-        listing.setNumMeaningfulUse(queryResult.getMeaningfulUseUserCount());
-        listing.setNumMeaningfulUseDate(
-                queryResult.getMeaningfulUseUsersDate() != null ? queryResult.getMeaningfulUseUsersDate().getTime() : null);
-        listing.setTransparencyAttestationUrl(queryResult.getTransparencyAttestationUrl());
-        listing.setEdition(queryResult.getEdition());
-        listing.setCuresUpdate(queryResult.getCuresUpdate());
-        listing.setAcb(queryResult.getAcbName());
-        listing.setAcbCertificationId(queryResult.getAcbCertificationId());
-        listing.setPracticeType(queryResult.getPracticeTypeName());
-        listing.setVersion(queryResult.getVersion());
-        listing.setProduct(queryResult.getProduct());
-        listing.setDeveloper(queryResult.getDeveloper());
-        listing.setSurveillanceCount(queryResult.getCountSurveillance().longValue());
-        listing.setOpenSurveillanceNonconformityCount(queryResult.getCountOpenSurveillanceNonconformities().longValue());
-        listing.setClosedSurveillanceNonconformityCount(queryResult.getCountClosedSurveillanceNonconformities().longValue());
-
-        if (queryResult.getCertificationDate() != null) {
-            listing.setCertificationDate(queryResult.getCertificationDate().getTime());
-        }
-
-        if (queryResult.getDecertificationDate() != null) {
-            listing.setDecertificationDate(queryResult.getDecertificationDate().getTime());
-        }
-
-        if (queryResult.getPreviousDeveloperOwner() != null) {
-            listing.getPreviousDevelopers().add(queryResult.getPreviousDeveloperOwner());
-        }
-
-        if (queryResult.getCert() != null) {
-            listing.getCriteriaMet().add(queryResult.getCert());
-        }
-
-        if (queryResult.getCqm() != null) {
-            listing.getCqmsMet().add(queryResult.getCqm());
-        }
-    }
-
-    private List<CertifiedProductFlatSearchResult> convertToFlatListings(
-            final List<CertifiedProductBasicSearchResultEntity> dbResults) {
+    private List<CertifiedProductFlatSearchResult> convertToFlatListings(List<CertifiedProductBasicSearchResultEntity> dbResults) {
         List<CertifiedProductFlatSearchResult> results = new ArrayList<CertifiedProductFlatSearchResult>(
                 dbResults.size());
         for (CertifiedProductBasicSearchResultEntity dbResult : dbResults) {
@@ -640,6 +619,91 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
             result.setClosedSurveillanceNonconformityCount(dbResult.getClosedSurveillanceNonconformityCount());
             result.setSurveillanceDates(dbResult.getSurveillanceDates());
             //TODO: set direct review values here from cache
+            result.setCriteriaMet(dbResult.getCerts());
+            result.setCqmsMet(dbResult.getCqms());
+            result.setPreviousDevelopers(dbResult.getPreviousDevelopers());
+
+            results.add(result);
+        }
+        return results;
+    }
+
+    @Deprecated
+    private void convertToListing(CertifiedProductListingSearchResultEntity queryResult,
+            CertifiedProductBasicSearchResult listing) {
+        listing.setId(queryResult.getId());
+        listing.setChplProductNumber(queryResult.getChplProductNumber());
+        listing.setCertificationStatus(queryResult.getCertificationStatus());
+        listing.setNumMeaningfulUse(queryResult.getMeaningfulUseUserCount());
+        listing.setNumMeaningfulUseDate(
+                queryResult.getMeaningfulUseUsersDate() != null ? queryResult.getMeaningfulUseUsersDate().getTime() : null);
+        listing.setTransparencyAttestationUrl(queryResult.getTransparencyAttestationUrl());
+        listing.setEdition(queryResult.getEdition());
+        listing.setCuresUpdate(queryResult.getCuresUpdate());
+        listing.setAcb(queryResult.getAcbName());
+        listing.setAcbCertificationId(queryResult.getAcbCertificationId());
+        listing.setPracticeType(queryResult.getPracticeTypeName());
+        listing.setVersion(queryResult.getVersion());
+        listing.setProduct(queryResult.getProduct());
+        listing.setDeveloper(queryResult.getDeveloper());
+        listing.setSurveillanceCount(queryResult.getCountSurveillance().longValue());
+        listing.setOpenNonconformityCount(queryResult.getCountOpenSurveillanceNonconformities().longValue());
+        listing.setClosedNonconformityCount(queryResult.getCountClosedSurveillanceNonconformities().longValue());
+
+        if (queryResult.getCertificationDate() != null) {
+            listing.setCertificationDate(queryResult.getCertificationDate().getTime());
+        }
+
+        if (queryResult.getDecertificationDate() != null) {
+            listing.setDecertificationDate(queryResult.getDecertificationDate().getTime());
+        }
+
+        if (queryResult.getPreviousDeveloperOwner() != null) {
+            listing.getPreviousDevelopers().add(queryResult.getPreviousDeveloperOwner());
+        }
+
+        if (queryResult.getCert() != null) {
+            listing.getCriteriaMet().add(queryResult.getCert());
+        }
+
+        if (queryResult.getCqm() != null) {
+            listing.getCqmsMet().add(queryResult.getCqm());
+        }
+    }
+
+    @Deprecated
+    private List<CertifiedProductFlatSearchResultLegacy> convertToFlatListingsLegacy(
+            List<CertifiedProductBasicSearchResultEntity> dbResults) {
+        List<CertifiedProductFlatSearchResultLegacy> results = new ArrayList<CertifiedProductFlatSearchResultLegacy>(
+                dbResults.size());
+        for (CertifiedProductBasicSearchResultEntity dbResult : dbResults) {
+            CertifiedProductFlatSearchResultLegacy result = new CertifiedProductFlatSearchResultLegacy();
+            result.setId(dbResult.getId());
+            result.setChplProductNumber(dbResult.getChplProductNumber());
+            result.setEdition(dbResult.getEdition());
+            result.setCuresUpdate(dbResult.getCuresUpdate());
+            result.setAcb(dbResult.getAcbName());
+            result.setAcbCertificationId(dbResult.getAcbCertificationId());
+            result.setPracticeType(dbResult.getPracticeTypeName());
+            result.setDeveloper(dbResult.getDeveloper());
+            result.setDeveloperStatus(dbResult.getDeveloperStatus());
+            result.setProduct(dbResult.getProduct());
+            result.setVersion(dbResult.getVersion());
+            result.setNumMeaningfulUse(dbResult.getMeaningfulUseUserCount());
+            result.setNumMeaningfulUseDate(dbResult.getMeaningfulUseUserDate() != null
+                    ? dbResult.getMeaningfulUseUserDate().getTime() : null);
+            result.setDecertificationDate(
+                    dbResult.getDecertificationDate() == null ? null : dbResult.getDecertificationDate().getTime());
+            result.setCertificationDate(dbResult.getCertificationDate().getTime());
+            result.setCertificationStatus(dbResult.getCertificationStatus());
+            result.setTransparencyAttestationUrl(dbResult.getTransparencyAttestationUrl());
+            result.setApiDocumentation(dbResult.getApiDocumentation());
+            result.setSurveillanceCount(dbResult.getSurveillanceCount());
+            result.setOpenSurveillanceCount(dbResult.getOpenSurveillanceCount());
+            result.setClosedSurveillanceCount(dbResult.getClosedSurveillanceCount());
+            result.setOpenNonconformityCount(dbResult.getOpenSurveillanceNonconformityCount());
+            result.setClosedNonconformityCount(dbResult.getClosedSurveillanceNonconformityCount());
+            result.setSurveillanceDates(dbResult.getSurveillanceDates());
             result.setCriteriaMet(dbResult.getCerts());
             result.setCqmsMet(dbResult.getCqms());
             result.setPreviousDevelopers(dbResult.getPreviousDevelopers());

@@ -3,8 +3,6 @@ package gov.healthit.chpl.caching;
 import java.io.IOException;
 import java.util.concurrent.Future;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -17,11 +15,11 @@ import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.service.DirectReviewService;
+import lombok.extern.log4j.Log4j2;
 
 @Component
+@Log4j2
 public class AsynchronousCacheInitialization {
-    private static final Logger LOGGER = LogManager.getLogger(AsynchronousCacheInitialization.class);
-
     private CertificationIdManager certificationIdManager;
     private DimensionalDataManager dimensionalDataManager;
     private CertifiedProductSearchManager certifiedProductSearchManager;
@@ -56,6 +54,9 @@ public class AsynchronousCacheInitialization {
         LOGGER.info("Starting cache initialization for CertifiedProductSearchManager.search()");
         certifiedProductSearchManager.search();
         LOGGER.info("Finished cache initialization for CertifiedProductSearchManager.search()");
+        LOGGER.info("Starting cache initialization for CertifiedProductSearchManager.searchLegacy()");
+        certifiedProductSearchManager.searchLegacy();
+        LOGGER.info("Finished cache initialization for CertifiedProductSearchManager.searchLegacy()");
         return new AsyncResult<>(true);
     }
 

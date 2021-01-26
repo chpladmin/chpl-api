@@ -14,7 +14,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResultLegacy;
 import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
 import gov.healthit.chpl.dto.ListingCountStatisticsDTO;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
@@ -50,7 +50,7 @@ public final class ChartDataCreatorJob extends QuartzJob {
     public void execute(JobExecutionContext arg0) throws JobExecutionException {
         LOGGER.info("*****Chart Data Generator is starting now.*****");
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        List<CertifiedProductFlatSearchResult> certifiedProducts = certifiedProductSearchDAO.getAllCertifiedProducts();
+        List<CertifiedProductFlatSearchResultLegacy> certifiedProducts = certifiedProductSearchDAO.getAllCertifiedProductsLegacy();
         LOGGER.info("Certified Product Count: " + certifiedProducts.size());
 
         try {
@@ -86,16 +86,16 @@ public final class ChartDataCreatorJob extends QuartzJob {
         LOGGER.info("*****Chart Data Generator is done running.*****");
     }
 
-    private static void analyzeDevelopers(final List<CertifiedProductFlatSearchResult> listings) {
+    private static void analyzeDevelopers(final List<CertifiedProductFlatSearchResultLegacy> listings) {
         IncumbentDevelopersStatisticsCalculator incumbentDevelopersStatisticsCalculator = new IncumbentDevelopersStatisticsCalculator();
         List<IncumbentDevelopersStatisticsDTO> dtos = incumbentDevelopersStatisticsCalculator.getCounts(listings);
         incumbentDevelopersStatisticsCalculator.logCounts(dtos);
         incumbentDevelopersStatisticsCalculator.save(dtos);
     }
 
-    private static void analyzeListingCounts(List<CertifiedProductFlatSearchResult> listings) {
+    private static void analyzeListingCounts(List<CertifiedProductFlatSearchResultLegacy> listings) {
         ListingCountDataFilter listingCountDataFilter = new ListingCountDataFilter();
-        List<CertifiedProductFlatSearchResult> filteredListings = listingCountDataFilter.filterData(listings);
+        List<CertifiedProductFlatSearchResultLegacy> filteredListings = listingCountDataFilter.filterData(listings);
         ListingCountStatisticsCalculator listingCountStatisticsCalculator = new ListingCountStatisticsCalculator();
         List<ListingCountStatisticsDTO> dtos = listingCountStatisticsCalculator.getCounts(filteredListings);
         listingCountStatisticsCalculator.logCounts(dtos);
@@ -109,16 +109,16 @@ public final class ChartDataCreatorJob extends QuartzJob {
         nonconformityStatisticsCalculator.saveCounts(dtos);
     }
 
-    private static void analyzeProducts(List<CertifiedProductFlatSearchResult> listings) throws NumberFormatException, EntityRetrievalException {
+    private static void analyzeProducts(List<CertifiedProductFlatSearchResultLegacy> listings) throws NumberFormatException, EntityRetrievalException {
         CriterionProductDataFilter criterionProductDataFilter = new CriterionProductDataFilter();
         CriterionProductStatisticsCalculator criterionProductStatisticsCalculator = new CriterionProductStatisticsCalculator();
-        List<CertifiedProductFlatSearchResult> filteredListings = criterionProductDataFilter.filterData(listings);
+        List<CertifiedProductFlatSearchResultLegacy> filteredListings = criterionProductDataFilter.filterData(listings);
         Map<String, Long> productCounts = criterionProductStatisticsCalculator.getCounts(filteredListings);
         criterionProductStatisticsCalculator.logCounts(productCounts);
         criterionProductStatisticsCalculator.save(productCounts);
     }
 
-    private static void analyzeSed(final List<CertifiedProductFlatSearchResult> listings) {
+    private static void analyzeSed(final List<CertifiedProductFlatSearchResultLegacy> listings) {
         // Get Certified Products
         SedDataCollector sedDataCollector = new SedDataCollector();
         List<CertifiedProductSearchDetails> seds = sedDataCollector.retreiveData(listings);

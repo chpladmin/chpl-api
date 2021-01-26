@@ -12,7 +12,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.IncumbentDevelopersStatisticsDAO;
-import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResultLegacy;
 import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -50,7 +50,7 @@ public class IncumbentDevelopersStatisticsCalculator {
      * @return statistics objects
      */
     public List<IncumbentDevelopersStatisticsDTO> getCounts(
-            final List<CertifiedProductFlatSearchResult> certifiedProducts) {
+            final List<CertifiedProductFlatSearchResultLegacy> certifiedProducts) {
 
         /**
          * Loop through every Listing. For each Listing, add that Listing's
@@ -65,7 +65,7 @@ public class IncumbentDevelopersStatisticsCalculator {
         HashSet<String> developers2011 = new HashSet<String>();
         HashSet<String> developers2014 = new HashSet<String>();
         HashSet<String> developers2015 = new HashSet<String>();
-        for (CertifiedProductFlatSearchResult listing : certifiedProducts) {
+        for (CertifiedProductFlatSearchResultLegacy listing : certifiedProducts) {
             switch (listing.getEdition()) {
             case "2011":
                 developers2011.add(listing.getDeveloper());

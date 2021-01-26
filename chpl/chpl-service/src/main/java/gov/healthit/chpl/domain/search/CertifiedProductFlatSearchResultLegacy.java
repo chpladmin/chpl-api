@@ -7,8 +7,9 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResult {
-    private static final long serialVersionUID = -2547390525592841033L;
+@Deprecated
+public class CertifiedProductFlatSearchResultLegacy extends CertifiedProductSearchResultLegacy {
+    private static final long serialVersionUID = -2547390525592841044L;
     public static final String CERTS_SPLIT_CHAR = "\u263A";
 
     @JsonView({
@@ -35,7 +36,7 @@ public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResu
 
     private String apiDocumentation;
 
-    public CertifiedProductFlatSearchResult(CertifiedProductFlatSearchResult other) {
+    public CertifiedProductFlatSearchResultLegacy(CertifiedProductFlatSearchResultLegacy other) {
         super(other);
         this.previousDevelopers = other.getPreviousDevelopers();
         this.criteriaMet = other.getCriteriaMet();

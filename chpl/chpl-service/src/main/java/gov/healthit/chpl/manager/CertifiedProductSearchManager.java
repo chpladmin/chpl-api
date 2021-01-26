@@ -12,6 +12,7 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResultLegacy;
 import gov.healthit.chpl.domain.search.SearchRequest;
 import gov.healthit.chpl.domain.search.SearchResponse;
 
@@ -25,12 +26,20 @@ public class CertifiedProductSearchManager {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(CacheNames.COLLECTIONS_LISTINGS)
+    @Cacheable(value = CacheNames.COLLECTIONS_LISTINGS, key = "'listings'")
     public List<CertifiedProductFlatSearchResult> search() {
-        List<CertifiedProductFlatSearchResult> results = searchDao.getAllCertifiedProducts()
-                //TODO remove
-                .subList(0, 10);
-        return results;
+        System.out.println("Not getting listings from cache");
+        List<CertifiedProductFlatSearchResult> results = searchDao.getAllCertifiedProducts();
+        return results.subList(0, 10);
+    }
+
+    @Transactional(readOnly = true)
+    @Cacheable(value = CacheNames.COLLECTIONS_LISTINGS, key = "'legacyListings'")
+    @Deprecated
+    public List<CertifiedProductFlatSearchResultLegacy> searchLegacy() {
+        System.out.println("Not getting listings from legacy cache");
+        List<CertifiedProductFlatSearchResultLegacy> results = searchDao.getAllCertifiedProductsLegacy();
+        return results.subList(0, 10);
     }
 
     @Transactional
