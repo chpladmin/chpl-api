@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.svap.dao.SvapDAO;
@@ -24,6 +25,7 @@ public class SvapManager {
     }
 
     //TODO - add permissions
+    @Transactional
     public List<Svap> getAll() {
         return svapDao.getAll();
     }

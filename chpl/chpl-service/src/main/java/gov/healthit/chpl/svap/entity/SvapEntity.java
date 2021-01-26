@@ -1,15 +1,21 @@
 package gov.healthit.chpl.svap.entity;
 
 import java.util.Date;
+import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import lombok.Data;
 
 @Entity
@@ -28,6 +34,13 @@ public class SvapEntity {
 
     @Column(name = "approved_standard_version", nullable = false)
     private String approvedStandardVersion;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "svap_criteria_map",
+        joinColumns = {@JoinColumn(name = "svap_id", referencedColumnName = "id")},
+        inverseJoinColumns = {@JoinColumn(name = "criteria_id", referencedColumnName = "certification_criterion_id")})
+    private Set<CertificationCriterionEntity> criteria;
+
 
     @Column(name = "replaced", nullable = false)
     private Boolean replaced;

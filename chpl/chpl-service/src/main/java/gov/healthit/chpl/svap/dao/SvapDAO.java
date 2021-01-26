@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -24,12 +25,14 @@ public class SvapDAO extends BaseDAOImpl {
         return null;
     }
 
+    @Transactional
     public List<SvapCriteriaMap> getAllSvapCriteriaMap() throws EntityRetrievalException {
         return getAllSvapCriteriaMapEntities().stream()
                 .map(e -> new SvapCriteriaMap(e))
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public List<Svap> getAll() {
         return getAllEntities().stream()
                 .map(entity -> new Svap(entity))
@@ -79,6 +82,7 @@ public class SvapDAO extends BaseDAOImpl {
     private List<SvapEntity> getAllEntities() {
         return entityManager.createQuery("SELECT svap "
                 + "FROM SvapEntity svap "
+                + "JOIN FETCH svap.criteria "
                 + "WHERE svap.deleted <> true ",
                 SvapEntity.class)
         .getResultList();
