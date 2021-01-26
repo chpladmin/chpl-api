@@ -30,7 +30,7 @@ public class CertifiedProductSearchManager {
     public List<CertifiedProductFlatSearchResult> search() {
         System.out.println("Not getting listings from cache");
         List<CertifiedProductFlatSearchResult> results = searchDao.getAllCertifiedProducts();
-        return results.subList(0, 10);
+        return results;
     }
 
     @Transactional(readOnly = true)
@@ -39,7 +39,7 @@ public class CertifiedProductSearchManager {
     public List<CertifiedProductFlatSearchResultLegacy> searchLegacy() {
         System.out.println("Not getting listings from legacy cache");
         List<CertifiedProductFlatSearchResultLegacy> results = searchDao.getAllCertifiedProductsLegacy();
-        return results.subList(0, 10);
+        return results;
     }
 
     @Transactional
