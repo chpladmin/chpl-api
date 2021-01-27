@@ -11,8 +11,13 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CQMResultDAO;
@@ -89,8 +94,10 @@ import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.PropertyUtil;
+import lombok.extern.log4j.Log4j2;
 
 @Loggable
+@Log4j2
 @Service("certifiedProductDetailsManager")
 public class CertifiedProductDetailsManager {
 
@@ -117,6 +124,7 @@ public class CertifiedProductDetailsManager {
     private ResourcePermissions resourcePermissions;
     private DimensionalDataManager dimensionalDataManager;
     private SvapDAO svapDao;
+    private JpaTransactionManager txnManager;
 
     private List<SvapCriteriaMap> svapCriteriaMap;
 
@@ -145,7 +153,8 @@ public class CertifiedProductDetailsManager {
             ChplProductNumberUtil chplProductNumberUtil,
             ResourcePermissions resourcePermissions,
             DimensionalDataManager dimensionalDataManager,
-            SvapDAO svapDao) {
+            SvapDAO svapDao,
+            JpaTransactionManager txnManager) {
 
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
         this.cqmResultDetailsDAO = cqmResultDetailsDAO;
@@ -170,11 +179,27 @@ public class CertifiedProductDetailsManager {
         this.resourcePermissions = resourcePermissions;
         this.dimensionalDataManager = dimensionalDataManager;
         this.svapDao = svapDao;
+        this.txnManager = txnManager;
     }
 
     @PostConstruct
     public void init() throws EntityRetrievalException {
-        svapCriteriaMap = svapDao.getAllSvapCriteriaMap();
+        //Need to manually get a transaction here, since the application context is not always complete
+        TransactionTemplate txTemplate = new TransactionTemplate(txnManager);
+        txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        txTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                try {
+                    svapCriteriaMap = svapDao.getAllSvapCriteriaMap();
+                } catch (EntityRetrievalException e) {
+                    LOGGER.catching(e);
+                }
+            }
+        });
+
+
+
     }
 
     @Transactional

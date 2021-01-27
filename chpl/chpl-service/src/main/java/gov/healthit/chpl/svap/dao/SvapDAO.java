@@ -25,14 +25,12 @@ public class SvapDAO extends BaseDAOImpl {
         return null;
     }
 
-    @Transactional
     public List<SvapCriteriaMap> getAllSvapCriteriaMap() throws EntityRetrievalException {
         return getAllSvapCriteriaMapEntities().stream()
                 .map(e -> new SvapCriteriaMap(e))
                 .collect(Collectors.toList());
     }
 
-    @Transactional
     public List<Svap> getAll() {
         return getAllEntities().stream()
                 .map(entity -> new Svap(entity))
