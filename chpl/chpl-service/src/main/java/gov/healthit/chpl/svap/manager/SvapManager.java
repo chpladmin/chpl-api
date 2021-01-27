@@ -54,16 +54,21 @@ public class SvapManager {
     //TODO - add permissions
     @Transactional
     public Svap create(Svap svap) throws EntityRetrievalException {
-        return svapDao.create(svap);
+        Svap newSvap = svapDao.create(svap);
+        svap.getCriteria().stream()
+                .forEach(crit -> svapDao.addSvapCriteriMap(newSvap, crit));
+
+        return svapDao.getById(newSvap.getSvapId());
     }
 
     @Transactional
     public void delete(Svap svap) throws EntityRetrievalException {
         Svap originalSvap = svapDao.getById(svap.getSvapId());
-        svapDao.update(originalSvap);
 
         originalSvap.getCriteria().stream()
                 .forEach(crit -> svapDao.removeSvapCriteriaMap(originalSvap, crit));
+
+        svapDao.remove(originalSvap);
     }
 
     private List<CertificationCriterion> getCriteriaAddedToSvap(Svap updatedSvap, Svap originalSvap) {

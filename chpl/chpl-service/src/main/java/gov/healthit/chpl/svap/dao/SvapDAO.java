@@ -96,7 +96,7 @@ public class SvapDAO extends BaseDAOImpl {
 
     public void removeSvapCriteriaMap(Svap svap, CertificationCriterion criterion) {
         try {
-            SvapCriteriaMapEntity entity = getAllSvapCriteriaMapBySvapAndCriterionEntity(svap.getSvapId(), criterion.getId());
+            SvapCriteriaMapEntity entity = getSvapCriteriaMapBySvapAndCriterionEntity(svap.getSvapId(), criterion.getId());
             entity.setDeleted(true);
             entity.setLastModifiedDate(new Date());
             entity.setLastModifiedUser(AuthUtil.getAuditId());
@@ -150,7 +150,7 @@ public class SvapDAO extends BaseDAOImpl {
         .getResultList();
     }
 
-    private SvapCriteriaMapEntity getAllSvapCriteriaMapBySvapAndCriterionEntity(Long svapId, Long certificationCriterionId) throws EntityRetrievalException {
+    private SvapCriteriaMapEntity getSvapCriteriaMapBySvapAndCriterionEntity(Long svapId, Long certificationCriterionId) throws EntityRetrievalException {
         List<SvapCriteriaMapEntity> result = entityManager.createQuery("SELECT DISTINCT scm "
                         + "FROM SvapCriteriaMapEntity scm "
                         + "JOIN FETCH scm.criteria c "
