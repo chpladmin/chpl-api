@@ -26,8 +26,8 @@ Version,Yes,<string>,The version of the product listed on the CHPL.
 Version Database ID,Yes,<int>,The unique database ID of the version.
 Practice Type,Yes,Ambulatory;Inpatient,"For 2014 listings, the practice setting for which the certified product is designed"
 Total Surveillance Activities,Yes,<int>,"The total number of surveillance activities that were conducted for the corresponding listing, regardless of whether or not a non-conformity was found.  For additional information, please see 'Understanding Surveillance Information in the CHPL', available in the CHPL Public User Guide"
-Total Nonconformities,Yes,<int>,"The total number of non-conformities found for the corresponding listing, regardless of whether or not the non-conformity has been resolved. For additional information, please see 'Understanding Surveillance Information in the CHPL', available in the CHPL Public User Guide"
-Open Nonconformities,Yes,<int>,"The total number of open (unresolved) non-conformities found for the corresponding listing. For additional information, please see 'Understanding Surveillance Information in the CHPL', available in the CHPL Public User Guide"
+Total Surveillance Non-conformities,Yes,<int>,"The total number of surveillance non-conformities found for the corresponding listing, regardless of whether or not the non-conformity has been resolved. For additional information, please see 'Understanding Surveillance Information in the CHPL', available in the CHPL Public User Guide"
+Open Surveillance Non-conformities,Yes,<int>,"The total number of open (unresolved) surveillance non-conformities found for the corresponding listing. For additional information, please see 'Understanding Surveillance Information in the CHPL', available in the CHPL Public User Guide"
 170.314(X)(X),Yes,TRUE; FALSE,Whether or not the listing was certified to the specified certification criteria
 170.314 (a)(1),Yes,TRUE; FALSE,Computerized provider order entry
 170.314 (a)(2),Yes,TRUE; FALSE,"Drug-drug, drug-allergy interactions checks"
