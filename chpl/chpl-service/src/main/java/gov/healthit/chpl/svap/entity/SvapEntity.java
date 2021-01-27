@@ -1,7 +1,7 @@
 package gov.healthit.chpl.svap.entity;
 
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -14,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.WhereJoinTable;
 
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import lombok.AllArgsConstructor;
@@ -45,21 +47,26 @@ public class SvapEntity {
     @JoinTable(name = "svap_criteria_map",
         joinColumns = {@JoinColumn(name = "svap_id", referencedColumnName = "id")},
         inverseJoinColumns = {@JoinColumn(name = "criteria_id", referencedColumnName = "certification_criterion_id")})
-    private Set<CertificationCriterionEntity> criteria;
+    @WhereJoinTable(clause = "deleted <> true")
+    private List<CertificationCriterionEntity> criteria;
 
 
     @Column(name = "replaced", nullable = false)
     private Boolean replaced;
 
+    @Basic(optional = false)
     @Column(name = "deleted", nullable = false)
     private Boolean deleted;
 
+    @Basic(optional = false)
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
+    @Basic(optional = false)
     @Column(name = "creation_date", insertable = false, updatable = false)
     private Date creationDate;
 
+    @Basic(optional = false)
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
 

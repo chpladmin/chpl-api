@@ -47,6 +47,15 @@ public class SvapController {
         return svapManager.create(svap);
     }
 
+    @ApiOperation(value = "Delete an SVAP.",
+            notes = "NEED TO ADD DESCRIPTION"
+                    + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.")
+    @RequestMapping(value = "", method = RequestMethod.DELETE, consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = "application/json; charset=utf-8")
+    public void deleteSvap(@RequestBody(required = true) Svap svap) throws EntityRetrievalException {
+        svapManager.delete(svap);
+    }
+
     @ApiOperation(value = "Update an SVAP.",
             notes = "NEED TO ADD DESCRIPTION"
                     + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.")
