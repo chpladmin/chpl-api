@@ -27,13 +27,22 @@ public class SvapController {
         this.svapManager = svapManager;
     }
 
-    @ApiOperation(value = "Get all SVAPs.",
+    @ApiOperation(value = "Update an SVAP.",
             notes = "NEED TO ADD DESCRIPTION"
                     + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.")
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = "application/json; charset=utf-8")
-    public @ResponseBody Svap updateSvap(Svap svap) throws EntityRetrievalException {
+    public @ResponseBody Svap updateSvap(@RequestBody(required = true) Svap svap) throws EntityRetrievalException, ValidationException {
         return svapManager.update(svap);
+    }
+
+    @ApiOperation(value = "Create an SVAP.",
+            notes = "NEED TO ADD DESCRIPTION"
+                    + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.")
+    @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = "application/json; charset=utf-8")
+    public @ResponseBody Svap createSvap(@RequestBody(required = true) Svap svap) throws EntityRetrievalException {
+        return svapManager.create(svap);
     }
 
     @ApiOperation(value = "Update an SVAP.",

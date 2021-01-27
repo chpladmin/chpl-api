@@ -16,11 +16,17 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "svap")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SvapEntity {
 
     @Id

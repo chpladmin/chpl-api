@@ -1,10 +1,10 @@
 package gov.healthit.chpl.svap.dao;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -49,20 +49,39 @@ public class SvapDAO extends BaseDAOImpl {
 
         update(entity);
 
-        return new Svap(entity);
+        return getById(entity.getSvapId());
+    }
+
+    public Svap create(Svap svap) throws EntityRetrievalException {
+        SvapEntity entity = SvapEntity.builder()
+                .approvedStandardVersion(svap.getApprovedStandardVersion())
+                .regulatoryTextCitation(svap.getRegulatoryTextCitation())
+                .replaced(svap.isReplaced())
+                .deleted(false)
+                .creationDate(new Date())
+                .lastModifiedDate(new Date())
+                .lastModifiedUser(AuthUtil.getAuditId())
+                .build();
+
+        create(entity);
+
+        return getById(entity.getSvapId());
     }
 
     private SvapEntity getSvapEntityById(Long id) throws EntityRetrievalException {
         List<SvapEntity> result = entityManager.createQuery("SELECT s "
                         + "FROM SvapEntity s "
-                        + "WHERE (NOT s.deleted = true) "
-                        + "AND (s.id = :entityid) ",
+                        + "JOIN FETCH s.criteria "
+                        + "WHERE s.deleted <> true "
+                        + "AND s.svapId = :entityid ",
                         SvapEntity.class)
                 .setParameter("entityid", id)
                 .getResultList();
 
         if (result.size() > 1) {
             throw new EntityRetrievalException("Data error. Duplicate svap id in database.");
+        } else if (result.size() == 0) {
+            throw new EntityRetrievalException("Data error. Could not locate SVAP {" + id + "} in database.");
         }
 
         return result.get(0);
@@ -73,8 +92,11 @@ public class SvapDAO extends BaseDAOImpl {
                         + "FROM SvapCriteriaMapEntity scm "
                         + "JOIN FETCH scm.criteria c "
                         + "JOIN FETCH c.certificationEdition "
-                        + "JOIN FETCH scm.svap "
-                        + "WHERE scm.deleted <> true ",
+                        + "JOIN FETCH scm.svap s "
+                        + "JOIN FETCH s.criteria c "
+                        + "WHERE scm.deleted <> true "
+                        + "AND s.deleted <> true "
+                        + "AND c.deleted <> true",
                         SvapCriteriaMapEntity.class)
                 .getResultList();
     }

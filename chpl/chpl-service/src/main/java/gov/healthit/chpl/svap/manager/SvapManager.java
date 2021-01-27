@@ -31,7 +31,17 @@ public class SvapManager {
     }
 
     //TODO - add permissions
-    public Svap update(Svap svap) throws EntityRetrievalException {
+    @Transactional
+    public Svap update(Svap svap) throws EntityRetrievalException, ValidationException {
+        if (true) {
+            throw new ValidationException("This is some message.");
+        }
         return svapDao.update(svap);
+    }
+
+    //TODO - add permissions
+    @Transactional
+    public Svap create(Svap svap) throws EntityRetrievalException {
+        return svapDao.create(svap);
     }
 }
