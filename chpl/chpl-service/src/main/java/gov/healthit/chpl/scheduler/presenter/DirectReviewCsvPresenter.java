@@ -26,7 +26,7 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
-@Log4j2
+@Log4j2(topic = "directReviewDownloadableResourceCreatorJobLogger")
 public class DirectReviewCsvPresenter {
     private Environment env;
     private DateTimeFormatter dateFormatter;
@@ -51,10 +51,13 @@ public class DirectReviewCsvPresenter {
                 if (developerIdKey instanceof Long) {
                     try {
                         Long developerId = (Long) developerIdKey;
-                        DeveloperDTO developer = developerManager.getById(developerId);
-                        List<List<String>> rowValues = generateMultiRowValue(developer, drCache.get(developerId));
-                        for (List<String> rowValue : rowValues) {
-                            csvPrinter.printRecord(rowValue);
+                        Object cachedDirectReviewValue = drCache.get(developerId).getObjectValue();
+                        if (cachedDirectReviewValue instanceof List<?> && ((List<?>) cachedDirectReviewValue).size() > 0) {
+                            DeveloperDTO developer = developerManager.getById(developerId);
+                            List<List<String>> rowValues = generateMultiRowValue(developer, drCache.get(developerId));
+                            for (List<String> rowValue : rowValues) {
+                                csvPrinter.printRecord(rowValue);
+                            }
                         }
                     } catch (EntityRetrievalException ex) {
                         LOGGER.error("Could not find developer with ID " + developerIdKey + ". Not writing direct reviews.");
