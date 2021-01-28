@@ -87,7 +87,7 @@ public class SvapManager {
                     listings.size(),
                     listings.stream()
                             .map(listing -> listing.getChplProductNumber())
-                            .collect(Collectors.joining(" | ")));
+                            .collect(Collectors.joining(", ")));
             ValidationException e = new ValidationException(message);
             throw e;
         }
