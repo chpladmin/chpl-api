@@ -21,12 +21,14 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
@@ -273,6 +275,14 @@ public class CertifiedProductSearchDetails implements Serializable {
     @XmlElementWrapper(name = "surveillanceList", nillable = true, required = false)
     @XmlElement(name = "surveillance")
     private List<Surveillance> surveillance = new ArrayList<Surveillance>();
+
+    /**
+     * Direct reviews that were conducted against this listing or its developer.
+     */
+    @JsonIgnore
+    @XmlElementWrapper(name = "directReviews", nillable = true, required = false)
+    @XmlElement(name = "directReview")
+    private List<DirectReview> directReviews = new ArrayList<DirectReview>();
 
     /**
      * This variable indicates that if there is the standard(s) or lack thereof used to meet the accessibility-centered
@@ -727,6 +737,14 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     public void setSurveillance(List<Surveillance> surveillance) {
         this.surveillance = surveillance;
+    }
+
+    public List<DirectReview> getDirectReviews() {
+        return directReviews;
+    }
+
+    public void setDirectReviews(List<DirectReview> directReviews) {
+        this.directReviews = directReviews;
     }
 
     public List<MeaningfulUseUser> getMeaningfulUseUserHistory() {

@@ -37,8 +37,8 @@ public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresent
         result.add("Version Database ID");
         result.add("Practice Type");
         result.add("Total Surveillance Activities");
-        result.add("Total Nonconformities");
-        result.add("Open Nonconformities");
+        result.add("Total Surveillance Non-conformities");
+        result.add("Open Surveillance Non-conformities");
         if (getApplicableCriteria() != null) {
             for (CertificationCriterionDTO criteria : getApplicableCriteria()) {
                 result.add(criteria.getNumber() + ": " + criteria.getTitle());
