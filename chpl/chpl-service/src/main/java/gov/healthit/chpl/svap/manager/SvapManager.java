@@ -1,6 +1,8 @@
 package gov.healthit.chpl.svap.manager;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -46,8 +48,9 @@ public class SvapManager {
     public Svap update(Svap svap) throws EntityRetrievalException, ValidationException {
         Svap originalSvap = svapDao.getById(svap.getSvapId());
 
-        svapDao.update(svap);
+        validateForEdit(svap,  originalSvap);
 
+        svapDao.update(svap);
         getCriteriaAddedToSvap(svap, originalSvap).stream()
                 .forEach(crit -> svapDao.addSvapCriteriMap(svap, crit));
         getCriteriaRemovedFromSvap(svap, originalSvap).stream()
@@ -89,6 +92,28 @@ public class SvapManager {
                             .map(listing -> listing.getChplProductNumber())
                             .collect(Collectors.joining(", ")));
             ValidationException e = new ValidationException(message);
+            throw e;
+        }
+    }
+
+    private void validateForEdit(Svap updatedSvap, Svap originalSvap) throws ValidationException {
+        Set<String> messages = new HashSet<String>();
+        //If there are removed criteria, make sure there are no listings attesting to SVAP/criteria
+        getCriteriaRemovedFromSvap(updatedSvap, originalSvap).stream()
+                .forEach(crit -> {
+                    List<CertifiedProductDetailsDTO> listings = svapDao.getCertifiedProductsBySvapAndCriteria(originalSvap, crit);
+                    if (listings.size() > 0) {
+                        messages.add(errorMessageUtil.getMessage("svap.edit.deletedCriteria.listingsExist",
+                                crit.getNumber(),
+                                listings.size(),
+                                listings.stream()
+                                        .map(listing -> listing.getChplProductNumber())
+                                        .collect(Collectors.joining(", "))));
+                    }
+                });
+
+        if (messages.size() > 0) {
+            ValidationException e = new ValidationException(messages);
             throw e;
         }
     }

@@ -124,6 +124,12 @@ public class SvapDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
+    public List<CertifiedProductDetailsDTO> getCertifiedProductsBySvapAndCriteria(Svap svap, CertificationCriterion criterion) {
+        return getCertificationResultSvapBySvapIdAndCriterionId(svap.getSvapId(), criterion.getId()).stream()
+                .map(crs -> getCertifiedProductDetails(crs.getCertificationResult().getCertifiedProductId()))
+                .collect(Collectors.toList());
+    }
+
     private CertifiedProductDetailsDTO getCertifiedProductDetails(Long certifiedProductId) {
         try {
             return certifiedProductSearchResultDAO.getById(certifiedProductId);
@@ -212,4 +218,19 @@ public class SvapDAO extends BaseDAOImpl {
                 .getResultList();
 
     }
+
+    private List<CertificationResultSvapEntity> getCertificationResultSvapBySvapIdAndCriterionId(Long svapId, Long criterionId) {
+        return entityManager.createQuery("SELECT crs "
+                        + "FROM CertificationResultSvapEntity crs "
+                        + "JOIN FETCH crs.certificationResult cr "
+                        + "WHERE crs.svapId = :svapId "
+                        + "AND cr.certificationCriterionId= :criterionId "
+                        + "AND crs.deleted <> true "
+                        + "AND cr.deleted <> true ",
+                        CertificationResultSvapEntity.class)
+                .setParameter("svapId", svapId)
+                .setParameter("criterionId", criterionId)
+                .getResultList();
+    }
+
  }
