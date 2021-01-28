@@ -43,44 +43,70 @@ public class SvapManager {
         return svapDao.getAll();
     }
 
-    //TODO - add permissions
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SVAP, "
+            + "T(gov.healthit.chpl.permissions.domains.SvapDomainPermissions).UPDATE)")
     @Transactional
     public Svap update(Svap svap) throws EntityRetrievalException, ValidationException {
         Svap originalSvap = svapDao.getById(svap.getSvapId());
-
         validateForEdit(svap,  originalSvap);
-
-        svapDao.update(svap);
-        getCriteriaAddedToSvap(svap, originalSvap).stream()
-                .forEach(crit -> svapDao.addSvapCriteriMap(svap, crit));
-        getCriteriaRemovedFromSvap(svap, originalSvap).stream()
-                .forEach(crit -> svapDao.removeSvapCriteriaMap(svap, crit));
-
-        return svapDao.getById(svap.getSvapId());
+        updateSvap(svap);
+        addNewCriteriaForExistingSvap(svap, originalSvap);
+        deleteCriteriaRemovedFromSvap(svap, originalSvap);
+        return getSvap(svap.getSvapId());
     }
 
     //TODO - add permissions
     @Transactional
     public Svap create(Svap svap) throws EntityRetrievalException {
-        Svap newSvap = svapDao.create(svap);
-        svap.getCriteria().stream()
-                .forEach(crit -> svapDao.addSvapCriteriMap(newSvap, crit));
-
-        return svapDao.getById(newSvap.getSvapId());
+        Svap newSvap = addSvap(svap);
+        addNewCriteriaForNewSvap(svap);
+        return getSvap(newSvap.getSvapId());
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SVAP, "
             + "T(gov.healthit.chpl.permissions.domains.SvapDomainPermissions).DELETE)")
     @Transactional
     public void delete(Svap svap) throws EntityRetrievalException, ValidationException {
-        Svap originalSvap = svapDao.getById(svap.getSvapId());
-
+        Svap originalSvap = getSvap(svap.getSvapId());
         validateForDelete(originalSvap);
+        deleteAllCriteriaFromSvap(originalSvap);
+        deleteSvap(originalSvap);
+    }
 
-        originalSvap.getCriteria().stream()
-                .forEach(crit -> svapDao.removeSvapCriteriaMap(originalSvap, crit));
+    private Svap getSvap(Long svapId) throws EntityRetrievalException {
+        return svapDao.getById(svapId);
+    }
 
-        svapDao.remove(originalSvap);
+    private void updateSvap(Svap svap) throws EntityRetrievalException {
+        svapDao.update(svap);
+    }
+
+    private Svap addSvap(Svap svap) throws EntityRetrievalException {
+        return svapDao.create(svap);
+    }
+
+    private void deleteSvap(Svap svap) throws EntityRetrievalException {
+        svapDao.remove(svap);
+    }
+
+    private void deleteCriteriaRemovedFromSvap(Svap updatedSvap, Svap originalSvap) {
+        getCriteriaRemovedFromSvap(updatedSvap, originalSvap).stream()
+                .forEach(crit -> svapDao.removeSvapCriteriaMap(updatedSvap, crit));
+    }
+
+    private void deleteAllCriteriaFromSvap(Svap svap) {
+        svap.getCriteria().stream()
+                .forEach(crit -> svapDao.removeSvapCriteriaMap(svap, crit));
+    }
+
+    private void addNewCriteriaForExistingSvap(Svap updatedSvap, Svap originalSvap) {
+        getCriteriaAddedToSvap(updatedSvap, originalSvap).stream()
+                .forEach(crit -> svapDao.addSvapCriteriMap(updatedSvap, crit));
+    }
+
+    private void addNewCriteriaForNewSvap(Svap svap) {
+        svap.getCriteria().stream()
+                .forEach(crit -> svapDao.addSvapCriteriMap(svap, crit));
     }
 
     private void validateForDelete(Svap svap) throws ValidationException {
@@ -119,22 +145,14 @@ public class SvapManager {
     }
 
     private List<CertificationCriterion> getCriteriaAddedToSvap(Svap updatedSvap, Svap originalSvap) {
-        List<CertificationCriterion> added = subtractLists(updatedSvap.getCriteria(), originalSvap.getCriteria());
-        added.stream()
-                .forEach(crit -> LOGGER.info("Added criteria: " + crit.getNumber()));
-        return added;
+        return subtractLists(updatedSvap.getCriteria(), originalSvap.getCriteria());
     }
 
     private List<CertificationCriterion> getCriteriaRemovedFromSvap(Svap updatedSvap, Svap originalSvap) {
-        List<CertificationCriterion> added = subtractLists(originalSvap.getCriteria(), updatedSvap.getCriteria());
-        added.stream()
-                .forEach(crit -> LOGGER.info("Removed criteria: " + crit.getNumber()));
-        return added;
+        return  subtractLists(originalSvap.getCriteria(), updatedSvap.getCriteria());
     }
 
-    private List<CertificationCriterion> subtractLists(List<CertificationCriterion> listA,
-            List<CertificationCriterion> listB) {
-
+    private List<CertificationCriterion> subtractLists(List<CertificationCriterion> listA, List<CertificationCriterion> listB) {
         Predicate<CertificationCriterion> notInListB = certFromA -> !listB.stream()
                 .anyMatch(cert -> certFromA.equals(cert));
 
