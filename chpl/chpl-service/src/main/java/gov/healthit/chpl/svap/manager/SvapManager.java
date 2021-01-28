@@ -55,7 +55,8 @@ public class SvapManager {
         return getSvap(svap.getSvapId());
     }
 
-    //TODO - add permissions
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SVAP, "
+            + "T(gov.healthit.chpl.permissions.domains.SvapDomainPermissions).CREATE)")
     @Transactional
     public Svap create(Svap svap) throws EntityRetrievalException {
         Svap newSvap = addSvap(svap);

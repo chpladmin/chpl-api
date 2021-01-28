@@ -4,8 +4,8 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
-@Component("svapUpdateActionPermissions")
-public class UpdateActionPermssions extends ActionPermissions {
+@Component("svapCreateActionPermissions")
+public class CreateActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess() {
