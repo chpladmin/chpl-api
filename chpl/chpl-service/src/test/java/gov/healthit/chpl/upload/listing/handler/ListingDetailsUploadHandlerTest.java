@@ -4,6 +4,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.LocalDate;
+import java.time.Month;
+import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.csv.CSVRecord;
@@ -25,6 +28,7 @@ public class ListingDetailsUploadHandlerTest {
     private ErrorMessageUtil msgUtil;
     private ListingUploadHandlerUtil handlerUtil;
     private ListingDetailsUploadHandler handler;
+    private CertificationDateHandler certDateHandler;
 
     @Before
     public void setup() {
@@ -42,7 +46,9 @@ public class ListingDetailsUploadHandlerTest {
 
         handlerUtil = new ListingUploadHandlerUtil(msgUtil);
         DeveloperDetailsUploadHandler devHandler = new DeveloperDetailsUploadHandler(handlerUtil);
-        handler = new ListingDetailsUploadHandler(devHandler,
+        certDateHandler = Mockito.mock(CertificationDateHandler.class);
+        handler = new ListingDetailsUploadHandler(certDateHandler,
+                devHandler,
                 Mockito.mock(TargetedUsersUploadHandler.class),
                 Mockito.mock(AccessibilityStandardsUploadHandler.class),
                 Mockito.mock(QmsUploadHandler.class), Mockito.mock(IcsUploadHandler.class),
@@ -200,47 +206,83 @@ public class ListingDetailsUploadHandlerTest {
     }
 
     @Test
-    public void buildListing_CertificationDateNoColumn_ReturnsNull() {
+    public void buildListing_CertificationDateNoColumnAndEmptyListingField_ReturnsNull() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("15.02.02.3007.A056.01.00.0.");
+        assertNotNull(listingRecords);
+
+        Mockito.when(certDateHandler.handle(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(null);
+        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
+        assertNotNull(listing);
+        assertNull(listing.getCertificationDate());
+    }
+
+    @Test
+    public void buildListing_CertificationDateNoColumn_ReturnsValueFromChplProductNumber() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN);
         assertNotNull(listingRecords);
 
+        Mockito.when(certDateHandler.handle(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(LocalDate.of(2018, Month.FEBRUARY, 14));
+
         CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
         assertNotNull(listing);
-        assertNull(listing.getCertificationDate());
+        Calendar cal = Calendar.getInstance();
+        cal.set(2018, 1, 14, 0, 0, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        assertEquals(cal.getTime().getTime(), listing.getCertificationDate());
     }
 
     @Test
-    public void buildListing_CertificationDateGood_ParsesDateValue() {
+    public void buildListing_CertificationDateColumnValid_ParsesDateValueFromColumn() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",CERTIFICATION_DATE__C").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",20200909");
         assertNotNull(listingRecords);
 
+        Mockito.when(certDateHandler.handle(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(LocalDate.of(2020, Month.SEPTEMBER, 9));
+
         CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
         assertNotNull(listing);
         assertNotNull(listing.getCertificationDate());
+        Calendar cal = Calendar.getInstance();
+        cal.set(2020, 8, 9, 0, 0, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        assertEquals(cal.getTime().getTime(), listing.getCertificationDate());
     }
 
     @Test
-    public void buildListing_CertificationDateEmpty_ParsesNullValue() {
+    public void buildListing_CertificationDateColumnEmpty_ParsesValueFromChplProductNumber() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",CERTIFICATION_DATE__C").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",");
         assertNotNull(listingRecords);
 
+        Mockito.when(certDateHandler.handle(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(LocalDate.of(2018, Month.FEBRUARY, 14));
+
         CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
         assertNotNull(listing);
-        assertNull(listing.getCertificationDate());
+        Calendar cal = Calendar.getInstance();
+        cal.set(2018, 1, 14, 0, 0, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        assertEquals(cal.getTime().getTime(), listing.getCertificationDate());
     }
 
     @Test
-    public void buildListing_CertificationDateValueBad_ReturnsNull() {
+    public void buildListing_CertificationDateValueBadInChplProductNumberAndDateColumn_ReturnsNull() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",CERTIFICATION_DATE__C").get(0);
         assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",BADDATE");
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("14.bl.ah." + ",BADDATE");
         assertNotNull(listingRecords);
+
+        Mockito.when(certDateHandler.handle(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(null);
 
         CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
         assertNull(listing.getCertificationDate());

@@ -4,13 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -47,6 +42,7 @@ import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.upload.listing.handler.CertificationDateHandler;
 import gov.healthit.chpl.upload.listing.handler.ListingDetailsUploadHandler;
 import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
@@ -58,10 +54,9 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ListingUploadManager {
     public static final String NEW_DEVELOPER_CODE = "XXXX";
-    private static final String CERT_DATE_CODE = "yyMMdd";
-    private DateFormat dateFormat;
 
     private ListingDetailsUploadHandler listingDetailsHandler;
+    private CertificationDateHandler certDateHandler;
     private ListingDetailsNormalizer listingNormalizer;
     private ListingUploadHandlerUtil uploadUtil;
     private ChplProductNumberUtil chplProductNumberUtil;
@@ -74,12 +69,13 @@ public class ListingUploadManager {
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
     public ListingUploadManager(ListingDetailsUploadHandler listingDetailsHandler,
+            CertificationDateHandler certDateHandler,
             ListingDetailsNormalizer listingNormalizer,
             ListingUploadHandlerUtil uploadUtil, ChplProductNumberUtil chplProductNumberUtil,
             ListingUploadDao listingUploadDao, CertificationBodyDAO acbDao, UserDAO userDao,
             ActivityManager activityManager, ErrorMessageUtil msgUtil) {
-        this.dateFormat = new SimpleDateFormat(CERT_DATE_CODE);
         this.listingDetailsHandler = listingDetailsHandler;
+        this.certDateHandler = certDateHandler;
         this.listingNormalizer = listingNormalizer;
         this.uploadUtil = uploadUtil;
         this.chplProductNumberUtil = chplProductNumberUtil;
@@ -285,23 +281,6 @@ public class ListingUploadManager {
        return acb;
     }
 
-    private LocalDate determineCertificationDate(CSVRecord headingRecord,
-            List<CSVRecord> listingRecords, String chplProductNumber) throws ParseException, ValidationException {
-        LocalDate certificationDate = null;
-        //first look for a certification date column in the file
-       Date certDateFromFile = uploadUtil.parseSingleRowFieldAsDate(Headings.CERTIFICATION_DATE, headingRecord, listingRecords);
-       if (certDateFromFile != null) {
-           certificationDate = certDateFromFile.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-       }
-        //if it's not there use the cert date code from the CHPL product number
-       String certDateCode = chplProductNumberUtil.getCertificationDateCode(chplProductNumber);
-       if (!StringUtils.isEmpty(certDateCode)) {
-           Date certDateFromChplNumber = dateFormat.parse(certDateCode);
-           certificationDate = certDateFromChplNumber.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-       }
-       return certificationDate;
-    }
-
     private List<CSVRecord> getNextListingRecordGroup(int startRow, CSVRecord headingRecord,
             List<CSVRecord> allListingRecords) {
         List<CSVRecord> listingCsvRecords = new ArrayList<CSVRecord>();
@@ -338,8 +317,7 @@ public class ListingUploadManager {
         listingUploadMetadata.setAcb(acb);
         LocalDate certificationDate = null;
         try {
-            certificationDate = determineCertificationDate(headingRecord, listingCsvRecords,
-                    listingUploadMetadata.getChplProductNumber());
+            certificationDate = certDateHandler.handle(headingRecord, listingCsvRecords);
         } catch (Exception ex) {
             LOGGER.error("Could not determine certification date.", ex);
         }

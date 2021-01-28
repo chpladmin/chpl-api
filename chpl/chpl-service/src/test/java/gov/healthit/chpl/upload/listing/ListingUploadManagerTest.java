@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -32,6 +33,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.upload.listing.handler.CertificationDateHandler;
 import gov.healthit.chpl.upload.listing.handler.ListingDetailsUploadHandler;
 import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
@@ -44,6 +46,7 @@ public class ListingUploadManagerTest {
     private String listing1Csv, listing2Csv, listingNewDeveloperCsv;
     private ErrorMessageUtil msgUtil;
     private ListingUploadManager uploadManager;
+    private CertificationDateHandler certDateHandler;
     private ListingUploadHandlerUtil uploadUtil;
     private ChplProductNumberUtil chplProductNumberUtil;
     private CertificationBodyDAO acbDao;
@@ -56,6 +59,7 @@ public class ListingUploadManagerTest {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         acbDao = Mockito.mock(CertificationBodyDAO.class);
         chplProductNumberUtil = Mockito.mock(ChplProductNumberUtil.class);
+        certDateHandler = Mockito.mock(CertificationDateHandler.class);
         ListingDetailsNormalizer listingNormalizer = Mockito.mock(ListingDetailsNormalizer.class);
 
         Mockito.when(acbDao.getByName(ArgumentMatchers.anyString())).thenReturn(createAcb());
@@ -71,6 +75,7 @@ public class ListingUploadManagerTest {
 
         uploadUtil = new ListingUploadHandlerUtil(msgUtil);
         uploadManager = new ListingUploadManager(Mockito.mock(ListingDetailsUploadHandler.class),
+                certDateHandler,
                 listingNormalizer,
                 uploadUtil, chplProductNumberUtil, Mockito.mock(ListingUploadDao.class), acbDao,
                 Mockito.mock(UserDAO.class), Mockito.mock(ActivityManager.class), msgUtil);
@@ -279,8 +284,8 @@ public class ListingUploadManagerTest {
         Mockito.when(acbDao.getByCode(ArgumentMatchers.anyString())).thenReturn(createAcb());
         Mockito.when(chplProductNumberUtil.getAcbCode(ArgumentMatchers.anyString()))
             .thenReturn("04");
-        Mockito.when(chplProductNumberUtil.getCertificationDateCode(ArgumentMatchers.anyString()))
-        .thenReturn("200707");
+        Mockito.when(certDateHandler.handle(ArgumentMatchers.any(), ArgumentMatchers.any()))
+                .thenReturn(LocalDate.of(2020, Month.JULY, 7));
 
         String fileContents = "UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,VERSION__C" + "\n"
                 + "15.04.04.2669.MDTB.03.01.1.200707,DEV Name,Prod Name,1.0";
@@ -293,7 +298,7 @@ public class ListingUploadManagerTest {
         assertNotNull(metadata.getAcb());
         assertEquals(1L, metadata.getAcb().getId());
         assertNotNull(metadata.getCertificationDate());
-        assertEquals(LocalDate.parse("2020-07-07"), metadata.getCertificationDate());
+        assertEquals(LocalDate.of(2020, Month.JULY, 7), metadata.getCertificationDate());
         assertEquals("DEV Name", metadata.getDeveloper());
         assertEquals("Prod Name", metadata.getProduct());
         assertEquals("1.0", metadata.getVersion());
@@ -306,8 +311,8 @@ public class ListingUploadManagerTest {
         Mockito.when(acbDao.getByCode(ArgumentMatchers.anyString())).thenReturn(createAcb());
         Mockito.when(chplProductNumberUtil.getAcbCode(ArgumentMatchers.anyString()))
             .thenReturn("04");
-        Mockito.when(chplProductNumberUtil.getCertificationDateCode(ArgumentMatchers.anyString()))
-        .thenReturn("200707");
+        Mockito.when(certDateHandler.handle(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(LocalDate.of(2020, Month.JULY, 7));
 
         String fileContents = "UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,VERSION__C" + "\n"
                 + "15.04.04.2669.MDTB.03.01.1.200707,DEV Name,Prod Name,1.0\n"
@@ -322,7 +327,7 @@ public class ListingUploadManagerTest {
         assertNotNull(metadata.getAcb());
         assertEquals(1L, metadata.getAcb().getId());
         assertNotNull(metadata.getCertificationDate());
-        assertEquals(LocalDate.parse("2020-07-07"), metadata.getCertificationDate());
+        assertEquals(LocalDate.of(2020, Month.JULY, 7), metadata.getCertificationDate());
         assertEquals("DEV Name", metadata.getDeveloper());
         assertEquals("Prod Name", metadata.getProduct());
         assertEquals("1.0", metadata.getVersion());

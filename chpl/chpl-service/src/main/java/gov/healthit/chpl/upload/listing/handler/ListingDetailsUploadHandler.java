@@ -1,5 +1,7 @@
 package gov.healthit.chpl.upload.listing.handler;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,6 +30,9 @@ import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 
 @Component("listingDetailsUploadHandler")
 public class ListingDetailsUploadHandler {
+    private static final int SECONDS_TO_MILLISECONDS = 1000;
+
+    private CertificationDateHandler certDateHandler;
     private DeveloperDetailsUploadHandler devDetailsUploadHandler;
     private TargetedUsersUploadHandler targetedUserUploadHandler;
     private AccessibilityStandardsUploadHandler accessibilityStandardsHandler;
@@ -41,13 +46,15 @@ public class ListingDetailsUploadHandler {
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
-    public ListingDetailsUploadHandler(DeveloperDetailsUploadHandler devDetailsUploadHandler,
+    public ListingDetailsUploadHandler(CertificationDateHandler certDateHandler,
+            DeveloperDetailsUploadHandler devDetailsUploadHandler,
             TargetedUsersUploadHandler targetedUserUploadHandler,
             AccessibilityStandardsUploadHandler accessibilityStandardsHandler,
             QmsUploadHandler qmsHandler, IcsUploadHandler icsHandler,
             CqmUploadHandler cqmHandler, MeasureUploadHandler measureHandler,
             SedUploadHandler sedUploadHandler, CertificationResultUploadHandler certResultHandler,
             ListingUploadHandlerUtil uploadUtil) {
+        this.certDateHandler = certDateHandler;
         this.devDetailsUploadHandler = devDetailsUploadHandler;
         this.targetedUserUploadHandler = targetedUserUploadHandler;
         this.accessibilityStandardsHandler = accessibilityStandardsHandler;
@@ -62,8 +69,6 @@ public class ListingDetailsUploadHandler {
 
     public CertifiedProductSearchDetails parseAsListing(CSVRecord headingRecord, List<CSVRecord> listingRecords)
         throws ValidationException {
-        Date certificationDate = parseCertificationDate(headingRecord, listingRecords);
-
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber(parseChplId(headingRecord, listingRecords))
                 .certifyingBody(parseAcb(headingRecord, listingRecords))
@@ -72,7 +77,7 @@ public class ListingDetailsUploadHandler {
                         Headings.ACB_CERTIFICATION_ID, headingRecord, listingRecords))
                 .accessibilityCertified(parseAccessibilityCertified(headingRecord, listingRecords))
                 .accessibilityCertifiedStr(parseAccessibilityCertifiedStr(headingRecord, listingRecords))
-                .certificationDate(certificationDate != null ? certificationDate.getTime() : null)
+                .certificationDate(parseCertificationDateMillis(headingRecord, listingRecords))
                 .certificationDateStr(parseCertificationDateStr(headingRecord, listingRecords))
                 .developer(devDetailsUploadHandler.handle(headingRecord, listingRecords))
                 .product(parseProduct(headingRecord, listingRecords))
@@ -137,14 +142,19 @@ public class ListingDetailsUploadHandler {
         return uploadUtil.parseSingleRowField(Headings.ACCESSIBILITY_CERTIFIED, headingRecord, listingRecords);
     }
 
-    private Date parseCertificationDate(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        Date certificationDate = null;
+    private Long parseCertificationDateMillis(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+        LocalDate certificationLocalDate = null;
         try {
-            certificationDate = uploadUtil.parseSingleRowFieldAsDate(
-                    Headings.CERTIFICATION_DATE, headingRecord, listingRecords);
+            certificationLocalDate = certDateHandler.handle(headingRecord, listingRecords);
         } catch (Exception ex) {
         }
-        return certificationDate;
+
+        Long certificationDateMilliseconds = null;
+        if (certificationLocalDate != null) {
+            ZoneId zoneId = ZoneId.systemDefault();
+            certificationDateMilliseconds = certificationLocalDate.atStartOfDay(zoneId).toEpochSecond() * SECONDS_TO_MILLISECONDS;
+        }
+        return certificationDateMilliseconds;
     }
 
     private String parseCertificationDateStr(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
