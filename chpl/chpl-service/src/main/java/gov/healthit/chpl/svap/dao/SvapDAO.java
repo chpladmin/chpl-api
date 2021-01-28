@@ -4,13 +4,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
+import gov.healthit.chpl.svap.entity.CertificationResultSvapEntity;
 import gov.healthit.chpl.svap.entity.SvapCriteriaMapEntity;
 import gov.healthit.chpl.svap.entity.SvapEntity;
 import gov.healthit.chpl.util.AuthUtil;
@@ -19,6 +23,12 @@ import lombok.extern.log4j.Log4j2;
 @Repository
 @Log4j2
 public class SvapDAO extends BaseDAOImpl {
+    private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
+
+    @Autowired
+    public SvapDAO(CertifiedProductSearchResultDAO certifiedProductSearchResultDAO) {
+        this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
+    }
 
     public Svap getById(Long id) throws EntityRetrievalException {
         SvapEntity entity = getSvapEntityById(id);
@@ -108,6 +118,20 @@ public class SvapDAO extends BaseDAOImpl {
         }
     }
 
+    public List<CertifiedProductDetailsDTO> getCertifiedProductsBySvap(Svap svap) {
+        return getCertificationResultSvapBySvapId(svap.getSvapId()).stream()
+                .map(crs -> getCertifiedProductDetails(crs.getCertificationResult().getCertifiedProductId()))
+                .collect(Collectors.toList());
+    }
+
+    private CertifiedProductDetailsDTO getCertifiedProductDetails(Long certifiedProductId) {
+        try {
+            return certifiedProductSearchResultDAO.getById(certifiedProductId);
+        } catch (EntityRetrievalException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private SvapEntity getSvapEntityById(Long id) throws EntityRetrievalException {
         List<SvapEntity> result = entityManager.createQuery("SELECT DISTINCT s "
                         + "FROM SvapEntity s "
@@ -174,6 +198,18 @@ public class SvapDAO extends BaseDAOImpl {
         }
 
         return result.get(0);
+    }
+
+    private List<CertificationResultSvapEntity> getCertificationResultSvapBySvapId(Long svapId) {
+        return entityManager.createQuery("SELECT crs "
+                        + "FROM CertificationResultSvapEntity crs "
+                        + "JOIN FETCH crs.certificationResult cr "
+                        + "WHERE crs.svapId = :svapId "
+                        + "AND crs.deleted <> true "
+                        + "AND cr.deleted <> true ",
+                        CertificationResultSvapEntity.class)
+                .setParameter("svapId", svapId)
+                .getResultList();
 
     }
-}
+ }

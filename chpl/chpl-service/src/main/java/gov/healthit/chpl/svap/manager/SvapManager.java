@@ -5,25 +5,30 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.svap.dao.SvapDAO;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2
 public class SvapManager {
     private SvapDAO svapDao;
+    private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public SvapManager(SvapDAO svapDao) {
+    public SvapManager(SvapDAO svapDao, ErrorMessageUtil errorMessageUtil) {
         this.svapDao = svapDao;
+        this.errorMessageUtil = errorMessageUtil;
     }
 
     public List<SvapCriteriaMap> getAllSvapCriteriaMaps() throws EntityRetrievalException {
@@ -61,14 +66,31 @@ public class SvapManager {
         return svapDao.getById(newSvap.getSvapId());
     }
 
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SVAP, "
+            + "T(gov.healthit.chpl.permissions.domains.SvapDomainPermissions).DELETE)")
     @Transactional
-    public void delete(Svap svap) throws EntityRetrievalException {
+    public void delete(Svap svap) throws EntityRetrievalException, ValidationException {
         Svap originalSvap = svapDao.getById(svap.getSvapId());
+
+        validateForDelete(originalSvap);
 
         originalSvap.getCriteria().stream()
                 .forEach(crit -> svapDao.removeSvapCriteriaMap(originalSvap, crit));
 
         svapDao.remove(originalSvap);
+    }
+
+    private void validateForDelete(Svap svap) throws ValidationException {
+        List<CertifiedProductDetailsDTO> listings = svapDao.getCertifiedProductsBySvap(svap);
+        if (listings.size() > 0) {
+            String message = errorMessageUtil.getMessage("svap.delete.listingsExist",
+                    listings.size(),
+                    listings.stream()
+                            .map(listing -> listing.getChplProductNumber())
+                            .collect(Collectors.joining(" | ")));
+            ValidationException e = new ValidationException(message);
+            throw e;
+        }
     }
 
     private List<CertificationCriterion> getCriteriaAddedToSvap(Svap updatedSvap, Svap originalSvap) {
@@ -95,6 +117,4 @@ public class SvapManager {
                 .filter(notInListB)
                 .collect(Collectors.toList());
     }
-
-
 }

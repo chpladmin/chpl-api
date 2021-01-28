@@ -52,7 +52,7 @@ public class SvapController {
                     + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.")
     @RequestMapping(value = "", method = RequestMethod.DELETE, consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = "application/json; charset=utf-8")
-    public void deleteSvap(@RequestBody(required = true) Svap svap) throws EntityRetrievalException {
+    public void deleteSvap(@RequestBody(required = true) Svap svap) throws EntityRetrievalException, ValidationException {
         svapManager.delete(svap);
     }
 
@@ -63,6 +63,4 @@ public class SvapController {
     public @ResponseBody List<Svap> getAllSvaps() {
         return svapManager.getAll();
     }
-    
-    
 }

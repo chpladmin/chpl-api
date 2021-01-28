@@ -10,9 +10,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import lombok.Data;
 
 @Entity
@@ -36,6 +38,11 @@ public class CertificationResultSvapEntity {
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "svap_id", unique = true, nullable = true, insertable = false, updatable = false)
     private SvapEntity svap;
+
+    @Basic(optional = true)
+    @ManyToOne(targetEntity = CertificationResultEntity.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_result_id", nullable = false, insertable = false, updatable = false)
+    private CertificationResultEntity certificationResult;
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
