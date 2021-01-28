@@ -16,6 +16,8 @@ public class ListingValidationReport {
     private Long certificationBodyId;
     private String productName;
     private String certificationStatusName;
+    private String certificationEditionName;
+    private Date listingModifiedDate;
     private String errorMessage;
     private ZonedDateTime reportDate;
     private Date creationDate;
@@ -29,6 +31,8 @@ public class ListingValidationReport {
         this.certificationBodyId = entity.getCertificationBodyId();
         this.productName = entity.getProductName();
         this.certificationStatusName = entity.getCertificationStatusName();
+        this.certificationEditionName = entity.getCertificationEditionName();
+        this.listingModifiedDate = entity.getLastModifiedDate();
         this.errorMessage = entity.getErrorMessage();
         this.reportDate = entity.getReportDate();
         this.creationDate = entity.getCreationDate();

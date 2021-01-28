@@ -3,9 +3,11 @@ package gov.healthit.chpl.scheduler.job.listingvalidation;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.csv.CSVFormat;
@@ -62,8 +64,10 @@ public class ListingValidationReportCsvCreator {
     private List<String> getHeaderRow() {
         return Arrays.asList(
                 "CHPL Product Number",
-                "Product Name",
-                "Status",
+                "CHPL Product Name",
+                "Certification Edition",
+                "Certification Status",
+                "Last Modified Date",
                 "Error Message");
     }
 
@@ -71,7 +75,9 @@ public class ListingValidationReportCsvCreator {
         return Arrays.asList(
                 report.getChplProductNumber(),
                 report.getProductName(),
+                report.getCertificationEditionName(),
                 report.getCertificationStatusName(),
+                formatDate(report.getListingModifiedDate()),
                 report.getErrorMessage());
     }
 
@@ -85,5 +91,10 @@ public class ListingValidationReportCsvCreator {
 
     private String getFilename() {
         return env.getProperty("listingValidationReport.fileName") + LocalDate.now().toString();
+    }
+
+    private String formatDate(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
+        return sdf.format(date);
     }
 }
