@@ -18,7 +18,6 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
-import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.EmailBuilder;
 import lombok.extern.log4j.Log4j2;
 
@@ -62,18 +61,10 @@ public class ListingValidatorEmailJob  implements Job {
         EmailBuilder emailBuilder = new EmailBuilder(env);
         emailBuilder.recipient(context.getMergedJobDataMap().getString("email"))
                 .subject(env.getProperty("listingValidationReport.subject"))
-                .htmlMessage(String.format(env.getProperty("listingValidationReport.body"), getReportDateAsString(rows), getAcbNamesAsCommaSeparatedList(context)))
+                .htmlMessage(String.format(env.getProperty("listingValidationReport.body"), getAcbNamesAsCommaSeparatedList(context), rows.size()))
                 .fileAttachments(Arrays.asList(listingValidationReportCsvCreator.createCsvFile(rows)))
                 .sendEmail();
         LOGGER.info("Completed Sending email to: " + context.getMergedJobDataMap().getString("email"));
-    }
-
-    private String getReportDateAsString(List<ListingValidationReport> rows) {
-        if (rows.size() > 0) {
-            return DateUtil.formatInEasternTime(rows.get(0).getReportDate());
-        } else {
-            return "UNKNOWN";
-        }
     }
 
     private String getAcbNamesAsCommaSeparatedList(JobExecutionContext jobContext) {
@@ -105,5 +96,4 @@ public class ListingValidatorEmailJob  implements Job {
                 .findAny()
                 .isPresent();
     }
-
 }
