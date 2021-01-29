@@ -11,7 +11,6 @@ import java.util.List;
 import org.apache.commons.csv.CSVRecord;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
@@ -32,7 +31,7 @@ public class CertificationDateHandlerTest {
     public void setup() {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         handlerUtil = new ListingUploadHandlerUtil(msgUtil);
-        chplProductNumberUtil = Mockito.mock(ChplProductNumberUtil.class);
+        chplProductNumberUtil = new ChplProductNumberUtil();
         handler = new CertificationDateHandler(handlerUtil, chplProductNumberUtil);
     }
 
@@ -42,9 +41,6 @@ public class CertificationDateHandlerTest {
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("15.02.02.3007.A056.01.00.0.");
         assertNotNull(listingRecords);
-
-        Mockito.when(chplProductNumberUtil.getCertificationDateCode(ArgumentMatchers.eq("15.02.02.3007.A056.01.00.0.")))
-            .thenReturn("");
 
         LocalDate certDate = handler.handle(headingRecord, listingRecords);
         assertNull(certDate);
@@ -56,9 +52,6 @@ public class CertificationDateHandlerTest {
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN);
         assertNotNull(listingRecords);
-
-        Mockito.when(chplProductNumberUtil.getCertificationDateCode(ArgumentMatchers.eq("15.02.02.3007.A056.01.00.0.180214")))
-            .thenReturn("180214");
 
         LocalDate certDate = handler.handle(headingRecord, listingRecords);
         assertNotNull(certDate);
@@ -84,9 +77,6 @@ public class CertificationDateHandlerTest {
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",");
         assertNotNull(listingRecords);
 
-        Mockito.when(chplProductNumberUtil.getCertificationDateCode(ArgumentMatchers.eq("15.02.02.3007.A056.01.00.0.180214")))
-            .thenReturn("180214");
-
         LocalDate certDate = handler.handle(headingRecord, listingRecords);
         assertNotNull(certDate);
         assertEquals(LocalDate.of(2018, Month.FEBRUARY, 14), certDate);
@@ -98,9 +88,6 @@ public class CertificationDateHandlerTest {
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("14.ba.d." + ",BADDATE");
         assertNotNull(listingRecords);
-
-        Mockito.when(chplProductNumberUtil.getCertificationDateCode(ArgumentMatchers.eq("15.02.02.3007.A056.01.00.0.")))
-            .thenReturn(null);
 
         LocalDate certDate = handler.handle(headingRecord, listingRecords);
         assertNull(certDate);

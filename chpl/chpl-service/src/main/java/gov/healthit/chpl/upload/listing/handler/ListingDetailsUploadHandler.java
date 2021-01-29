@@ -32,6 +32,7 @@ import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 public class ListingDetailsUploadHandler {
     private static final int SECONDS_TO_MILLISECONDS = 1000;
 
+    private CertificationEditionHandler editionHandler;
     private CertificationDateHandler certDateHandler;
     private DeveloperDetailsUploadHandler devDetailsUploadHandler;
     private TargetedUsersUploadHandler targetedUserUploadHandler;
@@ -46,7 +47,8 @@ public class ListingDetailsUploadHandler {
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
-    public ListingDetailsUploadHandler(CertificationDateHandler certDateHandler,
+    public ListingDetailsUploadHandler(CertificationEditionHandler editionHandler,
+            CertificationDateHandler certDateHandler,
             DeveloperDetailsUploadHandler devDetailsUploadHandler,
             TargetedUsersUploadHandler targetedUserUploadHandler,
             AccessibilityStandardsUploadHandler accessibilityStandardsHandler,
@@ -54,6 +56,7 @@ public class ListingDetailsUploadHandler {
             CqmUploadHandler cqmHandler, MeasureUploadHandler measureHandler,
             SedUploadHandler sedUploadHandler, CertificationResultUploadHandler certResultHandler,
             ListingUploadHandlerUtil uploadUtil) {
+        this.editionHandler = editionHandler;
         this.certDateHandler = certDateHandler;
         this.devDetailsUploadHandler = devDetailsUploadHandler;
         this.targetedUserUploadHandler = targetedUserUploadHandler;
@@ -82,7 +85,7 @@ public class ListingDetailsUploadHandler {
                 .developer(devDetailsUploadHandler.handle(headingRecord, listingRecords))
                 .product(parseProduct(headingRecord, listingRecords))
                 .version(parseVersion(headingRecord, listingRecords))
-                .certificationEdition(parseEdition(headingRecord, listingRecords))
+                .certificationEdition(editionHandler.handle(headingRecord, listingRecords))
                 .transparencyAttestationUrl(parseTransparencyAttestationUrl(headingRecord, listingRecords))
                 .targetedUsers(targetedUserUploadHandler.handle(headingRecord, listingRecords))
                 .accessibilityStandards(accessibilityStandardsHandler.handle(headingRecord, listingRecords))
@@ -183,17 +186,6 @@ public class ListingDetailsUploadHandler {
                 .version(versionName)
                 .build();
         return version;
-    }
-
-    private Map<String, Object> parseEdition(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        String year = uploadUtil.parseSingleRowField(Headings.EDITION, headingRecord, listingRecords);
-        if (year == null) {
-            return null;
-        }
-        Map<String, Object> edition = new HashMap<String, Object>();
-        edition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, year);
-        edition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, null);
-        return edition;
     }
 
     private Map<String, Object> parseAcb(CSVRecord headingRecord, List<CSVRecord> listingRecords) {

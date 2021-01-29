@@ -29,6 +29,7 @@ public class ListingDetailsUploadHandlerTest {
     private ListingUploadHandlerUtil handlerUtil;
     private ListingDetailsUploadHandler handler;
     private CertificationDateHandler certDateHandler;
+    private CertificationEditionHandler editionHandler;
 
     @Before
     public void setup() {
@@ -47,7 +48,9 @@ public class ListingDetailsUploadHandlerTest {
         handlerUtil = new ListingUploadHandlerUtil(msgUtil);
         DeveloperDetailsUploadHandler devHandler = new DeveloperDetailsUploadHandler(handlerUtil);
         certDateHandler = Mockito.mock(CertificationDateHandler.class);
-        handler = new ListingDetailsUploadHandler(certDateHandler,
+        editionHandler = Mockito.mock(CertificationEditionHandler.class);
+        handler = new ListingDetailsUploadHandler(editionHandler,
+                certDateHandler,
                 devHandler,
                 Mockito.mock(TargetedUsersUploadHandler.class),
                 Mockito.mock(AccessibilityStandardsUploadHandler.class),
@@ -288,33 +291,6 @@ public class ListingDetailsUploadHandlerTest {
         assertNull(listing.getCertificationDate());
         assertNotNull(listing.getCertificationDateStr());
         assertEquals("BADDATE", listing.getCertificationDateStr());
-    }
-
-    @Test
-    public void buildListing_EditionNoColumn_ReturnsNull() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
-        assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN);
-        assertNotNull(listingRecords);
-
-        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
-        assertNotNull(listing);
-        assertNull(listing.getCertificationEdition());
-    }
-
-    @Test
-    public void buildListing_EditionGood_ReturnsCorrectValue() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",CERT_YEAR__C").get(0);
-        assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",2015");
-        assertNotNull(listingRecords);
-
-        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
-        assertNotNull(listing);
-        assertNotNull(listing.getCertificationEdition());
-        assertEquals("2015",
-                listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString());
-        assertNull(listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY));
     }
 
     @Test

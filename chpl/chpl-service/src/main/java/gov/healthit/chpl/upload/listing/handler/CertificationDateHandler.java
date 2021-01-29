@@ -75,7 +75,7 @@ public class CertificationDateHandler {
             } else {
                 LOGGER.warn("No chpl product number was found in the file.");
             }
-        } catch (ValidationException ex) { }
+        } catch (ValidationException | ArrayIndexOutOfBoundsException ex) { }
         return certificationDate;
     }
 }
