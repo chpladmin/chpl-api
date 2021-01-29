@@ -50,7 +50,7 @@ public class DirectReview implements Serializable {
     @JsonProperty(value = "circumstances")
     @JsonAlias("customfield_11015")
     @JsonDeserialize(using = CircumstancesDeserializer.class)
-    @XmlElementWrapper(name = "circumstances", nillable = false, required = false)
+    @XmlElementWrapper(name = "circumstances", nillable = true, required = false)
     @XmlElement(name = "circumstance")
     private List<String> circumstances = new ArrayList<String>();
 
