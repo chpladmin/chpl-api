@@ -32,7 +32,7 @@ public class ListingValidationReport {
         this.productName = entity.getProductName();
         this.certificationStatusName = entity.getCertificationStatusName();
         this.certificationEditionName = entity.getCertificationEditionName();
-        this.listingModifiedDate = entity.getLastModifiedDate();
+        this.listingModifiedDate = entity.getListingModifiedDate();
         this.errorMessage = entity.getErrorMessage();
         this.reportDate = entity.getReportDate();
         this.creationDate = entity.getCreationDate();

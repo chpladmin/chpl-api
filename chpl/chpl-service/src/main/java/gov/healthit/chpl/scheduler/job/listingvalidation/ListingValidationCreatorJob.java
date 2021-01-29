@@ -90,6 +90,7 @@ public class ListingValidationCreatorJob implements Job {
     }
 
     private List<CertifiedProductSearchDetails> getListingsWithErrors() {
+
         return getAll2015CertifiedProducts().parallelStream()
                 .filter(listing -> isListingActive(listing))
                 .map(listing -> getCertifiedProductSearchDetails(listing.getId()))

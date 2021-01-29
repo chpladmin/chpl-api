@@ -47,8 +47,6 @@ public class ListingValidationReportCsvCreator {
         return csvFile;
     }
 
-
-
     private File getOutputFile() {
         File temp = null;
         try {
@@ -63,7 +61,7 @@ public class ListingValidationReportCsvCreator {
 
     private List<String> getHeaderRow() {
         return Arrays.asList(
-                "CHPL Product Number",
+                "CHPL ID",
                 "CHPL Product Name",
                 "Certification Edition",
                 "Certification Status",
