@@ -63,7 +63,6 @@ public class ListingValidationReportCsvCreator {
         return Arrays.asList(
                 "CHPL ID",
                 "CHPL Product Name",
-                "Certification Edition",
                 "Certification Status",
                 "Last Modified Date",
                 "Error Message");
@@ -73,7 +72,6 @@ public class ListingValidationReportCsvCreator {
         return Arrays.asList(
                 report.getChplProductNumber(),
                 report.getProductName(),
-                report.getCertificationEditionName(),
                 report.getCertificationStatusName(),
                 formatDate(report.getListingModifiedDate()),
                 report.getErrorMessage());

@@ -144,7 +144,6 @@ public class ListingValidationCreatorJob implements Job {
                     .certificationBodyId(Long.parseLong(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()))
                     .productName(listing.getProduct().getName())
                     .certificationStatusName(listing.getCurrentStatus().getStatus().getName())
-                    .certificationEditionName(listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString())
                     .listingModifiedDate(new Date(listing.getLastModifiedDate()))
                     .errorMessage(error)
                     .reportDate(ZonedDateTime.now(Clock.systemUTC()))
