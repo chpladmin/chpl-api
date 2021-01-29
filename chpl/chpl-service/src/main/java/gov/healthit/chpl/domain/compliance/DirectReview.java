@@ -32,7 +32,7 @@ public class DirectReview implements Serializable {
     @JsonProperty(value = "developerId")
     @JsonAlias("customfield_10900")
     @JsonDeserialize(using = DeveloperIdDeserializer.class)
-    @XmlElement(required = false, nillable = false)
+    @XmlElement(required = false, nillable = true)
     private Long developerId;
 
     @JsonProperty(value = "startDate")
