@@ -8,16 +8,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CQMResultDAO;
@@ -94,10 +87,8 @@ import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.PropertyUtil;
-import lombok.extern.log4j.Log4j2;
 
 @Loggable
-@Log4j2
 @Service("certifiedProductDetailsManager")
 public class CertifiedProductDetailsManager {
 
@@ -124,9 +115,6 @@ public class CertifiedProductDetailsManager {
     private ResourcePermissions resourcePermissions;
     private DimensionalDataManager dimensionalDataManager;
     private SvapDAO svapDao;
-    private JpaTransactionManager txnManager;
-
-    private List<SvapCriteriaMap> svapCriteriaMap;
 
     @SuppressWarnings({"checkstyle:parameternumber"})
     @Autowired
@@ -153,8 +141,7 @@ public class CertifiedProductDetailsManager {
             ChplProductNumberUtil chplProductNumberUtil,
             ResourcePermissions resourcePermissions,
             DimensionalDataManager dimensionalDataManager,
-            SvapDAO svapDao,
-            JpaTransactionManager txnManager) {
+            SvapDAO svapDao) {
 
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
         this.cqmResultDetailsDAO = cqmResultDetailsDAO;
@@ -179,27 +166,6 @@ public class CertifiedProductDetailsManager {
         this.resourcePermissions = resourcePermissions;
         this.dimensionalDataManager = dimensionalDataManager;
         this.svapDao = svapDao;
-        this.txnManager = txnManager;
-    }
-
-    @PostConstruct
-    public void init() throws EntityRetrievalException {
-        //Need to manually get a transaction here, since the application context is not always complete
-        TransactionTemplate txTemplate = new TransactionTemplate(txnManager);
-        txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-        txTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                try {
-                    svapCriteriaMap = svapDao.getAllSvapCriteriaMap();
-                } catch (EntityRetrievalException e) {
-                    LOGGER.catching(e);
-                }
-            }
-        });
-
-
-
     }
 
     @Transactional
@@ -293,9 +259,9 @@ public class CertifiedProductDetailsManager {
                 dto.getId(), true);
 
         CertifiedProductSearchDetails searchDetails = getCertifiedProductSearchDetails(dto);
+        List<SvapCriteriaMap> svapCriteriaMap = svapDao.getAllSvapCriteriaMap();
 
-        return getCertificationResults(certificationResultsFuture, searchDetails);
-
+        return getCertificationResults(certificationResultsFuture, searchDetails, svapCriteriaMap);
     }
 
     @Transactional
@@ -308,8 +274,9 @@ public class CertifiedProductDetailsManager {
                 dto.getId(), true);
 
         CertifiedProductSearchDetails searchDetails = getCertifiedProductSearchDetails(dto);
+        List<SvapCriteriaMap> svapCriteriaMap = svapDao.getAllSvapCriteriaMap();
 
-        return getCertificationResults(certificationResultsFuture, searchDetails);
+        return getCertificationResults(certificationResultsFuture, searchDetails, svapCriteriaMap);
     }
 
     private CertifiedProductSearchDetails createCertifiedSearchDetails(CertifiedProductDetailsDTO dto,
@@ -325,8 +292,9 @@ public class CertifiedProductDetailsManager {
                 retrieveAsynchronously);
 
         CertifiedProductSearchDetails searchDetails = getCertifiedProductSearchDetails(dto);
+        List<SvapCriteriaMap> svapCriteriaMap = svapDao.getAllSvapCriteriaMap();
 
-        searchDetails.setCertificationResults(getCertificationResults(certificationResultsFuture, searchDetails));
+        searchDetails.setCertificationResults(getCertificationResults(certificationResultsFuture, searchDetails, svapCriteriaMap));
         searchDetails.setCqmResults(getCqmResultDetails(cqmResultsFuture, dto.getYear()));
         searchDetails.setCertificationEvents(getCertificationStatusEvents(dto.getId()));
         searchDetails.setMeaningfulUseUserHistory(getMeaningfulUseUserHistory(dto.getId()));
@@ -438,14 +406,14 @@ public class CertifiedProductDetailsManager {
 
     private List<CertificationResult> getCertificationResults(
             Future<List<CertificationResultDetailsDTO>> certificationResultsFuture,
-            CertifiedProductSearchDetails searchDetails) throws EntityRetrievalException {
+            CertifiedProductSearchDetails searchDetails, List<SvapCriteriaMap> svapCriteriaMap) throws EntityRetrievalException {
 
         List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
         try {
             List<CertificationResultDetailsDTO> certificationResultDetailsDTOs = new ArrayList<CertificationResultDetailsDTO>();
             certificationResultDetailsDTOs = certificationResultsFuture.get();
             for (CertificationResultDetailsDTO certResult : certificationResultDetailsDTOs) {
-                certificationResults.add(getCertificationResult(certResult, searchDetails));
+                certificationResults.add(getCertificationResult(certResult, searchDetails, svapCriteriaMap));
             }
         } catch (InterruptedException e) {
             throw new EntityRetrievalException("Error retrieving Certification Results: " + e.getMessage());
@@ -506,7 +474,7 @@ public class CertifiedProductDetailsManager {
 
     @SuppressWarnings({"checkstyle:methodlength"})
     private CertificationResult getCertificationResult(CertificationResultDetailsDTO certResult,
-            CertifiedProductSearchDetails searchDetails) {
+            CertifiedProductSearchDetails searchDetails, List<SvapCriteriaMap> svapCriteriaMap) {
 
         CertificationResult result = new CertificationResult(certResult);
         // override optional boolean values
@@ -670,7 +638,7 @@ public class CertifiedProductDetailsManager {
         result.setAllowedTestFunctionalities(getAvailableTestFunctionalities(result, searchDetails));
 
         // set allowed svap for criteria
-        result.setAllowedSvaps(getAvailableSvapForCriteria(result));
+        result.setAllowedSvaps(getAvailableSvapForCriteria(result, svapCriteriaMap));
 
         if (result.getAllowedSvaps().size() > 0) {
             result.setSvaps(certResultManager.getSvapsForCertificationResult(result.getId()));
@@ -681,7 +649,7 @@ public class CertifiedProductDetailsManager {
         return result;
     }
 
-    private List<Svap> getAvailableSvapForCriteria(CertificationResult result) {
+    private List<Svap> getAvailableSvapForCriteria(CertificationResult result, List<SvapCriteriaMap> svapCriteriaMap) {
         return svapCriteriaMap.stream()
                 .filter(scm -> scm.getCriterion().getId().equals(result.getCriterion().getId()))
                 .map(scm -> scm.getSvap())
