@@ -131,7 +131,7 @@ public class SvapManager {
                     List<CertifiedProductDetailsDTO> listings = svapDao.getCertifiedProductsBySvapAndCriteria(originalSvap, crit);
                     if (listings.size() > 0) {
                         messages.add(errorMessageUtil.getMessage("svap.edit.deletedCriteria.listingsExist",
-                                crit.getNumber(),
+                                crit.getNumber() + (crit.getTitle().indexOf("Cures Update") == -1 ? "" : " (Cures Update)"),
                                 listings.size(),
                                 listings.stream()
                                         .map(listing -> listing.getChplProductNumber())
