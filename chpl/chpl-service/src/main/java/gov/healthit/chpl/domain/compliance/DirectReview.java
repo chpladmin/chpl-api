@@ -32,7 +32,7 @@ public class DirectReview implements Serializable {
     @JsonProperty(value = "developerId")
     @JsonAlias("customfield_10900")
     @JsonDeserialize(using = DeveloperIdDeserializer.class)
-    @XmlElement(required = true, nillable = false)
+    @XmlElement(required = false, nillable = false)
     private Long developerId;
 
     @JsonProperty(value = "startDate")
@@ -50,7 +50,7 @@ public class DirectReview implements Serializable {
     @JsonProperty(value = "circumstances")
     @JsonAlias("customfield_11015")
     @JsonDeserialize(using = CircumstancesDeserializer.class)
-    @XmlElementWrapper(name = "circumstances", nillable = true, required = false)
+    @XmlElementWrapper(name = "circumstances", nillable = false, required = false)
     @XmlElement(name = "circumstance")
     private List<String> circumstances = new ArrayList<String>();
 
