@@ -60,7 +60,7 @@ public class SvapManager {
     @Transactional
     public Svap create(Svap svap) throws EntityRetrievalException {
         Svap newSvap = addSvap(svap);
-        addNewCriteriaForNewSvap(svap);
+        addNewCriteriaForNewSvap(newSvap, svap.getCriteria());
         return getSvap(newSvap.getSvapId());
     }
 
@@ -105,8 +105,8 @@ public class SvapManager {
                 .forEach(crit -> svapDao.addSvapCriteriMap(updatedSvap, crit));
     }
 
-    private void addNewCriteriaForNewSvap(Svap svap) {
-        svap.getCriteria().stream()
+    private void addNewCriteriaForNewSvap(Svap svap, List<CertificationCriterion> criteria) {
+        criteria.stream()
                 .forEach(crit -> svapDao.addSvapCriteriMap(svap, crit));
     }
 
