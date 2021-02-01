@@ -11,15 +11,15 @@ import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
-import gov.healthit.chpl.permissions.domains.svap.DeleteActionPermissions;
+import gov.healthit.chpl.permissions.domains.svap.UpdateActionPermissions;
 
-public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
+public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Mock
     private ResourcePermissions resourcePermissions;
 
     @InjectMocks
-    private DeleteActionPermissions permissions;
+    private UpdateActionPermissions permissions;
 
     @Before
     public void setup() {
