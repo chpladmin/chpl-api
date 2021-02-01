@@ -10,17 +10,20 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Singular;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 public class Svap {
 
     private Long svapId;
     private String regulatoryTextCitation;
     private String approvedStandardVersion;
     private boolean replaced;
+
+    @Singular(value = "criterion")
     private List<CertificationCriterion> criteria;
 
     public Svap(SvapEntity entity) {

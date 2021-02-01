@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
@@ -27,7 +28,6 @@ import lombok.extern.log4j.Log4j2;
 public class SvapManager {
     private SvapDAO svapDao;
     private CertificationCriterionAttributeDAO certificationCriterionAttributeDAO;
-
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
@@ -135,6 +135,14 @@ public class SvapManager {
     private void validateForEdit(Svap updatedSvap, Svap originalSvap) throws ValidationException {
         Set<String> messages = new HashSet<String>();
 
+        if (StringUtils.isEmpty(updatedSvap.getApprovedStandardVersion())) {
+            messages.add(errorMessageUtil.getMessage("svap.edit.emptyApprovedStandardVersion"));
+        }
+
+        if (StringUtils.isEmpty(updatedSvap.getRegulatoryTextCitation())) {
+            messages.add(errorMessageUtil.getMessage("svap.edit.emtptyRegulatoryTextCitation"));
+        }
+
         if (updatedSvap.getCriteria().size() == 0) {
             messages.add(errorMessageUtil.getMessage("svap.edit.noCriteria"));
         }
@@ -161,6 +169,14 @@ public class SvapManager {
 
     private void validateForAdd(Svap newSvap) throws ValidationException {
         Set<String> messages = new HashSet<String>();
+
+        if (StringUtils.isEmpty(newSvap.getApprovedStandardVersion())) {
+            messages.add(errorMessageUtil.getMessage("svap.edit.emptyApprovedStandardVersion"));
+        }
+
+        if (StringUtils.isEmpty(newSvap.getRegulatoryTextCitation())) {
+            messages.add(errorMessageUtil.getMessage("svap.edit.emtptyRegulatoryTextCitation"));
+        }
 
         if (newSvap.getCriteria() == null || newSvap.getCriteria().size() == 0) {
             messages.add(errorMessageUtil.getMessage("svap.edit.noCriteria"));
