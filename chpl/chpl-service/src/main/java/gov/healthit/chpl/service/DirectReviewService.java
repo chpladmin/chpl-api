@@ -71,35 +71,33 @@ public class DirectReviewService {
             }
         }
 
-        if (allDirectReviews != null && allDirectReviews.size() > 0) {
-            CacheManager manager = CacheManager.getInstance();
-            Cache drCache = manager.getCache(CacheNames.DIRECT_REVIEWS);
-            LOGGER.info("Clearing the Direct Review cache.");
-            drCache.removeAll();
+        CacheManager manager = CacheManager.getInstance();
+        Cache drCache = manager.getCache(CacheNames.DIRECT_REVIEWS);
+        LOGGER.info("Clearing the Direct Review cache.");
+        drCache.removeAll();
 
-            //insert an entry in the cache for every developer ID
-            List<DeveloperDTO> allDeveloperIds = developerDao.findAllIdsAndNames();
-            LOGGER.info("Adding " + allDeveloperIds.size() + " keys to the Direct Review cache.");
-            allDeveloperIds.stream()
-                .forEach(dev -> drCache.put(new Element(dev.getId(), new ArrayList<DirectReview>())));
+        //insert an entry in the cache for every developer ID
+        List<DeveloperDTO> allDeveloperIds = developerDao.findAllIdsAndNames();
+        LOGGER.info("Adding " + allDeveloperIds.size() + " keys to the Direct Review cache.");
+        allDeveloperIds.stream()
+            .forEach(dev -> drCache.put(new Element(dev.getId(), new ArrayList<DirectReview>())));
 
-            //insert each direct review into the right place in our cache
-            LOGGER.info("Inserting " + allDirectReviews.size() + " values into the Direct Review cache.");
-            for (DirectReview dr : allDirectReviews) {
-                if (dr.getDeveloperId() != null) {
-                    if (drCache.get(dr.getDeveloperId()) != null) {
-                        Element devDirectReviewElement = drCache.get(dr.getDeveloperId());
-                        Object devDirectReviewsObj = devDirectReviewElement.getObjectValue();
-                        if (devDirectReviewsObj instanceof List<?>) {
-                            List<DirectReview> devDirectReviews = (List<DirectReview>) devDirectReviewsObj;
-                            devDirectReviews.add(dr);
-                        }
-                    } else {
-                        List<DirectReview> devDirectReviews = new ArrayList<DirectReview>();
+        //insert each direct review into the right place in our cache
+        LOGGER.info("Inserting " + allDirectReviews.size() + " values into the Direct Review cache.");
+        for (DirectReview dr : allDirectReviews) {
+            if (dr.getDeveloperId() != null) {
+                if (drCache.get(dr.getDeveloperId()) != null) {
+                    Element devDirectReviewElement = drCache.get(dr.getDeveloperId());
+                    Object devDirectReviewsObj = devDirectReviewElement.getObjectValue();
+                    if (devDirectReviewsObj instanceof List<?>) {
+                        List<DirectReview> devDirectReviews = (List<DirectReview>) devDirectReviewsObj;
                         devDirectReviews.add(dr);
-                        Element devDirectReviewElement = new Element(dr.getDeveloperId(), devDirectReviews);
-                        drCache.put(devDirectReviewElement);
                     }
+                } else {
+                    List<DirectReview> devDirectReviews = new ArrayList<DirectReview>();
+                    devDirectReviews.add(dr);
+                    Element devDirectReviewElement = new Element(dr.getDeveloperId(), devDirectReviews);
+                    drCache.put(devDirectReviewElement);
                 }
             }
         }
