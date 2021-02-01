@@ -18,7 +18,6 @@ public class ListingValidationReportDAO extends BaseDAOImpl {
                 .certificationBodyId(lvr.getCertificationBodyId())
                 .productName(lvr.getProductName())
                 .certificationStatusName(lvr.getCertificationStatusName())
-                .certificationEditionName(lvr.getCertificationEditionName())
                 .listingModifiedDate(lvr.getListingModifiedDate())
                 .errorMessage(lvr.getErrorMessage())
                 .reportDate(lvr.getReportDate())
