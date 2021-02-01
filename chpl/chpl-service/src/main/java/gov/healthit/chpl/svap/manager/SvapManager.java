@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.dao.CertificationCriterionAttributeDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -25,19 +26,26 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class SvapManager {
     private SvapDAO svapDao;
+    private CertificationCriterionAttributeDAO certificationCriterionAttributeDAO;
+
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public SvapManager(SvapDAO svapDao, ErrorMessageUtil errorMessageUtil) {
+    public SvapManager(SvapDAO svapDao, ErrorMessageUtil errorMessageUtil, CertificationCriterionAttributeDAO certificationCriterionAttributeDAO) {
         this.svapDao = svapDao;
         this.errorMessageUtil = errorMessageUtil;
+        this.certificationCriterionAttributeDAO = certificationCriterionAttributeDAO;
     }
 
     public List<SvapCriteriaMap> getAllSvapCriteriaMaps() throws EntityRetrievalException {
         return svapDao.getAllSvapCriteriaMap();
     }
 
-    //TODO - add permissions
+    @Transactional
+    public List<CertificationCriterion> getCertificationCriteriaForSvap() {
+        return certificationCriterionAttributeDAO.getCriteriaForSvap();
+    }
+
     @Transactional
     public List<Svap> getAll() {
         return svapDao.getAll();
@@ -58,7 +66,8 @@ public class SvapManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SVAP, "
             + "T(gov.healthit.chpl.permissions.domains.SvapDomainPermissions).CREATE)")
     @Transactional
-    public Svap create(Svap svap) throws EntityRetrievalException {
+    public Svap create(Svap svap) throws EntityRetrievalException, ValidationException {
+        validateForAdd(svap);
         Svap newSvap = addSvap(svap);
         addNewCriteriaForNewSvap(newSvap, svap.getCriteria());
         return getSvap(newSvap.getSvapId());
@@ -125,6 +134,11 @@ public class SvapManager {
 
     private void validateForEdit(Svap updatedSvap, Svap originalSvap) throws ValidationException {
         Set<String> messages = new HashSet<String>();
+
+        if (updatedSvap.getCriteria().size() == 0) {
+            messages.add(errorMessageUtil.getMessage("svap.edit.noCriteria"));
+        }
+
         //If there are removed criteria, make sure there are no listings attesting to SVAP/criteria
         getCriteriaRemovedFromSvap(updatedSvap, originalSvap).stream()
                 .forEach(crit -> {
@@ -138,6 +152,19 @@ public class SvapManager {
                                         .collect(Collectors.joining(", "))));
                     }
                 });
+
+        if (messages.size() > 0) {
+            ValidationException e = new ValidationException(messages);
+            throw e;
+        }
+    }
+
+    private void validateForAdd(Svap newSvap) throws ValidationException {
+        Set<String> messages = new HashSet<String>();
+
+        if (newSvap.getCriteria() == null || newSvap.getCriteria().size() == 0) {
+            messages.add(errorMessageUtil.getMessage("svap.edit.noCriteria"));
+        }
 
         if (messages.size() > 0) {
             ValidationException e = new ValidationException(messages);

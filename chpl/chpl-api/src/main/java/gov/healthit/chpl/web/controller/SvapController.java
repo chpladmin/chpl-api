@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.svap.domain.Svap;
@@ -43,7 +44,7 @@ public class SvapController {
                     + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = "application/json; charset=utf-8")
-    public @ResponseBody Svap createSvap(@RequestBody(required = true) Svap svap) throws EntityRetrievalException {
+    public @ResponseBody Svap createSvap(@RequestBody(required = true) Svap svap) throws EntityRetrievalException, ValidationException {
         return svapManager.create(svap);
     }
 
@@ -56,11 +57,17 @@ public class SvapController {
         svapManager.delete(svap);
     }
 
-    @ApiOperation(value = "Update an SVAP.",
-            notes = "NEED TO ADD DESCRIPTION"
-                    + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.")
+    @ApiOperation(value = "Retreive all current SVAPs.",
+            notes = "NEED TO ADD DESCRIPTION")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<Svap> getAllSvaps() {
         return svapManager.getAll();
+    }
+
+    @ApiOperation(value = "Get all criteria that SVAPs can be associated with.",
+            notes = "NEED TO ADD DESCRIPTION")
+    @RequestMapping(value = "/criteria", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<CertificationCriterion> getCertificsationCriteriaForSvap() {
+        return svapManager.getCertificationCriteriaForSvap();
     }
 }
