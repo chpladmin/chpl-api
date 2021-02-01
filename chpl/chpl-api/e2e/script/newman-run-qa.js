@@ -113,7 +113,7 @@ const jobs = [
     cb => newman.run(statusControllerTests,cb),
     cb => newman.run(testinglabControllerTests,cb),
     cb => newman.run(searchviewControllerTests,cb),
-	cb => newman.run(surveillanceControllerTests,cb),
+    cb => newman.run(surveillanceControllerTests,cb),
 ];
 
 const responseCallback = (err) => {
