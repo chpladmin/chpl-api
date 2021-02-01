@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.compliance.DirectReview;
+import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResultLegacy;
@@ -41,9 +42,18 @@ public class CertifiedProductSearchManager {
     private void populateDirectReviewFields(CertifiedProductFlatSearchResult searchResult) {
         List<DirectReview> listingDrs = drService.getDirectReviewsRelatedToListing(searchResult.getId(), searchResult.getDeveloperId());
         searchResult.setDirectReviewCount(listingDrs.size());
-        //TODO: calculate dr counts from here - Question to andrew about the below fields
-        searchResult.setOpenDirectReviewNonConformityCount(0);
-        searchResult.setClosedDirectReviewNonConformityCount(0);
+        searchResult.setOpenDirectReviewNonConformityCount((int) listingDrs.stream()
+                .filter(dr -> dr.getNonConformities() != null && dr.getNonConformities().size() > 0)
+                .flatMap(dr -> dr.getNonConformities().stream())
+                .filter(nc -> nc.getNonConformityStatus() != null
+                    && nc.getNonConformityStatus().equalsIgnoreCase(DirectReviewNonConformity.STATUS_OPEN))
+                .count());
+        searchResult.setClosedDirectReviewNonConformityCount((int) listingDrs.stream()
+                .filter(dr -> dr.getNonConformities() != null && dr.getNonConformities().size() > 0)
+                .flatMap(dr -> dr.getNonConformities().stream())
+                .filter(nc -> nc.getNonConformityStatus() != null
+                    && nc.getNonConformityStatus().equalsIgnoreCase(DirectReviewNonConformity.STATUS_CLOSED))
+                .count());
     }
 
     @Transactional(readOnly = true)
