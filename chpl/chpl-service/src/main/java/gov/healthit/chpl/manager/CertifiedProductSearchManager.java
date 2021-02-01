@@ -42,18 +42,31 @@ public class CertifiedProductSearchManager {
     private void populateDirectReviewFields(CertifiedProductFlatSearchResult searchResult) {
         List<DirectReview> listingDrs = drService.getDirectReviewsRelatedToListing(searchResult.getId(), searchResult.getDeveloperId());
         searchResult.setDirectReviewCount(listingDrs.size());
-        searchResult.setOpenDirectReviewNonConformityCount((int) listingDrs.stream()
-                .filter(dr -> dr.getNonConformities() != null && dr.getNonConformities().size() > 0)
-                .flatMap(dr -> dr.getNonConformities().stream())
-                .filter(nc -> nc.getNonConformityStatus() != null
-                    && nc.getNonConformityStatus().equalsIgnoreCase(DirectReviewNonConformity.STATUS_OPEN))
-                .count());
-        searchResult.setClosedDirectReviewNonConformityCount((int) listingDrs.stream()
-                .filter(dr -> dr.getNonConformities() != null && dr.getNonConformities().size() > 0)
-                .flatMap(dr -> dr.getNonConformities().stream())
-                .filter(nc -> nc.getNonConformityStatus() != null
-                    && nc.getNonConformityStatus().equalsIgnoreCase(DirectReviewNonConformity.STATUS_CLOSED))
-                .count());
+        searchResult.setOpenDirectReviewNonConformityCount(
+                calculateNonConformitiesWithStatusForListing(listingDrs, searchResult.getId(), DirectReviewNonConformity.STATUS_OPEN));
+        searchResult.setClosedDirectReviewNonConformityCount(
+                calculateNonConformitiesWithStatusForListing(listingDrs, searchResult.getId(), DirectReviewNonConformity.STATUS_CLOSED));
+    }
+
+    private int calculateNonConformitiesWithStatusForListing(List<DirectReview> listingDrs, Long listingId,
+            String nonConformityStatus) {
+        return (int) listingDrs.stream()
+        .filter(dr -> dr.getNonConformities() != null && dr.getNonConformities().size() > 0)
+        .flatMap(dr -> dr.getNonConformities().stream())
+        .filter(nc -> isNonConformityRelatedToListing(nc, listingId))
+        .filter(nc -> nc.getNonConformityStatus() != null
+            && nc.getNonConformityStatus().equalsIgnoreCase(nonConformityStatus))
+        .count();
+    }
+
+    private boolean isNonConformityRelatedToListing(DirectReviewNonConformity nonConformity, Long listingId) {
+        if (nonConformity.getDeveloperAssociatedListings() == null
+                || nonConformity.getDeveloperAssociatedListings().size() > 0) {
+            return true;
+        }
+        return nonConformity.getDeveloperAssociatedListings().stream()
+                .filter(dal -> dal.getId().equals(listingId))
+                .findAny().isPresent();
     }
 
     @Transactional(readOnly = true)
