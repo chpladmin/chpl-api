@@ -10,26 +10,40 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
+import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResultLegacy;
 import gov.healthit.chpl.domain.search.SearchRequest;
 import gov.healthit.chpl.domain.search.SearchResponse;
+import gov.healthit.chpl.service.DirectReviewSearchService;
 
 @Service
 public class CertifiedProductSearchManager {
     private CertifiedProductSearchDAO searchDao;
+    private DirectReviewSearchService drService;
 
     @Autowired
-    public CertifiedProductSearchManager(CertifiedProductSearchDAO searchDao) {
+    public CertifiedProductSearchManager(CertifiedProductSearchDAO searchDao, DirectReviewSearchService drService) {
         this.searchDao = searchDao;
+        this.drService = drService;
     }
 
     @Transactional(readOnly = true)
     @Cacheable(value = CacheNames.COLLECTIONS_LISTINGS, key = "'listings'")
     public List<CertifiedProductFlatSearchResult> search() {
         List<CertifiedProductFlatSearchResult> results = searchDao.getAllCertifiedProducts();
+        results.stream()
+            .forEach(searchResult -> populateDirectReviewFields(searchResult));
         return results;
+    }
+
+    private void populateDirectReviewFields(CertifiedProductFlatSearchResult searchResult) {
+        List<DirectReview> listingDrs = drService.getDirectReviewsRelatedToListing(searchResult.getId(), searchResult.getDeveloperId());
+        searchResult.setDirectReviewCount(listingDrs.size());
+        //TODO: calculate dr counts from here - Question to andrew about the below fields
+        searchResult.setOpenDirectReviewNonConformityCount(0);
+        searchResult.setClosedDirectReviewNonConformityCount(0);
     }
 
     @Transactional(readOnly = true)

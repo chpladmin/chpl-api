@@ -1,9 +1,9 @@
 package gov.healthit.chpl.service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,9 +29,9 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
-@Component("directReviewService")
+@Component("directReviewCachingService")
 @Log4j2
-public class DirectReviewService {
+public class DirectReviewCachingService {
     private static final String JIRA_KEY_FIELD = "key";
     private static final String JIRA_ISSUES_FIELD = "issues";
     private static final String JIRA_FIELDS_FIELD = "fields";
@@ -53,36 +53,11 @@ public class DirectReviewService {
     private DirectReviewDeserializingObjectMapper mapper;
 
     @Autowired
-    public DirectReviewService(DeveloperDAO developerDao, RestTemplate jiraAuthenticatedRestTemplate,
+    public DirectReviewCachingService(DeveloperDAO developerDao, RestTemplate jiraAuthenticatedRestTemplate,
             DirectReviewDeserializingObjectMapper mapper) {
         this.developerDao = developerDao;
         this.jiraAuthenticatedRestTemplate = jiraAuthenticatedRestTemplate;
         this.mapper = mapper;
-    }
-
-    public Ehcache getDirectReviewsCache() {
-        CacheManager manager = CacheManager.getInstance();
-        Ehcache drCache = manager.getEhcache(CacheNames.DIRECT_REVIEWS);
-        return drCache;
-    }
-
-    public boolean getDirectReviewsAvailable() {
-        boolean directReviewsAvailable = false;
-        Ehcache drCache = getDirectReviewsCache();
-        if (drCache instanceof HttpStatusAwareCache) {
-            HttpStatusAwareCache drStatusAwareCache = (HttpStatusAwareCache) drCache;
-            directReviewsAvailable = drStatusAwareCache.getHttpStatus() != null
-                    && drStatusAwareCache.getHttpStatus().is2xxSuccessful();
-        }
-        return directReviewsAvailable;
-    }
-
-    private void setDirectReviewsAvailable(HttpStatus httpStatus) {
-        Ehcache drCache = getDirectReviewsCache();
-        if (drCache instanceof HttpStatusAwareCache) {
-            HttpStatusAwareCache drStatusAwareCache = (HttpStatusAwareCache) drCache;
-            drStatusAwareCache.setHttpStatus(httpStatus);
-        }
     }
 
     public void populateDirectReviewsCache() {
@@ -165,34 +140,18 @@ public class DirectReviewService {
         return developerDrs;
     }
 
-    public List<DirectReview> getListingDirectReviewsFromCache(Long listingId) {
-        Ehcache drCache = getDirectReviewsCache();
-        //drCache has key = developerId and value = list of direct reviews
-        List<?> developerIdsWithDirectReviews = drCache.getKeys();
-        List<DirectReview> allDirectReviews = developerIdsWithDirectReviews.stream()
-            .map(key -> drCache.get(key))
-            .filter(cacheElement -> cacheElement != null)
-            .map(cacheElement -> cacheElement.getObjectValue())
-            .filter(cacheObject -> cacheObject != null && cacheObject instanceof List<?>)
-            .map(cacheObject -> (List<DirectReview>) cacheObject)
-            .flatMap(List::stream)
-            .collect(Collectors.toList());
-
-        return allDirectReviews.stream()
-                .filter(dr -> isAssociatedWithListing(dr, listingId))
-                .collect(Collectors.toList());
+    private Ehcache getDirectReviewsCache() {
+        CacheManager manager = CacheManager.getInstance();
+        Ehcache drCache = manager.getEhcache(CacheNames.DIRECT_REVIEWS);
+        return drCache;
     }
 
-    private boolean isAssociatedWithListing(DirectReview dr, Long listingId) {
-        if (dr.getNonConformities() == null || dr.getNonConformities().size() == 0) {
-            return false;
+    private void setDirectReviewsAvailable(HttpStatus httpStatus) {
+        Ehcache drCache = getDirectReviewsCache();
+        if (drCache instanceof HttpStatusAwareCache) {
+            HttpStatusAwareCache drStatusAwareCache = (HttpStatusAwareCache) drCache;
+            drStatusAwareCache.setHttpStatus(httpStatus);
         }
-
-        return dr.getNonConformities().stream()
-            .filter(nc -> nc.getDeveloperAssociatedListings() != null && nc.getDeveloperAssociatedListings().size() > 0)
-            .flatMap(nc -> nc.getDeveloperAssociatedListings().stream())
-            .filter(devAssocListing -> devAssocListing.getId().equals(listingId))
-            .findAny().isPresent();
     }
 
     private String fetchDirectReviews() throws JiraRequestFailedException {
@@ -254,6 +213,7 @@ public class DirectReviewService {
                         JsonNode fields = issueNode.get(JIRA_FIELDS_FIELD);
                         DirectReview dr = mapper.readValue(fields.toString(), DirectReview.class);
                         dr.setJiraKey(jiraKey);
+                        dr.setFetched(LocalDateTime.now());
                         if (dr.getStartDate() != null) {
                             drs.add(dr);
                         }

@@ -46,6 +46,8 @@ public class CertifiedProductSearchResult implements Serializable {
     })
     private String practiceType;
 
+    private Long developerId;
+
     @JsonView({
             SearchViews.Default.class
     })
@@ -89,30 +91,30 @@ public class CertifiedProductSearchResult implements Serializable {
     @JsonView({
             SearchViews.Default.class
     })
-    private Long openSurveillanceNonconformityCount;
+    private Long openSurveillanceNonConformityCount;
 
     @JsonView({
             SearchViews.Default.class
     })
-    private Long closedSurveillanceNonconformityCount;
+    private Long closedSurveillanceNonConformityCount;
 
     @JsonView({
         SearchViews.Default.class
     })
     @Builder.Default
-    private Long directReviewCount = 0L;
+    private Integer directReviewCount = 0;
 
     @JsonView({
             SearchViews.Default.class
     })
     @Builder.Default
-    private Long openDirectReviewNonconformityCount = 0L;
+    private Integer openDirectReviewNonConformityCount = 0;
 
     @JsonView({
             SearchViews.Default.class
     })
     @Builder.Default
-    private Long closedDirectReviewNonconformityCount = 0L;
+    private Integer closedDirectReviewNonConformityCount = 0;
 
     private Long openSurveillanceCount;
     private Long closedSurveillanceCount;
@@ -139,11 +141,11 @@ public class CertifiedProductSearchResult implements Serializable {
         this.surveillanceCount = other.getSurveillanceCount();
         this.openSurveillanceCount = other.getOpenSurveillanceCount();
         this.closedSurveillanceCount = other.getClosedSurveillanceCount();
-        this.openSurveillanceNonconformityCount = other.getOpenSurveillanceNonconformityCount();
-        this.closedSurveillanceNonconformityCount = other.getClosedSurveillanceNonconformityCount();
+        this.openSurveillanceNonConformityCount = other.getOpenSurveillanceNonConformityCount();
+        this.closedSurveillanceNonConformityCount = other.getClosedSurveillanceNonConformityCount();
         this.directReviewCount = other.getDirectReviewCount();
-        this.openDirectReviewNonconformityCount = other.getOpenDirectReviewNonconformityCount();
-        this.closedDirectReviewNonconformityCount = other.getClosedDirectReviewNonconformityCount();
+        this.openDirectReviewNonConformityCount = other.getOpenDirectReviewNonConformityCount();
+        this.closedDirectReviewNonConformityCount = other.getClosedDirectReviewNonConformityCount();
         this.numMeaningfulUse = other.getNumMeaningfulUse();
         this.numMeaningfulUseDate = other.getNumMeaningfulUseDate();
         this.transparencyAttestationUrl = other.getTransparencyAttestationUrl();

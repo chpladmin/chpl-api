@@ -14,7 +14,7 @@ import gov.healthit.chpl.exception.JiraRequestFailedException;
 import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
-import gov.healthit.chpl.service.DirectReviewService;
+import gov.healthit.chpl.service.DirectReviewCachingService;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -23,13 +23,13 @@ public class AsynchronousCacheInitialization {
     private CertificationIdManager certificationIdManager;
     private DimensionalDataManager dimensionalDataManager;
     private CertifiedProductSearchManager certifiedProductSearchManager;
-    private DirectReviewService drService;
+    private DirectReviewCachingService drService;
 
     @Autowired
     public AsynchronousCacheInitialization(CertificationIdManager certificationIdManager,
             DimensionalDataManager dimensionalDataManager,
             CertifiedProductSearchManager certifiedProductSearchManager,
-            DirectReviewService drService) {
+            DirectReviewCachingService drService) {
         this.certificationIdManager = certificationIdManager;
         this.dimensionalDataManager = dimensionalDataManager;
         this.certifiedProductSearchManager = certifiedProductSearchManager;

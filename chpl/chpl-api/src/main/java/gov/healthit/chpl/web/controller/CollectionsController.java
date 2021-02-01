@@ -32,7 +32,7 @@ import gov.healthit.chpl.domain.search.CertifiedProductSearchResultLegacy;
 import gov.healthit.chpl.domain.search.SearchViews;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DeveloperManager;
-import gov.healthit.chpl.service.DirectReviewService;
+import gov.healthit.chpl.service.DirectReviewSearchService;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
@@ -51,11 +51,11 @@ import lombok.extern.log4j.Log4j2;
 public class CollectionsController {
     private CertifiedProductSearchManager certifiedProductSearchManager;
     private DeveloperManager developerManager;
-    private DirectReviewService drService;
+    private DirectReviewSearchService drService;
 
     @Autowired
     public CollectionsController(CertifiedProductSearchManager certifiedProductSearchManager,
-            DeveloperManager developerManager, DirectReviewService drService) {
+            DeveloperManager developerManager, DirectReviewSearchService drService) {
         this.certifiedProductSearchManager = certifiedProductSearchManager;
         this.developerManager = developerManager;
         this.drService = drService;

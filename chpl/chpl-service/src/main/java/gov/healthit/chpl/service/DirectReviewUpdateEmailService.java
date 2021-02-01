@@ -38,11 +38,11 @@ public class DirectReviewUpdateEmailService {
     @Value("${directReview.unknownChanges.emailSubject}")
     private String unknownChangesEmailSubject;
 
-    private DirectReviewService directReviewService;
+    private DirectReviewCachingService directReviewService;
     private Environment env;
 
     @Autowired
-    public DirectReviewUpdateEmailService(DirectReviewService directReviewService, Environment env) {
+    public DirectReviewUpdateEmailService(DirectReviewCachingService directReviewService, Environment env) {
         this.directReviewService = directReviewService;
         this.env = env;
     }

@@ -599,6 +599,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
             result.setAcb(dbResult.getAcbName());
             result.setAcbCertificationId(dbResult.getAcbCertificationId());
             result.setPracticeType(dbResult.getPracticeTypeName());
+            result.setDeveloperId(dbResult.getDeveloperId());
             result.setDeveloper(dbResult.getDeveloper());
             result.setDeveloperStatus(dbResult.getDeveloperStatus());
             result.setProduct(dbResult.getProduct());
@@ -615,10 +616,9 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
             result.setSurveillanceCount(dbResult.getSurveillanceCount());
             result.setOpenSurveillanceCount(dbResult.getOpenSurveillanceCount());
             result.setClosedSurveillanceCount(dbResult.getClosedSurveillanceCount());
-            result.setOpenSurveillanceNonconformityCount(dbResult.getOpenSurveillanceNonconformityCount());
-            result.setClosedSurveillanceNonconformityCount(dbResult.getClosedSurveillanceNonconformityCount());
+            result.setOpenSurveillanceNonConformityCount(dbResult.getOpenSurveillanceNonConformityCount());
+            result.setClosedSurveillanceNonConformityCount(dbResult.getClosedSurveillanceNonConformityCount());
             result.setSurveillanceDates(dbResult.getSurveillanceDates());
-            //TODO: set direct review values here from cache
             result.setCriteriaMet(dbResult.getCerts());
             result.setCqmsMet(dbResult.getCqms());
             result.setPreviousDevelopers(dbResult.getPreviousDevelopers());
@@ -701,8 +701,8 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
             result.setSurveillanceCount(dbResult.getSurveillanceCount());
             result.setOpenSurveillanceCount(dbResult.getOpenSurveillanceCount());
             result.setClosedSurveillanceCount(dbResult.getClosedSurveillanceCount());
-            result.setOpenNonconformityCount(dbResult.getOpenSurveillanceNonconformityCount());
-            result.setClosedNonconformityCount(dbResult.getClosedSurveillanceNonconformityCount());
+            result.setOpenNonconformityCount(dbResult.getOpenSurveillanceNonConformityCount());
+            result.setClosedNonconformityCount(dbResult.getClosedSurveillanceNonConformityCount());
             result.setSurveillanceDates(dbResult.getSurveillanceDates());
             result.setCriteriaMet(dbResult.getCerts());
             result.setCqmsMet(dbResult.getCqms());
