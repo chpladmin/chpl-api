@@ -12,9 +12,13 @@ import lombok.Data;
 @AllArgsConstructor
 public class ListingValidationReport {
     private Long id;
+    private Long certifiedProductId;
     private String chplProductNumber;
     private Long certificationBodyId;
-    private String productName;
+    private String product;
+    private String version;
+    private String developer;
+    private String certificationBody;
     private String certificationStatusName;
     private Date listingModifiedDate;
     private String errorMessage;
@@ -26,9 +30,13 @@ public class ListingValidationReport {
 
     public ListingValidationReport(ListingValidationReportEntity entity) {
         this.id = entity.getId();
+        this.certifiedProductId = entity.getCertifiedProductId();
         this.chplProductNumber = entity.getChplProductNumber();
         this.certificationBodyId = entity.getCertificationBodyId();
-        this.productName = entity.getProductName();
+        this.product = entity.getProduct();
+        this.version = entity.getVersion();
+        this.developer = entity.getDeveloper();
+        this.certificationBody = entity.getCertificationBody();
         this.certificationStatusName = entity.getCertificationStatusName();
         this.listingModifiedDate = entity.getListingModifiedDate();
         this.errorMessage = entity.getErrorMessage();

@@ -31,6 +31,10 @@ public class ListingValidationReportEntity {
     private Long id;
 
     @Basic(optional = false)
+    @Column(name = "certified_product_id", nullable = false)
+    private Long certifiedProductId;
+
+    @Basic(optional = false)
     @Column(name = "chpl_product_number", nullable = false)
     private String chplProductNumber;
 
@@ -39,8 +43,20 @@ public class ListingValidationReportEntity {
     private Long certificationBodyId;
 
     @Basic(optional = false)
-    @Column(name = "product_name", nullable = false)
-    private String productName;
+    @Column(name = "product", nullable = false)
+    private String product;
+
+    @Basic(optional = false)
+    @Column(name = "version", nullable = false)
+    private String version;
+
+    @Basic(optional = false)
+    @Column(name = "developer", nullable = false)
+    private String developer;
+
+    @Basic(optional = false)
+    @Column(name = "certification_body", nullable = false)
+    private String certificationBody;
 
     @Basic(optional = false)
     @Column(name = "certification_status_name", nullable = false)

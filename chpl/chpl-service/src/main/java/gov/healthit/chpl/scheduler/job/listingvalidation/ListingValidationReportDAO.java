@@ -15,8 +15,12 @@ public class ListingValidationReportDAO extends BaseDAOImpl {
     public ListingValidationReport create(ListingValidationReport lvr) {
         ListingValidationReportEntity entity = ListingValidationReportEntity.builder()
                 .chplProductNumber(lvr.getChplProductNumber())
+                .certifiedProductId(lvr.getCertifiedProductId())
                 .certificationBodyId(lvr.getCertificationBodyId())
-                .productName(lvr.getProductName())
+                .product(lvr.getProduct())
+                .version(lvr.getVersion())
+                .developer(lvr.getDeveloper())
+                .certificationBody(lvr.getCertificationBody())
                 .certificationStatusName(lvr.getCertificationStatusName())
                 .listingModifiedDate(lvr.getListingModifiedDate())
                 .errorMessage(lvr.getErrorMessage())

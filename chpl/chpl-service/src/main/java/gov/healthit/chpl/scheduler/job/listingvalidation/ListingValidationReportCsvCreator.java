@@ -61,8 +61,12 @@ public class ListingValidationReportCsvCreator {
 
     private List<String> getHeaderRow() {
         return Arrays.asList(
-                "CHPL ID",
-                "CHPL Product Name",
+                "CHPL Database Id",
+                "CHPL Product Number",
+                "Product",
+                "Version",
+                "Developer",
+                "ONC-ACB",
                 "Certification Status",
                 "Last Modified Date",
                 "Error Message");
@@ -70,8 +74,12 @@ public class ListingValidationReportCsvCreator {
 
     private List<String> getRow(ListingValidationReport report) {
         return Arrays.asList(
+                report.getCertifiedProductId().toString(),
                 report.getChplProductNumber(),
-                report.getProductName(),
+                report.getProduct(),
+                report.getVersion(),
+                report.getDeveloper(),
+                report.getCertificationBody(),
                 report.getCertificationStatusName(),
                 formatDate(report.getListingModifiedDate()),
                 report.getErrorMessage());

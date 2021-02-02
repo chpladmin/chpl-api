@@ -24,7 +24,6 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
@@ -92,7 +91,6 @@ public class ListingValidationCreatorJob implements Job {
     private List<CertifiedProductSearchDetails> getListingsWithErrors() {
 
         return getAll2015CertifiedProducts().parallelStream()
-                .filter(listing -> isListingActive(listing))
                 .map(listing -> getCertifiedProductSearchDetails(listing.getId()))
                 .map(detail -> validateListing(detail))
                 .filter(detail -> doValidationErrorsExist(detail))
@@ -140,9 +138,13 @@ public class ListingValidationCreatorJob implements Job {
     private List<ListingValidationReport> createListingValidationReport(CertifiedProductSearchDetails listing) {
         List<ListingValidationReport> reports = listing.getErrorMessages().stream()
                 .map(error -> listingValidationReportDAO.create(ListingValidationReport.builder()
+                    .certifiedProductId(listing.getId())
                     .chplProductNumber(listing.getChplProductNumber())
                     .certificationBodyId(Long.parseLong(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()))
-                    .productName(listing.getProduct().getName())
+                    .product(listing.getProduct().getName())
+                    .version(listing.getVersion().getVersion())
+                    .developer(listing.getDeveloper().getName())
+                    .certificationBody(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString())
                     .certificationStatusName(listing.getCurrentStatus().getStatus().getName())
                     .listingModifiedDate(new Date(listing.getLastModifiedDate()))
                     .errorMessage(error)
@@ -152,12 +154,5 @@ public class ListingValidationCreatorJob implements Job {
                 .collect(Collectors.toList());
         LOGGER.info("Completed save of report data for: " + listing.getId());
         return reports;
-    }
-
-    private boolean isListingActive(CertifiedProductDetailsDTO listing) {
-        return CertificationStatusType.getActiveAndSuspendedNames().stream()
-                .filter(statusName -> listing.getCertificationStatusName().equals(statusName))
-                .findAny()
-                .isPresent();
     }
 }
