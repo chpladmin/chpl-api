@@ -55,7 +55,7 @@ public class CertifiedProductSearchManager {
         .flatMap(dr -> dr.getNonConformities().stream())
         .filter(nc -> isNonConformityRelatedToListing(nc, listingId))
         .filter(nc -> nc.getNonConformityStatus() != null
-            && nc.getNonConformityStatus().equalsIgnoreCase(nonConformityStatus))
+                && nc.getNonConformityStatus().equalsIgnoreCase(nonConformityStatus))
         .count();
     }
 

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.Query;
@@ -590,42 +591,43 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
     private List<CertifiedProductFlatSearchResult> convertToFlatListings(List<CertifiedProductBasicSearchResultEntity> dbResults) {
         List<CertifiedProductFlatSearchResult> results = new ArrayList<CertifiedProductFlatSearchResult>(
                 dbResults.size());
-        for (CertifiedProductBasicSearchResultEntity dbResult : dbResults) {
-            CertifiedProductFlatSearchResult result = new CertifiedProductFlatSearchResult();
-            result.setId(dbResult.getId());
-            result.setChplProductNumber(dbResult.getChplProductNumber());
-            result.setEdition(dbResult.getEdition());
-            result.setCuresUpdate(dbResult.getCuresUpdate());
-            result.setAcb(dbResult.getAcbName());
-            result.setAcbCertificationId(dbResult.getAcbCertificationId());
-            result.setPracticeType(dbResult.getPracticeTypeName());
-            result.setDeveloperId(dbResult.getDeveloperId());
-            result.setDeveloper(dbResult.getDeveloper());
-            result.setDeveloperStatus(dbResult.getDeveloperStatus());
-            result.setProduct(dbResult.getProduct());
-            result.setVersion(dbResult.getVersion());
-            result.setNumMeaningfulUse(dbResult.getMeaningfulUseUserCount());
-            result.setNumMeaningfulUseDate(dbResult.getMeaningfulUseUserDate() != null
-                    ? dbResult.getMeaningfulUseUserDate().getTime() : null);
-            result.setDecertificationDate(
-                    dbResult.getDecertificationDate() == null ? null : dbResult.getDecertificationDate().getTime());
-            result.setCertificationDate(dbResult.getCertificationDate().getTime());
-            result.setCertificationStatus(dbResult.getCertificationStatus());
-            result.setTransparencyAttestationUrl(dbResult.getTransparencyAttestationUrl());
-            result.setApiDocumentation(dbResult.getApiDocumentation());
-            result.setSurveillanceCount(dbResult.getSurveillanceCount());
-            result.setOpenSurveillanceCount(dbResult.getOpenSurveillanceCount());
-            result.setClosedSurveillanceCount(dbResult.getClosedSurveillanceCount());
-            result.setOpenSurveillanceNonConformityCount(dbResult.getOpenSurveillanceNonConformityCount());
-            result.setClosedSurveillanceNonConformityCount(dbResult.getClosedSurveillanceNonConformityCount());
-            result.setSurveillanceDates(dbResult.getSurveillanceDates());
-            result.setCriteriaMet(dbResult.getCerts());
-            result.setCqmsMet(dbResult.getCqms());
-            result.setPreviousDevelopers(dbResult.getPreviousDevelopers());
+        return dbResults.stream()
+            .map(dbResult -> buildFlatSearchResult(dbResult))
+            .collect(Collectors.toList());
+    }
 
-            results.add(result);
-        }
-        return results;
+    private CertifiedProductFlatSearchResult buildFlatSearchResult(CertifiedProductBasicSearchResultEntity entity) {
+        return CertifiedProductFlatSearchResult.builder()
+                .id(entity.getId())
+                .chplProductNumber(entity.getChplProductNumber())
+                .edition(entity.getEdition())
+                .curesUpdate(entity.getCuresUpdate())
+                .acb(entity.getAcbName())
+                .acbCertificationId(entity.getAcbCertificationId())
+                .practiceType(entity.getPracticeTypeName())
+                .developerId(entity.getDeveloperId())
+                .developer(entity.getDeveloper())
+                .developerStatus(entity.getDeveloperStatus())
+                .product(entity.getProduct())
+                .version(entity.getVersion())
+                .numMeaningfulUse(entity.getMeaningfulUseUserCount())
+                .numMeaningfulUseDate(entity.getMeaningfulUseUserDate() != null
+                    ? entity.getMeaningfulUseUserDate().getTime() : null)
+                .decertificationDate(entity.getDecertificationDate() == null ? null : entity.getDecertificationDate().getTime())
+                .certificationDate(entity.getCertificationDate().getTime())
+                .certificationStatus(entity.getCertificationStatus())
+                .transparencyAttestationUrl(entity.getTransparencyAttestationUrl())
+                .apiDocumentation(entity.getApiDocumentation())
+                .surveillanceCount(entity.getSurveillanceCount())
+                .openSurveillanceCount(entity.getOpenSurveillanceCount())
+                .closedSurveillanceCount(entity.getClosedSurveillanceCount())
+                .openSurveillanceNonConformityCount(entity.getOpenSurveillanceNonConformityCount())
+                .closedSurveillanceNonConformityCount(entity.getClosedSurveillanceNonConformityCount())
+                .surveillanceDates(entity.getSurveillanceDates())
+                .criteriaMet(entity.getCerts())
+                .cqmsMet(entity.getCqms())
+                .previousDevelopers(entity.getPreviousDevelopers())
+                .build();
     }
 
     @Deprecated

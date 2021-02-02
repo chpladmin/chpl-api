@@ -2,11 +2,15 @@ package gov.healthit.chpl.domain.search;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
+@SuperBuilder
 @NoArgsConstructor
+@AllArgsConstructor
 public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResult {
     private static final long serialVersionUID = -2547390525592841033L;
     public static final String CERTS_SPLIT_CHAR = "\u263A";
