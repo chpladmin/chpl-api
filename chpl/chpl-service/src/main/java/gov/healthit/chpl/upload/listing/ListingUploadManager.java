@@ -17,6 +17,7 @@ import javax.transaction.Transactional;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -339,7 +340,7 @@ public class ListingUploadManager {
 
         List<CSVRecord> records = null;
         try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8.name()));
+                new InputStreamReader(new BOMInputStream(file.getInputStream()), StandardCharsets.UTF_8.name()));
                 CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL
                         .withIgnoreEmptyLines()
                         .withIgnoreSurroundingSpaces())) {
