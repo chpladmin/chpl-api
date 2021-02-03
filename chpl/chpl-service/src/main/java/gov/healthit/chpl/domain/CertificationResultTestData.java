@@ -12,6 +12,8 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 /**
  * The version of the test data being used for a given certification criteria.
@@ -20,6 +22,8 @@ import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@AllArgsConstructor
+@Builder
 public class CertificationResultTestData implements Serializable {
     private static final long serialVersionUID = -7272525145274770518L;
 

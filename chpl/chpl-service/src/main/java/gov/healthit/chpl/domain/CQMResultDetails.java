@@ -3,6 +3,7 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -18,6 +19,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 /**
  * The clinical quality measure to which a given listing has been certified.
@@ -25,6 +28,8 @@ import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
+@AllArgsConstructor
 public class CQMResultDetails implements Serializable {
     private static final long serialVersionUID = -7077008682408284325L;
 
@@ -96,7 +101,8 @@ public class CQMResultDetails implements Serializable {
      */
     @XmlElementWrapper(name = "successVersions", nillable = true, required = false)
     @XmlElement(name = "version", required = false, nillable = true)
-    private Set<String> successVersions;
+    @Builder.Default
+    private Set<String> successVersions = new LinkedHashSet<String>();
 
     /**
      * All possible versions of the clinical quality measure. For a list of
@@ -105,7 +111,8 @@ public class CQMResultDetails implements Serializable {
      */
     @XmlElementWrapper(name = "allVersions", nillable = true, required = false)
     @XmlElement(name = "version", required = false, nillable = true)
-    private Set<String> allVersions;
+    @Builder.Default
+    private Set<String> allVersions = new LinkedHashSet<String>();
 
     /**
      * The certification criteria to which a given clinical quality measure
@@ -115,7 +122,8 @@ public class CQMResultDetails implements Serializable {
      */
     @XmlElementWrapper(name = "criteriaList", nillable = true, required = false)
     @XmlElement(name = "criteria")
-    private List<CQMResultCertification> criteria;
+    @Builder.Default
+    private List<CQMResultCertification> criteria = new ArrayList<CQMResultCertification>();
 
     public CQMResultDetails() {
         this.successVersions = new HashSet<String>();

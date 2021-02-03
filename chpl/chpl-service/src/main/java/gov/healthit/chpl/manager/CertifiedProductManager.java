@@ -67,6 +67,7 @@ import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
@@ -160,6 +161,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CuresUpdateService;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -213,6 +215,7 @@ public class CertifiedProductManager extends SecuredManager {
     private ActivityManager activityManager;
     private ListingValidatorFactory validatorFactory;
     private CuresUpdateService curesUpdateService;
+    private CertificationCriterionService criteriaService;
 
     private static final int PROD_CODE_LOC = 4;
     private static final int VER_CODE_LOC = 5;
@@ -249,7 +252,8 @@ public class CertifiedProductManager extends SecuredManager {
             CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
             ActivityManager activityManager, ListingValidatorFactory validatorFactory,
-            CuresUpdateService curesUpdateService) {
+            CuresUpdateService curesUpdateService,
+            CertificationCriterionService criteriaService) {
 
         this.msgUtil = msgUtil;
         this.cpDao = cpDao;
@@ -293,6 +297,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.activityManager = activityManager;
         this.validatorFactory = validatorFactory;
         this.curesUpdateService = curesUpdateService;
+        this.criteriaService = criteriaService;
     }
 
     @Transactional(readOnly = true)
@@ -1080,6 +1085,18 @@ public class CertifiedProductManager extends SecuredManager {
                 }
             }
         }
+
+        listing.getMeasures().stream()
+            .forEach(measure -> associateMeasureWithCuresAndOriginalCriteria(measure));
+    }
+
+    private void associateMeasureWithCuresAndOriginalCriteria(ListingMeasure measure) {
+        List<CertificationCriterion> expectedAssociatedCriteriaForMeasure = new ArrayList<CertificationCriterion>();
+        for (CertificationCriterion associatedCriterion : measure.getAssociatedCriteria()) {
+            List<CertificationCriterion> allCriteriaWithNumber = criteriaService.getByNumber(associatedCriterion.getNumber());
+            expectedAssociatedCriteriaForMeasure.addAll(allCriteriaWithNumber);
+        }
+        measure.getAssociatedCriteria().addAll(expectedAssociatedCriteriaForMeasure);
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
@@ -1629,8 +1646,8 @@ public class CertifiedProductManager extends SecuredManager {
 
         numChanges = measuresToAdd.size() + idsToRemove.size();
 
-        for (ListingMeasure toAdd : measuresToAdd) {
-            cpMeasureDao.createCertifiedProductMeasureMapping(listingId, toAdd);
+        for (ListingMeasure measure : measuresToAdd) {
+            cpMeasureDao.createCertifiedProductMeasureMapping(listingId, measure);
         }
 
         for (MeasurePair toUpdate : measuresToUpdate) {

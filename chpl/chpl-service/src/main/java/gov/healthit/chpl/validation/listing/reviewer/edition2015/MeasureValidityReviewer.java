@@ -22,11 +22,14 @@ public class MeasureValidityReviewer implements Reviewer {
     private static final String G1_CRITERIA_NUMBER = "170.315 (g)(1)";
     private static final String G2_CRITERIA_NUMBER = "170.315 (g)(2)";
 
+    private CertificationCriterionService criteriaService;
     private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public MeasureValidityReviewer(ValidationUtils validationUtils, ErrorMessageUtil msgUtil) {
+    public MeasureValidityReviewer(CertificationCriterionService criteriaService,
+            ValidationUtils validationUtils, ErrorMessageUtil msgUtil) {
+        this.criteriaService = criteriaService;
         this.validationUtils = validationUtils;
         this.msgUtil = msgUtil;
     }
@@ -41,6 +44,7 @@ public class MeasureValidityReviewer implements Reviewer {
             if (measure != null && measure.getMeasure() != null) {
                 reviewMeasureHasId(listing, measure);
                 reviewMeasureHasAssociatedCriteria(listing, measure);
+                reviewMeasureHasCuresAndOriginalAssociatedCriteria(listing, measure);
                 reviewMeasureHasOnlyAllowedCriteria(listing, measure);
                 if (measure.getMeasure().getRequiresCriteriaSelection() != null
                         && !measure.getMeasure().getRequiresCriteriaSelection()) {
@@ -118,12 +122,44 @@ public class MeasureValidityReviewer implements Reviewer {
             return;
         }
 
+        doesMeasureHaveAllExpectedCriteria(listing, measure,
+                measure.getAssociatedCriteria().stream().collect(Collectors.toList()),
+                measure.getMeasure().getAllowedCriteria().stream().collect(Collectors.toList()));
+    }
+
+    private void reviewMeasureHasAssociatedCriteria(CertifiedProductSearchDetails listing, ListingMeasure measure) {
+        if (measure.getAssociatedCriteria() == null || measure.getAssociatedCriteria().size() == 0) {
+            listing.getErrorMessages().add(msgUtil.getMessage(
+                    "listing.measure.missingAssociatedCriteria",
+                    measure.getMeasureType().getName(),
+                    measure.getMeasure().getName(),
+                    measure.getMeasure().getAbbreviation()));
+        }
+    }
+
+    private void reviewMeasureHasCuresAndOriginalAssociatedCriteria(CertifiedProductSearchDetails listing, ListingMeasure measure) {
+        if (measure.getAssociatedCriteria() == null || measure.getAssociatedCriteria().size() == 0) {
+            return;
+        }
+
+        measure.getAssociatedCriteria().stream()
+            .map(associatedCriterion -> criteriaService.getByNumber(associatedCriterion.getNumber()))
+            .filter(criteriaWithNumber -> criteriaWithNumber != null && criteriaWithNumber.size() > 1)
+            .forEach(criteriaWithNumber -> doesMeasureHaveAllExpectedCriteria(listing, measure,
+                    measure.getAssociatedCriteria().stream().collect(Collectors.toList()),
+                    criteriaWithNumber));
+    }
+
+    private void doesMeasureHaveAllExpectedCriteria(CertifiedProductSearchDetails listing,
+            ListingMeasure measure,
+            List<CertificationCriterion> associatedCriteria,
+            List<CertificationCriterion> expectedCriteria) {
         Predicate<CertificationCriterion> notInAssociatedCriteria =
-                allowedCriterion -> !measure.getAssociatedCriteria().stream()
+                allowedCriterion -> !associatedCriteria.stream()
                 .anyMatch(assocCriterion -> allowedCriterion.getId().equals(assocCriterion.getId()));
 
         List<CertificationCriterion> missingAllowedCriteria =
-                measure.getMeasure().getAllowedCriteria().stream()
+                expectedCriteria.stream()
                 .filter(notInAssociatedCriteria)
                 .collect(Collectors.toList());
 
@@ -135,16 +171,6 @@ public class MeasureValidityReviewer implements Reviewer {
                     measure.getMeasure().getAbbreviation(),
                     CertificationCriterionService.formatCriteriaNumber(missingAllowedCriterion)));
         });
-    }
-
-    private void reviewMeasureHasAssociatedCriteria(CertifiedProductSearchDetails listing, ListingMeasure measure) {
-        if (measure.getAssociatedCriteria() == null || measure.getAssociatedCriteria().size() == 0) {
-            listing.getErrorMessages().add(msgUtil.getMessage(
-                    "listing.measure.missingAssociatedCriteria",
-                    measure.getMeasureType().getName(),
-                    measure.getMeasure().getName(),
-                    measure.getMeasure().getAbbreviation()));
-        }
     }
 
     private void reviewMeasureHasId(CertifiedProductSearchDetails listing, ListingMeasure measure) {
