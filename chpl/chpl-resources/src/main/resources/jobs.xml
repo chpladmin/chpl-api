@@ -7,22 +7,6 @@
     <pre-processing-commands>
         <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
-        <!-- REMOVE after PROD push -->
-
-        <!-- need to delete this job so it gets re-added later with the recover 
-            boolean set to true; fixes existing bug -->
-        <delete-job>
-            <name>splitDeveloperJob</name>
-            <group>chplBackgroundJobs</group>
-        </delete-job>
-        
-        <!--  OCD-3563 -->
-        <delete-job>
-            <name>Listing Validation Email Report</name>
-            <group>chplJobs</group>
-        </delete-job>
-        <!--  END OCD-3563 -->
-        <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
         <overwrite-existing-data>false</overwrite-existing-data>

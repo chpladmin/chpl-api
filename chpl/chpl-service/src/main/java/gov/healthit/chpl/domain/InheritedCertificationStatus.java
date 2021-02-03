@@ -8,8 +8,10 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
@@ -32,7 +34,6 @@ public class InheritedCertificationStatus implements Serializable {
     /**
      * Boolean constructor provided for backwards compatibility with older listing details objects so that activity can
      * be reconstructed with a JSON parser.
-     * 
      * @param value
      */
     public InheritedCertificationStatus(final boolean value) {
@@ -46,6 +47,10 @@ public class InheritedCertificationStatus implements Serializable {
      */
     @XmlElement(name = "inherits")
     private Boolean inherits;
+
+    @XmlTransient
+    @JsonIgnore
+    private String inheritsStr;
 
     /**
      * The first-level parent listings that this listing inherits from
