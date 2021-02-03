@@ -12,6 +12,8 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 /**
  * The test procedure used for the certification criteria
@@ -20,6 +22,8 @@ import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
+@AllArgsConstructor
 public class CertificationResultTestProcedure implements Serializable {
     private static final long serialVersionUID = -8648559250833503194L;
 

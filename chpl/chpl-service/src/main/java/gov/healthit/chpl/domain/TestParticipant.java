@@ -13,6 +13,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import gov.healthit.chpl.dto.TestParticipantDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +24,7 @@ import lombok.Builder;
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 public class TestParticipant implements Serializable {
     private static final long serialVersionUID = -3771155258451736516L;
@@ -99,6 +101,10 @@ public class TestParticipant implements Serializable {
     @XmlElement(required = true)
     private Integer professionalExperienceMonths;
 
+    @XmlTransient
+    @JsonIgnore
+    private String professionalExperienceMonthsStr;
+
     /**
      * The corresponding participant's experience with computers (in general),
      * in number of months. It is only applicable for 2015 Edition and takes
@@ -106,6 +112,10 @@ public class TestParticipant implements Serializable {
      */
     @XmlElement(required = true)
     private Integer computerExperienceMonths;
+
+    @XmlTransient
+    @JsonIgnore
+    private String computerExperienceMonthsStr;
 
     /**
      * The corresponding participant's experience with the certified product/
@@ -115,6 +125,10 @@ public class TestParticipant implements Serializable {
      */
     @XmlElement(required = true)
     private Integer productExperienceMonths;
+
+    @XmlTransient
+    @JsonIgnore
+    private String productExperienceMonthsStr;
 
     /**
      * Any assistive technology needs as identified by the corresponding
@@ -331,6 +345,30 @@ public class TestParticipant implements Serializable {
 
     public void setAgeRange(final String ageRange) {
         this.ageRange = ageRange;
+    }
+
+    public String getProfessionalExperienceMonthsStr() {
+        return professionalExperienceMonthsStr;
+    }
+
+    public void setProfessionalExperienceMonthsStr(String professionalExperienceMonthsStr) {
+        this.professionalExperienceMonthsStr = professionalExperienceMonthsStr;
+    }
+
+    public String getComputerExperienceMonthsStr() {
+        return computerExperienceMonthsStr;
+    }
+
+    public void setComputerExperienceMonthsStr(String computerExperienceMonthsStr) {
+        this.computerExperienceMonthsStr = computerExperienceMonthsStr;
+    }
+
+    public String getProductExperienceMonthsStr() {
+        return productExperienceMonthsStr;
+    }
+
+    public void setProductExperienceMonthsStr(String productExperienceMonthsStr) {
+        this.productExperienceMonthsStr = productExperienceMonthsStr;
     }
 
 }

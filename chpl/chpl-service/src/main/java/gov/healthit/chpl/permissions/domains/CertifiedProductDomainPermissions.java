@@ -19,7 +19,8 @@ public class CertifiedProductDomainPermissions extends DomainPermissions {
     @Autowired
     public CertifiedProductDomainPermissions(
             @Qualifier("certifiedProductUploadActionPermissions") UploadActionPermissions uploadActionPermissions,
-            @Qualifier("certifiedProductCreateFromPendingActionPermissions") CreateFromPendingActionPermissions createFromPendingActionPermissions,
+            @Qualifier("certifiedProductCreateFromPendingActionPermissions")
+                CreateFromPendingActionPermissions createFromPendingActionPermissions,
             @Qualifier("certifiedProductCleanDataActionPermissions") CleanDataActionPermissions cleanDataActionPermissions,
             @Qualifier("certifiedProductUpdateActionPermissions") UpdateActionPermissions updateActionPermissions) {
         getActionPermissions().put(UPLOAD, uploadActionPermissions);

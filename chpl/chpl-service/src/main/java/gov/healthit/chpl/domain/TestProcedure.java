@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
@@ -16,6 +17,7 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class TestProcedure implements Serializable {
     private static final long serialVersionUID = -3763885258251744916L;
 
