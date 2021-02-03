@@ -21,7 +21,7 @@ public class CertificationCriterionAttributeDAO extends BaseDAOImpl {
     private List<CertificationCriterionAttributeEntity> getCertificationCriteriaAttributeEntityForSvap() {
         return entityManager
                 .createQuery("SELECT cca "
-                        + "FROM CertificationCriteriaAttributeEntity cca "
+                        + "FROM CertificationCriterionAttributeEntity cca "
                         + "JOIN FETCH cca.criterion "
                         + "WHERE cca.svap = true "
                         + "AND cca.deleted = false", CertificationCriterionAttributeEntity.class)
