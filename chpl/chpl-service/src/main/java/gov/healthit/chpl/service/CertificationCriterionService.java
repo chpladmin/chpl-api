@@ -28,7 +28,8 @@ public class CertificationCriterionService {
     private CertificationCriterionDAO certificationCriterionDAO;
     private Environment environment;
 
-    private Map<Long, CertificationCriterion> criteriaMap = new HashMap<Long, CertificationCriterion>();
+    private Map<Long, CertificationCriterion> criteriaByIdMap = new HashMap<Long, CertificationCriterion>();
+    private Map<String, List<CertificationCriterion>> criteriaByNumberMap = new HashMap<String, List<CertificationCriterion>>();
     private List<String> referenceSortingCriteriaList = new ArrayList<String>();
 
     @Autowired
@@ -39,14 +40,17 @@ public class CertificationCriterionService {
 
     @PostConstruct
     public void postConstruct() {
-        criteriaMap = certificationCriterionDAO.findAll().stream()
+        criteriaByIdMap = certificationCriterionDAO.findAll().stream()
                 .map(criterion -> new CertificationCriterion(criterion))
                 .collect(Collectors.toMap(CertificationCriterion::getId, cc -> cc));
+        criteriaByNumberMap = criteriaByIdMap.values().stream()
+                .collect(Collectors.groupingBy(CertificationCriterion::getNumber));
+
         referenceSortingCriteriaList = getReferenceSortingCriteriaList();
     }
 
     public CertificationCriterion get(Long certificationCriterionId) {
-        return criteriaMap.containsKey(certificationCriterionId) ? criteriaMap.get(certificationCriterionId) : null;
+        return criteriaByIdMap.get(certificationCriterionId);
     }
 
     public CertificationCriterion get(String certificationCriterionDescriptor) {
@@ -55,6 +59,10 @@ public class CertificationCriterionService {
         } catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    public List<CertificationCriterion> getByNumber(String certificationCriterionNumber) {
+        return criteriaByNumberMap.get(certificationCriterionNumber);
     }
 
     public int sortCriteria(CertificationCriterionDTO c1, CertificationCriterionDTO c2) {
