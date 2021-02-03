@@ -3,10 +3,12 @@ package gov.healthit.chpl.service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -15,8 +17,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import gov.healthit.chpl.DirectReviewDeserializingObjectMapper;
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
+import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.exception.JiraRequestFailedException;
 import lombok.extern.log4j.Log4j2;
 import net.sf.ehcache.Cache;
@@ -42,11 +46,14 @@ public class DirectReviewService {
     @Value("${jira.nonconformityUrl}")
     private String jiraNonconformityUrl;
 
+    private DeveloperDAO developerDao;
     private RestTemplate jiraAuthenticatedRestTemplate;
     private DirectReviewDeserializingObjectMapper mapper;
 
     @Autowired
-    public DirectReviewService(RestTemplate jiraAuthenticatedRestTemplate, DirectReviewDeserializingObjectMapper mapper) {
+    public DirectReviewService(DeveloperDAO developerDao, RestTemplate jiraAuthenticatedRestTemplate,
+            DirectReviewDeserializingObjectMapper mapper) {
+        this.developerDao = developerDao;
         this.jiraAuthenticatedRestTemplate = jiraAuthenticatedRestTemplate;
         this.mapper = mapper;
     }
@@ -64,27 +71,33 @@ public class DirectReviewService {
             }
         }
 
-        if (allDirectReviews != null && allDirectReviews.size() > 0) {
-            CacheManager manager = CacheManager.getInstance();
-            Cache drCache = manager.getCache(CacheNames.DIRECT_REVIEWS);
-            LOGGER.info("Clearing the Direct Review cache.");
-            drCache.removeAll();
-            //insert each direct review into the right place in our cache
-            for (DirectReview dr : allDirectReviews) {
-                if (dr.getDeveloperId() != null) {
-                    if (drCache.get(dr.getDeveloperId()) != null) {
-                        Element devDirectReviewElement = drCache.get(dr.getDeveloperId());
-                        Object devDirectReviewsObj = devDirectReviewElement.getObjectValue();
-                        if (devDirectReviewsObj instanceof List<?>) {
-                            List<DirectReview> devDirectReviews = (List<DirectReview>) devDirectReviewsObj;
-                            devDirectReviews.add(dr);
-                        }
-                    } else {
-                        List<DirectReview> devDirectReviews = new ArrayList<DirectReview>();
+        CacheManager manager = CacheManager.getInstance();
+        Cache drCache = manager.getCache(CacheNames.DIRECT_REVIEWS);
+        LOGGER.info("Clearing the Direct Review cache.");
+        drCache.removeAll();
+
+        //insert an entry in the cache for every developer ID
+        List<DeveloperDTO> allDeveloperIds = developerDao.findAllIdsAndNames();
+        LOGGER.info("Adding " + allDeveloperIds.size() + " keys to the Direct Review cache.");
+        allDeveloperIds.stream()
+            .forEach(dev -> drCache.put(new Element(dev.getId(), new ArrayList<DirectReview>())));
+
+        //insert each direct review into the right place in our cache
+        LOGGER.info("Inserting " + allDirectReviews.size() + " values into the Direct Review cache.");
+        for (DirectReview dr : allDirectReviews) {
+            if (dr.getDeveloperId() != null) {
+                if (drCache.get(dr.getDeveloperId()) != null) {
+                    Element devDirectReviewElement = drCache.get(dr.getDeveloperId());
+                    Object devDirectReviewsObj = devDirectReviewElement.getObjectValue();
+                    if (devDirectReviewsObj instanceof List<?>) {
+                        List<DirectReview> devDirectReviews = (List<DirectReview>) devDirectReviewsObj;
                         devDirectReviews.add(dr);
-                        Element devDirectReviewElement = new Element(dr.getDeveloperId(), devDirectReviews);
-                        drCache.put(devDirectReviewElement);
                     }
+                } else {
+                    List<DirectReview> devDirectReviews = new ArrayList<DirectReview>();
+                    devDirectReviews.add(dr);
+                    Element devDirectReviewElement = new Element(dr.getDeveloperId(), devDirectReviews);
+                    drCache.put(devDirectReviewElement);
                 }
             }
         }
@@ -105,6 +118,48 @@ public class DirectReviewService {
             }
         }
         return drs;
+    }
+
+    @Cacheable(CacheNames.DIRECT_REVIEWS)
+    public List<DirectReview> getDeveloperDirectReviewsFromCache(Long developerId) {
+        List<DirectReview> developerDrs = new ArrayList<DirectReview>();
+        try {
+            developerDrs = getDirectReviews(developerId);
+        } catch (JiraRequestFailedException ex) {
+            LOGGER.error("Could not fetch DRs from Jira.", ex);
+        }
+        return developerDrs;
+    }
+
+    public List<DirectReview> getListingDirectReviewsFromCache(Long listingId) {
+        CacheManager manager = CacheManager.getInstance();
+        Cache drCache = manager.getCache(CacheNames.DIRECT_REVIEWS);
+        //drCache has key = developerId and value = list of direct reviews
+        List<?> developerIdsWithDirectReviews = drCache.getKeys();
+        List<DirectReview> allDirectReviews = developerIdsWithDirectReviews.stream()
+            .map(key -> drCache.get(key))
+            .filter(cacheElement -> cacheElement != null)
+            .map(cacheElement -> cacheElement.getObjectValue())
+            .filter(cacheObject -> cacheObject != null && cacheObject instanceof List<?>)
+            .map(cacheObject -> (List<DirectReview>) cacheObject)
+            .flatMap(List::stream)
+            .collect(Collectors.toList());
+
+        return allDirectReviews.stream()
+                .filter(dr -> isAssociatedWithListing(dr, listingId))
+                .collect(Collectors.toList());
+    }
+
+    private boolean isAssociatedWithListing(DirectReview dr, Long listingId) {
+        if (dr.getNonConformities() == null || dr.getNonConformities().size() == 0) {
+            return false;
+        }
+
+        return dr.getNonConformities().stream()
+            .filter(nc -> nc.getDeveloperAssociatedListings() != null && nc.getDeveloperAssociatedListings().size() > 0)
+            .flatMap(nc -> nc.getDeveloperAssociatedListings().stream())
+            .filter(devAssocListing -> devAssocListing.getId().equals(listingId))
+            .findAny().isPresent();
     }
 
     private String fetchDirectReviews() throws JiraRequestFailedException {
@@ -163,7 +218,9 @@ public class DirectReviewService {
                         JsonNode fields = issueNode.get(JIRA_FIELDS_FIELD);
                         DirectReview dr = mapper.readValue(fields.toString(), DirectReview.class);
                         dr.setJiraKey(jiraKey);
-                        drs.add(dr);
+                        if (dr.getStartDate() != null) {
+                            drs.add(dr);
+                        }
                     } catch (IOException ex) {
                         LOGGER.error("Cannot map issue JSON to DirectReview class", ex);
                     }

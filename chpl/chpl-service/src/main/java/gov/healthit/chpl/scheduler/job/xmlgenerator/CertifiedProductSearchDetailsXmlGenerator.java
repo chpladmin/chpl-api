@@ -88,6 +88,7 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
             createSimpleElement(cp.getCuresUpdate() == null ? false : cp.getCuresUpdate(), "curesUpdate", sw);
             createSimpleElement(cp.getDecertificationDate(), "decertificationDate", sw);
             DeveloperXmlGenerator.addDeveloper(cp.getDeveloper(), "developer", sw);
+            DirectReviewXmlGenerator.add(cp.getDirectReviews(), "directReviews", sw);
             InheritedCertificationStatusXmlGenerator.add(cp.getIcs(), "ics", sw);
             createSimpleElement(cp.getId(), "id", sw);
             createSimpleElement(cp.getLastModifiedDate(), "lastModifiedDate", sw);

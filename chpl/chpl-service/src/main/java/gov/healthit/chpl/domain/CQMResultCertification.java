@@ -9,6 +9,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 /**
  * The certification criteria to which a given clinical quality measure applies.
@@ -16,6 +18,8 @@ import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@Builder
+@AllArgsConstructor
 public class CQMResultCertification implements Serializable {
     private static final long serialVersionUID = 2547864525772721622L;
 

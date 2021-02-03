@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,8 @@ import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.TransparencyAttestation;
 import gov.healthit.chpl.domain.UcdProcess;
+import gov.healthit.chpl.domain.compliance.DirectReview;
+import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
@@ -80,6 +83,7 @@ import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.impl.CertifiedProductDetailsManagerAsync;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.service.DirectReviewService;
 import gov.healthit.chpl.svap.dao.SvapDAO;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
@@ -87,7 +91,10 @@ import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.PropertyUtil;
+import lombok.extern.log4j.Log4j2;
+import one.util.streamex.StreamEx;
 
+@Log4j2
 @Loggable
 @Service("certifiedProductDetailsManager")
 public class CertifiedProductDetailsManager {
@@ -114,6 +121,7 @@ public class CertifiedProductDetailsManager {
     private ChplProductNumberUtil chplProductNumberUtil;
     private ResourcePermissions resourcePermissions;
     private DimensionalDataManager dimensionalDataManager;
+    private DirectReviewService drService;
     private SvapDAO svapDao;
 
     @SuppressWarnings({"checkstyle:parameternumber"})
@@ -141,6 +149,7 @@ public class CertifiedProductDetailsManager {
             ChplProductNumberUtil chplProductNumberUtil,
             ResourcePermissions resourcePermissions,
             DimensionalDataManager dimensionalDataManager,
+            DirectReviewService drService,
             SvapDAO svapDao) {
 
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
@@ -165,6 +174,7 @@ public class CertifiedProductDetailsManager {
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.resourcePermissions = resourcePermissions;
         this.dimensionalDataManager = dimensionalDataManager;
+        this.drService = drService;
         this.svapDao = svapDao;
     }
 
@@ -301,8 +311,8 @@ public class CertifiedProductDetailsManager {
         // get first-level parents and children
         searchDetails.getIcs().setParents(populateParents(parentsFuture, searchDetails));
         searchDetails.getIcs().setChildren(populateChildren(childrenFuture, searchDetails));
-
-        searchDetails = populateTestingLab(dto, searchDetails);
+        searchDetails = populateTestingLabs(dto, searchDetails);
+        searchDetails = populateDirectReviews(searchDetails);
         return searchDetails;
     }
 
@@ -322,7 +332,7 @@ public class CertifiedProductDetailsManager {
         searchDetails.getIcs().setParents(populateParents(parentsFuture, searchDetails));
         searchDetails.getIcs().setChildren(populateChildren(childrenFuture, searchDetails));
 
-        searchDetails = populateTestingLab(dto, searchDetails);
+        searchDetails = populateTestingLabs(dto, searchDetails);
 
         return searchDetails;
     }
@@ -338,7 +348,7 @@ public class CertifiedProductDetailsManager {
         return dtos.get(0);
     }
 
-    private CertifiedProductSearchDetails populateTestingLab(CertifiedProductDetailsDTO dto,
+    private CertifiedProductSearchDetails populateTestingLabs(CertifiedProductDetailsDTO dto,
             CertifiedProductSearchDetails searchDetails) throws EntityRetrievalException {
 
         List<CertifiedProductTestingLabDTO> testingLabDtos = certifiedProductTestingLabDao
@@ -350,6 +360,43 @@ public class CertifiedProductDetailsManager {
         }
         searchDetails.setTestingLabs(testingLabResults);
         return searchDetails;
+    }
+
+    private CertifiedProductSearchDetails populateDirectReviews(CertifiedProductSearchDetails listing) {
+
+        List<DirectReview> drs = new ArrayList<DirectReview>();
+        drs.addAll(drService.getListingDirectReviewsFromCache(listing.getId()));
+        if (listing.getDeveloper() != null && listing.getDeveloper().getDeveloperId() != null) {
+            drs.addAll(getDeveloperDirectReviewsWithoutAssociatedListings(
+                    listing.getDeveloper().getDeveloperId()));
+        }
+
+        drs = StreamEx.of(drs)
+            .distinct(DirectReview::getJiraKey)
+            .collect(Collectors.toList());
+
+        listing.setDirectReviews(drs);
+        return listing;
+    }
+
+    private List<DirectReview> getDeveloperDirectReviewsWithoutAssociatedListings(Long developerId) {
+        List<DirectReview> drsWithoutAssociatedListings = drService.getDeveloperDirectReviewsFromCache(developerId);
+        return Stream.of(
+            drsWithoutAssociatedListings.stream()
+                .filter(dr -> dr.getNonConformities() == null || dr.getNonConformities().size() == 0)
+                .collect(Collectors.toList()),
+            drsWithoutAssociatedListings.stream()
+                .filter(dr -> hasNoDeveloperAssociatedListings(dr.getNonConformities()))
+                .collect(Collectors.toList()))
+          .flatMap(List::stream)
+          .collect(Collectors.toList());
+    }
+
+    private boolean hasNoDeveloperAssociatedListings(List<DirectReviewNonConformity> ncs) {
+        return ncs.stream()
+            .filter(nc -> nc.getDeveloperAssociatedListings() == null || nc.getDeveloperAssociatedListings().size() == 0)
+            .findAny()
+            .isPresent();
     }
 
     private List<CertifiedProduct> populateParents(Future<List<CertifiedProductDTO>> parentsFuture,

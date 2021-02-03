@@ -11,6 +11,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.domain.contact.PointOfContact;
@@ -62,6 +63,10 @@ public class Developer implements Serializable {
      */
     @XmlElement(required = true)
     private Boolean selfDeveloper;
+
+    @XmlTransient
+    @JsonIgnore
+    private String selfDeveloperStr;
 
     /**
      * Developer's physical address
@@ -242,5 +247,13 @@ public class Developer implements Serializable {
 
     public void setStatusEvents(List<DeveloperStatusEvent> statusEvents) {
         this.statusEvents = statusEvents;
+    }
+
+    public String getSelfDeveloperStr() {
+        return selfDeveloperStr;
+    }
+
+    public void setSelfDeveloperStr(String selfDeveloperStr) {
+        this.selfDeveloperStr = selfDeveloperStr;
     }
 }

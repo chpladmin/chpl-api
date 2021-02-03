@@ -12,6 +12,8 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 /**
  * The test tool used to certify the Health IT Module to the corresponding
@@ -22,6 +24,8 @@ import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@AllArgsConstructor
+@Builder
 public class CertificationResultTestTool implements Serializable {
     private static final long serialVersionUID = 2785949879671019720L;
 
