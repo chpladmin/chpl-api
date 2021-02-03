@@ -5,16 +5,13 @@ import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Data
-@Deprecated
-public class CertifiedProductSearchResultLegacy implements Serializable {
+public abstract class CertifiedProductSearchResultLegacy implements Serializable {
     private static final long serialVersionUID = -2547390525592841034L;
 
     @JsonView({
