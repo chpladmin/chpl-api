@@ -12,24 +12,22 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
+import gov.healthit.chpl.service.CertificationCriterionService;
 
 @Component
 public class MeasureNormalizer {
     private MacraMeasureDAO legacyMacraMeasureDao;
     private MeasureDAO measureDao;
     private ListingMeasureDAO listingMeasureDao;
-    //TODO: replace with method in CertificationCriterionService when OCD-3582 is merged
-    private CertificationCriterionDAO criterionDao;
+    private CertificationCriterionService criteriaService;
 
     private Set<MeasureType> measureTypes;
 
@@ -37,11 +35,11 @@ public class MeasureNormalizer {
     public MeasureNormalizer(MacraMeasureDAO legacyMacraMeasureDao,
             MeasureDAO measureDao,
             ListingMeasureDAO listingMeasureDao,
-            CertificationCriterionDAO criterionDao) {
+            CertificationCriterionService criteriaService) {
         this.legacyMacraMeasureDao = legacyMacraMeasureDao;
         this.measureDao = measureDao;
         this.listingMeasureDao = listingMeasureDao;
-        this.criterionDao = criterionDao;
+        this.criteriaService = criteriaService;
     }
 
     @PostConstruct
@@ -112,11 +110,9 @@ public class MeasureNormalizer {
 
         listingMeasure.getAssociatedCriteria().stream()
             .forEach(associatedCriterion -> {
-                //TODO: replace with method in CertificationCriterionService when OCD-3582 is merged
-                List<CertificationCriterionDTO> criteriaWithNumber = criterionDao.getAllByNumber(associatedCriterion.getNumber());
+                List<CertificationCriterion> criteriaWithNumber = criteriaService.getByNumber(associatedCriterion.getNumber());
                 if (criteriaWithNumber.size() > 1) {
-                    associatedCriteriaCopy.addAll(
-                            criteriaWithNumber.stream().map(criterionDto -> new CertificationCriterion(criterionDto)).collect(Collectors.toList()));
+                    associatedCriteriaCopy.addAll(criteriaWithNumber);
                 }
             });
         listingMeasure.setAssociatedCriteria(associatedCriteriaCopy);
