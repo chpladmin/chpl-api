@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.svap.manager.SvapManager;
 import io.swagger.annotations.Api;
@@ -21,6 +22,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "svaps")
 @RestController
 @RequestMapping("/svaps")
+@Loggable
 public class SvapController {
 
     private SvapManager svapManager;
@@ -31,7 +33,7 @@ public class SvapController {
     }
 
     @ApiOperation(value = "Update an SVAP.",
-            notes = "NEED TO ADD DESCRIPTION"
+            notes = "Provides functionality to update an SVAP and the Criteria associated with it."
                     + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.")
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = "application/json; charset=utf-8")
@@ -40,7 +42,7 @@ public class SvapController {
     }
 
     @ApiOperation(value = "Create an SVAP.",
-            notes = "NEED TO ADD DESCRIPTION"
+            notes = "Provides functionality to add a new SVAP and the Criteria associated with it."
                     + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = "application/json; charset=utf-8")
@@ -49,7 +51,7 @@ public class SvapController {
     }
 
     @ApiOperation(value = "Delete an SVAP.",
-            notes = "NEED TO ADD DESCRIPTION"
+            notes = "Provides functionality to delete an existing SVAP and the Criteria associated with it."
                     + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.")
     @RequestMapping(value = "", method = RequestMethod.DELETE, consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = "application/json; charset=utf-8")
@@ -58,14 +60,14 @@ public class SvapController {
     }
 
     @ApiOperation(value = "Retreive all current SVAPs.",
-            notes = "NEED TO ADD DESCRIPTION")
+            notes = "Returns all of the SVAPs that are currenty in the CHPL.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<Svap> getAllSvaps() {
         return svapManager.getAll();
     }
 
     @ApiOperation(value = "Get all criteria that SVAPs can be associated with.",
-            notes = "NEED TO ADD DESCRIPTION")
+            notes = "Returns all of the Criteria that an SVAP can be associated to.")
     @RequestMapping(value = "/criteria", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertificationCriterion> getCertificsationCriteriaForSvap() {
         return svapManager.getCertificationCriteriaForSvap();
