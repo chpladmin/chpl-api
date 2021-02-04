@@ -204,7 +204,7 @@ public class ListingMeasureDAO extends BaseDAOImpl {
         return entity;
     }
 
-    public Set<MeasureType> getMeasureType() {
+    public Set<MeasureType> getMeasureTypes() {
         Query query = entityManager.createQuery("SELECT measureType "
                 + "FROM ListingMeasureTypeEntity measureType "
                 + "WHERE deleted = false");

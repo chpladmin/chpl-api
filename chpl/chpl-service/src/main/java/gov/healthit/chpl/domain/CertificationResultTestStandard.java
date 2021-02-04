@@ -12,6 +12,8 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 /**
  * A standard used to meet a certification criterion. You can find a list of
@@ -22,6 +24,8 @@ import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
+@AllArgsConstructor
 public class CertificationResultTestStandard implements Serializable {
     private static final long serialVersionUID = -9182555768595891414L;
 
