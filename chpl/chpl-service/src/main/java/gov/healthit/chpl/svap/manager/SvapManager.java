@@ -17,6 +17,7 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.svap.dao.SvapDAO;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
@@ -153,7 +154,7 @@ public class SvapManager {
                     List<CertifiedProductDetailsDTO> listings = svapDao.getCertifiedProductsBySvapAndCriteria(originalSvap, crit);
                     if (listings.size() > 0) {
                         messages.add(errorMessageUtil.getMessage("svap.edit.deletedCriteria.listingsExist",
-                                crit.getNumber() + (crit.getTitle().indexOf("Cures Update") == -1 ? "" : " (Cures Update)"),
+                                CertificationCriterionService.formatCriteriaNumber(crit),
                                 listings.size(),
                                 listings.stream()
                                         .map(listing -> listing.getChplProductNumber())
