@@ -3,6 +3,7 @@ package gov.healthit.chpl.validation.listing.reviewer.duplicate;
 import static org.junit.Assert.assertEquals;
 
 import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -56,16 +57,16 @@ public class MeasureDuplicateReviewerTest {
     @Test
     public void review_duplicateExistsButDifferentCriteria_warningFoundAndDuplicateRemoved() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        ListingMeasure measure1 = getMeasure(1L, 1L, MEASURE_NAME, RT3, 1L, "G1");
-        measure1.getAssociatedCriteria().add(CertificationCriterion.builder()
+        CertificationCriterion a1Criterion = CertificationCriterion.builder()
                 .id(1L)
                 .number("170.315 (a)(1)")
-                .build());
-        ListingMeasure measure2 = getMeasure(2L, 1L, MEASURE_NAME, RT3, 1L, "G1");
-        measure2.getAssociatedCriteria().add(CertificationCriterion.builder()
+                .build();
+        CertificationCriterion a2Criterion = CertificationCriterion.builder()
                 .id(2L)
                 .number("170.315 (a)(2)")
-                .build());
+                .build();
+        ListingMeasure measure1 = getMeasure(1L, 1L, MEASURE_NAME, RT3, 1L, "G1", a1Criterion);
+        ListingMeasure measure2 = getMeasure(2L, 1L, MEASURE_NAME, RT3, 1L, "G1", a2Criterion);
         listing.getMeasures().add(measure1);
         listing.getMeasures().add(measure2);
 
@@ -152,7 +153,26 @@ public class MeasureDuplicateReviewerTest {
                     .id(typeId)
                     .name(typeName)
                     .build())
-            .associatedCriteria(new LinkedHashSet<CertificationCriterion>())
+            .build();
+    }
+
+    private ListingMeasure getMeasure(Long id, Long measureId, String measureName,
+            String rtAbbrev, Long typeId, String typeName, CertificationCriterion criterion) {
+        Set<CertificationCriterion> criteria = new LinkedHashSet<CertificationCriterion>();
+        criteria.add(criterion);
+
+        return ListingMeasure.builder()
+            .id(id)
+            .measure(Measure.builder()
+                    .id(measureId)
+                    .name(measureName)
+                    .abbreviation(rtAbbrev)
+                    .build())
+            .measureType(MeasureType.builder()
+                    .id(typeId)
+                    .name(typeName)
+                    .build())
+            .associatedCriteria(criteria)
             .build();
     }
 }

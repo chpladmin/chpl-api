@@ -19,6 +19,7 @@ public enum ActivityConcept implements Serializable {
     USER,
     TESTING_LAB,
     PENDING_CERTIFIED_PRODUCT,
+    LISTING_UPLOAD,
     API_KEY,
     ANNOUNCEMENT,
     CERTIFICATION_ID,
