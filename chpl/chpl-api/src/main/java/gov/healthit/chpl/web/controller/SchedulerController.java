@@ -53,7 +53,7 @@ public class SchedulerController {
      * @throws ValidationException if job values aren't correct
      */
     @ApiOperation(value = "Create a new trigger and return it",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB.")
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB.")
     @RequestMapping(value = "/triggers", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody ScheduleTriggersResults createTrigger(@RequestBody(required = true)
     final ChplRepeatableTrigger trigger) throws SchedulerException, ValidationException {
@@ -105,9 +105,9 @@ public class SchedulerController {
      */
     @ApiOperation(value = "Get the list of all triggers of type '" + USER_JOB_TYPE + "' or '" + SYSTEM_JOB_TYPE + "' "
             + "that are applicable to the currently logged in user",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB for '" + USER_JOB_TYPE + "' jobs "
-                    + "and have administrative authority on the specified ACB. "
-                    + "ROLE_ADMIN or ROLE_ONC for '" + SYSTEM_JOB_TYPE + "' jobs. "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB for '" + USER_JOB_TYPE + "' jobs "
+                    + "and have administrative authority on the specified ONC-ACB. "
+                    + "ROLE_ADMIN, ROLE_ONC, or ROLE_ONC_STAFF for '" + SYSTEM_JOB_TYPE + "' jobs. "
                     + "Note: The default jobType query parameter is set to '" + USER_JOB_TYPE + "'.")
     @RequestMapping(value = "/triggers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody Object getAllTriggersByJobType(@RequestParam(defaultValue = USER_JOB_TYPE) String jobType)
@@ -133,8 +133,8 @@ public class SchedulerController {
      * @throws ValidationException if job values aren't correct
      */
     @ApiOperation(value = "Update an existing trigger and return it",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC or ROLE_ACB and have administrative authority on "
-                    + "the specified ACB.")
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF or ROLE_ACB and have administrative authority on "
+                    + "the specified ONC-ACB.")
     @RequestMapping(value = "/triggers", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public @ResponseBody ScheduleTriggersResults updateTrigger(@RequestBody(required = true) final ChplRepeatableTrigger trigger)
             throws SchedulerException, ValidationException {
@@ -150,7 +150,7 @@ public class SchedulerController {
      * @throws SchedulerException if exception is thrown
      */
     @ApiOperation(value = "Get the list of all jobs that are applicable to the currently logged in user",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and have administrative authority on the specified ACB")
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and have administrative authority on the specified ONC-ACB")
     @RequestMapping(value = "/jobs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody ChplJobsResults getAllJobs() throws SchedulerException {
@@ -167,8 +167,8 @@ public class SchedulerController {
      * @throws SchedulerException if scheduler has issues
      */
     @ApiOperation(value = "Update a given job",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC or ROLE_ACB and have administrative authority on "
-                    + "the specified ACB.")
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF or ROLE_ACB and have administrative authority on "
+                    + "the specified ONC-ACB.")
     @RequestMapping(value = "/jobs", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public @ResponseBody ChplJobsResults updateJob(@RequestBody(required = true)
     final ChplJob job) throws SchedulerException {
