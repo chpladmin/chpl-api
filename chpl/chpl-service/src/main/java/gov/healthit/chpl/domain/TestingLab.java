@@ -4,12 +4,11 @@ import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.dto.TestingLabDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
-/**
- * Testing lab domain object.
- * @author kekey
- *
- */
+@Builder
+@AllArgsConstructor
 public class TestingLab implements Serializable {
     private static final long serialVersionUID = 7787353272569398682L;
     private Long id;

@@ -18,6 +18,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.Measure;
 import lombok.Data;
 
@@ -71,22 +72,24 @@ public class MeasureEntity {
     private Long lastModifiedUser;
 
     public Measure convert() {
-        Measure measure = new Measure();
-        measure.setId(getId());
-        measure.setAbbreviation(getAbbreviation());
-        measure.setName(getName());
-        measure.setRequiredTest(getRequiredTest());
-        measure.setRequiresCriteriaSelection(getCriteriaSelectionRequired());
-        measure.setRemoved(getRemoved());
-        measure.setDomain(getDomain().convert());
+        Set<CertificationCriterion> convertedAllowedCriteria = new LinkedHashSet<CertificationCriterion>();
         if (getAllowedCriteria() != null) {
             getAllowedCriteria().stream()
+                .filter(allowedCriterion -> allowedCriterion != null)
                 .forEach(allowedCriterion -> {
-                    if (allowedCriterion != null) {
-                        measure.getAllowedCriteria().add(allowedCriterion.convert());
-                    }
+                    convertedAllowedCriteria.add(allowedCriterion.convert());
                 });
         }
-        return measure;
+
+        return Measure.builder()
+            .id(getId())
+            .abbreviation(getAbbreviation())
+            .name(getName())
+            .requiredTest(getRequiredTest())
+            .requiresCriteriaSelection(getCriteriaSelectionRequired())
+            .removed(removed)
+            .domain(getDomain().convert())
+            .allowedCriteria(convertedAllowedCriteria)
+            .build();
     }
 }

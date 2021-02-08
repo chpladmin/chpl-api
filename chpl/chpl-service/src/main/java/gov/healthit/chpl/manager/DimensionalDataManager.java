@@ -486,7 +486,7 @@ public class DimensionalDataManager {
     @Transactional
     @Cacheable(value = CacheNames.MEASURE_TYPES)
     public Set<MeasureType> getMeasureTypes() {
-        return listingMeasureDao.getMeasureType();
+        return listingMeasureDao.getMeasureTypes();
     }
 
     @Transactional
