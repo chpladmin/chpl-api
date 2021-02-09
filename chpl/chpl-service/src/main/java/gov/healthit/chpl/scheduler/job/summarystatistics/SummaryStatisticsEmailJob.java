@@ -14,6 +14,7 @@ import javax.mail.internet.AddressException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dom4j.DocumentException;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ import gov.healthit.chpl.scheduler.job.summarystatistics.email.ListingStatistics
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.NonConformityStatisticsSectionCreator;
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.ProductStatisticsSectionCreator;
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.SurveillanceStatisticsSectionCreator;
+import gov.healthit.chpl.scheduler.job.summarystatistics.pdf.SummaryStatisticsPdf;
 import gov.healthit.chpl.util.EmailBuilder;
 
 public class SummaryStatisticsEmailJob extends QuartzJob {
@@ -46,6 +48,9 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
     @Autowired
     private CertificationBodyDAO certificationBodyDAO;
+
+    @Autowired
+    private SummaryStatisticsPdf summaryStatisticsPdf;
 
     @Autowired
     private Environment env;
@@ -77,22 +82,26 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         }
     }
 
-    private void sendEmail(String message, String address) throws AddressException, MessagingException {
+    private void sendEmail(String message, String address) throws AddressException, MessagingException, IOException, DocumentException {
         String subject = env.getProperty("summaryEmailSubject").toString();
 
         List<String> addresses = new ArrayList<String>();
         addresses.add(address);
 
         EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipients(addresses).subject(subject).htmlMessage(message)
-        .fileAttachments(getSummaryStatisticsFile()).sendEmail();
+        emailBuilder.recipients(addresses)
+                .subject(subject).htmlMessage(message)
+                .fileAttachments(getSummaryStatisticsFile())
+                .sendEmail();
     }
 
-    private List<File> getSummaryStatisticsFile() {
+    private List<File> getSummaryStatisticsFile() throws IOException, DocumentException {
         List<File> files = new ArrayList<File>();
         File file = new File(env.getProperty("downloadFolderPath") + File.separator
                 + env.getProperty("summaryEmailName", "summaryStatistics.csv"));
         files.add(file);
+
+        files.add(summaryStatisticsPdf.generate());
         return files;
     }
 
