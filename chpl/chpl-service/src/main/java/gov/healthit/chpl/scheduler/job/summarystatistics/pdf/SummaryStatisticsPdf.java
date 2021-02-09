@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itextpdf.kernel.colors.Color;
+import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
@@ -24,16 +26,24 @@ import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatistics;
 
 @Component
 public class SummaryStatisticsPdf {
+    private static final Integer ONE_WEEK = 7;
     private SummaryStatisticsDAO summaryStatisticsDAO;
     private DeveloperSummaryStatisticsSectionPdf developerSummaryStatisticsSectionPdf;
+    private ProductSummaryStatisticsSectionPdf productSummaryStatisticsSectionPdf;
+    private ListingSummaryStatisticsSectionPdf listingSummaryStatisticsSectionPdf;
 
     @Autowired
     public SummaryStatisticsPdf(SummaryStatisticsDAO summaryStatisticsDAO,
-            DeveloperSummaryStatisticsSectionPdf developerSummaryStatisticsSectionPdf) {
+            DeveloperSummaryStatisticsSectionPdf developerSummaryStatisticsSectionPdf,
+            ProductSummaryStatisticsSectionPdf productSummaryStatisticsSectionPdf,
+            ListingSummaryStatisticsSectionPdf listingSummaryStatisticsSectionPdf) {
         this.summaryStatisticsDAO = summaryStatisticsDAO;
         this.developerSummaryStatisticsSectionPdf = developerSummaryStatisticsSectionPdf;
+        this.productSummaryStatisticsSectionPdf = productSummaryStatisticsSectionPdf;
+        this.listingSummaryStatisticsSectionPdf = listingSummaryStatisticsSectionPdf;
     }
 
+    @SuppressWarnings("resource")
     public File generate() throws DocumentException, IOException {
         String dest = "C:/chpl/files/SummaryStatistics.pdf";
         File file = new File(dest);
@@ -42,7 +52,7 @@ public class SummaryStatisticsPdf {
         try (Document document = new Document(pdf)) {
             SummaryStatisticsEntity recentStats = getSummaryStatisticsAsOf(LocalDate.now());
             EmailStatistics recentEmailStats = getEmailStatisticsFromSummaryStatistics(recentStats);
-            SummaryStatisticsEntity previousStats = getSummaryStatisticsAsOf(convertDateToLocalDate(recentStats.getEndDate()).minusDays(7));
+            SummaryStatisticsEntity previousStats = getSummaryStatisticsAsOf(convertDateToLocalDate(recentStats.getEndDate()).minusDays(ONE_WEEK));
             EmailStatistics previousEmailStats = getEmailStatisticsFromSummaryStatistics(previousStats);
 
             Paragraph title = new Paragraph("ONC CHPL");
@@ -51,17 +61,35 @@ public class SummaryStatisticsPdf {
             document.add(title);
 
             Paragraph subtitle = new Paragraph("Weekly Summary Statistics Report");
-            title.setFont(SummaryStatisticsPDFDefaults.getDefaultFont());
-            title.setFontSize(SummaryStatisticsPDFDefaults.SUBTITLE_FONT_SIZE);
+            subtitle.setFont(SummaryStatisticsPDFDefaults.getDefaultFont());
+            Color fontColor = new DeviceRgb(163, 209, 235);
+            subtitle.setFontColor(fontColor);
+            subtitle.setFontSize(SummaryStatisticsPDFDefaults.SUBTITLE_FONT_SIZE);
             document.add(subtitle);
 
             Paragraph currentDate = new Paragraph(LocalDate.now().format(DateTimeFormatter.ofPattern("LLLL dd, yyyy")));
-            title.setFont(SummaryStatisticsPDFDefaults.getDefaultFont());
-            title.setFontSize(SummaryStatisticsPDFDefaults.DEFAULT_FONT_SIZE);
-            title.setItalic();
+            currentDate.setFont(SummaryStatisticsPDFDefaults.getDefaultFont());
+            currentDate.setFontSize(SummaryStatisticsPDFDefaults.DEFAULT_FONT_SIZE);
+            currentDate.setItalic();
             document.add(currentDate);
 
             document.add(developerSummaryStatisticsSectionPdf.generateTable(
+                    convertDateToLocalDate(recentStats.getEndDate()),
+                    convertDateToLocalDate(previousStats.getEndDate()),
+                    recentEmailStats,
+                    previousEmailStats));
+
+            document.add(new Paragraph(""));
+
+            document.add(productSummaryStatisticsSectionPdf.generateTable(
+                    convertDateToLocalDate(recentStats.getEndDate()),
+                    convertDateToLocalDate(previousStats.getEndDate()),
+                    recentEmailStats,
+                    previousEmailStats));
+
+            document.add(new Paragraph(""));
+
+            document.add(listingSummaryStatisticsSectionPdf.generateTable(
                     convertDateToLocalDate(recentStats.getEndDate()),
                     convertDateToLocalDate(previousStats.getEndDate()),
                     recentEmailStats,

@@ -8,7 +8,8 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.kernel.colors.Color;
+import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
@@ -43,7 +44,8 @@ public abstract class SummaryStatisticsSectionPdf {
         headers.stream()
                 .forEach(text -> {
                     Cell cell = new Cell();
-                    cell.setBackgroundColor(ColorConstants.LIGHT_GRAY);
+                    Color backgroundColor = new DeviceRgb(225,238,217);
+                    cell.setBackgroundColor(backgroundColor);
                     cell.setBorder(new SolidBorder(1));
                     cell.setFont(SummaryStatisticsPDFDefaults.getDefaultFont());
                     cell.setFontSize(SummaryStatisticsPDFDefaults.DEFAULT_FONT_SIZE);
