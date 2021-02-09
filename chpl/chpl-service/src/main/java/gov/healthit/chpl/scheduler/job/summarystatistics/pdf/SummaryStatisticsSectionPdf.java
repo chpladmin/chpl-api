@@ -1,42 +1,41 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics.pdf;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
-import com.itextpdf.kernel.colors.Color;
-import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailCertificationBodyStatistic;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatistics;
+import gov.healthit.chpl.scheduler.job.summarystatistics.email.StatisticsMassager;
 
 public abstract class SummaryStatisticsSectionPdf {
-    private static final float SECTION_DESCRIPTION = 6;
-    private static final float RECENT_DATE = 3;
-    private static final float PREVIOUS_DATE = 3;
-    private static final float DELTA = 1;
+    private static final float SECTION_DESCRIPTION_RELATIVE_WIDTH = 6;
+    private static final float RECENT_DATE_RELATIVE_WIDTH = 3;
+    private static final float PREVIOUS_DATE_RELATIVE_WIDTH = 3;
+    private static final float DELTA_RELATIVE_WIDTH = 1;
     private static final float DEFAULT_INDENT = 20;
+    private static final Integer NUMBER_OF_INDENTS_ACB_LEVEL_STAT = 3;
 
-    private List<CertificationBodyDTO> acbs;
+    private StatisticsMassager statisticsMassager;
 
     public SummaryStatisticsSectionPdf(CertificationBodyDAO certificationBodyDAO) {
-        this.acbs = certificationBodyDAO.findAll();
+        statisticsMassager = new StatisticsMassager(certificationBodyDAO.findAll());
     }
 
     public abstract Table generateTable(LocalDate recent, LocalDate previous, EmailStatistics recentEmailStatistics, EmailStatistics previousEmailStatistics);
 
     public float[] getRelativeColumnWidths() {
-        return new float[] {SECTION_DESCRIPTION, RECENT_DATE, PREVIOUS_DATE, DELTA};
+        return new float[] {SECTION_DESCRIPTION_RELATIVE_WIDTH, RECENT_DATE_RELATIVE_WIDTH, PREVIOUS_DATE_RELATIVE_WIDTH, DELTA_RELATIVE_WIDTH};
     }
 
 
@@ -44,8 +43,7 @@ public abstract class SummaryStatisticsSectionPdf {
         headers.stream()
                 .forEach(text -> {
                     Cell cell = new Cell();
-                    Color backgroundColor = new DeviceRgb(225,238,217);
-                    cell.setBackgroundColor(backgroundColor);
+                    cell.setBackgroundColor(SummaryStatisticsPDFDefaults.getTableHeaderDefaultColor());
                     cell.setBorder(new SolidBorder(1));
                     cell.setFont(SummaryStatisticsPDFDefaults.getDefaultFont());
                     cell.setFontSize(SummaryStatisticsPDFDefaults.DEFAULT_FONT_SIZE);
@@ -103,34 +101,33 @@ public abstract class SummaryStatisticsSectionPdf {
         recentEmailAcbStats = addMissingAcbsToCollection(recentEmailAcbStats);
         previousEmailAcbStats = addMissingAcbsToCollection(previousEmailAcbStats);
 
-        List<EmailCertificationBodyStatistic> orderedRecentAcbStats = recentEmailAcbStats.stream()
-                        .sorted(Comparator.comparing(EmailCertificationBodyStatistic::getAcbName))
-                        .collect(Collectors.toList());
-
-        for (EmailCertificationBodyStatistic recentAcbStat : orderedRecentAcbStats) {
+        for (EmailCertificationBodyStatistic recentAcbStat : recentEmailAcbStats) {
             //Find the matching stat in the previous collection
             Optional<EmailCertificationBodyStatistic> previousAcbStat =
                     getAccompanyingEmailCertificationBodyStatistic(recentAcbStat, previousEmailAcbStats);
 
             if (previousAcbStat.isPresent()) {
-                table = addTableRow(table, createDataForRow(recentAcbStat.getAcbName(), recentAcbStat.getCount(), previousAcbStat.get().getCount()), 3);
+                table = addTableRow(table, createDataForRow(recentAcbStat.getAcbName(), recentAcbStat.getCount(), previousAcbStat.get().getCount()), NUMBER_OF_INDENTS_ACB_LEVEL_STAT);
             }
         }
         return table;
     }
 
+    public Table addHeaders(Table table, String sectionName, LocalDate recent, LocalDate previous) {
+        List<String> headers = new ArrayList<String>();
+        headers.add(sectionName);
+        headers.add(recent.format(getDefaultDateFormat()));
+        headers.add(previous.format(getDefaultDateFormat()));
+        headers.add("Delta");
+        addTableHeaderRow(table, headers);
+        return table;
+    }
+
+    private DateTimeFormatter getDefaultDateFormat() {
+        return DateTimeFormatter.ofPattern("LLLL dd, yyyy");
+    }
+
     private List<EmailCertificationBodyStatistic> addMissingAcbsToCollection(List<EmailCertificationBodyStatistic> emailAcbStats) {
-        for (CertificationBodyDTO acb : acbs) {
-            Optional<EmailCertificationBodyStatistic> emailAcbStat = emailAcbStats.stream()
-                    .filter(item -> item.getAcbName().equals(acb.getName()))
-                    .findAny();
-            if (emailAcbStat.isEmpty()) {
-                emailAcbStats.add(EmailCertificationBodyStatistic.builder()
-                        .acbName(acb.getName())
-                        .count(0L)
-                        .build());
-            }
-        }
-        return emailAcbStats;
+        return statisticsMassager.getStatistics(emailAcbStats);
     }
 }

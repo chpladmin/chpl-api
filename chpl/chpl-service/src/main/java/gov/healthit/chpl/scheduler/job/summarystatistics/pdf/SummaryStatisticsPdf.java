@@ -31,16 +31,20 @@ public class SummaryStatisticsPdf {
     private DeveloperSummaryStatisticsSectionPdf developerSummaryStatisticsSectionPdf;
     private ProductSummaryStatisticsSectionPdf productSummaryStatisticsSectionPdf;
     private ListingSummaryStatisticsSectionPdf listingSummaryStatisticsSectionPdf;
+    private SurveillanceSummaryStatisticsSectionPdf surveillanceSummaryStatisticsSectionPdf;
 
     @Autowired
     public SummaryStatisticsPdf(SummaryStatisticsDAO summaryStatisticsDAO,
             DeveloperSummaryStatisticsSectionPdf developerSummaryStatisticsSectionPdf,
             ProductSummaryStatisticsSectionPdf productSummaryStatisticsSectionPdf,
-            ListingSummaryStatisticsSectionPdf listingSummaryStatisticsSectionPdf) {
+            ListingSummaryStatisticsSectionPdf listingSummaryStatisticsSectionPdf,
+            SurveillanceSummaryStatisticsSectionPdf surveillanceSummaryStatisticsSectionPdf) {
+
         this.summaryStatisticsDAO = summaryStatisticsDAO;
         this.developerSummaryStatisticsSectionPdf = developerSummaryStatisticsSectionPdf;
         this.productSummaryStatisticsSectionPdf = productSummaryStatisticsSectionPdf;
         this.listingSummaryStatisticsSectionPdf = listingSummaryStatisticsSectionPdf;
+        this.surveillanceSummaryStatisticsSectionPdf = surveillanceSummaryStatisticsSectionPdf;
     }
 
     @SuppressWarnings("resource")
@@ -90,6 +94,14 @@ public class SummaryStatisticsPdf {
             document.add(new Paragraph(""));
 
             document.add(listingSummaryStatisticsSectionPdf.generateTable(
+                    convertDateToLocalDate(recentStats.getEndDate()),
+                    convertDateToLocalDate(previousStats.getEndDate()),
+                    recentEmailStats,
+                    previousEmailStats));
+
+            document.add(new Paragraph(""));
+
+            document.add(surveillanceSummaryStatisticsSectionPdf.generateTable(
                     convertDateToLocalDate(recentStats.getEndDate()),
                     convertDateToLocalDate(previousStats.getEndDate()),
                     recentEmailStats,

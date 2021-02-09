@@ -1,9 +1,6 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics.pdf;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,7 +22,7 @@ public class ListingSummaryStatisticsSectionPdf extends SummaryStatisticsSection
     public Table generateTable(LocalDate recent, LocalDate previous, EmailStatistics recentEmailStatistics, EmailStatistics previousEmailStatistics) {
         Table table = new Table(getRelativeColumnWidths());
         table.useAllAvailableWidth();
-        table = addHeaders(table, recent, previous);
+        table = addHeaders(table, "ListingStatistics", recent, previous);
         table = addTableRow(table, createDataForRow("3. Total # of Listings (Regardless of Status or Edition)",
                                     recentEmailStatistics.getListingsForEditionAnyTotal(),
                                     previousEmailStatistics.getListingsForEditionAnyTotal()));
@@ -82,16 +79,6 @@ public class ListingSummaryStatisticsSectionPdf extends SummaryStatisticsSection
                 recentEmailStatistics.getListingsForEdition2015CuresTotal(),
                 previousEmailStatistics.getListingsForEdition2015CuresTotal()), 1);
 
-        return table;
-    }
-
-    private Table addHeaders(Table table, LocalDate recent, LocalDate previous) {
-        List<String> headers = new ArrayList<String>();
-        headers.add("Listing Statistics");
-        headers.add(recent.format(DateTimeFormatter.ofPattern("LLLL dd, yyyy")));
-        headers.add(previous.format(DateTimeFormatter.ofPattern("LLLL dd, yyyy")));
-        headers.add("Delta");
-        addTableHeaderRow(table, headers);
         return table;
     }
 }
