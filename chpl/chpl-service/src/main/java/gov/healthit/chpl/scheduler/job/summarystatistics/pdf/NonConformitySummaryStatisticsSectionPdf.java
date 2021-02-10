@@ -1,6 +1,8 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics.pdf;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Component;
 import com.itextpdf.layout.element.Table;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailCertificationBodyStatistic;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatistics;
 
 @Component
@@ -29,7 +32,8 @@ public class NonConformitySummaryStatisticsSectionPdf extends SummaryStatisticsS
 
         table = addTableRow(table, createDataForRow("a. Open NCs",
                 recentEmailStatistics.getNonconfStatusOpen().getCount(),
-                previousEmailStatistics.getNonconfStatusOpen().getCount()), 1);
+                previousEmailStatistics.getNonconfStatusOpen().getCount()),
+                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
 
         table = addAcbRows(table,
                 recentEmailStatistics.getNonconfStatusOpen().getAcbStatistics(),
@@ -37,48 +41,61 @@ public class NonConformitySummaryStatisticsSectionPdf extends SummaryStatisticsS
 
         table = addTableRow(table, createDataForRow("b. Closed NCs",
                 recentEmailStatistics.getNonconfStatusClosedTotal(),
-                previousEmailStatistics.getNonconfStatusClosedTotal()), 1);
+                previousEmailStatistics.getNonconfStatusClosedTotal()),
+                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
 
         table = addTableRow(table, createDataForRow("c. Average Time to Assess Conformity (in days)",
                 recentEmailStatistics.getNonconfAvgTimeToAssessConformity(),
-                previousEmailStatistics.getNonconfAvgTimeToAssessConformity()), 1);
+                previousEmailStatistics.getNonconfAvgTimeToAssessConformity()),
+                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
 
         table = addTableRow(table, createDataForRow("d. Average Time to Approve CAP (in days)",
                 recentEmailStatistics.getNonconfAvgTimeToApproveCAP(),
-                previousEmailStatistics.getNonconfAvgTimeToApproveCAP()), 1);
+                previousEmailStatistics.getNonconfAvgTimeToApproveCAP()),
+                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
 
         table = addTableRow(table, createDataForRow("e. Average Duration of CAP (in days) (includes closed and ongoing CAPs)",
                 recentEmailStatistics.getNonconfAvgDurationOfCAP(),
-                previousEmailStatistics.getNonconfAvgDurationOfCAP()), 1);
+                previousEmailStatistics.getNonconfAvgDurationOfCAP()),
+                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
 
         table = addTableRow(table, createDataForRow("f. Average Time from CAP Approval to Surveillance Close (in days)",
                 recentEmailStatistics.getNonconfAvgTimeFromCAPAprrovalToSurveillanceEnd(),
-                previousEmailStatistics.getNonconfAvgTimeFromCAPAprrovalToSurveillanceEnd()), 1);
+                previousEmailStatistics.getNonconfAvgTimeFromCAPAprrovalToSurveillanceEnd()),
+                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
 
         table = addTableRow(table, createDataForRow("g. Average Time from CAP Close to Surveillance Close (in days)",
                 recentEmailStatistics.getNonconfAvgTimeFromCAPEndToSurveillanceEnd(),
-                previousEmailStatistics.getNonconfAvgTimeFromCAPEndToSurveillanceEnd()), 1);
+                previousEmailStatistics.getNonconfAvgTimeFromCAPEndToSurveillanceEnd()),
+                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
 
         table = addTableRow(table, createDataForRow("h. Average Duration of Closed Non-Conformities (in days)",
                 recentEmailStatistics.getNonconfAvgTimeFromSurveillanceOpenToSurveillanceClose(),
-                previousEmailStatistics.getNonconfAvgTimeFromSurveillanceOpenToSurveillanceClose()), 1);
+                previousEmailStatistics.getNonconfAvgTimeFromSurveillanceOpenToSurveillanceClose()),
+                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
 
-        //TODO - Where did this come from?
-        /*
+        // These are calculated differently thjan all of the other rows.  The data is a little different
         table = addTableRow(table, createDataForRow("6. Total Number of CAPs",
-                recentEmailStatistics.getNonconfAvgTimeFromSurveillanceOpenToSurveillanceClose(),
-                previousEmailStatistics.getNonconfAvgTimeFromSurveillanceOpenToSurveillanceClose()));
+                sumEmailAcbStatisticList(recentEmailStatistics.getNonconfCAPStatusOpen()) + sumEmailAcbStatisticList(recentEmailStatistics.getNonconfCAPStatusClosed()),
+                sumEmailAcbStatisticList(previousEmailStatistics.getNonconfCAPStatusOpen()) + sumEmailAcbStatisticList(previousEmailStatistics.getNonconfCAPStatusClosed())));
 
         table = addTableRow(table, createDataForRow("a. Number of Open CAPs",
-                recentEmailStatistics.getNonconfCAPStatusOpen(),
-                previousEmailStatistics.getNonconfCAPStatusOpen()), 1);
+                sumEmailAcbStatisticList(recentEmailStatistics.getNonconfCAPStatusOpen()),
+                sumEmailAcbStatisticList(previousEmailStatistics.getNonconfCAPStatusOpen())),
+                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
 
-        table = addAcbRows(table,
-                recentEmailStatistics.getNonconfStatusOpen().getAcbStatistics(),
-                previousEmailStatistics.getNonconfStatusOpen().getAcbStatistics());
-        */
-
+        table = addTableRow(table, createDataForRow("b. Number of Closed CAPs",
+                sumEmailAcbStatisticList(recentEmailStatistics.getNonconfCAPStatusClosed()),
+                sumEmailAcbStatisticList(previousEmailStatistics.getNonconfCAPStatusClosed())),
+                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
 
         return table;
     }
+
+    private Long sumEmailAcbStatisticList(List<EmailCertificationBodyStatistic> stats) {
+        return stats.stream()
+                .collect(Collectors.summarizingLong(EmailCertificationBodyStatistic::getCount))
+                .getSum();
+    }
+
 }

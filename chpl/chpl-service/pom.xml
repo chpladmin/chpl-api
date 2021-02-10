@@ -393,6 +393,13 @@
             <type>pom</type>
         </dependency>
 
+        <!-- jFreeChart for generating charts -->
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>1.5.2</version>
+        </dependency>
+
     </dependencies>
 
     <build>

@@ -29,7 +29,8 @@ public class SurveillanceSummaryStatisticsSectionPdf extends SummaryStatisticsSe
 
         table = addTableRow(table, createDataForRow("a. Open Surveillance Activities",
                 recentEmailStatistics.getSurveillanceOpenStatus().getCount(),
-                previousEmailStatistics.getSurveillanceOpenStatus().getCount()), 1);
+                previousEmailStatistics.getSurveillanceOpenStatus().getCount()),
+                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
 
         table = addAcbRows(table,
                 recentEmailStatistics.getSurveillanceOpenStatus().getAcbStatistics(),
@@ -37,11 +38,13 @@ public class SurveillanceSummaryStatisticsSectionPdf extends SummaryStatisticsSe
 
         table = addTableRow(table, createDataForRow("b. Closed Surveillance Activities",
                 recentEmailStatistics.getSurveillanceClosedStatusTotal(),
-                previousEmailStatistics.getSurveillanceClosedStatusTotal()), 1);
+                previousEmailStatistics.getSurveillanceClosedStatusTotal()),
+                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
 
         table = addTableRow(table, createDataForRow("c. Average Duration of Closed Surveillance (in days)",
                 recentEmailStatistics.getSurveillanceAvgTimeToClose(),
-                previousEmailStatistics.getSurveillanceAvgTimeToClose()), 1);
+                previousEmailStatistics.getSurveillanceAvgTimeToClose()),
+                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
 
         return table;
     }

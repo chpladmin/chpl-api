@@ -12,8 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.itextpdf.kernel.colors.Color;
-import com.itextpdf.kernel.colors.DeviceRgb;
+import com.itextpdf.kernel.events.PdfDocumentEvent;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
@@ -32,19 +31,22 @@ public class SummaryStatisticsPdf {
     private ProductSummaryStatisticsSectionPdf productSummaryStatisticsSectionPdf;
     private ListingSummaryStatisticsSectionPdf listingSummaryStatisticsSectionPdf;
     private SurveillanceSummaryStatisticsSectionPdf surveillanceSummaryStatisticsSectionPdf;
+    private NonConformitySummaryStatisticsSectionPdf nonConformitySummaryStatisticsSectionPdf;
 
     @Autowired
     public SummaryStatisticsPdf(SummaryStatisticsDAO summaryStatisticsDAO,
             DeveloperSummaryStatisticsSectionPdf developerSummaryStatisticsSectionPdf,
             ProductSummaryStatisticsSectionPdf productSummaryStatisticsSectionPdf,
             ListingSummaryStatisticsSectionPdf listingSummaryStatisticsSectionPdf,
-            SurveillanceSummaryStatisticsSectionPdf surveillanceSummaryStatisticsSectionPdf) {
+            SurveillanceSummaryStatisticsSectionPdf surveillanceSummaryStatisticsSectionPdf,
+            NonConformitySummaryStatisticsSectionPdf nonConformitySummaryStatisticsSectionPdf) {
 
         this.summaryStatisticsDAO = summaryStatisticsDAO;
         this.developerSummaryStatisticsSectionPdf = developerSummaryStatisticsSectionPdf;
         this.productSummaryStatisticsSectionPdf = productSummaryStatisticsSectionPdf;
         this.listingSummaryStatisticsSectionPdf = listingSummaryStatisticsSectionPdf;
         this.surveillanceSummaryStatisticsSectionPdf = surveillanceSummaryStatisticsSectionPdf;
+        this.nonConformitySummaryStatisticsSectionPdf = nonConformitySummaryStatisticsSectionPdf;
     }
 
     @SuppressWarnings("resource")
@@ -53,6 +55,7 @@ public class SummaryStatisticsPdf {
         File file = new File(dest);
 
         PdfDocument pdf = new PdfDocument(new PdfWriter(dest));
+        pdf.addEventHandler(PdfDocumentEvent.END_PAGE, new SummaryStatisticsPdfFooterEvent());
         try (Document document = new Document(pdf)) {
             SummaryStatisticsEntity recentStats = getSummaryStatisticsAsOf(LocalDate.now());
             EmailStatistics recentEmailStats = getEmailStatisticsFromSummaryStatistics(recentStats);
@@ -60,20 +63,19 @@ public class SummaryStatisticsPdf {
             EmailStatistics previousEmailStats = getEmailStatisticsFromSummaryStatistics(previousStats);
 
             Paragraph title = new Paragraph("ONC CHPL");
-            title.setFont(SummaryStatisticsPDFDefaults.getDefaultFont());
-            title.setFontSize(SummaryStatisticsPDFDefaults.TITLE_FONT_SIZE);
+            title.setFont(SummaryStatisticsPdfDefaults.getDefaultFont());
+            title.setFontSize(SummaryStatisticsPdfDefaults.TITLE_FONT_SIZE);
             document.add(title);
 
             Paragraph subtitle = new Paragraph("Weekly Summary Statistics Report");
-            subtitle.setFont(SummaryStatisticsPDFDefaults.getDefaultFont());
-            Color fontColor = new DeviceRgb(163, 209, 235);
-            subtitle.setFontColor(fontColor);
-            subtitle.setFontSize(SummaryStatisticsPDFDefaults.SUBTITLE_FONT_SIZE);
+            subtitle.setFont(SummaryStatisticsPdfDefaults.getDefaultFont());
+            subtitle.setFontColor(SummaryStatisticsPdfDefaults.getSubtitleFontColor());
+            subtitle.setFontSize(SummaryStatisticsPdfDefaults.SUBTITLE_FONT_SIZE);
             document.add(subtitle);
 
             Paragraph currentDate = new Paragraph(LocalDate.now().format(DateTimeFormatter.ofPattern("LLLL dd, yyyy")));
-            currentDate.setFont(SummaryStatisticsPDFDefaults.getDefaultFont());
-            currentDate.setFontSize(SummaryStatisticsPDFDefaults.DEFAULT_FONT_SIZE);
+            currentDate.setFont(SummaryStatisticsPdfDefaults.getDefaultFont());
+            currentDate.setFontSize(SummaryStatisticsPdfDefaults.DEFAULT_FONT_SIZE);
             currentDate.setItalic();
             document.add(currentDate);
 
@@ -102,6 +104,14 @@ public class SummaryStatisticsPdf {
             document.add(new Paragraph(""));
 
             document.add(surveillanceSummaryStatisticsSectionPdf.generateTable(
+                    convertDateToLocalDate(recentStats.getEndDate()),
+                    convertDateToLocalDate(previousStats.getEndDate()),
+                    recentEmailStats,
+                    previousEmailStats));
+
+            document.add(new Paragraph(""));
+
+            document.add(nonConformitySummaryStatisticsSectionPdf.generateTable(
                     convertDateToLocalDate(recentStats.getEndDate()),
                     convertDateToLocalDate(previousStats.getEndDate()),
                     recentEmailStats,

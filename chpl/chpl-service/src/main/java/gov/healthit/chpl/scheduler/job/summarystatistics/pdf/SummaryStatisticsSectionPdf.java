@@ -25,6 +25,7 @@ public abstract class SummaryStatisticsSectionPdf {
     private static final float DELTA_RELATIVE_WIDTH = 1;
     private static final float DEFAULT_INDENT = 20;
     private static final Integer NUMBER_OF_INDENTS_ACB_LEVEL_STAT = 3;
+    public static final Integer NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT = 1;
 
     private StatisticsMassager statisticsMassager;
 
@@ -43,10 +44,10 @@ public abstract class SummaryStatisticsSectionPdf {
         headers.stream()
                 .forEach(text -> {
                     Cell cell = new Cell();
-                    cell.setBackgroundColor(SummaryStatisticsPDFDefaults.getTableHeaderDefaultColor());
+                    cell.setBackgroundColor(SummaryStatisticsPdfDefaults.getTableHeaderDefaultColor());
                     cell.setBorder(new SolidBorder(1));
-                    cell.setFont(SummaryStatisticsPDFDefaults.getDefaultFont());
-                    cell.setFontSize(SummaryStatisticsPDFDefaults.DEFAULT_FONT_SIZE);
+                    cell.setFont(SummaryStatisticsPdfDefaults.getDefaultFont());
+                    cell.setFontSize(SummaryStatisticsPdfDefaults.DEFAULT_FONT_SIZE);
                     cell.add(new Paragraph(text));
                     table.addCell(cell);
                 });
@@ -59,8 +60,8 @@ public abstract class SummaryStatisticsSectionPdf {
                 .forEach(text -> {
                     Cell cell = new Cell();
                     cell.setBorder(new SolidBorder(1));
-                    cell.setFont(SummaryStatisticsPDFDefaults.getDefaultFont());
-                    cell.setFontSize(SummaryStatisticsPDFDefaults.DEFAULT_FONT_SIZE);
+                    cell.setFont(SummaryStatisticsPdfDefaults.getDefaultFont());
+                    cell.setFontSize(SummaryStatisticsPdfDefaults.DEFAULT_FONT_SIZE);
                     if (indentTimes != null && index.get() == 0) {
                         cell.setPaddingLeft(indentTimes * DEFAULT_INDENT);
                     }
