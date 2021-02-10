@@ -30,6 +30,7 @@ import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResultLegacy;
 import gov.healthit.chpl.domain.search.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.search.CertifiedProductSearchResultLegacy;
 import gov.healthit.chpl.domain.search.SearchViews;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.service.DirectReviewSearchService;
@@ -48,6 +49,7 @@ import lombok.extern.log4j.Log4j2;
 @RestController
 @RequestMapping("/collections")
 @Log4j2
+@Loggable
 public class CollectionsController {
     private CertifiedProductSearchManager certifiedProductSearchManager;
     private DeveloperManager developerManager;

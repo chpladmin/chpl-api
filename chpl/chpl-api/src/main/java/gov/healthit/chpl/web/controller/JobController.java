@@ -16,6 +16,7 @@ import gov.healthit.chpl.domain.Job;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.JobManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.AuthUtil;
@@ -26,6 +27,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "jobs")
 @RestController
 @RequestMapping("/jobs")
+@Loggable
 public class JobController {
 
     private static final Logger LOGGER = LogManager.getLogger(JobController.class);

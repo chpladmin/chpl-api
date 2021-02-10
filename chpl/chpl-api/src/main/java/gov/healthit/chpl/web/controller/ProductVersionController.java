@@ -28,6 +28,7 @@ import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
@@ -40,6 +41,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "versions")
 @RestController
 @RequestMapping("/versions")
+@Loggable
 public class ProductVersionController {
 
     @Autowired

@@ -23,6 +23,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.JobManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.util.AuthUtil;
@@ -33,6 +34,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "meaningful-use")
 @RestController
 @RequestMapping("/meaningful_use")
+@Loggable
 public class MeaningfulUseController {
     private static final Logger LOGGER = LogManager.getLogger(MeaningfulUseController.class);
     private final JobTypeConcept allowedJobType = JobTypeConcept.MUU_UPLOAD;
