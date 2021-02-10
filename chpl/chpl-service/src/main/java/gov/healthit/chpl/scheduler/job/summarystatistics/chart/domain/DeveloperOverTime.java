@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.summarystatistics.chart;
+package gov.healthit.chpl.scheduler.job.summarystatistics.chart.domain;
 
 import java.time.LocalDate;
 

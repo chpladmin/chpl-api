@@ -24,21 +24,20 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 
-import gov.healthit.chpl.scheduler.job.summarystatistics.chart.domain.UniqueProductsWithActiveListingsOverTime;
+import gov.healthit.chpl.scheduler.job.summarystatistics.chart.domain.TotalUniqueProductsOverTime;
 
-public class UniqueProductsWithActiveListingsOverTimeChart {
+public class TotalUniqueProductsOverTimeChart {
+
     private static final int MONTH_INTERVAL = 4;
     private static final int DATE_COLUMN = 0;
-    private static final int PRODUCT_ACTIVE_ALL_COLUMN = 7;
-    private static final int PRODUCT_ACTIVE_2014_COLUMN = 5;
-    private static final int PRODUCT_ACTIVE_2015_COLUMN = 6;
+    private static final int PRODUCT_ALL_COLUMN = 4;
 
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE LLL dd yyyy");
 
     public JFreeChart generate(File csv) throws IOException {
-        List<UniqueProductsWithActiveListingsOverTime> reportData = getDataFromCsv(csv);
+        List<TotalUniqueProductsOverTime> reportData = getDataFromCsv(csv);
 
-        JFreeChart chart = ChartFactory.createTimeSeriesChart("Unique Products with Active Listings Over Time",
+        JFreeChart chart = ChartFactory.createTimeSeriesChart("Unique Products Over Time",
                 "Date", "Product Count", createDataSet(reportData));
 
 
@@ -51,27 +50,21 @@ public class UniqueProductsWithActiveListingsOverTimeChart {
         return chart;
     }
 
-    private XYDataset createDataSet(List<UniqueProductsWithActiveListingsOverTime> data) {
+    private XYDataset createDataSet(List<TotalUniqueProductsOverTime> data) {
         TimeSeriesCollection dataset = new TimeSeriesCollection();
-        TimeSeries series1 = new TimeSeries("Total Unique Products With Active Listings");
-        TimeSeries series2 = new TimeSeries("Unique Products with Active 2014 Listings");
-        TimeSeries series3 = new TimeSeries("Unique Products with Active 2015 Listings");
+        TimeSeries series1 = new TimeSeries("Total Unique Products");
 
-        for (UniqueProductsWithActiveListingsOverTime item : data) {
-            series1.add(new Day(java.sql.Date.valueOf(item.getDate())), item.getTotalProductsWithActiveListings());
-            series2.add(new Day(java.sql.Date.valueOf(item.getDate())), item.getTotalProductsWithActive2014Listings());
-            series3.add(new Day(java.sql.Date.valueOf(item.getDate())), item.getTotalProductsWithActive2015Listings());
-
+        for (TotalUniqueProductsOverTime item : data) {
+            series1.add(new Day(java.sql.Date.valueOf(item.getDate())), item.getTotalProductsListings());
         }
+
         dataset.addSeries(series1);
-        dataset.addSeries(series2);
-        dataset.addSeries(series3);
 
         return dataset;
     }
 
-    private List<UniqueProductsWithActiveListingsOverTime> getDataFromCsv(File csv) throws IOException {
-        List<UniqueProductsWithActiveListingsOverTime> reportData = new ArrayList<UniqueProductsWithActiveListingsOverTime>();
+    private List<TotalUniqueProductsOverTime> getDataFromCsv(File csv) throws IOException {
+        List<TotalUniqueProductsOverTime> reportData = new ArrayList<TotalUniqueProductsOverTime>();
 
         try (Reader reader = new FileReader(csv);
                 CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);) {
@@ -80,11 +73,9 @@ public class UniqueProductsWithActiveListingsOverTimeChart {
                 if (csvRecord.get(DATE_COLUMN).equalsIgnoreCase("Date")) {
                     continue;
                 }
-                UniqueProductsWithActiveListingsOverTime data = UniqueProductsWithActiveListingsOverTime.builder()
+                TotalUniqueProductsOverTime data = TotalUniqueProductsOverTime.builder()
                         .date(LocalDate.from(formatter.parse(csvRecord.get(DATE_COLUMN))))
-                        .totalProductsWithActiveListings(Long.parseLong(csvRecord.get(PRODUCT_ACTIVE_ALL_COLUMN)))
-                        .totalProductsWithActive2014Listings(Long.parseLong(csvRecord.get(PRODUCT_ACTIVE_2014_COLUMN)))
-                        .totalProductsWithActive2015Listings(Long.parseLong(csvRecord.get(PRODUCT_ACTIVE_2015_COLUMN)))
+                        .totalProductsListings(Long.parseLong(csvRecord.get(PRODUCT_ALL_COLUMN)))
                         .build();
                 reportData.add(data);
             }
@@ -92,5 +83,4 @@ public class UniqueProductsWithActiveListingsOverTimeChart {
 
         return reportData;
     }
-
 }

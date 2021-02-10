@@ -28,6 +28,7 @@ import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.entity.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.DevelopersOverTimeChart;
+import gov.healthit.chpl.scheduler.job.summarystatistics.chart.TotalUniqueProductsOverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.UniqueProductsWithActiveListingsOverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatistics;
 
@@ -138,6 +139,12 @@ public class SummaryStatisticsPdf {
             UniqueProductsWithActiveListingsOverTimeChart uniqueProductsOverTimeGenerator = new UniqueProductsWithActiveListingsOverTimeChart();
             JFreeChart uniqueProductsOverTimeChart = uniqueProductsOverTimeGenerator.generate(csv);
             document.add(getPdfImage(uniqueProductsOverTimeChart));
+
+            document.add(new Paragraph(""));
+
+            TotalUniqueProductsOverTimeChart totalUniqueProductsOverTimeChartGenerator = new TotalUniqueProductsOverTimeChart();
+            JFreeChart totalUniqueProductsOverTimeChartChart = totalUniqueProductsOverTimeChartGenerator.generate(csv);
+            document.add(getPdfImage(totalUniqueProductsOverTimeChartChart));
 
             document.close();
         }

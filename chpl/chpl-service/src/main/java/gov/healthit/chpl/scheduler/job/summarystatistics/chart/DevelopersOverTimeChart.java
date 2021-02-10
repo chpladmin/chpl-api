@@ -24,6 +24,7 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 
+import gov.healthit.chpl.scheduler.job.summarystatistics.chart.domain.DeveloperOverTime;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
