@@ -101,7 +101,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
                 + env.getProperty("summaryEmailName", "summaryStatistics.csv"));
         files.add(file);
 
-        files.add(summaryStatisticsPdf.generate());
+        files.add(summaryStatisticsPdf.generate(file));
         return files;
     }
 

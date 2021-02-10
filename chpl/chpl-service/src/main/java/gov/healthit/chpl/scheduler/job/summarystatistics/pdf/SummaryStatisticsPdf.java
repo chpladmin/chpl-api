@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import org.dom4j.DocumentException;
+import org.jfree.chart.JFreeChart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +22,7 @@ import com.itextpdf.layout.element.Paragraph;
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.entity.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.scheduler.job.summarystatistics.chart.DevelopersOverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatistics;
 
 @Component
@@ -50,13 +52,20 @@ public class SummaryStatisticsPdf {
     }
 
     @SuppressWarnings("resource")
-    public File generate() throws DocumentException, IOException {
+    public File generate(File csv) throws DocumentException, IOException {
         String dest = "C:/chpl/files/SummaryStatistics.pdf";
         File file = new File(dest);
 
-        PdfDocument pdf = new PdfDocument(new PdfWriter(dest));
+        PdfWriter writer = new PdfWriter(dest);
+        PdfDocument pdf = new PdfDocument(writer);
         pdf.addEventHandler(PdfDocumentEvent.END_PAGE, new SummaryStatisticsPdfFooterEvent());
         try (Document document = new Document(pdf)) {
+            DevelopersOverTimeChart chart = new DevelopersOverTimeChart();
+            JFreeChart x = chart.generate(csv);
+//            BufferedImage bufferedImage = chart.createBufferedImage(100, 100);
+//            Image image = Image.getInstance(writer, bufferedImage, 1.0f);
+//            document.add(image);
+
             SummaryStatisticsEntity recentStats = getSummaryStatisticsAsOf(LocalDate.now());
             EmailStatistics recentEmailStats = getEmailStatisticsFromSummaryStatistics(recentStats);
             SummaryStatisticsEntity previousStats = getSummaryStatisticsAsOf(convertDateToLocalDate(recentStats.getEndDate()).minusDays(ONE_WEEK));
