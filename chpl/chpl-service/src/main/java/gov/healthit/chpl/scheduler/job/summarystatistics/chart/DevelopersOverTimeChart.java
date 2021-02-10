@@ -14,7 +14,6 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.DateTickUnit;
@@ -50,9 +49,9 @@ public class DevelopersOverTimeChart {
         axis.setTickUnit(new DateTickUnit(DateTickUnitType.MONTH, 4));
         axis.setVerticalTickLabels(true);
 
-        String dest = "C:/chpl/files/developerChart.jpg";
-        File file = new File(dest);
-        ChartUtils.saveChartAsJPEG(file, chart, 600, 300);
+        //String dest = "C:/chpl/files/developerChart.jpg";
+        //File file = new File(dest);
+        //ChartUtils.saveChartAsJPEG(file, chart, 600, 300);
         return chart;
     }
 

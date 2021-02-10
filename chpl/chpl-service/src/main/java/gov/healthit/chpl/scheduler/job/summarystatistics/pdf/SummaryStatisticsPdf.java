@@ -1,5 +1,6 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics.pdf;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -8,15 +9,19 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import org.dom4j.DocumentException;
+import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itextpdf.io.image.ImageData;
+import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.events.PdfDocumentEvent;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
 
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
@@ -60,11 +65,6 @@ public class SummaryStatisticsPdf {
         PdfDocument pdf = new PdfDocument(writer);
         pdf.addEventHandler(PdfDocumentEvent.END_PAGE, new SummaryStatisticsPdfFooterEvent());
         try (Document document = new Document(pdf)) {
-            DevelopersOverTimeChart chart = new DevelopersOverTimeChart();
-            JFreeChart x = chart.generate(csv);
-//            BufferedImage bufferedImage = chart.createBufferedImage(100, 100);
-//            Image image = Image.getInstance(writer, bufferedImage, 1.0f);
-//            document.add(image);
 
             SummaryStatisticsEntity recentStats = getSummaryStatisticsAsOf(LocalDate.now());
             EmailStatistics recentEmailStats = getEmailStatisticsFromSummaryStatistics(recentStats);
@@ -126,12 +126,21 @@ public class SummaryStatisticsPdf {
                     recentEmailStats,
                     previousEmailStats));
 
+            DevelopersOverTimeChart chart = new DevelopersOverTimeChart();
+            JFreeChart x = chart.generate(csv);
+            document.add(getPdfImage(x));
+
             document.close();
         }
 
         return file;
     }
 
+    private Image getPdfImage(JFreeChart chart) throws IOException {
+        final BufferedImage image = chart.createBufferedImage(600, 300, 600, 300, null);
+        ImageData rawImage = ImageDataFactory.create(ChartUtils.encodeAsPNG(image));
+        return new Image(rawImage);
+    }
 
     private EmailStatistics getEmailStatisticsFromSummaryStatistics(SummaryStatisticsEntity stats) {
         try {
