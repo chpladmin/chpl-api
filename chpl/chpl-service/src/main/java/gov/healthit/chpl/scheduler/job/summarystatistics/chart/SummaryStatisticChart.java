@@ -21,6 +21,15 @@ public abstract class SummaryStatisticChart {
     public static final int LISTING_2014_COLUMN = 9;
     public static final int LISTING_2015_COLUMN = 10;
     public static final int LISTING_2011_COLUMN = 11;
+    public static final int SURVEILLANCE_ALL_COLUMN = 12;
+    public static final int SURVEILLANCE_OPEN_COLUMN = 13;
+    public static final int SURVEILLANCE_CLOSED_COLUMN = 14;
+    public static final int NON_CONFORMITY_ALL_COLUMN = 15;
+    public static final int NON_CONFORMITY_OPEN_COLUMN = 16;
+    public static final int NON_CONFORMITY_CLOSED_COLUMN = 17;
+
+    private static final int TITLE_FONT_SIZE = 16;
+
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE LLL dd yyyy");
 
     public abstract JFreeChart generate(File csv) throws IOException;
@@ -30,6 +39,6 @@ public abstract class SummaryStatisticChart {
     }
 
     public Font getTitleFont() {
-        return new Font(Font.SANS_SERIF, Font.PLAIN, 16);
+        return new Font(Font.SANS_SERIF, Font.PLAIN, TITLE_FONT_SIZE);
     }
 }

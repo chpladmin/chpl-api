@@ -24,17 +24,15 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 
-import gov.healthit.chpl.scheduler.job.summarystatistics.chart.domain.DeveloperOverTime;
-import lombok.extern.log4j.Log4j2;
+import gov.healthit.chpl.scheduler.job.summarystatistics.chart.domain.SurveillanceActivitiesOverTime;
 
-@Log4j2
-public class DevelopersOverTimeChart extends SummaryStatisticChart {
+public class SurveillanceActivitiesOverTimeChart extends SummaryStatisticChart {
 
     @Override
     public JFreeChart generate(File csv) throws IOException {
-        List<DeveloperOverTime> reportData = getDataFromCsv(csv);
+        List<SurveillanceActivitiesOverTime> reportData = getDataFromCsv(csv);
 
-        JFreeChart chart = ChartFactory.createTimeSeriesChart("Developers Over Time", "Date", "Developer Count", createDataSet(reportData));
+        JFreeChart chart = ChartFactory.createTimeSeriesChart("Surveillance Activities Over Time", "Date", "Surveillance Count", createDataSet(reportData));
         chart.getTitle().setFont(getTitleFont());
         chart.getTitle().setTextAlignment(HorizontalAlignment.LEFT);
 
@@ -47,16 +45,16 @@ public class DevelopersOverTimeChart extends SummaryStatisticChart {
         return chart;
     }
 
-    private XYDataset createDataSet(List<DeveloperOverTime> data) {
+    private XYDataset createDataSet(List<SurveillanceActivitiesOverTime> data) {
         TimeSeriesCollection dataset = new TimeSeriesCollection();
-        TimeSeries series1 = new TimeSeries("Total Developers");
-        TimeSeries series2 = new TimeSeries("Developers with 2014 Listings");
-        TimeSeries series3 = new TimeSeries("Developers with 2015 Listings");
+        TimeSeries series1 = new TimeSeries("Total Surveillance Activities");
+        TimeSeries series2 = new TimeSeries("Total Open Surveillance Activities");
+        TimeSeries series3 = new TimeSeries("Total Closed Surveillance Activities");
 
-        for (DeveloperOverTime item : data) {
-            series1.add(new Day(java.sql.Date.valueOf(item.getDate())), item.getTotalDevelopers());
-            series2.add(new Day(java.sql.Date.valueOf(item.getDate())), item.getTotalDevelopersWith2014Listings());
-            series3.add(new Day(java.sql.Date.valueOf(item.getDate())), item.getTotalDevelopersWith2015Listings());
+        for (SurveillanceActivitiesOverTime item : data) {
+            series1.add(new Day(java.sql.Date.valueOf(item.getDate())), item.getTotalSurveillanceActivities());
+            series2.add(new Day(java.sql.Date.valueOf(item.getDate())), item.getTotalOpenSurveillanceActivities());
+            series3.add(new Day(java.sql.Date.valueOf(item.getDate())), item.getTotalClosedSurveillanceActivities());
 
         }
         dataset.addSeries(series1);
@@ -66,8 +64,8 @@ public class DevelopersOverTimeChart extends SummaryStatisticChart {
         return dataset;
     }
 
-    private List<DeveloperOverTime> getDataFromCsv(File csv) throws IOException {
-        List<DeveloperOverTime> reportData = new ArrayList<DeveloperOverTime>();
+    private List<SurveillanceActivitiesOverTime> getDataFromCsv(File csv) throws IOException {
+        List<SurveillanceActivitiesOverTime> reportData = new ArrayList<SurveillanceActivitiesOverTime>();
 
         try (Reader reader = new FileReader(csv);
                 CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);) {
@@ -76,11 +74,11 @@ public class DevelopersOverTimeChart extends SummaryStatisticChart {
                 if (csvRecord.get(DATE_COLUMN).equalsIgnoreCase("Date")) {
                     continue;
                 }
-                DeveloperOverTime data = DeveloperOverTime.builder()
+                SurveillanceActivitiesOverTime data = SurveillanceActivitiesOverTime.builder()
                         .date(LocalDate.from(getDateTimeFormatter().parse(csvRecord.get(DATE_COLUMN))))
-                        .totalDevelopers(Long.parseLong(csvRecord.get(DEVELOPER_ALL_COLUMN)))
-                        .totalDevelopersWith2014Listings(Long.parseLong(csvRecord.get(DEVELOPER_2014_COLUMN)))
-                        .totalDevelopersWith2015Listings(Long.parseLong(csvRecord.get(DEVELOPER_2015_COLUMN)))
+                        .totalSurveillanceActivities(Long.parseLong(csvRecord.get(SURVEILLANCE_ALL_COLUMN)))
+                        .totalOpenSurveillanceActivities(Long.parseLong(csvRecord.get(SURVEILLANCE_OPEN_COLUMN)))
+                        .totalClosedSurveillanceActivities(Long.parseLong(csvRecord.get(SURVEILLANCE_CLOSED_COLUMN)))
                         .build();
                 reportData.add(data);
             }

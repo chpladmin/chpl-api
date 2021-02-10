@@ -32,7 +32,9 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.DevelopersOverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.Listing2014OverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.Listing2015OverTimeChart;
+import gov.healthit.chpl.scheduler.job.summarystatistics.chart.NonConformitiesOverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.SummaryStatisticChart;
+import gov.healthit.chpl.scheduler.job.summarystatistics.chart.SurveillanceActivitiesOverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.TotalListingsOverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.TotalUniqueProductsOverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.UniqueProductsWithActiveListingsOverTimeChart;
@@ -74,6 +76,7 @@ public class SummaryStatisticsPdf {
 
         //This adds the footer at the end of each page
         pdf.addEventHandler(PdfDocumentEvent.END_PAGE, new SummaryStatisticsPdfFooterEvent());
+
         try (Document document = new Document(pdf)) {
             SummaryStatisticsEntity recentStats = getSummaryStatisticsAsOf(LocalDate.now());
             SummaryStatisticsEntity previousStats = getSummaryStatisticsAsOf(convertDateToLocalDate(recentStats.getEndDate()).minusDays(ONE_WEEK));
@@ -143,7 +146,9 @@ public class SummaryStatisticsPdf {
                 new TotalUniqueProductsOverTimeChart(),
                 new TotalListingsOverTimeChart(),
                 new Listing2014OverTimeChart(),
-                new Listing2015OverTimeChart());
+                new Listing2015OverTimeChart(),
+                new SurveillanceActivitiesOverTimeChart(),
+                new NonConformitiesOverTimeChart());
 
         chartGenerators.forEach(chartGenerator -> {
             document.add(new Paragraph(""));
