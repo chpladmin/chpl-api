@@ -4,6 +4,7 @@ import gov.healthit.chpl.domain.ParticipantGenderStatistics;
 import gov.healthit.chpl.domain.SedParticipantStatisticsCount;
 import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
 import gov.healthit.chpl.dto.SedParticipantStatisticsCountDTO;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.StatisticsManager;
 import gov.healthit.chpl.scheduler.job.chartdata.ExperienceType;
 import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(value = "statistics")
 @RestController
 @RequestMapping("/statistics")
+@Loggable
 public class StatisticsController {
 
     @Autowired

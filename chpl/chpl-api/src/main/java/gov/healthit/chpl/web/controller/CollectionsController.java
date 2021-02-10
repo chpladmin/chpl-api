@@ -29,6 +29,7 @@ import gov.healthit.chpl.domain.search.BasicSearchResponse;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.domain.search.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.search.SearchViews;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
@@ -44,6 +45,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "collections")
 @RestController
 @RequestMapping("/collections")
+@Loggable
 public class CollectionsController {
     private static final Logger LOGGER = LogManager.getLogger(CollectionsController.class);
     @Autowired

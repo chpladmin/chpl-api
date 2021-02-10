@@ -40,6 +40,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.ComplaintManager;
 import gov.healthit.chpl.manager.SurveillanceReportManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -50,6 +51,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "surveillance-report")
 @RestController
 @RequestMapping("/surveillance-report")
+@Loggable
 public class SurveillanceReportController {
 
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceReportController.class);

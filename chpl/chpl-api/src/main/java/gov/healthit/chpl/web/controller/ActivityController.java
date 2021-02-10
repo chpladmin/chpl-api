@@ -44,6 +44,7 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.ActivityMetadataManager;
 import gov.healthit.chpl.manager.ActivityPagedMetadataManager;
@@ -65,6 +66,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "activity")
 @RestController
 @RequestMapping("/activity")
+@Loggable
 public class ActivityController {
     private static final Logger LOGGER = LogManager.getLogger(ActivityController.class);
     public static final int DEFAULT_MAX_ACTIVITY_RANGE_DAYS = 30;
