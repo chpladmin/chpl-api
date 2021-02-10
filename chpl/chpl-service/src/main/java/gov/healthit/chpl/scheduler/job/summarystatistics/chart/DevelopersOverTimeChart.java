@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +18,7 @@ import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.DateTickUnit;
 import org.jfree.chart.axis.DateTickUnitType;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.ui.HorizontalAlignment;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -28,21 +28,15 @@ import gov.healthit.chpl.scheduler.job.summarystatistics.chart.domain.DeveloperO
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-public class DevelopersOverTimeChart {
-    private static final int MONTH_INTERVAL = 4;
-    private static final int DATE_COLUMN = 0;
-    private static final int DEVELOPER_ALL_COLUMN = 1;
-    private static final int DEVELOPER_2014_COLUMN = 2;
-    private static final int DEVELOPER_2015_COLUMN = 3;
+public class DevelopersOverTimeChart extends SummaryStatisticChart {
 
-
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE LLL dd yyyy");
-
-    public JFreeChart generate(File csv) throws IOException {
+        @Override
+        public JFreeChart generate(File csv) throws IOException {
         List<DeveloperOverTime> reportData = getDataFromCsv(csv);
 
-        JFreeChart chart = ChartFactory.createTimeSeriesChart("Developers Over Time",
-                "Date", "Developer Count", createDataSet(reportData));
+        JFreeChart chart = ChartFactory.createTimeSeriesChart("Developers Over Time", "Date", "Developer Count", createDataSet(reportData));
+        chart.getTitle().setFont(getTitleFont());
+        chart.getTitle().setTextAlignment(HorizontalAlignment.LEFT);
 
         XYPlot plot = (XYPlot) chart.getPlot();
         DateAxis axis = (DateAxis) plot.getDomainAxis();
@@ -83,7 +77,7 @@ public class DevelopersOverTimeChart {
                     continue;
                 }
                 DeveloperOverTime data = DeveloperOverTime.builder()
-                        .date(LocalDate.from(formatter.parse(csvRecord.get(DATE_COLUMN))))
+                        .date(LocalDate.from(getDateTimeFormatter().parse(csvRecord.get(DATE_COLUMN))))
                         .totalDevelopers(Long.parseLong(csvRecord.get(DEVELOPER_ALL_COLUMN)))
                         .totalDevelopersWith2014Listings(Long.parseLong(csvRecord.get(DEVELOPER_2014_COLUMN)))
                         .totalDevelopersWith2015Listings(Long.parseLong(csvRecord.get(DEVELOPER_2015_COLUMN)))

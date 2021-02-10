@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import org.dom4j.DocumentException;
 import org.jfree.chart.ChartUtils;
@@ -28,6 +30,10 @@ import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.entity.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.DevelopersOverTimeChart;
+import gov.healthit.chpl.scheduler.job.summarystatistics.chart.Listing2014OverTimeChart;
+import gov.healthit.chpl.scheduler.job.summarystatistics.chart.Listing2015OverTimeChart;
+import gov.healthit.chpl.scheduler.job.summarystatistics.chart.SummaryStatisticChart;
+import gov.healthit.chpl.scheduler.job.summarystatistics.chart.TotalListingsOverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.TotalUniqueProductsOverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.UniqueProductsWithActiveListingsOverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatistics;
@@ -128,28 +134,38 @@ public class SummaryStatisticsPdf {
                     recentEmailStats,
                     previousEmailStats));
 
-            document.add(new Paragraph(""));
-
-            DevelopersOverTimeChart developersOverTimeGenerator = new DevelopersOverTimeChart();
-            JFreeChart developersOverTimeChart = developersOverTimeGenerator.generate(csv);
-            document.add(getPdfImage(developersOverTimeChart));
-
-            document.add(new Paragraph(""));
-
-            UniqueProductsWithActiveListingsOverTimeChart uniqueProductsOverTimeGenerator = new UniqueProductsWithActiveListingsOverTimeChart();
-            JFreeChart uniqueProductsOverTimeChart = uniqueProductsOverTimeGenerator.generate(csv);
-            document.add(getPdfImage(uniqueProductsOverTimeChart));
-
-            document.add(new Paragraph(""));
-
-            TotalUniqueProductsOverTimeChart totalUniqueProductsOverTimeChartGenerator = new TotalUniqueProductsOverTimeChart();
-            JFreeChart totalUniqueProductsOverTimeChartChart = totalUniqueProductsOverTimeChartGenerator.generate(csv);
-            document.add(getPdfImage(totalUniqueProductsOverTimeChartChart));
+            addCharts(document, csv);
 
             document.close();
         }
 
         return file;
+    }
+
+    @SuppressWarnings("resource")
+    private void addCharts(Document document, File csv) throws IOException {
+        List<SummaryStatisticChart> chartGenerators = Arrays.asList(
+                new DevelopersOverTimeChart(),
+                new UniqueProductsWithActiveListingsOverTimeChart(),
+                new TotalUniqueProductsOverTimeChart(),
+                new TotalListingsOverTimeChart(),
+                new Listing2014OverTimeChart(),
+                new Listing2015OverTimeChart());
+
+        chartGenerators.forEach(chartGenerator -> {
+            document.add(new Paragraph(""));
+            try {
+                addChart(document, csv, chartGenerator);
+            } catch (IOException e) {
+                document.add(new Paragraph("[Could not generate chart]"));
+            }
+        });
+    }
+
+    @SuppressWarnings("resource")
+    private void addChart(Document document, File csv, SummaryStatisticChart chartGenerator) throws IOException {
+        JFreeChart chart = chartGenerator.generate(csv);
+        document.add(getPdfImage(chart));
     }
 
     private Image getPdfImage(JFreeChart chart) throws IOException {

@@ -24,15 +24,15 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 
-import gov.healthit.chpl.scheduler.job.summarystatistics.chart.domain.TotalUniqueProductsOverTime;
+import gov.healthit.chpl.scheduler.job.summarystatistics.chart.domain.ListingsByEditionOverTime;
 
-public class TotalUniqueProductsOverTimeChart extends SummaryStatisticChart {
+public class Listing2014OverTimeChart extends SummaryStatisticChart {
 
-        @Override
-        public JFreeChart generate(File csv) throws IOException {
-        List<TotalUniqueProductsOverTime> reportData = getDataFromCsv(csv);
+    @Override
+    public JFreeChart generate(File csv) throws IOException {
+        List<ListingsByEditionOverTime> reportData = getDataFromCsv(csv);
 
-        JFreeChart chart = ChartFactory.createTimeSeriesChart("Unique Products Over Time", "Date", "Product Count", createDataSet(reportData));
+        JFreeChart chart = ChartFactory.createTimeSeriesChart("Total 2014 Listings Over Time", "Date", "Listing Count", createDataSet(reportData));
         chart.getTitle().setFont(getTitleFont());
         chart.getTitle().setTextAlignment(HorizontalAlignment.LEFT);
 
@@ -45,21 +45,20 @@ public class TotalUniqueProductsOverTimeChart extends SummaryStatisticChart {
         return chart;
     }
 
-    private XYDataset createDataSet(List<TotalUniqueProductsOverTime> data) {
+    private XYDataset createDataSet(List<ListingsByEditionOverTime> data) {
         TimeSeriesCollection dataset = new TimeSeriesCollection();
-        TimeSeries series1 = new TimeSeries("Total Unique Products");
+        TimeSeries series1 = new TimeSeries("Total 2014 Listings");
 
-        for (TotalUniqueProductsOverTime item : data) {
-            series1.add(new Day(java.sql.Date.valueOf(item.getDate())), item.getTotalProductsListings());
+        for (ListingsByEditionOverTime item : data) {
+            series1.add(new Day(java.sql.Date.valueOf(item.getDate())), item.getListingCount());
         }
-
         dataset.addSeries(series1);
 
         return dataset;
     }
 
-    private List<TotalUniqueProductsOverTime> getDataFromCsv(File csv) throws IOException {
-        List<TotalUniqueProductsOverTime> reportData = new ArrayList<TotalUniqueProductsOverTime>();
+    private List<ListingsByEditionOverTime> getDataFromCsv(File csv) throws IOException {
+        List<ListingsByEditionOverTime> reportData = new ArrayList<ListingsByEditionOverTime>();
 
         try (Reader reader = new FileReader(csv);
                 CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);) {
@@ -68,9 +67,9 @@ public class TotalUniqueProductsOverTimeChart extends SummaryStatisticChart {
                 if (csvRecord.get(DATE_COLUMN).equalsIgnoreCase("Date")) {
                     continue;
                 }
-                TotalUniqueProductsOverTime data = TotalUniqueProductsOverTime.builder()
+                ListingsByEditionOverTime data = ListingsByEditionOverTime.builder()
                         .date(LocalDate.from(getDateTimeFormatter().parse(csvRecord.get(DATE_COLUMN))))
-                        .totalProductsListings(Long.parseLong(csvRecord.get(PRODUCT_ALL_COLUMN)))
+                        .listingCount(Long.parseLong(csvRecord.get(LISTING_2014_COLUMN)))
                         .build();
                 reportData.add(data);
             }
@@ -78,4 +77,5 @@ public class TotalUniqueProductsOverTimeChart extends SummaryStatisticChart {
 
         return reportData;
     }
+
 }

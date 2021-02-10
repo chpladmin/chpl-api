@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +18,7 @@ import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.DateTickUnit;
 import org.jfree.chart.axis.DateTickUnitType;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.ui.HorizontalAlignment;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -26,21 +26,15 @@ import org.jfree.data.xy.XYDataset;
 
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.domain.UniqueProductsWithActiveListingsOverTime;
 
-public class UniqueProductsWithActiveListingsOverTimeChart {
-    private static final int MONTH_INTERVAL = 4;
-    private static final int DATE_COLUMN = 0;
-    private static final int PRODUCT_ACTIVE_ALL_COLUMN = 7;
-    private static final int PRODUCT_ACTIVE_2014_COLUMN = 5;
-    private static final int PRODUCT_ACTIVE_2015_COLUMN = 6;
+public class UniqueProductsWithActiveListingsOverTimeChart extends SummaryStatisticChart {
 
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE LLL dd yyyy");
-
+    @Override
     public JFreeChart generate(File csv) throws IOException {
         List<UniqueProductsWithActiveListingsOverTime> reportData = getDataFromCsv(csv);
 
-        JFreeChart chart = ChartFactory.createTimeSeriesChart("Unique Products with Active Listings Over Time",
-                "Date", "Product Count", createDataSet(reportData));
-
+        JFreeChart chart = ChartFactory.createTimeSeriesChart("Unique Products with Active Listings Over Time", "Date", "Product Count", createDataSet(reportData));
+        chart.getTitle().setFont(getTitleFont());
+        chart.getTitle().setTextAlignment(HorizontalAlignment.LEFT);
 
         XYPlot plot = (XYPlot) chart.getPlot();
         DateAxis axis = (DateAxis) plot.getDomainAxis();
@@ -81,7 +75,7 @@ public class UniqueProductsWithActiveListingsOverTimeChart {
                     continue;
                 }
                 UniqueProductsWithActiveListingsOverTime data = UniqueProductsWithActiveListingsOverTime.builder()
-                        .date(LocalDate.from(formatter.parse(csvRecord.get(DATE_COLUMN))))
+                        .date(LocalDate.from(getDateTimeFormatter().parse(csvRecord.get(DATE_COLUMN))))
                         .totalProductsWithActiveListings(Long.parseLong(csvRecord.get(PRODUCT_ACTIVE_ALL_COLUMN)))
                         .totalProductsWithActive2014Listings(Long.parseLong(csvRecord.get(PRODUCT_ACTIVE_2014_COLUMN)))
                         .totalProductsWithActive2015Listings(Long.parseLong(csvRecord.get(PRODUCT_ACTIVE_2015_COLUMN)))

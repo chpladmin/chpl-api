@@ -24,15 +24,15 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 
-import gov.healthit.chpl.scheduler.job.summarystatistics.chart.domain.TotalUniqueProductsOverTime;
+import gov.healthit.chpl.scheduler.job.summarystatistics.chart.domain.ListingsOverTime;
 
-public class TotalUniqueProductsOverTimeChart extends SummaryStatisticChart {
+public class TotalListingsOverTimeChart extends SummaryStatisticChart {
 
-        @Override
-        public JFreeChart generate(File csv) throws IOException {
-        List<TotalUniqueProductsOverTime> reportData = getDataFromCsv(csv);
+    @Override
+    public JFreeChart generate(File csv) throws IOException {
+        List<ListingsOverTime> reportData = getDataFromCsv(csv);
 
-        JFreeChart chart = ChartFactory.createTimeSeriesChart("Unique Products Over Time", "Date", "Product Count", createDataSet(reportData));
+        JFreeChart chart = ChartFactory.createTimeSeriesChart("Total Listings Over Time", "Date", "Listing Count", createDataSet(reportData));
         chart.getTitle().setFont(getTitleFont());
         chart.getTitle().setTextAlignment(HorizontalAlignment.LEFT);
 
@@ -45,21 +45,29 @@ public class TotalUniqueProductsOverTimeChart extends SummaryStatisticChart {
         return chart;
     }
 
-    private XYDataset createDataSet(List<TotalUniqueProductsOverTime> data) {
+    private XYDataset createDataSet(List<ListingsOverTime> data) {
         TimeSeriesCollection dataset = new TimeSeriesCollection();
-        TimeSeries series1 = new TimeSeries("Total Unique Products");
+        TimeSeries series1 = new TimeSeries("Total Listings");
+        TimeSeries series2 = new TimeSeries("Total 2011 Listings");
+        TimeSeries series3 = new TimeSeries("Total 2014 Listings");
+        TimeSeries series4 = new TimeSeries("Total 2015 Listings");
 
-        for (TotalUniqueProductsOverTime item : data) {
-            series1.add(new Day(java.sql.Date.valueOf(item.getDate())), item.getTotalProductsListings());
+        for (ListingsOverTime item : data) {
+            series1.add(new Day(java.sql.Date.valueOf(item.getDate())), item.getTotalListings());
+            series2.add(new Day(java.sql.Date.valueOf(item.getDate())), item.getTotal2011Listings());
+            series3.add(new Day(java.sql.Date.valueOf(item.getDate())), item.getTotal2014Listings());
+            series4.add(new Day(java.sql.Date.valueOf(item.getDate())), item.getTotal2015Listings());
         }
-
         dataset.addSeries(series1);
+        dataset.addSeries(series2);
+        dataset.addSeries(series3);
+        dataset.addSeries(series4);
 
         return dataset;
     }
 
-    private List<TotalUniqueProductsOverTime> getDataFromCsv(File csv) throws IOException {
-        List<TotalUniqueProductsOverTime> reportData = new ArrayList<TotalUniqueProductsOverTime>();
+    private List<ListingsOverTime> getDataFromCsv(File csv) throws IOException {
+        List<ListingsOverTime> reportData = new ArrayList<ListingsOverTime>();
 
         try (Reader reader = new FileReader(csv);
                 CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);) {
@@ -68,9 +76,12 @@ public class TotalUniqueProductsOverTimeChart extends SummaryStatisticChart {
                 if (csvRecord.get(DATE_COLUMN).equalsIgnoreCase("Date")) {
                     continue;
                 }
-                TotalUniqueProductsOverTime data = TotalUniqueProductsOverTime.builder()
+                ListingsOverTime data = ListingsOverTime.builder()
                         .date(LocalDate.from(getDateTimeFormatter().parse(csvRecord.get(DATE_COLUMN))))
-                        .totalProductsListings(Long.parseLong(csvRecord.get(PRODUCT_ALL_COLUMN)))
+                        .totalListings(Long.parseLong(csvRecord.get(LISTING_ALL_COLUMN)))
+                        .total2011Listings(Long.parseLong(csvRecord.get(LISTING_2011_COLUMN)))
+                        .total2014Listings(Long.parseLong(csvRecord.get(LISTING_2014_COLUMN)))
+                        .total2015Listings(Long.parseLong(csvRecord.get(LISTING_2015_COLUMN)))
                         .build();
                 reportData.add(data);
             }
@@ -78,4 +89,6 @@ public class TotalUniqueProductsOverTimeChart extends SummaryStatisticChart {
 
         return reportData;
     }
+
 }
+
