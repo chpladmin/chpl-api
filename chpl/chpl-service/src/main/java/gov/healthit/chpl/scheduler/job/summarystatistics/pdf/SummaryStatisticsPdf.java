@@ -71,75 +71,68 @@ public class SummaryStatisticsPdf {
 
         PdfWriter writer = new PdfWriter(dest);
         PdfDocument pdf = new PdfDocument(writer);
+
+        //This adds the footer at the end of each page
         pdf.addEventHandler(PdfDocumentEvent.END_PAGE, new SummaryStatisticsPdfFooterEvent());
         try (Document document = new Document(pdf)) {
-
             SummaryStatisticsEntity recentStats = getSummaryStatisticsAsOf(LocalDate.now());
-            EmailStatistics recentEmailStats = getEmailStatisticsFromSummaryStatistics(recentStats);
             SummaryStatisticsEntity previousStats = getSummaryStatisticsAsOf(convertDateToLocalDate(recentStats.getEndDate()).minusDays(ONE_WEEK));
-            EmailStatistics previousEmailStats = getEmailStatisticsFromSummaryStatistics(previousStats);
-
-            Paragraph title = new Paragraph("ONC CHPL");
-            title.setFont(SummaryStatisticsPdfDefaults.getDefaultFont());
-            title.setFontSize(SummaryStatisticsPdfDefaults.TITLE_FONT_SIZE);
-            document.add(title);
-
-            Paragraph subtitle = new Paragraph("Weekly Summary Statistics Report");
-            subtitle.setFont(SummaryStatisticsPdfDefaults.getDefaultFont());
-            subtitle.setFontColor(SummaryStatisticsPdfDefaults.getSubtitleFontColor());
-            subtitle.setFontSize(SummaryStatisticsPdfDefaults.SUBTITLE_FONT_SIZE);
-            document.add(subtitle);
-
-            Paragraph currentDate = new Paragraph(LocalDate.now().format(DateTimeFormatter.ofPattern("LLLL dd, yyyy")));
-            currentDate.setFont(SummaryStatisticsPdfDefaults.getDefaultFont());
-            currentDate.setFontSize(SummaryStatisticsPdfDefaults.DEFAULT_FONT_SIZE);
-            currentDate.setItalic();
-            document.add(currentDate);
-
-            document.add(developerSummaryStatisticsSectionPdf.generateTable(
-                    convertDateToLocalDate(recentStats.getEndDate()),
-                    convertDateToLocalDate(previousStats.getEndDate()),
-                    recentEmailStats,
-                    previousEmailStats));
-
-            document.add(new Paragraph(""));
-
-            document.add(productSummaryStatisticsSectionPdf.generateTable(
-                    convertDateToLocalDate(recentStats.getEndDate()),
-                    convertDateToLocalDate(previousStats.getEndDate()),
-                    recentEmailStats,
-                    previousEmailStats));
-
-            document.add(new Paragraph(""));
-
-            document.add(listingSummaryStatisticsSectionPdf.generateTable(
-                    convertDateToLocalDate(recentStats.getEndDate()),
-                    convertDateToLocalDate(previousStats.getEndDate()),
-                    recentEmailStats,
-                    previousEmailStats));
-
-            document.add(new Paragraph(""));
-
-            document.add(surveillanceSummaryStatisticsSectionPdf.generateTable(
-                    convertDateToLocalDate(recentStats.getEndDate()),
-                    convertDateToLocalDate(previousStats.getEndDate()),
-                    recentEmailStats,
-                    previousEmailStats));
-
-            document.add(new Paragraph(""));
-
-            document.add(nonConformitySummaryStatisticsSectionPdf.generateTable(
-                    convertDateToLocalDate(recentStats.getEndDate()),
-                    convertDateToLocalDate(previousStats.getEndDate()),
-                    recentEmailStats,
-                    previousEmailStats));
-
+            addDocumentHeader(document);
+            addTables(document, recentStats, previousStats);
             addCharts(document, csv);
-
             document.close();
         }
-
         return file;
+    }
+
+    @SuppressWarnings("resource")
+    private void addDocumentHeader(Document document) {
+        Paragraph title = new Paragraph("ONC CHPL");
+        title.setFont(SummaryStatisticsPdfDefaults.getDefaultFont());
+        title.setFontSize(SummaryStatisticsPdfDefaults.TITLE_FONT_SIZE);
+        document.add(title);
+
+        Paragraph subtitle = new Paragraph("Weekly Summary Statistics Report");
+        subtitle.setFont(SummaryStatisticsPdfDefaults.getDefaultFont());
+        subtitle.setFontColor(SummaryStatisticsPdfDefaults.getSubtitleFontColor());
+        subtitle.setFontSize(SummaryStatisticsPdfDefaults.SUBTITLE_FONT_SIZE);
+        document.add(subtitle);
+
+        Paragraph currentDate = new Paragraph(LocalDate.now().format(DateTimeFormatter.ofPattern("LLLL dd, yyyy")));
+        currentDate.setFont(SummaryStatisticsPdfDefaults.getDefaultFont());
+        currentDate.setFontSize(SummaryStatisticsPdfDefaults.DEFAULT_FONT_SIZE);
+        currentDate.setItalic();
+        document.add(currentDate);
+
+    }
+    @SuppressWarnings("resource")
+    private void addTables(Document document, SummaryStatisticsEntity recentStats, SummaryStatisticsEntity previousStats) {
+        EmailStatistics recentEmailStats = getEmailStatisticsFromSummaryStatistics(recentStats);
+        EmailStatistics previousEmailStats = getEmailStatisticsFromSummaryStatistics(previousStats);
+
+        List<SummaryStatisticsSectionPdf> tableGenerators = Arrays.asList(
+                developerSummaryStatisticsSectionPdf,
+                productSummaryStatisticsSectionPdf,
+                listingSummaryStatisticsSectionPdf,
+                surveillanceSummaryStatisticsSectionPdf,
+                nonConformitySummaryStatisticsSectionPdf);
+
+        tableGenerators.forEach(generator -> {
+            addTable(document,
+                    generator,
+                    convertDateToLocalDate(recentStats.getEndDate()),
+                    convertDateToLocalDate(previousStats.getEndDate()),
+                    recentEmailStats, previousEmailStats);
+            document.add(new Paragraph(""));
+        });
+    }
+
+    @SuppressWarnings("resource")
+    private void addTable(Document document, SummaryStatisticsSectionPdf tableGenerator, LocalDate recentDate, LocalDate previousDate,
+            EmailStatistics recentEmailStats, EmailStatistics previousEmailStats) {
+
+        document.add(tableGenerator.generateTable(recentDate, previousDate, recentEmailStats, previousEmailStats));
+
     }
 
     @SuppressWarnings("resource")
