@@ -53,7 +53,7 @@ public class ListingCountStatisticsCalculator {
      *            incoming listings
      * @return list of listingCountStatisticsDTOs
      */
-    public List<ListingCountStatisticsDTO> getCounts(final List<CertifiedProductFlatSearchResult> listings) {
+    public List<ListingCountStatisticsDTO> getCounts(List<CertifiedProductFlatSearchResult> listings) {
         HashMap<String, HashSet<String>> developers = new HashMap<String, HashSet<String>>();
         HashMap<String, HashSet<String>> products = new HashMap<String, HashSet<String>>();
         for (CertifiedProductFlatSearchResult listing : listings) {
