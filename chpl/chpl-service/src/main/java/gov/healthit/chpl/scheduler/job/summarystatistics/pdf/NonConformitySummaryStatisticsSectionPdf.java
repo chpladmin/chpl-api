@@ -26,7 +26,7 @@ public class NonConformitySummaryStatisticsSectionPdf extends SummaryStatisticsS
         Table table = new Table(getRelativeColumnWidths());
         table.useAllAvailableWidth();
         table = addHeaders(table, "Non-conformity Statistics", recent, previous);
-        table = addTableRow(table, createDataForRow("4. Total # of NCs",
+        table = addTableRow(table, createDataForRow("5. Total # of NCs",
                                     recentEmailStatistics.getNonconfStatusAllTotal(),
                                     previousEmailStatistics.getNonconfStatusAllTotal()));
 
@@ -74,7 +74,7 @@ public class NonConformitySummaryStatisticsSectionPdf extends SummaryStatisticsS
                 previousEmailStatistics.getNonconfAvgTimeFromSurveillanceOpenToSurveillanceClose()),
                 NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
 
-        // These are calculated differently thjan all of the other rows.  The data is a little different
+        // These are calculated differently than all of the other rows.  The data is a little different
         table = addTableRow(table, createDataForRow("6. Total Number of CAPs",
                 sumEmailAcbStatisticList(recentEmailStatistics.getNonconfCAPStatusOpen()) + sumEmailAcbStatisticList(recentEmailStatistics.getNonconfCAPStatusClosed()),
                 sumEmailAcbStatisticList(previousEmailStatistics.getNonconfCAPStatusOpen()) + sumEmailAcbStatisticList(previousEmailStatistics.getNonconfCAPStatusClosed())));
@@ -84,10 +84,18 @@ public class NonConformitySummaryStatisticsSectionPdf extends SummaryStatisticsS
                 sumEmailAcbStatisticList(previousEmailStatistics.getNonconfCAPStatusOpen())),
                 NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
 
+        table = addAcbRows(table,
+                recentEmailStatistics.getNonconfCAPStatusOpen(),
+                previousEmailStatistics.getNonconfCAPStatusOpen());
+
         table = addTableRow(table, createDataForRow("b. Number of Closed CAPs",
                 sumEmailAcbStatisticList(recentEmailStatistics.getNonconfCAPStatusClosed()),
                 sumEmailAcbStatisticList(previousEmailStatistics.getNonconfCAPStatusClosed())),
                 NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
+
+        table = addAcbRows(table,
+                recentEmailStatistics.getNonconfCAPStatusClosed(),
+                previousEmailStatistics.getNonconfCAPStatusClosed());
 
         return table;
     }

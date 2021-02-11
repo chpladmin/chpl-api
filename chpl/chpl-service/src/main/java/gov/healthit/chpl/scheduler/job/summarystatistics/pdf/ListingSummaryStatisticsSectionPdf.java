@@ -22,7 +22,7 @@ public class ListingSummaryStatisticsSectionPdf extends SummaryStatisticsSection
     public Table generateTable(LocalDate recent, LocalDate previous, EmailStatistics recentEmailStatistics, EmailStatistics previousEmailStatistics) {
         Table table = new Table(getRelativeColumnWidths());
         table.useAllAvailableWidth();
-        table = addHeaders(table, "ListingStatistics", recent, previous);
+        table = addHeaders(table, "Listing Statistics", recent, previous);
         table = addTableRow(table, createDataForRow("3. Total # of Listings (Regardless of Status or Edition)",
                                     recentEmailStatistics.getListingsForEditionAnyTotal(),
                                     previousEmailStatistics.getListingsForEditionAnyTotal()));
@@ -72,19 +72,29 @@ public class ListingSummaryStatisticsSectionPdf extends SummaryStatisticsSection
                 recentEmailStatistics.getListingsForEdition2015CuresWithAllStatusesAndAltTestMethods().getAcbStatistics(),
                 previousEmailStatistics.getListingsForEdition2015CuresWithAllStatusesAndAltTestMethods().getAcbStatistics());
 
-        table = addTableRow(table, createDataForRow("f. Total # of 2015 Listings and 2015 Cures Update Listings (Regardless of Status)",
+        table = addTableRow(table, createDataForRow("f. Total # of 2014 (Regardless of Status)",
+                recentEmailStatistics.getListingsForEdition2014Total(),
+                previousEmailStatistics.getListingsForEdition2014Total()),
+                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
+
+        table = addTableRow(table, createDataForRow("g. Total # of 2015 Listings and 2015 Cures Update Listings (Regardless of Status)",
                 recentEmailStatistics.getListingsForEdition2015NonCuresAndCuresTotal(),
                 previousEmailStatistics.getListingsForEdition2015NonCuresAndCuresTotal()),
                 NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
 
-        table = addTableRow(table, createDataForRow("g. Total # of 2015 Listings (Regardless of Status)",
+        table = addTableRow(table, createDataForRow("h. Total # of 2015 Listings (Regardless of Status)",
                 recentEmailStatistics.getListingsForEdition2015NonCuresTotal(),
                 previousEmailStatistics.getListingsForEdition2015NonCuresTotal()),
                 NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
 
-        table = addTableRow(table, createDataForRow("h. Total # of 2015 Cures Update Listings (Regardless of Status)",
+        table = addTableRow(table, createDataForRow("i. Total # of 2015 Cures Update Listings (Regardless of Status)",
                 recentEmailStatistics.getListingsForEdition2015CuresTotal(),
                 previousEmailStatistics.getListingsForEdition2015CuresTotal()),
+                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
+
+        table = addTableRow(table, createDataForRow("j. Total # of 2011 Listings (Regardless of Status)",
+                recentEmailStatistics.getListingsForEdition2011Total(),
+                previousEmailStatistics.getListingsForEdition2011Total()),
                 NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
 
         return table;

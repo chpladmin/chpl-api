@@ -26,6 +26,14 @@ public final class SummaryStatisticsPdfDefaults {
         }
     }
 
+    public static PdfFont getDefaultTableHeaderFont() {
+        try {
+            return PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static Color getTableHeaderDefaultColor() {
         return new DeviceRgb(
                 TABLE_HEADER_BACKGROUND_COLOR[0],

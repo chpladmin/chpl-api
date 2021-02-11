@@ -137,6 +137,11 @@ public class ProductSummaryStatisticsSectionPdf extends SummaryStatisticsSection
                 recentEmailStatistics.getProductsForEdition2015CuresWithSuspendedStatuses().getAcbStatistics(),
                 previousEmailStatistics.getProductsForEdition2015CuresWithSuspendedStatuses().getAcbStatistics());
 
+        table = addTableRow(table, createDataForRow("m. Total # of Unique Products with Active Listings (Regardless of Edition)",
+                recentEmailStatistics.getProductsForEditionAllAndActiveStatuses(),
+                recentEmailStatistics.getProductsForEditionAllAndActiveStatuses()),
+                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
+
         return table;
     }
 }

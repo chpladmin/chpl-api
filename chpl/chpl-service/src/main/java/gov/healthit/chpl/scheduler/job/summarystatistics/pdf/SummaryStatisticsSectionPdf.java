@@ -46,7 +46,7 @@ public abstract class SummaryStatisticsSectionPdf {
                     Cell cell = new Cell();
                     cell.setBackgroundColor(SummaryStatisticsPdfDefaults.getTableHeaderDefaultColor());
                     cell.setBorder(new SolidBorder(1));
-                    cell.setFont(SummaryStatisticsPdfDefaults.getDefaultFont());
+                    cell.setFont(SummaryStatisticsPdfDefaults.getDefaultTableHeaderFont());
                     cell.setFontSize(SummaryStatisticsPdfDefaults.DEFAULT_FONT_SIZE);
                     cell.add(new Paragraph(text));
                     table.addCell(cell);
