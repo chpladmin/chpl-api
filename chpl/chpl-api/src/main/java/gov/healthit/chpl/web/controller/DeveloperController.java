@@ -62,7 +62,7 @@ import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
-import gov.healthit.chpl.service.DirectReviewService;
+import gov.healthit.chpl.service.DirectReviewCachingService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
@@ -80,7 +80,7 @@ public class DeveloperController {
     private DeveloperManager developerManager;
     private ErrorMessageUtil msgUtil;
     private UserPermissionsManager userPermissionsManager;
-    private DirectReviewService directReviewService;
+    private DirectReviewCachingService directReviewService;
     private FileUtils fileUtils;
     private FF4j ff4j;
 
@@ -95,7 +95,7 @@ public class DeveloperController {
             CertifiedProductManager cpManager,
             UserPermissionsManager userPermissionsManager,
             ErrorMessageUtil msgUtil,
-            DirectReviewService directReviewService,
+            DirectReviewCachingService directReviewService,
             FileUtils fileUtils,
             FF4j ff4j) {
         this.developerManager = developerManager;

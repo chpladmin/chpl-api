@@ -31,6 +31,8 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DirectReviewNonConformity implements Serializable {
     private static final long serialVersionUID = 7018071377961783691L;
+    public static final String STATUS_OPEN = "OPEN";
+    public static final String STATUS_CLOSED = "CLOSED";
 
     @JsonProperty(value = "requirement")
     @JsonAlias("customfield_11018")

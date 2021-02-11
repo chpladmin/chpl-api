@@ -93,10 +93,10 @@ public class CertifiedProductListingSearchResultEntity {
     private Integer countSurveillance;
 
     @Column(name = "count_open_nonconformities")
-    private Integer countOpenNonconformities;
+    private Integer countOpenSurveillanceNonconformities;
 
     @Column(name = "count_closed_nonconformities")
-    private Integer countClosedNonconformities;
+    private Integer countClosedSurveillanceNonconformities;
 
     @Column(name = "cert_number")
     private String cert;
