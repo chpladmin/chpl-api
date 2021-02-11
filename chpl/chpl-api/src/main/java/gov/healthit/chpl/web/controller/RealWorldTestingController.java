@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUploadResponse;
 import gov.healthit.chpl.realworldtesting.manager.RealWorldTestingManager;
@@ -23,16 +24,14 @@ import lombok.extern.log4j.Log4j2;
 @Api(value = "real-world-testing")
 @RestController
 @RequestMapping("/real-world-testing")
-@Log4j2
+@Loggable
 public class RealWorldTestingController {
 
     private RealWorldTestingManager realWorldTestingManager;
-    private UserManager userManager;
 
     @Autowired
-    public RealWorldTestingController(RealWorldTestingManager realWorldTestingManager, UserManager userManager) {
+    public RealWorldTestingController(RealWorldTestingManager realWorldTestingManager) {
         this.realWorldTestingManager = realWorldTestingManager;
-        this.userManager = userManager;
     }
 
     @ApiOperation(value = "Upload a file with real world testing data for certified products.",

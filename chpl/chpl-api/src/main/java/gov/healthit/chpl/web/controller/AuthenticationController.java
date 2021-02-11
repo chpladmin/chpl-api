@@ -36,6 +36,7 @@ import gov.healthit.chpl.exception.JWTValidationException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.auth.AuthenticationManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.util.AuthUtil;
@@ -47,6 +48,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @Api(value = "auth")
 @RestController
 @RequestMapping("/auth")
+@Loggable
 public class AuthenticationController {
     private static final Logger LOGGER = LogManager.getLogger(AuthenticationController.class);
 

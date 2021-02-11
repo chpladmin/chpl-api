@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.healthit.chpl.logging.Loggable;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -22,6 +23,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "feature-flags")
 @RestController
 @RequestMapping("/feature-flags")
+@Loggable
 public class FeatureFlagController {
 
     private FF4j ff4j;

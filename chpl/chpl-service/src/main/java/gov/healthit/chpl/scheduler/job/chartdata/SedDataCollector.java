@@ -53,7 +53,7 @@ public class SedDataCollector {
      *            initial set of Listings
      * @return List of CertifiedProductSearchDetails
      */
-    public List<CertifiedProductSearchDetails> retreiveData(final List<CertifiedProductFlatSearchResult> listings) {
+    public List<CertifiedProductSearchDetails> retreiveData(List<CertifiedProductFlatSearchResult> listings) {
 
         List<CertifiedProductFlatSearchResult> certifiedProducts = filterData(listings);
         LOGGER.info("2015/SED Certified Product Count: " + certifiedProducts.size());

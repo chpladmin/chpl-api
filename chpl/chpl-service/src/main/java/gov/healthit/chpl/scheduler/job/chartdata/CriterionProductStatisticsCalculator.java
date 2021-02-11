@@ -52,7 +52,7 @@ public class CriterionProductStatisticsCalculator {
      *            listings to parse
      * @return map of criteria to counts
      */
-    public Map<String, Long> getCounts(final List<CertifiedProductFlatSearchResult> listings) {
+    public Map<String, Long> getCounts(List<CertifiedProductFlatSearchResult> listings) {
         Map<String, Long> criterionMap = new HashMap<String, Long>();
         HashSet<String> uniqueProductSet = new HashSet<String>();
         for (CertifiedProductFlatSearchResult listing : listings) {

@@ -27,6 +27,7 @@ import gov.healthit.chpl.domain.ApiKeyRegistration;
 import gov.healthit.chpl.dto.ApiKeyDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.ApiKeyManager;
 import gov.healthit.chpl.util.EmailBuilder;
 import io.swagger.annotations.Api;
@@ -35,6 +36,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "api-key")
 @RestController
 @RequestMapping("/key")
+@Loggable
 public class ApiKeyController {
 
     @Autowired
