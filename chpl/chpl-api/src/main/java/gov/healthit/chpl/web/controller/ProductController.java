@@ -41,6 +41,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
@@ -54,6 +55,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "products")
 @RestController
 @RequestMapping("/products")
+@Loggable
 public class ProductController {
 
     @Autowired

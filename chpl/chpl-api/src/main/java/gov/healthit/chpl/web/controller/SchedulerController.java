@@ -19,6 +19,7 @@ import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
 import gov.healthit.chpl.domain.schedule.ScheduledSystemJob;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
@@ -38,6 +39,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "schedules")
 @RestController
 @RequestMapping("/schedules")
+@Loggable
 public class SchedulerController {
     private static final String USER_JOB_TYPE = "user";
     private static final String SYSTEM_JOB_TYPE = "system";

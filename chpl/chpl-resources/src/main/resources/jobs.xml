@@ -73,9 +73,6 @@
             <group>chplJobs</group>
         </delete-job>
         <!-- END remove after PROD push of OCD-3584-->
-
-        <!-- REMOVE after PROD push -->
-        <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
         <overwrite-existing-data>false</overwrite-existing-data>
@@ -314,7 +311,7 @@
             <recover>false</recover>
         </job>
 
-        <!--  Questionable URL data emailer -->
+        <!-- Questionable URL data emailer -->
         <job>
             <name>Questionable URL Report</name>
             <group>chplJobs</group>
@@ -350,7 +347,8 @@
             </job-data-map>
         </job>
 
-        <!-- Job used to trigger mass required password change of almost all users-->
+        <!-- Job used to trigger mass required password change of almost 
+            all users -->
         <job>
             <name>massRequirePasswordChangeJob</name>
             <group>systemJobs</group>
@@ -623,6 +621,46 @@
                 <entry>
                     <key>authorities</key>
                     <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF;ROLE_ACB</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+                <entry>
+                    <key>acbSpecific</key>
+                    <value>true</value>
+                </entry>
+            </job-data-map>
+        </job>
+
+        <!-- Create the Listing Validation Report Data -->
+        <job>
+            <name>listingValidationReportCreator</name>
+            <group>systemJobs</group>
+            <description>Create the listing validation report data</description>
+            <job-class>gov.healthit.chpl.scheduler.job.listingvalidation.ListingValidationCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+            </job-data-map>
+        </job>
+
+        <!-- Generate email report for Listing Validation -->
+        <job>
+            <name>Listing Validation Email Report</name>
+            <group>chplJobs</group>
+            <description>Sends a report providing information about Listing Validation errors</description>
+            <job-class>gov.healthit.chpl.scheduler.job.listingvalidation.ListingValidatorEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF</value>
                 </entry>
                 <entry>
                     <key>frequency</key>

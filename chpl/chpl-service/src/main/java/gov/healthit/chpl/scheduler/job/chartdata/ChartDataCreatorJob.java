@@ -86,7 +86,7 @@ public final class ChartDataCreatorJob extends QuartzJob {
         LOGGER.info("*****Chart Data Generator is done running.*****");
     }
 
-    private static void analyzeDevelopers(final List<CertifiedProductFlatSearchResult> listings) {
+    private static void analyzeDevelopers(List<CertifiedProductFlatSearchResult> listings) {
         IncumbentDevelopersStatisticsCalculator incumbentDevelopersStatisticsCalculator = new IncumbentDevelopersStatisticsCalculator();
         List<IncumbentDevelopersStatisticsDTO> dtos = incumbentDevelopersStatisticsCalculator.getCounts(listings);
         incumbentDevelopersStatisticsCalculator.logCounts(dtos);
@@ -118,7 +118,7 @@ public final class ChartDataCreatorJob extends QuartzJob {
         criterionProductStatisticsCalculator.save(productCounts);
     }
 
-    private static void analyzeSed(final List<CertifiedProductFlatSearchResult> listings) {
+    private static void analyzeSed(List<CertifiedProductFlatSearchResult> listings) {
         // Get Certified Products
         SedDataCollector sedDataCollector = new SedDataCollector();
         List<CertifiedProductSearchDetails> seds = sedDataCollector.retreiveData(listings);

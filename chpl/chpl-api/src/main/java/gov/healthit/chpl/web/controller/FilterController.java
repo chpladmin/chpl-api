@@ -28,6 +28,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.FilterManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.util.AuthUtil;
@@ -38,37 +39,33 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "filters")
 @RestController
 @RequestMapping("/filters")
+@Loggable
 public class FilterController {
-    private static final Logger LOGGER = LogManager.getLogger(FilterController.class);
 
     private FilterManager filterManager;
     private UserManager userManager;
-    
+
     @Autowired
     public FilterController(final FilterManager filterManager, final UserManager userManager) {
         this.filterManager = filterManager;
         this.userManager = userManager;
     }
-    
+
     @ApiOperation(value = "List all filters based on the filter type for the current user.",
             notes = "Security Restrictions: Only filters owned by the current user will be returned")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody FilterResults getFiltersByFilterType(@RequestParam() final Long filterTypeId) throws EntityRetrievalException {
         FilterResults results = new FilterResults();
-        
         FilterTypeDTO filterTypeDTO = filterManager.getFilterType(filterTypeId);
-        
         List<Filter> filters = new ArrayList<Filter>();
         List<FilterDTO> dtos = filterManager.getByFilterType(filterTypeDTO);
         for (FilterDTO dto : dtos) {
             filters.add(new Filter(dto));
         }
-        
         results.setResults(filters);
-        
         return results;
     }
-    
+
     @ApiOperation(value = "Save filter for the current user.",
             notes = "")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
@@ -76,17 +73,16 @@ public class FilterController {
         FilterDTO dto = new FilterDTO();
         UserDTO userDTO = userManager.getById(AuthUtil.getCurrentUser().getId());
         FilterTypeDTO filterTypeDTO = filterManager.getFilterType(filter.getFilterType().getId());
-        
+
         dto.setName(filter.getName());
         dto.setFilter(filter.getFilter());
         dto.setUser(userDTO);
         dto.setFilterType(filterTypeDTO);
-        
+
         dto = filterManager.create(dto);
-        
         return new Filter(dto);
     }
-    
+
     @ApiOperation(value = "Deletes a filter.",
             notes = "")
     @RequestMapping(value = "/{filterId}", method = RequestMethod.DELETE,
