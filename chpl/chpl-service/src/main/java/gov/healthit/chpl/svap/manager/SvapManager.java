@@ -133,7 +133,7 @@ public class SvapManager {
         }
     }
 
-    private void validateForEdit(Svap updatedSvap, Svap originalSvap) throws ValidationException {
+    private void validateForEdit(Svap updatedSvap, Svap originalSvap) throws ValidationException, EntityRetrievalException {
         Set<String> messages = new HashSet<String>();
 
         if (StringUtils.isEmpty(updatedSvap.getApprovedStandardVersion())) {
@@ -146,6 +146,10 @@ public class SvapManager {
 
         if (updatedSvap.getCriteria().size() == 0) {
             messages.add(errorMessageUtil.getMessage("svap.edit.noCriteria"));
+        }
+
+        if (isSvapDuplicateOnEdit(updatedSvap)) {
+            messages.add(errorMessageUtil.getMessage("svap.edit.duplicate"));
         }
 
         //If there are removed criteria, make sure there are no listings attesting to SVAP/criteria
@@ -168,7 +172,7 @@ public class SvapManager {
         }
     }
 
-    private void validateForAdd(Svap newSvap) throws ValidationException {
+    private void validateForAdd(Svap newSvap) throws ValidationException, EntityRetrievalException {
         Set<String> messages = new HashSet<String>();
 
         if (StringUtils.isEmpty(newSvap.getApprovedStandardVersion())) {
@@ -183,10 +187,31 @@ public class SvapManager {
             messages.add(errorMessageUtil.getMessage("svap.edit.noCriteria"));
         }
 
+        if (isSvapDuplicateOnAdd(newSvap)) {
+            messages.add(errorMessageUtil.getMessage("svap.edit.duplicate"));
+        }
+
         if (messages.size() > 0) {
             ValidationException e = new ValidationException(messages);
             throw e;
         }
+    }
+
+    private boolean isSvapDuplicateOnAdd(Svap svap) throws EntityRetrievalException {
+        return getAllSvapCriteriaMaps().stream()
+                .filter(s -> s.getSvap().getApprovedStandardVersion().equals(svap.getApprovedStandardVersion())
+                        && s.getSvap().getRegulatoryTextCitation().equals(svap.getRegulatoryTextCitation()))
+                .findAny()
+                .isPresent();
+    }
+
+    private boolean isSvapDuplicateOnEdit(Svap svap) throws EntityRetrievalException {
+        return getAllSvapCriteriaMaps().stream()
+                .filter(s -> s.getSvap().getApprovedStandardVersion().equals(svap.getApprovedStandardVersion())
+                        && s.getSvap().getRegulatoryTextCitation().equals(svap.getRegulatoryTextCitation())
+                        && !s.getSvap().getSvapId().equals(svap.getSvapId()))
+                .findAny()
+                .isPresent();
     }
 
     private List<CertificationCriterion> getCriteriaAddedToSvap(Svap updatedSvap, Svap originalSvap) {
