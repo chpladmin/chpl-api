@@ -1,4 +1,4 @@
-package gov.healthit.chpl.surveillance.report.builder;
+package gov.healthit.chpl.surveillance.report.builder2019;
 
 import java.util.List;
 

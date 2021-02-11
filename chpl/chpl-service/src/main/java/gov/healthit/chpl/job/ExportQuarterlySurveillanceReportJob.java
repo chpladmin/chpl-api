@@ -19,7 +19,7 @@ import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.entity.job.JobStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
-import gov.healthit.chpl.surveillance.report.builder.QuarterlyReportBuilderXlsx;
+import gov.healthit.chpl.surveillance.report.builder2019.QuarterlyReportBuilderXlsx;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 

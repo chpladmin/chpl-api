@@ -1,4 +1,4 @@
-package gov.healthit.chpl.surveillance.report.builder;
+package gov.healthit.chpl.surveillance.report.builder2019;
 
 import java.util.List;
 
@@ -11,32 +11,20 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 
-/**
- * Creates a worksheet with high level information about the report.
- * The workbook must be "set" to a non-null Excel workbook object before building the worksheet.
- * @author kekey
- *
- */
 @Component
 public class AnnualReportInfoWorksheetBuilder extends ReportInfoWorksheetBuilder {
 
     @Autowired
-    public AnnualReportInfoWorksheetBuilder(final SurveillanceReportManager reportManager) {
+    public AnnualReportInfoWorksheetBuilder(SurveillanceReportManager reportManager) {
         super(reportManager);
     }
 
-    /**
-     * Creates the header section and returns the row number of the last row that was added.
-     * @param sheet
-     * @return
-     */
-    protected int createHeader(final SurveillanceReportWorkbookWrapper workbook,
-            final Sheet sheet, final List<QuarterlyReportDTO> reports, final int beginRow) {
+    protected int createHeader(SurveillanceReportWorkbookWrapper workbook, Sheet sheet, List<QuarterlyReportDTO> reports, int beginRow) {
         int currRow = beginRow;
         Row row = workbook.getRow(sheet, currRow++);
         Cell cell = workbook.createCell(row, 1, workbook.getBoldStyle());
         cell.setCellValue("ONC-Authorized Certification Body (ONC-ACB) "
                 + determineYear(reports) + " Annual Surveillance Report");
-        return row.getRowNum()+1;
+        return row.getRowNum() + 1;
     }
 }

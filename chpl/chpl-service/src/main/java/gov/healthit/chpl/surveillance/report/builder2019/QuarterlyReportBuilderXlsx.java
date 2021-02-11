@@ -1,4 +1,4 @@
-package gov.healthit.chpl.surveillance.report.builder;
+package gov.healthit.chpl.surveillance.report.builder2019;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,11 +20,11 @@ public class QuarterlyReportBuilderXlsx {
     private SurveillanceSummaryWorksheetBuilder summaryWorksheetBuilder;
 
     @Autowired
-    public QuarterlyReportBuilderXlsx(final ListWorksheetBuilder listWorksheetBuilder,
-            final QuarterlyReportInfoWorksheetBuilder reportInfoWorksheetBuilder,
-            final ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesWorksheetBuilder,
-            final ComplaintsWorksheetBuilder complaintsWorksheetBuilder,
-            final SurveillanceSummaryWorksheetBuilder summaryWorksheetBuilder) {
+    public QuarterlyReportBuilderXlsx(ListWorksheetBuilder listWorksheetBuilder,
+            QuarterlyReportInfoWorksheetBuilder reportInfoWorksheetBuilder,
+            ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesWorksheetBuilder,
+            ComplaintsWorksheetBuilder complaintsWorksheetBuilder,
+            SurveillanceSummaryWorksheetBuilder summaryWorksheetBuilder) {
         this.listWorksheetBuilder = listWorksheetBuilder;
         this.reportInfoWorksheetBuilder = reportInfoWorksheetBuilder;
         this.activitiesAndOutcomesWorksheetBuilder = activitiesAndOutcomesWorksheetBuilder;
@@ -37,7 +37,7 @@ public class QuarterlyReportBuilderXlsx {
      * @param report
      * @return
      */
-    public Workbook buildXlsx(final QuarterlyReportDTO report) throws IOException {
+    public Workbook buildXlsx(QuarterlyReportDTO report) throws IOException {
         SurveillanceReportWorkbookWrapper workbook = new SurveillanceReportWorkbookWrapper();
 
         List<QuarterlyReportDTO> reports = new ArrayList<QuarterlyReportDTO>();

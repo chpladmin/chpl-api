@@ -1,4 +1,4 @@
-package gov.healthit.chpl.surveillance.report.builder;
+package gov.healthit.chpl.surveillance.report.builder2019;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -48,6 +48,7 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.surveillance.report.PrivilegedSurveillanceDAO;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
+import gov.healthit.chpl.surveillance.report.builder.MultiQuarterWorksheetBuilderUtil;
 import gov.healthit.chpl.surveillance.report.dto.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportRelevantListingDTO;
@@ -103,9 +104,9 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
     private PropertyTemplate pt;
 
     @Autowired
-    public ActivitiesAndOutcomesWorksheetBuilder(final SurveillanceReportManager reportManager,
-            final CertifiedProductDetailsManager detailsManager,
-            final SurveillanceManager survManager, final PrivilegedSurveillanceDAO privilegedSurvDao) {
+    public ActivitiesAndOutcomesWorksheetBuilder(SurveillanceReportManager reportManager,
+            CertifiedProductDetailsManager detailsManager,
+            SurveillanceManager survManager, PrivilegedSurveillanceDAO privilegedSurvDao) {
         this.reportManager = reportManager;
         this.detailsManager = detailsManager;
         this.survManager = survManager;
@@ -121,14 +122,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         return lastDataRow <= 1 ? 2 : lastDataRow;
     }
 
-    /**
-     * Creates a formatted Excel worksheet with the information in the report.
-     * @param reportListingMap a mapping of quarterly reports to the listing details
-     * (including surveillance that occurred during the quarter)
-     * @return
-     * @throws IOException
-     */
-    public Sheet buildWorksheet(final SurveillanceReportWorkbookWrapper workbook, final List<QuarterlyReportDTO> quarterlyReports)
+    public Sheet buildWorksheet(SurveillanceReportWorkbookWrapper workbook, List<QuarterlyReportDTO> quarterlyReports)
             throws IOException {
         lastDataRow = 0;
         pt = new PropertyTemplate();
@@ -268,13 +262,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         return sheet;
     }
 
-    /**
-     * Creates the heading for this worksheet.
-     * Returns the number of rows added.
-     * @param sheet
-     * @return
-     */
-    private int addHeadingRow(final SurveillanceReportWorkbookWrapper workbook, final Sheet sheet) {
+    private int addHeadingRow(SurveillanceReportWorkbookWrapper workbook, Sheet sheet) {
         Row row = workbook.getRow(sheet, 1);
         //row can have 6 lines of text
         row.setHeightInPoints(6 * sheet.getDefaultRowHeightInPoints());
@@ -371,13 +359,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         return 1;
     }
 
-    /**
-     * Adds all of the surveillance data to this worksheet.
-     * Returns the number of rows added.
-     * @param sheet
-     * @param reportListingMap
-     */
-    private int addTableData(final SurveillanceReportWorkbookWrapper workbook, final Sheet sheet,
+    private int addTableData(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
             final List<QuarterlyReportDTO> quarterlyReports) {
         int addedRows = 0;
         int rowNum = 2;
@@ -491,7 +473,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         return addedRows;
     }
 
-    private List<CertifiedProductSearchDetails> getRelevantListingsDetails(final List<QuarterlyReportDTO> quarterlyReports) {
+    private List<CertifiedProductSearchDetails> getRelevantListingsDetails(List<QuarterlyReportDTO> quarterlyReports) {
         List<CertifiedProductSearchDetails> relevantListingDetails =
                 new ArrayList<CertifiedProductSearchDetails>();
         for (QuarterlyReportDTO currReport : quarterlyReports) {
@@ -527,8 +509,6 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
      * (surveillance that occurred during the quarter) and adds it into a new details object.
      * The returned objects should have all of the fields needed to fill out
      * the Activities and Outcomes worksheet.
-     * @param report
-     * @return
      */
     private List<CertifiedProductSearchDetails> getRelevantListingDetails(
             final List<QuarterlyReportRelevantListingDTO> listingDtos) {
@@ -583,12 +563,9 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
 
     /**
      * A surveillance is relevant if its dates occur within any of the quarterlyReports passed in.
-     * @param quarterlyReports
-     * @param allSurveillances
-     * @return
      */
-    private List<Surveillance> determineRelevantSurveillances(final List<QuarterlyReportDTO> quarterlyReports,
-            final List<Surveillance> allSurveillances) {
+    private List<Surveillance> determineRelevantSurveillances(List<QuarterlyReportDTO> quarterlyReports,
+            List<Surveillance> allSurveillances) {
         List<Surveillance> relevantSurveillances = new ArrayList<Surveillance>();
         for (Surveillance currSurv : allSurveillances) {
             boolean isRelevantToAtLeastOneQuarter = false;
@@ -606,8 +583,8 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         return relevantSurveillances;
     }
 
-    private boolean determineIfSurveillanceHappenedDuringQuarter(final String quarterName,
-            final List<QuarterlyReportDTO> quarterlyReports, final Surveillance surv) {
+    private boolean determineIfSurveillanceHappenedDuringQuarter(String quarterName,
+            List<QuarterlyReportDTO> quarterlyReports, Surveillance surv) {
         QuarterlyReportDTO quarterlyReport = null;
         for (QuarterlyReportDTO currReport : quarterlyReports) {
             if (currReport.getQuarter().getName().equals(quarterName)) {
@@ -627,14 +604,8 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         return result;
     }
 
-    /**
-     * Creates a consolidated string for all quarterly reports.
-     * @param quarterlyReports
-     * @param privilegedSurvData
-     * @return
-     */
-    private String generateK1ReviewedValue(final List<QuarterlyReportDTO> quarterlyReports,
-            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+    private String generateK1ReviewedValue(List<QuarterlyReportDTO> quarterlyReports,
+            List<PrivilegedSurveillanceDTO> privilegedSurvData) {
         String result = "";
         if (quarterlyReports.size() == 1) {
             //find the privileged surv data for the single report
@@ -669,14 +640,8 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         return result;
     }
 
-    /**
-     * Creates a consolidated string for all quarterly reports.
-     * @param quarterlyReports
-     * @param privilegedSurvData
-     * @return
-     */
-    private String generateSurveillanceOutcomeValue(final List<QuarterlyReportDTO> quarterlyReports,
-            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+    private String generateSurveillanceOutcomeValue(List<QuarterlyReportDTO> quarterlyReports,
+            List<PrivilegedSurveillanceDTO> privilegedSurvData) {
         String result = "";
         if (quarterlyReports.size() == 1) {
             //find the privileged surv data for the single report
@@ -711,8 +676,8 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         return result;
     }
 
-    private String generateSurveillanceOutcomeOtherValue(final List<QuarterlyReportDTO> quarterlyReports,
-            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+    private String generateSurveillanceOutcomeOtherValue(List<QuarterlyReportDTO> quarterlyReports,
+            List<PrivilegedSurveillanceDTO> privilegedSurvData) {
         String result = "";
         if (quarterlyReports.size() == 1) {
             //find the privileged surv data for the single report
@@ -747,14 +712,8 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         return result;
     }
 
-    /**
-     * Creates a consolidated string for all quarterly reports.
-     * @param quarterlyReports
-     * @param privilegedSurvData
-     * @return
-     */
-    private String generateSurveillanceProcessTypeValue(final List<QuarterlyReportDTO> quarterlyReports,
-            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+    private String generateSurveillanceProcessTypeValue(List<QuarterlyReportDTO> quarterlyReports,
+            List<PrivilegedSurveillanceDTO> privilegedSurvData) {
         String result = "";
         if (quarterlyReports.size() == 1) {
             //find the privileged surv data for the single report
@@ -789,14 +748,8 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         return result;
     }
 
-    /**
-     * Creates a consolidated string for all quarterly reports.
-     * @param quarterlyReports
-     * @param privilegedSurvData
-     * @return
-     */
-    private String generateSurveillanceProcessTypeOtherValue(final List<QuarterlyReportDTO> quarterlyReports,
-            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+    private String generateSurveillanceProcessTypeOtherValue(List<QuarterlyReportDTO> quarterlyReports,
+            List<PrivilegedSurveillanceDTO> privilegedSurvData) {
         String result = "";
         if (quarterlyReports.size() == 1) {
             //find the privileged surv data for the single report
@@ -831,14 +784,8 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         return result;
     }
 
-    /**
-     * Creates a consolidated string for all quarterly reports.
-     * @param quarterlyReports
-     * @param privilegedSurvData
-     * @return
-     */
-    private String generateGroundsForInitiatingValue(final List<QuarterlyReportDTO> quarterlyReports,
-            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+    private String generateGroundsForInitiatingValue(List<QuarterlyReportDTO> quarterlyReports,
+            List<PrivilegedSurveillanceDTO> privilegedSurvData) {
         String result = "";
         if (quarterlyReports.size() == 1) {
             //find the privileged surv data for the single report
@@ -873,14 +820,8 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         return result;
     }
 
-    /**
-     * Creates a consolidated string for all quarterly reports.
-     * @param quarterlyReports
-     * @param privilegedSurvData
-     * @return
-     */
-    private String generateNonconformityCausesValue(final List<QuarterlyReportDTO> quarterlyReports,
-            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+    private String generateNonconformityCausesValue(List<QuarterlyReportDTO> quarterlyReports,
+            List<PrivilegedSurveillanceDTO> privilegedSurvData) {
         String result = "";
         if (quarterlyReports.size() == 1) {
             //find the privileged surv data for the single report
@@ -915,14 +856,8 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         return result;
     }
 
-    /**
-     * Creates a consolidated string for all quarterly reports.
-     * @param quarterlyReports
-     * @param privilegedSurvData
-     * @return
-     */
-    private String generateNonconformityNatureValue(final List<QuarterlyReportDTO> quarterlyReports,
-            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+    private String generateNonconformityNatureValue(List<QuarterlyReportDTO> quarterlyReports,
+            List<PrivilegedSurveillanceDTO> privilegedSurvData) {
         String result = "";
         if (quarterlyReports.size() == 1) {
             //find the privileged surv data for the single report
@@ -957,14 +892,8 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         return result;
     }
 
-    /**
-     * Creates a consolidated string for all quarterly reports.
-     * @param quarterlyReports
-     * @param privilegedSurvData
-     * @return
-     */
-    private String generateStepsToSurveilValue(final List<QuarterlyReportDTO> quarterlyReports,
-            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+    private String generateStepsToSurveilValue(List<QuarterlyReportDTO> quarterlyReports,
+            List<PrivilegedSurveillanceDTO> privilegedSurvData) {
         String result = "";
         if (quarterlyReports.size() == 1) {
             //find the privileged surv data for the single report
@@ -999,14 +928,8 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         return result;
     }
 
-    /**
-     * Creates a consolidated string for all quarterly reports.
-     * @param quarterlyReports
-     * @param privilegedSurvData
-     * @return
-     */
-    private String generateStepsToEngageValue(final List<QuarterlyReportDTO> quarterlyReports,
-            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+    private String generateStepsToEngageValue(List<QuarterlyReportDTO> quarterlyReports,
+            List<PrivilegedSurveillanceDTO> privilegedSurvData) {
         String result = "";
         if (quarterlyReports.size() == 1) {
             //find the privileged surv data for the single report
@@ -1041,14 +964,8 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         return result;
     }
 
-    /**
-     * Creates a consolidated string for all quarterly reports.
-     * @param quarterlyReports
-     * @param privilegedSurvData
-     * @return
-     */
-    private String generateAdditionalCostsValue(final List<QuarterlyReportDTO> quarterlyReports,
-            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+    private String generateAdditionalCostsValue(List<QuarterlyReportDTO> quarterlyReports,
+            List<PrivilegedSurveillanceDTO> privilegedSurvData) {
         String result = "";
         if (quarterlyReports.size() == 1) {
             //find the privileged surv data for the single report
@@ -1083,14 +1000,8 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         return result;
     }
 
-    /**
-     * Creates a consolidated string for all quarterly reports.
-     * @param quarterlyReports
-     * @param privilegedSurvData
-     * @return
-     */
-    private String generateLimitationsValue(final List<QuarterlyReportDTO> quarterlyReports,
-            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+    private String generateLimitationsValue(List<QuarterlyReportDTO> quarterlyReports,
+            List<PrivilegedSurveillanceDTO> privilegedSurvData) {
         String result = "";
         if (quarterlyReports.size() == 1) {
             //find the privileged surv data for the single report
@@ -1125,14 +1036,8 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         return result;
     }
 
-    /**
-     * Creates a consolidated string for all quarterly reports.
-     * @param quarterlyReports
-     * @param privilegedSurvData
-     * @return
-     */
-    private String generateNondisclosureValue(final List<QuarterlyReportDTO> quarterlyReports,
-            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+    private String generateNondisclosureValue(List<QuarterlyReportDTO> quarterlyReports,
+            List<PrivilegedSurveillanceDTO> privilegedSurvData) {
         String result = "";
         if (quarterlyReports.size() == 1) {
             //find the privileged surv data for the single report
@@ -1167,14 +1072,8 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         return result;
     }
 
-    /**
-     * Creates a consolidated string for all quarterly reports.
-     * @param quarterlyReports
-     * @param privilegedSurvData
-     * @return
-     */
-    private String generateDeveloperResolutionValue(final List<QuarterlyReportDTO> quarterlyReports,
-            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+    private String generateDeveloperResolutionValue(List<QuarterlyReportDTO> quarterlyReports,
+            List<PrivilegedSurveillanceDTO> privilegedSurvData) {
         String result = "";
         if (quarterlyReports.size() == 1) {
             //find the privileged surv data for the single report
@@ -1209,14 +1108,8 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         return result;
     }
 
-    /**
-     * Creates a consolidated string for all quarterly reports.
-     * @param quarterlyReports
-     * @param privilegedSurvData
-     * @return
-     */
-    private String generateCompletedCapValue(final List<QuarterlyReportDTO> quarterlyReports,
-            final List<PrivilegedSurveillanceDTO> privilegedSurvData) {
+    private String generateCompletedCapValue(List<QuarterlyReportDTO> quarterlyReports,
+            List<PrivilegedSurveillanceDTO> privilegedSurvData) {
         String result = "";
         if (quarterlyReports.size() == 1) {
             //find the privileged surv data for the single report
@@ -1251,7 +1144,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         return result;
     }
 
-    private String determineNonconformityTypes(final Surveillance surv) {
+    private String determineNonconformityTypes(Surveillance surv) {
         Set<String> nonconformityTypes = new HashSet<String>();
         //get unique set of nonconformity types
         for (SurveillanceRequirement req : surv.getRequirements()) {
@@ -1289,8 +1182,8 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
      * @param surv
      * @return
      */
-    private String determineResultantCertificationStatus(final CertifiedProductSearchDetails listing,
-            final Surveillance surv) {
+    private String determineResultantCertificationStatus(CertifiedProductSearchDetails listing,
+            Surveillance surv) {
         String result = "";
         if (surv.getEndDate() == null) {
             result = listing.getCurrentStatus().getStatus().getName();
@@ -1309,7 +1202,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
      * @param surv
      * @return
      */
-    private String determineSuspendedStatus(final CertifiedProductSearchDetails listing,
+    private String determineSuspendedStatus(CertifiedProductSearchDetails listing,
             final Surveillance surv) {
         String result = "No";
         for (CertificationStatusEvent statusEvent : listing.getCertificationEvents()) {
@@ -1326,25 +1219,23 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         return result;
     }
 
-    private Cell addHeadingCell(final SurveillanceReportWorkbookWrapper workbook,
-            final Row row, final int cellNum, final String cellText) {
+    private Cell addHeadingCell(SurveillanceReportWorkbookWrapper workbook, Row row, int cellNum, String cellText) {
         Cell cell = workbook.createCell(row, cellNum, workbook.getWrappedTableHeadingStyle());
         cell.setCellValue(cellText);
         return cell;
     }
 
-    private Cell addRichTextHeadingCell(final SurveillanceReportWorkbookWrapper workbook, final Row row, final int cellNum,
-            final String cellHeading, final String cellSubHeading) {
+    private Cell addRichTextHeadingCell(SurveillanceReportWorkbookWrapper workbook, Row row, int cellNum,
+            String cellHeading, String cellSubHeading) {
         Cell cell = workbook.createCell(row, cellNum, workbook.getWrappedTableHeadingStyle());
         RichTextString richTextTitle = new XSSFRichTextString(cellHeading + "\n" + cellSubHeading);
         richTextTitle.applyFont(0, cellHeading.length(), workbook.getBoldSmallFont());
-        richTextTitle.applyFont(cellHeading.length()+1, richTextTitle.length(), workbook.getItalicSmallFont());
+        richTextTitle.applyFont(cellHeading.length() + 1, richTextTitle.length(), workbook.getItalicSmallFont());
         cell.setCellValue(richTextTitle);
         return cell;
     }
 
-    private Cell addDataCell(final SurveillanceReportWorkbookWrapper workbook,
-            final Row row, final int cellNum, final String cellText) {
+    private Cell addDataCell(SurveillanceReportWorkbookWrapper workbook, Row row, int cellNum, String cellText) {
         Cell cell = workbook.createCell(row, cellNum);
         cell.setCellValue(cellText);
         return cell;

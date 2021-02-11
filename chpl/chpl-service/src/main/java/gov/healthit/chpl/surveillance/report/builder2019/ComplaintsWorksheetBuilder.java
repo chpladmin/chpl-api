@@ -1,4 +1,4 @@
-package gov.healthit.chpl.surveillance.report.builder;
+package gov.healthit.chpl.surveillance.report.builder2019;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -39,6 +39,7 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.ComplaintManager;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.surveillance.report.PrivilegedSurveillanceDAO;
+import gov.healthit.chpl.surveillance.report.builder.MultiQuarterWorksheetBuilderUtil;
 import gov.healthit.chpl.surveillance.report.dto.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 
@@ -99,12 +100,6 @@ public class ComplaintsWorksheetBuilder {
         return lastDataRow <= 1 ? 2 : lastDataRow;
     }
 
-    /**
-     * Creates a formatted Excel worksheet with the information in the report.
-     * 
-     * @return
-     * @throws IOException
-     */
     public Sheet buildWorksheet(final SurveillanceReportWorkbookWrapper workbook, final List<QuarterlyReportDTO> quarterlyReports)
             throws IOException {
         pt = new PropertyTemplate();
@@ -223,13 +218,7 @@ public class ComplaintsWorksheetBuilder {
         return sheet;
     }
 
-    /**
-     * Creates the heading for this worksheet. Returns the number of rows added.
-     * 
-     * @param sheet
-     * @return
-     */
-    private int addHeadingRow(final SurveillanceReportWorkbookWrapper workbook, final Sheet sheet) {
+    private int addHeadingRow(SurveillanceReportWorkbookWrapper workbook, Sheet sheet) {
         Row row = workbook.getRow(sheet, 1);
         // row can have 6 lines of text
         row.setHeightInPoints(3 * sheet.getDefaultRowHeightInPoints());
@@ -256,14 +245,7 @@ public class ComplaintsWorksheetBuilder {
         return 1;
     }
 
-    /**
-     * Adds all of the complaint data to this worksheet. Returns the number of rows added.
-     * 
-     * @param sheet
-     * @param reportListingMap
-     */
-    private int addTableData(final SurveillanceReportWorkbookWrapper workbook, final Sheet sheet,
-            final List<QuarterlyReportDTO> quarterlyReports) {
+    private int addTableData(SurveillanceReportWorkbookWrapper workbook, Sheet sheet, List<QuarterlyReportDTO> quarterlyReports) {
         int addedRows = 0;
         int rowNum = 2;
 
@@ -432,7 +414,7 @@ public class ComplaintsWorksheetBuilder {
         return addedRows;
     }
 
-    private String getSurveillanceOutcome(final List<QuarterlyReportDTO> reports, final Long survId) {
+    private String getSurveillanceOutcome(List<QuarterlyReportDTO> reports, Long survId) {
         List<Long> reportIds = new ArrayList<Long>();
         for (QuarterlyReportDTO report : reports) {
             reportIds.add(report.getId());
@@ -463,8 +445,7 @@ public class ComplaintsWorksheetBuilder {
         return result;
     }
 
-    private void addComplaintData(final SurveillanceReportWorkbookWrapper workbook,
-            final Row row, final Complaint complaint) {
+    private void addComplaintData(SurveillanceReportWorkbookWrapper workbook, Row row, Complaint complaint) {
         addDataCell(workbook, row, COL_COMPLAINT_DATE, dateFormatter.format(complaint.getReceivedDate()));
         addDataCell(workbook, row, COL_ACB_COMPLAINT_ID, complaint.getAcbComplaintId());
         addDataCell(workbook, row, COL_ONC_COMPLAINT_ID, complaint.getOncComplaintId());
@@ -481,15 +462,13 @@ public class ComplaintsWorksheetBuilder {
         addDataCell(workbook, row, COL_FLAGGED_FOR_ONC, complaint.isFlagForOncReview() ? BOOLEAN_YES : BOOLEAN_NO);
     }
 
-    private Cell addHeadingCell(final SurveillanceReportWorkbookWrapper workbook,
-            final Row row, final int cellNum, final String cellText) {
+    private Cell addHeadingCell(SurveillanceReportWorkbookWrapper workbook, Row row, int cellNum, String cellText) {
         Cell cell = workbook.createCell(row, cellNum, workbook.getWrappedTableHeadingStyle());
         cell.setCellValue(cellText);
         return cell;
     }
 
-    private Cell addDataCell(final SurveillanceReportWorkbookWrapper workbook,
-            final Row row, final int cellNum, final String cellText) {
+    private Cell addDataCell(SurveillanceReportWorkbookWrapper workbook, Row row, int cellNum, String cellText) {
         Cell cell = workbook.createCell(row, cellNum);
         cell.setCellValue(cellText);
         return cell;

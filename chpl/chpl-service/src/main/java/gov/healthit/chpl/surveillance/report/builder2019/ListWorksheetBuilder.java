@@ -1,4 +1,4 @@
-package gov.healthit.chpl.surveillance.report.builder;
+package gov.healthit.chpl.surveillance.report.builder2019;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,9 +19,6 @@ import gov.healthit.chpl.surveillance.report.dto.SurveillanceProcessTypeDTO;
 
 /**
  * A hidden worksheet that contains values used to populate drop-down lists elsewhere in the workbook.
- * The workbook must be "set" to a non-null Excel workbook object before building the worksheet.
- * @author kekey
- *
  */
 @Component
 public class ListWorksheetBuilder {
@@ -35,8 +32,8 @@ public class ListWorksheetBuilder {
     private PrivilegedSurveillanceDAO reportMapDao;
 
     @Autowired
-    public ListWorksheetBuilder(final ComplaintDAO complaintDao,
-            final PrivilegedSurveillanceDAO reportMapDao) {
+    public ListWorksheetBuilder(ComplaintDAO complaintDao,
+            PrivilegedSurveillanceDAO reportMapDao) {
         super();
         this.complaintDao = complaintDao;
         this.reportMapDao = reportMapDao;
@@ -60,7 +57,7 @@ public class ListWorksheetBuilder {
  * @return
  * @throws IOException
  */
-    public Sheet buildWorksheet(final SurveillanceReportWorkbookWrapper workbook) throws IOException {
+    public Sheet buildWorksheet(SurveillanceReportWorkbookWrapper workbook) throws IOException {
         //create sheet
         Sheet sheet = workbook.getSheet("Lists", getLastDataColumn());
         Row choicesRow = null;

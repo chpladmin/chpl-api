@@ -1,4 +1,4 @@
-package gov.healthit.chpl.surveillance.report.builder;
+package gov.healthit.chpl.surveillance.report.builder2019;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -23,13 +23,13 @@ public class AnnualReportBuilderXlsx {
     private SurveillanceExperienceWorksheetBuilder survExprienceWorksheetBuilder;
 
     @Autowired
-    public AnnualReportBuilderXlsx(final SurveillanceReportManager reportManager,
-            final ListWorksheetBuilder listWorksheetBuilder,
-            final AnnualReportInfoWorksheetBuilder reportInfoWorksheetBuilder,
-            final ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesWorksheetBuilder,
-            final ComplaintsWorksheetBuilder complaintsWorksheetBuilder,
-            final SurveillanceSummaryWorksheetBuilder survSummaryWorksheetBuilder,
-            final SurveillanceExperienceWorksheetBuilder survExprienceWorksheetBuilder) {
+    public AnnualReportBuilderXlsx(SurveillanceReportManager reportManager,
+            ListWorksheetBuilder listWorksheetBuilder,
+            AnnualReportInfoWorksheetBuilder reportInfoWorksheetBuilder,
+            ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesWorksheetBuilder,
+            ComplaintsWorksheetBuilder complaintsWorksheetBuilder,
+            SurveillanceSummaryWorksheetBuilder survSummaryWorksheetBuilder,
+            SurveillanceExperienceWorksheetBuilder survExprienceWorksheetBuilder) {
         this.reportManager = reportManager;
         this.listWorksheetBuilder = listWorksheetBuilder;
         this.reportInfoWorksheetBuilder = reportInfoWorksheetBuilder;
@@ -39,12 +39,7 @@ public class AnnualReportBuilderXlsx {
         this.survExprienceWorksheetBuilder = survExprienceWorksheetBuilder;
     }
 
-    /**
-     * Creates a formatted Excel document with the information in the report.
-     * @param report
-     * @return
-     */
-    public Workbook buildXlsx(final AnnualReportDTO annualReport) throws IOException {
+    public Workbook buildXlsx(AnnualReportDTO annualReport) throws IOException {
         SurveillanceReportWorkbookWrapper workbook = new SurveillanceReportWorkbookWrapper();
 
         listWorksheetBuilder.buildWorksheet(workbook);
