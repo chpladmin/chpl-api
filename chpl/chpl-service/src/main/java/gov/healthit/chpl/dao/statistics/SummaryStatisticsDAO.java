@@ -53,9 +53,9 @@ public class SummaryStatisticsDAO extends BaseDAOImpl {
                 + "FROM SummaryStatisticsEntity stats "
                 + "WHERE MONTH(stats.endDate) = :month "
                 + "AND DAY(stats.endDate) = :day "
-                + "AND YEAR(stats.endDate) = :year ", SummaryStatisticsEntity.class);
+                + "AND YEAR(stats.endDate) = :year "
+                + "AND deleted = false", SummaryStatisticsEntity.class);
 
-        //query.setMaxResults(1);
         query.setParameter("month", asOf.getMonthValue());
         query.setParameter("day", asOf.getDayOfMonth());
         query.setParameter("year", asOf.getYear());
@@ -67,30 +67,4 @@ public class SummaryStatisticsDAO extends BaseDAOImpl {
             return null;
         }
     }
-
-    public void deleteAll() {
-        try {
-            List<SummaryStatisticsEntity> entities = getAllSummaryStatistics();
-            if (entities != null) {
-                for (SummaryStatisticsEntity entity : entities) {
-                    entity.setDeleted(true);
-                    entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
-                    entityManager.merge(entity);
-                    entityManager.flush();
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.error(e);
-        }
-    }
-
-    private List<SummaryStatisticsEntity> getAllSummaryStatistics() throws EntityRetrievalException {
-        List<SummaryStatisticsEntity> entities = entityManager
-                .createQuery("SELECT stats " + "FROM SummaryStatisticsEntity stats " + "WHERE (stats.deleted <> true)",
-                        SummaryStatisticsEntity.class)
-                .getResultList();
-
-        return entities;
-    }
-
 }

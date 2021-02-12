@@ -182,7 +182,6 @@ public class SummaryStatisticsPdf {
         }
     }
 
-    //TODO: Need to add some sort of check to only look so far back...
     private SummaryStatisticsEntity getSummaryStatisticsAsOf(LocalDate asOf) {
         try {
             SummaryStatisticsEntity stats = null;
