@@ -13,8 +13,6 @@ import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 
 /**
  * Creates a worksheet with high level information about the report.
- * The workbook must be "set" to a non-null Excel workbook object before building the worksheet.
- * @author kekey
  *
  */
 @Component
@@ -25,13 +23,8 @@ public class QuarterlyReportInfoWorksheetBuilder extends ReportInfoWorksheetBuil
         super(reportManager);
     }
 
-    /**
-     * Creates the header section and returns the row number of the last row that was added.
-     * @param sheet
-     * @return
-     */
-    protected int createHeader(final SurveillanceReportWorkbookWrapper workbook,
-            final Sheet sheet, final List<QuarterlyReportDTO> reports, final int beginRow) {
+    protected int createHeader(SurveillanceReportWorkbookWrapper workbook,
+            Sheet sheet, List<QuarterlyReportDTO> reports, int beginRow) {
         int currRow = beginRow;
         Row row = workbook.getRow(sheet, currRow++);
         Cell cell = workbook.createCell(row, 1, workbook.getBoldStyle());

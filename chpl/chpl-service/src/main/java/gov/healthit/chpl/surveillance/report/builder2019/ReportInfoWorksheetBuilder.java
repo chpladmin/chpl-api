@@ -26,8 +26,6 @@ import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportRelevantListingD
 
 /**
  * Creates a worksheet with high level information about the report.
- * The workbook must be "set" to a non-null Excel workbook object before building the worksheet.
- * @author kekey
  *
  */
 public abstract class ReportInfoWorksheetBuilder {
@@ -38,7 +36,7 @@ public abstract class ReportInfoWorksheetBuilder {
     private PropertyTemplate pt;
     private int lastDataRow;
 
-    public ReportInfoWorksheetBuilder(final SurveillanceReportManager reportManager) {
+    public ReportInfoWorksheetBuilder(SurveillanceReportManager reportManager) {
         this.reportManager = reportManager;
     }
 
@@ -55,8 +53,7 @@ public abstract class ReportInfoWorksheetBuilder {
      * @param report
      * @return
      */
-    public Sheet buildWorksheet(final SurveillanceReportWorkbookWrapper workbook,
-            final List<QuarterlyReportDTO> reports) throws IOException {
+    public Sheet buildWorksheet(SurveillanceReportWorkbookWrapper workbook, List<QuarterlyReportDTO> reports) throws IOException {
         lastDataRow = 0;
         pt = new PropertyTemplate();
         //create sheet or get the sheet if it already exists
@@ -86,16 +83,11 @@ public abstract class ReportInfoWorksheetBuilder {
         return sheet;
     }
 
-    /**
-     * Creates the header section and returns the row number of the last row that was added.
-     * @param sheet
-     * @return
-     */
-    protected abstract int createHeader(final SurveillanceReportWorkbookWrapper workbook,
-            final Sheet sheet, final List<QuarterlyReportDTO> reports, final int beginRow);
+    protected abstract int createHeader(SurveillanceReportWorkbookWrapper workbook,
+            Sheet sheet, List<QuarterlyReportDTO> reports, int beginRow);
 
-    private int createAcbSection(final SurveillanceReportWorkbookWrapper workbook, final Sheet sheet, final List<QuarterlyReportDTO> reports,
-            final int beginRow) {
+    private int createAcbSection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet, List<QuarterlyReportDTO> reports,
+            int beginRow) {
         int currRow = beginRow;
         Row row = workbook.getRow(sheet, currRow++);
         Cell cell = workbook.createCell(row, 0, workbook.getSectionNumberingStyle());
@@ -129,8 +121,8 @@ public abstract class ReportInfoWorksheetBuilder {
         return row.getRowNum()+1;
     }
 
-    private int createReportingPeriodSection(final SurveillanceReportWorkbookWrapper workbook, final Sheet sheet,
-            final List<QuarterlyReportDTO> reports, final int beginRow) {
+    private int createReportingPeriodSection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
+             List<QuarterlyReportDTO> reports, int beginRow) {
         int currRow = beginRow;
         Row row = workbook.getRow(sheet, currRow++);
         Cell cell = workbook.createCell(row, 0, workbook.getSectionNumberingStyle());
@@ -162,8 +154,8 @@ public abstract class ReportInfoWorksheetBuilder {
         return row.getRowNum()+1;
     }
 
-    private int createActivitiesAndOutcomesSection(final SurveillanceReportWorkbookWrapper workbook, final Sheet sheet,
-            final List<QuarterlyReportDTO> reports, final int beginRow) {
+    private int createActivitiesAndOutcomesSection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
+            List<QuarterlyReportDTO> reports, int beginRow) {
         int currRow = beginRow;
         Row row = workbook.getRow(sheet, currRow++);
         Cell cell = workbook.createCell(row, 0, workbook.getSectionNumberingStyle());
@@ -212,8 +204,8 @@ public abstract class ReportInfoWorksheetBuilder {
         return row.getRowNum()+1;
     }
 
-    private int createSelectingAndSamplingSection(final SurveillanceReportWorkbookWrapper workbook,
-            final Sheet sheet, final List<QuarterlyReportDTO> reports, final int beginRow) {
+    private int createSelectingAndSamplingSection(SurveillanceReportWorkbookWrapper workbook,
+            Sheet sheet, List<QuarterlyReportDTO> reports, int beginRow) {
         int currRow = beginRow;
         Row row = workbook.getRow(sheet, currRow++);
         Cell cell = workbook.createCell(row, 0, workbook.getSectionNumberingStyle());
@@ -338,8 +330,8 @@ public abstract class ReportInfoWorksheetBuilder {
         return row.getRowNum()+1;
     }
 
-    private int createPrioritizedSurveillanceSection(final SurveillanceReportWorkbookWrapper workbook, final Sheet sheet,
-            final List<QuarterlyReportDTO> reports, final int beginRow) {
+    private int createPrioritizedSurveillanceSection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
+            List<QuarterlyReportDTO> reports, int beginRow) {
         int currRow = beginRow;
         Row row = workbook.getRow(sheet, currRow++);
         Cell cell = workbook.createCell(row, 0, workbook.getSectionNumberingStyle());
@@ -421,7 +413,7 @@ public abstract class ReportInfoWorksheetBuilder {
         return row.getRowNum()+1;
     }
 
-    private int createComplaintsSection(final SurveillanceReportWorkbookWrapper workbook, final Sheet sheet, final int beginRow) {
+    private int createComplaintsSection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet, int beginRow) {
         int currRow = beginRow;
         Row row = workbook.getRow(sheet, currRow++);
         Cell cell = workbook.createCell(row, 0, workbook.getSectionNumberingStyle());
@@ -434,7 +426,7 @@ public abstract class ReportInfoWorksheetBuilder {
         return row.getRowNum()+1;
     }
 
-    protected int determineYear(final List<QuarterlyReportDTO> quarterlyReports) {
+    protected int determineYear(List<QuarterlyReportDTO> quarterlyReports) {
         return quarterlyReports.get(0).getYear();
     }
 
@@ -443,20 +435,20 @@ public abstract class ReportInfoWorksheetBuilder {
         private String reason;
         public QuarterlyExclusionReason() {
         }
-        public QuarterlyExclusionReason(final String quarterName, final String reason) {
+        public QuarterlyExclusionReason(String quarterName, String reason) {
             this.quarterName = quarterName;
             this.reason = reason;
         }
         public String getQuarterName() {
             return quarterName;
         }
-        public void setQuarterName(final String quarterName) {
+        public void setQuarterName(String quarterName) {
             this.quarterName = quarterName;
         }
         public String getReason() {
             return reason;
         }
-        public void setReason(final String reason) {
+        public void setReason(String reason) {
             this.reason = reason;
         }
         public String toString() {

@@ -33,12 +33,7 @@ public class SurveillanceExperienceWorksheetBuilder {
         return LAST_DATA_ROW;
     }
 
-    /**
-     * Creates a formatted Excel worksheet with the information in the report.
-     * @param report
-     * @return
-     */
-    public Sheet buildWorksheet(final SurveillanceReportWorkbookWrapper workbook, final AnnualReportDTO report) throws IOException {
+    public Sheet buildWorksheet(SurveillanceReportWorkbookWrapper workbook, AnnualReportDTO report) throws IOException {
         pt = new PropertyTemplate();
 
         //create sheet
@@ -65,7 +60,7 @@ public class SurveillanceExperienceWorksheetBuilder {
         return sheet;
     }
 
-    private void addSurveillanceObstacles(final SurveillanceReportWorkbookWrapper workbook, final Sheet sheet, final AnnualReportDTO report) {
+    private void addSurveillanceObstacles(SurveillanceReportWorkbookWrapper workbook, Sheet sheet, AnnualReportDTO report) {
         Row row = workbook.getRow(sheet, 1);
         Cell cell = workbook.createCell(row, 1, workbook.getLeftAlignedTableHeadingStyle());
         cell.setCellValue("List Any Obstacles Encountered During Surveillance");
@@ -83,8 +78,7 @@ public class SurveillanceExperienceWorksheetBuilder {
                 BorderStyle.MEDIUM, BorderExtent.ALL);
     }
 
-    private void addFindingsSummary(final SurveillanceReportWorkbookWrapper workbook,
-            final Sheet sheet, final AnnualReportDTO report) {
+    private void addFindingsSummary(SurveillanceReportWorkbookWrapper workbook, Sheet sheet, AnnualReportDTO report) {
         Row row = workbook.getRow(sheet, 1);
         Cell cell = workbook.createCell(row, 5, workbook.getLeftAlignedTableHeadingStyle());
         cell.setCellValue("Describe How Priorities May Have Shifted in Response to Findings in the Field");
@@ -97,7 +91,7 @@ public class SurveillanceExperienceWorksheetBuilder {
         int lineCount = workbook.calculateLineCount(cell.getStringCellValue(), sheet, 5, 5);
         //take the max of the height found for this row in the other section and the height
         //found for this row in this section (two sections sharing the same row)
-        row.setHeightInPoints(Math.max(row.getHeightInPoints(), 
+        row.setHeightInPoints(Math.max(row.getHeightInPoints(),
                 (Math.max(MIN_TEXT_AREA_LINES, lineCount) * sheet.getDefaultRowHeightInPoints())));
 
         pt.drawBorders(new CellRangeAddress(1, 2, 5, 5),

@@ -53,10 +53,10 @@ public class SurveillanceSummaryWorksheetBuilder {
     private PropertyTemplate pt;
 
     @Autowired
-    public SurveillanceSummaryWorksheetBuilder(final CertifiedProductDetailsManager detailsManager,
-            final SurveillanceSummaryDAO survSummaryDao,
-            final PrivilegedSurveillanceDAO privSurvDao,
-            final ComplaintSummaryDAO complaintSummaryDao) {
+    public SurveillanceSummaryWorksheetBuilder(CertifiedProductDetailsManager detailsManager,
+            SurveillanceSummaryDAO survSummaryDao,
+            PrivilegedSurveillanceDAO privSurvDao,
+            ComplaintSummaryDAO complaintSummaryDao) {
         this.detailsManager = detailsManager;
         this.survSummaryDao = survSummaryDao;
         this.privSurvDao = privSurvDao;
@@ -71,13 +71,7 @@ public class SurveillanceSummaryWorksheetBuilder {
         return LAST_DATA_ROW;
     }
 
-    /**
-     * Creates a formatted Excel worksheet with the information in the report.
-     * @param report
-     * @return
-     */
-    public Sheet buildWorksheet(final SurveillanceReportWorkbookWrapper workbook,
-            final List<QuarterlyReportDTO> reports) throws IOException {
+    public Sheet buildWorksheet(SurveillanceReportWorkbookWrapper workbook, List<QuarterlyReportDTO> reports) throws IOException {
         pt = new PropertyTemplate();
 
         //create sheet
@@ -105,8 +99,7 @@ public class SurveillanceSummaryWorksheetBuilder {
         return sheet;
     }
 
-    private void addSurveillanceCounts(final SurveillanceReportWorkbookWrapper workbook,
-            final Sheet sheet, final List<QuarterlyReportDTO> reports) {
+    private void addSurveillanceCounts(SurveillanceReportWorkbookWrapper workbook, Sheet sheet, List<QuarterlyReportDTO> reports) {
         //the reports must all be for the same ACB so just take the acb in the first one
         Long acbId = reports.get(0).getAcb().getId();
         //find the date range encompassing all the reports
@@ -349,8 +342,8 @@ public class SurveillanceSummaryWorksheetBuilder {
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
     }
 
-    private boolean determineIfListingHadStatusDuringRelevantSurveillance(final QuarterlyReportRelevantListingDTO listing,
-            final List<CertificationStatusType> statusesToCheck) {
+    private boolean determineIfListingHadStatusDuringRelevantSurveillance(QuarterlyReportRelevantListingDTO listing,
+            List<CertificationStatusType> statusesToCheck) {
         boolean result = false;
         //get the certification events for the listing
         List<CertificationStatusEvent> statusEvents = new ArrayList<CertificationStatusEvent>();
@@ -361,7 +354,7 @@ public class SurveillanceSummaryWorksheetBuilder {
         details.setId(listing.getId());
         details.setCertificationEvents(statusEvents);
 
-        //check each relevant surveillance to see if the listing's status matches 
+        //check each relevant surveillance to see if the listing's status matches
         //the status to check on the end date of the surveillance
         for (PrivilegedSurveillanceDTO surv : listing.getSurveillances()) {
             String resultantStatus = determineResultantCertificationStatus(details, surv);
@@ -374,8 +367,8 @@ public class SurveillanceSummaryWorksheetBuilder {
         return result;
     }
 
-    private String determineResultantCertificationStatus(final CertifiedProductSearchDetails listing,
-            final PrivilegedSurveillanceDTO surv) {
+    private String determineResultantCertificationStatus(CertifiedProductSearchDetails listing,
+            PrivilegedSurveillanceDTO surv) {
         String result = "";
         if (surv.getEndDate() == null) {
             result = listing.getCurrentStatus().getStatus().getName();
@@ -388,8 +381,8 @@ public class SurveillanceSummaryWorksheetBuilder {
         return result;
     }
 
-    private void addComplaintsCounts(final SurveillanceReportWorkbookWrapper workbook, final Sheet sheet,
-            final List<QuarterlyReportDTO> reports) {
+    private void addComplaintsCounts(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
+            List<QuarterlyReportDTO> reports) {
         //the reports must all be for the same ACB so just take the acb in the first one
         Long acbId = reports.get(0).getAcb().getId();
         //find the date range encompassing all the reports
@@ -433,8 +426,8 @@ public class SurveillanceSummaryWorksheetBuilder {
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
     }
 
-    private void createSurveillanceCountsSubheadingRow(final SurveillanceReportWorkbookWrapper workbook,
-            final Sheet sheet, final String text, final int rowNum) {
+    private void createSurveillanceCountsSubheadingRow(SurveillanceReportWorkbookWrapper workbook,
+            Sheet sheet, String text, int rowNum) {
         Row row = workbook.getRow(sheet, rowNum);
         Cell cell = workbook.createCell(row, 1, workbook.getTableSubheadingStyle());
         cell.setCellValue(text);
@@ -446,9 +439,8 @@ public class SurveillanceSummaryWorksheetBuilder {
                 BorderStyle.THIN, BorderExtent.OUTSIDE_HORIZONTAL);
     }
 
-    private void createSurveillanceCountsDataRow(final SurveillanceReportWorkbookWrapper workbook,
-            final Sheet sheet, final String name,
-            final long reactiveValue, final long randomziedValue, final long totalValue, final int rowNum) {
+    private void createSurveillanceCountsDataRow(SurveillanceReportWorkbookWrapper workbook,
+            Sheet sheet, String name, long reactiveValue, long randomziedValue, long totalValue, int rowNum) {
         Row row = workbook.getRow(sheet, rowNum);
         Cell cell = workbook.createCell(row, 1);
         cell.setCellValue(name);
@@ -463,8 +455,8 @@ public class SurveillanceSummaryWorksheetBuilder {
                 BorderStyle.HAIR, BorderExtent.OUTSIDE_HORIZONTAL);
     }
 
-    private void createComplaintCountsSubheadingRow(final SurveillanceReportWorkbookWrapper workbook,
-            final Sheet sheet, final String text, final int rowNum) {
+    private void createComplaintCountsSubheadingRow(SurveillanceReportWorkbookWrapper workbook,
+            Sheet sheet, String text, int rowNum) {
         Row row = workbook.getRow(sheet, rowNum);
         Cell cell = workbook.createCell(row, 6, workbook.getTableSubheadingStyle());
         cell.setCellValue(text);
@@ -474,8 +466,8 @@ public class SurveillanceSummaryWorksheetBuilder {
                 BorderStyle.THIN, BorderExtent.OUTSIDE_HORIZONTAL);
     }
 
-    private void createComplainCountsDataRow(final SurveillanceReportWorkbookWrapper workbook,
-            final Sheet sheet, final String name, final long value, final int rowNum) {
+    private void createComplainCountsDataRow(SurveillanceReportWorkbookWrapper workbook,
+            Sheet sheet, String name, long value, int rowNum) {
         Row row = workbook.getRow(sheet, rowNum);
         Cell cell = workbook.createCell(row, 6);
         cell.setCellValue(name);

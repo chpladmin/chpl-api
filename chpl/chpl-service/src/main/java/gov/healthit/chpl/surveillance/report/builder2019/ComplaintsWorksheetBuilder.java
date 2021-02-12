@@ -100,7 +100,7 @@ public class ComplaintsWorksheetBuilder {
         return lastDataRow <= 1 ? 2 : lastDataRow;
     }
 
-    public Sheet buildWorksheet(final SurveillanceReportWorkbookWrapper workbook, final List<QuarterlyReportDTO> quarterlyReports)
+    public Sheet buildWorksheet(SurveillanceReportWorkbookWrapper workbook, List<QuarterlyReportDTO> quarterlyReports)
             throws IOException {
         pt = new PropertyTemplate();
         lastDataRow = 0;

@@ -13,7 +13,6 @@ import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Name;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
@@ -43,17 +42,11 @@ public class SurveillanceReportWorkbookWrapper {
         initializeStyles();
     }
 
-    public Sheet getSheet(final String sheetName, final int lastDataColumn) {
+    public Sheet getSheet(String sheetName, int lastDataColumn) {
         return getSheet(sheetName, null, lastDataColumn);
     }
 
-    /**
-     * Get or create a new worksheet within the workbook.
-     * Worksheets are identified by name.
-     * @param sheetName
-     * @return
-     */
-    public Sheet getSheet(final String sheetName, final Color tabColor, final int lastDataColumn) {
+    public Sheet getSheet(String sheetName, Color tabColor, int lastDataColumn) {
         Sheet sheet = workbook.getSheet(sheetName);
         if (sheet == null) {
             sheet = workbook.createSheet(sheetName);
@@ -82,36 +75,24 @@ public class SurveillanceReportWorkbookWrapper {
      * That is in character units (i.e. if the width is 8.43 then 8.43 characters fit in the cell).
      * The POI library uses different units (1/256 of a character width). This function converts the excel
      * width units into the POI width units. It's pretty close but not 100%.
-     * @param excelWidth
-     * @return
      */
-    public int getColumnWidth(final double excelWidth) {
+    public int getColumnWidth(double excelWidth) {
         return (int)(excelWidth * 256);
     }
 
     /**
      * Given a string and the width of the column figure out how many lines the text
      * will take up using this workbooks default font.
-     * @param text
-     * @param sheet
-     * @param firstColIndex
-     * @param lastColIndex
-     * @return
      */
-    public int calculateLineCount(final String text, final Sheet sheet,
-            final int firstColIndex, final int lastColIndex) {
+    public int calculateLineCount(String text, Sheet sheet, int firstColIndex, int lastColIndex) {
         return calculateLineCount(text, smallFont, sheet, firstColIndex, lastColIndex);
     }
 
     /**
      * Given a string and the width of column (in... units?? pixels?) figure out
      * how many lines the string of text it will take up using the given font if the text wraps.
-     * @param text
-     * @param cells
-     * @return
      */
-    public int calculateLineCount(final String text, final Font font, final Sheet sheet,
-            final int firstColIndex, final int lastColIndex) {
+    public int calculateLineCount(String text, Font font, Sheet sheet, int firstColIndex, int lastColIndex) {
         int totalLineCount = 0;
         //count newline characters that are present in the text first
         int newlineCharCount = StringUtils.countOccurrencesOf(text, "\n");
@@ -154,14 +135,9 @@ public class SurveillanceReportWorkbookWrapper {
      * text does not have any explicit newlines in it.
      * Using the "smallFont" as our default since most user-entered text cells
      * are styled with that one. It sometimes returns one line too many and I'm not sure why.
-     * @param textWithoutNewlines
-     * @param sheet
-     * @param firstColIndex
-     * @param lastColIndex
-     * @return
      */
-    public int calculateLineCountWithoutNewlines(final String textWithoutNewlines, final Font font,
-            final Sheet sheet, final int firstColIndex, final int lastColIndex) {
+    public int calculateLineCountWithoutNewlines(String textWithoutNewlines, Font font,
+            Sheet sheet, int firstColIndex, int lastColIndex) {
         int lineCount = 0;
 
         if (StringUtils.isEmpty(textWithoutNewlines)) {
@@ -197,21 +173,15 @@ public class SurveillanceReportWorkbookWrapper {
 
     /**
      * Create a new cell and apply the default workbook style to it.
-     * @param row
-     * @param cellIndex
-     * @return
      */
-    public Cell createCell(final Row row, final int cellIndex) {
+    public Cell createCell(Row row, int cellIndex) {
         return createCell(row, cellIndex, smallStyle);
     }
 
     /**
      * Create a new cell and apply the a style to it.
-     * @param row
-     * @param cellIndex
-     * @return
      */
-    public Cell createCell(final Row row, final int cellIndex, final CellStyle style) {
+    public Cell createCell(Row row, int cellIndex, CellStyle style) {
         Cell cell = null;
         try {
             cell = row.createCell(cellIndex);
@@ -225,11 +195,8 @@ public class SurveillanceReportWorkbookWrapper {
 
     /**
      * Creates a row if it's not already created. Otherwise returns the existing row.
-     * @param sheet
-     * @param rowIndex
-     * @return
      */
-    public Row getRow(final Sheet sheet, final int rowIndex) {
+    public Row getRow(Sheet sheet, int rowIndex) {
         Row row = sheet.getRow(rowIndex);
         if (row == null) {
             row = sheet.createRow(rowIndex);
