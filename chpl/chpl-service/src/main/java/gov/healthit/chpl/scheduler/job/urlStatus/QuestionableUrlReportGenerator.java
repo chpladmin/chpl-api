@@ -130,6 +130,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                         case TEST_RESULTS_SUMMARY:
                         case REAL_WORLD_TESTING_PLANS:
                         case REAL_WORLD_TESTING_RESULTS:
+                        case SVAP_NOTICE_URL:
                             LOGGER.info("[" + i + "] Getting Listings with bad " + urlResult.getUrlType().getName()
                                     + " website " + urlResult.getUrl());
                             List<CertifiedProductSummaryDTO> listingsWithBadUrl = cpDao

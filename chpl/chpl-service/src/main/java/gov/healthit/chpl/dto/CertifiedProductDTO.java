@@ -55,6 +55,7 @@ public class CertifiedProductDTO implements Serializable {
     private String rwtResultsUrl;
     private LocalDate rwtResultsCheckDate;
     private Integer rwtEligibilityYear;
+    private String svapNoticeUrl;
 
     public CertifiedProductDTO() {
     }
@@ -93,6 +94,7 @@ public class CertifiedProductDTO implements Serializable {
         this.setRwtResultsUrl(entity.getRwtResultsUrl());
         this.setRwtResultsCheckDate(entity.getRwtResultsCheckDate());
         this.setRwtEligibilityYear(entity.getRwtEligibilityYear());
+        this.setSvapNoticeUrl(entity.getSvapNoticeUrl());
     }
 
     public CertifiedProductDTO(CertifiedProductSearchDetails from) throws InvalidArgumentsException {
@@ -129,6 +131,7 @@ public class CertifiedProductDTO implements Serializable {
         this.setRwtPlansCheckDate(from.getRwtPlansCheckDate());
         this.setRwtResultsUrl(from.getRwtResultsUrl());
         this.setRwtResultsCheckDate(from.getRwtResultsCheckDate());
+        this.setSvapNoticeUrl(from.getSvapNoticeUrl());
 
         // set the pieces of the unique id
         if (!StringUtils.isEmpty(from.getChplProductNumber())) {

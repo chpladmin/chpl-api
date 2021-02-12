@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,16 +21,19 @@ import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 
 @Component("svapReviewer")
-public class SvapReviewer implements ComparisonReviewer{
+public class SvapReviewer implements ComparisonReviewer {
     private Map<Long, List<SvapCriteriaMap>> svapCriteriaMap = new HashMap<Long, List<SvapCriteriaMap>>();
     private SvapDAO svapDao;
+    private ValidationUtils validationUtils;
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public SvapReviewer(SvapDAO svapDao, ErrorMessageUtil errorMessageUtil) {
+    public SvapReviewer(SvapDAO svapDao, ValidationUtils validationUtils, ErrorMessageUtil errorMessageUtil) {
         this.svapDao = svapDao;
+        this.validationUtils = validationUtils;
         this.errorMessageUtil = errorMessageUtil;
     }
 
@@ -45,14 +49,16 @@ public class SvapReviewer implements ComparisonReviewer{
 
         if (!isListing2015Edition(existingListing)) {
             updatedListing.getCertificationResults().stream()
-                    .filter(cr -> cr.getSvaps() != null && cr.getSvaps().size() > 0)
-                    .forEach(cr -> updatedListing.getErrorMessages().add(
-                            errorMessageUtil.getMessage("listing.criteria.svap.invalidEdition",
-                                    cr.getNumber(), getListingEdition(existingListing))));
+            .filter(cr -> cr.getSvaps() != null && cr.getSvaps().size() > 0)
+            .forEach(cr -> updatedListing.getErrorMessages().add(
+                    errorMessageUtil.getMessage("listing.criteria.svap.invalidEdition",
+                            cr.getNumber(), getListingEdition(existingListing))));
         } else {
+            validateSvapNoticeUrl(updatedListing);
+
             List<CertificationResult> certificationResultsWithSvaps = updatedListing.getCertificationResults().stream()
-                .filter(cr -> cr.isSuccess() && cr.getSvaps() != null && cr.getSvaps().size() > 0)
-                .collect(Collectors.toList());
+                    .filter(cr -> cr.isSuccess() && cr.getSvaps() != null && cr.getSvaps().size() > 0)
+                    .collect(Collectors.toList());
 
             for (CertificationResult cr : certificationResultsWithSvaps) {
                 for (CertificationResultSvap crs : cr.getSvaps()) {
@@ -73,13 +79,21 @@ public class SvapReviewer implements ComparisonReviewer{
         return isSvapAdded(crs) && getSvap(crs.getSvapId()).get().isReplaced();
     }
 
+    private void validateSvapNoticeUrl(CertifiedProductSearchDetails listing) {
+        if (!StringUtils.isBlank(listing.getSvapNoticeUrl())
+                && !validationUtils.isWellFormedUrl(listing.getSvapNoticeUrl())) {
+            listing.getErrorMessages().add(
+                    errorMessageUtil.getMessage("listing.svap.url.invalid"));
+        }
+    }
+
     private boolean isListing2015Edition(CertifiedProductSearchDetails listing) {
         return getListingEdition(listing).equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
     }
 
     private String getListingEdition(CertifiedProductSearchDetails listing) {
         return listing.getCertificationEdition().containsKey(CertifiedProductSearchDetails.EDITION_NAME_KEY)
-                        ? listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString()
+                ? listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString()
                         : "";
     }
 

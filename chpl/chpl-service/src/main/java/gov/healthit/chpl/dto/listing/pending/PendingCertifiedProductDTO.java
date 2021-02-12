@@ -111,6 +111,7 @@ public class PendingCertifiedProductDTO implements Serializable {
     private Boolean accessibilityCertified;
     private TransparencyAttestationDTO transparencyAttestation;
     private String transparencyAttestationUrl;
+    private String svapNoticeUrl;
 
     @Singular
     private List<PendingCertifiedProductTestingLabDTO> testingLabs = new ArrayList<PendingCertifiedProductTestingLabDTO>();

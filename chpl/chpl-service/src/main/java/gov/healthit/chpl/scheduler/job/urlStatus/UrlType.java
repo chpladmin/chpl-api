@@ -21,7 +21,9 @@ public enum UrlType {
     //Real World Testing Plans
     REAL_WORLD_TESTING_PLANS("Real World Testing Plans"),
     //Real World Testing Results
-    REAL_WORLD_TESTING_RESULTS("Real World Testing Results");
+    REAL_WORLD_TESTING_RESULTS("Real World Testing Results"),
+    //SVAP Notice
+    SVAP_NOTICE_URL("SVAP Notice URL");
 
 
     private String name;
