@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
@@ -60,6 +61,7 @@ public class DirectReviewCachingService {
         this.mapper = mapper;
     }
 
+    @CacheEvict(value = { CacheNames.COLLECTIONS_LISTINGS }, allEntries = true)
     public void populateDirectReviewsCache() {
         LOGGER.info("Fetching all direct review data.");
         //Could this response ever be too big? Maybe we would just do it per developer at that point?
