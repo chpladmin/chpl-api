@@ -199,16 +199,16 @@ public class SvapManager {
 
     private boolean isSvapDuplicateOnAdd(Svap svap) throws EntityRetrievalException {
         return getAllSvapCriteriaMaps().stream()
-                .filter(s -> s.getSvap().getApprovedStandardVersion().equals(svap.getApprovedStandardVersion())
-                        && s.getSvap().getRegulatoryTextCitation().equals(svap.getRegulatoryTextCitation()))
+                .filter(s -> s.getSvap().getApprovedStandardVersion().equalsIgnoreCase(svap.getApprovedStandardVersion())
+                        && s.getSvap().getRegulatoryTextCitation().equalsIgnoreCase(svap.getRegulatoryTextCitation()))
                 .findAny()
                 .isPresent();
     }
 
     private boolean isSvapDuplicateOnEdit(Svap svap) throws EntityRetrievalException {
         return getAllSvapCriteriaMaps().stream()
-                .filter(s -> s.getSvap().getApprovedStandardVersion().equals(svap.getApprovedStandardVersion())
-                        && s.getSvap().getRegulatoryTextCitation().equals(svap.getRegulatoryTextCitation())
+                .filter(s -> s.getSvap().getApprovedStandardVersion().equalsIgnoreCase(svap.getApprovedStandardVersion())
+                        && s.getSvap().getRegulatoryTextCitation().equalsIgnoreCase(svap.getRegulatoryTextCitation())
                         && !s.getSvap().getSvapId().equals(svap.getSvapId()))
                 .findAny()
                 .isPresent();
