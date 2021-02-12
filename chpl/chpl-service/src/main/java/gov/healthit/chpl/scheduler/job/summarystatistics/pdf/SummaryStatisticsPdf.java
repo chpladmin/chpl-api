@@ -4,7 +4,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Date;
@@ -67,11 +69,10 @@ public class SummaryStatisticsPdf {
     }
 
     @SuppressWarnings("resource")
-    public File generate(File csv) throws DocumentException, IOException {
-        String dest = "C:/chpl/files/SummaryStatistics.pdf";
-        File file = new File(dest);
+    public File generate(File csvData) throws DocumentException, IOException {
+        File file = File.createTempFile("SummaryStatistics-" + getUniqueIdenftifierforFileName(), ".pdf");
 
-        PdfWriter writer = new PdfWriter(dest);
+        PdfWriter writer = new PdfWriter(file);
         PdfDocument pdf = new PdfDocument(writer);
 
         //This adds the footer at the end of each page
@@ -82,7 +83,7 @@ public class SummaryStatisticsPdf {
             SummaryStatisticsEntity previousStats = getSummaryStatisticsAsOf(convertDateToLocalDate(recentStats.getEndDate()).minusDays(ONE_WEEK));
             addDocumentHeader(document);
             addTables(document, recentStats, previousStats);
-            addCharts(document, csv);
+            addCharts(document, csvData);
             document.close();
         }
         return file;
@@ -139,7 +140,7 @@ public class SummaryStatisticsPdf {
     }
 
     @SuppressWarnings("resource")
-    private void addCharts(Document document, File csv) throws IOException {
+    private void addCharts(Document document, File csvData) throws IOException {
         List<SummaryStatisticChart> chartGenerators = Arrays.asList(
                 new DevelopersOverTimeChart(),
                 new UniqueProductsWithActiveListingsOverTimeChart(),
@@ -153,7 +154,7 @@ public class SummaryStatisticsPdf {
         chartGenerators.forEach(chartGenerator -> {
             document.add(new Paragraph(""));
             try {
-                addChart(document, csv, chartGenerator);
+                addChart(document, csvData, chartGenerator);
             } catch (IOException e) {
                 document.add(new Paragraph("[Could not generate chart]"));
             }
@@ -161,8 +162,8 @@ public class SummaryStatisticsPdf {
     }
 
     @SuppressWarnings("resource")
-    private void addChart(Document document, File csv, SummaryStatisticChart chartGenerator) throws IOException {
-        JFreeChart chart = chartGenerator.generate(csv);
+    private void addChart(Document document, File csvData, SummaryStatisticChart chartGenerator) throws IOException {
+        JFreeChart chart = chartGenerator.generate(csvData);
         document.add(getPdfImage(chart));
     }
 
@@ -199,5 +200,9 @@ public class SummaryStatisticsPdf {
         return toConvert.toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
+    }
+
+    private String getUniqueIdenftifierforFileName() {
+        return Long.valueOf(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)).toString();
     }
 }

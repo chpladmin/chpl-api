@@ -14,9 +14,9 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.scheduler.job.summarystatistics.StatisticsMassager;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailCertificationBodyStatistic;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatistics;
-import gov.healthit.chpl.scheduler.job.summarystatistics.email.StatisticsMassager;
 
 public abstract class SummaryStatisticsSectionPdf {
     private static final float SECTION_DESCRIPTION_RELATIVE_WIDTH = 6;
