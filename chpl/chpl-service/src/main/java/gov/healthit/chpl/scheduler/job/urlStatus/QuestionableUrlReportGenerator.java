@@ -426,8 +426,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             int brokenAcbUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.ACB);
             int brokenAtlUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.ATL);
             int brokenDeveloperUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.DEVELOPER);
-            int brokenMandatoryDisclosureUrls = getCountOfBrokenUrlsOfType(urlResults,
-                    UrlType.MANDATORY_DISCLOSURE_URL);
+            int brokenMandatoryDisclosureUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.MANDATORY_DISCLOSURE_URL);
             int brokenTestResultsSummaryUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.TEST_RESULTS_SUMMARY);
             int brokenFullUsabilityReportUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.FULL_USABILITY_REPORT);
             int brokenApiDocumentationUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.API_DOCUMENTATION);
@@ -436,6 +435,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             int brokenUseCasesUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.USE_CASES);
             int brokenRwtPlansUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.REAL_WORLD_TESTING_PLANS);
             int brokenRwtResultsUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.REAL_WORLD_TESTING_RESULTS);
+            int brokenSvapNoticeUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.SVAP_NOTICE_URL);
 
             htmlMessage += "<ul>";
             htmlMessage += "<li>" + UrlType.ATL.getName() + ": " + brokenAtlUrls + "</li>";
@@ -450,6 +450,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             htmlMessage += "<li>" + UrlType.USE_CASES.getName() + ": " + brokenUseCasesUrls + "</li>";
             htmlMessage += "<li>" + UrlType.REAL_WORLD_TESTING_PLANS.getName() + ": " + brokenRwtPlansUrls + "</li>";
             htmlMessage += "<li>" + UrlType.REAL_WORLD_TESTING_RESULTS.getName() + ": " + brokenRwtResultsUrls + "</li>";
+            htmlMessage += "<li>" + UrlType.SVAP_NOTICE_URL.getName() + ": " + brokenSvapNoticeUrls + "</li>";
             htmlMessage += "</ul>";
         }
 

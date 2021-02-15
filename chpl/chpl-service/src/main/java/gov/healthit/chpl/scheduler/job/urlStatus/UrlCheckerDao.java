@@ -234,6 +234,24 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         }
                     }
                     break;
+                    case SVAP_NOTICE_URL:
+                        @SuppressWarnings("unchecked") List<String> svapNoticeWebsites =
+                        entityManager.createQuery(
+                                "SELECT DISTINCT svapNoticeUrl "
+                                + "FROM CertifiedProductEntity "
+                                + "WHERE svapNoticeUrl IS NOT NULL "
+                                + "AND svapNoticeUrl != '' "
+                                + "AND deleted = false")
+                        .getResultList();
+                        for (String website : svapNoticeWebsites) {
+                            if (!StringUtils.isEmpty(website)) {
+                                UrlResult checkableUrl = new UrlResult();
+                                checkableUrl.setUrl(website);
+                                checkableUrl.setUrlType(urlType);
+                                results.add(checkableUrl);
+                            }
+                        }
+                        break;
                 default:
                     break;
             }
