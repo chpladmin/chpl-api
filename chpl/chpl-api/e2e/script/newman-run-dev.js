@@ -103,7 +103,7 @@ const searchviewControllerTests = {
 	        },
 	    },
 	};
-	
+
 const jobControllerTests = {
 	    ...commonOptions,
 	    collection: collection_path + '/job-controller.postman_collection.json',
@@ -113,7 +113,7 @@ const jobControllerTests = {
 	        },
 	    },
 	};
-	
+
 const schedulerControllerTests = {
 	    ...commonOptions,
 	    collection: collection_path + '/scheduler-controller.postman_collection.json',
