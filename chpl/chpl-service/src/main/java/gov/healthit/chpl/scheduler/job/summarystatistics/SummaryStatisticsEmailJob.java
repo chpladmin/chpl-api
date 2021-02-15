@@ -32,16 +32,12 @@ import gov.healthit.chpl.entity.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatistics;
-<<<<<<< HEAD
-import gov.healthit.chpl.scheduler.job.summarystatistics.pdf.SummaryStatisticsPdf;
-=======
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.DeveloperStatisticsSectionCreator;
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.ListingStatisticsSectionCreator;
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.NonConformityStatisticsSectionCreator;
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.ProductStatisticsSectionCreator;
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.SurveillanceStatisticsSectionCreator;
-import gov.healthit.chpl.util.DateUtil;
->>>>>>> staging
+import gov.healthit.chpl.scheduler.job.summarystatistics.pdf.SummaryStatisticsPdf;
 import gov.healthit.chpl.util.EmailBuilder;
 
 public class SummaryStatisticsEmailJob extends QuartzJob {
@@ -95,11 +91,11 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         EmailBuilder emailBuilder = new EmailBuilder(env);
         emailBuilder.recipients(addresses)
                 .subject(subject).htmlMessage(message)
-                .fileAttachments(getSummaryStatisticsFiles())
+                .fileAttachments(getSummaryStatisticsFile())
                 .sendEmail();
     }
 
-    private List<File> getSummaryStatisticsFiles() throws IOException, DocumentException {
+    private List<File> getSummaryStatisticsFile() throws IOException, DocumentException {
         List<File> files = new ArrayList<File>();
         File file = new File(env.getProperty("downloadFolderPath") + File.separator
                 + env.getProperty("summaryEmailName", "summaryStatistics.csv"));
@@ -117,36 +113,35 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
     private String createHtmlMessage(EmailStatistics stats, Date endDate) throws EntityRetrievalException {
         StringBuilder emailMessage = new StringBuilder();
+        DeveloperStatisticsSectionCreator developerStatisticsSectionCreator = new DeveloperStatisticsSectionCreator();
+        ProductStatisticsSectionCreator productStatisticsSectionCreator = new ProductStatisticsSectionCreator();
+        ListingStatisticsSectionCreator listingStatisticsSectionCreator = new ListingStatisticsSectionCreator();
+        SurveillanceStatisticsSectionCreator surveillanceStatisticsSectionCreator = new SurveillanceStatisticsSectionCreator();
+        NonConformityStatisticsSectionCreator nonConformityStatisticsSectionCreator = new NonConformityStatisticsSectionCreator();
+
         emailMessage.append(createMessageHeader(endDate));
+        emailMessage.append(developerStatisticsSectionCreator.build(stats, activeAcbs));
+        emailMessage.append(productStatisticsSectionCreator.build(stats, activeAcbs));
+        emailMessage.append(listingStatisticsSectionCreator.build(stats, activeAcbs));
+        emailMessage.append(surveillanceStatisticsSectionCreator.build(stats, activeAcbs));
+        emailMessage.append(nonConformityStatisticsSectionCreator.build(stats, activeAcbs));
+
         return emailMessage.toString();
     }
 
     private String createMessageHeader(Date endDate) {
+        Calendar currDateCal = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
         Calendar endDateCal = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
         endDateCal.setTime(endDate);
         StringBuilder ret = new StringBuilder();
-<<<<<<< HEAD
-        ret.append("Current statistics are in the attached PDF attachment.");
+        ret.append("Email body has current statistics as of " + currDateCal.getTime());
         ret.append("<br/>");
-        ret.append("Historical statistics has weekly statistics ending " + endDateCal.getTime());
-=======
-        ret.append("Email body has current statistics as of " + getReportDateAsString(currDateCal.getTime()));
-        ret.append("<br/>");
-        ret.append("Email attachment has weekly statistics ending " + getReportDateAsString(endDateCal.getTime()));
->>>>>>> staging
+        ret.append("Email attachment has weekly statistics ending " + endDateCal.getTime());
         ret.append("<br/>");
         ret.append("In the attached CSV file: <br/>");
         ret.append("<ul>");
         ret.append("<li>Total Closed Non-Conformities - Some Non-Conformities may be closed that are not counted in these statistics</li>");
         ret.append("</ul>");
         return ret.toString();
-    }
-
-    private String getReportDateAsString(Date date) {
-        if (date != null) {
-             return DateUtil.formatInEasternTime(date);
-        } else {
-            return "UNKNOWN";
-        }
     }
 }
