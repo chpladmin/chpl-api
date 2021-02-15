@@ -259,9 +259,6 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
      */
     private String svapNoticeUrl;
 
-    /**
-     * Default constructor.
-     */
     public CertifiedProductSearchBasicDetails() {
         sed = new CertifiedProductSed();
     }

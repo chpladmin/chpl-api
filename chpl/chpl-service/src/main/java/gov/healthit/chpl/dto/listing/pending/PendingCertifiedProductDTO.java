@@ -80,7 +80,6 @@ public class PendingCertifiedProductDTO implements Serializable {
     private Set<String> errorMessages = new HashSet<String>();
     @Singular
     private Set<String> warningMessages = new HashSet<String>();
-
     private String uniqueId;
     private String recordStatus;
     private String practiceType;
