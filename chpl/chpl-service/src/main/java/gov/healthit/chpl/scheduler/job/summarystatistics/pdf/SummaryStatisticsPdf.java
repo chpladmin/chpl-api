@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.dom4j.DocumentException;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +68,7 @@ public class SummaryStatisticsPdf {
     }
 
     @SuppressWarnings("resource")
-    public File generate(File csvData) throws DocumentException, IOException {
+    public File generate(File csvData) throws IOException {
         File file = File.createTempFile("SummaryStatistics-" + getUniqueIdenftifierforFileName(), ".pdf");
 
         PdfWriter writer = new PdfWriter(file);

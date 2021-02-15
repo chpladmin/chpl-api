@@ -95,7 +95,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
                 .sendEmail();
     }
 
-    private List<File> getSummaryStatisticsFile() throws IOException, DocumentException {
+    private List<File> getSummaryStatisticsFile() throws IOException {
         List<File> files = new ArrayList<File>();
         File file = new File(env.getProperty("downloadFolderPath") + File.separator
                 + env.getProperty("summaryEmailName", "summaryStatistics.csv"));
