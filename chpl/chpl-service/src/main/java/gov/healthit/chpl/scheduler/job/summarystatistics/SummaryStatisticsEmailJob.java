@@ -14,7 +14,6 @@ import javax.mail.internet.AddressException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dom4j.DocumentException;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +81,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         }
     }
 
-    private void sendEmail(String message, String address) throws AddressException, MessagingException, IOException, DocumentException {
+    private void sendEmail(String message, String address) throws AddressException, MessagingException, IOException {
         String subject = env.getProperty("summaryEmailSubject").toString();
 
         List<String> addresses = new ArrayList<String>();
