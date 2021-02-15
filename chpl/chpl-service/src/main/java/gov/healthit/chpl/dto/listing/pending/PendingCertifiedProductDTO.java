@@ -225,6 +225,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         }
         this.transparencyAttestationUrl = details.getTransparencyAttestationUrl();
         this.accessibilityCertified = details.getAccessibilityCertified();
+        this.svapNoticeUrl = details.getSvapNoticeUrl();
 
         if (details.getIcs() != null) {
             if (details.getIcs().getParents() != null && details.getIcs().getParents().size() > 0) {
