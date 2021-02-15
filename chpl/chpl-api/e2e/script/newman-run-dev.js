@@ -22,6 +22,16 @@ const acbControllerTests = {
     },
 };
 
+const certifiedProductControllerTests = {
+	    ...commonOptions,
+	    collection: collection_path + '/certified-product-controller.postman_collection.json',
+	    reporter: {
+	        junit: {
+	            export: reports_path + '/certified-product-controller-tests.xml',
+	        },
+	    },
+	};
+
 const developerControllerDataTests = {
     ...commonOptions,
     collection: collection_path + '/developer-controller.postman_collection.json',
@@ -97,6 +107,7 @@ const searchviewControllerTests = {
 
 const jobs = [
     cb => newman.run(acbControllerTests,cb),
+    cb => newman.run(certifiedProductControllerTests,cb),
     cb => newman.run(developerControllerDataTests,cb),
     cb => newman.run(developerControllerNoDataTests,cb),
     cb => newman.run(productsControllerTests,cb),
