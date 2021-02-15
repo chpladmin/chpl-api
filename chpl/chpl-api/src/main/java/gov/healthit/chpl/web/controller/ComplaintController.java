@@ -17,6 +17,7 @@ import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.ComplaintManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.web.controller.results.ComplaintResults;
@@ -26,6 +27,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "complaints")
 @RestController
 @RequestMapping("/complaints")
+@Loggable
 public class ComplaintController {
     private ComplaintManager complaintManager;
     private ErrorMessageUtil errorMessageUtil;

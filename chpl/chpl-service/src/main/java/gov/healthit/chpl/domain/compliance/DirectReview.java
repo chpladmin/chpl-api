@@ -1,6 +1,7 @@
 package gov.healthit.chpl.domain.compliance;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -73,4 +74,8 @@ public class DirectReview implements Serializable {
     @XmlElementWrapper(name = "nonConformities", nillable = true, required = false)
     @XmlElement(name = "nonConformity")
     private List<DirectReviewNonConformity> nonConformities = new ArrayList<DirectReviewNonConformity>();
+
+    @JsonIgnore
+    @XmlTransient
+    private LocalDateTime fetched;
 }
