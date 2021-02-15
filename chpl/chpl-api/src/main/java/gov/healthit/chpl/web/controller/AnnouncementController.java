@@ -21,6 +21,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.AnnouncementManager;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
@@ -33,6 +34,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "announcements")
 @RestController
 @RequestMapping("/announcements")
+@Loggable
 public class AnnouncementController {
 
     @Autowired

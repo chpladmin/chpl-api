@@ -1,5 +1,41 @@
 # Release Notes
 
+## Version 27.1.0
+_8 February 2021_
+
+### Features
+* Add Direct Review and Non-conformity counts to downloadable CSVs
+* Add Direct Reviews into Listing XML download file
+
+### Flagged Features
+* Create endpoints for flexible upload of Listings
+
+### Bug Fixes
+* Questionable Activity Report - activity details missing for old G1-G2 measure activity
+* Legacy + Cures criteria get associated with measure on upload
+
+---
+
+## Version 27.0.0
+_25 January 2021_
+
+### Breaking Changes
+* Developer PUT endpoint for developer updates and merges was modified
+
+### Features
+* Add reports on missing / soon-to-be-missing RWT Plans & Results
+* Update validation for b10 and g10 criteria
+* Execute developer merge as background quartz job
+* Change 2014 Download file generation to be quarterly
+* Ensure email is used when username does not exist
+* Add /activity/metadata/beta/api-keys endpoint for paged API Key activity
+* Allow edit of SVAP information for listings
+
+### Flagged Features
+* Only put RWT data in downloadable CSV files when flag is enabled
+
+---
+
 ## Version 26.2.0
 _11 January 2021_
 

@@ -353,6 +353,28 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="listingValidationReportCreatorJob"
+            fileName="${logDir}/scheduler/listingValidationReportCreatorJob.log"
+            filePattern="${logDir}/scheduler/history/listingValidationReportCreatorJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
+        <RollingFile name="listingValidationReportEmailJob"
+            fileName="${logDir}/scheduler/listingValidationReportEmailJob.log"
+            filePattern="${logDir}/scheduler/history/listingValidationReportEmailJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
         <RollingFile name="realWorldTestingReportEmailJob"
             fileName="${logDir}/scheduler/realWorldTestingReportEmailJob.log"
             filePattern="${logDir}/scheduler/history/realWorldTestingReportEmailJob-%d{yyyy-MM-dd}.log">
@@ -382,7 +404,7 @@
         <logger name="org.springframework.cache" level="INFO">
             <AppenderRef ref="cacheListenerActivity" />
         </logger>
-        <Logger name="gov.healthit.chpl" level="DEBUG" additivity="false">
+        <Logger name="gov.healthit.chpl" level="INFO" additivity="false">
             <AppenderRef ref="STDOUT" />
         </Logger>
         <Logger name="loggableLogger" level="INFO"
@@ -509,6 +531,14 @@
         <Logger name="auditDataRetentionJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="auditDataRetentionJob" />
+        </Logger>
+        <Logger name="listingValidationReportCreatorJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="listingValidationReportCreatorJob" />
+        </Logger>
+        <Logger name="listingValidationReportEmailJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="listingValidationReportEmailJob" />
         </Logger>
     </Loggers>
 </Configuration>

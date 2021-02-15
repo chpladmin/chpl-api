@@ -57,6 +57,7 @@ import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.TransparencyAttestation;
 import gov.healthit.chpl.domain.UcdProcess;
+import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
@@ -82,6 +83,7 @@ import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.impl.CertifiedProductDetailsManagerAsync;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.service.DirectReviewSearchService;
 import gov.healthit.chpl.svap.dao.SvapDAO;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
@@ -89,7 +91,9 @@ import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.PropertyUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Loggable
 @Service("certifiedProductDetailsManager")
 public class CertifiedProductDetailsManager {
@@ -116,8 +120,8 @@ public class CertifiedProductDetailsManager {
     private ChplProductNumberUtil chplProductNumberUtil;
     private ResourcePermissions resourcePermissions;
     private DimensionalDataManager dimensionalDataManager;
+    private DirectReviewSearchService drService;
     private SvapDAO svapDao;
-
     private List<SvapCriteriaMap> svapCriteriaMap;
 
     @SuppressWarnings({"checkstyle:parameternumber"})
@@ -145,6 +149,7 @@ public class CertifiedProductDetailsManager {
             ChplProductNumberUtil chplProductNumberUtil,
             ResourcePermissions resourcePermissions,
             DimensionalDataManager dimensionalDataManager,
+            DirectReviewSearchService drService,
             SvapDAO svapDao) {
 
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
@@ -169,6 +174,7 @@ public class CertifiedProductDetailsManager {
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.resourcePermissions = resourcePermissions;
         this.dimensionalDataManager = dimensionalDataManager;
+        this.drService = drService;
         this.svapDao = svapDao;
     }
 
@@ -308,8 +314,8 @@ public class CertifiedProductDetailsManager {
         // get first-level parents and children
         searchDetails.getIcs().setParents(populateParents(parentsFuture, searchDetails));
         searchDetails.getIcs().setChildren(populateChildren(childrenFuture, searchDetails));
-
-        searchDetails = populateTestingLab(dto, searchDetails);
+        searchDetails = populateTestingLabs(dto, searchDetails);
+        searchDetails = populateDirectReviews(searchDetails);
         return searchDetails;
     }
 
@@ -329,7 +335,7 @@ public class CertifiedProductDetailsManager {
         searchDetails.getIcs().setParents(populateParents(parentsFuture, searchDetails));
         searchDetails.getIcs().setChildren(populateChildren(childrenFuture, searchDetails));
 
-        searchDetails = populateTestingLab(dto, searchDetails);
+        searchDetails = populateTestingLabs(dto, searchDetails);
 
         return searchDetails;
     }
@@ -345,7 +351,7 @@ public class CertifiedProductDetailsManager {
         return dtos.get(0);
     }
 
-    private CertifiedProductSearchDetails populateTestingLab(CertifiedProductDetailsDTO dto,
+    private CertifiedProductSearchDetails populateTestingLabs(CertifiedProductDetailsDTO dto,
             CertifiedProductSearchDetails searchDetails) throws EntityRetrievalException {
 
         List<CertifiedProductTestingLabDTO> testingLabDtos = certifiedProductTestingLabDao
@@ -357,6 +363,15 @@ public class CertifiedProductDetailsManager {
         }
         searchDetails.setTestingLabs(testingLabResults);
         return searchDetails;
+    }
+
+    private CertifiedProductSearchDetails populateDirectReviews(CertifiedProductSearchDetails listing) {
+        List<DirectReview> drs = new ArrayList<DirectReview>();
+        if (listing.getDeveloper() != null && listing.getDeveloper().getDeveloperId() != null) {
+            drs = drService.getDirectReviewsRelatedToListing(listing.getId(), listing.getDeveloper().getDeveloperId());
+        }
+        listing.setDirectReviews(drs);
+        return listing;
     }
 
     private List<CertifiedProduct> populateParents(Future<List<CertifiedProductDTO>> parentsFuture,

@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -13,18 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.exception.JiraRequestFailedException;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.scheduler.presenter.DirectReviewCsvPresenter;
-import gov.healthit.chpl.service.DirectReviewService;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
+import gov.healthit.chpl.service.DirectReviewCachingService;
+import gov.healthit.chpl.service.DirectReviewSearchService;
+import lombok.extern.log4j.Log4j2;
 
 @DisallowConcurrentExecution
+@Log4j2(topic = "directReviewDownloadableResourceCreatorJobLogger")
 public class DirectReviewDownloadableResourceCreatorJob extends DownloadableResourceCreatorJob {
-    private static final Logger LOGGER = LogManager.getLogger("directReviewDownloadableResourceCreatorJobLogger");
-
     @Autowired
     private Environment env;
 
@@ -32,7 +27,10 @@ public class DirectReviewDownloadableResourceCreatorJob extends DownloadableReso
     private DeveloperManager devManager;
 
     @Autowired
-    private DirectReviewService directReviewService;
+    private DirectReviewCachingService drCachingService;
+
+    @Autowired
+    private DirectReviewSearchService drSearchService;
 
     public DirectReviewDownloadableResourceCreatorJob() throws Exception {
         super(LOGGER);
@@ -43,18 +41,20 @@ public class DirectReviewDownloadableResourceCreatorJob extends DownloadableReso
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Direct Review Downloadable Resource Creator job. *********");
         try {
-            CacheManager manager = CacheManager.getInstance();
-            Cache drCache = manager.getCache(CacheNames.DIRECT_REVIEWS);
-
-            //re-populate the DR cache
             try {
-                directReviewService.populateDirectReviewsCache();
-            } catch (JiraRequestFailedException ex) {
-                LOGGER.error("Request to Jira to populate all direct reviews failed.", ex);
-                if (drCache.getKeys() == null || drCache.getKeys().size() == 0) {
-                    LOGGER.fatal("No Direct Reviews found in the cache. Not writing out a file.");
-                    return;
-                }
+                LOGGER.info("Repopulating the direct reviews cache.");
+                drCachingService.populateDirectReviewsCache();
+                LOGGER.info("Completed repopulating the direct reviews cache.");
+            } catch (Exception ex) {
+                LOGGER.error("Repopulating direct reviews cache failed. Not writing out a file.", ex);
+                return;
+            }
+
+            if (!drSearchService.getDirectReviewsAvailable()) {
+                LOGGER.fatal("Direct Reviews cache is not available. "
+                        + "There may have been an error retreiving direct reviews from Jira. "
+                        + "Not writing out a file.");
+                return;
             }
 
             File downloadFolder = getDownloadFolder();
@@ -64,7 +64,7 @@ public class DirectReviewDownloadableResourceCreatorJob extends DownloadableReso
                     + getFilenameTimestampFormat().format(new Date())
                     + ".csv";
             File csvFile = getFile(csvFilename);
-            DirectReviewCsvPresenter csvPresenter = new DirectReviewCsvPresenter(env, devManager);
+            DirectReviewCsvPresenter csvPresenter = new DirectReviewCsvPresenter(env, devManager, drSearchService);
             csvPresenter.presentAsFile(csvFile);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);

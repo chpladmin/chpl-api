@@ -36,6 +36,11 @@ public class MeasureDAO extends BaseDAOImpl {
         return result;
     }
 
+    public Measure getMeasureByMacraMeasureId(Long macraMeasureId) {
+        MeasureEntity entity = getEntityByMacraMeasureId(macraMeasureId);
+        return entity.convert();
+    }
+
     public MeasureEntity getEntityByMacraMeasureId(Long macraMeasureId) {
         Query query = entityManager.createQuery(
                 MEASURE_HQL_BEGIN

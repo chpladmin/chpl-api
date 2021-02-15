@@ -7,13 +7,6 @@
 
     <persistence-unit name="openchpl" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <!-- not sure why but the entities from auth need to be declared
-            here -->
-        <class>gov.healthit.chpl.entity.auth.UserEntity</class>
-        <class>gov.healthit.chpl.entity.auth.UserContactEntity</class>
-        <class>gov.healthit.chpl.entity.auth.UserPermissionEntity</class>
-        <class>gov.healthit.chpl.entity.auth.UserResetTokenEntity</class>
-        <class>gov.healthit.chpl.entity.auth.InvitationEntity</class>
         <properties>
             <!-- SQL values should be false normally; true if debugging -->
             <property name="hibernate.show_sql" value="false" />

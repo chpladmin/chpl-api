@@ -2,14 +2,17 @@ package gov.healthit.chpl.domain.search;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-/**
- * Class containing fields that are flattened using an emoji delimiter. This includes CQMs, certification criteria,
- * previous developers, and an array of API Documentation as necessary.
- * @author alarned
- *
- */
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
+@Data
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResult {
-    private static final long serialVersionUID = -2547390525592841044L;
+    private static final long serialVersionUID = -2547390525592841033L;
     public static final String CERTS_SPLIT_CHAR = "\u263A";
 
     @JsonView({
@@ -36,64 +39,12 @@ public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResu
 
     private String apiDocumentation;
 
-    /**
-     * Default constructor.
-     */
-    public CertifiedProductFlatSearchResult() {
-
-    }
-
-    /**
-     * Constructed from other flat search result.
-     * @param other the other one
-     */
-    public CertifiedProductFlatSearchResult(final CertifiedProductFlatSearchResult other) {
+    public CertifiedProductFlatSearchResult(CertifiedProductFlatSearchResult other) {
         super(other);
         this.previousDevelopers = other.getPreviousDevelopers();
         this.criteriaMet = other.getCriteriaMet();
         this.cqmsMet = other.getCqmsMet();
         this.surveillanceDates = other.getSurveillanceDates();
         this.apiDocumentation = other.getApiDocumentation();
-    }
-
-    public String getPreviousDevelopers() {
-        return previousDevelopers;
-    }
-
-    public void setPreviousDevelopers(final String previousDevelopers) {
-        this.previousDevelopers = previousDevelopers;
-    }
-
-    public String getCriteriaMet() {
-        return criteriaMet;
-    }
-
-    public void setCriteriaMet(final String criteriaMet) {
-        this.criteriaMet = criteriaMet;
-    }
-
-    public String getCqmsMet() {
-        return cqmsMet;
-    }
-
-    public void setCqmsMet(final String cqmsMet) {
-        this.cqmsMet = cqmsMet;
-    }
-
-    public String getApiDocumentation() {
-        return apiDocumentation;
-    }
-
-    public void setApiDocumentation(final String apiDocumentation) {
-        this.apiDocumentation = apiDocumentation;
-    }
-
-
-    public String getSurveillanceDates() {
-        return surveillanceDates;
-    }
-
-    public void setSurveillanceDates(final String surveillanceDates) {
-        this.surveillanceDates = surveillanceDates;
     }
 }

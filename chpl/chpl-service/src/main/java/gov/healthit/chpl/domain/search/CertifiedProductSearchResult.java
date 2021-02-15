@@ -8,13 +8,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 @Data
 public class CertifiedProductSearchResult implements Serializable {
-    private static final long serialVersionUID = -2547390525592841034L;
+    private static final long serialVersionUID = -2547390525592841123L;
 
     @JsonView({
             SearchViews.Default.class
@@ -45,6 +46,8 @@ public class CertifiedProductSearchResult implements Serializable {
             SearchViews.Default.class
     })
     private String practiceType;
+
+    private Long developerId;
 
     @JsonView({
             SearchViews.Default.class
@@ -89,12 +92,30 @@ public class CertifiedProductSearchResult implements Serializable {
     @JsonView({
             SearchViews.Default.class
     })
-    private Long openNonconformityCount;
+    private Long openSurveillanceNonConformityCount;
 
     @JsonView({
             SearchViews.Default.class
     })
-    private Long closedNonconformityCount;
+    private Long closedSurveillanceNonConformityCount;
+
+    @JsonView({
+        SearchViews.Default.class
+    })
+    @Builder.Default
+    private Integer directReviewCount = 0;
+
+    @JsonView({
+            SearchViews.Default.class
+    })
+    @Builder.Default
+    private Integer openDirectReviewNonConformityCount = 0;
+
+    @JsonView({
+            SearchViews.Default.class
+    })
+    @Builder.Default
+    private Integer closedDirectReviewNonConformityCount = 0;
 
     private Long openSurveillanceCount;
     private Long closedSurveillanceCount;
@@ -103,7 +124,7 @@ public class CertifiedProductSearchResult implements Serializable {
     private Long numMeaningfulUseDate;
     private String transparencyAttestationUrl;
 
-    public CertifiedProductSearchResult(final CertifiedProductSearchResult other) {
+    public CertifiedProductSearchResult(CertifiedProductSearchResult other) {
         this.id = other.getId();
         this.chplProductNumber = other.getChplProductNumber();
         this.edition = other.getEdition();
@@ -121,8 +142,11 @@ public class CertifiedProductSearchResult implements Serializable {
         this.surveillanceCount = other.getSurveillanceCount();
         this.openSurveillanceCount = other.getOpenSurveillanceCount();
         this.closedSurveillanceCount = other.getClosedSurveillanceCount();
-        this.openNonconformityCount = other.getOpenNonconformityCount();
-        this.closedNonconformityCount = other.getClosedNonconformityCount();
+        this.openSurveillanceNonConformityCount = other.getOpenSurveillanceNonConformityCount();
+        this.closedSurveillanceNonConformityCount = other.getClosedSurveillanceNonConformityCount();
+        this.directReviewCount = other.getDirectReviewCount();
+        this.openDirectReviewNonConformityCount = other.getOpenDirectReviewNonConformityCount();
+        this.closedDirectReviewNonConformityCount = other.getClosedDirectReviewNonConformityCount();
         this.numMeaningfulUse = other.getNumMeaningfulUse();
         this.numMeaningfulUseDate = other.getNumMeaningfulUseDate();
         this.transparencyAttestationUrl = other.getTransparencyAttestationUrl();

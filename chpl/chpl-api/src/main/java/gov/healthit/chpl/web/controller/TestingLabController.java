@@ -30,6 +30,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.manager.auth.UserManager;
@@ -45,6 +46,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "atls")
 @RestController
 @RequestMapping("/atls")
+@Loggable
 public class TestingLabController {
 
     @Autowired

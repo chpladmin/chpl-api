@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.Query;
@@ -28,6 +29,7 @@ import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResultLegacy;
 import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
 import gov.healthit.chpl.domain.search.SearchRequest;
 import gov.healthit.chpl.domain.search.SearchSetOperator;
@@ -115,6 +117,27 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         return domainResults;
     }
 
+    @Deprecated
+    public List<CertifiedProductFlatSearchResultLegacy> getAllCertifiedProductsLegacy() {
+        LOGGER.info("Starting basic search query.");
+        Query query = entityManager.createQuery("SELECT cps "
+                + "FROM CertifiedProductBasicSearchResultEntity cps ",
+                CertifiedProductBasicSearchResultEntity.class);
+
+        Date startDate = new Date();
+        List<CertifiedProductBasicSearchResultEntity> results = query.getResultList();
+        Date endDate = new Date();
+        LOGGER.info("Got query results in " + (endDate.getTime() - startDate.getTime()) + " millis");
+        List<CertifiedProductFlatSearchResultLegacy> domainResults = null;
+
+        try {
+            domainResults = convertToFlatListingsLegacy(results);
+        } catch (Exception ex) {
+            LOGGER.error("Could not convert to flat listings " + ex.getMessage(), ex);
+        }
+        return domainResults;
+    }
+
     public int getTotalResultCount(final SearchRequest searchRequest) {
         int totalCount = -1;
         String sql = "SELECT count(*) FROM ";
@@ -129,9 +152,6 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
     }
 
     public Collection<CertifiedProductBasicSearchResult> search(final SearchRequest searchRequest) {
-        //        List<CertifiedProductBasicSearchResult> results =
-        //                new ArrayList<CertifiedProductBasicSearchResult>();
-
         //this is always the beginning of the query
         String sql = "SELECT row_number() OVER() as \"unique_id\", certified_product_search_result.* "
                 + "FROM "
@@ -172,7 +192,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         return listingResultsMap.values();
     }
 
-    private String createFilterQuery(final SearchRequest searchRequest) {
+    private String createFilterQuery(SearchRequest searchRequest) {
         String sql = "(SELECT DISTINCT "
                 + "cp.certified_product_id, "
                 //all fields that can be ordered by need to go here
@@ -568,8 +588,51 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         query.setParameter("lastResult", lastResult);
     }
 
-    private void convertToListing(final CertifiedProductListingSearchResultEntity queryResult,
-            final CertifiedProductBasicSearchResult listing) {
+    private List<CertifiedProductFlatSearchResult> convertToFlatListings(List<CertifiedProductBasicSearchResultEntity> dbResults) {
+        List<CertifiedProductFlatSearchResult> results = new ArrayList<CertifiedProductFlatSearchResult>(
+                dbResults.size());
+        return dbResults.stream()
+            .map(dbResult -> buildFlatSearchResult(dbResult))
+            .collect(Collectors.toList());
+    }
+
+    private CertifiedProductFlatSearchResult buildFlatSearchResult(CertifiedProductBasicSearchResultEntity entity) {
+        return CertifiedProductFlatSearchResult.builder()
+                .id(entity.getId())
+                .chplProductNumber(entity.getChplProductNumber())
+                .edition(entity.getEdition())
+                .curesUpdate(entity.getCuresUpdate())
+                .acb(entity.getAcbName())
+                .acbCertificationId(entity.getAcbCertificationId())
+                .practiceType(entity.getPracticeTypeName())
+                .developerId(entity.getDeveloperId())
+                .developer(entity.getDeveloper())
+                .developerStatus(entity.getDeveloperStatus())
+                .product(entity.getProduct())
+                .version(entity.getVersion())
+                .numMeaningfulUse(entity.getMeaningfulUseUserCount())
+                .numMeaningfulUseDate(entity.getMeaningfulUseUserDate() != null
+                    ? entity.getMeaningfulUseUserDate().getTime() : null)
+                .decertificationDate(entity.getDecertificationDate() == null ? null : entity.getDecertificationDate().getTime())
+                .certificationDate(entity.getCertificationDate().getTime())
+                .certificationStatus(entity.getCertificationStatus())
+                .transparencyAttestationUrl(entity.getTransparencyAttestationUrl())
+                .apiDocumentation(entity.getApiDocumentation())
+                .surveillanceCount(entity.getSurveillanceCount())
+                .openSurveillanceCount(entity.getOpenSurveillanceCount())
+                .closedSurveillanceCount(entity.getClosedSurveillanceCount())
+                .openSurveillanceNonConformityCount(entity.getOpenSurveillanceNonConformityCount())
+                .closedSurveillanceNonConformityCount(entity.getClosedSurveillanceNonConformityCount())
+                .surveillanceDates(entity.getSurveillanceDates())
+                .criteriaMet(entity.getCerts())
+                .cqmsMet(entity.getCqms())
+                .previousDevelopers(entity.getPreviousDevelopers())
+                .build();
+    }
+
+    @Deprecated
+    private void convertToListing(CertifiedProductListingSearchResultEntity queryResult,
+            CertifiedProductBasicSearchResult listing) {
         listing.setId(queryResult.getId());
         listing.setChplProductNumber(queryResult.getChplProductNumber());
         listing.setCertificationStatus(queryResult.getCertificationStatus());
@@ -586,8 +649,8 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         listing.setProduct(queryResult.getProduct());
         listing.setDeveloper(queryResult.getDeveloper());
         listing.setSurveillanceCount(queryResult.getCountSurveillance().longValue());
-        listing.setOpenNonconformityCount(queryResult.getCountOpenNonconformities().longValue());
-        listing.setClosedNonconformityCount(queryResult.getCountClosedNonconformities().longValue());
+        listing.setOpenNonconformityCount(queryResult.getCountOpenSurveillanceNonconformities().longValue());
+        listing.setClosedNonconformityCount(queryResult.getCountClosedSurveillanceNonconformities().longValue());
 
         if (queryResult.getCertificationDate() != null) {
             listing.setCertificationDate(queryResult.getCertificationDate().getTime());
@@ -610,12 +673,13 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         }
     }
 
-    private List<CertifiedProductFlatSearchResult> convertToFlatListings(
-            final List<CertifiedProductBasicSearchResultEntity> dbResults) {
-        List<CertifiedProductFlatSearchResult> results = new ArrayList<CertifiedProductFlatSearchResult>(
+    @Deprecated
+    private List<CertifiedProductFlatSearchResultLegacy> convertToFlatListingsLegacy(
+            List<CertifiedProductBasicSearchResultEntity> dbResults) {
+        List<CertifiedProductFlatSearchResultLegacy> results = new ArrayList<CertifiedProductFlatSearchResultLegacy>(
                 dbResults.size());
         for (CertifiedProductBasicSearchResultEntity dbResult : dbResults) {
-            CertifiedProductFlatSearchResult result = new CertifiedProductFlatSearchResult();
+            CertifiedProductFlatSearchResultLegacy result = new CertifiedProductFlatSearchResultLegacy();
             result.setId(dbResult.getId());
             result.setChplProductNumber(dbResult.getChplProductNumber());
             result.setEdition(dbResult.getEdition());
@@ -639,9 +703,9 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
             result.setSurveillanceCount(dbResult.getSurveillanceCount());
             result.setOpenSurveillanceCount(dbResult.getOpenSurveillanceCount());
             result.setClosedSurveillanceCount(dbResult.getClosedSurveillanceCount());
-            result.setOpenNonconformityCount(dbResult.getOpenNonconformityCount());
-            result.setClosedNonconformityCount(dbResult.getClosedNonconformityCount());
-            result.setSurveillanceDates(dbResult.getSurvDates());
+            result.setOpenNonconformityCount(dbResult.getOpenSurveillanceNonConformityCount());
+            result.setClosedNonconformityCount(dbResult.getClosedSurveillanceNonConformityCount());
+            result.setSurveillanceDates(dbResult.getSurveillanceDates());
             result.setCriteriaMet(dbResult.getCerts());
             result.setCqmsMet(dbResult.getCqms());
             result.setPreviousDevelopers(dbResult.getPreviousDevelopers());

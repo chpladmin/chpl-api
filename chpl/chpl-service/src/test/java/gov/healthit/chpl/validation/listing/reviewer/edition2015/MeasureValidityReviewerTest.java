@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.text.ParseException;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,19 +20,24 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
 public class MeasureValidityReviewerTest {
+    private CertificationCriterionService criterionService;
     private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
     private MeasureValidityReviewer reviewer;
 
     @Before
     public void setup() {
+        criterionService = Mockito.mock(CertificationCriterionService.class);
+        Mockito.when(criterionService.getByNumber(ArgumentMatchers.anyString()))
+            .thenReturn(Stream.of(buildCriterion(1L, "170.315 (a)(1)")).collect(Collectors.toList()));
         validationUtils = Mockito.mock(ValidationUtils.class);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        reviewer = new MeasureValidityReviewer(validationUtils, msgUtil);
+        reviewer = new MeasureValidityReviewer(criterionService, validationUtils, msgUtil);
     }
 
     @Test
@@ -344,12 +351,130 @@ public class MeasureValidityReviewerTest {
         assertEquals(0, listing.getErrorMessages().size());
     }
 
+    @Test
+    public void review_missingAssociatedCuresCriterion_hasErrorMessage() throws ParseException {
+        Mockito.when(criterionService.getByNumber(ArgumentMatchers.eq("170.315 (g)(1)")))
+        .thenReturn(Stream.of(buildCriterion(1L, "170.315 (g)(1)"), buildCuresCriterion(2L, "170.315 (g)(1)")).collect(Collectors.toList()));
+
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.measure.missingRequiredCriterion"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyString()))
+                .thenAnswer(i -> String.format("The %s measure %s for %s is missing required criterion %s.",
+                        i.getArgument(1), i.getArgument(2), i.getArgument(3), i.getArgument(4)));
+
+        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
+        CertificationResult g1Result = CertificationResult.builder()
+                .id(1L)
+                .criterion(buildCriterion(1L, "170.315 (g)(1)"))
+                .success(true)
+                .build();
+        listing.getCertificationResults().add(g1Result);
+        listing.getMeasures().add(ListingMeasure.builder()
+                .measure(Measure.builder()
+                        .id(1L)
+                        .name("Test")
+                        .abbreviation("T")
+                        .allowedCriteria(Stream.of(buildCriterion(1L, "170.315 (g)(1)"), buildCuresCriterion(2L, "170.315 (g)(1)")).collect(Collectors.toSet()))
+                        .build())
+                .measureType(MeasureType.builder()
+                        .id(1L)
+                        .name("G1")
+                        .build())
+                .associatedCriteria(Stream.of(buildCriterion(1L, "170.315 (g)(1)")).collect(Collectors.toSet()))
+                .build());
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getErrorMessages().size());
+        assertEquals("The G1 measure Test for T is missing required criterion 170.315 (g)(1) (Cures Update).",
+                listing.getErrorMessages().iterator().next());
+    }
+
+    @Test
+    public void review_missingAssociatedLegacyCriterion_hasErrorMessage() throws ParseException {
+        Mockito.when(criterionService.getByNumber(ArgumentMatchers.eq("170.315 (g)(1)")))
+        .thenReturn(Stream.of(buildCriterion(1L, "170.315 (g)(1)"), buildCuresCriterion(2L, "170.315 (g)(1)")).collect(Collectors.toList()));
+
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.measure.missingRequiredCriterion"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyString()))
+                .thenAnswer(i -> String.format("The %s measure %s for %s is missing required criterion %s.",
+                        i.getArgument(1), i.getArgument(2), i.getArgument(3), i.getArgument(4)));
+
+        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
+        CertificationResult g1Result = CertificationResult.builder()
+                .id(1L)
+                .criterion(buildCriterion(1L, "170.315 (g)(1)"))
+                .success(true)
+                .build();
+        listing.getCertificationResults().add(g1Result);
+        listing.getMeasures().add(ListingMeasure.builder()
+                .measure(Measure.builder()
+                        .id(1L)
+                        .name("Test")
+                        .abbreviation("T")
+                        .allowedCriteria(Stream.of(buildCriterion(1L, "170.315 (g)(1)"), buildCuresCriterion(2L, "170.315 (g)(1)")).collect(Collectors.toSet()))
+                        .build())
+                .measureType(MeasureType.builder()
+                        .id(1L)
+                        .name("G1")
+                        .build())
+                .associatedCriteria(Stream.of(buildCuresCriterion(2L, "170.315 (g)(1)")).collect(Collectors.toSet()))
+                .build());
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getErrorMessages().size());
+        assertEquals("The G1 measure Test for T is missing required criterion 170.315 (g)(1).",
+                listing.getErrorMessages().iterator().next());
+    }
+
+    @Test
+    public void review_hasAssociatedCuresAndLegacyCriterion_noErrorMessage() throws ParseException {
+        Mockito.when(criterionService.getByNumber(ArgumentMatchers.eq("170.315 (g)(1)")))
+        .thenReturn(Stream.of(buildCriterion(1L, "170.315 (g)(1)"), buildCuresCriterion(2L, "170.315 (g)(1)")).collect(Collectors.toList()));
+
+        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
+        CertificationResult g1Result = CertificationResult.builder()
+                .id(1L)
+                .criterion(buildCriterion(1L, "170.315 (g)(1)"))
+                .success(true)
+                .build();
+        listing.getCertificationResults().add(g1Result);
+        listing.getMeasures().add(ListingMeasure.builder()
+                .measure(Measure.builder()
+                        .id(1L)
+                        .name("Test")
+                        .abbreviation("T")
+                        .allowedCriteria(Stream.of(buildCriterion(1L, "170.315 (g)(1)"), buildCuresCriterion(2L, "170.315 (g)(1)")).collect(Collectors.toSet()))
+                        .build())
+                .measureType(MeasureType.builder()
+                        .id(1L)
+                        .name("G1")
+                        .build())
+                .associatedCriteria(Stream.of(buildCriterion(1L, "170.315 (g)(1)"), buildCuresCriterion(2L, "170.315 (g)(1)")).collect(Collectors.toSet()))
+                .build());
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
     private Set<CertificationCriterion> buildCriterionSet(Long id, String number) {
         Set<CertificationCriterion> critSet = new LinkedHashSet<CertificationCriterion>();
-        critSet.add(CertificationCriterion.builder()
-                .id(id)
-                .number(number)
-                .build());
+        critSet.add(buildCriterion(id, number));
         return critSet;
+    }
+
+    private CertificationCriterion buildCriterion(Long id, String number) {
+        return CertificationCriterion.builder()
+        .id(id)
+        .number(number)
+        .build();
+    }
+
+    private CertificationCriterion buildCuresCriterion(Long id, String number) {
+        return CertificationCriterion.builder()
+        .id(id)
+        .number(number)
+        .title("(Cures Update)")
+        .build();
     }
 }
