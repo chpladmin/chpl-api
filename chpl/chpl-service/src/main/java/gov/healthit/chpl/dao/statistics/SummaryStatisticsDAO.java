@@ -6,8 +6,6 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.user.User;
@@ -18,7 +16,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("summaryStatisticsDAO")
 public class SummaryStatisticsDAO extends BaseDAOImpl {
-    private static final Logger LOGGER = LogManager.getLogger(SummaryStatisticsDAO.class);
 
     public SummaryStatisticsEntity create(SummaryStatisticsEntity summaryStatistics)
             throws EntityCreationException, EntityRetrievalException {
