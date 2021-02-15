@@ -43,7 +43,7 @@ public class SvapController {
 
     @ApiOperation(value = "Create an SVAP.",
             notes = "Provides functionality to add a new SVAP and the Criteria associated with it."
-                    + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.")
+                    + "Security Restrictions: To create: ROLE_ADMIN or ROLE_ONC.")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = "application/json; charset=utf-8")
     public @ResponseBody Svap createSvap(@RequestBody(required = true) Svap svap) throws EntityRetrievalException, ValidationException {
