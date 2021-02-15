@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.JiraRequestFailedException;
 import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
@@ -50,22 +49,16 @@ public class AsynchronousCacheInitialization {
 
     @Async
     @Transactional
-    public Future<Boolean> initializeBasicSearch() throws IOException, EntityRetrievalException, InterruptedException {
+    public Future<Boolean> initializeBasicSearchAndDirectReviews() throws IOException, EntityRetrievalException, InterruptedException {
+        LOGGER.info("Starting cache initialization for Direct Reviews");
+        drService.populateDirectReviewsCache();
+        LOGGER.info("Finished cache initialization for Direct Reviews");
         LOGGER.info("Starting cache initialization for CertifiedProductSearchManager.search()");
         certifiedProductSearchManager.search();
         LOGGER.info("Finished cache initialization for CertifiedProductSearchManager.search()");
         LOGGER.info("Starting cache initialization for CertifiedProductSearchManager.searchLegacy()");
         certifiedProductSearchManager.searchLegacy();
         LOGGER.info("Finished cache initialization for CertifiedProductSearchManager.searchLegacy()");
-        return new AsyncResult<>(true);
-    }
-
-    @Async
-    @Transactional
-    public Future<Boolean> initializeDirectReviews() throws IOException, JiraRequestFailedException, InterruptedException {
-        LOGGER.info("Starting cache initialization for Direct Reviews");
-        drService.populateDirectReviewsCache();
-        LOGGER.info("Finished cache initialization for Direct Reviews");
         return new AsyncResult<>(true);
     }
 

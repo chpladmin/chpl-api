@@ -62,8 +62,11 @@ public class ChplCacheConfig {
         //this looks a little weird to me but it's done according to ehcace documentation
         //so that the decorated cache gets properly initialized
         //https://www.ehcache.org/documentation/2.8/apis/cache-decorators.html#creating-a-decorator
-        Ehcache drCache = createEternalCache(CacheNames.DIRECT_REVIEWS);
-        backingManager.addCacheIfAbsent(drCache);
+        Ehcache drCache = backingManager.getEhcache(CacheNames.DIRECT_REVIEWS);
+        if (drCache == null) {
+            drCache = createEternalCache(CacheNames.DIRECT_REVIEWS);
+            backingManager.addCacheIfAbsent(drCache);
+        }
         Ehcache decoratedDrCache = createDirectReviewCache(drCache, CacheNames.DIRECT_REVIEWS);
         backingManager.replaceCacheWithDecoratedCache(drCache, decoratedDrCache);
 
