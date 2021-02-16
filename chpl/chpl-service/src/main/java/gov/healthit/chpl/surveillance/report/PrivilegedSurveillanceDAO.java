@@ -10,14 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.entity.surveillance.report.QuarterlyReportSurveillanceMapEntity;
-import gov.healthit.chpl.entity.surveillance.report.SurveillanceOutcomeEntity;
-import gov.healthit.chpl.entity.surveillance.report.SurveillanceProcessTypeEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.surveillance.report.dto.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.surveillance.report.dto.SurveillanceOutcomeDTO;
 import gov.healthit.chpl.surveillance.report.dto.SurveillanceProcessTypeDTO;
+import gov.healthit.chpl.surveillance.report.entity.QuarterlyReportSurveillanceMapEntity;
+import gov.healthit.chpl.surveillance.report.entity.SurveillanceOutcomeEntity;
+import gov.healthit.chpl.surveillance.report.entity.SurveillanceProcessTypeEntity;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import lombok.extern.log4j.Log4j2;

@@ -11,7 +11,7 @@ import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.listing.ListingWithPrivilegedSurveillanceEntity;
-import gov.healthit.chpl.entity.surveillance.report.PrivilegedSurveillanceEntity;
+import gov.healthit.chpl.surveillance.report.entity.PrivilegedSurveillanceEntity;
 import lombok.Data;
 import lombok.Singular;
 

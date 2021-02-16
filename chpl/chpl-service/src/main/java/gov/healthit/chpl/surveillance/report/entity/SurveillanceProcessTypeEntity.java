@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity.surveillance.report;
+package gov.healthit.chpl.surveillance.report.entity;
 
 import java.util.Date;
 
@@ -13,8 +13,8 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "surveillance_outcome")
-public class SurveillanceOutcomeEntity {
+@Table(name = "surveillance_process_type")
+public class SurveillanceProcessTypeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

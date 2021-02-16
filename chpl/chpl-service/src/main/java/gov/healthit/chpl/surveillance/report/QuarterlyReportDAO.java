@@ -14,13 +14,13 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.listing.ListingWithPrivilegedSurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
-import gov.healthit.chpl.entity.surveillance.report.QuarterlyReportEntity;
-import gov.healthit.chpl.entity.surveillance.report.QuarterlyReportExcludedListingMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportExclusionDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportRelevantListingDTO;
+import gov.healthit.chpl.surveillance.report.entity.QuarterlyReportEntity;
+import gov.healthit.chpl.surveillance.report.entity.QuarterlyReportExcludedListingMapEntity;
 import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("quarterlyReportDao")

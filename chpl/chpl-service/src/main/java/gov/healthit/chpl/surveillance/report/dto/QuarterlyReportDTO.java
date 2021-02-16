@@ -6,7 +6,7 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.entity.surveillance.report.QuarterlyReportEntity;
+import gov.healthit.chpl.surveillance.report.entity.QuarterlyReportEntity;
 import lombok.Data;
 
 @Data

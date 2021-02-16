@@ -8,9 +8,9 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.entity.surveillance.report.QuarterEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.surveillance.report.dto.QuarterDTO;
+import gov.healthit.chpl.surveillance.report.entity.QuarterEntity;
 
 @Repository("quarterDao")
 public class QuarterDAO extends BaseDAOImpl {

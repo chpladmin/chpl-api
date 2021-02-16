@@ -1,6 +1,6 @@
 package gov.healthit.chpl.surveillance.report.dto;
 
-import gov.healthit.chpl.entity.surveillance.report.SurveillanceProcessTypeEntity;
+import gov.healthit.chpl.surveillance.report.entity.SurveillanceProcessTypeEntity;
 import lombok.Data;
 
 @Data

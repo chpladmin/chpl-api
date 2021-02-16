@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity.surveillance.report;
+package gov.healthit.chpl.surveillance.report.entity;
 
 import java.util.Date;
 
@@ -12,35 +12,34 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
+import gov.healthit.chpl.entity.CertificationBodyEntity;
 import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "quarterly_report_excluded_listing_map")
-public class QuarterlyReportExcludedListingMapEntity {
+@Table(name = "annual_report")
+public class AnnualReportEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "quarterly_report_id")
-    private Long quarterlyReportId;
+    @Column(name = "certification_body_id")
+    private Long certificationBodyId;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "quarterly_report_id", insertable = false, updatable = false)
-    private QuarterlyReportEntity quarterlyReport;
+    @JoinColumn(name = "certification_body_id", insertable = false, updatable = false)
+    private CertificationBodyEntity acb;
 
-    @Column(name = "listing_id")
-    private Long listingId;
+    @Column(name = "year")
+    private Integer year;
 
-    @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "listing_id", insertable = false, updatable = false)
-    private CertifiedProductDetailsEntity listing;
+    @Column(name = "obstacle_summary")
+    private String obstacleSummary;
 
-    @Column(name = "reason")
-    private String reason;
+    @Column(name = "findings_summary")
+    private String findingsSummary;
 
     @Column(name = "deleted", insertable = false)
     private Boolean deleted;

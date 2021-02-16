@@ -1,7 +1,7 @@
 package gov.healthit.chpl.surveillance.report.dto;
 
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.entity.surveillance.report.AnnualReportEntity;
+import gov.healthit.chpl.surveillance.report.entity.AnnualReportEntity;
 import lombok.Data;
 
 @Data

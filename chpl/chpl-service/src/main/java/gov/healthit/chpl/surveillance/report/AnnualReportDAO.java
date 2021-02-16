@@ -9,10 +9,10 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.entity.surveillance.report.AnnualReportEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.surveillance.report.dto.AnnualReportDTO;
+import gov.healthit.chpl.surveillance.report.entity.AnnualReportEntity;
 import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("annualReportDao")

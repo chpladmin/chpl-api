@@ -1,6 +1,6 @@
 package gov.healthit.chpl.surveillance.report.dto;
 
-import gov.healthit.chpl.entity.surveillance.report.QuarterlyReportExcludedListingMapEntity;
+import gov.healthit.chpl.surveillance.report.entity.QuarterlyReportExcludedListingMapEntity;
 import lombok.Data;
 
 @Data
