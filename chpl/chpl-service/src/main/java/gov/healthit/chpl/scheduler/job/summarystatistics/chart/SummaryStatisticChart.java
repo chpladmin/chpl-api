@@ -30,7 +30,7 @@ public abstract class SummaryStatisticChart {
 
     private static final int TITLE_FONT_SIZE = 16;
 
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE LLL dd yyyy");
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E MMM dd yyyy");
 
     public abstract JFreeChart generate(File csv) throws IOException;
 
