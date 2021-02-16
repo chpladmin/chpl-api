@@ -2,14 +2,11 @@ package gov.healthit.chpl.permissions;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.PermissionEvaluator;
-import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -43,7 +40,6 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 @Loggable
 @Component
 public class ResourcePermissions {
-    private PermissionEvaluator permissionEvaluator;
     private UserCertificationBodyMapDAO userCertificationBodyMapDAO;
     private UserTestingLabMapDAO userTestingLabMapDAO;
     private UserDeveloperMapDAO userDeveloperMapDAO;
@@ -55,12 +51,10 @@ public class ResourcePermissions {
 
     @SuppressWarnings({"checkstyle:parameternumber"})
     @Autowired
-    public ResourcePermissions(PermissionEvaluator permissionEvaluator,
-            UserCertificationBodyMapDAO userCertificationBodyMapDAO,
+    public ResourcePermissions(UserCertificationBodyMapDAO userCertificationBodyMapDAO,
             UserDeveloperMapDAO userDeveloperMapDAO, CertificationBodyDAO acbDAO,
             UserTestingLabMapDAO userTestingLabMapDAO, TestingLabDAO atlDAO,
             ErrorMessageUtil errorMessageUtil, UserDAO userDAO, DeveloperDAO developerDAO) {
-        this.permissionEvaluator = permissionEvaluator;
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
         this.acbDAO = acbDAO;
         this.userTestingLabMapDAO = userTestingLabMapDAO;
@@ -357,7 +351,7 @@ public class ResourcePermissions {
     @Transactional(readOnly = true)
     public boolean hasPermissionOnUser(UserDTO user) {
 
-        if (isUserRoleAdmin() || doesCurrentUserHaveExplicitAdminToSubject(user)) {
+        if (isUserRoleAdmin() || AuthUtil.getCurrentUser().getId().equals(user.getId())) {
             return true;
         } else if (isUserRoleOnc()) {
             return !getRoleByUserId(user.getId()).getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN);
@@ -401,14 +395,6 @@ public class ResourcePermissions {
             }
         }
         return false;
-    }
-
-    private boolean doesCurrentUserHaveExplicitAdminToSubject(UserDTO subject) {
-        if (Objects.nonNull(AuthUtil.getCurrentUser())) {
-            return permissionEvaluator.hasPermission(AuthUtil.getCurrentUser(), subject, BasePermission.ADMINISTRATION);
-        } else {
-            return false;
-        }
     }
 
     public boolean isUserRoleAdmin() {

@@ -25,6 +25,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -116,7 +117,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter {
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
     }
-    
+
     @Bean
     public CookieLocaleResolver localeResolver() {
         CookieLocaleResolver localeResolver = new CookieLocaleResolver();
@@ -144,7 +145,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter {
         CacheControlHandlerInterceptor interceptor = new CacheControlHandlerInterceptor();
         return interceptor;
     }
-    
+
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
         registry.addInterceptor(localeInterceptor());
@@ -161,5 +162,11 @@ public class CHPLConfig extends WebMvcConfigurerAdapter {
         viewResolver.setPrefix("/webapp/WEB-INF/jsp/");
         viewResolver.setSuffix(".jsp");
         return viewResolver;
+    }
+
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        LOGGER.info("Get BCryptPasswordEncoder");
+        return new BCryptPasswordEncoder();
     }
 }
