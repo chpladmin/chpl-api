@@ -1,4 +1,4 @@
-package gov.healthit.chpl.svap.entity;
+package gov.healthit.chpl.entity;
 
 import java.util.Date;
 
@@ -13,19 +13,18 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "svap_criteria_map")
+@Table(name = "certification_criterion_attribute")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SvapCriteriaMapEntity {
+public class CertificationCriterionAttributeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,21 +32,13 @@ public class SvapCriteriaMapEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "criteria_id")
-    private Long certificationCriterionId;
-
     @Basic(optional = false)
     @OneToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "criteria_id", insertable = false, updatable = false)
-    private CertificationCriterionEntity criteria;
+    @JoinColumn(name = "criterion_id", insertable = false, updatable = false)
+    private CertificationCriterionEntity criterion;
 
-    @Column(name = "svap_id")
-    private Long svapId;
-
-    @Basic(optional = false)
-    @OneToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "svap_id", insertable = false, updatable = false)
-    private SvapEntity svap;
+    @Column(name = "svap")
+    private Boolean svap;
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
