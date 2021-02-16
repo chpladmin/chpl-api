@@ -40,6 +40,7 @@ import gov.healthit.chpl.manager.ComplaintManager;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.surveillance.report.PrivilegedSurveillanceDAO;
 import gov.healthit.chpl.surveillance.report.builder.MultiQuarterWorksheetBuilderUtil;
+import gov.healthit.chpl.surveillance.report.builder.SurveillanceReportWorkbookWrapper;
 import gov.healthit.chpl.surveillance.report.dto.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 

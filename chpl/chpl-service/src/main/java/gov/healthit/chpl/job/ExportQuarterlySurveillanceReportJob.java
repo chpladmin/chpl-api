@@ -19,7 +19,7 @@ import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.entity.job.JobStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
-import gov.healthit.chpl.surveillance.report.builder2019.QuarterlyReportBuilderXlsx;
+import gov.healthit.chpl.surveillance.report.builder2019.QuarterlyReportBuilder2019;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -30,12 +30,12 @@ public class ExportQuarterlySurveillanceReportJob extends RunnableJob {
     private static final Logger LOGGER = LogManager.getLogger(ExportQuarterlySurveillanceReportJob.class);
     private ErrorMessageUtil errorMessageUtil;
     private SurveillanceReportManager reportManager;
-    private QuarterlyReportBuilderXlsx reportBuilder;
+    private QuarterlyReportBuilder2019 reportBuilder;
 
     @Autowired
     public ExportQuarterlySurveillanceReportJob(final ErrorMessageUtil errorMessageUtil,
             final SurveillanceReportManager reportManager,
-            final QuarterlyReportBuilderXlsx reportBuilder) {
+            final QuarterlyReportBuilder2019 reportBuilder) {
         this.errorMessageUtil = errorMessageUtil;
         this.reportManager = reportManager;
         this.reportBuilder = reportBuilder;

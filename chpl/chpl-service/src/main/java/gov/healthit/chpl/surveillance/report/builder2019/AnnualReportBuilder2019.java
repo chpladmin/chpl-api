@@ -9,23 +9,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
+import gov.healthit.chpl.surveillance.report.builder.AnnualReportBuilderXlsx;
+import gov.healthit.chpl.surveillance.report.builder.ListWorksheetBuilder;
+import gov.healthit.chpl.surveillance.report.builder.SurveillanceReportWorkbookWrapper;
 import gov.healthit.chpl.surveillance.report.dto.AnnualReportDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 
-@Component("annualReportBuilder")
-public class AnnualReportBuilderXlsx {
+@Component("annualReportBuilder2019")
+public class AnnualReportBuilder2019 implements AnnualReportBuilderXlsx {
     private SurveillanceReportManager reportManager;
     private ListWorksheetBuilder listWorksheetBuilder;
-    private ReportInfoWorksheetBuilder reportInfoWorksheetBuilder;
+    private ReportInfoWorksheetBuilder2019 reportInfoWorksheetBuilder;
     private ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesWorksheetBuilder;
     private ComplaintsWorksheetBuilder complaintsWorksheetBuilder;
     private SurveillanceSummaryWorksheetBuilder survSummaryWorksheetBuilder;
     private SurveillanceExperienceWorksheetBuilder survExprienceWorksheetBuilder;
 
     @Autowired
-    public AnnualReportBuilderXlsx(SurveillanceReportManager reportManager,
+    public AnnualReportBuilder2019(SurveillanceReportManager reportManager,
             ListWorksheetBuilder listWorksheetBuilder,
-            AnnualReportInfoWorksheetBuilder reportInfoWorksheetBuilder,
+            ReportInfoWorksheetBuilder2019 reportInfoWorksheetBuilder,
             ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesWorksheetBuilder,
             ComplaintsWorksheetBuilder complaintsWorksheetBuilder,
             SurveillanceSummaryWorksheetBuilder survSummaryWorksheetBuilder,

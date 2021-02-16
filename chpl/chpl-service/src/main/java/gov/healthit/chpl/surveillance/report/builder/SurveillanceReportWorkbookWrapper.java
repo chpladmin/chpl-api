@@ -1,4 +1,4 @@
-package gov.healthit.chpl.surveillance.report.builder2019;
+package gov.healthit.chpl.surveillance.report.builder;
 
 import java.awt.Color;
 import java.awt.font.FontRenderContext;

@@ -8,20 +8,23 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.surveillance.report.builder.ListWorksheetBuilder;
+import gov.healthit.chpl.surveillance.report.builder.QuarterlyReportBuilderXlsx;
+import gov.healthit.chpl.surveillance.report.builder.SurveillanceReportWorkbookWrapper;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 
-@Component("quarterlyReportBuilder")
-public class QuarterlyReportBuilderXlsx {
+@Component("quarterlyReportBuilder2019")
+public class QuarterlyReportBuilder2019 implements QuarterlyReportBuilderXlsx {
 
     private ListWorksheetBuilder listWorksheetBuilder;
-    private ReportInfoWorksheetBuilder reportInfoWorksheetBuilder;
+    private ReportInfoWorksheetBuilder2019 reportInfoWorksheetBuilder;
     private ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesWorksheetBuilder;
     private ComplaintsWorksheetBuilder complaintsWorksheetBuilder;
     private SurveillanceSummaryWorksheetBuilder summaryWorksheetBuilder;
 
     @Autowired
-    public QuarterlyReportBuilderXlsx(ListWorksheetBuilder listWorksheetBuilder,
-            QuarterlyReportInfoWorksheetBuilder reportInfoWorksheetBuilder,
+    public QuarterlyReportBuilder2019(ListWorksheetBuilder listWorksheetBuilder,
+            ReportInfoWorksheetBuilder2019 reportInfoWorksheetBuilder,
             ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesWorksheetBuilder,
             ComplaintsWorksheetBuilder complaintsWorksheetBuilder,
             SurveillanceSummaryWorksheetBuilder summaryWorksheetBuilder) {
@@ -32,11 +35,6 @@ public class QuarterlyReportBuilderXlsx {
         this.summaryWorksheetBuilder = summaryWorksheetBuilder;
     }
 
-    /**
-     * Creates a formatted Excel document with the information in the report.
-     * @param report
-     * @return
-     */
     public Workbook buildXlsx(QuarterlyReportDTO report) throws IOException {
         SurveillanceReportWorkbookWrapper workbook = new SurveillanceReportWorkbookWrapper();
 
