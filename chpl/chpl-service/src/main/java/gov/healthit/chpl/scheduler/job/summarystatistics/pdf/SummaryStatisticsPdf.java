@@ -101,7 +101,7 @@ public class SummaryStatisticsPdf {
         subtitle.setFontSize(SummaryStatisticsPdfDefaults.SUBTITLE_FONT_SIZE);
         document.add(subtitle);
 
-        Paragraph currentDate = new Paragraph(LocalDate.now().format(DateTimeFormatter.ofPattern("LLLL dd, yyyy")));
+        Paragraph currentDate = new Paragraph(LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM dd, yyyy")));
         currentDate.setFont(SummaryStatisticsPdfDefaults.getDefaultFont());
         currentDate.setFontSize(SummaryStatisticsPdfDefaults.DEFAULT_FONT_SIZE);
         currentDate.setItalic();
