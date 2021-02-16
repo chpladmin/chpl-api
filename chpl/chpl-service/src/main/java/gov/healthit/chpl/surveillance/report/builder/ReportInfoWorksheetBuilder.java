@@ -31,11 +31,15 @@ public abstract class ReportInfoWorksheetBuilder {
 
     protected abstract String getReportingAcbDescription();
 
+    protected abstract String getSurveillanceActivitiesAndOutcomesDescription();
+
+    protected abstract String getReactiveSummaryTitle();
+
+    protected abstract String getReactiveSummaryDescription();
+
     protected abstract String getDisclosureSummaryTitle();
 
     protected abstract String getDisclosureSummaryDescription();
-
-    protected abstract String getReactiveSummaryTitle();
 
     public int getLastDataColumn() {
         return LAST_DATA_COLUMN;
@@ -165,9 +169,7 @@ public abstract class ReportInfoWorksheetBuilder {
         row = workbook.getRow(sheet, currRow++);
         cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
         row.setHeightInPoints((2*sheet.getDefaultRowHeightInPoints()));
-        cell.setCellValue("The ONC-ACB used the following selection method to make its "
-                + "random selection of certified Complete EHRs and certified Health IT "
-                + "Modules for surveillance initiated during the reporting period.");
+        cell.setCellValue(getSurveillanceActivitiesAndOutcomesDescription());
         sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
 
         row = workbook.getRow(sheet, currRow++);
@@ -219,12 +221,7 @@ public abstract class ReportInfoWorksheetBuilder {
         row = workbook.getRow(sheet, currRow++);
         cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
         row.setHeightInPoints((3 * sheet.getDefaultRowHeightInPoints()));
-        cell.setCellValue("In order to meet its obligation to conduct reactive surveillance, "
-                + "the ONC-ACB undertook the following activities and implemented the following "
-                + "measures to ensure that it was able to systematically obtain, synthesize and "
-                + "act on all facts and circumstances that would cause a reasonable person to "
-                + "question the ongoing compliance of any certified Complete EHR or certified "
-                + "Health IT Module. ");
+        cell.setCellValue(getReactiveSummaryDescription());
         sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
         row = workbook.getRow(sheet, currRow++);
         cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
