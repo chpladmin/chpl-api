@@ -258,7 +258,7 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
         toCreateEntity.setQuarterId(toCreate.getQuarter().getId());
         toCreateEntity.setActivitiesOutcomesSummary(toCreate.getActivitiesOutcomesSummary());
         toCreateEntity.setReactiveSummary(toCreate.getReactiveSummary());
-        toCreateEntity.setTransparencyDisclosureSummary(toCreate.getTransparencyDisclosureSummary());
+        toCreateEntity.setDisclosureSummary(toCreate.getDisclosureSummary());
         toCreateEntity.setCreationDate(new Date());
         toCreateEntity.setLastModifiedUser(AuthUtil.getAuditId());
 
@@ -294,7 +294,7 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
         toUpdateEntity.setActivitiesOutcomesSummary(toUpdate.getActivitiesOutcomesSummary());
         toUpdateEntity.setPrioritizedElementSummary(toUpdate.getPrioritizedElementSummary());
         toUpdateEntity.setReactiveSummary(toUpdate.getReactiveSummary());
-        toUpdateEntity.setTransparencyDisclosureSummary(toUpdate.getTransparencyDisclosureSummary());
+        toUpdateEntity.setDisclosureSummary(toUpdate.getDisclosureSummary());
         toUpdateEntity.setLastModifiedUser(AuthUtil.getAuditId());
 
         super.update(toUpdateEntity);

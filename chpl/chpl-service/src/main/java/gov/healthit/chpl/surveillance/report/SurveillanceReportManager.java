@@ -560,7 +560,7 @@ public class SurveillanceReportManager extends SecuredManager {
             nextReport.setActivitiesOutcomesSummary(prevReport.getActivitiesOutcomesSummary());
             nextReport.setPrioritizedElementSummary(prevReport.getPrioritizedElementSummary());
             nextReport.setReactiveSummary(prevReport.getReactiveSummary());
-            nextReport.setTransparencyDisclosureSummary(prevReport.getTransparencyDisclosureSummary());
+            nextReport.setDisclosureSummary(prevReport.getDisclosureSummary());
             try {
                 quarterlyDao.update(nextReport);
             } catch (Exception ex) {

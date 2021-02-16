@@ -33,6 +33,8 @@ public abstract class ReportInfoWorksheetBuilder {
 
     protected abstract String getDisclosureSummaryDescription();
 
+    protected abstract String getReactiveSummaryTitle();
+
     public int getLastDataColumn() {
         return LAST_DATA_COLUMN;
     }
@@ -212,7 +214,7 @@ public abstract class ReportInfoWorksheetBuilder {
         currRow = addExclusionAndExhaustionSection(workbook, sheet, reports, beginRow);
         row = workbook.getRow(sheet, currRow++);
         cell = workbook.createCell(row, 1, workbook.getItalicUnderlinedSmallStyle());
-        cell.setCellValue("Reactive Surveillance");
+        cell.setCellValue(getReactiveSummaryTitle());
         row = workbook.getRow(sheet, currRow++);
         cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
         row.setHeightInPoints((3 * sheet.getDefaultRowHeightInPoints()));

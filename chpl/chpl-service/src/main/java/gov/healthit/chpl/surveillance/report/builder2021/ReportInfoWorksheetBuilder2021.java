@@ -27,6 +27,11 @@ public class ReportInfoWorksheetBuilder2021 extends ReportInfoWorksheetBuilder {
     }
 
     @Override
+    protected String getReactiveSummaryTitle() {
+        return "Reactive Surveillance Summary";
+    }
+
+    @Override
     protected int addExclusionAndExhaustionSection(SurveillanceReportWorkbookWrapper workbook,
             Sheet sheet, List<QuarterlyReportDTO> reports, int beginRow) {
         return beginRow;
