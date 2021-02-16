@@ -28,6 +28,19 @@ public class ReportInfoWorksheetBuilder2019 extends ReportInfoWorksheetBuilder {
         this.reportManager = reportManager;
     }
 
+    @Override
+    protected String getDisclosureSummaryTitle() {
+        return "Transparency and Disclosure Requirements";
+    }
+
+    @Override
+    protected String getDisclosureSummaryDescription() {
+        return "The ONC-ACB undertook the following activities and implemented the following measures "
+                + "to ensure adherence by developers to transparency and disclosure requirements, as required of "
+                + "the ONC-ACB under 45 CFR § 170.523(k):";
+    }
+
+    @Override
     protected int addExclusionAndExhaustionSection(SurveillanceReportWorkbookWrapper workbook,
             Sheet sheet, List<QuarterlyReportDTO> reports, int beginRow) {
         int currRow = beginRow;

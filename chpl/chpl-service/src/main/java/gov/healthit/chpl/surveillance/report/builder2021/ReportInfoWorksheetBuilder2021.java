@@ -8,16 +8,25 @@ import gov.healthit.chpl.surveillance.report.builder.ReportInfoWorksheetBuilder;
 import gov.healthit.chpl.surveillance.report.builder.SurveillanceReportWorkbookWrapper;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 
-/**
- * Creates a worksheet with high level information about the report.
- *
- */
-public abstract class ReportInfoWorksheetBuilder2021 extends ReportInfoWorksheetBuilder {
+public class ReportInfoWorksheetBuilder2021 extends ReportInfoWorksheetBuilder {
 
     public ReportInfoWorksheetBuilder2021() {
         super();
     }
 
+    @Override
+    protected String getDisclosureSummaryTitle() {
+        return "Disclosure Requirements";
+    }
+
+    @Override
+    protected String getDisclosureSummaryDescription() {
+        return "The ONC-ACB undertook the following activities and implemented the following measures "
+                + "to ensure adherence by developers to disclosure requirements, as required of "
+                + "the ONC-ACB under 45 CFR § 170.523(k):";
+    }
+
+    @Override
     protected int addExclusionAndExhaustionSection(SurveillanceReportWorkbookWrapper workbook,
             Sheet sheet, List<QuarterlyReportDTO> reports, int beginRow) {
         return beginRow;

@@ -20,10 +20,6 @@ import org.apache.poi.ss.util.PropertyTemplate;
 
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 
-/**
- * Creates a worksheet with high level information about the report.
- *
- */
 public abstract class ReportInfoWorksheetBuilder {
     private static final int LAST_DATA_COLUMN = 6;
     private static final int MIN_TEXT_AREA_LINES = 4;
@@ -32,6 +28,10 @@ public abstract class ReportInfoWorksheetBuilder {
 
     protected abstract int addExclusionAndExhaustionSection(SurveillanceReportWorkbookWrapper workbook,
             Sheet sheet, List<QuarterlyReportDTO> reports, int beginRow);
+
+    protected abstract String getDisclosureSummaryTitle();
+
+    protected abstract String getDisclosureSummaryDescription();
 
     public int getLastDataColumn() {
         return LAST_DATA_COLUMN;
@@ -298,13 +298,11 @@ public abstract class ReportInfoWorksheetBuilder {
         currRow++;
         row = workbook.getRow(sheet, currRow++);
         cell = workbook.createCell(row, 1, workbook.getItalicUnderlinedSmallStyle());
-        cell.setCellValue("Transparency and Disclosure Requirements");
+        cell.setCellValue(getDisclosureSummaryTitle());
         row = workbook.getRow(sheet, currRow++);
         cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
-        cell.setCellValue("The ONC-ACB undertook the following activities and implemented the following measures "
-                + "to ensure adherence by developers to transparency and disclosure requirements, as required of "
-                + "the ONC-ACB under 45 CFR § 170.523(k):");
-        row.setHeightInPoints((2*sheet.getDefaultRowHeightInPoints()));
+        cell.setCellValue(getDisclosureSummaryDescription());
+        row.setHeightInPoints((2 * sheet.getDefaultRowHeightInPoints()));
         sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
 
         //skip row
@@ -312,13 +310,13 @@ public abstract class ReportInfoWorksheetBuilder {
         row = workbook.getRow(sheet, currRow++);
         cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
         if (reports.size() == 1) {
-            cell.setCellValue(reports.get(0).getTransparencyDisclosureSummary());
+            cell.setCellValue(reports.get(0).getDisclosureSummary());
         } else {
             StringBuffer buf = new StringBuffer();
             for (QuarterlyReportDTO report : reports) {
-                if (!StringUtils.isEmpty(report.getTransparencyDisclosureSummary())) {
+                if (!StringUtils.isEmpty(report.getDisclosureSummary())) {
                     buf.append(report.getQuarter().getName()).append(":")
-                        .append(report.getTransparencyDisclosureSummary())
+                        .append(report.getDisclosureSummary())
                         .append("\n");
                 }
             }
