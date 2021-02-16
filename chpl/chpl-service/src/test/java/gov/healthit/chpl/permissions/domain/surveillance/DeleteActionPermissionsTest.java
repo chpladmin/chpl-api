@@ -26,7 +26,7 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }
 
     @Override
@@ -53,6 +53,15 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
 
         // Since it is onc it has access to all - param value does not matter.
         assertTrue(permissions.hasAccess(1L));
+    }
+
+    @Override
+    @Test
+    public void hasAccess_OncStaff() throws Exception {
+        setupForOncStaffUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
+        assertFalse(permissions.hasAccess(1L));
     }
 
     @Override

@@ -14,11 +14,17 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "svap_criteria_map")
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class SvapCriteriaMapEntity {
 
     @Id

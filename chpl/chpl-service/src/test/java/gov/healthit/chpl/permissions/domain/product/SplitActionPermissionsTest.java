@@ -30,7 +30,7 @@ public class SplitActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
         Mockito.when(msgUtil.getMessage(
                 ArgumentMatchers.eq("product.split.notAllowedMultipleAcbs"),
                 ArgumentMatchers.any())).thenReturn("AnyMessage1");
@@ -52,6 +52,15 @@ public class SplitActionPermissionsTest extends ActionPermissionsBaseTest {
 
         assertFalse(permissions.hasAccess());
         assertTrue(permissions.hasAccess(new ProductDTO()));
+    }
+
+    @Override
+    @Test
+    public void hasAccess_OncStaff() throws Exception {
+        setupForOncStaffUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
+        assertFalse(permissions.hasAccess(new ProductDTO()));
     }
 
     @Override

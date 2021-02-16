@@ -43,10 +43,10 @@ public class GetByFilterTypeActionPermissionsTest extends ActionPermissionsBaseT
 
         assertFalse(permissions.hasAccess());
 
-        FilterDTO dto = getFilterDTO(1l, -2l);
+        FilterDTO dto = getFilterDTO(1L, -2L);
         assertTrue(permissions.hasAccess(dto));
 
-        FilterDTO dto2 = getFilterDTO(1l, -5l);
+        FilterDTO dto2 = getFilterDTO(1L, -5l);
         assertFalse(permissions.hasAccess(dto2));
     }
 
@@ -57,10 +57,24 @@ public class GetByFilterTypeActionPermissionsTest extends ActionPermissionsBaseT
 
         assertFalse(permissions.hasAccess());
 
-        FilterDTO dto = getFilterDTO(1l, 3l);
+        FilterDTO dto = getFilterDTO(1L, 3l);
         assertTrue(permissions.hasAccess(dto));
 
-        FilterDTO dto2 = getFilterDTO(1l, 5l);
+        FilterDTO dto2 = getFilterDTO(1L, 5l);
+        assertFalse(permissions.hasAccess(dto2));
+    }
+
+    @Override
+    @Test
+    public void hasAccess_OncStaff() throws Exception {
+        setupForOncStaffUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
+
+        FilterDTO dto = getFilterDTO(1L, 3l);
+        assertTrue(permissions.hasAccess(dto));
+
+        FilterDTO dto2 = getFilterDTO(1L, 5l);
         assertFalse(permissions.hasAccess(dto2));
     }
 
@@ -71,10 +85,10 @@ public class GetByFilterTypeActionPermissionsTest extends ActionPermissionsBaseT
 
         assertFalse(permissions.hasAccess());
 
-        FilterDTO dto = getFilterDTO(1l, 3l);
+        FilterDTO dto = getFilterDTO(1L, 3l);
         assertTrue(permissions.hasAccess(dto));
 
-        FilterDTO dto2 = getFilterDTO(1l, 5l);
+        FilterDTO dto2 = getFilterDTO(1L, 5l);
         assertFalse(permissions.hasAccess(dto2));
     }
 
@@ -85,10 +99,10 @@ public class GetByFilterTypeActionPermissionsTest extends ActionPermissionsBaseT
 
         assertFalse(permissions.hasAccess());
 
-        FilterDTO dto = getFilterDTO(1l, 3l);
+        FilterDTO dto = getFilterDTO(1L, 3l);
         assertTrue(permissions.hasAccess(dto));
 
-        FilterDTO dto2 = getFilterDTO(1l, 5l);
+        FilterDTO dto2 = getFilterDTO(1L, 5l);
         assertFalse(permissions.hasAccess(dto2));
     }
 
@@ -99,10 +113,10 @@ public class GetByFilterTypeActionPermissionsTest extends ActionPermissionsBaseT
 
         assertFalse(permissions.hasAccess());
 
-        FilterDTO dto = getFilterDTO(1l, 3l);
+        FilterDTO dto = getFilterDTO(1L, 3l);
         assertTrue(permissions.hasAccess(dto));
 
-        FilterDTO dto2 = getFilterDTO(1l, 5l);
+        FilterDTO dto2 = getFilterDTO(1L, 5l);
         assertFalse(permissions.hasAccess(dto2));
     }
 
@@ -111,8 +125,8 @@ public class GetByFilterTypeActionPermissionsTest extends ActionPermissionsBaseT
     public void hasAccess_Anon() throws Exception {
         setupForAnonUser(resourcePermissions);
 
-        FilterDTO dto2 = getFilterDTO(1l, 3l);
-        Mockito.when(filterDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getFilterDTO(1l, -5l));
+        FilterDTO dto2 = getFilterDTO(1L, 3l);
+        Mockito.when(filterDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getFilterDTO(1L, -5l));
         assertFalse(permissions.hasAccess(dto2));
     }
 
@@ -121,7 +135,7 @@ public class GetByFilterTypeActionPermissionsTest extends ActionPermissionsBaseT
         filterDTO.setId(id);
         filterDTO.setFilter("{}");
         filterDTO.setFilterType(new FilterTypeDTO());
-        filterDTO.getFilterType().setId(1l);
+        filterDTO.getFilterType().setId(1L);
         filterDTO.getFilterType().setName("SAMPLE_FILTER");
         filterDTO.setUser(new UserDTO());
         filterDTO.getUser().setId(userId);
