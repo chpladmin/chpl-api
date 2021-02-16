@@ -1,21 +1,21 @@
-package gov.healthit.chpl.permissions.domains.scheduler;
+package gov.healthit.chpl.permissions.domains.job;
 
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
-@Component(value = "schedulerUpdateJobActionPermissions")
-public class UpdateJobActionPermissions extends ActionPermissions {
+@Component("jobGetAllActionPermissions")
+public class GetAllActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess() {
         return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
-                || getResourcePermissions().isUserRoleOncStaff()
-                || getResourcePermissions().isUserRoleAcbAdmin();
+                || getResourcePermissions().isUserRoleOncStaff();
     }
 
     @Override
     public boolean hasAccess(Object obj) {
         return false;
     }
+
 }

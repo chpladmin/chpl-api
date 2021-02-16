@@ -7,6 +7,72 @@
     <pre-processing-commands>
         <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
+        <!-- REMOVE after PROD push of OCD-3584-->
+        <delete-job>
+            <name>Summary Statistics Email</name>
+            <group>chplJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>Trigger Developer Ban Notification</name>
+            <group>chplJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>Questionable Activity Report</name>
+            <group>chplJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>Questionable URL Report</name>
+            <group>chplJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>updateListingStatusJob</name>
+            <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>updateSingleListingStatusJob</name>
+            <group>subordinateJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>splitDeveloperJob</name>
+            <group>chplBackgroundJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>mergeDeveloperJob</name>
+            <group>chplBackgroundJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>realWorldTestingEligibilityJob</name>
+            <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>realWorldTestingUploadJob</name>
+            <group>chplBackgroundJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>Developer Access Report</name>
+            <group>chplJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>Overnight Broken Surveillance Rules Report</name>
+            <group>chplJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>All Broken Surveillance Rules Report</name>
+            <group>chplJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>Inherited Certification Status Errors Report</name>
+            <group>chplJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>Pending "Change Request" Report</name>
+            <group>chplJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>Real World Testing Email Report</name>
+            <group>chplJobs</group>
+        </delete-job>
+        <!-- END remove after PROD push of OCD-3584-->
     </pre-processing-commands>
     <processing-directives>
         <overwrite-existing-data>false</overwrite-existing-data>
@@ -124,7 +190,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC</value> <!-- Semi-colon delimited string -->
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF</value> <!-- Semi-colon delimited string -->
                 </entry>
                 <entry>
                     <key>frequency</key>
@@ -144,7 +210,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC</value> <!-- Semi-colon delimited string -->
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF</value> <!-- Semi-colon delimited string -->
                 </entry>
                 <entry>
                     <key>email</key>
@@ -188,7 +254,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF</value>
                 </entry>
                 <entry>
                     <key>frequency</key>
@@ -256,7 +322,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF</value>
                 </entry>
                 <entry>
                     <key>frequency</key>
@@ -303,7 +369,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF</value>
                 </entry>
                 <entry>
                     <key>parameters</key>
@@ -324,7 +390,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF</value>
                 </entry>
             </job-data-map>
         </job>
@@ -340,7 +406,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF;ROLE_ACB</value>
                 </entry>
                 <entry>
                     <key>email</key>
@@ -360,7 +426,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF;ROLE_ACB</value>
                 </entry>
                 <entry>
                     <key>email</key>
@@ -380,7 +446,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF</value>
                 </entry>
             </job-data-map>
         </job>
@@ -396,7 +462,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF;ROLE_ACB</value>
                 </entry>
                 <entry>
                     <key>email</key>
@@ -416,7 +482,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF;ROLE_ACB</value>
                 </entry>
                 <entry>
                     <key>frequency</key>
@@ -440,7 +506,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF;ROLE_ACB</value>
                 </entry>
                 <entry>
                     <key>frequency</key>
@@ -468,7 +534,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF;ROLE_ACB</value>
                 </entry>
                 <entry>
                     <key>frequency</key>
@@ -496,7 +562,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF;ROLE_ACB</value>
                 </entry>
                 <entry>
                     <key>frequency</key>
@@ -520,7 +586,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF;ROLE_ACB</value>
                 </entry>
                 <entry>
                     <key>frequency</key>
@@ -543,7 +609,7 @@
             <recover>false</recover>
         </job>
 
-        <!-- Generate email report for Real World Testing -->
+        <!-- Generate email report for Real World Testing  -->
         <job>
             <name>Real World Testing Email Report</name>
             <group>chplJobs</group>
@@ -554,7 +620,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF;ROLE_ACB</value>
                 </entry>
                 <entry>
                     <key>frequency</key>
@@ -606,6 +672,5 @@
                 </entry>
             </job-data-map>
         </job>
-
     </schedule>
 </job-scheduling-data>

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.permissions.domain.complaint;
+package gov.healthit.chpl.permissions.domain.invitation;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -10,19 +10,16 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
-import gov.healthit.chpl.permissions.domains.complaint.UpdateActionPermissions;
+import gov.healthit.chpl.permissions.domains.invitation.InviteOncStaffActionPermissions;
 
-public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
-
+public class InviteOncStaffActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
     private ResourcePermissions resourcePermissions;
 
     @InjectMocks
-    private UpdateActionPermissions permissions;
+    private InviteOncStaffActionPermissions permissions;
 
     @Before
     public void setup() {
@@ -35,20 +32,25 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     @Test
     public void hasAccess_Admin() throws Exception {
         setupForAdminUser(resourcePermissions);
-        assertFalse(permissions.hasAccess());
 
-        Complaint complaint = new Complaint();
-        assertTrue(permissions.hasAccess(complaint));
+        // Only ROLE_ADMIN and ROLE_ONC has access
+        assertTrue(permissions.hasAccess());
+
+        // This should always be false
+        assertFalse(permissions.hasAccess(new Object()));
+
     }
 
     @Override
     @Test
     public void hasAccess_Onc() throws Exception {
         setupForOncUser(resourcePermissions);
-        assertFalse(permissions.hasAccess());
 
-        Complaint complaint = new Complaint();
-        assertTrue(permissions.hasAccess(complaint));
+        // Only ROLE_ADMIN and ROLE_ONC has access
+        assertTrue(permissions.hasAccess());
+
+        // This should always be false
+        assertFalse(permissions.hasAccess(new Object()));
     }
 
     @Override
@@ -56,53 +58,56 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_OncStaff() throws Exception {
         setupForOncStaffUser(resourcePermissions);
 
-        assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(new Complaint()));
+        assertTrue(permissions.hasAccess());
+        assertFalse(permissions.hasAccess(new Object()));
     }
 
     @Override
     @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
+
+        // Only ROLE_ADMIN and ROLE_ONC has access
         assertFalse(permissions.hasAccess());
 
-        Complaint complaint = new Complaint();
-        complaint.setCertificationBody(new CertificationBody());
-        complaint.getCertificationBody().setId(2L);
-        assertTrue(permissions.hasAccess(complaint));
-
-        complaint.getCertificationBody().setId(1L);
-        assertFalse(permissions.hasAccess(complaint));
+        // This should always be false
+        assertFalse(permissions.hasAccess(new Object()));
     }
 
     @Override
     @Test
     public void hasAccess_Atl() throws Exception {
         setupForAtlUser(resourcePermissions);
+
+        // Only ROLE_ADMIN and ROLE_ONC has access
         assertFalse(permissions.hasAccess());
 
-        Complaint complaint = new Complaint();
-        assertFalse(permissions.hasAccess(complaint));
+        // This should always be false
+        assertFalse(permissions.hasAccess(new Object()));
     }
 
     @Override
     @Test
     public void hasAccess_Cms() throws Exception {
         setupForCmsUser(resourcePermissions);
+
+        // Only ROLE_ADMIN and ROLE_ONC has access
         assertFalse(permissions.hasAccess());
 
-        Complaint complaint = new Complaint();
-        assertFalse(permissions.hasAccess(complaint));
+        // This should always be false
+        assertFalse(permissions.hasAccess(new Object()));
     }
 
     @Override
     @Test
     public void hasAccess_Anon() throws Exception {
         setupForAnonUser(resourcePermissions);
+
+        // Only ROLE_ADMIN and ROLE_ONC has access
         assertFalse(permissions.hasAccess());
 
-        Complaint complaint = new Complaint();
-        assertFalse(permissions.hasAccess(complaint));
+        // This should always be false
+        assertFalse(permissions.hasAccess(new Object()));
     }
 
 }

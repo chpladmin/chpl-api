@@ -38,7 +38,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(resourcePermissions.getAllDevelopersForCurrentUser()).thenReturn(getAllDeveloperForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllDevelopersForCurrentUser()).thenReturn(getAllDeveloperForUser(2L, 4L));
     }
 
     @Override
@@ -48,7 +48,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
         assertTrue(permissions.hasAccess());
 
         assertTrue(permissions.hasAccess(ChangeRequest.builder()
-                .developer(Developer.builder().developerId(2l).build())
+                .developer(Developer.builder().developerId(2L).build())
                 .build()));
 
         assertFalse(permissions.hasAccess(ChangeRequest.builder()
@@ -74,6 +74,15 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
+    public void hasAccess_OncStaff() throws Exception {
+        setupForOncStaffUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
+        assertFalse(permissions.hasAccess(new ChangeRequest()));
+    }
+
+    @Override
+    @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
         assertTrue(permissions.hasAccess());
@@ -81,15 +90,15 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
         Mockito.when(developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(ArgumentMatchers.anyLong()))
                 .thenReturn(getDeveloperAcbs());
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser())
-                .thenReturn(getAllAcbForUser(1l));
+                .thenReturn(getAllAcbForUser(1L));
         assertTrue(permissions.hasAccess(ChangeRequest.builder()
-                .developer(Developer.builder().developerId(1l).build())
+                .developer(Developer.builder().developerId(1L).build())
                 .build()));
 
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser())
                 .thenReturn(getAllAcbForUser(5l));
         assertFalse(permissions.hasAccess(ChangeRequest.builder()
-                .developer(Developer.builder().developerId(1l).build())
+                .developer(Developer.builder().developerId(1L).build())
                 .build()));
 
     }
@@ -121,7 +130,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
 
     private List<CertificationBody> getDeveloperAcbs() {
         return new ArrayList<CertificationBody>(Arrays.asList(
-                CertificationBody.builder().id(1l).build(),
-                CertificationBody.builder().id(2l).build()));
+                CertificationBody.builder().id(1L).build(),
+                CertificationBody.builder().id(2L).build()));
     }
 }

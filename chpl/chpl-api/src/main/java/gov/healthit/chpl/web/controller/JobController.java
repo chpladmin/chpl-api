@@ -38,12 +38,14 @@ public class JobController {
     private ResourcePermissions resourcePermissions;
 
     @ApiOperation(value = "Get the list of all jobs currently running in the system and those"
-            + "that have completed within a configurable amount of time (usually a short window like the last 7 days).")
+            + "that have completed within a configurable amount of time (usually a short window like the last 7 days).",
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC and ROLE_ONC_STAFF can see all recent jobs. Other users may see their own recent jobs.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @PreAuthorize("isAuthenticated()")
     public @ResponseBody JobResults getAllJobs() throws EntityRetrievalException {
         List<JobDTO> jobDtos = null;
-        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
+        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()
+                || resourcePermissions.isUserRoleOncStaff()) {
             jobDtos = jobManager.getAllJobs();
         } else {
             UserDTO currentUser = new UserDTO();

@@ -73,6 +73,15 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
+    public void hasAccess_OncStaff() throws Exception {
+        setupForOncStaffUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
+        assertFalse(permissions.hasAccess(new Surveillance()));
+    }
+
+    @Override
+    @Test
     @Ignore
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
@@ -82,12 +91,12 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
 
         Surveillance surv = new Surveillance();
         surv.setCertifiedProduct(new CertifiedProduct());
-        surv.getCertifiedProduct().setId(1l);
+        surv.getCertifiedProduct().setId(1L);
 
-        Mockito.when(certifiedProductDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getListing(1l));
+        Mockito.when(certifiedProductDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getListing(1L));
         assertFalse(permissions.hasAccess(surv));
 
-        Mockito.when(certifiedProductDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getListing(2l));
+        Mockito.when(certifiedProductDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getListing(2L));
         assertTrue(permissions.hasAccess(surv));
     }
 
