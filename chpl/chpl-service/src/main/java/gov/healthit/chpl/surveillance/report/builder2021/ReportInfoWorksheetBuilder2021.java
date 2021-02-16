@@ -15,6 +15,12 @@ public class ReportInfoWorksheetBuilder2021 extends ReportInfoWorksheetBuilder {
     }
 
     @Override
+    protected String getReportingAcbDescription() {
+        return "This report is submitted by the below ONC-ACB in accordance with "
+                + "45 CFR § 170.523(i)(2), 45 CFR § 170.523(n), and 45 CFR § 170.556(e).";
+    }
+
+    @Override
     protected String getDisclosureSummaryTitle() {
         return "Disclosure Requirements";
     }

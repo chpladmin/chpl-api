@@ -29,6 +29,12 @@ public class ReportInfoWorksheetBuilder2019 extends ReportInfoWorksheetBuilder {
     }
 
     @Override
+    protected String getReportingAcbDescription() {
+        return "This report is submitted by the below named ONC-ACB in "
+                + "accordance with 45 CFR § 170.523(i)(2) and 45 CFR § 170.556(e).";
+    }
+
+    @Override
     protected String getDisclosureSummaryTitle() {
         return "Transparency and Disclosure Requirements";
     }
@@ -44,6 +50,7 @@ public class ReportInfoWorksheetBuilder2019 extends ReportInfoWorksheetBuilder {
     protected String getReactiveSummaryTitle() {
         return "Reactive Surveillance";
     }
+
 
     @Override
     protected int addExclusionAndExhaustionSection(SurveillanceReportWorkbookWrapper workbook,

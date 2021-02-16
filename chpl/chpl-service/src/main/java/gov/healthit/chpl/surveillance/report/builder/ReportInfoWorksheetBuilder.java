@@ -29,6 +29,8 @@ public abstract class ReportInfoWorksheetBuilder {
     protected abstract int addExclusionAndExhaustionSection(SurveillanceReportWorkbookWrapper workbook,
             Sheet sheet, List<QuarterlyReportDTO> reports, int beginRow);
 
+    protected abstract String getReportingAcbDescription();
+
     protected abstract String getDisclosureSummaryTitle();
 
     protected abstract String getDisclosureSummaryDescription();
@@ -95,8 +97,7 @@ public abstract class ReportInfoWorksheetBuilder {
         cell.setCellValue("Reporting ONC-ACB");
         row = workbook.getRow(sheet, currRow++);
         cell = workbook.createCell(row, 1);
-        cell.setCellValue("This report is submitted by the below named ONC-ACB in "
-                + "accordance with 45 CFR § 170.523(i)(2) and 45 CFR § 170.556(e).");
+        cell.setCellValue(getReportingAcbDescription());
         sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
 
         row = workbook.getRow(sheet, currRow++);
