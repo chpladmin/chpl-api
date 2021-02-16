@@ -19,7 +19,8 @@ import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.entity.job.JobStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
-import gov.healthit.chpl.surveillance.report.builder2019.QuarterlyReportBuilder2019;
+import gov.healthit.chpl.surveillance.report.builder.QuarterlyReportBuilderXlsx;
+import gov.healthit.chpl.surveillance.report.builder.ReportBuilderFactory;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -30,22 +31,22 @@ public class ExportQuarterlySurveillanceReportJob extends RunnableJob {
     private static final Logger LOGGER = LogManager.getLogger(ExportQuarterlySurveillanceReportJob.class);
     private ErrorMessageUtil errorMessageUtil;
     private SurveillanceReportManager reportManager;
-    private QuarterlyReportBuilder2019 reportBuilder;
+    private ReportBuilderFactory reportBuilderFactory;
 
     @Autowired
-    public ExportQuarterlySurveillanceReportJob(final ErrorMessageUtil errorMessageUtil,
-            final SurveillanceReportManager reportManager,
-            final QuarterlyReportBuilder2019 reportBuilder) {
+    public ExportQuarterlySurveillanceReportJob(ErrorMessageUtil errorMessageUtil,
+            SurveillanceReportManager reportManager,
+            ReportBuilderFactory reportBuilderFactory) {
         this.errorMessageUtil = errorMessageUtil;
         this.reportManager = reportManager;
-        this.reportBuilder = reportBuilder;
+        this.reportBuilderFactory = reportBuilderFactory;
     }
 
     public ExportQuarterlySurveillanceReportJob() {
         LOGGER.debug("Created new Export Quarterly Report Job Job");
     }
 
-    public ExportQuarterlySurveillanceReportJob(final JobDTO job) {
+    public ExportQuarterlySurveillanceReportJob(JobDTO job) {
         LOGGER.debug("Created new Export Quarterly Report Job");
         this.job = job;
     }
@@ -72,7 +73,15 @@ public class ExportQuarterlySurveillanceReportJob extends RunnableJob {
         try {
             report = reportManager.getQuarterlyReport(quarterlyReportId);
             if (report != null) {
-                workbook = reportBuilder.buildXlsx(report);
+                QuarterlyReportBuilderXlsx reportBuilder = reportBuilderFactory.getReportBuilder(report);
+                if (reportBuilder != null) {
+                    workbook = reportBuilder.buildXlsx(report);
+                } else {
+                    String msg = errorMessageUtil.getMessage("report.quarterlySurveillance.builderNotFound");
+                    LOGGER.error(msg + " Report id " + quarterlyReportId);
+                    addJobMessage(msg);
+                    updateStatus(100, JobStatusType.Error);
+                }
             }
         } catch (EntityRetrievalException ex) {
             String msg = errorMessageUtil.getMessage("report.quarterlySurveillance.export.badId", quarterlyReportId);

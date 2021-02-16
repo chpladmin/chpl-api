@@ -19,7 +19,8 @@ import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.entity.job.JobStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
-import gov.healthit.chpl.surveillance.report.builder2019.AnnualReportBuilder2019;
+import gov.healthit.chpl.surveillance.report.builder.AnnualReportBuilderXlsx;
+import gov.healthit.chpl.surveillance.report.builder.ReportBuilderFactory;
 import gov.healthit.chpl.surveillance.report.dto.AnnualReportDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -30,22 +31,22 @@ public class ExportAnnualSurveillanceReportJob extends RunnableJob {
     private static final Logger LOGGER = LogManager.getLogger(ExportAnnualSurveillanceReportJob.class);
     private ErrorMessageUtil errorMessageUtil;
     private SurveillanceReportManager reportManager;
-    private AnnualReportBuilder2019 reportBuilder;
+    private ReportBuilderFactory reportBuilderFactory;
 
     @Autowired
-    public ExportAnnualSurveillanceReportJob(final ErrorMessageUtil errorMessageUtil,
-            final SurveillanceReportManager reportManager,
-            final AnnualReportBuilder2019 reportBuilder) {
+    public ExportAnnualSurveillanceReportJob(ErrorMessageUtil errorMessageUtil,
+            SurveillanceReportManager reportManager,
+            ReportBuilderFactory reportBuilderFactory) {
         this.errorMessageUtil = errorMessageUtil;
         this.reportManager = reportManager;
-        this.reportBuilder = reportBuilder;
+        this.reportBuilderFactory = reportBuilderFactory;
     }
 
     public ExportAnnualSurveillanceReportJob() {
         LOGGER.debug("Created new Export Annual Report Job Job");
     }
 
-    public ExportAnnualSurveillanceReportJob(final JobDTO job) {
+    public ExportAnnualSurveillanceReportJob(JobDTO job) {
         LOGGER.debug("Created new Export Annual Report Job");
         this.job = job;
     }
@@ -71,7 +72,15 @@ public class ExportAnnualSurveillanceReportJob extends RunnableJob {
         try {
             AnnualReportDTO report = reportManager.getAnnualReport(annualReportId);
             if (report != null) {
-                workbook = reportBuilder.buildXlsx(report);
+                AnnualReportBuilderXlsx reportBuilder = reportBuilderFactory.getReportBuilder(report);
+                if (reportBuilder != null) {
+                    workbook = reportBuilder.buildXlsx(report);
+                } else {
+                    String msg = errorMessageUtil.getMessage("report.annualSurveillance.builderNotFound");
+                    LOGGER.error(msg + " Report id " + annualReportId);
+                    addJobMessage(msg);
+                    updateStatus(100, JobStatusType.Error);
+                }
             }
         } catch (EntityRetrievalException ex) {
             String msg = errorMessageUtil.getMessage("report.annualSurveillance.export.badId", annualReportId);
