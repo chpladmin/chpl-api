@@ -63,6 +63,15 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
+    public void hasAccess_OncStaff() throws Exception {
+        setupForOncStaffUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
+        assertFalse(permissions.hasAccess(1L));
+    }
+
+    @Override
+    @Test
     @Ignore
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);

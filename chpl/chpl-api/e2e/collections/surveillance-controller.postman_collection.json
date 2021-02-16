@@ -1,0 +1,382 @@
+{
+	"info": {
+		"name": "surveillance-controller",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "POST /surveillance/upload - access denied to anonymous user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"surveillance upload request by anonymous user should return Status code 401\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"anonymous user should be denied access to upload surveillance\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "API-KEY",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "chpl/chpl-api/e2e/data/SurveillanceUpload.csv"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}/rest/surveillance/upload",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+					    "rest",
+						"surveillance",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST /surveillance/upload - ROLE_ACB has access to upload surveillance activity on own listings",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"usernameACB\"),password:pm.environment.get(\"passwordACB\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"surveillance upload request by ACB user to upload surveillance activity on listing owned by the ACB should return Status code 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"surveillance upload by ACB user should be successful\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"pendingSurveillance\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "API-KEY",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "chpl/chpl-api/e2e/data/SurveillanceUpload.csv"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}/rest/surveillance/upload",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+					    "rest",
+						"surveillance",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST /surveillance/upload - ROLE_ADMIN user has access to upload surveillance activity",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"usernameADMIN\"),password:pm.environment.get(\"passwordADMIN\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"surveillance upload request by ROLE ADMIN user to upload surveillance activity should return Status code 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"surveillance upload by ROLE ADMIN user should be successful\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"pendingSurveillance\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "API-KEY",
+						"type": "text",
+						"value": "{{apiKey}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "chpl/chpl-api/e2e/data/SurveillanceUpload.csv"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}/rest/surveillance/upload",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+					    "rest",
+						"surveillance",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST /surveillance/upload - ROLE_ONC user has access to upload surveillance activity",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"usernameONC\"),password:pm.environment.get(\"passwordONC\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"surveillance upload request by ROLE ONC user to upload surveillance activity should return Status code 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"surveillance upload by ROLE ONC user should be successful\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"pendingSurveillance\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "API-KEY",
+						"type": "text",
+						"value": "{{apiKey}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "chpl/chpl-api/e2e/data/SurveillanceUpload.csv"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}/rest/surveillance/upload",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+					    "rest",
+						"surveillance",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /surveillance/pending - access denied to anonymous user to view pending surveillance",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"request to view pending surveillance activity by anonymous user should return Status code 401\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"anonymous user should be denied access to view pending surveillance\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {				
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-KEY",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/surveillance/pending",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+					    "rest",
+						"surveillance",
+						"pending"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

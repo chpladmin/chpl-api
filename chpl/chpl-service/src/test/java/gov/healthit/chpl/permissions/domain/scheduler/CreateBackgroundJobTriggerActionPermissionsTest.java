@@ -51,7 +51,19 @@ public class CreateBackgroundJobTriggerActionPermissionsTest extends ActionPermi
         //Not Used
         assertFalse(permissions.hasAccess());
 
-        assertTrue(permissions.hasAccess("JOB NAME"));    }
+        assertTrue(permissions.hasAccess("JOB NAME"));
+    }
+
+    @Override
+    @Test
+    public void hasAccess_OncStaff() throws Exception {
+        setupForOncStaffUser(resourcePermissions);
+
+        //Not Used
+        assertFalse(permissions.hasAccess());
+
+        assertTrue(permissions.hasAccess("JOB NAME"));
+    }
 
     @Override
     @Test

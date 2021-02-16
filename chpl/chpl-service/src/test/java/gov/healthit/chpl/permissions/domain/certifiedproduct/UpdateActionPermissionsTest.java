@@ -29,7 +29,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }
 
     @Override
@@ -60,6 +60,15 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
+    public void hasAccess_OncStaff() throws Exception {
+        setupForOncStaffUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
+        assertFalse(permissions.hasAccess(1L));
+    }
+
+    @Override
+    @Test
     @Ignore
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
@@ -69,12 +78,12 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
         ListingUpdateRequest request = new ListingUpdateRequest();
         request.setListing(new CertifiedProductSearchDetails());
-        request.getListing().getCertifyingBody().put(CertifiedProductSearchDetails.ACB_ID_KEY, 1l);
+        request.getListing().getCertifyingBody().put(CertifiedProductSearchDetails.ACB_ID_KEY, 1L);
         assertFalse(permissions.hasAccess(request));
 
         request = new ListingUpdateRequest();
         request.setListing(new CertifiedProductSearchDetails());
-        request.getListing().getCertifyingBody().put(CertifiedProductSearchDetails.ACB_ID_KEY, 2l);
+        request.getListing().getCertifyingBody().put(CertifiedProductSearchDetails.ACB_ID_KEY, 2L);
         assertTrue(permissions.hasAccess(request));
     }
 

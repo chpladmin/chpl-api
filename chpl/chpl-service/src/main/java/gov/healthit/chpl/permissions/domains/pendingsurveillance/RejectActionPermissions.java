@@ -15,7 +15,7 @@ public class RejectActionPermissions extends ActionPermissions {
     private UserPermissionDAO userPermissionDAO;
 
     @Autowired
-    public RejectActionPermissions(final SurveillanceDAO surveillanceDAO, final UserPermissionDAO userPermissionDAO) {
+    public RejectActionPermissions(SurveillanceDAO surveillanceDAO, UserPermissionDAO userPermissionDAO) {
         this.surveillanceDAO = surveillanceDAO;
         this.userPermissionDAO = userPermissionDAO;
     }
@@ -44,7 +44,8 @@ public class RejectActionPermissions extends ActionPermissions {
                     // Make sure the user has access to the pendingSurveillance
                     return isAcbValidForCurrentUser(entity.getCertifiedProduct().getCertificationBodyId());
                 }
-            } else if (getResourcePermissions().isUserRoleOnc() || getResourcePermissions().isUserRoleAdmin()) {
+            } else if (getResourcePermissions().isUserRoleOnc()
+                    || getResourcePermissions().isUserRoleAdmin()) {
                 Long pendingSurveillanceId = (Long) obj;
                 PendingSurveillanceEntity entity = surveillanceDAO.getPendingSurveillanceById(pendingSurveillanceId);
 

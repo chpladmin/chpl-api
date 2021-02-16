@@ -48,8 +48,6 @@ public class SvapReviewerTest {
                 .thenReturn("Test Error Message 2");
 
         svapReviewer = new SvapReviewer(svapDao, validationUtils, errorMessageUtil);
-        svapReviewer.init();
-
     }
 
     @Test
