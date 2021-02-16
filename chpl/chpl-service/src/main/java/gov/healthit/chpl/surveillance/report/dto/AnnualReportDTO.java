@@ -2,7 +2,9 @@ package gov.healthit.chpl.surveillance.report.dto;
 
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.entity.surveillance.report.AnnualReportEntity;
+import lombok.Data;
 
+@Data
 public class AnnualReportDTO {
 
     private Long id;
@@ -13,7 +15,7 @@ public class AnnualReportDTO {
 
     public AnnualReportDTO() {}
 
-    public AnnualReportDTO(final AnnualReportEntity entity) {
+    public AnnualReportDTO(AnnualReportEntity entity) {
         this.id = entity.getId();
         this.year = entity.getYear();
         this.obstacleSummary = entity.getObstacleSummary();
@@ -24,45 +26,5 @@ public class AnnualReportDTO {
             this.acb = new CertificationBodyDTO();
             this.acb.setId(entity.getCertificationBodyId());
         }
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Integer getYear() {
-        return year;
-    }
-
-    public void setYear(final Integer year) {
-        this.year = year;
-    }
-
-    public CertificationBodyDTO getAcb() {
-        return acb;
-    }
-
-    public void setAcb(final CertificationBodyDTO acb) {
-        this.acb = acb;
-    }
-
-    public String getObstacleSummary() {
-        return obstacleSummary;
-    }
-
-    public void setObstacleSummary(final String obstacleSummary) {
-        this.obstacleSummary = obstacleSummary;
-    }
-
-    public String getFindingsSummary() {
-        return findingsSummary;
-    }
-
-    public void setFindingsSummary(final String findingsSummary) {
-        this.findingsSummary = findingsSummary;
     }
 }

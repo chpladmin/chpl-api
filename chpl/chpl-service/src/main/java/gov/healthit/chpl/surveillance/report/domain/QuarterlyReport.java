@@ -4,7 +4,9 @@ import java.io.Serializable;
 
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
+import lombok.Data;
 
+@Data
 public class QuarterlyReport implements Serializable {
     private static final long serialVersionUID = 8743838678379539305L;
 
@@ -29,7 +31,7 @@ public class QuarterlyReport implements Serializable {
         this.surveillanceActivitiesAndOutcomes = dto.getActivitiesOutcomesSummary();
         this.reactiveSummary = dto.getReactiveSummary();
         this.prioritizedElementSummary = dto.getPrioritizedElementSummary();
-        this.transparencyDisclosureSummary = dto.getTransparencyDisclosureSummary();
+        this.transparencyDisclosureSummary = dto.getDisclosureSummary();
         if (dto.getQuarter() != null) {
             this.quarter = dto.getQuarter().getName();
         }
@@ -38,77 +40,5 @@ public class QuarterlyReport implements Serializable {
         }
         this.startDate = dto.getStartDate().getTime();
         this.endDate = dto.getEndDate().getTime();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public CertificationBody getAcb() {
-        return acb;
-    }
-
-    public void setAcb(final CertificationBody acb) {
-        this.acb = acb;
-    }
-
-    public Integer getYear() {
-        return year;
-    }
-
-    public void setYear(final Integer year) {
-        this.year = year;
-    }
-
-    public String getQuarter() {
-        return quarter;
-    }
-
-    public void setQuarter(final String quarter) {
-        this.quarter = quarter;
-    }
-
-    public String getSurveillanceActivitiesAndOutcomes() {
-        return surveillanceActivitiesAndOutcomes;
-    }
-
-    public void setSurveillanceActivitiesAndOutcomes(final String surveillanceActivitiesAndOutcomes) {
-        this.surveillanceActivitiesAndOutcomes = surveillanceActivitiesAndOutcomes;
-    }
-
-    public String getReactiveSummary() {
-        return reactiveSummary;
-    }
-
-    public void setReactiveSummary(final String reactiveSummary) {
-        this.reactiveSummary = reactiveSummary;
-    }
-
-    public String getPrioritizedElementSummary() {
-        return prioritizedElementSummary;
-    }
-
-    public void setPrioritizedElementSummary(final String prioritizedElementSummary) {
-        this.prioritizedElementSummary = prioritizedElementSummary;
-    }
-
-    public String getTransparencyDisclosureSummary() {
-        return transparencyDisclosureSummary;
-    }
-
-    public void setTransparencyDisclosureSummary(final String transparencyDisclosureSummary) {
-        this.transparencyDisclosureSummary = transparencyDisclosureSummary;
-    }
-
-    public Long getStartDate() {
-        return startDate;
-    }
-
-    public Long getEndDate() {
-        return endDate;
     }
 }

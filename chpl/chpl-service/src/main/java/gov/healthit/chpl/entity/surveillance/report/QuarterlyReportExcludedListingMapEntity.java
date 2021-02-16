@@ -13,8 +13,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
+import lombok.Data;
 
 @Entity
+@Data
 @Table(name = "quarterly_report_excluded_listing_map")
 public class QuarterlyReportExcludedListingMapEntity {
 
@@ -51,76 +53,4 @@ public class QuarterlyReportExcludedListingMapEntity {
 
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Long getQuarterlyReportId() {
-        return quarterlyReportId;
-    }
-
-    public void setQuarterlyReportId(final Long quarterlyReportId) {
-        this.quarterlyReportId = quarterlyReportId;
-    }
-
-    public QuarterlyReportEntity getQuarterlyReport() {
-        return quarterlyReport;
-    }
-
-    public Long getListingId() {
-        return listingId;
-    }
-
-    public void setListingId(final Long listingId) {
-        this.listingId = listingId;
-    }
-
-    public CertifiedProductDetailsEntity getListing() {
-        return listing;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(final String reason) {
-        this.reason = reason;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public Date getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
 }

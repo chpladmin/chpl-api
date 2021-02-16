@@ -4,7 +4,9 @@ import gov.healthit.chpl.dto.surveillance.SurveillanceBasicDTO;
 import gov.healthit.chpl.entity.surveillance.SurveillanceBasicEntity;
 import gov.healthit.chpl.entity.surveillance.report.PrivilegedSurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.report.QuarterlyReportSurveillanceMapEntity;
+import lombok.Data;
 
+@Data
 public class PrivilegedSurveillanceDTO extends SurveillanceBasicDTO {
     private static final long serialVersionUID = 849149508008111347L;
 
@@ -30,11 +32,11 @@ public class PrivilegedSurveillanceDTO extends SurveillanceBasicDTO {
         super();
     }
 
-    public PrivilegedSurveillanceDTO(final SurveillanceBasicEntity entity) {
+    public PrivilegedSurveillanceDTO(SurveillanceBasicEntity entity) {
         super(entity);
     }
 
-    public PrivilegedSurveillanceDTO(final PrivilegedSurveillanceEntity entity) {
+    public PrivilegedSurveillanceDTO(PrivilegedSurveillanceEntity entity) {
         super(entity);
         if (entity.getPrivSurvMap() != null && entity.getPrivSurvMap().size() > 0) {
             //should only be 1 per report
@@ -78,7 +80,7 @@ public class PrivilegedSurveillanceDTO extends SurveillanceBasicDTO {
         }
     }
 
-    public PrivilegedSurveillanceDTO(final QuarterlyReportSurveillanceMapEntity entity) {
+    public PrivilegedSurveillanceDTO(QuarterlyReportSurveillanceMapEntity entity) {
         super(entity.getSurveillance());
 
         this.mappingId = entity.getId();
@@ -118,128 +120,8 @@ public class PrivilegedSurveillanceDTO extends SurveillanceBasicDTO {
         this.surveillanceProcessTypeOther = entity.getSurveillanceProcessTypeOther();
     }
 
-    public Long getMappingId() {
-        return mappingId;
-    }
-
-    public void setMappingId(final Long mappingId) {
-        this.mappingId = mappingId;
-    }
-
-    public QuarterlyReportDTO getQuarterlyReport() {
-        return quarterlyReport;
-    }
-
-    public void setQuarterlyReport(final QuarterlyReportDTO quarterlyReport) {
-        this.quarterlyReport = quarterlyReport;
-    }
-
-    public SurveillanceOutcomeDTO getSurveillanceOutcome() {
-        return surveillanceOutcome;
-    }
-
-    public void setSurveillanceOutcome(final SurveillanceOutcomeDTO surveillanceOutcome) {
-        this.surveillanceOutcome = surveillanceOutcome;
-    }
-
-    public SurveillanceProcessTypeDTO getSurveillanceProcessType() {
-        return surveillanceProcessType;
-    }
-
-    public void setSurveillanceProcessType(final SurveillanceProcessTypeDTO surveillanceProcessType) {
-        this.surveillanceProcessType = surveillanceProcessType;
-    }
-
-    public Boolean getK1Reviewed() {
-        return k1Reviewed;
-    }
-
-    public void setK1Reviewed(final Boolean k1Reviewed) {
-        this.k1Reviewed = k1Reviewed;
-    }
-
-    public String getGroundsForInitiating() {
-        return groundsForInitiating;
-    }
-
-    public void setGroundsForInitiating(final String groundsForInitiating) {
-        this.groundsForInitiating = groundsForInitiating;
-    }
-
-    public String getNonconformityCauses() {
-        return nonconformityCauses;
-    }
-
-    public void setNonconformityCauses(final String nonconformityCauses) {
-        this.nonconformityCauses = nonconformityCauses;
-    }
-
-    public String getNonconformityNature() {
-        return nonconformityNature;
-    }
-
-    public void setNonconformityNature(final String nonconformityNature) {
-        this.nonconformityNature = nonconformityNature;
-    }
-
-    public String getStepsToSurveil() {
-        return stepsToSurveil;
-    }
-
-    public void setStepsToSurveil(final String stepsToSurveil) {
-        this.stepsToSurveil = stepsToSurveil;
-    }
-
-    public String getStepsToEngage() {
-        return stepsToEngage;
-    }
-
-    public void setStepsToEngage(final String stepsToEngage) {
-        this.stepsToEngage = stepsToEngage;
-    }
-
-    public String getAdditionalCostsEvaluation() {
-        return additionalCostsEvaluation;
-    }
-
-    public void setAdditionalCostsEvaluation(final String additionalCostsEvaluation) {
-        this.additionalCostsEvaluation = additionalCostsEvaluation;
-    }
-
-    public String getLimitationsEvaluation() {
-        return limitationsEvaluation;
-    }
-
-    public void setLimitationsEvaluation(final String limitationsEvaluation) {
-        this.limitationsEvaluation = limitationsEvaluation;
-    }
-
-    public String getNondisclosureEvaluation() {
-        return nondisclosureEvaluation;
-    }
-
-    public void setNondisclosureEvaluation(final String nondisclosureEvaluation) {
-        this.nondisclosureEvaluation = nondisclosureEvaluation;
-    }
-
-    public String getDirectionDeveloperResolution() {
-        return directionDeveloperResolution;
-    }
-
-    public void setDirectionDeveloperResolution(final String directionDeveloperResolution) {
-        this.directionDeveloperResolution = directionDeveloperResolution;
-    }
-
-    public String getCompletedCapVerification() {
-        return completedCapVerification;
-    }
-
-    public void setCompletedCapVerification(final String completedCapVerification) {
-        this.completedCapVerification = completedCapVerification;
-    }
-
     @Override
-    public boolean equals(final Object anotherObject) {
+    public boolean equals(Object anotherObject) {
         if (anotherObject == null || !(anotherObject instanceof PrivilegedSurveillanceDTO)) {
             return false;
         }
@@ -263,22 +145,6 @@ public class PrivilegedSurveillanceDTO extends SurveillanceBasicDTO {
         return this.getId().hashCode();
     }
 
-    public String getSurveillanceOutcomeOther() {
-        return surveillanceOutcomeOther;
-    }
-
-    public void setSurveillanceOutcomeOther(final String surveillanceOutcomeOther) {
-        this.surveillanceOutcomeOther = surveillanceOutcomeOther;
-    }
-
-    public String getSurveillanceProcessTypeOther() {
-        return surveillanceProcessTypeOther;
-    }
-
-    public void setSurveillanceProcessTypeOther(final String surveillanceProcessTypeOther) {
-        this.surveillanceProcessTypeOther = surveillanceProcessTypeOther;
-    }
-
     public void clearPrivilegedFields() {
         this.mappingId = null;
         this.k1Reviewed = null;
@@ -299,7 +165,7 @@ public class PrivilegedSurveillanceDTO extends SurveillanceBasicDTO {
         this.surveillanceProcessTypeOther = null;
     }
 
-    public void copyPrivilegedFields(final PrivilegedSurveillanceDTO another) {
+    public void copyPrivilegedFields(PrivilegedSurveillanceDTO another) {
         this.mappingId = another.getMappingId();
         this.k1Reviewed = another.getK1Reviewed();
         this.groundsForInitiating = another.getGroundsForInitiating();

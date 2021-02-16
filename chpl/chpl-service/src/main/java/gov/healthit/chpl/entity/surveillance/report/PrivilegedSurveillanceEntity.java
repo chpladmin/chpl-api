@@ -21,8 +21,10 @@ import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.entity.surveillance.SurveillanceTypeEntity;
+import lombok.Data;
 
 @Entity
+@Data
 @Immutable
 @Table(name = "surveillance_basic")
 public class PrivilegedSurveillanceEntity {
@@ -70,108 +72,4 @@ public class PrivilegedSurveillanceEntity {
 
     @Column(name = "deleted")
     private Boolean deleted;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getFriendlyId() {
-        return friendlyId;
-    }
-
-    public void setFriendlyId(final String friendlyId) {
-        this.friendlyId = friendlyId;
-    }
-
-    public Long getCertifiedProductId() {
-        return certifiedProductId;
-    }
-
-    public void setCertifiedProductId(final Long certifiedProductId) {
-        this.certifiedProductId = certifiedProductId;
-    }
-
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(final Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(final Date endDate) {
-        this.endDate = endDate;
-    }
-
-    public Long getSurveillanceTypeId() {
-        return surveillanceTypeId;
-    }
-
-    public void setSurveillanceTypeId(final Long surveillanceTypeId) {
-        this.surveillanceTypeId = surveillanceTypeId;
-    }
-
-    public SurveillanceTypeEntity getSurveillanceType() {
-        return surveillanceType;
-    }
-
-    public void setSurveillanceType(final SurveillanceTypeEntity surveillanceType) {
-        this.surveillanceType = surveillanceType;
-    }
-
-    public Integer getNumRandomizedSites() {
-        return numRandomizedSites;
-    }
-
-    public void setNumRandomizedSites(final Integer numRandomizedSites) {
-        this.numRandomizedSites = numRandomizedSites;
-    }
-
-    public Long getUserPermissionId() {
-        return userPermissionId;
-    }
-
-    public void setUserPermissionId(final Long userPermissionId) {
-        this.userPermissionId = userPermissionId;
-    }
-
-    public Set<QuarterlyReportSurveillanceMapEntity> getPrivSurvMap() {
-        return privSurvMap;
-    }
-
-    public void setPrivSurvMap(final Set<QuarterlyReportSurveillanceMapEntity> privSurvMap) {
-        this.privSurvMap = privSurvMap;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Integer getNumOpenNonconformities() {
-        return numOpenNonconformities;
-    }
-
-    public void setNumOpenNonconformities(final Integer numOpenNonconformities) {
-        this.numOpenNonconformities = numOpenNonconformities;
-    }
-
-    public Integer getNumClosedNonconformities() {
-        return numClosedNonconformities;
-    }
-
-    public void setNumClosedNonconformities(final Integer numClosedNonconformities) {
-        this.numClosedNonconformities = numClosedNonconformities;
-    }
 }

@@ -30,12 +30,12 @@ public class QuarterlyReportRelevantListingDTO extends CertifiedProductDetailsDT
         this.surveillances = new ArrayList<>();
     }
 
-    public QuarterlyReportRelevantListingDTO(final CertifiedProductDetailsEntity entity) {
+    public QuarterlyReportRelevantListingDTO(CertifiedProductDetailsEntity entity) {
         super(entity);
         this.surveillances = new ArrayList<>();
     }
 
-    public QuarterlyReportRelevantListingDTO(final ListingWithPrivilegedSurveillanceEntity entity) {
+    public QuarterlyReportRelevantListingDTO(ListingWithPrivilegedSurveillanceEntity entity) {
         this.setId(entity.getId());
         this.setChplProductNumber(entity.getChplProductNumber());
         DeveloperDTO developer = new DeveloperDTO();
@@ -69,7 +69,7 @@ public class QuarterlyReportRelevantListingDTO extends CertifiedProductDetailsDT
     }
 
     @Override
-    public boolean equals(final Object anotherObject) {
+    public boolean equals(Object anotherObject) {
         if (anotherObject == null || !(anotherObject instanceof QuarterlyReportRelevantListingDTO)) {
             return false;
         }

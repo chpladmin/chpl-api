@@ -5,10 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gov.healthit.chpl.domain.CertifiedProduct;
-import gov.healthit.chpl.dto.surveillance.SurveillanceBasicDTO;
 import gov.healthit.chpl.surveillance.report.dto.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportRelevantListingDTO;
+import lombok.Data;
 
+@Data
 public class RelevantListing extends CertifiedProduct implements Serializable {
     private static final long serialVersionUID = -4490178928672550687L;
 
@@ -21,7 +22,7 @@ public class RelevantListing extends CertifiedProduct implements Serializable {
         this.surveillances = new ArrayList<PrivilegedSurveillance>();
     }
 
-    public RelevantListing(final QuarterlyReportRelevantListingDTO dto) {
+    public RelevantListing(QuarterlyReportRelevantListingDTO dto) {
         super(dto);
         this.surveillances = new ArrayList<PrivilegedSurveillance>();
         this.isExcluded = dto.isExcluded();
@@ -31,29 +32,5 @@ public class RelevantListing extends CertifiedProduct implements Serializable {
                 this.surveillances.add(new PrivilegedSurveillance(survDto));
             }
         }
-    }
-
-    public boolean isExcluded() {
-        return isExcluded;
-    }
-
-    public void setExcluded(final boolean isExcluded) {
-        this.isExcluded = isExcluded;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(final String reason) {
-        this.reason = reason;
-    }
-
-    public List<PrivilegedSurveillance> getSurveillances() {
-        return surveillances;
-    }
-
-    public void setSurveillances(final List<PrivilegedSurveillance> surveillances) {
-        this.surveillances = surveillances;
     }
 }
