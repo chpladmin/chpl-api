@@ -9,8 +9,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.web.filter.GenericFilterBean;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,31 +19,22 @@ import gov.healthit.chpl.dto.ApiKeyDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ApiKeyManager;
+import lombok.extern.log4j.Log4j2;
 
-/**
- * Filter used to ensure calls to API that require an API-Key have a valid API-Key.
- */
+@Log4j2
 public class APIKeyAuthenticationFilter extends GenericFilterBean {
-    private static final Logger LOGGER = LogManager.getLogger(APIKeyAuthenticationFilter.class);
-    /**
-     * Requests that do not require an API Key.
-     */
     public static final String[] ALLOWED_REQUEST_PATHS = {
             "/api-docs", "/system-status", "/status", "/cache_status", "/monitoring", "/ff4j-console"
     };
 
     private ApiKeyManager apiKeyManager;
 
-    /**
-     * Constructor with key manager.
-     * @param apiKeyManager the api key manager
-     */
-    public APIKeyAuthenticationFilter(final ApiKeyManager apiKeyManager) {
+    public APIKeyAuthenticationFilter(ApiKeyManager apiKeyManager) {
         this.apiKeyManager = apiKeyManager;
     }
 
     @Override
-    public void doFilter(final ServletRequest req, final ServletResponse res, final FilterChain chain)
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
         HttpServletRequest request = null;
         HttpServletResponse response = (HttpServletResponse) res;
@@ -114,12 +103,12 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
                 } else {
                     try {
                         apiKeyManager.logApiKeyActivity(key, requestPath, requestMethod);
-                    } catch (final EntityCreationException e) {
+                    } catch (EntityCreationException e) {
                         throw new ServletException(e);
                     }
                     chain.doFilter(req, res); // continue
                 }
-            } catch (final EntityRetrievalException ex) {
+            } catch (EntityRetrievalException ex) {
                 LOGGER.error("Cannot find key for HTTP filter: " + key);
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid API Key");
                 return;
