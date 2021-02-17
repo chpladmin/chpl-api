@@ -1,4 +1,4 @@
-package gov.healthit.chpl.surveillance.report.builder2019;
+package gov.healthit.chpl.surveillance.report.builder;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -13,8 +13,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.BorderExtent;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -31,7 +29,6 @@ import org.apache.poi.xssf.usermodel.XSSFDataValidationHelper;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -48,15 +45,13 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.surveillance.report.PrivilegedSurveillanceDAO;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
-import gov.healthit.chpl.surveillance.report.builder.MultiQuarterWorksheetBuilderUtil;
-import gov.healthit.chpl.surveillance.report.builder.SurveillanceReportWorkbookWrapper;
 import gov.healthit.chpl.surveillance.report.dto.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportRelevantListingDTO;
+import lombok.extern.log4j.Log4j2;
 
-@Component
-public class ActivitiesAndOutcomesWorksheetBuilder {
-    private static final Logger LOGGER = LogManager.getLogger(ActivitiesAndOutcomesWorksheetBuilder.class);
+@Log4j2
+public abstract class ActivitiesAndOutcomesWorksheetBuilder {
     private static final int LAST_DATA_COLUMN = 37;
 
     private static final int COL_CHPL_ID = 1;
@@ -114,6 +109,8 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         this.privilegedSurvDao = privilegedSurvDao;
         dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
     }
+
+    protected abstract String getNonDisclosureEvaluationDescription();
 
     public int getLastDataColumn() {
         return LAST_DATA_COLUMN;
@@ -341,10 +338,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder {
         addRichTextHeadingCell(workbook, row, COL_LIMITATIONS_EVAL, cellTitle, cellSubtitle);
 
         cellTitle = "Non-Disclosure Evaluation";
-        cellSubtitle = "If a suspected non-conformity resulted from the non-disclosure of material "
-                + "information by the developer about limitations or additional types of costs associated "
-                + "with the Complete EHR or Health IT Module, how did the ONC-ACB evaluate the suspected "
-                + "non-conformity?";
+        cellSubtitle = getNonDisclosureEvaluationDescription();
         addRichTextHeadingCell(workbook, row, COL_NONDISCLOSURE_EVAL, cellTitle, cellSubtitle);
 
         cellTitle = "Direction for Developer Resolution";

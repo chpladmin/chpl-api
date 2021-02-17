@@ -8,26 +8,25 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.surveillance.report.builder.ComplaintsWorksheetBuilder;
 import gov.healthit.chpl.surveillance.report.builder.ListWorksheetBuilder;
 import gov.healthit.chpl.surveillance.report.builder.QuarterlyReportBuilderXlsx;
 import gov.healthit.chpl.surveillance.report.builder.SurveillanceReportWorkbookWrapper;
-import gov.healthit.chpl.surveillance.report.builder2019.ActivitiesAndOutcomesWorksheetBuilder;
-import gov.healthit.chpl.surveillance.report.builder2019.ComplaintsWorksheetBuilder;
-import gov.healthit.chpl.surveillance.report.builder2019.SurveillanceSummaryWorksheetBuilder;
+import gov.healthit.chpl.surveillance.report.builder.SurveillanceSummaryWorksheetBuilder;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 
 @Component("quarterlyReportBuilder2021")
 public class QuarterlyReportBuilder2021 implements QuarterlyReportBuilderXlsx {
     private ListWorksheetBuilder listWorksheetBuilder;
     private ReportInfoWorksheetBuilder2021 reportInfoWorksheetBuilder;
-    private ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesWorksheetBuilder;
+    private ActivitiesAndOutcomesWorksheetBuilder2021 activitiesAndOutcomesWorksheetBuilder;
     private ComplaintsWorksheetBuilder complaintsWorksheetBuilder;
     private SurveillanceSummaryWorksheetBuilder summaryWorksheetBuilder;
 
     @Autowired
     public QuarterlyReportBuilder2021(ListWorksheetBuilder listWorksheetBuilder,
             ReportInfoWorksheetBuilder2021 reportInfoWorksheetBuilder,
-            ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesWorksheetBuilder,
+            ActivitiesAndOutcomesWorksheetBuilder2021 activitiesAndOutcomesWorksheetBuilder,
             ComplaintsWorksheetBuilder complaintsWorksheetBuilder,
             SurveillanceSummaryWorksheetBuilder summaryWorksheetBuilder) {
         this.listWorksheetBuilder = listWorksheetBuilder;

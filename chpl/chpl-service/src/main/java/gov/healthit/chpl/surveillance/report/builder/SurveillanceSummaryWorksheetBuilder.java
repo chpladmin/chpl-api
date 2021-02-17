@@ -1,4 +1,4 @@
-package gov.healthit.chpl.surveillance.report.builder2019;
+package gov.healthit.chpl.surveillance.report.builder;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -25,7 +25,6 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.surveillance.report.ComplaintSummaryDAO;
 import gov.healthit.chpl.surveillance.report.PrivilegedSurveillanceDAO;
 import gov.healthit.chpl.surveillance.report.SurveillanceSummaryDAO;
-import gov.healthit.chpl.surveillance.report.builder.SurveillanceReportWorkbookWrapper;
 import gov.healthit.chpl.surveillance.report.dto.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportRelevantListingDTO;

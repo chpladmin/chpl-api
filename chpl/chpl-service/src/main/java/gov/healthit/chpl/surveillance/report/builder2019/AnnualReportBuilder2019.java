@@ -10,8 +10,11 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
 import gov.healthit.chpl.surveillance.report.builder.AnnualReportBuilderXlsx;
+import gov.healthit.chpl.surveillance.report.builder.ComplaintsWorksheetBuilder;
 import gov.healthit.chpl.surveillance.report.builder.ListWorksheetBuilder;
+import gov.healthit.chpl.surveillance.report.builder.SurveillanceExperienceWorksheetBuilder;
 import gov.healthit.chpl.surveillance.report.builder.SurveillanceReportWorkbookWrapper;
+import gov.healthit.chpl.surveillance.report.builder.SurveillanceSummaryWorksheetBuilder;
 import gov.healthit.chpl.surveillance.report.dto.AnnualReportDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 
@@ -20,7 +23,7 @@ public class AnnualReportBuilder2019 implements AnnualReportBuilderXlsx {
     private SurveillanceReportManager reportManager;
     private ListWorksheetBuilder listWorksheetBuilder;
     private ReportInfoWorksheetBuilder2019 reportInfoWorksheetBuilder;
-    private ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesWorksheetBuilder;
+    private ActivitiesAndOutcomesWorksheetBuilder2019 activitiesAndOutcomesWorksheetBuilder;
     private ComplaintsWorksheetBuilder complaintsWorksheetBuilder;
     private SurveillanceSummaryWorksheetBuilder survSummaryWorksheetBuilder;
     private SurveillanceExperienceWorksheetBuilder survExprienceWorksheetBuilder;
@@ -29,7 +32,7 @@ public class AnnualReportBuilder2019 implements AnnualReportBuilderXlsx {
     public AnnualReportBuilder2019(SurveillanceReportManager reportManager,
             ListWorksheetBuilder listWorksheetBuilder,
             ReportInfoWorksheetBuilder2019 reportInfoWorksheetBuilder,
-            ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesWorksheetBuilder,
+            ActivitiesAndOutcomesWorksheetBuilder2019 activitiesAndOutcomesWorksheetBuilder,
             ComplaintsWorksheetBuilder complaintsWorksheetBuilder,
             SurveillanceSummaryWorksheetBuilder survSummaryWorksheetBuilder,
             SurveillanceExperienceWorksheetBuilder survExprienceWorksheetBuilder) {

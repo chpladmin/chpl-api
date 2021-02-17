@@ -1,4 +1,4 @@
-package gov.healthit.chpl.surveillance.report.builder2019;
+package gov.healthit.chpl.surveillance.report.builder;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -9,8 +9,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.BorderExtent;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -39,14 +37,13 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.ComplaintManager;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.surveillance.report.PrivilegedSurveillanceDAO;
-import gov.healthit.chpl.surveillance.report.builder.MultiQuarterWorksheetBuilderUtil;
-import gov.healthit.chpl.surveillance.report.builder.SurveillanceReportWorkbookWrapper;
 import gov.healthit.chpl.surveillance.report.dto.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
+import lombok.extern.log4j.Log4j2;
 
 @Component
+@Log4j2
 public class ComplaintsWorksheetBuilder {
-    private static final Logger LOGGER = LogManager.getLogger(ComplaintsWorksheetBuilder.class);
     private static final int LAST_DATA_COLUMN = 21;
 
     private static final String BOOLEAN_YES = "Yes";

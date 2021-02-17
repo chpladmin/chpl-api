@@ -8,9 +8,11 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.surveillance.report.builder.ComplaintsWorksheetBuilder;
 import gov.healthit.chpl.surveillance.report.builder.ListWorksheetBuilder;
 import gov.healthit.chpl.surveillance.report.builder.QuarterlyReportBuilderXlsx;
 import gov.healthit.chpl.surveillance.report.builder.SurveillanceReportWorkbookWrapper;
+import gov.healthit.chpl.surveillance.report.builder.SurveillanceSummaryWorksheetBuilder;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 
 @Component("quarterlyReportBuilder2019")
@@ -18,14 +20,14 @@ public class QuarterlyReportBuilder2019 implements QuarterlyReportBuilderXlsx {
 
     private ListWorksheetBuilder listWorksheetBuilder;
     private ReportInfoWorksheetBuilder2019 reportInfoWorksheetBuilder;
-    private ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesWorksheetBuilder;
+    private ActivitiesAndOutcomesWorksheetBuilder2019 activitiesAndOutcomesWorksheetBuilder;
     private ComplaintsWorksheetBuilder complaintsWorksheetBuilder;
     private SurveillanceSummaryWorksheetBuilder summaryWorksheetBuilder;
 
     @Autowired
     public QuarterlyReportBuilder2019(ListWorksheetBuilder listWorksheetBuilder,
             ReportInfoWorksheetBuilder2019 reportInfoWorksheetBuilder,
-            ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesWorksheetBuilder,
+            ActivitiesAndOutcomesWorksheetBuilder2019 activitiesAndOutcomesWorksheetBuilder,
             ComplaintsWorksheetBuilder complaintsWorksheetBuilder,
             SurveillanceSummaryWorksheetBuilder summaryWorksheetBuilder) {
         this.listWorksheetBuilder = listWorksheetBuilder;

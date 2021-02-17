@@ -10,12 +10,11 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
 import gov.healthit.chpl.surveillance.report.builder.AnnualReportBuilderXlsx;
+import gov.healthit.chpl.surveillance.report.builder.ComplaintsWorksheetBuilder;
 import gov.healthit.chpl.surveillance.report.builder.ListWorksheetBuilder;
+import gov.healthit.chpl.surveillance.report.builder.SurveillanceExperienceWorksheetBuilder;
 import gov.healthit.chpl.surveillance.report.builder.SurveillanceReportWorkbookWrapper;
-import gov.healthit.chpl.surveillance.report.builder2019.ActivitiesAndOutcomesWorksheetBuilder;
-import gov.healthit.chpl.surveillance.report.builder2019.ComplaintsWorksheetBuilder;
-import gov.healthit.chpl.surveillance.report.builder2019.SurveillanceExperienceWorksheetBuilder;
-import gov.healthit.chpl.surveillance.report.builder2019.SurveillanceSummaryWorksheetBuilder;
+import gov.healthit.chpl.surveillance.report.builder.SurveillanceSummaryWorksheetBuilder;
 import gov.healthit.chpl.surveillance.report.dto.AnnualReportDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 
@@ -24,7 +23,7 @@ public class AnnualReportBuilder2021 implements AnnualReportBuilderXlsx {
     private SurveillanceReportManager reportManager;
     private ListWorksheetBuilder listWorksheetBuilder;
     private ReportInfoWorksheetBuilder2021 reportInfoWorksheetBuilder;
-    private ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesWorksheetBuilder;
+    private ActivitiesAndOutcomesWorksheetBuilder2021 activitiesAndOutcomesWorksheetBuilder;
     private ComplaintsWorksheetBuilder complaintsWorksheetBuilder;
     private SurveillanceSummaryWorksheetBuilder survSummaryWorksheetBuilder;
     private SurveillanceExperienceWorksheetBuilder survExprienceWorksheetBuilder;
@@ -33,7 +32,7 @@ public class AnnualReportBuilder2021 implements AnnualReportBuilderXlsx {
     public AnnualReportBuilder2021(SurveillanceReportManager reportManager,
             ListWorksheetBuilder listWorksheetBuilder,
             ReportInfoWorksheetBuilder2021 reportInfoWorksheetBuilder,
-            ActivitiesAndOutcomesWorksheetBuilder activitiesAndOutcomesWorksheetBuilder,
+            ActivitiesAndOutcomesWorksheetBuilder2021 activitiesAndOutcomesWorksheetBuilder,
             ComplaintsWorksheetBuilder complaintsWorksheetBuilder,
             SurveillanceSummaryWorksheetBuilder survSummaryWorksheetBuilder,
             SurveillanceExperienceWorksheetBuilder survExprienceWorksheetBuilder) {
