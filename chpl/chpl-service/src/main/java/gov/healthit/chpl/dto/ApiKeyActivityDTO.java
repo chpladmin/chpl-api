@@ -5,7 +5,11 @@ import java.util.Date;
 
 import gov.healthit.chpl.entity.ApiKeyActivityEntity;
 import gov.healthit.chpl.util.Util;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
 public class ApiKeyActivityDTO implements Serializable {
     private static final long serialVersionUID = 8932636865845455436L;
     private Long id;
@@ -17,9 +21,6 @@ public class ApiKeyActivityDTO implements Serializable {
     private Long lastModifiedUser;
     private Boolean deleted;
 
-    public ApiKeyActivityDTO() {
-    }
-
     public ApiKeyActivityDTO(ApiKeyActivityEntity entity) {
 
         this.id = entity.getId();
@@ -30,31 +31,6 @@ public class ApiKeyActivityDTO implements Serializable {
         this.lastModifiedDate = entity.getLastModifiedDate();
         this.lastModifiedUser = entity.getLastModifiedUser();
         this.deleted = entity.getDeleted();
-
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Long getApiKeyId() {
-        return apiKeyId;
-    }
-
-    public void setApiKeyId(final Long apiKeyId) {
-        this.apiKeyId = apiKeyId;
-    }
-
-    public String getApiCallPath() {
-        return apiCallPath;
-    }
-
-    public void setApiCallPath(final String apiCallPath) {
-        this.apiCallPath = apiCallPath;
     }
 
     public Date getCreationDate() {
@@ -72,21 +48,4 @@ public class ApiKeyActivityDTO implements Serializable {
     public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
 }
