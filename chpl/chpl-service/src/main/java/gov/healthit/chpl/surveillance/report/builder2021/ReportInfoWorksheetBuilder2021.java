@@ -3,11 +3,13 @@ package gov.healthit.chpl.surveillance.report.builder2021;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Sheet;
+import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.surveillance.report.builder.ReportInfoWorksheetBuilder;
 import gov.healthit.chpl.surveillance.report.builder.SurveillanceReportWorkbookWrapper;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 
+@Component
 public class ReportInfoWorksheetBuilder2021 extends ReportInfoWorksheetBuilder {
 
     public ReportInfoWorksheetBuilder2021() {

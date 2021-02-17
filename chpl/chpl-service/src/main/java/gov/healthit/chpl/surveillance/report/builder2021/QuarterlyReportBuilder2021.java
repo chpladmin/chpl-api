@@ -14,8 +14,10 @@ import gov.healthit.chpl.surveillance.report.builder.QuarterlyReportBuilderXlsx;
 import gov.healthit.chpl.surveillance.report.builder.SurveillanceReportWorkbookWrapper;
 import gov.healthit.chpl.surveillance.report.builder.SurveillanceSummaryWorksheetBuilder;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
+import lombok.NoArgsConstructor;
 
 @Component("quarterlyReportBuilder2021")
+@NoArgsConstructor
 public class QuarterlyReportBuilder2021 implements QuarterlyReportBuilderXlsx {
     private ListWorksheetBuilder listWorksheetBuilder;
     private ReportInfoWorksheetBuilder2021 reportInfoWorksheetBuilder;

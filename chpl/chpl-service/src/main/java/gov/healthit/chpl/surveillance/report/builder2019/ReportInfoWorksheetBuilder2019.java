@@ -11,13 +11,17 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.PropertyTemplate;
+import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
 import gov.healthit.chpl.surveillance.report.builder.ReportInfoWorksheetBuilder;
 import gov.healthit.chpl.surveillance.report.builder.SurveillanceReportWorkbookWrapper;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportRelevantListingDTO;
+import lombok.NoArgsConstructor;
 
+@Component
+@NoArgsConstructor
 public class ReportInfoWorksheetBuilder2019 extends ReportInfoWorksheetBuilder {
     private static final int MIN_EXCLUSION_LINES = 1;
     private SurveillanceReportManager reportManager;
