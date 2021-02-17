@@ -257,7 +257,7 @@ public class SurveillanceReportController {
         quarterlyReport.setActivitiesOutcomesSummary(createRequest.getSurveillanceActivitiesAndOutcomes());
         quarterlyReport.setPrioritizedElementSummary(createRequest.getPrioritizedElementSummary());
         quarterlyReport.setReactiveSummary(createRequest.getReactiveSummary());
-        quarterlyReport.setTransparencyDisclosureSummary(createRequest.getTransparencyDisclosureSummary());
+        quarterlyReport.setDisclosureSummary(createRequest.getTransparencyDisclosureSummary());
         QuarterlyReportDTO createdReport = reportManager.createQuarterlyReport(quarterlyReport);
         return new QuarterlyReport(createdReport);
     }
@@ -362,7 +362,7 @@ public class SurveillanceReportController {
         reportToUpdate.setActivitiesOutcomesSummary(updateRequest.getSurveillanceActivitiesAndOutcomes());
         reportToUpdate.setPrioritizedElementSummary(updateRequest.getPrioritizedElementSummary());
         reportToUpdate.setReactiveSummary(updateRequest.getReactiveSummary());
-        reportToUpdate.setTransparencyDisclosureSummary(updateRequest.getTransparencyDisclosureSummary());
+        reportToUpdate.setDisclosureSummary(updateRequest.getTransparencyDisclosureSummary());
         QuarterlyReportDTO createdReport = reportManager.updateQuarterlyReport(reportToUpdate);
         return new QuarterlyReport(createdReport);
     }

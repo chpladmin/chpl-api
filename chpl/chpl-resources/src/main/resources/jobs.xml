@@ -369,6 +369,46 @@
             </job-data-map>
         </job>
 
+        <!-- Job fired when quarterly reports are created -->
+        <job>
+            <name>quarterlyReportGenerationJob</name>
+            <group>chplBackgroundJobs</group>
+            <description>Complete the work of generating a quarterly report for surveillance and sending it via email.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.surveillanceReport.QuarterlyReportGenerationJob</job-class>
+            <durability>true</durability>
+            <recover>true</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
+                </entry>
+                <entry>
+                    <key>email</key>
+                    <value></value>
+                </entry>
+            </job-data-map>
+        </job>
+
+        <!-- Job fired when annual reports are created -->
+        <job>
+            <name>annualReportGenerationJob</name>
+            <group>chplBackgroundJobs</group>
+            <description>Complete the work of generating an annual report for surveillance and sending it via email.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.surveillanceReport.AnnualReportGenerationJob</job-class>
+            <durability>true</durability>
+            <recover>true</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
+                </entry>
+                <entry>
+                    <key>email</key>
+                    <value></value>
+                </entry>
+            </job-data-map>
+        </job>
+
         <!-- Real World Testing Eligibility Job -->
         <job>
             <name>realWorldTestingEligibilityJob</name>
