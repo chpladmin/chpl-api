@@ -37,6 +37,7 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
             entity = new ApiKeyActivityEntity();
             entity.setApiKeyId(dto.getApiKeyId());
             entity.setApiCallPath(dto.getApiCallPath());
+            entity.setApiCallMethod(dto.getApiCallMethod());
 
             if (dto.getLastModifiedDate() != null) {
                 entity.setLastModifiedDate(dto.getLastModifiedDate());
@@ -68,6 +69,7 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 
         entity.setApiKeyId(dto.getApiKeyId());
         entity.setApiCallPath(dto.getApiCallPath());
+        entity.setApiCallMethod(dto.getApiCallMethod());
 
         if (dto.getLastModifiedDate() != null) {
             entity.setLastModifiedDate(dto.getLastModifiedDate());

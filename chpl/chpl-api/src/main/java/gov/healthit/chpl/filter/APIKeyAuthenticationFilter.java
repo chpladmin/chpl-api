@@ -70,6 +70,7 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
             requestPath = request.getRequestURI() + "?" + request.getQueryString();
         }
 
+        String requestMethod = request.getMethod();
         String key = null;
         String keyFromHeader = request.getHeader("API-Key");
         String keyFromParam = request.getParameter("api_key");
@@ -112,7 +113,7 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
                     return;
                 } else {
                     try {
-                        apiKeyManager.logApiKeyActivity(key, requestPath);
+                        apiKeyManager.logApiKeyActivity(key, requestPath, requestMethod);
                     } catch (final EntityCreationException e) {
                         throw new ServletException(e);
                     }

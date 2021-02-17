@@ -94,13 +94,14 @@ public class ApiKeyManager {
     }
 
     @Transactional
-    public void logApiKeyActivity(final String keyString, final String apiCallPath)
+    public void logApiKeyActivity(final String keyString, final String apiCallPath, final String apiCallMethod)
             throws EntityRetrievalException, EntityCreationException {
 
         ApiKeyDTO apiKey = findKey(keyString);
         ApiKeyActivityDTO apiKeyActivityDto = new ApiKeyActivityDTO();
 
         apiKeyActivityDto.setApiCallPath(apiCallPath);
+        apiKeyActivityDto.setApiCallMethod(apiCallMethod);
         apiKeyActivityDto.setApiKeyId(apiKey.getId());
         apiKeyActivityDto.setDeleted(false);
 

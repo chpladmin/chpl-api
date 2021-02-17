@@ -11,6 +11,7 @@ public class ApiKeyActivityDTO implements Serializable {
     private Long id;
     private Long apiKeyId;
     private String apiCallPath;
+    private String apiCallMethod;
     private Date creationDate;
     private Date lastModifiedDate;
     private Long lastModifiedUser;
@@ -24,6 +25,7 @@ public class ApiKeyActivityDTO implements Serializable {
         this.id = entity.getId();
         this.apiKeyId = entity.getApiKeyId();
         this.apiCallPath = entity.getApiCallPath();
+        this.apiCallMethod = entity.getApiCallMethod();
         this.creationDate = entity.getCreationDate();
         this.lastModifiedDate = entity.getLastModifiedDate();
         this.lastModifiedUser = entity.getLastModifiedUser();

@@ -31,6 +31,10 @@ public class ApiKeyActivityEntity {
     private String apiCallPath;
 
     @Basic(optional = false)
+    @Column(name = "api_call_method")
+    private String apiCallMethod;
+
+    @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
     private Date creationDate;
 
