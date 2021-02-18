@@ -561,7 +561,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
                 + "FROM CertifiedProductSummaryEntity cp "
                 + "WHERE cp.deleted = false ";
         switch (urlType) {
-        case MANDATORY_DISCLOSURE_URL:
+        case MANDATORY_DISCLOSURE:
             queryStr += " AND cp.transparencyAttestationUrl = :url ";
             break;
         case FULL_USABILITY_REPORT:
@@ -576,7 +576,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         case REAL_WORLD_TESTING_RESULTS:
             queryStr += " AND cp.rwtResultsUrl = :url ";
             break;
-        case SVAP_NOTICE_URL:
+        case SVAP_NOTICE:
             queryStr += " AND cp.svapNoticeUrl = :url ";
             break;
         default:

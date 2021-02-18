@@ -77,7 +77,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         }
                     }
                     break;
-                case MANDATORY_DISCLOSURE_URL:
+                case MANDATORY_DISCLOSURE:
                     @SuppressWarnings("unchecked") List<String> mandatoryDisclosureWebsites =
                         entityManager.createQuery(
                                 "SELECT DISTINCT transparencyAttestationUrl "
@@ -162,7 +162,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         }
                     }
                     break;
-                case DOCUMENTATION_URL:
+                case DOCUMENTATION:
                     @SuppressWarnings("unchecked") List<String> documentationUrlWebsites =
                     entityManager.createQuery(
                             "SELECT DISTINCT documentationUrl "
@@ -234,7 +234,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         }
                     }
                     break;
-                    case SVAP_NOTICE_URL:
+                    case SVAP_NOTICE:
                         @SuppressWarnings("unchecked") List<String> svapNoticeWebsites =
                         entityManager.createQuery(
                                 "SELECT DISTINCT svapNoticeUrl "
