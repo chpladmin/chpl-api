@@ -130,7 +130,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                         case TEST_RESULTS_SUMMARY:
                         case REAL_WORLD_TESTING_PLANS:
                         case REAL_WORLD_TESTING_RESULTS:
-                        case SVAP_NOTICE:
+                        case STANDARDS_VERSION_ADVANCEMENT_PROCESS_NOTICE:
                             LOGGER.info("[" + i + "] Getting Listings with bad " + urlResult.getUrlType().getName()
                                     + " website " + urlResult.getUrl());
                             List<CertifiedProductSummaryDTO> listingsWithBadUrl = cpDao
@@ -435,7 +435,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             int brokenUseCasesUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.USE_CASES);
             int brokenRwtPlansUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.REAL_WORLD_TESTING_PLANS);
             int brokenRwtResultsUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.REAL_WORLD_TESTING_RESULTS);
-            int brokenSvapNoticeUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.SVAP_NOTICE);
+            int brokenSvapNoticeUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.STANDARDS_VERSION_ADVANCEMENT_PROCESS_NOTICE);
 
             htmlMessage += "<ul>";
             htmlMessage += "<li>" + UrlType.ATL.getName() + ": " + brokenAtlUrls + "</li>";
@@ -450,7 +450,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             htmlMessage += "<li>" + UrlType.USE_CASES.getName() + ": " + brokenUseCasesUrls + "</li>";
             htmlMessage += "<li>" + UrlType.REAL_WORLD_TESTING_PLANS.getName() + ": " + brokenRwtPlansUrls + "</li>";
             htmlMessage += "<li>" + UrlType.REAL_WORLD_TESTING_RESULTS.getName() + ": " + brokenRwtResultsUrls + "</li>";
-            htmlMessage += "<li>" + UrlType.SVAP_NOTICE.getName() + ": " + brokenSvapNoticeUrls + "</li>";
+            htmlMessage += "<li>" + UrlType.STANDARDS_VERSION_ADVANCEMENT_PROCESS_NOTICE.getName() + ": " + brokenSvapNoticeUrls + "</li>";
             htmlMessage += "</ul>";
         }
 

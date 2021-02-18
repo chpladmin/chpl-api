@@ -13,7 +13,7 @@ public enum UrlType {
     USE_CASES("Use Cases"),
     REAL_WORLD_TESTING_PLANS("Real World Testing Plans"),
     REAL_WORLD_TESTING_RESULTS("Real World Testing Results"),
-    SVAP_NOTICE("Standards Version Advancement Process Notice");
+    STANDARDS_VERSION_ADVANCEMENT_PROCESS_NOTICE("Standards Version Advancement Process Notice");
 
     private String name;
 

@@ -234,7 +234,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         }
                     }
                     break;
-                    case SVAP_NOTICE:
+                    case STANDARDS_VERSION_ADVANCEMENT_PROCESS_NOTICE:
                         @SuppressWarnings("unchecked") List<String> svapNoticeWebsites =
                         entityManager.createQuery(
                                 "SELECT DISTINCT svapNoticeUrl "

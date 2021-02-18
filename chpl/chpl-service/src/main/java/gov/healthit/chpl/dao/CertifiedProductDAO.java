@@ -576,7 +576,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         case REAL_WORLD_TESTING_RESULTS:
             queryStr += " AND cp.rwtResultsUrl = :url ";
             break;
-        case SVAP_NOTICE:
+        case STANDARDS_VERSION_ADVANCEMENT_PROCESS_NOTICE:
             queryStr += " AND cp.svapNoticeUrl = :url ";
             break;
         default:
