@@ -11,6 +11,8 @@ import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.scheduler.job.RealWorldTestingUploadJob;
 import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
+import gov.healthit.chpl.scheduler.job.surveillanceReport.AnnualReportGenerationJob;
+import gov.healthit.chpl.scheduler.job.surveillanceReport.QuarterlyReportGenerationJob;
 
 @Component(value = "schedulerCreateBackgroundJobTriggerActionPermissions")
 public class CreateBackgroundJobTriggerActionPermissions extends ActionPermissions {
@@ -21,6 +23,8 @@ public class CreateBackgroundJobTriggerActionPermissions extends ActionPermissio
     public void init() {
         BACKGROUND_JOBS_ACB_CAN_CREATE.add(SplitDeveloperJob.JOB_NAME);
         BACKGROUND_JOBS_ACB_CAN_CREATE.add(RealWorldTestingUploadJob.JOB_NAME);
+        BACKGROUND_JOBS_ACB_CAN_CREATE.add(QuarterlyReportGenerationJob.JOB_NAME);
+        BACKGROUND_JOBS_ACB_CAN_CREATE.add(AnnualReportGenerationJob.JOB_NAME);
     }
 
     @Override
