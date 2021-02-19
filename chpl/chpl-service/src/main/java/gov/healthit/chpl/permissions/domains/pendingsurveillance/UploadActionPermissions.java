@@ -13,7 +13,7 @@ public class UploadActionPermissions extends ActionPermissions {
     private CertifiedProductDAO certifiedProductDAO;
 
     @Autowired
-    public UploadActionPermissions(final CertifiedProductDAO certifiedProductDAO) {
+    public UploadActionPermissions(CertifiedProductDAO certifiedProductDAO) {
         this.certifiedProductDAO = certifiedProductDAO;
     }
 
@@ -24,7 +24,7 @@ public class UploadActionPermissions extends ActionPermissions {
     }
 
     @Override
-    public boolean hasAccess(final Object obj) {
+    public boolean hasAccess(Object obj) {
         try {
             if (!(obj instanceof Surveillance)) {
                 return false;
@@ -34,7 +34,8 @@ public class UploadActionPermissions extends ActionPermissions {
                 CertifiedProductDTO dto = certifiedProductDAO.getById(surv.getCertifiedProduct().getId());
                 return isAcbValidForCurrentUser(dto.getCertificationBodyId());
             } else {
-                return getResourcePermissions().isUserRoleOnc() || getResourcePermissions().isUserRoleAdmin();
+                return getResourcePermissions().isUserRoleOnc()
+                        || getResourcePermissions().isUserRoleAdmin();
             }
         } catch (Exception e) {
             return false;

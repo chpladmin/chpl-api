@@ -14,7 +14,7 @@ public class GetAllActionPermissions extends ActionPermissions {
     private CertifiedProductDAO certifiedProductDAO;
 
     @Autowired
-    public GetAllActionPermissions(final CertifiedProductDAO certifiedProductDAO) {
+    public GetAllActionPermissions(CertifiedProductDAO certifiedProductDAO) {
         this.certifiedProductDAO = certifiedProductDAO;
     }
 
@@ -25,7 +25,7 @@ public class GetAllActionPermissions extends ActionPermissions {
     }
 
     @Override
-    public boolean hasAccess(final Object obj) {
+    public boolean hasAccess(Object obj) {
         try {
             if (!(obj instanceof Surveillance)) {
                 return false;
@@ -40,7 +40,8 @@ public class GetAllActionPermissions extends ActionPermissions {
                     CertifiedProductDTO dto = certifiedProductDAO.getById(surv.getCertifiedProduct().getId());
                     return isAcbValidForCurrentUser(dto.getCertificationBodyId());
                 }
-            } else if (getResourcePermissions().isUserRoleOnc() || getResourcePermissions().isUserRoleAdmin()) {
+            } else if (getResourcePermissions().isUserRoleOnc()
+                    || getResourcePermissions().isUserRoleAdmin()) {
                 Surveillance surv = (Surveillance) obj;
                 // Make sure the pending surveillance belongs to the correct
                 // authority

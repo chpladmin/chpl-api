@@ -26,7 +26,7 @@ public class GetPendingListingActivityByAcbActionPermissionsTest extends ActionP
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }
 
     @Override
@@ -48,6 +48,15 @@ public class GetPendingListingActivityByAcbActionPermissionsTest extends ActionP
         assertTrue(permissions.hasAccess());
 
         // Not used
+        assertFalse(permissions.hasAccess(new Object()));
+    }
+
+    @Override
+    @Test
+    public void hasAccess_OncStaff() throws Exception {
+        setupForOncStaffUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
         assertFalse(permissions.hasAccess(new Object()));
     }
 

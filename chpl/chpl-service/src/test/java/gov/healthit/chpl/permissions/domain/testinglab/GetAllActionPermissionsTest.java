@@ -17,7 +17,7 @@ import gov.healthit.chpl.permissions.domains.testinglab.GetAllActionPermissions;
 
 public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
-    private ResourcePermissions resourcePermissions;;
+    private ResourcePermissions resourcePermissions;
 
     @InjectMocks
     private GetAllActionPermissions permissions;
@@ -26,7 +26,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(resourcePermissions.getAllAtlsForCurrentUser()).thenReturn(getAllAtlForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAtlsForCurrentUser()).thenReturn(getAllAtlForUser(2L, 4L));
     }
 
     @Override
@@ -53,6 +53,17 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
         TestingLabDTO dto = new TestingLabDTO();
         dto.setId(1L);
         assertTrue(permissions.hasAccess(dto));
+    }
+
+    @Override
+    @Test
+    public void hasAccess_OncStaff() throws Exception {
+        setupForOncStaffUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
+        TestingLabDTO dto = new TestingLabDTO();
+        dto.setId(1L);
+        assertFalse(permissions.hasAccess(dto));
     }
 
     @Override
