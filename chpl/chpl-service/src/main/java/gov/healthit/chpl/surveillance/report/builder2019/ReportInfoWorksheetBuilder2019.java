@@ -10,7 +10,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.ss.util.PropertyTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
@@ -25,8 +25,8 @@ import lombok.NoArgsConstructor;
 public class ReportInfoWorksheetBuilder2019 extends ReportInfoWorksheetBuilder {
     private static final int MIN_EXCLUSION_LINES = 1;
     private SurveillanceReportManager reportManager;
-    private PropertyTemplate pt;
 
+    @Autowired
     public ReportInfoWorksheetBuilder2019(SurveillanceReportManager reportManager) {
         super();
         this.reportManager = reportManager;

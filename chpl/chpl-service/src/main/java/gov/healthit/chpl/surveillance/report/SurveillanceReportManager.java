@@ -1,12 +1,13 @@
 package gov.healthit.chpl.surveillance.report;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.quartz.JobDataMap;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
@@ -19,19 +20,21 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.domain.concept.JobTypeConcept;
+import gov.healthit.chpl.domain.schedule.ChplJob;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.dto.job.JobDTO;
-import gov.healthit.chpl.dto.job.JobTypeDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.manager.JobManager;
+import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
+import gov.healthit.chpl.scheduler.job.surveillanceReport.AnnualReportGenerationJob;
+import gov.healthit.chpl.scheduler.job.surveillanceReport.QuarterlyReportGenerationJob;
 import gov.healthit.chpl.surveillance.report.dto.AnnualReportDTO;
 import gov.healthit.chpl.surveillance.report.dto.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterDTO;
@@ -50,7 +53,7 @@ public class SurveillanceReportManager extends SecuredManager {
 
     private ActivityManager activityManager;
     private UserManager userManager;
-    private JobManager jobManager;
+    private SchedulerManager schedulerManager;
     private QuarterlyReportDAO quarterlyDao;
     private PrivilegedSurveillanceDAO quarterlySurvMapDao;
     private AnnualReportDAO annualDao;
@@ -61,13 +64,14 @@ public class SurveillanceReportManager extends SecuredManager {
     @SuppressWarnings("checkstyle:parameternumber")
     public SurveillanceReportManager(ActivityManager activityManager,
             UserManager userManager,
-            JobManager jobManager, QuarterlyReportDAO quarterlyDao,
+            SchedulerManager schedulerManager,
+            QuarterlyReportDAO quarterlyDao,
             PrivilegedSurveillanceDAO quarterlySurvMapDao,
             AnnualReportDAO annualDao, QuarterDAO quarterDao,
             ErrorMessageUtil msgUtil) {
         this.activityManager = activityManager;
         this.userManager = userManager;
-        this.jobManager = jobManager;
+        this.schedulerManager = schedulerManager;
         this.quarterlyDao = quarterlyDao;
         this.quarterlySurvMapDao = quarterlySurvMapDao;
         this.annualDao = annualDao;
@@ -175,34 +179,29 @@ public class SurveillanceReportManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).EXPORT_ANNUAL, "
-            + "#id)")
-    public JobDTO exportAnnualReportAsBackgroundJob(Long id)
-            throws EntityRetrievalException, EntityCreationException, UserRetrievalException, IOException {
-        // figure out the user
-        UserDTO currentUser = userManager.getById(AuthUtil.getCurrentUser().getId());
-
-        JobTypeDTO jobType = null;
-        List<JobTypeDTO> jobTypes = jobManager.getAllJobTypes();
-        for (JobTypeDTO jt : jobTypes) {
-            if (jt.getName().equalsIgnoreCase(JobTypeConcept.EXPORT_ANNUAL.getName())) {
-                jobType = jt;
-            }
+            + "#annualReportId)")
+    public ChplOneTimeTrigger exportAnnualReportAsBackgroundJob(Long annualReportId)
+            throws ValidationException, SchedulerException, UserRetrievalException {
+        UserDTO jobUser = null;
+        try {
+            jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
+        } catch (UserRetrievalException ex) {
+            LOGGER.error("Could not find user to execute job.");
         }
 
-        JobDTO toCreate = new JobDTO();
-        //job data is the quarterly report id
-        toCreate.setData(id.toString());
-        toCreate.setUser(currentUser);
-        toCreate.setJobType(jobType);
-        JobDTO insertedJob = jobManager.createJob(toCreate);
-        JobDTO createdJob = jobManager.getJobById(insertedJob.getId());
-        jobManager.start(createdJob);
-        JobDTO startedJob = jobManager.getJobById(insertedJob.getId());
+        ChplOneTimeTrigger exportAnnualReportTrigger = new ChplOneTimeTrigger();
+        ChplJob expoertAnnualReportJob = new ChplJob();
+        expoertAnnualReportJob.setName(AnnualReportGenerationJob.JOB_NAME);
+        expoertAnnualReportJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put(AnnualReportGenerationJob.ANNUAL_REPORT_ID_KEY, annualReportId);
+        jobDataMap.put(AnnualReportGenerationJob.USER_KEY, jobUser);
+        expoertAnnualReportJob.setJobDataMap(jobDataMap);
+        exportAnnualReportTrigger.setJob(expoertAnnualReportJob);
+        exportAnnualReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
+        exportAnnualReportTrigger = schedulerManager.createBackgroundJobTrigger(exportAnnualReportTrigger);
 
-        AnnualReportDTO report = annualDao.getById(id);
-        activityManager.addActivity(ActivityConcept.ANNUAL_REPORT, id,
-                "Exported annual report.", null, report);
-        return startedJob;
+        return exportAnnualReportTrigger;
     }
 
     @Transactional
@@ -524,33 +523,29 @@ public class SurveillanceReportManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).EXPORT_QUARTERLY, "
-            + "#id)")
-    public JobDTO exportQuarterlyReportAsBackgroundJob(Long id)
-            throws EntityRetrievalException, EntityCreationException, UserRetrievalException, IOException {
-        // figure out the user
-        UserDTO currentUser = userManager.getById(AuthUtil.getCurrentUser().getId());
-
-        JobTypeDTO jobType = null;
-        List<JobTypeDTO> jobTypes = jobManager.getAllJobTypes();
-        for (JobTypeDTO jt : jobTypes) {
-            if (jt.getName().equalsIgnoreCase(JobTypeConcept.EXPORT_QUARTERLY.getName())) {
-                jobType = jt;
-            }
+            + "#quarterlyReportId)")
+    public ChplOneTimeTrigger exportQuarterlyReportAsBackgroundJob(Long quarterlyReportId)
+            throws ValidationException, SchedulerException, UserRetrievalException {
+        UserDTO jobUser = null;
+        try {
+            jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
+        } catch (UserRetrievalException ex) {
+            LOGGER.error("Could not find user to execute job.");
         }
 
-        JobDTO toCreate = new JobDTO();
-        //job data is the quarterly report id
-        toCreate.setData(id.toString());
-        toCreate.setUser(currentUser);
-        toCreate.setJobType(jobType);
-        JobDTO insertedJob = jobManager.createJob(toCreate);
-        JobDTO createdJob = jobManager.getJobById(insertedJob.getId());
-        jobManager.start(createdJob);
-        JobDTO startedJob = jobManager.getJobById(insertedJob.getId());
-        QuarterlyReportDTO report = quarterlyDao.getById(id);
-        activityManager.addActivity(ActivityConcept.QUARTERLY_REPORT, id,
-                "Exported quarterly report.", null, report);
-        return startedJob;
+        ChplOneTimeTrigger exportQuarterlyReportTrigger = new ChplOneTimeTrigger();
+        ChplJob expoertQuarterlyReportJob = new ChplJob();
+        expoertQuarterlyReportJob.setName(QuarterlyReportGenerationJob.JOB_NAME);
+        expoertQuarterlyReportJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put(QuarterlyReportGenerationJob.QUARTERLY_REPORT_ID_KEY, quarterlyReportId);
+        jobDataMap.put(QuarterlyReportGenerationJob.USER_KEY, jobUser);
+        expoertQuarterlyReportJob.setJobDataMap(jobDataMap);
+        exportQuarterlyReportTrigger.setJob(expoertQuarterlyReportJob);
+        exportQuarterlyReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
+        exportQuarterlyReportTrigger = schedulerManager.createBackgroundJobTrigger(exportQuarterlyReportTrigger);
+
+        return exportQuarterlyReportTrigger;
     }
 
     private void copyPreviousReportDataIntoNextReport(QuarterlyReportDTO nextReport) {

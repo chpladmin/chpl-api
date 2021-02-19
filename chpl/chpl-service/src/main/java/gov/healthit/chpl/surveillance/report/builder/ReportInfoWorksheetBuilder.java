@@ -23,8 +23,8 @@ import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 public abstract class ReportInfoWorksheetBuilder {
     private static final int LAST_DATA_COLUMN = 6;
     private static final int MIN_TEXT_AREA_LINES = 4;
-    private PropertyTemplate pt;
     private int lastDataRow;
+    protected PropertyTemplate pt;
 
     protected abstract int addExclusionAndExhaustionSection(SurveillanceReportWorkbookWrapper workbook,
             Sheet sheet, List<QuarterlyReportDTO> reports, int beginRow);
@@ -214,7 +214,7 @@ public abstract class ReportInfoWorksheetBuilder {
         cell.setCellValue("IV.");
         cell = workbook.createCell(row, 1, workbook.getSectionHeadingStyle());
         cell.setCellValue("Sampling and Selecting");
-        currRow = addExclusionAndExhaustionSection(workbook, sheet, reports, beginRow);
+        currRow = addExclusionAndExhaustionSection(workbook, sheet, reports, currRow);
         row = workbook.getRow(sheet, currRow++);
         cell = workbook.createCell(row, 1, workbook.getItalicUnderlinedSmallStyle());
         cell.setCellValue(getReactiveSummaryTitle());

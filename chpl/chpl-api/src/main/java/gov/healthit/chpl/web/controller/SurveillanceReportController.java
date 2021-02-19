@@ -1,14 +1,12 @@
 package gov.healthit.chpl.web.controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,14 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.domain.Job;
 import gov.healthit.chpl.domain.complaint.Complaint;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.ComplaintManager;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
@@ -155,9 +153,9 @@ public class SurveillanceReportController {
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
                     + "on the ACB associated with the report.")
     @RequestMapping(value = "/export/annual/{annualReportId}", method = RequestMethod.GET)
-    public Job exportAnnualReport(@PathVariable("annualReportId") final Long annualReportId,
-            final HttpServletResponse response) throws EntityRetrievalException, UserRetrievalException,
-            EntityCreationException, IOException, InvalidArgumentsException {
+    public ChplOneTimeTrigger exportAnnualReport(@PathVariable("annualReportId") Long annualReportId)
+            throws ValidationException, SchedulerException, EntityRetrievalException,
+            UserRetrievalException, InvalidArgumentsException {
         AnnualReportDTO reportToExport = reportManager.getAnnualReport(annualReportId);
         //at least one quarterly report must exist to export the annual report
         List<QuarterlyReportDTO> quarterlyReports =
@@ -167,8 +165,7 @@ public class SurveillanceReportController {
                     reportToExport.getYear(), "export"));
         }
 
-        JobDTO exportJob = reportManager.exportAnnualReportAsBackgroundJob(annualReportId);
-        return new Job(exportJob);
+        return reportManager.exportAnnualReportAsBackgroundJob(annualReportId);
     }
 
     @ApiOperation(value = "Get all quarterly surveillance reports this user has access to.",
@@ -382,10 +379,8 @@ public class SurveillanceReportController {
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
                     + "on the ACB associated with the report.")
     @RequestMapping(value = "/export/quarterly/{quarterlyReportId}", method = RequestMethod.GET)
-    public Job exportQuarterlyReport(@PathVariable("quarterlyReportId") final Long quarterlyReportId,
-            final HttpServletResponse response) throws EntityRetrievalException, UserRetrievalException,
-            EntityCreationException, IOException {
-        JobDTO exportJob = reportManager.exportQuarterlyReportAsBackgroundJob(quarterlyReportId);
-        return new Job(exportJob);
+    public ChplOneTimeTrigger exportQuarterlyReport(@PathVariable("quarterlyReportId") Long quarterlyReportId)
+                throws ValidationException, SchedulerException, UserRetrievalException {
+        return reportManager.exportQuarterlyReportAsBackgroundJob(quarterlyReportId);
     }
 }

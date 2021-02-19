@@ -8,13 +8,11 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.surveillance.report.builder.ReportInfoWorksheetBuilder;
 import gov.healthit.chpl.surveillance.report.builder.SurveillanceReportWorkbookWrapper;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
+import lombok.NoArgsConstructor;
 
 @Component
+@NoArgsConstructor
 public class ReportInfoWorksheetBuilder2021 extends ReportInfoWorksheetBuilder {
-
-    public ReportInfoWorksheetBuilder2021() {
-        super();
-    }
 
     @Override
     protected String getReportingAcbDescription() {
