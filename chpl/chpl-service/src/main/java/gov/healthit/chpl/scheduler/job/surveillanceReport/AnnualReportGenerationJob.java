@@ -184,8 +184,14 @@ public class AnnualReportGenerationJob implements Job {
             String msg = msgUtil.getMessage("report.annualSurveillance.export.writeError");
             LOGGER.error(msg, ex);
         } finally {
-            try { outputStream.flush(); } catch (Exception ignore) {}
-            try { outputStream.close(); } catch (Exception ignore) {}
+            try {
+                outputStream.flush();
+            } catch (Exception ignore) {
+            }
+            try {
+                outputStream.close();
+            } catch (Exception ignore) {
+            }
         }
         return writtenFile;
     }
