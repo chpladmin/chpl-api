@@ -135,7 +135,7 @@ public class ResourcePermissions {
         List<CertificationBodyDTO> acbs = new ArrayList<CertificationBodyDTO>();
 
         if (user != null) {
-            if (isUserRoleAdmin() || isUserRoleOnc()) {
+            if (isUserRoleAdmin() || isUserRoleOnc() || isUserRoleOncStaff()) {
                 acbs = acbDAO.findAll();
             } else {
                 List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(user.getId());

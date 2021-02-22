@@ -16,7 +16,7 @@ import gov.healthit.chpl.permissions.domains.testinglab.RetireActionPermissions;
 
 public class RetireActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
-    private ResourcePermissions resourcePermissions;;
+    private ResourcePermissions resourcePermissions;
 
     @InjectMocks
     private RetireActionPermissions permissions;
@@ -25,7 +25,7 @@ public class RetireActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(resourcePermissions.getAllAtlsForCurrentUser()).thenReturn(getAllAtlForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAtlsForCurrentUser()).thenReturn(getAllAtlForUser(2L, 4L));
     }
 
     @Override
@@ -47,6 +47,15 @@ public class RetireActionPermissionsTest extends ActionPermissionsBaseTest {
         assertTrue(permissions.hasAccess());
 
         // This is not used
+        assertFalse(permissions.hasAccess(new Object()));
+    }
+
+    @Override
+    @Test
+    public void hasAccess_OncStaff() throws Exception {
+        setupForOncStaffUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
         assertFalse(permissions.hasAccess(new Object()));
     }
 

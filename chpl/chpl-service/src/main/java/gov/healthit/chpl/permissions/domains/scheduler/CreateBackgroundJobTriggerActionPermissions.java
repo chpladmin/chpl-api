@@ -11,6 +11,7 @@ import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.scheduler.job.RealWorldTestingUploadJob;
 import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
+import gov.healthit.chpl.scheduler.job.developer.MergeDeveloperJob;
 
 @Component(value = "schedulerCreateBackgroundJobTriggerActionPermissions")
 public class CreateBackgroundJobTriggerActionPermissions extends ActionPermissions {
@@ -20,6 +21,7 @@ public class CreateBackgroundJobTriggerActionPermissions extends ActionPermissio
     @PostConstruct
     public void init() {
         BACKGROUND_JOBS_ACB_CAN_CREATE.add(SplitDeveloperJob.JOB_NAME);
+        BACKGROUND_JOBS_ACB_CAN_CREATE.add(MergeDeveloperJob.JOB_NAME);
         BACKGROUND_JOBS_ACB_CAN_CREATE.add(RealWorldTestingUploadJob.JOB_NAME);
     }
 
@@ -31,7 +33,8 @@ public class CreateBackgroundJobTriggerActionPermissions extends ActionPermissio
     @Override
     public boolean hasAccess(Object obj) {
         if (getResourcePermissions().isUserRoleAdmin()
-                || getResourcePermissions().isUserRoleOnc()) {
+                || getResourcePermissions().isUserRoleOnc()
+                || getResourcePermissions().isUserRoleOncStaff()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             if (obj instanceof ChplOneTimeTrigger) {

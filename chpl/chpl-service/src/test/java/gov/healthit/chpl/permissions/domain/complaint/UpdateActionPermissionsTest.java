@@ -28,7 +28,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }
 
     @Override
@@ -53,16 +53,25 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
+    public void hasAccess_OncStaff() throws Exception {
+        setupForOncStaffUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
+        assertFalse(permissions.hasAccess(new Complaint()));
+    }
+
+    @Override
+    @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
         assertFalse(permissions.hasAccess());
 
         Complaint complaint = new Complaint();
         complaint.setCertificationBody(new CertificationBody());
-        complaint.getCertificationBody().setId(2l);
+        complaint.getCertificationBody().setId(2L);
         assertTrue(permissions.hasAccess(complaint));
 
-        complaint.getCertificationBody().setId(1l);
+        complaint.getCertificationBody().setId(1L);
         assertFalse(permissions.hasAccess(complaint));
     }
 
