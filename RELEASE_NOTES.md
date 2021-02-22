@@ -1,5 +1,16 @@
 # Release Notes
 
+## Version 27.2.0
+_22 February 2021_
+
+### Features
+* Give ROLE_ONC_STAFF access to scheduled and background jobs
+* Enable Standards Version Advancement Process Administration
+* Add /collections/certified-products endpoint including Direct Review data for listings
+* Create scheduled job to identify any listings that fail current validation rules
+
+---
+
 ## Version 27.1.0
 _8 February 2021_
 
