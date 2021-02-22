@@ -32,8 +32,8 @@ public class SvapController {
         this.svapManager = svapManager;
     }
 
-    @ApiOperation(value = "Update an SVAP.",
-            notes = "Provides functionality to update an SVAP and the Criteria associated with it."
+    @ApiOperation(value = "Update an Standards Version Advancement Process.",
+            notes = "Provides functionality to update an SVAP and the Criteria associated with it. "
                     + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.")
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = "application/json; charset=utf-8")
@@ -41,8 +41,8 @@ public class SvapController {
         return svapManager.update(svap);
     }
 
-    @ApiOperation(value = "Create an SVAP.",
-            notes = "Provides functionality to add a new SVAP and the Criteria associated with it."
+    @ApiOperation(value = "Create an Standards Version Advancement Process.",
+            notes = "Provides functionality to add a new SVAP and the Criteria associated with it. "
                     + "Security Restrictions: To create: ROLE_ADMIN or ROLE_ONC.")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = "application/json; charset=utf-8")
@@ -50,8 +50,8 @@ public class SvapController {
         return svapManager.create(svap);
     }
 
-    @ApiOperation(value = "Delete an SVAP.",
-            notes = "Provides functionality to delete an existing SVAP and the Criteria associated with it."
+    @ApiOperation(value = "Delete an Standards Version Advancement Process.",
+            notes = "Provides functionality to delete an existing SVAP and the Criteria associated with it. "
                     + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.")
     @RequestMapping(value = "", method = RequestMethod.DELETE, consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = "application/json; charset=utf-8")
@@ -59,7 +59,7 @@ public class SvapController {
         svapManager.delete(svap);
     }
 
-    @ApiOperation(value = "Retreive all current SVAPs.",
+    @ApiOperation(value = "Retrieve all current Standards Version Advancement Processes. ",
             notes = "Returns all of the SVAPs that are currenty in the CHPL.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<Svap> getAllSvaps() {
