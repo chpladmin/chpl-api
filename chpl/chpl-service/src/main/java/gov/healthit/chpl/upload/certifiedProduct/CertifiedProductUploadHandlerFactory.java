@@ -27,6 +27,8 @@ public class CertifiedProductUploadHandlerFactory {
     private CertifiedProductHandler2015Version3 handler2015Version3;
     private CertifiedProductHandler2015Version4 handler2015Version4;
     private CertifiedProductHandler2015Version5 handler2015Version5;
+    private CertifiedProductHandler2015Version6 handler2015Version6;
+
     private ErrorMessageUtil msgUtil;
 
     @Autowired
@@ -37,6 +39,7 @@ public class CertifiedProductUploadHandlerFactory {
             @Qualifier("certifiedProductHandler2015Version3") CertifiedProductHandler2015Version3 handler2015Version3,
             @Qualifier("certifiedProductHandler2015Version4") CertifiedProductHandler2015Version4 handler2015Version4,
             @Qualifier("certifiedProductHandler2015Version5") CertifiedProductHandler2015Version5 handler2015Version5,
+            @Qualifier("certifiedProductHandler2015Version6") CertifiedProductHandler2015Version6 handler2015Version6,
             ErrorMessageUtil msgUtil) {
         this.templateVersionDao = templateVersionDao;
         this.handler2015Version1 = handler2015Version1;
@@ -44,6 +47,7 @@ public class CertifiedProductUploadHandlerFactory {
         this.handler2015Version3 = handler2015Version3;
         this.handler2015Version4 = handler2015Version4;
         this.handler2015Version5 = handler2015Version5;
+        this.handler2015Version6 = handler2015Version6;
         this.msgUtil = msgUtil;
     }
 
@@ -134,6 +138,8 @@ public class CertifiedProductUploadHandlerFactory {
             handler = handler2015Version4;
         } else if (templateVersion.getName().equals(UploadTemplateVersion.EDITION_2015_VERSION_5.getName())) {
             handler = handler2015Version5;
+        } else if (templateVersion.getName().equals(UploadTemplateVersion.EDITION_2015_VERSION_6.getName())) {
+            handler = handler2015Version6;
         }
 
         if (handler != null)  {
