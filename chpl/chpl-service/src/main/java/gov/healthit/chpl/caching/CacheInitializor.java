@@ -28,7 +28,6 @@ public class CacheInitializor {
     private Future<Boolean> isInitializeBasicSearchDone;
     private Future<Boolean> isInitializeCertificationIdsGetAllDone;
     private Future<Boolean> isInitializeCertificationIdsGetAllWithProductsDone;
-    private Future<Boolean> isInitializeDirectReviewsDone;
     private String enableCacheInitializationValue;
 
     private AsynchronousCacheInitialization asynchronousCacheInitialization;
@@ -93,11 +92,7 @@ public class CacheInitializor {
                     if (isInitializeBasicSearchDone != null && !isInitializeBasicSearchDone.isDone()) {
                         isInitializeBasicSearchDone.cancel(true);
                     }
-                    isInitializeBasicSearchDone = asynchronousCacheInitialization.initializeBasicSearch();
-                    if (isInitializeDirectReviewsDone != null && !isInitializeDirectReviewsDone.isDone()) {
-                        isInitializeDirectReviewsDone.cancel(true);
-                    }
-                    isInitializeDirectReviewsDone = asynchronousCacheInitialization.initializeDirectReviews();
+                    isInitializeBasicSearchDone = asynchronousCacheInitialization.initializeBasicSearchAndDirectReviews();
                 }
             } catch (Exception e) {
                 LOGGER.error("Caching failed to initialize");

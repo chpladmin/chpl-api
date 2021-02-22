@@ -33,7 +33,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }
 
     @Override
@@ -70,19 +70,28 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
+    public void hasAccess_OncStaff() throws Exception {
+        setupForOncStaffUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
+        assertFalse(permissions.hasAccess(new Surveillance()));
+    }
+
+    @Override
+    @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
 
         assertTrue(permissions.hasAccess());
 
         // Setup Mock
-        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getCertifiedProduct(1l, 2l));
+        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getCertifiedProduct(1L, 2L));
 
         // With the above mock, the user should have access
         // The ACB is correct, but the authority is incorrect
         Surveillance surv = new Surveillance();
         surv.setCertifiedProduct(new CertifiedProduct());
-        surv.getCertifiedProduct().setId(1l);
+        surv.getCertifiedProduct().setId(1L);
         surv.setAuthority("ROLE_ACB");
         assertTrue(permissions.hasAccess(surv));
 
@@ -90,18 +99,18 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
         // The ACB is correct, and the authority is correct
         surv = new Surveillance();
         surv.setCertifiedProduct(new CertifiedProduct());
-        surv.getCertifiedProduct().setId(1l);
+        surv.getCertifiedProduct().setId(1L);
         surv.setAuthority("ROLE_ONC");
         assertFalse(permissions.hasAccess(surv));
 
         // Setup Mock
-        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getCertifiedProduct(1l, 3l));
+        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getCertifiedProduct(1L, 3l));
 
         // With the above mock, the user should NOT have access
         // The ACB is incorrect, but the authority is correct
         surv = new Surveillance();
         surv.setCertifiedProduct(new CertifiedProduct());
-        surv.getCertifiedProduct().setId(1l);
+        surv.getCertifiedProduct().setId(1L);
         surv.setAuthority("ROLE_ACB");
         assertFalse(permissions.hasAccess(surv));
     }

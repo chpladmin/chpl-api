@@ -26,7 +26,7 @@ public class GetDetailsByIdActionPermissionsTest extends ActionPermissionsBaseTe
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }
 
     @Override
@@ -50,6 +50,15 @@ public class GetDetailsByIdActionPermissionsTest extends ActionPermissionsBaseTe
         assertFalse(permissions.hasAccess());
 
         // Only ROLE_ADMIN and ROLE_ACB has access
+        assertFalse(permissions.hasAccess(new PendingCertifiedProductDetails()));
+    }
+
+    @Override
+    @Test
+    public void hasAccess_OncStaff() throws Exception {
+        setupForOncStaffUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
         assertFalse(permissions.hasAccess(new PendingCertifiedProductDetails()));
     }
 

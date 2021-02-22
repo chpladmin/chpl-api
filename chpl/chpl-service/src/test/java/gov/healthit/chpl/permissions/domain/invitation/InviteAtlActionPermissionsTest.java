@@ -25,7 +25,7 @@ public class InviteAtlActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(resourcePermissions.getAllAtlsForCurrentUser()).thenReturn(getAllAtlForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAtlsForCurrentUser()).thenReturn(getAllAtlForUser(2L, 4L));
     }
 
     @Override
@@ -50,6 +50,15 @@ public class InviteAtlActionPermissionsTest extends ActionPermissionsBaseTest {
 
         // Since it is ONC it has access to all - param value does not matter.
         assertTrue(permissions.hasAccess(1L));
+    }
+
+    @Override
+    @Test
+    public void hasAccess_OncStaff() throws Exception {
+        setupForOncStaffUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
+        assertFalse(permissions.hasAccess(1L));
     }
 
     @Override

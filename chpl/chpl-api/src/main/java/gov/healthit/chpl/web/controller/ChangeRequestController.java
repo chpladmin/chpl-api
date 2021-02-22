@@ -22,6 +22,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.web.controller.results.ChangeRequestResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,6 +30,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "change-requests")
 @RestController
 @RequestMapping("/change-requests")
+@Loggable
 public class ChangeRequestController {
 
     private ChangeRequestManager changeRequestManager;

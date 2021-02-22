@@ -49,6 +49,9 @@ public class CertifiedProductBasicSearchResultEntity {
     @Column(name = "product_name")
     private String product;
 
+    @Column(name = "vendor_id")
+    private Long developerId;
+
     @Column(name = "vendor_name")
     private String developer;
 
@@ -87,13 +90,13 @@ public class CertifiedProductBasicSearchResultEntity {
     private Long closedSurveillanceCount;
 
     @Column(name = "open_nonconformity_count")
-    private Long openNonconformityCount;
+    private Long openSurveillanceNonConformityCount;
 
     @Column(name = "closed_nonconformity_count")
-    private Long closedNonconformityCount;
+    private Long closedSurveillanceNonConformityCount;
 
     @Column(name = "surv_dates")
-    private String survDates;
+    private String surveillanceDates;
 
     @Column(name = "meaningful_use_users")
     private Long meaningfulUseUserCount;

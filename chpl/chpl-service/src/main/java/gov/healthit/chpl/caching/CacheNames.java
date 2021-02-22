@@ -33,11 +33,4 @@ public final class CacheNames {
     public static final String COLLECTIONS_DEVELOPERS = "developerCollection";
     public static final String COLLECTIONS_LISTINGS = "listingCollection";
     public static final String DIRECT_REVIEWS = "directReviews";
-
-    //caches that are pre-fetched due to longish load times
-    public static final String PREFETCHED_COLLECTIONS_LISTINGS = "prefetchedListingCollection";
-    public static final String PREFETCHED_ALL_CERT_IDS = "prefetchedAllCertIds";
-    public static final String PREFETCHED_ALL_CERT_IDS_WITH_PRODUCTS = "prefetchedAllCertIdsWithProducts";
-    public static final String PREFETCHED_PRODUCT_NAMES = "prefetchedProductNames";
-    public static final String PREFETCHED_DEVELOPER_NAMES = "prefetchedDeveloperNames";
 }

@@ -33,7 +33,7 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }
 
     @Override
@@ -42,7 +42,7 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForAdminUser(resourcePermissions);
         assertFalse(permissions.hasAccess());
 
-        assertTrue(permissions.hasAccess(1l));
+        assertTrue(permissions.hasAccess(1L));
     }
 
     @Override
@@ -51,7 +51,16 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForOncUser(resourcePermissions);
         assertFalse(permissions.hasAccess());
 
-        assertTrue(permissions.hasAccess(1l));
+        assertTrue(permissions.hasAccess(1L));
+    }
+
+    @Override
+    @Test
+    public void hasAccess_OncStaff() throws Exception {
+        setupForOncStaffUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
+        assertFalse(permissions.hasAccess(1L));
     }
 
     @Override
@@ -61,16 +70,16 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         ComplaintDTO dto = new ComplaintDTO();
-        dto.setId(1l);
+        dto.setId(1L);
         dto.setCertificationBody(new CertificationBodyDTO());
-        dto.getCertificationBody().setId(2l);
+        dto.getCertificationBody().setId(2L);
 
         Mockito.when(complaintDAO.getComplaint(ArgumentMatchers.anyLong())).thenReturn(dto);
-        assertTrue(permissions.hasAccess(1l));
+        assertTrue(permissions.hasAccess(1L));
 
-        dto.getCertificationBody().setId(1l);
+        dto.getCertificationBody().setId(1L);
         Mockito.when(complaintDAO.getComplaint(ArgumentMatchers.anyLong())).thenReturn(dto);
-        assertFalse(permissions.hasAccess(1l));
+        assertFalse(permissions.hasAccess(1L));
     }
 
     @Override
@@ -79,7 +88,7 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForAtlUser(resourcePermissions);
         assertFalse(permissions.hasAccess());
 
-        assertFalse(permissions.hasAccess(1l));
+        assertFalse(permissions.hasAccess(1L));
     }
 
     @Override
@@ -88,7 +97,7 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForCmsUser(resourcePermissions);
         assertFalse(permissions.hasAccess());
 
-        assertFalse(permissions.hasAccess(1l));
+        assertFalse(permissions.hasAccess(1L));
     }
 
     @Override
@@ -97,7 +106,7 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForAnonUser(resourcePermissions);
         assertFalse(permissions.hasAccess());
 
-        assertFalse(permissions.hasAccess(1l));
+        assertFalse(permissions.hasAccess(1L));
     }
 
 }

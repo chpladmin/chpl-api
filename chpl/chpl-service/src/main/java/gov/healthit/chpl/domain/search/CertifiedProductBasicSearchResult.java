@@ -5,7 +5,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-public class CertifiedProductBasicSearchResult extends CertifiedProductSearchResult {
+public class CertifiedProductBasicSearchResult extends CertifiedProductSearchResultLegacy {
     private static final long serialVersionUID = -2547390525592841038L;
 
     @JsonView({

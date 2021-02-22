@@ -16,6 +16,7 @@ import gov.healthit.chpl.domain.Job;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.JobManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.AuthUtil;
@@ -26,6 +27,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "jobs")
 @RestController
 @RequestMapping("/jobs")
+@Loggable
 public class JobController {
 
     private static final Logger LOGGER = LogManager.getLogger(JobController.class);
@@ -36,12 +38,14 @@ public class JobController {
     private ResourcePermissions resourcePermissions;
 
     @ApiOperation(value = "Get the list of all jobs currently running in the system and those"
-            + "that have completed within a configurable amount of time (usually a short window like the last 7 days).")
+            + "that have completed within a configurable amount of time (usually a short window like the last 7 days).",
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC and ROLE_ONC_STAFF can see all recent jobs. Other users may see their own recent jobs.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @PreAuthorize("isAuthenticated()")
     public @ResponseBody JobResults getAllJobs() throws EntityRetrievalException {
         List<JobDTO> jobDtos = null;
-        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
+        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()
+                || resourcePermissions.isUserRoleOncStaff()) {
             jobDtos = jobManager.getAllJobs();
         } else {
             UserDTO currentUser = new UserDTO();

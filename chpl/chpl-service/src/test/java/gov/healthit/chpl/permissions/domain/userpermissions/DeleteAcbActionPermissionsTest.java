@@ -26,7 +26,7 @@ public class DeleteAcbActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2l, 4l));
+        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }
 
     @Override
@@ -53,6 +53,17 @@ public class DeleteAcbActionPermissionsTest extends ActionPermissionsBaseTest {
         CertificationBodyDTO dto = new CertificationBodyDTO();
         dto.setId(1L);
         assertTrue(permissions.hasAccess(dto));
+    }
+
+    @Override
+    @Test
+    public void hasAccess_OncStaff() throws Exception {
+        setupForOncStaffUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
+        CertificationBodyDTO dto = new CertificationBodyDTO();
+        dto.setId(1L);
+        assertFalse(permissions.hasAccess(dto));
     }
 
     @Override

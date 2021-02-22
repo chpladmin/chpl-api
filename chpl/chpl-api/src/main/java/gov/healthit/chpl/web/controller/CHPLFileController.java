@@ -20,6 +20,7 @@ import gov.healthit.chpl.dto.CHPLFileDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.CHPLFileManager;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
@@ -30,6 +31,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "files")
 @RestController
 @RequestMapping("/files")
+@Loggable
 public class CHPLFileController {
     private static final String APPLICATION_MS_EXCEL =
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";

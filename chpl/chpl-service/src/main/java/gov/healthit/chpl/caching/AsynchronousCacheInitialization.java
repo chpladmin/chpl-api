@@ -3,8 +3,6 @@ package gov.healthit.chpl.caching;
 import java.io.IOException;
 import java.util.concurrent.Future;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -12,26 +10,25 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.JiraRequestFailedException;
 import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
-import gov.healthit.chpl.service.DirectReviewService;
+import gov.healthit.chpl.service.DirectReviewCachingService;
+import lombok.extern.log4j.Log4j2;
 
 @Component
+@Log4j2
 public class AsynchronousCacheInitialization {
-    private static final Logger LOGGER = LogManager.getLogger(AsynchronousCacheInitialization.class);
-
     private CertificationIdManager certificationIdManager;
     private DimensionalDataManager dimensionalDataManager;
     private CertifiedProductSearchManager certifiedProductSearchManager;
-    private DirectReviewService drService;
+    private DirectReviewCachingService drService;
 
     @Autowired
     public AsynchronousCacheInitialization(CertificationIdManager certificationIdManager,
             DimensionalDataManager dimensionalDataManager,
             CertifiedProductSearchManager certifiedProductSearchManager,
-            DirectReviewService drService) {
+            DirectReviewCachingService drService) {
         this.certificationIdManager = certificationIdManager;
         this.dimensionalDataManager = dimensionalDataManager;
         this.certifiedProductSearchManager = certifiedProductSearchManager;
@@ -52,19 +49,16 @@ public class AsynchronousCacheInitialization {
 
     @Async
     @Transactional
-    public Future<Boolean> initializeBasicSearch() throws IOException, EntityRetrievalException, InterruptedException {
-        LOGGER.info("Starting cache initialization for CertifiedProductSearchManager.search()");
-        certifiedProductSearchManager.search();
-        LOGGER.info("Finished cache initialization for CertifiedProductSearchManager.search()");
-        return new AsyncResult<>(true);
-    }
-
-    @Async
-    @Transactional
-    public Future<Boolean> initializeDirectReviews() throws IOException, JiraRequestFailedException, InterruptedException {
+    public Future<Boolean> initializeBasicSearchAndDirectReviews() throws IOException, EntityRetrievalException, InterruptedException {
         LOGGER.info("Starting cache initialization for Direct Reviews");
         drService.populateDirectReviewsCache();
         LOGGER.info("Finished cache initialization for Direct Reviews");
+        LOGGER.info("Starting cache initialization for CertifiedProductSearchManager.search()");
+        certifiedProductSearchManager.search();
+        LOGGER.info("Finished cache initialization for CertifiedProductSearchManager.search()");
+        LOGGER.info("Starting cache initialization for CertifiedProductSearchManager.searchLegacy()");
+        certifiedProductSearchManager.searchLegacy();
+        LOGGER.info("Finished cache initialization for CertifiedProductSearchManager.searchLegacy()");
         return new AsyncResult<>(true);
     }
 
