@@ -3,8 +3,10 @@ package gov.healthit.chpl.surveillance.report.dto;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.surveillance.report.entity.AnnualReportEntity;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class AnnualReportDTO {
 
     private Long id;
@@ -12,8 +14,6 @@ public class AnnualReportDTO {
     private CertificationBodyDTO acb;
     private String obstacleSummary;
     private String findingsSummary;
-
-    public AnnualReportDTO() {}
 
     public AnnualReportDTO(AnnualReportEntity entity) {
         this.id = entity.getId();

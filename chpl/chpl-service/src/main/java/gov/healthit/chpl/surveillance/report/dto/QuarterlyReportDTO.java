@@ -8,8 +8,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.surveillance.report.entity.QuarterlyReportEntity;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class QuarterlyReportDTO {
 
@@ -21,9 +23,6 @@ public class QuarterlyReportDTO {
     private String reactiveSummary;
     private String prioritizedElementSummary;
     private String disclosureSummary;
-
-    public QuarterlyReportDTO() {
-    }
 
     public QuarterlyReportDTO(QuarterlyReportEntity entity) {
         this();

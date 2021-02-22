@@ -2,8 +2,10 @@ package gov.healthit.chpl.surveillance.report.dto;
 
 import gov.healthit.chpl.surveillance.report.entity.QuarterEntity;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class QuarterDTO {
 
     private Long id;
@@ -12,8 +14,6 @@ public class QuarterDTO {
     private Integer startDay;
     private Integer endMonth;
     private Integer endDay;
-
-    public QuarterDTO() {}
 
     public QuarterDTO(QuarterEntity entity) {
         this.id = entity.getId();
