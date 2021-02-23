@@ -32,7 +32,7 @@ public class NonConformitiesOverTimeChart extends SummaryStatisticChart {
     public JFreeChart generate(File csv) throws IOException {
         List<NonConformitiesOverTime> reportData = getDataFromCsv(csv);
 
-        JFreeChart chart = ChartFactory.createTimeSeriesChart("Non-Conformity Activities Over Time", "Date", "Non-Conformity Count", createDataSet(reportData));
+        JFreeChart chart = ChartFactory.createTimeSeriesChart("Non-Conformities Over Time", "Date", "Non-Conformity Count", createDataSet(reportData));
         chart.getTitle().setFont(getTitleFont());
         chart.getTitle().setTextAlignment(HorizontalAlignment.LEFT);
 
@@ -47,12 +47,12 @@ public class NonConformitiesOverTimeChart extends SummaryStatisticChart {
 
     private XYDataset createDataSet(List<NonConformitiesOverTime> data) {
         TimeSeriesCollection dataset = new TimeSeriesCollection();
-        TimeSeries series1 = new TimeSeries("Total Non-Conformity Activities");
-        TimeSeries series2 = new TimeSeries("Total Open Non-Conformity Activities");
-        TimeSeries series3 = new TimeSeries("Total Closed Non-Conformity Activities");
+        TimeSeries series1 = new TimeSeries("Total Non-Conformities");
+        TimeSeries series2 = new TimeSeries("Total Open Non-Conformities");
+        TimeSeries series3 = new TimeSeries("Total Closed Non-Conformities");
 
         for (NonConformitiesOverTime item : data) {
-            series1.add(new Day(java.sql.Date.valueOf(item.getDate())), item.getTotalOpenNonConformityActivities());
+            series1.add(new Day(java.sql.Date.valueOf(item.getDate())), item.getTotalNonConformityActivities());
             series2.add(new Day(java.sql.Date.valueOf(item.getDate())), item.getTotalOpenNonConformityActivities());
             series3.add(new Day(java.sql.Date.valueOf(item.getDate())), item.getTotalClosedNonConformityActivities());
 
