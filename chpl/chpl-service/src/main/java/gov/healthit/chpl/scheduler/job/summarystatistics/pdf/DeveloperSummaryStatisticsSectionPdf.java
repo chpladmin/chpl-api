@@ -84,7 +84,7 @@ public class DeveloperSummaryStatisticsSectionPdf extends SummaryStatisticsSecti
                 recentEmailStatistics.getDevelopersForEdition2015CuresAndNonCuresWithSuspendedStatuses().getAcbStatistics(),
                 previousEmailStatistics.getDevelopersForEdition2015CuresAndNonCuresWithSuspendedStatuses().getAcbStatistics());
 
-        table = addTableRow(table, createDataForRow("g. Total # of Developers with 2015 Listings (Regardless of Status)*",
+        table = addTableRow(table, createDataForRow("g. Total # of Developers with 2015 Listings (Regardless of Status)",
                 recentEmailStatistics.getDevelopersForEdition2015NonCuresWithAllStatuses().getCount(),
                 recentEmailStatistics.getDevelopersForEdition2015NonCuresWithAllStatuses().getCount()),
                 NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
@@ -93,7 +93,7 @@ public class DeveloperSummaryStatisticsSectionPdf extends SummaryStatisticsSecti
                 recentEmailStatistics.getDevelopersForEdition2015NonCuresWithAllStatuses().getAcbStatistics(),
                 previousEmailStatistics.getDevelopersForEdition2015NonCuresWithAllStatuses().getAcbStatistics());
 
-        table = addTableRow(table, createDataForRow("h. Total # of Developers with Active 2015 Listings*",
+        table = addTableRow(table, createDataForRow("h. Total # of Developers with Active 2015 Listings",
                 recentEmailStatistics.getDevelopersForEdition2015NonCuresWithActiveStatuses().getCount(),
                 recentEmailStatistics.getDevelopersForEdition2015NonCuresWithActiveStatuses().getCount()),
                 NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);

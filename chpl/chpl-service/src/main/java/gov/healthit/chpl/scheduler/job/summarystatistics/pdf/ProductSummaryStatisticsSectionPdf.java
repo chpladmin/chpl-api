@@ -55,7 +55,7 @@ public class ProductSummaryStatisticsSectionPdf extends SummaryStatisticsSection
                 previousEmailStatistics.getProductsForEdition2014WithSuspendedStatuses().getAcbStatistics());
 
 
-        table = addTableRow(table, createDataForRow("d. Total # of Unique Products with 2015 Listings or 2015 Cures Update Listings (Regardless of Status)*",
+        table = addTableRow(table, createDataForRow("d. Total # of Unique Products with 2015 Listings or 2015 Cures Update Listings (Regardless of Status)",
                 recentEmailStatistics.getProductsForEdition2015CuresAndNonCuresWithAllStatuses().getCount(),
                 recentEmailStatistics.getProductsForEdition2015CuresAndNonCuresWithAllStatuses().getCount()),
                 NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
@@ -65,7 +65,7 @@ public class ProductSummaryStatisticsSectionPdf extends SummaryStatisticsSection
                 previousEmailStatistics.getProductsForEdition2015CuresAndNonCuresWithAllStatuses().getAcbStatistics());
 
 
-        table = addTableRow(table, createDataForRow("e. Total # of Unique Products with Active 2015 Listings or 2015 Cures Update Listings*",
+        table = addTableRow(table, createDataForRow("e. Total # of Unique Products with Active 2015 Listings or 2015 Cures Update Listings",
                 recentEmailStatistics.getProductsForEdition2015CuresAndNonCuresWithActiveStatuses().getCount(),
                 recentEmailStatistics.getProductsForEdition2015CuresAndNonCuresWithActiveStatuses().getCount()),
                 NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
@@ -74,7 +74,7 @@ public class ProductSummaryStatisticsSectionPdf extends SummaryStatisticsSection
                 recentEmailStatistics.getProductsForEdition2015CuresAndNonCuresWithActiveStatuses().getAcbStatistics(),
                 previousEmailStatistics.getProductsForEdition2015CuresAndNonCuresWithActiveStatuses().getAcbStatistics());
 
-        table = addTableRow(table, createDataForRow("f.  Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015 Listings or 2015 Cures Update Listings*",
+        table = addTableRow(table, createDataForRow("f.  Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015 Listings or 2015 Cures Update Listings",
                 recentEmailStatistics.getProductsForEdition2015CuresAndNonCuresWithSuspendedStatuses().getCount(),
                 recentEmailStatistics.getProductsForEdition2015CuresAndNonCuresWithSuspendedStatuses().getCount()),
                 NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
@@ -101,7 +101,7 @@ public class ProductSummaryStatisticsSectionPdf extends SummaryStatisticsSection
                 recentEmailStatistics.getProductsForEdition2015NonCuresWithActiveStatuses().getAcbStatistics(),
                 previousEmailStatistics.getProductsForEdition2015NonCuresWithActiveStatuses().getAcbStatistics());
 
-        table = addTableRow(table, createDataForRow("i. Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015 Listings",
+        table = addTableRow(table, createDataForRow("i. Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015 Listings*",
                 recentEmailStatistics.getProductsForEdition2015NonCuresWithSuspendedStatuses().getCount(),
                 recentEmailStatistics.getProductsForEdition2015NonCuresWithSuspendedStatuses().getCount()),
                 NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
