@@ -672,5 +672,24 @@
                 </entry>
             </job-data-map>
         </job>
+        <!-- Generate email report for User-Defined Quartz Triggers-->
+        <job>
+            <name>Quartz User Triggers Job</name>
+            <group>chplJobs</group>
+            <description>Sends a report containing a list of user-defined Quartz triggers.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.QuartzTriggersEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+            </job-data-map>
+        </job>
     </schedule>
 </job-scheduling-data>
