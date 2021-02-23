@@ -386,9 +386,9 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
-        <RollingFile name="quartzTriggersEmailJob"
-            fileName="${logDir}/scheduler/quartzTriggersEmailJob.log"
-            filePattern="${logDir}/scheduler/history/quartzTriggersEmailJobb-%d{yyyy-MM-dd}.log">
+        <RollingFile name="userDefinedTriggersEmailJob"
+            fileName="${logDir}/scheduler/userDefinedTriggersEmailJob.log"
+            filePattern="${logDir}/scheduler/history/userDefinedTriggersEmailJob-%d{yyyy-MM-dd}.log">
             <PatternLayout>
                 <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
             </PatternLayout>
@@ -551,9 +551,9 @@
             additivity="false">
             <AppenderRef ref="listingValidationReportEmailJob" />
         </Logger>
-        <Logger name="quartzTriggersEmailJobLogger" level="INFO"
+        <Logger name="userDefinedTriggersEmailJobLogger" level="INFO"
             additivity="false">
-            <AppenderRef ref="quartzTriggersEmailJob" />
+            <AppenderRef ref="userDefinedTriggersEmailJob" />
         </Logger>
     </Loggers>
 </Configuration>

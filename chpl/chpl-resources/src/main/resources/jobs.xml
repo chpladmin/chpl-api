@@ -610,10 +610,10 @@
         </job>
         <!-- Generate email report for User-Defined Quartz Triggers-->
         <job>
-            <name>Quartz User Triggers Job</name>
+            <name>User-Defined Triggers Job</name>
             <group>chplJobs</group>
-            <description>Sends a report containing a list of user-defined Quartz triggers.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.QuartzTriggersEmailJob</job-class>
+            <description>Sends a report containing a list of user-defined scheduled jobs.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.UserDefinedTriggersEmailJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>

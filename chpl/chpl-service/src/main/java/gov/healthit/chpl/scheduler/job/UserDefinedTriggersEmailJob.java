@@ -41,8 +41,9 @@ import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.util.EmailBuilder;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "quartzTriggersEmailJobLogger")
-public class QuartzTriggersEmailJob extends QuartzJob {
+@Log4j2(topic = "userDefinedTriggersEmailJobLogger")
+public class UserDefinedTriggersEmailJob extends QuartzJob {
+    private String[] standardJobDataKeys = {"acb", "acbSpecific", "email", "authorities", "frequency"};
 
     @Autowired
     private SchedulerManager schedulerManager;
@@ -53,14 +54,14 @@ public class QuartzTriggersEmailJob extends QuartzJob {
     @Autowired
     private Environment env;
 
-    public QuartzTriggersEmailJob() throws Exception {
+    public UserDefinedTriggersEmailJob() throws Exception {
         super();
     }
 
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        LOGGER.info("********* Starting the Quartz User Triggers Email job. *********");
+        LOGGER.info("********* Starting the User-Defined Triggers Email job. *********");
         setSecurityContext();
         try {
             List<ChplRepeatableTrigger> userTriggers = schedulerManager.getAllTriggersForUser();
@@ -69,7 +70,7 @@ public class QuartzTriggersEmailJob extends QuartzJob {
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-        LOGGER.info("********* Completed the Quartz User Triggers Email job. *********");
+        LOGGER.info("********* Completed the User-Defined Triggers Email job. *********");
     }
 
     private List<List<String>> formatAsCsv(List<ChplRepeatableTrigger> userTriggers) {
@@ -85,17 +86,18 @@ public class QuartzTriggersEmailJob extends QuartzJob {
         triggerCsv.add(userTrigger.getJob().getName());
         triggerCsv.add(userTrigger.getEmail());
         triggerCsv.add(getAcbs(userTrigger));
+        triggerCsv.add(userTrigger.getCronSchedule());
+        triggerCsv.add(getCronDescription(userTrigger.getCronSchedule()));
         JobDataMap jobDataMap = userTrigger.getJob().getJobDataMap();
         if (jobDataMap != null && jobDataMap.getKeys() != null && jobDataMap.getKeys().length > 0) {
             triggerCsv.add(Stream.of(jobDataMap.getKeys())
                 .filter(key -> key != null && jobDataMap.get(key) != null)
+                .filter(key -> !Arrays.stream(standardJobDataKeys).anyMatch(key::equalsIgnoreCase))
                 .map(key -> key + ":" + jobDataMap.get(key).toString())
                 .collect(Collectors.joining(";")));
         } else {
             triggerCsv.add("");
         }
-        triggerCsv.add(userTrigger.getCronSchedule());
-        triggerCsv.add(getCronDescription(userTrigger.getCronSchedule()));
         return triggerCsv;
     }
 
@@ -150,9 +152,20 @@ public class QuartzTriggersEmailJob extends QuartzJob {
         row.add("Job Name");
         row.add("Email Address");
         row.add("ACB(s)");
-        row.add("Extra Job Data");
         row.add("Quartz Cron Schedule");
         row.add("Cron Schedule Description");
+        row.add("Extra Job Data");
+        return row;
+    }
+
+    private List<String> getFooterRow() {
+        List<String> row = new ArrayList<String>();
+        row.add("");
+        row.add("");
+        row.add("");
+        row.add(env.getProperty("userTriggersReport.cronDescriptionUrl"));
+        row.add("");
+        row.add("");
         return row;
     }
 
@@ -166,11 +179,12 @@ public class QuartzTriggersEmailJob extends QuartzJob {
         .subject(getSubject(jobContext))
         .htmlMessage(getHtmlMessage(csvRows.size()))
         .fileAttachments(getAttachments(csvRows))
+        .acbAtlHtmlFooter()
         .sendEmail();
     }
 
     private String getSubject(JobExecutionContext jobContext) {
-        return "Quartz User Triggers";
+        return env.getProperty("userTriggersReport.subject");
     }
 
     private List<File> getAttachments(List<List<String>> csvRows) {
@@ -185,7 +199,7 @@ public class QuartzTriggersEmailJob extends QuartzJob {
     private File getCsvFile(List<List<String>> csvRows) {
         File csvFile = null;
         if (csvRows.size() > 0) {
-            String filename = "quartz-user-triggers";
+            String filename = env.getProperty("userTriggersReport.filename");
             if (csvRows.size() > 0) {
                 csvFile = getOutputFile(csvRows, filename);
             }
@@ -207,6 +221,7 @@ public class QuartzTriggersEmailJob extends QuartzJob {
                 for (List<String> rowValue : rows) {
                     csvPrinter.printRecord(rowValue);
                 }
+                csvPrinter.printRecord(getFooterRow());
             } catch (IOException e) {
                 LOGGER.error(e.getMessage(), e);
             }
@@ -217,7 +232,7 @@ public class QuartzTriggersEmailJob extends QuartzJob {
     }
 
     private String getHtmlMessage(Integer rowCount) {
-        return "The " + rowCount + " user triggers are attached.";
+        return String.format(env.getProperty("userTriggersReport.htmlBody"), rowCount);
     }
 
     private List<String> getEmailRecipients(JobExecutionContext jobContext) {
@@ -231,7 +246,6 @@ public class QuartzTriggersEmailJob extends QuartzJob {
         adminUser.setFriendlyName("Admin");
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-
         SecurityContextHolder.getContext().setAuthentication(adminUser);
     }
 }
