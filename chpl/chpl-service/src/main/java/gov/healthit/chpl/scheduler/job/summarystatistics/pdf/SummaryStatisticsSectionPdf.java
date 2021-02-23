@@ -125,7 +125,7 @@ public abstract class SummaryStatisticsSectionPdf {
     }
 
     private DateTimeFormatter getDefaultDateFormat() {
-        return DateTimeFormatter.ofPattern("LLLL dd, yyyy");
+        return DateTimeFormatter.ofPattern("MMMM dd, yyyy");
     }
 
     private List<EmailCertificationBodyStatistic> addMissingAcbsToCollection(List<EmailCertificationBodyStatistic> emailAcbStats) {
