@@ -19,6 +19,32 @@ public class ActivitiesAndOutcomesWorksheetBuilder2019 extends ActivitiesAndOutc
         super(reportManager, detailsManager, survManager, privilegedSurvDao);
     }
 
+    protected String getGroundsForInitiatingSurveillanceDescription() {
+        return "On what grounds did the ONC-ACB initiate surveillance "
+                + "(i.e., the particular facts and circumstances from which a reasonable person would "
+                + "have had grounds to question the continued conformity of the Complete EHR or "
+                + "Health IT Module)? For randomized surveillance, it is acceptable to state it was chosen randomly.";
+    }
+
+    protected String getStepsToSurveilDescription() {
+        return "What steps did the ONC-ACB take to surveil the Complete EHR or Health "
+                + "IT Module, to analyze evidence, and to substantiate the non-conformity or non-conformities?";
+    }
+
+    protected String getAdditionalCostsEvaluationDescription() {
+        return "If a suspected non-conformity resulted from additional types of costs "
+                + "that a user was required to pay in order to implement or use the Complete EHR "
+                + "or Health IT Module's certified capabilities, how did ONC-ACB evaluate that "
+                + "suspected non-conformity?";
+    }
+
+    protected String getLimitationsEvaluationDescription() {
+        return "If a suspected non-conformity resulted from limitations that a user "
+                + "encountered in the course of implementing and using the Complete EHR or "
+                + "Health IT Module's certified capabilities, how did ONC-ACB evaluate that "
+                + "suspected non-conformity?";
+    }
+
     protected String getNonDisclosureEvaluationDescription() {
         return "If a suspected non-conformity resulted from the non-disclosure of material "
                 + "information by the developer about limitations or additional types of costs associated "

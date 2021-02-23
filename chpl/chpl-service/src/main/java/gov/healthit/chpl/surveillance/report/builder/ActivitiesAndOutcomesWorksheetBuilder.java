@@ -110,6 +110,10 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
     }
 
+    protected abstract String getGroundsForInitiatingSurveillanceDescription();
+    protected abstract String getStepsToSurveilDescription();
+    protected abstract String getAdditionalCostsEvaluationDescription();
+    protected abstract String getLimitationsEvaluationDescription();
     protected abstract String getNonDisclosureEvaluationDescription();
 
     public int getLastDataColumn() {
@@ -293,10 +297,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
 
         //these headings are more complicated with various fonts throughout the cell
         String cellTitle = "Grounds for Initiating Surveillance";
-        String cellSubtitle = "On what grounds did the ONC-ACB initiate surveillance "
-                + "(i.e., the particular facts and circumstances from which a reasonable person would "
-                + "have had grounds to question the continued conformity of the Complete EHR or "
-                + "Health IT Module)? For randomized surveillance, it is acceptable to state it was chosen randomly.";
+        String cellSubtitle = getGroundsForInitiatingSurveillanceDescription();
         addRichTextHeadingCell(workbook, row, COL_SURV_GROUNDS, cellTitle, cellSubtitle);
 
         cellTitle = "Potential Causes of Non-Conformities or Suspected Non-Conformities";
@@ -313,8 +314,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         addRichTextHeadingCell(workbook, row, COL_NONCONFORMITY_NATURES, cellTitle, cellSubtitle);
 
         cellTitle = "Steps to Surveil and Substantiate";
-        cellSubtitle = "What steps did the ONC-ACB take to surveil the Complete EHR or Health "
-                + "IT Module, to analyze evidence, and to substantiate the non-conformity or non-conformities?";
+        cellSubtitle = getStepsToSurveilDescription();
         addRichTextHeadingCell(workbook, row, COL_SURV_STEPS, cellTitle, cellSubtitle);
 
         cellTitle = "Steps to Engage and Work with Developer and End-Users";
@@ -324,17 +324,11 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         addRichTextHeadingCell(workbook, row, COL_ENGAGEMENT_STEPS, cellTitle, cellSubtitle);
 
         cellTitle = "Additional Costs Evaluation";
-        cellSubtitle = "If a suspected non-conformity resulted from additional types of costs "
-                + "that a user was required to pay in order to implement or use the Complete EHR "
-                + "or Health IT Module's certified capabilities, how did ONC-ACB evaluate that "
-                + "suspected non-conformity?";
+        cellSubtitle = getAdditionalCostsEvaluationDescription();
         addRichTextHeadingCell(workbook, row, COL_ADDITIONAL_COSTS, cellTitle, cellSubtitle);
 
         cellTitle = "Limitations Evaluation";
-        cellSubtitle = "If a suspected non-conformity resulted from limitations that a user "
-                + "encountered in the course of implementing and using the Complete EHR or "
-                + "Health IT Module's certified capabilities, how did ONC-ACB evaluate that "
-                + "suspected non-conformity?";
+        cellSubtitle = getLimitationsEvaluationDescription();
         addRichTextHeadingCell(workbook, row, COL_LIMITATIONS_EVAL, cellTitle, cellSubtitle);
 
         cellTitle = "Non-Disclosure Evaluation";

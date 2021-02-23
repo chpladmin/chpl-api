@@ -38,7 +38,7 @@ public class ReportInfoWorksheetBuilder2021 extends ReportInfoWorksheetBuilder {
 
     @Override
     protected String getDisclosureSummaryTitle() {
-        return "Disclosure Requirements";
+        return "Disclosure Requirements Summary";
     }
 
     @Override
