@@ -80,7 +80,6 @@ public class PendingCertifiedProductDTO implements Serializable {
     private Set<String> errorMessages = new HashSet<String>();
     @Singular
     private Set<String> warningMessages = new HashSet<String>();
-
     private String uniqueId;
     private String recordStatus;
     private String practiceType;
@@ -111,6 +110,7 @@ public class PendingCertifiedProductDTO implements Serializable {
     private Boolean accessibilityCertified;
     private TransparencyAttestationDTO transparencyAttestation;
     private String transparencyAttestationUrl;
+    private String svapNoticeUrl;
 
     @Singular
     private List<PendingCertifiedProductTestingLabDTO> testingLabs = new ArrayList<PendingCertifiedProductTestingLabDTO>();
@@ -225,6 +225,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         }
         this.transparencyAttestationUrl = details.getTransparencyAttestationUrl();
         this.accessibilityCertified = details.getAccessibilityCertified();
+        this.svapNoticeUrl = details.getSvapNoticeUrl();
 
         if (details.getIcs() != null) {
             if (details.getIcs().getParents() != null && details.getIcs().getParents().size() > 0) {

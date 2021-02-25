@@ -49,7 +49,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
@@ -68,7 +67,6 @@ import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 @Import(ChplCacheConfig.class)
 @EnableWebMvc
 @EnableTransactionManagement(proxyTargetClass = true)
-@EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, proxyTargetClass = true)
 @EnableAsync
 @EnableAspectJAutoProxy
@@ -95,6 +93,7 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
     private static final int JOB_CORE_POOL_SIZE = 3;
     private static final int JOB_MAX_POOL_SIZE = 6;
     private static final int DEFAULT_REQUEST_TIMEOUT = 10000;
+    private static final int THREAD_POOL_TASK_THREAD = 5;
 
     @Autowired
     private Environment env;
@@ -161,7 +160,7 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
     @Bean
     public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
         ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
-        threadPoolTaskScheduler.setPoolSize(5);
+        threadPoolTaskScheduler.setPoolSize(THREAD_POOL_TASK_THREAD);
         threadPoolTaskScheduler.setThreadNamePrefix("ThreadPoolTaskScheduler");
         return threadPoolTaskScheduler;
     }

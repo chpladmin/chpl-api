@@ -21,7 +21,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -417,6 +416,12 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElement(name = "rwtEligibilityYear", nillable = true, required = false)
     private Integer rwtEligibilityYear;
+
+    /**
+     * URL where the Listing's SVAP Notice URL is located
+     */
+    @XmlElement(name = "svapNoticeUrl", nillable = true, required = false)
+    private String svapNoticeUrl;
 
     @Builder.Default
     @XmlTransient
@@ -959,5 +964,13 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     public void setRwtEligibilityYear(Integer rwtEligibilityYear) {
         this.rwtEligibilityYear = rwtEligibilityYear;
+    }
+
+    public String getSvapNoticeUrl() {
+        return svapNoticeUrl;
+    }
+
+    public void setSvapNoticeUrl(String svapNoticeUrl) {
+        this.svapNoticeUrl = svapNoticeUrl;
     }
 }

@@ -182,6 +182,8 @@ public class CertifiedProductSummaryEntity implements Serializable {
     @Column(name = "rwt_results_check_date")
     private LocalDate rwtResultsCheckDate;
 
+    @Column(name = "svap_notice_url")
+    private String svapNoticeUrl;
 
     public Date getSedTestingEnd() {
         return Util.getNewDate(sedTestingEnd);
