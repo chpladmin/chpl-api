@@ -21,15 +21,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.acls.domain.BasePermission;
-import org.springframework.security.acls.domain.ObjectIdentityImpl;
-import org.springframework.security.acls.domain.PrincipalSid;
-import org.springframework.security.acls.model.MutableAcl;
-import org.springframework.security.acls.model.MutableAclService;
-import org.springframework.security.acls.model.NotFoundException;
-import org.springframework.security.acls.model.ObjectIdentity;
-import org.springframework.security.acls.model.Permission;
-import org.springframework.security.acls.model.Sid;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,19 +61,17 @@ public class UserManager extends SecuredManager {
     private UserDAO userDAO;
     private UserResetTokenDAO userResetTokenDAO;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-    private MutableAclService mutableAclService;
     private ErrorMessageUtil errorMessageUtil;
     private ActivityManager activityManager;
 
     @Autowired
     public UserManager(Environment env, UserDAO userDAO,
             UserResetTokenDAO userResetTokenDAO, BCryptPasswordEncoder bCryptPasswordEncoder,
-            MutableAclService mutableAclService, ErrorMessageUtil errorMessageUtil, ActivityManager activityManager) {
+            ErrorMessageUtil errorMessageUtil, ActivityManager activityManager) {
         this.env = env;
         this.userDAO = userDAO;
         this.userResetTokenDAO = userResetTokenDAO;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.mutableAclService = mutableAclService;
         this.errorMessageUtil = errorMessageUtil;
         this.activityManager = activityManager;
     }
@@ -101,10 +90,6 @@ public class UserManager extends SecuredManager {
             throw new UserCreationException("Password is not strong enough");
         }
         UserDTO newUser = userDAO.create(userDto, encodePassword(password));
-
-        // Grant the user administrative permission over itself.
-        addAclPermission(newUser, new PrincipalSid(newUser.getEmail()), BasePermission.ADMINISTRATION);
-
         return newUser;
     }
 
@@ -176,12 +161,6 @@ public class UserManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).DELETE)")
     public void delete(UserDTO user)
             throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
-        // remove all ACLs for this user
-        // should only be one - for themselves
-        ObjectIdentity oid = new ObjectIdentityImpl(UserDTO.class, user.getId());
-        mutableAclService.deleteAcl(oid, false);
-
-        // now delete the user
         userDAO.delete(user.getId());
     }
 
@@ -337,18 +316,6 @@ public class UserManager extends SecuredManager {
         .htmlMessage(htmlMessage)
         .publicHtmlFooter()
         .sendEmail();
-    }
-
-    private void addAclPermission(UserDTO user, Sid recipient, Permission permission) {
-        MutableAcl acl;
-        ObjectIdentity oid = new ObjectIdentityImpl(UserDTO.class, user.getId());
-        try {
-            acl = (MutableAcl) mutableAclService.readAclById(oid);
-        } catch (NotFoundException nfe) {
-            acl = mutableAclService.createAcl(oid);
-        }
-        acl.insertAce(acl.getEntries().size(), permission, recipient, true);
-        mutableAclService.updateAcl(acl);
     }
 
     private Optional<ValidationException> validateUser(UserDTO user) {

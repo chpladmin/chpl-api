@@ -1,0 +1,54 @@
+{
+    "info": {
+        "name": "api-key-controller",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "GET /key/activity - tests",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "const resp = pm.response.json()\r",
+                            "pm.test(\"expect activity call to have 500 error\", () => {\r",
+                            "  pm.response.to.have.status(500);\r",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "API-Key",
+                        "value": "{{apiKey}}",
+                        "type": "text"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{url}}/rest/key/activity",
+                    "host": [
+                        "{{url}}"
+                    ],
+                    "path": [
+                        "rest",
+                        "key",
+                        "activity"
+                    ]
+                },
+                "description": "Expect API Key activity endpoint to not exist"
+            },
+            "response": []
+        }
+    ],
+    "protocolProfileBehavior": {}
+}
