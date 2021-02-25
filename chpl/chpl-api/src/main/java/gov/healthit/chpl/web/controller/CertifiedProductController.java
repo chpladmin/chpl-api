@@ -984,6 +984,7 @@ public class CertifiedProductController {
         certifiedProductSearchBasicDetails.setSedIntendedUserDescription(e.getSedIntendedUserDescription());
         certifiedProductSearchBasicDetails.setSedReportFileLocation(e.getSedReportFileLocation());
         certifiedProductSearchBasicDetails.setSedTestingEndDate(e.getSedTestingEndDate());
+        certifiedProductSearchBasicDetails.setSvapNoticeUrl(e.getSvapNoticeUrl());
         certifiedProductSearchBasicDetails.setSurveillance(e.getSurveillance());
         certifiedProductSearchBasicDetails.setTargetedUsers(e.getTargetedUsers());
         certifiedProductSearchBasicDetails.setTestingLabs(e.getTestingLabs());
