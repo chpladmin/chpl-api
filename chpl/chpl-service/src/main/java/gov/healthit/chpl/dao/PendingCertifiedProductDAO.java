@@ -43,7 +43,9 @@ import gov.healthit.chpl.listing.measure.PendingListingMeasureCriterionMapEntity
 import gov.healthit.chpl.listing.measure.PendingListingMeasureEntity;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @Repository(value = "pendingCertifiedProductDAO")
 public class PendingCertifiedProductDAO extends BaseDAOImpl {
     private static final Logger LOGGER = LogManager.getLogger(PendingCertifiedProductDAO.class);

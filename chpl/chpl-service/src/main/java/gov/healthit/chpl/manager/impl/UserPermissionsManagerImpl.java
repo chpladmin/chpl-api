@@ -8,9 +8,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.acls.domain.ObjectIdentityImpl;
-import org.springframework.security.acls.model.MutableAclService;
-import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,19 +39,19 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
     private UserTestingLabMapDAO userTestingLabMapDAO;
     private UserDeveloperMapDAO userDeveloperMapDAO;
     private UserDAO userDAO;
-    private MutableAclService mutableAclService;
     private ActivityManager activityManager;
 
     @Autowired
-    public UserPermissionsManagerImpl(final UserCertificationBodyMapDAO userCertificationBodyMapDAO,
-            final UserTestingLabMapDAO userTestingLabMapDAO, final UserDeveloperMapDAO userDeveloperMapDAO,
-            final UserDAO userDAO, final MutableAclService mutableAclService, final ActivityManager activityManager) {
+    public UserPermissionsManagerImpl(UserCertificationBodyMapDAO userCertificationBodyMapDAO,
+            UserTestingLabMapDAO userTestingLabMapDAO,
+            UserDeveloperMapDAO userDeveloperMapDAO,
+            UserDAO userDAO,
+            ActivityManager activityManager) {
 
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
         this.userTestingLabMapDAO = userTestingLabMapDAO;
         this.userDeveloperMapDAO = userDeveloperMapDAO;
         this.userDAO = userDAO;
-        this.mutableAclService = mutableAclService;
         this.activityManager = activityManager;
     }
 
@@ -308,12 +305,6 @@ public class UserPermissionsManagerImpl extends SecuredManager implements UserPe
             // the user to be deleted has the same membership as the calling
             // user because at this point that membership has been removed.
             // Just delete the user here.
-
-            // remove all ACLs for this user
-            // should only be one - for themselves
-            ObjectIdentity oid = new ObjectIdentityImpl(UserDTO.class, user.getId());
-            mutableAclService.deleteAcl(oid, false);
-
             userDAO.delete(user.getId());
 
             String message = "Deleted user " + user.getUsername();

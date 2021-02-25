@@ -8,8 +8,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -122,7 +120,6 @@ public class CertifiedProductDetailsManager {
     private DimensionalDataManager dimensionalDataManager;
     private DirectReviewSearchService drService;
     private SvapDAO svapDao;
-    private List<SvapCriteriaMap> svapCriteriaMap;
 
     @SuppressWarnings({"checkstyle:parameternumber"})
     @Autowired
@@ -176,11 +173,6 @@ public class CertifiedProductDetailsManager {
         this.dimensionalDataManager = dimensionalDataManager;
         this.drService = drService;
         this.svapDao = svapDao;
-    }
-
-    @PostConstruct
-    public void init() throws EntityRetrievalException {
-        svapCriteriaMap = svapDao.getAllSvapCriteriaMap();
     }
 
     @Transactional
@@ -274,9 +266,9 @@ public class CertifiedProductDetailsManager {
                 dto.getId(), true);
 
         CertifiedProductSearchDetails searchDetails = getCertifiedProductSearchDetails(dto);
+        List<SvapCriteriaMap> svapCriteriaMap = svapDao.getAllSvapCriteriaMap();
 
-        return getCertificationResults(certificationResultsFuture, searchDetails);
-
+        return getCertificationResults(certificationResultsFuture, searchDetails, svapCriteriaMap);
     }
 
     @Transactional
@@ -289,8 +281,9 @@ public class CertifiedProductDetailsManager {
                 dto.getId(), true);
 
         CertifiedProductSearchDetails searchDetails = getCertifiedProductSearchDetails(dto);
+        List<SvapCriteriaMap> svapCriteriaMap = svapDao.getAllSvapCriteriaMap();
 
-        return getCertificationResults(certificationResultsFuture, searchDetails);
+        return getCertificationResults(certificationResultsFuture, searchDetails, svapCriteriaMap);
     }
 
     private CertifiedProductSearchDetails createCertifiedSearchDetails(CertifiedProductDetailsDTO dto,
@@ -306,8 +299,9 @@ public class CertifiedProductDetailsManager {
                 retrieveAsynchronously);
 
         CertifiedProductSearchDetails searchDetails = getCertifiedProductSearchDetails(dto);
+        List<SvapCriteriaMap> svapCriteriaMap = svapDao.getAllSvapCriteriaMap();
 
-        searchDetails.setCertificationResults(getCertificationResults(certificationResultsFuture, searchDetails));
+        searchDetails.setCertificationResults(getCertificationResults(certificationResultsFuture, searchDetails, svapCriteriaMap));
         searchDetails.setCqmResults(getCqmResultDetails(cqmResultsFuture, dto.getYear()));
         searchDetails.setCertificationEvents(getCertificationStatusEvents(dto.getId()));
         searchDetails.setMeaningfulUseUserHistory(getMeaningfulUseUserHistory(dto.getId()));
@@ -428,14 +422,14 @@ public class CertifiedProductDetailsManager {
 
     private List<CertificationResult> getCertificationResults(
             Future<List<CertificationResultDetailsDTO>> certificationResultsFuture,
-            CertifiedProductSearchDetails searchDetails) throws EntityRetrievalException {
+            CertifiedProductSearchDetails searchDetails, List<SvapCriteriaMap> svapCriteriaMap) throws EntityRetrievalException {
 
         List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
         try {
             List<CertificationResultDetailsDTO> certificationResultDetailsDTOs = new ArrayList<CertificationResultDetailsDTO>();
             certificationResultDetailsDTOs = certificationResultsFuture.get();
             for (CertificationResultDetailsDTO certResult : certificationResultDetailsDTOs) {
-                certificationResults.add(getCertificationResult(certResult, searchDetails));
+                certificationResults.add(getCertificationResult(certResult, searchDetails, svapCriteriaMap));
             }
         } catch (InterruptedException e) {
             throw new EntityRetrievalException("Error retrieving Certification Results: " + e.getMessage());
@@ -496,7 +490,7 @@ public class CertifiedProductDetailsManager {
 
     @SuppressWarnings({"checkstyle:methodlength"})
     private CertificationResult getCertificationResult(CertificationResultDetailsDTO certResult,
-            CertifiedProductSearchDetails searchDetails) {
+            CertifiedProductSearchDetails searchDetails, List<SvapCriteriaMap> svapCriteriaMap) {
 
         CertificationResult result = new CertificationResult(certResult);
         // override optional boolean values
@@ -660,7 +654,7 @@ public class CertifiedProductDetailsManager {
         result.setAllowedTestFunctionalities(getAvailableTestFunctionalities(result, searchDetails));
 
         // set allowed svap for criteria
-        result.setAllowedSvaps(getAvailableSvapForCriteria(result));
+        result.setAllowedSvaps(getAvailableSvapForCriteria(result, svapCriteriaMap));
 
         if (result.getAllowedSvaps().size() > 0) {
             result.setSvaps(certResultManager.getSvapsForCertificationResult(result.getId()));
@@ -671,7 +665,7 @@ public class CertifiedProductDetailsManager {
         return result;
     }
 
-    private List<Svap> getAvailableSvapForCriteria(CertificationResult result) {
+    private List<Svap> getAvailableSvapForCriteria(CertificationResult result, List<SvapCriteriaMap> svapCriteriaMap) {
         return svapCriteriaMap.stream()
                 .filter(scm -> scm.getCriterion().getId().equals(result.getCriterion().getId()))
                 .map(scm -> scm.getSvap())
@@ -743,6 +737,7 @@ public class CertifiedProductDetailsManager {
         searchDetails.setRwtResultsUrl(dto.getRwtResultsUrl());
         searchDetails.setRwtResultsCheckDate(dto.getRwtResultsCheckDate());
         searchDetails.setRwtEligibilityYear(dto.getRwtEligibilityYear());
+        searchDetails.setSvapNoticeUrl(dto.getSvapNoticeUrl());
 
         InheritedCertificationStatus ics = new InheritedCertificationStatus();
         ics.setInherits(dto.getIcs());

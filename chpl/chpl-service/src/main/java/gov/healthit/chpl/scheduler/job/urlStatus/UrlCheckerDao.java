@@ -77,7 +77,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         }
                     }
                     break;
-                case MANDATORY_DISCLOSURE_URL:
+                case MANDATORY_DISCLOSURE:
                     @SuppressWarnings("unchecked") List<String> mandatoryDisclosureWebsites =
                         entityManager.createQuery(
                                 "SELECT DISTINCT transparencyAttestationUrl "
@@ -162,7 +162,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         }
                     }
                     break;
-                case DOCUMENTATION_URL:
+                case DOCUMENTATION:
                     @SuppressWarnings("unchecked") List<String> documentationUrlWebsites =
                     entityManager.createQuery(
                             "SELECT DISTINCT documentationUrl "
@@ -234,6 +234,24 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         }
                     }
                     break;
+                    case STANDARDS_VERSION_ADVANCEMENT_PROCESS_NOTICE:
+                        @SuppressWarnings("unchecked") List<String> svapNoticeWebsites =
+                        entityManager.createQuery(
+                                "SELECT DISTINCT svapNoticeUrl "
+                                + "FROM CertifiedProductEntity "
+                                + "WHERE svapNoticeUrl IS NOT NULL "
+                                + "AND svapNoticeUrl != '' "
+                                + "AND deleted = false")
+                        .getResultList();
+                        for (String website : svapNoticeWebsites) {
+                            if (!StringUtils.isEmpty(website)) {
+                                UrlResult checkableUrl = new UrlResult();
+                                checkableUrl.setUrl(website);
+                                checkableUrl.setUrlType(urlType);
+                                results.add(checkableUrl);
+                            }
+                        }
+                        break;
                 default:
                     break;
             }

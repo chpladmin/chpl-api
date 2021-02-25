@@ -123,6 +123,7 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
             createSimpleElement(cp.getSedReportFileLocation(), "sedReportFileLocation", sw);
             createSimpleElement(cp.getSedTestingEndDate(), "sedTestingEndDate", sw);
             SurveillanceXmlGenerator.add(cp.getSurveillance(), "surveillanceList", sw);
+            createSimpleElement(cp.getSvapNoticeUrl(), "svapNoticeUrl", sw);
             CertifiedProductTargetedUserXmlGenerator.add(cp.getTargetedUsers(), "targetedUsers", sw);
             CertifiedProductTestingLabXmlGenerator.addTestingLabs(cp.getTestingLabs(), "testingLabs", sw);
             TransparencyAttestationXmlGenerator.add(cp.getTransparencyAttestation(), "transparencyAttestation", sw);

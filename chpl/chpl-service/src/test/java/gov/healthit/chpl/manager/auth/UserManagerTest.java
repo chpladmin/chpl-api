@@ -4,26 +4,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
-import org.springframework.security.acls.model.AccessControlEntry;
-import org.springframework.security.acls.model.Acl;
-import org.springframework.security.acls.model.MutableAcl;
-import org.springframework.security.acls.model.MutableAclService;
-import org.springframework.security.acls.model.NotFoundException;
-import org.springframework.security.acls.model.ObjectIdentity;
-import org.springframework.security.acls.model.Permission;
-import org.springframework.security.acls.model.Sid;
-import org.springframework.security.acls.model.UnloadedSidException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -51,7 +39,6 @@ public class UserManagerTest {
     private static final int FOUR_FAILED_LOGIN_ATTEMPTS = 4;
 
     private UserDAO userDAO;
-    private MutableAclService mutableAclService;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private ActivityManager activityManager;
     private ErrorMessageUtil errorMessageUtil;
@@ -64,7 +51,6 @@ public class UserManagerTest {
             EntityRetrievalException, MultipleUserAccountsException {
 
         userDAO = Mockito.mock(UserDAO.class);
-        mutableAclService = Mockito.mock(MutableAclService.class);
         bCryptPasswordEncoder = Mockito.mock(BCryptPasswordEncoder.class);
         activityManager = Mockito.mock(ActivityManager.class);
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
@@ -90,14 +76,6 @@ public class UserManagerTest {
                 .updateAccountLockedStatus(ArgumentMatchers.anyString(), ArgumentMatchers.anyBoolean());
         Mockito.when(userDAO.findUserByEmail(ArgumentMatchers.anyString()))
                 .thenReturn(getUserDTO(1L));
-
-        Mockito.when(mutableAclService.readAclById(ArgumentMatchers.any(ObjectIdentity.class)))
-                .thenReturn(getMutabeAcl());
-        Mockito.when(mutableAclService.updateAcl(ArgumentMatchers.any(MutableAcl.class)))
-                .thenReturn(null);
-        Mockito.doNothing()
-                .when(mutableAclService)
-                .deleteAcl(ArgumentMatchers.any(ObjectIdentity.class), ArgumentMatchers.anyBoolean());
 
         Mockito.when(bCryptPasswordEncoder.encode(ArgumentMatchers.anyString()))
                 .thenAnswer(i -> i.getArgument(0));
@@ -130,7 +108,7 @@ public class UserManagerTest {
     public void create_GoodData_Success() throws UserCreationException {
 
         UserDTO user = getUserDTO(1L);
-        UserManager userManager = new UserManager(null, userDAO, null, bCryptPasswordEncoder, mutableAclService, null, null);
+        UserManager userManager = new UserManager(null, userDAO, null, bCryptPasswordEncoder,  null, null);
 
         UserDTO newUser = userManager.create(user, "@ThisShouldBeAStrongPassword1!");
 
@@ -144,7 +122,7 @@ public class UserManagerTest {
 
         UserDTO user = getUserDTO(1L);
 
-        UserManager userManager = new UserManager(null, userDAO, null, bCryptPasswordEncoder, mutableAclService, null, null);
+        UserManager userManager = new UserManager(null, userDAO, null, bCryptPasswordEncoder, null, null);
 
         userManager.create(user, "@ThisShouldBeAStrongPassword1!");
 
@@ -156,7 +134,7 @@ public class UserManagerTest {
             throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
             ValidationException, MultipleUserAccountsException, UserAccountExistsException {
 
-        UserManager userManager = new UserManager(null, userDAO, null, null, null, null, activityManager);
+        UserManager userManager = new UserManager(null, userDAO, null, null, null, activityManager);
 
         UserDTO user = getUserDTO(1L);
         UserDTO updatedUser = userManager.update(user);
@@ -172,7 +150,7 @@ public class UserManagerTest {
             throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
             ValidationException, MultipleUserAccountsException, UserAccountExistsException {
 
-        UserManager userManager = new UserManager(null, null, null, null, null, errorMessageUtil, null);
+        UserManager userManager = new UserManager(null, null, null, null, errorMessageUtil, null);
 
         UserDTO user = getUserDTO(1L);
         user.setFullName("");
@@ -186,7 +164,7 @@ public class UserManagerTest {
             throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
             ValidationException, MultipleUserAccountsException, UserAccountExistsException {
 
-        UserManager userManager = new UserManager(null, null, null, null, null, errorMessageUtil, null);
+        UserManager userManager = new UserManager(null, null, null, null, errorMessageUtil, null);
 
         UserDTO user = getUserDTO(1L);
         user.setFullName("");
@@ -200,7 +178,7 @@ public class UserManagerTest {
             throws JsonProcessingException, UserRetrievalException, EntityCreationException, EntityRetrievalException,
             ValidationException, MultipleUserAccountsException, UserAccountExistsException {
 
-        UserManager userManager = new UserManager(null, null, null, null, null, errorMessageUtil, null);
+        UserManager userManager = new UserManager(null, null, null, null, errorMessageUtil, null);
 
         UserDTO user = getUserDTO(1L);
         user.setPhoneNumber("");
@@ -214,7 +192,7 @@ public class UserManagerTest {
             throws JsonProcessingException, UserRetrievalException, EntityCreationException,
             EntityRetrievalException, MultipleUserAccountsException, UserAccountExistsException {
 
-        UserManager userManager = new UserManager(null, null, null, null, null, errorMessageUtil, null);
+        UserManager userManager = new UserManager(null, null, null, null, errorMessageUtil, null);
 
         UserDTO user = getUserDTO(1L);
         user.setPhoneNumber("");
@@ -232,7 +210,7 @@ public class UserManagerTest {
     public void update_DuplicateEmailAddress_UserAccountExistsThrown()
             throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
             ValidationException, MultipleUserAccountsException, UserAccountExistsException {
-        UserManager userManager = new UserManager(null, userDAO, null, null, null, errorMessageUtil, null);
+        UserManager userManager = new UserManager(null, userDAO, null, null, errorMessageUtil, null);
 
         UserDTO user = getUserDTO(1L);
         user.setEmail("anotheremail@test.com");
@@ -245,10 +223,9 @@ public class UserManagerTest {
     public void delete_GoodData_Success()
             throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
 
-        UserManager userManager = new UserManager(null, userDAO, null, null, mutableAclService, null, null);
+        UserManager userManager = new UserManager(null, userDAO, null, null, null, null);
         userManager.delete(getUserDTO(1L));
 
-        Mockito.verify(mutableAclService).deleteAcl(ArgumentMatchers.any(ObjectIdentity.class), ArgumentMatchers.anyBoolean());
         Mockito.verify(userDAO).delete(1L);
     }
 
@@ -257,7 +234,7 @@ public class UserManagerTest {
             throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
         Mockito.doThrow(UserRetrievalException.class).when(userDAO).delete(ArgumentMatchers.anyLong());
 
-        UserManager userManager = new UserManager(null, userDAO, null, null, mutableAclService, null, null);
+        UserManager userManager = new UserManager(null, userDAO, null, null, null, null);
         userManager.delete(getUserDTO(1L));
 
         fail();
@@ -267,7 +244,7 @@ public class UserManagerTest {
     public void updateFailedLoginCount_FailedLoginCountLessThanMaxFailedAttempts_NoErrors()
             throws UserRetrievalException, MultipleUserAccountsException {
 
-        UserManager userManager = new UserManager(env, userDAO, null, null, null, null, null);
+        UserManager userManager = new UserManager(env, userDAO, null, null, null, null);
 
         userManager.updateFailedLoginCount(getUserDTO(1L));
 
@@ -281,7 +258,7 @@ public class UserManagerTest {
         Mockito.doThrow(UserRetrievalException.class).when(userDAO).updateFailedLoginCount(
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyInt());
 
-        UserManager userManager = new UserManager(null, userDAO, null, null, null, null, null);
+        UserManager userManager = new UserManager(null, userDAO, null, null, null, null);
 
         userManager.updateFailedLoginCount(getUserDTO(1L));
 
@@ -292,7 +269,7 @@ public class UserManagerTest {
     public void updateFailedLoginCount_FailedLoginCountGreaterThanMaxFailedAttempts_AccountIsLocked()
             throws UserRetrievalException, MultipleUserAccountsException {
 
-        UserManager userManager = new UserManager(env, userDAO, null, null, null, null, null);
+        UserManager userManager = new UserManager(env, userDAO, null, null, null, null);
 
         UserDTO user = getUserDTO(1L);
         user.setFailedLoginCount(FOUR_FAILED_LOGIN_ATTEMPTS);
@@ -304,7 +281,7 @@ public class UserManagerTest {
 
     @Test
     public void createResetUserPasswordToken_UserIsValid_ValidUserResetTokenDTO() throws UserRetrievalException {
-        UserManager userManager = new UserManager(null, userDAO, userResetTokenDAO, null, null, null, null);
+        UserManager userManager = new UserManager(null, userDAO, userResetTokenDAO, null, null, null);
         UserResetTokenDTO token = userManager.createResetUserPasswordToken("abc@def.com");
 
         assertNotNull(token);
@@ -315,7 +292,7 @@ public class UserManagerTest {
         Mockito.when(userDAO.findUserByEmail(ArgumentMatchers.anyString()))
                 .thenReturn(null);
 
-        UserManager userManager = new UserManager(null, userDAO, userResetTokenDAO, null, null, null, null);
+        UserManager userManager = new UserManager(null, userDAO, userResetTokenDAO, null, null, null);
         userManager.createResetUserPasswordToken("abc@def.com");
 
         fail();
@@ -323,7 +300,7 @@ public class UserManagerTest {
 
     @Test
     public void authorizePasswordReset_ValidToken_ReturnTrue() {
-        UserManager userManager = new UserManager(env, null, userResetTokenDAO, null, null, null, null);
+        UserManager userManager = new UserManager(env, null, userResetTokenDAO, null, null, null);
         boolean auth = userManager.authorizePasswordReset("token");
 
         assertEquals(true, auth);
@@ -334,7 +311,7 @@ public class UserManagerTest {
         Mockito.when(userResetTokenDAO.findByAuthToken(ArgumentMatchers.anyString()))
                 .thenReturn(null);
 
-        UserManager userManager = new UserManager(null, null, userResetTokenDAO, null, null, null, null);
+        UserManager userManager = new UserManager(null, null, userResetTokenDAO, null, null, null);
         boolean auth = userManager.authorizePasswordReset("token");
 
         assertEquals(false, auth);
@@ -350,7 +327,7 @@ public class UserManagerTest {
                         .creationDate(oldDate.getTime())
                         .build());
 
-        UserManager userManager = new UserManager(env, null, userResetTokenDAO, null, null, null, null);
+        UserManager userManager = new UserManager(env, null, userResetTokenDAO, null, null, null);
         boolean auth = userManager.authorizePasswordReset("token");
 
         assertEquals(false, auth);
@@ -372,97 +349,6 @@ public class UserManagerTest {
                 .signatureDate(new Date())
                 .title("Sr Eng")
                 .build();
-    }
-
-    private MutableAcl getMutabeAcl() {
-        return new MutableAcl() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public boolean isSidLoaded(List<Sid> sids) {
-                // TODO Auto-generated method stub
-                return false;
-            }
-
-            @Override
-            public boolean isGranted(List<Permission> permission, List<Sid> sids, boolean administrativeMode)
-                    throws NotFoundException, UnloadedSidException {
-                // TODO Auto-generated method stub
-                return false;
-            }
-
-            @Override
-            public boolean isEntriesInheriting() {
-                // TODO Auto-generated method stub
-                return false;
-            }
-
-            @Override
-            public Acl getParentAcl() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public Sid getOwner() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public ObjectIdentity getObjectIdentity() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public List<AccessControlEntry> getEntries() {
-                return new ArrayList<AccessControlEntry>();
-            }
-
-            @Override
-            public void updateAce(int aceIndex, Permission permission) throws NotFoundException {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void setParent(Acl newParent) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void setOwner(Sid newOwner) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void setEntriesInheriting(boolean entriesInheriting) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void insertAce(int atIndexLocation, Permission permission, Sid sid, boolean granting)
-                    throws NotFoundException {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public Serializable getId() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public void deleteAce(int aceIndex) throws NotFoundException {
-                // TODO Auto-generated method stub
-
-            }
-        };
     }
 
 }
