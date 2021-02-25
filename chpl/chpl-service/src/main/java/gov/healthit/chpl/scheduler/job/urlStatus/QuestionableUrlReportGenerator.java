@@ -126,10 +126,11 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                             }
                             break;
                         case FULL_USABILITY_REPORT:
-                        case MANDATORY_DISCLOSURE_URL:
+                        case MANDATORY_DISCLOSURE:
                         case TEST_RESULTS_SUMMARY:
                         case REAL_WORLD_TESTING_PLANS:
                         case REAL_WORLD_TESTING_RESULTS:
+                        case STANDARDS_VERSION_ADVANCEMENT_PROCESS_NOTICE:
                             LOGGER.info("[" + i + "] Getting Listings with bad " + urlResult.getUrlType().getName()
                                     + " website " + urlResult.getUrl());
                             List<CertifiedProductSummaryDTO> listingsWithBadUrl = cpDao
@@ -163,7 +164,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                             break;
                         case API_DOCUMENTATION:
                         case EXPORT_DOCUMENTATION:
-                        case DOCUMENTATION_URL:
+                        case DOCUMENTATION:
                         case USE_CASES:
                             LOGGER.info("[" + i + "] Getting criteria with bad " + urlResult.getUrlType().getName()
                                     + " website " + urlResult.getUrl());
@@ -425,30 +426,31 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             int brokenAcbUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.ACB);
             int brokenAtlUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.ATL);
             int brokenDeveloperUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.DEVELOPER);
-            int brokenMandatoryDisclosureUrls = getCountOfBrokenUrlsOfType(urlResults,
-                    UrlType.MANDATORY_DISCLOSURE_URL);
+            int brokenMandatoryDisclosureUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.MANDATORY_DISCLOSURE);
             int brokenTestResultsSummaryUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.TEST_RESULTS_SUMMARY);
             int brokenFullUsabilityReportUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.FULL_USABILITY_REPORT);
             int brokenApiDocumentationUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.API_DOCUMENTATION);
             int brokenExportDocumentationUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.EXPORT_DOCUMENTATION);
-            int brokenDocumentationUrlUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.DOCUMENTATION_URL);
+            int brokenDocumentationUrlUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.DOCUMENTATION);
             int brokenUseCasesUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.USE_CASES);
             int brokenRwtPlansUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.REAL_WORLD_TESTING_PLANS);
             int brokenRwtResultsUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.REAL_WORLD_TESTING_RESULTS);
+            int brokenSvapNoticeUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.STANDARDS_VERSION_ADVANCEMENT_PROCESS_NOTICE);
 
             htmlMessage += "<ul>";
             htmlMessage += "<li>" + UrlType.ATL.getName() + ": " + brokenAtlUrls + "</li>";
             htmlMessage += "<li>" + UrlType.ACB.getName() + ": " + brokenAcbUrls + "</li>";
             htmlMessage += "<li>" + UrlType.DEVELOPER.getName() + ": " + brokenDeveloperUrls + "</li>";
             htmlMessage += "<li>" + UrlType.FULL_USABILITY_REPORT.getName() + ": " + brokenFullUsabilityReportUrls + "</li>";
-            htmlMessage += "<li>" + UrlType.MANDATORY_DISCLOSURE_URL.getName() + ": " + brokenMandatoryDisclosureUrls + "</li>";
+            htmlMessage += "<li>" + UrlType.MANDATORY_DISCLOSURE.getName() + ": " + brokenMandatoryDisclosureUrls + "</li>";
             htmlMessage += "<li>" + UrlType.TEST_RESULTS_SUMMARY.getName() + ": " + brokenTestResultsSummaryUrls + "</li>";
             htmlMessage += "<li>" + UrlType.API_DOCUMENTATION.getName() + ": " + brokenApiDocumentationUrls + "</li>";
             htmlMessage += "<li>" + UrlType.EXPORT_DOCUMENTATION.getName() + ": " + brokenExportDocumentationUrls + "</li>";
-            htmlMessage += "<li>" + UrlType.DOCUMENTATION_URL.getName() + ": " + brokenDocumentationUrlUrls + "</li>";
+            htmlMessage += "<li>" + UrlType.DOCUMENTATION.getName() + ": " + brokenDocumentationUrlUrls + "</li>";
             htmlMessage += "<li>" + UrlType.USE_CASES.getName() + ": " + brokenUseCasesUrls + "</li>";
             htmlMessage += "<li>" + UrlType.REAL_WORLD_TESTING_PLANS.getName() + ": " + brokenRwtPlansUrls + "</li>";
             htmlMessage += "<li>" + UrlType.REAL_WORLD_TESTING_RESULTS.getName() + ": " + brokenRwtResultsUrls + "</li>";
+            htmlMessage += "<li>" + UrlType.STANDARDS_VERSION_ADVANCEMENT_PROCESS_NOTICE.getName() + ": " + brokenSvapNoticeUrls + "</li>";
             htmlMessage += "</ul>";
         }
 

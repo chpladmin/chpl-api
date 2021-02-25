@@ -448,6 +448,7 @@ public class CertifiedProductManager extends SecuredManager {
         }
         toCreate.setCertificationEditionId(pendingCp.getCertificationEditionId());
         toCreate.setTransparencyAttestationUrl(pendingCp.getTransparencyAttestationUrl());
+        toCreate.setSvapNoticeUrl(pendingCp.getSvapNoticeUrl());
 
         DeveloperDTO developer = null;
         if (pendingCp.getDeveloperId() == null) {

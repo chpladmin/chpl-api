@@ -80,6 +80,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             entity.setQmsTesting(dto.getQmsTesting());
             entity.setAccessibilityCertified(dto.getAccessibilityCertified());
             entity.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
+            entity.setSvapNoticeUrl(dto.getSvapNoticeUrl());
 
             if (dto.getCertificationBodyId() != null) {
                 entity.setCertificationBodyId(dto.getCertificationBodyId());
@@ -157,6 +158,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         entity.setRwtPlansCheckDate(dto.getRwtPlansCheckDate());
         entity.setRwtResultsUrl(dto.getRwtResultsUrl());
         entity.setRwtResultsCheckDate(dto.getRwtResultsCheckDate());
+        entity.setSvapNoticeUrl(dto.getSvapNoticeUrl());
 
         entity.setLastModifiedDate(new Date());
         entity.setLastModifiedUser(AuthUtil.getAuditId());
@@ -559,7 +561,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
                 + "FROM CertifiedProductSummaryEntity cp "
                 + "WHERE cp.deleted = false ";
         switch (urlType) {
-        case MANDATORY_DISCLOSURE_URL:
+        case MANDATORY_DISCLOSURE:
             queryStr += " AND cp.transparencyAttestationUrl = :url ";
             break;
         case FULL_USABILITY_REPORT:
@@ -573,6 +575,9 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             break;
         case REAL_WORLD_TESTING_RESULTS:
             queryStr += " AND cp.rwtResultsUrl = :url ";
+            break;
+        case STANDARDS_VERSION_ADVANCEMENT_PROCESS_NOTICE:
+            queryStr += " AND cp.svapNoticeUrl = :url ";
             break;
         default:
             break;
