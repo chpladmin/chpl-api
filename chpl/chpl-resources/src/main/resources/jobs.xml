@@ -7,72 +7,8 @@
     <pre-processing-commands>
         <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
-        <!-- REMOVE after PROD push of OCD-3584-->
-        <delete-job>
-            <name>Summary Statistics Email</name>
-            <group>chplJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>Trigger Developer Ban Notification</name>
-            <group>chplJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>Questionable Activity Report</name>
-            <group>chplJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>Questionable URL Report</name>
-            <group>chplJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>updateListingStatusJob</name>
-            <group>systemJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>updateSingleListingStatusJob</name>
-            <group>subordinateJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>splitDeveloperJob</name>
-            <group>chplBackgroundJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>mergeDeveloperJob</name>
-            <group>chplBackgroundJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>realWorldTestingEligibilityJob</name>
-            <group>systemJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>realWorldTestingUploadJob</name>
-            <group>chplBackgroundJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>Developer Access Report</name>
-            <group>chplJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>Overnight Broken Surveillance Rules Report</name>
-            <group>chplJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>All Broken Surveillance Rules Report</name>
-            <group>chplJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>Inherited Certification Status Errors Report</name>
-            <group>chplJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>Pending "Change Request" Report</name>
-            <group>chplJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>Real World Testing Email Report</name>
-            <group>chplJobs</group>
-        </delete-job>
-        <!-- END remove after PROD push of OCD-3584-->
+        <!-- BEGIN REMOVE after PROD push -->
+        <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
         <overwrite-existing-data>false</overwrite-existing-data>
