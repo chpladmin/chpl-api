@@ -25,12 +25,12 @@ public class SurveillanceSummaryStatisticsSectionPdf extends SummaryStatisticsSe
         table = addHeaders(table, "Surveillance Statistics", recent, previous);
         table = addTableRow(table, createDataForRow("4. Total # of Surveillance Activities",
                                     recentEmailStatistics.getSurveillanceAllStatusTotal(),
-                                    previousEmailStatistics.getSurveillanceAllStatusTotal()));
+                                    previousEmailStatistics.getSurveillanceAllStatusTotal()), true);
 
         table = addTableRow(table, createDataForRow("a. Open Surveillance Activities",
                 recentEmailStatistics.getSurveillanceOpenStatus().getCount(),
                 previousEmailStatistics.getSurveillanceOpenStatus().getCount()),
-                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
+                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
 
         table = addAcbRows(table,
                 recentEmailStatistics.getSurveillanceOpenStatus().getAcbStatistics(),
@@ -39,12 +39,12 @@ public class SurveillanceSummaryStatisticsSectionPdf extends SummaryStatisticsSe
         table = addTableRow(table, createDataForRow("b. Closed Surveillance Activities",
                 recentEmailStatistics.getSurveillanceClosedStatusTotal(),
                 previousEmailStatistics.getSurveillanceClosedStatusTotal()),
-                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
+                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
 
         table = addTableRow(table, createDataForRow("c. Average Duration of Closed Surveillance (in days)",
                 recentEmailStatistics.getSurveillanceAvgTimeToClose(),
                 previousEmailStatistics.getSurveillanceAvgTimeToClose()),
-                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT);
+                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
 
         return table;
     }

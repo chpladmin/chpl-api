@@ -54,7 +54,7 @@ public abstract class SummaryStatisticsSectionPdf {
         return table;
     }
 
-    public Table addTableRow(Table table, List<String> cells, Integer indentTimes) {
+    public Table addTableRow(Table table, List<String> cells, Integer indentTimes, Boolean bold) {
         AtomicInteger index = new AtomicInteger(0);
         cells.stream()
                 .forEach(text -> {
@@ -62,6 +62,9 @@ public abstract class SummaryStatisticsSectionPdf {
                     cell.setBorder(new SolidBorder(1));
                     cell.setFont(SummaryStatisticsPdfDefaults.getDefaultFont());
                     cell.setFontSize(SummaryStatisticsPdfDefaults.DEFAULT_FONT_SIZE);
+                    if (bold) {
+                        cell.setBold();
+                    }
                     if (indentTimes != null && index.get() == 0) {
                         cell.setPaddingLeft(indentTimes * DEFAULT_INDENT);
                     }
@@ -72,8 +75,8 @@ public abstract class SummaryStatisticsSectionPdf {
         return table;
     }
 
-    public Table addTableRow(Table table, List<String> cells) {
-        return addTableRow(table, cells, null);
+    public Table addTableRow(Table table, List<String> cells, Boolean bold) {
+        return addTableRow(table, cells, null, bold);
     }
 
     public List<String> createDataForRow(String description, Long recentValue, Long previousValue) {
@@ -108,7 +111,7 @@ public abstract class SummaryStatisticsSectionPdf {
                     getAccompanyingEmailCertificationBodyStatistic(recentAcbStat, previousEmailAcbStats);
 
             if (previousAcbStat.isPresent()) {
-                table = addTableRow(table, createDataForRow(recentAcbStat.getAcbName(), recentAcbStat.getCount(), previousAcbStat.get().getCount()), NUMBER_OF_INDENTS_ACB_LEVEL_STAT);
+                table = addTableRow(table, createDataForRow(recentAcbStat.getAcbName(), recentAcbStat.getCount(), previousAcbStat.get().getCount()), NUMBER_OF_INDENTS_ACB_LEVEL_STAT, false);
             }
         }
         return table;
