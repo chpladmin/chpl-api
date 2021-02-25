@@ -158,18 +158,6 @@ public class ApiKeyDAO extends BaseDAOImpl {
 
     }
 
-    public ApiKeyDTO getRevokedKeyById(Long id) throws EntityRetrievalException {
-
-        ApiKeyDTO dto = null;
-        ApiKeyEntity entity = getRevokedEntityById(id);
-
-        if (entity != null) {
-            dto = new ApiKeyDTO(entity);
-        }
-        return dto;
-
-    }
-
     public ApiKeyDTO getRevokedKeyByKey(String apiKey) {
 
         ApiKeyDTO dto = null;
@@ -306,22 +294,6 @@ public class ApiKeyDAO extends BaseDAOImpl {
         return result;
     }
 
-    private ApiKeyEntity getRevokedEntityById(final Long entityId) throws EntityRetrievalException {
-        ApiKeyEntity entity = null;
-
-        Query query = entityManager.createQuery(
-                "from ApiKeyEntity where (deleted = true) AND (api_key_id = :entityid) ", ApiKeyEntity.class);
-        query.setParameter("entityid", entityId);
-        List<ApiKeyEntity> result = query.getResultList();
-
-        if (result.size() > 1) {
-            throw new EntityRetrievalException("Data error. Duplicate api key id in database.");
-        } else if (result.size() == 1) {
-            entity = result.get(0);
-        }
-        return entity;
-    }
-
     private ApiKeyEntity getRevokedEntityByKey(final String key) {
         ApiKeyEntity entity = null;
 
@@ -335,5 +307,4 @@ public class ApiKeyDAO extends BaseDAOImpl {
         }
         return entity;
     }
-
 }

@@ -1,0 +1,54 @@
+{
+    "info": {
+        "name": "certified-product-controller",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "GET /rest/certified_products/{listingId} - schema tests",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "const resp = pm.response.json()\r",
+                            "pm.test(\"expect Listing Basic response to have svapResultUrl\", () => {\r",
+                            "  pm.expect(resp).to.have.property('svapNoticeUrl');\r",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "API-Key",
+                        "value": "{{apiKey}}",
+                        "type": "text"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{url}}/rest/certified_products/10457",
+                    "host": [
+                        "{{url}}"
+                    ],
+                    "path": [
+                        "rest",
+                        "certified_products",
+                        "10457"
+                    ]
+                },
+                "description": "Expect Listing Basic response to have svapResultsUrl"
+            },
+            "response": []
+        }
+    ],
+    "protocolProfileBehavior": {}
+}

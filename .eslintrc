@@ -21,7 +21,7 @@
         "eol-last": ["error"],
         "eqeqeq": ["error"],
         "func-call-spacing": ["error"],
-        "indent": ["error"],
+        "indent": ["error", 2],
         "key-spacing": ["error"],
         "keyword-spacing": ["error"],
         "no-multi-spaces": ["error", { "ignoreEOLComments": true }],

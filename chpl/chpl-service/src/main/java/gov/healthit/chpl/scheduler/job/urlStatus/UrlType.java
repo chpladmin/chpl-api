@@ -4,29 +4,20 @@ public enum UrlType {
     ATL("ONC-ATL"),
     ACB("ONC-ACB"),
     DEVELOPER("Developer"),
-    //transparency_attestation_url
-    MANDATORY_DISCLOSURE_URL("Mandatory Disclosure URL"),
-    //report_file_location
+    MANDATORY_DISCLOSURE("Mandatory Disclosure"),
     TEST_RESULTS_SUMMARY("Test Results Summary"),
-    //sed_report_file_location
     FULL_USABILITY_REPORT("Full Usability Report"),
-    //api_documentation
     API_DOCUMENTATION("API Documentation"),
-    // export_documentation
     EXPORT_DOCUMENTATION("Export Documentation"),
-    // documentation_url
-    DOCUMENTATION_URL("Documentation URL"),
-    // use_cases
+    DOCUMENTATION("Documentation"),
     USE_CASES("Use Cases"),
-    //Real World Testing Plans
     REAL_WORLD_TESTING_PLANS("Real World Testing Plans"),
-    //Real World Testing Results
-    REAL_WORLD_TESTING_RESULTS("Real World Testing Results");
-
+    REAL_WORLD_TESTING_RESULTS("Real World Testing Results"),
+    STANDARDS_VERSION_ADVANCEMENT_PROCESS_NOTICE("Standards Version Advancement Process Notice");
 
     private String name;
 
-    UrlType(final String name) {
+    UrlType(String name) {
         this.name = name;
     }
 
@@ -34,7 +25,7 @@ public enum UrlType {
         return name;
     }
 
-    public static UrlType findByName(final String urlTypeName) {
+    public static UrlType findByName(String urlTypeName) {
         UrlType result = null;
         UrlType[] availableValues = values();
         for (int i = 0; i < availableValues.length && result == null; i++) {
