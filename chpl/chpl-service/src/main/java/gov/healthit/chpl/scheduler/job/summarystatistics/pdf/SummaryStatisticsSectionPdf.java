@@ -30,7 +30,7 @@ public abstract class SummaryStatisticsSectionPdf {
     private StatisticsMassager statisticsMassager;
 
     public SummaryStatisticsSectionPdf(CertificationBodyDAO certificationBodyDAO) {
-        statisticsMassager = new StatisticsMassager(certificationBodyDAO.findAll());
+        statisticsMassager = new StatisticsMassager(certificationBodyDAO.findAllActive());
     }
 
     public abstract Table generateTable(LocalDate recent, LocalDate previous, EmailStatistics recentEmailStatistics, EmailStatistics previousEmailStatistics);
