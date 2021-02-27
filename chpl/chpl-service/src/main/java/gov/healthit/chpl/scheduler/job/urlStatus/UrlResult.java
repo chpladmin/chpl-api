@@ -5,6 +5,15 @@ import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UrlResult {
     private Long id;
     private String url;
@@ -12,9 +21,6 @@ public class UrlResult {
     private Date lastChecked;
     private Integer responseCode;
     private String responseMessage;
-
-    public UrlResult() {
-    }
 
     public UrlResult(UrlResultEntity entity) {
         BeanUtils.copyProperties(entity, this);
@@ -45,47 +51,12 @@ public class UrlResult {
         }
         return false;
     }
+
     @Override
     public int hashCode() {
         if (StringUtils.isEmpty(this.getUrl()) || this.getLastChecked() == null) {
             return -1;
         }
         return this.getUrl().hashCode() + this.getLastChecked().hashCode();
-    }
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-    public String getUrl() {
-        return url;
-    }
-    public void setUrl(String url) {
-        this.url = url;
-    }
-    public UrlType getUrlType() {
-        return urlType;
-    }
-    public void setUrlType(UrlType urlType) {
-        this.urlType = urlType;
-    }
-    public Date getLastChecked() {
-        return lastChecked;
-    }
-    public void setLastChecked(Date lastChecked) {
-        this.lastChecked = lastChecked;
-    }
-    public Integer getResponseCode() {
-        return responseCode;
-    }
-    public void setResponseCode(Integer responseCode) {
-        this.responseCode = responseCode;
-    }
-    public String getResponseMessage() {
-        return responseMessage;
-    }
-    public void setResponseMessage(String responseMessage) {
-        this.responseMessage = responseMessage;
     }
 }

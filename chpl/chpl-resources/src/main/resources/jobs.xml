@@ -267,6 +267,30 @@
             </job-data-map>
         </job>
 
+        <!-- ONC-ACB Filtered Questionable URL data emailer -->
+        <job>
+            <name>Questionable URL Report</name>
+            <group>chplJobs</group>
+            <description>Sends a report to ONC-ACBs of all relevant URLs entered into the system that respond with a questionable status code.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.urlStatus.QuestionableUrlReportGenerator</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ACB</value>
+                </entry>
+                <entry>
+                    <key>httpStatusIncludeRegex</key>
+                    <value>[45][0-9][0-9]</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>WEEKLY</value>
+                </entry>
+            </job-data-map>
+        </job>
+
         <!-- Job used to trigger interruptions of other jobs -->
         <job>
             <name>interruptJob</name>
