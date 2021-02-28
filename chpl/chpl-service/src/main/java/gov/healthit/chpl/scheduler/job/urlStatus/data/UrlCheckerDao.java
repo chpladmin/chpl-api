@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.urlStatus;
+package gov.healthit.chpl.scheduler.job.urlStatus.data;
 
 import java.util.ArrayList;
 import java.util.List;

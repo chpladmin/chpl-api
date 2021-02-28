@@ -1,24 +1,24 @@
-package gov.healthit.chpl.scheduler.job.urlStatus;
+package gov.healthit.chpl.scheduler.job.urlStatus.data;
 
 import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Immutable;
 
 import lombok.Data;
 
 @Entity
+@Immutable
 @Data
-@Table(name = "url_check_result")
-public class UrlResultEntity {
+@Table(name = "url_type")
+public class UrlTypeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,28 +27,8 @@ public class UrlResultEntity {
     private Long id;
 
     @Basic(optional = false)
-    @Column(name = "url")
-    private String url;
-
-    @Basic(optional = false)
-    @Column(name = "url_type_id")
-    private Long urlTypeId;
-
-    @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "url_type_id", insertable = false, updatable = false)
-    private UrlTypeEntity urlType;
-
-    @Basic(optional = false)
-    @Column(name = "response_code")
-    private Integer responseCode;
-
-    @Basic(optional = false)
-    @Column(name = "response_message")
-    private String responseMessage;
-
-    @Basic(optional = false)
-    @Column(name = "checked_date")
-    private Date lastChecked;
+    @Column(name = "name")
+    private String name;
 
     @Column(name = "deleted", insertable = false)
     private Boolean deleted;

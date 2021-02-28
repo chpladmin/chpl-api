@@ -288,6 +288,10 @@
                     <key>frequency</key>
                     <value>WEEKLY</value>
                 </entry>
+                <entry>
+                    <key>acbSpecific</key>
+                    <value>true</value>
+                </entry>
             </job-data-map>
         </job>
 
