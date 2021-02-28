@@ -6,9 +6,14 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
 
@@ -22,6 +27,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.scheduler.job.urlStatus.data.UrlCheckerDao;
 import gov.healthit.chpl.scheduler.job.urlStatus.data.UrlResult;
@@ -36,6 +45,9 @@ import lombok.extern.log4j.Log4j2;
 public class QuestionableUrlReportGenerator extends QuartzJob {
     @Autowired
     private Environment env;
+
+    @Autowired
+    private CertifiedProductDAO cpDao;
 
     @Autowired
     private UrlCheckerDao urlCheckerDao;
@@ -93,7 +105,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                 i++;
             }
 
-            filterUrls(badUrlsToWrite, jobContext);
+            badUrlsToWrite = filterUrls(badUrlsToWrite, jobContext);
 
             // sort the bad urls first by url and then by type
             Collections.sort(badUrlsToWrite, new Comparator<FailedUrlResult>() {
@@ -139,14 +151,60 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
     }
 
     private List<FailedUrlResult> filterUrls(List<FailedUrlResult> badUrls, JobExecutionContext jobContext) {
-        //TODO filter for acbs
         String acbSpecific = jobContext.getMergedJobDataMap().getString("acbSpecific");
         if (!StringUtils.isEmpty(acbSpecific) && BooleanUtils.toBoolean(acbSpecific)) {
-            //include empty status codes
-            //include acb, listing for acb, developer
-            //check httpStatusIncludRegex
+            List<Long> acbIds = getSelectedAcbIds(jobContext);
+            badUrls.stream()
+                .filter(badUrl -> isUrlRelatedToAcbs(badUrl, acbIds))
+                .filter(badUrl -> doesUrlResultMatchAllowedStatusCodes(badUrl, jobContext))
+                .collect(Collectors.toList());
         }
         return badUrls;
+    }
+
+    private boolean isUrlRelatedToAcbs(FailedUrlResult urlResult, List<Long> acbIds) {
+        if (urlResult.getAcb() != null) {
+            return acbIds.contains(urlResult.getAcb().getId());
+        }
+        if (urlResult.getListing() != null && urlResult.getListing().getAcb() != null) {
+            return acbIds.contains(urlResult.getListing().getAcb().getId());
+        }
+        if (urlResult.getDeveloper() != null) {
+            List<CertificationStatusType> activeStatuses = new ArrayList<CertificationStatusType>();
+            activeStatuses.add(CertificationStatusType.Active);
+            activeStatuses.add(CertificationStatusType.SuspendedByAcb);
+            activeStatuses.add(CertificationStatusType.SuspendedByOnc);
+
+            List<CertifiedProductDetailsDTO> filteredListings
+                = cpDao.getListingsByStatusForDeveloperAndAcb(urlResult.getDeveloper().getDeveloperId(), activeStatuses, acbIds);
+            return filteredListings != null && filteredListings.size() > 0;
+        }
+        return false;
+    }
+
+    private boolean doesUrlResultMatchAllowedStatusCodes(FailedUrlResult urlResult, JobExecutionContext jobContext) {
+        String httpStatusIncludeRegex = jobContext.getMergedJobDataMap().getString("httpStatusIncludeRegex");
+        if (StringUtils.isEmpty(httpStatusIncludeRegex)) {
+            return true;
+        }
+        if (urlResult.getResponseCode() == null) {
+            return true;
+        }
+        try {
+            Pattern httpStatusPattern = Pattern.compile(httpStatusIncludeRegex);
+            Matcher httpStatusMatcher = httpStatusPattern.matcher(urlResult.getResponseCode().toString());
+            return httpStatusMatcher.matches();
+        } catch (PatternSyntaxException ex) {
+            LOGGER.error("Invalid pattern: " + httpStatusIncludeRegex, ex);
+        }
+        return false;
+    }
+
+    private List<Long> getSelectedAcbIds(JobExecutionContext jobContext) {
+        return Arrays.asList(jobContext.getMergedJobDataMap().getString("acb")
+                .split(SchedulerManager.DATA_DELIMITER)).stream()
+                .map(str -> Long.parseLong(str))
+                .collect(Collectors.toList());
     }
 
     private File getOutputFile(List<FailedUrlResult> urlResultsToWrite, String reportFilename) {

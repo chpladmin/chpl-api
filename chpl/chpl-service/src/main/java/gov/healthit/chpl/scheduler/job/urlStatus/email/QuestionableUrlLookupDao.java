@@ -102,7 +102,6 @@ public class QuestionableUrlLookupDao {
                         .url(urlResult.getUrl())
                         .urlType(urlResult.getUrlType())
                         .listing(cpDto)
-                        .developer(new Developer(cpDto.getDeveloper()))
                         .build())
                 .collect(Collectors.toList());
     }
@@ -121,11 +120,6 @@ public class QuestionableUrlLookupDao {
                         .certResult(new CertificationResult(certResultDto))
                         .listing(getAssociatedListing(certResultDto.getCertifiedProductId()))
                         .build())
-                .peek(item -> {
-                    if (item.getListing() != null && item.getListing().getDeveloper() != null) {
-                        item.setDeveloper(new Developer(item.getListing().getDeveloper()));
-                    }
-                })
                 .collect(Collectors.toList());
     }
 
