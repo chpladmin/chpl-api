@@ -269,7 +269,7 @@
 
         <!-- ONC-ACB Filtered Questionable URL data emailer -->
         <job>
-            <name>ONC-ACB URL Report</name>
+            <name>ONC-ACB Questionable URL Report</name>
             <group>chplJobs</group>
             <description>Sends a report of all relevant URLs entered into the system that respond with a questionable status code filtered by ONC-ACB.</description>
             <job-class>gov.healthit.chpl.scheduler.job.urlStatus.QuestionableUrlReportGenerator</job-class>
