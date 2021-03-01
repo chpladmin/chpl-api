@@ -7,8 +7,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,21 +45,27 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.web.controller.results.ComplaintResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.log4j.Log4j2;
 
 @Api(value = "surveillance-report")
 @RestController
 @RequestMapping("/surveillance-report")
 @Loggable
+@Log4j2
 public class SurveillanceReportController {
 
-    private static final Logger LOGGER = LogManager.getLogger(SurveillanceReportController.class);
+    private ErrorMessageUtil msgUtil;
+    private SurveillanceReportManager reportManager;
+    private ComplaintManager complaintManager;
 
     @Autowired
-    private ErrorMessageUtil msgUtil;
-    @Autowired
-    private SurveillanceReportManager reportManager;
-    @Autowired
-    private ComplaintManager complaintManager;
+    public SurveillanceReportController(ErrorMessageUtil msgUtil,
+            SurveillanceReportManager reportManager,
+            ComplaintManager complaintManager) {
+        this.msgUtil = msgUtil;
+        this.reportManager = reportManager;
+        this.complaintManager = complaintManager;
+    }
 
     @ApiOperation(value = "Get all annual surveillance reports this user has access to.",
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative "
@@ -81,7 +85,7 @@ public class SurveillanceReportController {
                     + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/annual/{annualReportId}",
         method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody AnnualReport getAnnualReport(@PathVariable final Long annualReportId)
+    public @ResponseBody AnnualReport getAnnualReport(@PathVariable Long annualReportId)
             throws AccessDeniedException, EntityRetrievalException {
         AnnualReportDTO reportDto = reportManager.getAnnualReport(annualReportId);
         return new AnnualReport(reportDto);
@@ -92,7 +96,7 @@ public class SurveillanceReportController {
                     + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/annual", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public synchronized AnnualReport createAnnualReport(
-        @RequestBody(required = true) final AnnualReport createRequest)
+        @RequestBody(required = true) AnnualReport createRequest)
                 throws AccessDeniedException, InvalidArgumentsException, EntityCreationException,
                 JsonProcessingException, EntityRetrievalException {
         if (createRequest.getAcb() == null || createRequest.getAcb().getId() == null) {
@@ -125,7 +129,7 @@ public class SurveillanceReportController {
             + "on the ACB associated with the report.")
     @RequestMapping(value = "/annual", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public synchronized AnnualReport updateAnnualReport(
-        @RequestBody(required = true) final AnnualReport updateRequest)
+        @RequestBody(required = true) AnnualReport updateRequest)
     throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
     EntityCreationException {
         if (updateRequest.getId() == null) {
@@ -144,7 +148,7 @@ public class SurveillanceReportController {
             + "on the ACB associated with the report.")
     @RequestMapping(value = "/annual/{annualReportId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
-    public void deleteAnnualReport(@PathVariable final Long annualReportId)
+    public void deleteAnnualReport(@PathVariable Long annualReportId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         reportManager.deleteAnnualReport(annualReportId);
     }
@@ -155,8 +159,8 @@ public class SurveillanceReportController {
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
                     + "on the ACB associated with the report.")
     @RequestMapping(value = "/export/annual/{annualReportId}", method = RequestMethod.GET)
-    public Job exportAnnualReport(@PathVariable("annualReportId") final Long annualReportId,
-            final HttpServletResponse response) throws EntityRetrievalException, UserRetrievalException,
+    public Job exportAnnualReport(@PathVariable("annualReportId") Long annualReportId,
+            HttpServletResponse response) throws EntityRetrievalException, UserRetrievalException,
             EntityCreationException, IOException, InvalidArgumentsException {
         AnnualReportDTO reportToExport = reportManager.getAnnualReport(annualReportId);
         //at least one quarterly report must exist to export the annual report
@@ -189,7 +193,7 @@ public class SurveillanceReportController {
                     + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/quarterly/{quarterlyReportId}",
         method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody QuarterlyReport getQuarterlyReport(@PathVariable final Long quarterlyReportId)
+    public @ResponseBody QuarterlyReport getQuarterlyReport(@PathVariable Long quarterlyReportId)
             throws AccessDeniedException, EntityRetrievalException {
         QuarterlyReportDTO reportDto = reportManager.getQuarterlyReport(quarterlyReportId);
         return new QuarterlyReport(reportDto);
@@ -202,7 +206,7 @@ public class SurveillanceReportController {
                     + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/quarterly/{quarterlyReportId}/listings",
         method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<RelevantListing> getRelevantListings(@PathVariable final Long quarterlyReportId)
+    public @ResponseBody List<RelevantListing> getRelevantListings(@PathVariable Long quarterlyReportId)
             throws AccessDeniedException, EntityRetrievalException {
         QuarterlyReportDTO reportDto = reportManager.getQuarterlyReport(quarterlyReportId);
         List<QuarterlyReportRelevantListingDTO> relevantListingDtos =
@@ -223,7 +227,7 @@ public class SurveillanceReportController {
                     + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/quarterly/{quarterlyReportId}/complaints",
         method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody ComplaintResults getRelevantComplaints(@PathVariable final Long quarterlyReportId)
+    public @ResponseBody ComplaintResults getRelevantComplaints(@PathVariable Long quarterlyReportId)
             throws AccessDeniedException, EntityRetrievalException {
         QuarterlyReportDTO reportDto = reportManager.getQuarterlyReport(quarterlyReportId);
         List<Complaint> relevantComplaints =
@@ -238,7 +242,7 @@ public class SurveillanceReportController {
                             + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/quarterly", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public synchronized QuarterlyReport createQuarterlyReport(
-            @RequestBody(required = true) final QuarterlyReport createRequest)
+            @RequestBody(required = true) QuarterlyReport createRequest)
     throws AccessDeniedException, InvalidArgumentsException, EntityCreationException,
     JsonProcessingException, EntityRetrievalException {
         if (createRequest.getAcb() == null || createRequest.getAcb().getId() == null) {
@@ -267,9 +271,9 @@ public class SurveillanceReportController {
                     + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/quarterly/{quarterlyReportId}/surveillance/{surveillanceId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public synchronized PrivilegedSurveillance updatePrivilegedSurveillanceData(
-            @PathVariable final Long quarterlyReportId,
-            @PathVariable final Long surveillanceId,
-            @RequestBody(required = true) final PrivilegedSurveillance updateRequest)
+            @PathVariable Long quarterlyReportId,
+            @PathVariable Long surveillanceId,
+            @RequestBody(required = true) PrivilegedSurveillance updateRequest)
                 throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException,
                 EntityCreationException, JsonProcessingException {
         QuarterlyReportDTO quarterlyReport = reportManager.getQuarterlyReport(quarterlyReportId);
@@ -310,9 +314,9 @@ public class SurveillanceReportController {
             notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/quarterly/{quarterlyReportId}/listings/{listingId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
-    public synchronized RelevantListing updateRelevantListing(@PathVariable final Long quarterlyReportId,
-            @PathVariable final Long listingId,
-            @RequestBody(required = true) final RelevantListing updateExclusionRequest)
+    public synchronized RelevantListing updateRelevantListing(@PathVariable Long quarterlyReportId,
+            @PathVariable Long listingId,
+            @RequestBody(required = true) RelevantListing updateExclusionRequest)
                 throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, EntityCreationException,
                 JsonProcessingException {
         QuarterlyReportDTO quarterlyReport = reportManager.getQuarterlyReport(quarterlyReportId);
@@ -351,7 +355,7 @@ public class SurveillanceReportController {
             + "on the ACB associated with the report.")
     @RequestMapping(value = "/quarterly", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public synchronized QuarterlyReport updateQuarterlyReport(
-        @RequestBody(required = true) final QuarterlyReport updateRequest)
+        @RequestBody(required = true) QuarterlyReport updateRequest)
     throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
     EntityCreationException {
         if (updateRequest.getId() == null) {
@@ -372,7 +376,7 @@ public class SurveillanceReportController {
             + "on the ACB associated with the report.")
     @RequestMapping(value = "/quarterly/{quarterlyReportId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
-    public void deleteQuarterlyReport(@PathVariable final Long quarterlyReportId)
+    public void deleteQuarterlyReport(@PathVariable Long quarterlyReportId)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         reportManager.deleteQuarterlyReport(quarterlyReportId);
     }
@@ -382,8 +386,8 @@ public class SurveillanceReportController {
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
                     + "on the ACB associated with the report.")
     @RequestMapping(value = "/export/quarterly/{quarterlyReportId}", method = RequestMethod.GET)
-    public Job exportQuarterlyReport(@PathVariable("quarterlyReportId") final Long quarterlyReportId,
-            final HttpServletResponse response) throws EntityRetrievalException, UserRetrievalException,
+    public Job exportQuarterlyReport(@PathVariable("quarterlyReportId") Long quarterlyReportId,
+            HttpServletResponse response) throws EntityRetrievalException, UserRetrievalException,
             EntityCreationException, IOException {
         JobDTO exportJob = reportManager.exportQuarterlyReportAsBackgroundJob(quarterlyReportId);
         return new Job(exportJob);
