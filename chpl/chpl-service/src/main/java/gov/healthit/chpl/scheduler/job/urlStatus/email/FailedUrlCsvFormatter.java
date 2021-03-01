@@ -3,7 +3,6 @@ package gov.healthit.chpl.scheduler.job.urlStatus.email;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -27,12 +26,13 @@ public class FailedUrlCsvFormatter {
     private static final int INDEX_DEVELOPER_CONTACT_EMAIL = 9;
     private static final int INDEX_DEVELOPER_CONTACT_PHONE = 10;
     private static final int INDEX_PRODUCT_NAME = 11;
-    private static final int INDEX_CHPL_PRODUCT_NUMBER = 12;
-    private static final int INDEX_EDITION = 13;
-    private static final int INDEX_CERTIFICATION_DATE = 14;
-    private static final int INDEX_CERTIFICATION_STATUS = 15;
-    private static final int INDEX_CRITERION = 16;
-    private static final int INDEX_LAST_CHECKED_DATE = 17;
+    private static final int INDEX_VERSION = 12;
+    private static final int INDEX_CHPL_PRODUCT_NUMBER = 13;
+    private static final int INDEX_EDITION = 14;
+    private static final int INDEX_CERTIFICATION_DATE = 15;
+    private static final int INDEX_CERTIFICATION_STATUS = 16;
+    private static final int INDEX_CRITERION = 17;
+    private static final int INDEX_LAST_CHECKED_DATE = 18;
 
     private static final String[] CSV_HEADER = {
             "URL", "Status Code", "Status Name", "Error Message", "URL Type", "ONC-ATL", "ONC-ACB", "Developer",
@@ -66,6 +66,9 @@ public class FailedUrlCsvFormatter {
         if (listing != null && listing.getProduct() != null) {
             row.set(INDEX_PRODUCT_NAME, listing.getProduct().getName());
         }
+        if (listing != null && listing.getVersion() != null) {
+            row.set(INDEX_VERSION, listing.getVersion().getVersion());
+        }
         if (listing != null) {
             row.set(INDEX_CHPL_PRODUCT_NUMBER, listing.getChplProductNumber());
             row.set(INDEX_EDITION, listing.getYear());
@@ -80,7 +83,9 @@ public class FailedUrlCsvFormatter {
 
     private List<String> createRow(FailedUrlResult urlResult) {
         List<String> result = new ArrayList<String>(CSV_HEADER.length);
-        Collections.fill(result, "");
+        for (int i = 0; i < CSV_HEADER.length; i++) {
+            result.add("");
+        }
         result.set(INDEX_URL, urlResult.getUrl());
         if (urlResult.getResponseCode() != null) {
             result.set(INDEX_STATUS_CODE, urlResult.getResponseCode().toString());

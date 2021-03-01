@@ -55,7 +55,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
     @Autowired
     private QuestionableUrlLookupDao urlLookupDao;
 
-    private FailedUrlCsvFormatter csvFormatter;
+    private FailedUrlCsvFormatter csvFormatter = new FailedUrlCsvFormatter();
 
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
@@ -78,7 +78,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                     badUrlsToWrite.addAll(urlLookupDao.getAtlsWithUrl(urlResult));
                     break;
                 case DEVELOPER:
-                    LOGGER.info("[ " + i + "] Getting Developers with bad website " + urlResult.getUrl());
+                    LOGGER.info("[" + i + "] Getting Developers with bad website " + urlResult.getUrl());
                     badUrlsToWrite.addAll(urlLookupDao.getDevelopersWithUrl(urlResult));
                     break;
                 case FULL_USABILITY_REPORT:
@@ -154,7 +154,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
         String acbSpecific = jobContext.getMergedJobDataMap().getString("acbSpecific");
         if (!StringUtils.isEmpty(acbSpecific) && BooleanUtils.toBoolean(acbSpecific)) {
             List<Long> acbIds = getSelectedAcbIds(jobContext);
-            badUrls.stream()
+            return badUrls.stream()
                 .filter(badUrl -> isUrlRelatedToAcbs(badUrl, acbIds))
                 .filter(badUrl -> doesUrlResultMatchAllowedStatusCodes(badUrl, jobContext))
                 .collect(Collectors.toList());
