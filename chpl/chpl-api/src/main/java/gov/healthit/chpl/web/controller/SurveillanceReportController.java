@@ -68,7 +68,7 @@ public class SurveillanceReportController {
     }
 
     @ApiOperation(value = "Get all annual surveillance reports this user has access to.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/annual", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<AnnualReport> getAllAnnualReports() throws AccessDeniedException {
@@ -81,7 +81,7 @@ public class SurveillanceReportController {
     }
 
     @ApiOperation(value = "Get a specific annual surveillance report by ID.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/annual/{annualReportId}",
         method = RequestMethod.GET, produces = "application/json; charset=utf-8")
@@ -156,7 +156,7 @@ public class SurveillanceReportController {
 
     @ApiOperation(value = "Generates an annual report as an XLSX file as a background job "
             + "and emails the report to the logged in user",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative authority "
                     + "on the ACB associated with the report.")
     @RequestMapping(value = "/export/annual/{annualReportId}", method = RequestMethod.GET)
     public Job exportAnnualReport(@PathVariable("annualReportId") Long annualReportId,
@@ -176,7 +176,7 @@ public class SurveillanceReportController {
     }
 
     @ApiOperation(value = "Get all quarterly surveillance reports this user has access to.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/quarterly", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<QuarterlyReport> getAllQuarterlyReports() throws AccessDeniedException {
@@ -189,7 +189,7 @@ public class SurveillanceReportController {
     }
 
     @ApiOperation(value = "Get a specific quarterly surveillance report by ID.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/quarterly/{quarterlyReportId}",
         method = RequestMethod.GET, produces = "application/json; charset=utf-8")
@@ -202,7 +202,7 @@ public class SurveillanceReportController {
     @ApiOperation(value = "Get listings that are relevant to a specific quarterly report. "
             + "These are listings belonging to the ACB associtaed with the report "
             + "that had a status of <TBD>. at any point during the quarter",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/quarterly/{quarterlyReportId}/listings",
         method = RequestMethod.GET, produces = "application/json; charset=utf-8")
@@ -223,7 +223,7 @@ public class SurveillanceReportController {
 
     @ApiOperation(value = "Get complaints that are relevant to a specific quarterly report. "
             + "These are complaints that were open during the quarter.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/quarterly/{quarterlyReportId}/complaints",
         method = RequestMethod.GET, produces = "application/json; charset=utf-8")
@@ -383,7 +383,7 @@ public class SurveillanceReportController {
 
     @ApiOperation(value = "Generates a quarterly report as an XLSX file as a background job "
             + "and emails the report to the logged in user",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative authority "
                     + "on the ACB associated with the report.")
     @RequestMapping(value = "/export/quarterly/{quarterlyReportId}", method = RequestMethod.GET)
     public Job exportQuarterlyReport(@PathVariable("quarterlyReportId") Long quarterlyReportId,
