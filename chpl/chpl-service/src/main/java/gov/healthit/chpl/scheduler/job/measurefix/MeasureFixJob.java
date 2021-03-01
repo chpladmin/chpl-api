@@ -103,7 +103,7 @@ public class MeasureFixJob implements Job {
                             .reason(null)
                             .build();
 
-                    certifiedProductManager.update(request);
+                    certifiedProductManager.update(request, false);
                     LOGGER.info("Successfully updated listing: " + cp.getId());
                     return true;
                 } catch (ValidationException e) {
