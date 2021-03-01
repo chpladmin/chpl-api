@@ -27,9 +27,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.scheduler.job.urlStatus.data.UrlCheckerDao;
@@ -50,6 +52,9 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
     private CertifiedProductDAO cpDao;
 
     @Autowired
+    private CertificationBodyDAO acbDao;
+
+    @Autowired
     private UrlCheckerDao urlCheckerDao;
 
     @Autowired
@@ -63,23 +68,23 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
         LOGGER.info("********* Starting the Questionable URL Report Generator job. *********");
 
         try {
-            List<FailedUrlResult> badUrlsToWrite = new ArrayList<FailedUrlResult>();
-            List<UrlResult> badUrls = urlCheckerDao.getUrlResultsWithError();
-            LOGGER.info("Found " + badUrls.size() + " urls with errors.");
+            List<FailedUrlResult> questionableUrls = new ArrayList<FailedUrlResult>();
+            List<UrlResult> allQuestionableUrlResults = urlCheckerDao.getUrlResultsWithError();
+            LOGGER.info("Found " + allQuestionableUrlResults.size() + " urls with errors.");
             int i = 0;
-            for (UrlResult urlResult : badUrls) {
-                switch (urlResult.getUrlType()) {
+            for (UrlResult questionableUrlResult : allQuestionableUrlResults) {
+                switch (questionableUrlResult.getUrlType()) {
                 case ACB:
-                    LOGGER.info("[" + i + "]: Getting ACBs with bad website " + urlResult.getUrl());
-                    badUrlsToWrite.addAll(urlLookupDao.getAcbsWithUrl(urlResult));
+                    LOGGER.info("[" + i + "]: Getting ACBs with bad website " + questionableUrlResult.getUrl());
+                    questionableUrls.addAll(urlLookupDao.getAcbsWithUrl(questionableUrlResult));
                     break;
                 case ATL:
-                    LOGGER.info("[" + i + "] Getting ATLs with bad website " + urlResult.getUrl());
-                    badUrlsToWrite.addAll(urlLookupDao.getAtlsWithUrl(urlResult));
+                    LOGGER.info("[" + i + "] Getting ATLs with bad website " + questionableUrlResult.getUrl());
+                    questionableUrls.addAll(urlLookupDao.getAtlsWithUrl(questionableUrlResult));
                     break;
                 case DEVELOPER:
-                    LOGGER.info("[" + i + "] Getting Developers with bad website " + urlResult.getUrl());
-                    badUrlsToWrite.addAll(urlLookupDao.getDevelopersWithUrl(urlResult));
+                    LOGGER.info("[" + i + "] Getting Developers with bad website " + questionableUrlResult.getUrl());
+                    questionableUrls.addAll(urlLookupDao.getDevelopersWithUrl(questionableUrlResult));
                     break;
                 case FULL_USABILITY_REPORT:
                 case MANDATORY_DISCLOSURE:
@@ -87,17 +92,17 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                 case REAL_WORLD_TESTING_PLANS:
                 case REAL_WORLD_TESTING_RESULTS:
                 case STANDARDS_VERSION_ADVANCEMENT_PROCESS_NOTICE:
-                    LOGGER.info("[" + i + "] Getting Listings with bad " + urlResult.getUrlType().getName()
-                            + " website " + urlResult.getUrl());
-                    badUrlsToWrite.addAll(urlLookupDao.getListingsWithUrl(urlResult));
+                    LOGGER.info("[" + i + "] Getting Listings with bad " + questionableUrlResult.getUrlType().getName()
+                            + " website " + questionableUrlResult.getUrl());
+                    questionableUrls.addAll(urlLookupDao.getListingsWithUrl(questionableUrlResult));
                     break;
                 case API_DOCUMENTATION:
                 case EXPORT_DOCUMENTATION:
                 case DOCUMENTATION:
                 case USE_CASES:
-                    LOGGER.info("[" + i + "] Getting criteria with bad " + urlResult.getUrlType().getName()
-                            + " website " + urlResult.getUrl());
-                    badUrlsToWrite.addAll(urlLookupDao.getCertificationResultsWithUrl(urlResult));
+                    LOGGER.info("[" + i + "] Getting criteria with bad " + questionableUrlResult.getUrlType().getName()
+                            + " website " + questionableUrlResult.getUrl());
+                    questionableUrls.addAll(urlLookupDao.getCertificationResultsWithUrl(questionableUrlResult));
                     break;
                 default:
                     break;
@@ -105,10 +110,10 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                 i++;
             }
 
-            badUrlsToWrite = filterUrls(badUrlsToWrite, jobContext);
+            questionableUrls = filterUrls(questionableUrls, jobContext);
 
-            // sort the bad urls first by url and then by type
-            Collections.sort(badUrlsToWrite, new Comparator<FailedUrlResult>() {
+            // sort the questionable urls first by url and then by type
+            Collections.sort(questionableUrls, new Comparator<FailedUrlResult>() {
                 @Override
                 public int compare(final FailedUrlResult o1, final FailedUrlResult o2) {
                     if (o1.getUrl().equals(o2.getUrl())) {
@@ -118,32 +123,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                 }
             });
 
-            LOGGER.info("Creating email subject and body.");
-            String to = jobContext.getMergedJobDataMap().getString("email");
-            String subject = env.getProperty("job.questionableUrlReport.emailSubject");
-            String htmlMessage = env.getProperty("job.questionableUrlReport.emailBodyBegin");
-            htmlMessage += createHtmlEmailBody(badUrlsToWrite,
-                    env.getProperty("job.questionableUrlReport.emailBodyNoContent"));
-            File output = null;
-            List<File> files = new ArrayList<File>();
-            if (badUrlsToWrite.size() > 0) {
-                output = getOutputFile(badUrlsToWrite,
-                        env.getProperty("job.questionableUrlReport.emailAttachmentName"));
-                files.add(output);
-            }
-
-            LOGGER.info("Sending email to {} with contents {} and a total of {} questionable URLs.", to,
-                    htmlMessage, badUrlsToWrite.size());
-            try {
-                List<String> addresses = new ArrayList<String>();
-                addresses.add(to);
-
-                EmailBuilder emailBuilder = new EmailBuilder(env);
-                emailBuilder.recipients(addresses).subject(subject).htmlMessage(htmlMessage)
-                        .fileAttachments(files).sendEmail();
-            } catch (MessagingException e) {
-                LOGGER.error(e);
-            }
+            sendEmail(questionableUrls, jobContext);
         } catch (Exception ex) {
             LOGGER.error("Unable to complete job: " + ex.getMessage(), ex);
         }
@@ -207,10 +187,48 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                 .collect(Collectors.toList());
     }
 
-    private File getOutputFile(List<FailedUrlResult> urlResultsToWrite, String reportFilename) {
+    private void sendEmail(List<FailedUrlResult> questionableUrls, JobExecutionContext jobContext) {
+        LOGGER.info("Creating email subject and body.");
+        String to = jobContext.getMergedJobDataMap().getString("email");
+        String subject = env.getProperty("job.questionableUrlReport.emailSubject");
+        String htmlMessage = env.getProperty("job.questionableUrlReport.emailBodyBegin");
+        htmlMessage += createHtmlEmailBody(questionableUrls);
+        List<Long> jobAcbIds = getSelectedAcbIds(jobContext);
+        if (jobAcbIds != null && jobAcbIds.size() > 0) {
+            htmlMessage += String.format(
+                    env.getProperty("job.questionableUrlReport.acbSpecific.emailBodyEnd"),
+                    getAcbNamesAsCommaSeparatedString(jobAcbIds));
+        }
+
+        File output = null;
+        List<File> files = new ArrayList<File>();
+        if (questionableUrls.size() > 0) {
+            output = getOutputFile(questionableUrls);
+            files.add(output);
+        }
+
+        LOGGER.info("Sending email to {} with contents {} and a total of {} questionable URLs.", to,
+                htmlMessage, questionableUrls.size());
+        try {
+            List<String> addresses = new ArrayList<String>();
+            addresses.add(to);
+
+            EmailBuilder emailBuilder = new EmailBuilder(env);
+            emailBuilder.recipients(addresses)
+                .subject(subject)
+                .htmlMessage(htmlMessage)
+                .fileAttachments(files)
+                .acbAtlHtmlFooter()
+                .sendEmail();
+        } catch (MessagingException e) {
+            LOGGER.error(e);
+        }
+    }
+
+    private File getOutputFile(List<FailedUrlResult> urlResultsToWrite) {
         File temp = null;
         try {
-            temp = File.createTempFile(reportFilename, ".csv");
+            temp = File.createTempFile(env.getProperty("job.questionableUrlReport.emailAttachmentName"), ".csv");
             temp.deleteOnExit();
         } catch (IOException ex) {
             LOGGER.error("Could not create temporary file " + ex.getMessage(), ex);
@@ -235,10 +253,10 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
         return temp;
     }
 
-    private String createHtmlEmailBody(List<FailedUrlResult> urlResults, String noContentMsg) {
+    private String createHtmlEmailBody(List<FailedUrlResult> urlResults) {
         String htmlMessage = "";
         if (urlResults.size() == 0) {
-            htmlMessage = noContentMsg;
+            htmlMessage = env.getProperty("job.questionableUrlReport.emailBodyNoContent");
         } else {
             int brokenAcbUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.ACB);
             int brokenAtlUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.ATL);
@@ -282,5 +300,20 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             }
         }
         return count;
+    }
+
+    private String getAcbNamesAsCommaSeparatedString(List<Long> acbIds) {
+        return acbIds.stream()
+            .map(acbId -> {
+                try {
+                    return acbDao.getById(acbId);
+                } catch (EntityRetrievalException ex) {
+                    LOGGER.error("Could not find acb " + acbId, ex);
+                    return null;
+                }
+            })
+            .filter(acb -> acb != null)
+            .map(acb -> acb.getName())
+            .collect(Collectors.joining(", "));
     }
 }
