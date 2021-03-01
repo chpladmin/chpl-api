@@ -51,7 +51,8 @@ public class SummaryStatisticsDAO extends BaseDAOImpl {
                 + "WHERE MONTH(stats.endDate) = :month "
                 + "AND DAY(stats.endDate) = :day "
                 + "AND YEAR(stats.endDate) = :year "
-                + "AND deleted = false", SummaryStatisticsEntity.class);
+                + "AND deleted = false "
+                + "ORDER BY stats.endDate DESC", SummaryStatisticsEntity.class);
 
         query.setParameter("month", asOf.getMonthValue());
         query.setParameter("day", asOf.getDayOfMonth());
