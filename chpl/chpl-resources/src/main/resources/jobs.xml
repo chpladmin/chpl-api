@@ -251,7 +251,7 @@
         <job>
             <name>Questionable URL Report</name>
             <group>chplJobs</group>
-            <description>Sends a report of all URLs entered into the system that respond with a questionable status code.</description>
+            <description>Sends a report of all URLs entered into the system that respond with a questionable status code</description>
             <job-class>gov.healthit.chpl.scheduler.job.urlStatus.QuestionableUrlReportGenerator</job-class>
             <durability>true</durability>
             <recover>false</recover>
@@ -271,7 +271,7 @@
         <job>
             <name>ONC-ACB Questionable URL Report</name>
             <group>chplJobs</group>
-            <description>Sends a report of all relevant URLs entered into the system that respond with a questionable status code filtered by ONC-ACB.</description>
+            <description>Sends a report of all relevant URLs entered into the system that respond with a questionable status code filtered by ONC-ACB</description>
             <job-class>gov.healthit.chpl.scheduler.job.urlStatus.QuestionableUrlReportGenerator</job-class>
             <durability>true</durability>
             <recover>false</recover>
@@ -312,7 +312,7 @@
         </job>
 
         <!-- Job used to trigger mass required password change of almost 
-            all users -->
+           all users -->
         <job>
             <name>massRequirePasswordChangeJob</name>
             <group>systemJobs</group>
