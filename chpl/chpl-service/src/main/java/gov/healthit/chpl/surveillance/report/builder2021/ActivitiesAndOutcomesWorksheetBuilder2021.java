@@ -32,7 +32,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder2021 extends ActivitiesAndOutc
     }
 
     protected String getAdditionalCostsEvaluationDescription() {
-        return "If a suspected non-conformity resulted from additional types of costs that a "
+        return "If a suspected non-conformity resulted from additional types of costs or fees that a "
                 + "user was required to pay in order to implement or use the Health IT Module's "
                 + "certified capabilities, how did ONC-ACB evaluate that suspected non-conformity?";
     }
@@ -45,7 +45,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder2021 extends ActivitiesAndOutc
 
     protected String getNonDisclosureEvaluationDescription() {
         return "If a suspected non-conformity resulted from the non-disclosure of material "
-                + "information by the developer about additional types of costs associated with "
+                + "information by the developer about additional types of costs or fees associated with "
                 + "the Health IT Module, how did the ONC-ACB evaluate the suspected non-conformity?";
     }
 }
