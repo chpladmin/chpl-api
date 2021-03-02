@@ -285,7 +285,6 @@
                                         directory -->
                                     <directory>../chpl-resources/src/main/resources-${env}</directory>
                                     <excludes>
-                                        <exclude>log4j2-app.xml</exclude>
                                         <exclude>jobs.xml</exclude>
                                     </excludes>
                                     <!-- override default destination at
