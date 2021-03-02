@@ -2,6 +2,8 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.List;
 
+import javax.mail.MessagingException;
+
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,11 +33,6 @@ import gov.healthit.chpl.web.controller.results.SystemTriggerResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-/**
- * API interface for Quartz Scheduled jobs.
- * @author alarned
- *
- */
 @Api(value = "schedules")
 @RestController
 @RequestMapping("/schedules")
@@ -47,31 +44,17 @@ public class SchedulerController {
     @Autowired
     private SchedulerManager schedulerManager;
 
-    /**
-     * Create a new Trigger based on passed information.
-     * @param trigger input
-     * @return the new trigger
-     * @throws SchedulerException if exception is thrown
-     * @throws ValidationException if job values aren't correct
-     */
     @ApiOperation(value = "Create a new trigger and return it",
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB.")
     @RequestMapping(value = "/triggers", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody ScheduleTriggersResults createTrigger(@RequestBody(required = true)
-    final ChplRepeatableTrigger trigger) throws SchedulerException, ValidationException {
+    final ChplRepeatableTrigger trigger) throws SchedulerException, ValidationException, MessagingException {
         ChplRepeatableTrigger result = schedulerManager.createTrigger(trigger);
         ScheduleTriggersResults results = new ScheduleTriggersResults();
         results.getResults().add(result);
         return results;
     }
 
-    /**
-     * Create a new one timeSimpleTrigger based on passed information.
-     * @param trigger input
-     * @return the new trigger
-     * @throws SchedulerException if exception is thrown
-     * @throws ValidationException if job values aren't correct
-     */
     @ApiOperation(value = "Create a new trigger and return it")
     @RequestMapping(value = "/triggers/one_time", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody ScheduleOneTimeTriggersResults createOneTimeTrigger(@RequestBody(required = true)
@@ -82,29 +65,14 @@ public class SchedulerController {
         return results;
     }
 
-    /**
-     * Remove a new Trigger based on passed information.
-     * @param triggerGroup The group that identifies the trigger to remove
-     * @param triggerName The name that identifies the trigger to remove
-     * @throws SchedulerException if exception is thrown
-     * @throws ValidationException if job values aren't correct
-     */
     @ApiOperation(value = "Delete an existing trigger")
     @RequestMapping(value = "/triggers/{triggerGroup}/{triggerName}", method = RequestMethod.DELETE)
     public void deleteTrigger(@PathVariable("triggerGroup") final String triggerGroup,
             @PathVariable("triggerName") final String triggerName)
-                    throws SchedulerException, ValidationException {
+                    throws SchedulerException, ValidationException, MessagingException {
         schedulerManager.deleteTrigger(triggerGroup, triggerName);
     }
 
-    /**
-     * Get the list of all triggers of type '{@value SchedulerController#USER_JOB_TYPE}' or
-     * '{@value SchedulerController#SYSTEM_JOB_TYPE}' that are applicable to the currently logged in user.
-     * @param jobType The type of job we want to get triggers for.
-     * This can either be '{@value SchedulerController#USER_JOB_TYPE}' or '{@value SchedulerController#SYSTEM_JOB_TYPE}'
-     * @return Object Results object which includes current triggers (scheduled jobs)
-     * @throws SchedulerException if scheduler has an issue
-     */
     @ApiOperation(value = "Get the list of all triggers of type '" + USER_JOB_TYPE + "' or '" + SYSTEM_JOB_TYPE + "' "
             + "that are applicable to the currently logged in user",
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB for '" + USER_JOB_TYPE + "' jobs "
@@ -127,30 +95,18 @@ public class SchedulerController {
         }
     }
 
-    /**
-     * Update an existing Trigger based on passed information.
-     * @param trigger input trigger
-     * @return the updated trigger
-     * @throws SchedulerException if exception is thrown
-     * @throws ValidationException if job values aren't correct
-     */
     @ApiOperation(value = "Update an existing trigger and return it",
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF or ROLE_ACB and have administrative authority on "
                     + "the specified ONC-ACB.")
     @RequestMapping(value = "/triggers", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public @ResponseBody ScheduleTriggersResults updateTrigger(@RequestBody(required = true) final ChplRepeatableTrigger trigger)
-            throws SchedulerException, ValidationException {
+            throws SchedulerException, ValidationException, MessagingException {
         ChplRepeatableTrigger result = schedulerManager.updateTrigger(trigger);
         ScheduleTriggersResults results = new ScheduleTriggersResults();
         results.getResults().add(result);
         return results;
     }
 
-    /**
-     * Returns a list of all jobs that are applicable to the currently logged in user.
-     * @return List of ChplJob objects
-     * @throws SchedulerException if exception is thrown
-     */
     @ApiOperation(value = "Get the list of all jobs that are applicable to the currently logged in user",
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and have administrative authority on the specified ONC-ACB")
     @RequestMapping(value = "/jobs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
@@ -162,12 +118,6 @@ public class SchedulerController {
         return results;
     }
 
-    /**
-     * Update an existing Job based on passed in information.
-     * @param job the CHPL job
-     * @return the updated job
-     * @throws SchedulerException if scheduler has issues
-     */
     @ApiOperation(value = "Update a given job",
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF or ROLE_ACB and have administrative authority on "
                     + "the specified ONC-ACB.")

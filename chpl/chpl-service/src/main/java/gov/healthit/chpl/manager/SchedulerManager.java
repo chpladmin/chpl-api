@@ -15,6 +15,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.mail.MessagingException;
+
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -25,6 +27,8 @@ import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -43,18 +47,16 @@ import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.EmailBuilder;
 
-/**
- * Implementation of Scheduler Manager.
- *
- * @author alarned
- *
- */
 @Loggable
 @Service
 public class SchedulerManager extends SecuredManager {
 
     private static final String AUTHORITY_DELIMITER = ";";
+    private static final String ADDED = "added";
+    private static final String UPDATED = "updated";
+    private static final String DELETED = "deleted";
     public static final String DATA_DELIMITER = ",";
     public static final String CHPL_BACKGROUND_JOBS_KEY = "chplBackgroundJobs";
     public static final String CHPL_JOBS_KEY = "chplJobs";
@@ -62,18 +64,24 @@ public class SchedulerManager extends SecuredManager {
 
     private ChplSchedulerReference chplScheduler;
     private ResourcePermissions resourcePermissions;
+    private Environment environment;
+    private String emailSubject;
+    private String emailBody;
 
     @Autowired
-    public SchedulerManager(ChplSchedulerReference chplScheduler,
-            ResourcePermissions resourcePermissions) {
+    public SchedulerManager(ChplSchedulerReference chplScheduler, ResourcePermissions resourcePermissions, Environment environment,
+            @Value("${job.change.subject}") String emailSubject, @Value("${job.change.body}") String emailBody) {
         this.chplScheduler = chplScheduler;
         this.resourcePermissions = resourcePermissions;
+        this.environment = environment;
+        this.emailSubject = emailSubject;
+        this.emailBody = emailBody;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
             + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).CREATE_TRIGGER)")
     public ChplRepeatableTrigger createTrigger(ChplRepeatableTrigger trigger)
-            throws SchedulerException, ValidationException {
+            throws SchedulerException, ValidationException, MessagingException {
         Scheduler scheduler = getScheduler();
 
         TriggerKey triggerId = triggerKey(createTriggerName(trigger), createTriggerGroup(trigger.getJob()));
@@ -108,6 +116,7 @@ public class SchedulerManager extends SecuredManager {
             }
 
             ChplRepeatableTrigger newTrigger = new ChplRepeatableTrigger((CronTrigger) scheduler.getTrigger(triggerId));
+            sendEmail(newTrigger, ADDED);
             return newTrigger;
         } else {
             throw new AccessDeniedException("Can not create this trigger");
@@ -141,11 +150,12 @@ public class SchedulerManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
             + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).DELETE_TRIGGER)")
     public void deleteTrigger(String triggerGroup, String triggerName)
-            throws SchedulerException, ValidationException {
+            throws SchedulerException, ValidationException, MessagingException {
         Scheduler scheduler = getScheduler();
         TriggerKey triggerKey = triggerKey(triggerName, triggerGroup);
 
         if (doesUserHavePermissionToTrigger(scheduler.getTrigger(triggerKey))) {
+            sendEmail(getChplTrigger(triggerKey), DELETED);
             scheduler.unscheduleJob(triggerKey);
         } else {
             throw new AccessDeniedException("Can not update this trigger");
@@ -203,7 +213,7 @@ public class SchedulerManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
             + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).UPDATE_TRIGGER)")
     public ChplRepeatableTrigger updateTrigger(ChplRepeatableTrigger trigger)
-            throws SchedulerException, ValidationException {
+            throws SchedulerException, ValidationException, MessagingException {
         Scheduler scheduler = getScheduler();
         Trigger oldTrigger = scheduler.getTrigger(triggerKey(trigger.getName(), trigger.getGroup()));
         Trigger qzTrigger = null;
@@ -231,18 +241,13 @@ public class SchedulerManager extends SecuredManager {
             scheduler.rescheduleJob(oldTrigger.getKey(), qzTrigger);
 
             ChplRepeatableTrigger newTrigger = getChplTrigger(qzTrigger.getKey());
+            sendEmail(newTrigger, UPDATED);
             return newTrigger;
         } else {
             throw new AccessDeniedException("Can not update this trigger");
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see gov.healthit.chpl.manager.SchedulerManager#getAllJobs() As new jobs are added that have authorities other
-     * than ROLE_ADMIN, those authorities will need to be added to the list.
-     */
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
             + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).GET_ALL)")
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
@@ -286,7 +291,7 @@ public class SchedulerManager extends SecuredManager {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public void retireAcb(String acb) throws SchedulerException, ValidationException {
+    public void retireAcb(String acb) throws SchedulerException, ValidationException, MessagingException {
         List<ChplRepeatableTrigger> allTriggers = getAllTriggersForUser();
         for (ChplRepeatableTrigger trigger : allTriggers) {
             if (!StringUtils.isEmpty(trigger.getAcb()) && trigger.getAcb().indexOf(acb) > -1) {
@@ -450,4 +455,12 @@ public class SchedulerManager extends SecuredManager {
     private String createTriggerName(ChplOneTimeTrigger trigger) {
         return UUID.randomUUID().toString();
     }
+
+    private void sendEmail(ChplRepeatableTrigger trigger, String action) throws MessagingException {
+        EmailBuilder email = new EmailBuilder(environment);
+        email.recipient(trigger.getEmail())
+                .subject(emailSubject)
+                .htmlMessage(String.format(emailBody, trigger.getJob().getName(), action))
+                .sendEmail();
+   }
 }
