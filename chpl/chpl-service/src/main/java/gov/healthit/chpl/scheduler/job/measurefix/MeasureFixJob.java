@@ -21,6 +21,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
@@ -31,7 +32,7 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "measureFixJobLogger")
 public class MeasureFixJob implements Job {
 
     @Autowired
@@ -55,7 +56,7 @@ public class MeasureFixJob implements Job {
         LOGGER.info("********* Starting the G1/G2 Measure Data Fix job. *********");
         try {
             setSecurityContext();
-            ExecutorService executorService = Executors.newFixedThreadPool(4);
+            ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
 
             List<CompletableFuture<Boolean>> futures = getAll2015CertifiedProducts().stream()
                     .map(cp -> CompletableFuture.supplyAsync(() ->
@@ -94,8 +95,6 @@ public class MeasureFixJob implements Job {
             @Override
             public Boolean doInTransaction(TransactionStatus status) {
                 try {
-                    // This will control how many threads are used by the parallelStream.  By default parallelStream
-                    // will use the # of processors - 1 threads.  We want to be able to limit this.
                     CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetails(cp.getId());
                     ListingUpdateRequest request = ListingUpdateRequest.builder()
                             .listing(listing)
@@ -104,15 +103,15 @@ public class MeasureFixJob implements Job {
                             .build();
 
                     certifiedProductManager.update(request, false);
-                    LOGGER.info("Successfully updated listing: " + cp.getId());
+                    LOGGER.info(String.format("Successfully updated listing %s (%s).", cp.getChplProductNumber(), cp.getId().toString()));
                     return true;
                 } catch (ValidationException e) {
-                    LOGGER.info("Could not update listing: " + cp.getId());
+                    LOGGER.info(String.format("Could not update listing %s (%s) for the following reasons:", cp.getChplProductNumber(), cp.getId().toString()));
                     e.getErrorMessages().stream()
                         .forEach(message -> LOGGER.info(message));
                     return false;
                 } catch (Exception e) {
-                    LOGGER.info("Could not update listing: " + cp.getId());
+                    LOGGER.info(String.format("Could not update listing %s (%s) for the following reasons:", cp.getChplProductNumber(), cp.getId().toString()));
                     LOGGER.catching(e);
                     return false;
                 }
@@ -123,7 +122,7 @@ public class MeasureFixJob implements Job {
     private void setSecurityContext() {
         JWTAuthenticatedUser adminUser = new JWTAuthenticatedUser();
         adminUser.setFullName("Administrator");
-        adminUser.setId(-2L);
+        adminUser.setId(User.ADMIN_USER_ID);
         adminUser.setFriendlyName("Admin");
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));

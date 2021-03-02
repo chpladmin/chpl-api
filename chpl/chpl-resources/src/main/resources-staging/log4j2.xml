@@ -390,6 +390,17 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="measureFixJob"
+            fileName="${logDir}/scheduler/measureFixJob.log"
+            filePattern="${logDir}/scheduler/history/measureFixJob-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
     </Appenders>
     <Loggers>
         <Logger name="org.jose4j" level="ERROR" additivity="false">
@@ -543,6 +554,10 @@
         <Logger name="listingValidationReportEmailJobLogger" level="INFO"
             additivity="false">
             <AppenderRef ref="listingValidationReportEmailJob" />
+        </Logger>
+        <Logger name="measureFixJobLogger" level="INFO"
+            additivity="false">
+            <AppenderRef ref="measureFixJob" />
         </Logger>
     </Loggers>
 </Configuration>
