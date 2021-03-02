@@ -1,7 +1,6 @@
 package gov.healthit.chpl.validation.listing.reviewer;
 
-import java.util.Date;
-
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +17,13 @@ public class CertificationDateReviewer implements Reviewer {
     }
     @Override
     public void review(CertifiedProductSearchDetails listing) {
-        if (listing.getCertificationDate() > new Date().getTime()) {
+        if (listing.getCertificationDate() == null && StringUtils.isEmpty(listing.getCertificationDateStr())) {
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.certificationDateMissing"));
+        } else if (listing.getCertificationDate() == null && !StringUtils.isEmpty(listing.getCertificationDateStr())) {
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.badCertificationDate", listing.getCertificationDateStr()));
+        }
+
+        if (listing.getCertificationDate() != null && listing.getCertificationDate() > System.currentTimeMillis()) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.futureCertificationDate"));
         }
     }
