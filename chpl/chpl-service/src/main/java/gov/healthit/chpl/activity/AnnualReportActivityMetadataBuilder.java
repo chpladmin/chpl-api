@@ -10,7 +10,7 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.AnnualReportActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
-import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
+import gov.healthit.chpl.surveillance.report.dto.AnnualReportDTO;
 
 @Component("annualReportActivityMetadataBuilder")
 public class AnnualReportActivityMetadataBuilder extends ActivityMetadataBuilder {

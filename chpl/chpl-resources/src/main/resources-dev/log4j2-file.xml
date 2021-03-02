@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Configuration>
+<!-- Local logging configuration for things that go to the console/standard out -->
+<Configuration status="warn" monitorInterval="300" name="CHPL-Service-local" packages="">
+    <Appenders>
+        <RollingFile name="FILE" fileName="${logDir}/chplservice.log" filePermissions="rw-rw-r--"
+            filePattern="${logDir}/chplservice-%d{yyyyMMdd}.log">
+            <PatternLayout>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Logger name="org.jose4j" level="ERROR" additivity="false">
+            <AppenderRef ref="FILE" />
+        </Logger>
+        <Logger name="org.hibernate" level="ERROR" additivity="false">
+            <AppenderRef ref="FILE" />
+        </Logger>
+        <Logger name="org.springframework" level="ERROR"
+            additivity="false">
+            <AppenderRef ref="FILE" />
+        </Logger>
+        <Logger name="gov.healthit.chpl" level="INFO" additivity="false">
+            <AppenderRef ref="FILE" />
+        </Logger>
+    </Loggers>
+</Configuration>
