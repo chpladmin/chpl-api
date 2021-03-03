@@ -27,8 +27,6 @@ import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,9 +43,9 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.scheduler.ChplRepeatableTriggerChangeEmailer;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 import gov.healthit.chpl.util.AuthUtil;
-import gov.healthit.chpl.util.EmailBuilder;
 
 @Loggable
 @Service
@@ -64,18 +62,15 @@ public class SchedulerManager extends SecuredManager {
 
     private ChplSchedulerReference chplScheduler;
     private ResourcePermissions resourcePermissions;
-    private Environment environment;
-    private String emailSubject;
-    private String emailBody;
+    private ChplRepeatableTriggerChangeEmailer emailer;
 
     @Autowired
-    public SchedulerManager(ChplSchedulerReference chplScheduler, ResourcePermissions resourcePermissions, Environment environment,
-            @Value("${job.change.subject}") String emailSubject, @Value("${job.change.body}") String emailBody) {
+    public SchedulerManager(ChplSchedulerReference chplScheduler, ResourcePermissions resourcePermissions,
+            ChplRepeatableTriggerChangeEmailer emailer) {
+
         this.chplScheduler = chplScheduler;
         this.resourcePermissions = resourcePermissions;
-        this.environment = environment;
-        this.emailSubject = emailSubject;
-        this.emailBody = emailBody;
+        this.emailer = emailer;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
@@ -116,7 +111,7 @@ public class SchedulerManager extends SecuredManager {
             }
 
             ChplRepeatableTrigger newTrigger = new ChplRepeatableTrigger((CronTrigger) scheduler.getTrigger(triggerId));
-            sendEmail(newTrigger, ADDED);
+            emailer.sendEmail(newTrigger, ADDED);
             return newTrigger;
         } else {
             throw new AccessDeniedException("Can not create this trigger");
@@ -155,7 +150,7 @@ public class SchedulerManager extends SecuredManager {
         TriggerKey triggerKey = triggerKey(triggerName, triggerGroup);
 
         if (doesUserHavePermissionToTrigger(scheduler.getTrigger(triggerKey))) {
-            sendEmail(getChplTrigger(triggerKey), DELETED);
+            emailer.sendEmail(getChplTrigger(triggerKey), DELETED);
             scheduler.unscheduleJob(triggerKey);
         } else {
             throw new AccessDeniedException("Can not update this trigger");
@@ -241,7 +236,7 @@ public class SchedulerManager extends SecuredManager {
             scheduler.rescheduleJob(oldTrigger.getKey(), qzTrigger);
 
             ChplRepeatableTrigger newTrigger = getChplTrigger(qzTrigger.getKey());
-            sendEmail(newTrigger, UPDATED);
+            emailer.sendEmail(newTrigger, UPDATED);
             return newTrigger;
         } else {
             throw new AccessDeniedException("Can not update this trigger");
@@ -456,11 +451,4 @@ public class SchedulerManager extends SecuredManager {
         return UUID.randomUUID().toString();
     }
 
-    private void sendEmail(ChplRepeatableTrigger trigger, String action) throws MessagingException {
-        EmailBuilder email = new EmailBuilder(environment);
-        email.recipient(trigger.getEmail())
-                .subject(emailSubject)
-                .htmlMessage(String.format(emailBody, trigger.getJob().getName(), action))
-                .sendEmail();
-   }
 }
