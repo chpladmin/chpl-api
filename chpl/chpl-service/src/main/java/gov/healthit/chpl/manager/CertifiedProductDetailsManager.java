@@ -287,14 +287,21 @@ public class CertifiedProductDetailsManager {
     }
 
     @Transactional(readOnly = true)
-    public List<ListingMeasure> getCertifiedProductMeasures(Long listingId)
-            throws EntityRetrievalException {
+    public List<ListingMeasure> getCertifiedProductMeasures(Long listingId) throws EntityRetrievalException {
+        return getCertifiedProductMeasures(listingId, false);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ListingMeasure> getCertifiedProductMeasures(Long listingId, Boolean checkIfListingExists) throws EntityRetrievalException {
+        //This is used when called from the controller to ensure that the listing exists
+        if (checkIfListingExists) {
+            certifiedProductSearchResultDAO.getById(listingId);
+        }
         return listingMeasureDao.getMeasuresByListingId(listingId);
     }
 
     @Transactional
     public List<ListingMeasure> getCertifiedProductMeasures(String chplProductNumber) throws EntityRetrievalException {
-
         CertifiedProductDetailsDTO dto = getCertifiedProductDetailsDtoByChplProductNumber(chplProductNumber);
         return getCertifiedProductMeasures(dto.getId());
     }

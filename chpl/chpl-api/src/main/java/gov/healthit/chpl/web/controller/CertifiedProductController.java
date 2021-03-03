@@ -376,7 +376,7 @@ public class CertifiedProductController {
     public @ResponseBody MeasureResults getMeasuresByCertifiedProductId(
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
 
-        MeasureResults results = new MeasureResults(cpdManager.getCertifiedProductMeasures(certifiedProductId));
+        MeasureResults results = new MeasureResults(cpdManager.getCertifiedProductMeasures(certifiedProductId, true));
 
         return results;
     }
