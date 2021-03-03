@@ -15,7 +15,7 @@ public class DeleteActionPermissions extends ActionPermissions {
     private ComplaintDAO complaintDAO;
 
     @Autowired
-    public DeleteActionPermissions(final ComplaintDAO complaintDAO) {
+    public DeleteActionPermissions(ComplaintDAO complaintDAO) {
         this.complaintDAO = complaintDAO;
     }
 
@@ -30,8 +30,7 @@ public class DeleteActionPermissions extends ActionPermissions {
         if (!(obj instanceof Long)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin()
-                || getResourcePermissions().isUserRoleOnc()
-                || getResourcePermissions().isUserRoleOncStaff()) {
+                || getResourcePermissions().isUserRoleOnc()) {
            return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             Long complaintId = (Long) obj;
