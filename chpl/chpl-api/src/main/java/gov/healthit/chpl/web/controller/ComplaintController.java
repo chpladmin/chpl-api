@@ -2,7 +2,6 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.List;
 
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,7 +32,7 @@ public class ComplaintController {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public ComplaintController(final ComplaintManager complaintManager, final ErrorMessageUtil errorMessageUtil) {
+    public ComplaintController(ComplaintManager complaintManager, ErrorMessageUtil errorMessageUtil) {
         this.complaintManager = complaintManager;
         this.errorMessageUtil = errorMessageUtil;
     }
@@ -51,7 +50,7 @@ public class ComplaintController {
     @ApiOperation(value = "Save complaint for use in Surveillance Quarterly Report.",
             notes = "")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public @ResponseBody Complaint create(@RequestBody final Complaint complaint) throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
+    public @ResponseBody Complaint create(@RequestBody Complaint complaint) throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
         ValidationException error = new ValidationException();
         //Make sure there is an ACB
         if (complaint.getCertificationBody() == null || complaint.getCertificationBody().getId() == null) {
@@ -65,7 +64,7 @@ public class ComplaintController {
     @ApiOperation(value = "Update complaint for use in Surveillance Quarterly Report.",
             notes = "")
     @RequestMapping(value = "/{complaintId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
-    public @ResponseBody Complaint update(@RequestBody final Complaint complaint)
+    public @ResponseBody Complaint update(@RequestBody Complaint complaint)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
         ValidationException error = new ValidationException();
         if (complaint.getCertificationBody() == null || complaint.getCertificationBody().getId() == null) {
@@ -78,7 +77,7 @@ public class ComplaintController {
     @ApiOperation(value = "Delete complaint for use in Surveillance Quarterly Report.",
             notes = "")
     @RequestMapping(value = "/{complaintId}", method = RequestMethod.DELETE, produces = "application/json; charset=utf-8")
-    public @ResponseBody void delete(@PathVariable("complaintId") final Long complaintId)
+    public @ResponseBody void delete(@PathVariable("complaintId") Long complaintId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         complaintManager.delete(complaintId);
     }
