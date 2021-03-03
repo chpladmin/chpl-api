@@ -115,6 +115,16 @@ const searchviewControllerTests = {
   },
 };
 
+const surveillanceReportControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/surveillance-report-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/surveillance-report-controller-tests.xml',
+    },
+  },
+};
+
 const jobs = [
   cb => newman.run(acbControllerTests,cb),
   cb => newman.run(apiKeyControllerTests,cb),
@@ -126,6 +136,7 @@ const jobs = [
   cb => newman.run(statusControllerTests,cb),
   cb => newman.run(testinglabControllerTests,cb),
   cb => newman.run(searchviewControllerTests,cb),
+  cb => newman.run(surveillanceReportControllerTests,cb)
 ];
 
 const responseCallback = (err) => {
