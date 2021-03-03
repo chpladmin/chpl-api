@@ -909,49 +909,53 @@ public class CertifiedProductController {
         return certifiedProduct;
     }
 
-    @SuppressWarnings({"checkstyle:linelength"})
     private static Function<CertifiedProductSearchDetails, CertifiedProductSearchBasicDetails> mapCertifiedProductDetailsToBasic = (CertifiedProductSearchDetails e) -> {
-        CertifiedProductSearchBasicDetails certifiedProductSearchBasicDetails = new CertifiedProductSearchBasicDetails();
-        certifiedProductSearchBasicDetails.setAcbCertificationId(e.getAcbCertificationId());
-        certifiedProductSearchBasicDetails.setAccessibilityCertified(e.getAccessibilityCertified());
-        certifiedProductSearchBasicDetails.setAccessibilityStandards(e.getAccessibilityStandards());
-        certifiedProductSearchBasicDetails.setCertificationDate(e.getCertificationDate());
-        certifiedProductSearchBasicDetails.setCertificationEdition(e.getCertificationEdition());
-        certifiedProductSearchBasicDetails.setCertificationEvents(e.getCertificationEvents());
-        certifiedProductSearchBasicDetails.setCertificationStatus(e.getCertificationStatus());
-        certifiedProductSearchBasicDetails.setCertifyingBody(e.getCertifyingBody());
-        certifiedProductSearchBasicDetails.setChplProductNumber(e.getChplProductNumber());
-        certifiedProductSearchBasicDetails.setClassificationType(e.getClassificationType());
-        certifiedProductSearchBasicDetails.setCountCerts(e.getCountCerts());
-        certifiedProductSearchBasicDetails.setCountClosedNonconformities(e.getCountClosedNonconformities());
-        certifiedProductSearchBasicDetails.setCountClosedSurveillance(e.getCountClosedSurveillance());
-        certifiedProductSearchBasicDetails.setCountCqms(e.getCountCqms());
-        certifiedProductSearchBasicDetails.setCountOpenNonconformities(e.getCountOpenNonconformities());
-        certifiedProductSearchBasicDetails.setCountOpenSurveillance(e.getCountOpenSurveillance());
-        certifiedProductSearchBasicDetails.setCountSurveillance(e.getCountSurveillance());
-        certifiedProductSearchBasicDetails.setDecertificationDate(e.getDecertificationDate());
-        certifiedProductSearchBasicDetails.setDeveloper(e.getDeveloper());
-        certifiedProductSearchBasicDetails.setIcs(e.getIcs());
-        certifiedProductSearchBasicDetails.setId(e.getId());
-        certifiedProductSearchBasicDetails.setLastModifiedDate(e.getLastModifiedDate());
-        certifiedProductSearchBasicDetails.setMeaningfulUseUserHistory(e.getMeaningfulUseUserHistory());
-        certifiedProductSearchBasicDetails.setOtherAcb(e.getOtherAcb());
-        certifiedProductSearchBasicDetails.setPracticeType(e.getPracticeType());
-        certifiedProductSearchBasicDetails.setProduct(e.getProduct());
-        certifiedProductSearchBasicDetails.setProductAdditionalSoftware(e.getProductAdditionalSoftware());
-        certifiedProductSearchBasicDetails.setQmsStandards(e.getQmsStandards());
-        certifiedProductSearchBasicDetails.setReportFileLocation(e.getReportFileLocation());
-        certifiedProductSearchBasicDetails.setSed(e.getSed());
-        certifiedProductSearchBasicDetails.setSedIntendedUserDescription(e.getSedIntendedUserDescription());
-        certifiedProductSearchBasicDetails.setSedReportFileLocation(e.getSedReportFileLocation());
-        certifiedProductSearchBasicDetails.setSedTestingEndDate(e.getSedTestingEndDate());
-        certifiedProductSearchBasicDetails.setSvapNoticeUrl(e.getSvapNoticeUrl());
-        certifiedProductSearchBasicDetails.setSurveillance(e.getSurveillance());
-        certifiedProductSearchBasicDetails.setTargetedUsers(e.getTargetedUsers());
-        certifiedProductSearchBasicDetails.setTestingLabs(e.getTestingLabs());
-        certifiedProductSearchBasicDetails.setTransparencyAttestation(e.getTransparencyAttestation());
-        certifiedProductSearchBasicDetails.setTransparencyAttestationUrl(e.getTransparencyAttestationUrl());
-        certifiedProductSearchBasicDetails.setVersion(e.getVersion());
-        return certifiedProductSearchBasicDetails;
+        return CertifiedProductSearchBasicDetails.builder()
+                .acbCertificationId(e.getAcbCertificationId())
+                .accessibilityCertified(e.getAccessibilityCertified())
+                .accessibilityStandards(e.getAccessibilityStandards())
+                .certificationDate(e.getCertificationDate())
+                .certificationEdition(e.getCertificationEdition())
+                .certificationEvents(e.getCertificationEvents())
+                .certificationStatus(e.getCertificationStatus())
+                .certifyingBody(e.getCertifyingBody())
+                .chplProductNumber(e.getChplProductNumber())
+                .classificationType(e.getClassificationType())
+                .countCerts(e.getCountCerts())
+                .countClosedNonconformities(e.getCountClosedNonconformities())
+                .countClosedSurveillance(e.getCountClosedSurveillance())
+                .countCqms(e.getCountCqms())
+                .countOpenNonconformities(e.getCountOpenNonconformities())
+                .countOpenSurveillance(e.getCountOpenSurveillance())
+                .countSurveillance(e.getCountSurveillance())
+                .decertificationDate(e.getDecertificationDate())
+                .developer(e.getDeveloper())
+                .ics(e.getIcs())
+                .id(e.getId())
+                .lastModifiedDate(e.getLastModifiedDate())
+                .meaningfulUseUserHistory(e.getMeaningfulUseUserHistory())
+                .otherAcb(e.getOtherAcb())
+                .practiceType(e.getPracticeType())
+                .product(e.getProduct())
+                .productAdditionalSoftware(e.getProductAdditionalSoftware())
+                .qmsStandards(e.getQmsStandards())
+                .reportFileLocation(e.getReportFileLocation())
+                .rwtEligibilityYear(e.getRwtEligibilityYear())
+                .rwtPlansCheckDate(e.getRwtPlansCheckDate())
+                .rwtPlansUrl(e.getRwtPlansUrl())
+                .rwtResultsCheckDate(e.getRwtResultsCheckDate())
+                .rwtResultsUrl(e.getRwtResultsUrl())
+                .sed(e.getSed())
+                .sedIntendedUserDescription(e.getSedIntendedUserDescription())
+                .sedReportFileLocation(e.getSedReportFileLocation())
+                .sedTestingEndDate(e.getSedTestingEndDate())
+                .svapNoticeUrl(e.getSvapNoticeUrl())
+                .surveillance(e.getSurveillance())
+                .targetedUsers(e.getTargetedUsers())
+                .testingLabs(e.getTestingLabs())
+                .transparencyAttestation(e.getTransparencyAttestation())
+                .transparencyAttestationUrl(e.getTransparencyAttestationUrl())
+                .version(e.getVersion())
+                .build();
     };
 }
