@@ -8,7 +8,7 @@ import org.springframework.beans.BeanUtils;
 import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;
 import gov.healthit.chpl.dto.SurveillanceTypeDTO;
 import gov.healthit.chpl.entity.surveillance.SurveillanceBasicEntity;
-import gov.healthit.chpl.entity.surveillance.report.PrivilegedSurveillanceEntity;
+import gov.healthit.chpl.surveillance.report.entity.PrivilegedSurveillanceEntity;
 import gov.healthit.chpl.util.Util;
 
 public class SurveillanceBasicDTO implements Serializable {

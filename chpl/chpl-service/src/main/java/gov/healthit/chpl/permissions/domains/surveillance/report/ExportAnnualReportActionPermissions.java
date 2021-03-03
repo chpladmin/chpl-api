@@ -3,10 +3,10 @@ package gov.healthit.chpl.permissions.domains.surveillance.report;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.surveillance.report.AnnualReportDAO;
-import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
+import gov.healthit.chpl.surveillance.report.AnnualReportDAO;
+import gov.healthit.chpl.surveillance.report.dto.AnnualReportDTO;
 
 @Component("surveillanceReportExportAnnualReportActionPermissions")
 public class ExportAnnualReportActionPermissions extends ActionPermissions {

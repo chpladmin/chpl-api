@@ -13,8 +13,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.dao.auth.UserDAO;
-import gov.healthit.chpl.dao.surveillance.report.AnnualReportDAO;
-import gov.healthit.chpl.dao.surveillance.report.QuarterlyReportDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.domain.auth.Authority;
@@ -24,10 +22,12 @@ import gov.healthit.chpl.dto.ComplaintDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
-import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
-import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
-import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
+import gov.healthit.chpl.surveillance.report.AnnualReportDAO;
+import gov.healthit.chpl.surveillance.report.QuarterlyReportDAO;
+import gov.healthit.chpl.surveillance.report.dto.AnnualReportDTO;
+import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
+import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportRelevantListingDTO;
 
 @Component("actionGetActivityDetailsActionPermissions")
 public class GetActivityDetailsActionPermissions extends ActionPermissions {

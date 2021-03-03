@@ -1,12 +1,10 @@
 package gov.healthit.chpl.web.controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,29 +16,29 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.domain.Job;
 import gov.healthit.chpl.domain.complaint.Complaint;
-import gov.healthit.chpl.domain.surveillance.privileged.PrivilegedSurveillance;
-import gov.healthit.chpl.domain.surveillance.report.AnnualReport;
-import gov.healthit.chpl.domain.surveillance.report.QuarterlyReport;
-import gov.healthit.chpl.domain.surveillance.report.RelevantListing;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.job.JobDTO;
-import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
-import gov.healthit.chpl.dto.surveillance.report.PrivilegedSurveillanceDTO;
-import gov.healthit.chpl.dto.surveillance.report.QuarterDTO;
-import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
-import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportExclusionDTO;
-import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportRelevantListingDTO;
-import gov.healthit.chpl.dto.surveillance.report.SurveillanceOutcomeDTO;
-import gov.healthit.chpl.dto.surveillance.report.SurveillanceProcessTypeDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.ComplaintManager;
-import gov.healthit.chpl.manager.SurveillanceReportManager;
+import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
+import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
+import gov.healthit.chpl.surveillance.report.domain.PrivilegedSurveillance;
+import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
+import gov.healthit.chpl.surveillance.report.domain.RelevantListing;
+import gov.healthit.chpl.surveillance.report.dto.AnnualReportDTO;
+import gov.healthit.chpl.surveillance.report.dto.PrivilegedSurveillanceDTO;
+import gov.healthit.chpl.surveillance.report.dto.QuarterDTO;
+import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
+import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportExclusionDTO;
+import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportRelevantListingDTO;
+import gov.healthit.chpl.surveillance.report.dto.SurveillanceOutcomeDTO;
+import gov.healthit.chpl.surveillance.report.dto.SurveillanceProcessTypeDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.web.controller.results.ComplaintResults;
 import io.swagger.annotations.Api;
@@ -159,9 +157,9 @@ public class SurveillanceReportController {
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative authority "
                     + "on the ACB associated with the report.")
     @RequestMapping(value = "/export/annual/{annualReportId}", method = RequestMethod.GET)
-    public Job exportAnnualReport(@PathVariable("annualReportId") Long annualReportId,
-            HttpServletResponse response) throws EntityRetrievalException, UserRetrievalException,
-            EntityCreationException, IOException, InvalidArgumentsException {
+    public ChplOneTimeTrigger exportAnnualReport(@PathVariable("annualReportId") Long annualReportId)
+            throws ValidationException, SchedulerException, EntityRetrievalException,
+            UserRetrievalException, InvalidArgumentsException {
         AnnualReportDTO reportToExport = reportManager.getAnnualReport(annualReportId);
         //at least one quarterly report must exist to export the annual report
         List<QuarterlyReportDTO> quarterlyReports =
@@ -171,8 +169,7 @@ public class SurveillanceReportController {
                     reportToExport.getYear(), "export"));
         }
 
-        JobDTO exportJob = reportManager.exportAnnualReportAsBackgroundJob(annualReportId);
-        return new Job(exportJob);
+        return reportManager.exportAnnualReportAsBackgroundJob(annualReportId);
     }
 
     @ApiOperation(value = "Get all quarterly surveillance reports this user has access to.",
@@ -261,7 +258,7 @@ public class SurveillanceReportController {
         quarterlyReport.setActivitiesOutcomesSummary(createRequest.getSurveillanceActivitiesAndOutcomes());
         quarterlyReport.setPrioritizedElementSummary(createRequest.getPrioritizedElementSummary());
         quarterlyReport.setReactiveSummary(createRequest.getReactiveSummary());
-        quarterlyReport.setTransparencyDisclosureSummary(createRequest.getTransparencyDisclosureSummary());
+        quarterlyReport.setDisclosureSummary(createRequest.getTransparencyDisclosureSummary());
         QuarterlyReportDTO createdReport = reportManager.createQuarterlyReport(quarterlyReport);
         return new QuarterlyReport(createdReport);
     }
@@ -366,7 +363,7 @@ public class SurveillanceReportController {
         reportToUpdate.setActivitiesOutcomesSummary(updateRequest.getSurveillanceActivitiesAndOutcomes());
         reportToUpdate.setPrioritizedElementSummary(updateRequest.getPrioritizedElementSummary());
         reportToUpdate.setReactiveSummary(updateRequest.getReactiveSummary());
-        reportToUpdate.setTransparencyDisclosureSummary(updateRequest.getTransparencyDisclosureSummary());
+        reportToUpdate.setDisclosureSummary(updateRequest.getTransparencyDisclosureSummary());
         QuarterlyReportDTO createdReport = reportManager.updateQuarterlyReport(reportToUpdate);
         return new QuarterlyReport(createdReport);
     }
@@ -386,10 +383,8 @@ public class SurveillanceReportController {
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative authority "
                     + "on the ACB associated with the report.")
     @RequestMapping(value = "/export/quarterly/{quarterlyReportId}", method = RequestMethod.GET)
-    public Job exportQuarterlyReport(@PathVariable("quarterlyReportId") Long quarterlyReportId,
-            HttpServletResponse response) throws EntityRetrievalException, UserRetrievalException,
-            EntityCreationException, IOException {
-        JobDTO exportJob = reportManager.exportQuarterlyReportAsBackgroundJob(quarterlyReportId);
-        return new Job(exportJob);
+    public ChplOneTimeTrigger exportQuarterlyReport(@PathVariable("quarterlyReportId") Long quarterlyReportId)
+                throws ValidationException, SchedulerException, UserRetrievalException {
+        return reportManager.exportQuarterlyReportAsBackgroundJob(quarterlyReportId);
     }
 }

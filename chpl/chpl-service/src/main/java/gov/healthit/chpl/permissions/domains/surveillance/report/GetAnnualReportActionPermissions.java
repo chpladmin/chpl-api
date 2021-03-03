@@ -2,8 +2,8 @@ package gov.healthit.chpl.permissions.domains.surveillance.report;
 
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
+import gov.healthit.chpl.surveillance.report.dto.AnnualReportDTO;
 
 @Component("surveillanceReportGetAnnualReportActionPermissions")
 public class GetAnnualReportActionPermissions extends ActionPermissions {
