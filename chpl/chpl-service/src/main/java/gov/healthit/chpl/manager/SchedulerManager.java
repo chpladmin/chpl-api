@@ -50,12 +50,12 @@ import gov.healthit.chpl.util.AuthUtil;
 @Loggable
 @Service
 public class SchedulerManager extends SecuredManager {
-
     private static final String AUTHORITY_DELIMITER = ";";
     private static final String ADDED = "added";
     private static final String UPDATED = "updated";
     private static final String DELETED = "deleted";
     public static final String DATA_DELIMITER = ",";
+    public static final Integer DELAY_BEFORE_BACKGROUND_JOB_START = 5000;
     public static final String CHPL_BACKGROUND_JOBS_KEY = "chplBackgroundJobs";
     public static final String CHPL_JOBS_KEY = "chplJobs";
     public static final String SYSTEM_JOBS_KEY = "systemJobs";
