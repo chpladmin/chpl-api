@@ -29,6 +29,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -61,11 +62,15 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
     private QuestionableUrlLookupDao urlLookupDao;
 
     private FailedUrlCsvFormatter csvFormatter = new FailedUrlCsvFormatter();
+    private List<CertificationStatusType> activeAndSuspendedStatuses = new ArrayList<CertificationStatusType>();
 
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Questionable URL Report Generator job. *********");
+        activeAndSuspendedStatuses.add(CertificationStatusType.Active);
+        activeAndSuspendedStatuses.add(CertificationStatusType.SuspendedByAcb);
+        activeAndSuspendedStatuses.add(CertificationStatusType.SuspendedByOnc);
 
         try {
             List<FailedUrlResult> questionableUrls = new ArrayList<FailedUrlResult>();
@@ -136,6 +141,8 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             List<Long> acbIds = getSelectedAcbIds(jobContext);
             return badUrls.stream()
                 .filter(badUrl -> isUrlRelatedToAcbs(badUrl, acbIds))
+                .filter(badUrl -> isNotListingUrl(badUrl) || isUrlRelatedTo2015Edition(badUrl))
+                .filter(badUrl -> isNotListingUrl(badUrl) || isUrlRelatedToActiveListing(badUrl))
                 .filter(badUrl -> doesUrlResultMatchAllowedStatusCodes(badUrl, jobContext))
                 .collect(Collectors.toList());
         }
@@ -150,14 +157,28 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             return acbIds.contains(urlResult.getListing().getAcb().getId());
         }
         if (urlResult.getDeveloper() != null) {
-            List<CertificationStatusType> activeStatuses = new ArrayList<CertificationStatusType>();
-            activeStatuses.add(CertificationStatusType.Active);
-            activeStatuses.add(CertificationStatusType.SuspendedByAcb);
-            activeStatuses.add(CertificationStatusType.SuspendedByOnc);
-
             List<CertifiedProductDetailsDTO> filteredListings
-                = cpDao.getListingsByStatusForDeveloperAndAcb(urlResult.getDeveloper().getDeveloperId(), activeStatuses, acbIds);
+                = cpDao.getListingsByStatusForDeveloperAndAcb(urlResult.getDeveloper().getDeveloperId(), activeAndSuspendedStatuses, acbIds);
             return filteredListings != null && filteredListings.size() > 0;
+        }
+        return false;
+    }
+
+    private boolean isNotListingUrl(FailedUrlResult urlResult) {
+        return urlResult.getListing() == null;
+    }
+
+    private boolean isUrlRelatedTo2015Edition(FailedUrlResult urlResult) {
+        if (urlResult.getListing() != null && !StringUtils.isEmpty(urlResult.getListing().getYear())) {
+            return urlResult.getListing().getYear()
+                    .equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
+        }
+        return false;
+    }
+
+    private boolean isUrlRelatedToActiveListing(FailedUrlResult urlResult) {
+        if (urlResult.getListing() != null && !StringUtils.isEmpty(urlResult.getListing().getCertificationStatus())) {
+            return CertificationStatusType.Active.getName().equals(urlResult.getListing().getCertificationStatus());
         }
         return false;
     }
