@@ -29,8 +29,10 @@ public class DeleteActionPermissions extends ActionPermissions {
     public boolean hasAccess(Object obj) {
         if (!(obj instanceof Long)) {
             return false;
-        } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
-            return true;
+        } else if (getResourcePermissions().isUserRoleAdmin()
+                || getResourcePermissions().isUserRoleOnc()
+                || getResourcePermissions().isUserRoleOncStaff()) {
+           return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             Long complaintId = (Long) obj;
             try {
