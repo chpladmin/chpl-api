@@ -37,7 +37,7 @@ public class ComplaintController {
         this.errorMessageUtil = errorMessageUtil;
     }
 
-    @ApiOperation(value = "List all complaints the current user can view/edit.",
+    @ApiOperation(value = "List all complaints the current user can view.",
             notes = "Security Restrictions: Only complaints owned by the current user's ACB will be returned")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ComplaintResults getComplaints() {
