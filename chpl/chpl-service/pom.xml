@@ -378,14 +378,6 @@
             <artifactId>streamex</artifactId> 
             <version>0.7.3</version> 
         </dependency>
-        
-        <!-- Create readable cron expressions -->
-        <!-- from: https://github.com/jmrozanec/cron-utils -->     
-        <dependency>
-            <groupId>com.cronutils</groupId>
-            <artifactId>cron-utils</artifactId>
-            <version>9.1.3</version>
-        </dependency>
     </dependencies>
 
     <build>

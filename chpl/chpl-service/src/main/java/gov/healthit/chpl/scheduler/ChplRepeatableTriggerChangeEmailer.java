@@ -1,7 +1,6 @@
 package gov.healthit.chpl.scheduler;
 
 import java.util.Arrays;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
@@ -12,11 +11,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.cronutils.descriptor.CronDescriptor;
-import com.cronutils.model.CronType;
-import com.cronutils.model.definition.CronDefinitionBuilder;
-import com.cronutils.parser.CronParser;
-
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -24,6 +18,7 @@ import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.HtmlEmailTemplate;
 import lombok.extern.log4j.Log4j2;
+
 
 @Service
 @Log4j2
@@ -53,14 +48,6 @@ public class ChplRepeatableTriggerChangeEmailer {
                 .subject(emailSubject)
                 .htmlMessage(getEmailText(trigger, action))
                 .sendEmail();
-    }
-
-    private String getCronDecription(ChplRepeatableTrigger trigger) {
-        CronDescriptor descriptor = CronDescriptor.instance(Locale.ENGLISH);
-        CronParser parser = new CronParser(CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ));
-
-        //Remove the "at " in the beginning of the string
-        return descriptor.describe(parser.parse(trigger.getCronSchedule())).substring(4);
     }
 
     private String getEmailText(ChplRepeatableTrigger trigger, String action) {
@@ -94,20 +81,22 @@ public class ChplRepeatableTriggerChangeEmailer {
         table.append("                " + trigger.getJob().getName() + "\n");
         table.append("            </td>\n");
         table.append("        </tr>\n");
-        table.append("        <tr class='even'>\n");
-        table.append("            <td>\n");
-        table.append("                Job Description\n");
-        table.append("            </td>\n");
-        table.append("            <td>\n");
-        table.append("                " + trigger.getJob().getDescription() + "\n");
-        table.append("            </td>\n");
-        table.append("        </tr>\n");
+        if (!StringUtils.isEmpty(trigger.getJob().getDescription())) {
+            table.append("        <tr class='even'>\n");
+            table.append("            <td>\n");
+            table.append("                Job Description\n");
+            table.append("            </td>\n");
+            table.append("            <td>\n");
+            table.append("                " + trigger.getJob().getDescription() + "\n");
+            table.append("            </td>\n");
+            table.append("        </tr>\n");
+        }
         table.append("        <tr class='odd'>\n");
         table.append("            <td>\n");
         table.append("                Schedule\n");
         table.append("            </td>\n");
         table.append("            <td>\n");
-        table.append("                " + getCronDecription(trigger) + "\n");
+        table.append("                " + trigger.getCronSchedule() + "\n");
         table.append("            </td>\n");
         table.append("        </tr>\n");
         if (!StringUtils.isEmpty(trigger.getAcb())) {
