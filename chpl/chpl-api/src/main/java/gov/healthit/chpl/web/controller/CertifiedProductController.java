@@ -81,14 +81,12 @@ import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.results.CQMResultDetailResults;
 import gov.healthit.chpl.web.controller.results.CertificationResults;
+import gov.healthit.chpl.web.controller.results.MeasureResults;
 import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.log4j.Log4j2;
 
-/**
- * Certified Product Controller.
- */
 @Loggable
 @Api(value = "certified-products")
 @RestController
@@ -137,13 +135,6 @@ public class CertifiedProductController {
         this.developerManager = developerManager;
     }
 
-    /**
-     * List all certified products.
-     * @param versionId if entered, filters list to only listings under given version
-     * @param editable if true, returns only those user has ability to edit
-     * @return list of certified products
-     * @throws EntityRetrievalException if unable to retrieve entity
-     */
     @ApiOperation(value = "List all certified products",
             notes = "Default behavior is to return all certified products in the system. "
                     + " The required 'versionId' parameter filters the certified products to those"
@@ -167,12 +158,6 @@ public class CertifiedProductController {
         return certifiedProductList;
     }
 
-    /**
-     * Get all details for a specified certified product.
-     * @param certifiedProductId database id of listing
-     * @return Listing Details domain object
-     * @throws EntityRetrievalException if cannot retrieve Listing
-     */
     @ApiOperation(value = "Get all details for a specified certified product.",
             notes = "Returns all information in the CHPL related to the specified certified product.")
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/details",
@@ -187,20 +172,6 @@ public class CertifiedProductController {
         return certifiedProduct;
     }
 
-    /**
-     * Get certified product details for a listing based on unique CHPL ID.
-     * @param year two-digit year (14 or 15)
-     * @param testingLab two-digit ATL code
-     * @param certBody two-digit ACB code
-     * @param vendorCode assigned developer code
-     * @param productCode user-defined product code
-     * @param versionCode user-defined version code
-     * @param icsCode two-digit ICS code
-     * @param addlSoftwareCode single-digit additional software code (0 or 1)
-     * @param certDateCode certified date code (YYMMDD format)
-     * @return details for the listing with the unique CHPL ID specified
-     * @throws EntityRetrievalException if a listing with the unique CHPL ID cannot be found.
-     */
     @SuppressWarnings({"checkstyle:parameternumber"})
     @ApiOperation(value = "Get all details for a specified certified product.",
     notes = "Returns all information in the CHPL related to the specified certified product.  "
@@ -274,21 +245,6 @@ public class CertifiedProductController {
         return mapCertifiedProductDetailsToBasic.apply(certifiedProduct);
     }
 
-    /**
-     * Get "basic" information for a listing which includes all details
-     * except for certification results and cqm results.
-     * @param year two-digit year (14 or 15)
-     * @param testingLab two-digit ATL code
-     * @param certBody two-digit ACB code
-     * @param vendorCode assigned developer code
-     * @param productCode user-defined product code
-     * @param versionCode user-defined version code
-     * @param icsCode two-digit ICS code
-     * @param addlSoftwareCode single-digit additional software code (0 or 1)
-     * @param certDateCode certified date code (YYMMDD format)
-     * @return the basic information about the listing identified by the unique CHPL ID specified
-     * @throws EntityRetrievalException if the listing cannot be found
-     */
     @SuppressWarnings({"checkstyle:parameternumber"})
     @ApiOperation(value = "Get all basic information for a specified certified product.  Does not include "
             + "the CQM results and certification results.",
@@ -412,6 +368,64 @@ public class CertifiedProductController {
         return results;
     }
 
+    @ApiOperation(value = "Get all of the CQM results for a specified certified product.",
+            notes = "Returns all of the CQM results in the CHPL related to the specified certified product.")
+    @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/measures", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody MeasureResults getMeasuresByCertifiedProductId(
+            @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
+
+        MeasureResults results = new MeasureResults(cpdManager.getCertifiedProductMeasures(certifiedProductId));
+
+        return results;
+    }
+
+    @SuppressWarnings({"checkstyle:parameternumber"})
+    @ApiOperation(value = "Get all of the Measures for a specified certified product.",
+            notes = "Returns all of the Measures in the CHPL related to the specified certified product.  "
+                    + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
+                    + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid call to "
+                    + "this service would look like /certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD/"
+                    + "measures.")
+    @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/measures", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody MeasureResults getMeasuresByCertifiedProductId(
+            @PathVariable("year") String year,
+            @PathVariable("testingLab") String testingLab,
+            @PathVariable("certBody") String certBody,
+            @PathVariable("vendorCode") String vendorCode,
+            @PathVariable("productCode") String productCode,
+            @PathVariable("versionCode") String versionCode,
+            @PathVariable("icsCode") String icsCode,
+            @PathVariable("addlSoftwareCode") String addlSoftwareCode,
+            @PathVariable("certDateCode") String certDateCode) throws EntityRetrievalException  {
+
+        String chplProductNumber =
+                chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode,
+                        versionCode, icsCode, addlSoftwareCode, certDateCode);
+        MeasureResults results = new MeasureResults(cpdManager.getCertifiedProductMeasures(chplProductNumber));
+        return results;
+    }
+
+    @ApiOperation(value = "Get all of the Measures for a specified certified product based on a legacy "
+            + "CHPL Product Number.",
+            notes = "\"Returns all of the Measures in the CHPL related to the specified certified product.  "
+                    + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call "
+                    + "to this service would look like /certified_products/CHP-999999/measures.")
+    @RequestMapping(value = "/{chplPrefix}-{identifier}/measures", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody MeasureResults getMeasuresByCertifiedProductId(
+            @PathVariable("chplPrefix") String chplPrefix,
+            @PathVariable("identifier") String identifier) throws EntityRetrievalException  {
+
+        String chplProductNumber =  chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
+        MeasureResults results = new MeasureResults(cpdManager.getCertifiedProductMeasures(chplProductNumber));
+        return results;
+    }
+
     @ApiOperation(value = "Get all of the certification results for a specified certified product.",
             notes = "Returns all of the certifiection results in the CHPL related to the specified certified product.")
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/certification_results", method = RequestMethod.GET,
@@ -426,12 +440,6 @@ public class CertifiedProductController {
         return results;
     }
 
-    /**
-     * Download all SED details that are certified to 170.315(g)(3).
-     * @return an HTTP response
-     * @throws EntityRetrievalException if cannot retrieve entity
-     * @throws IOException if IO Exception
-     */
     @SuppressWarnings({"checkstyle:linelength", "checkstyle:parameternumber"})
     @ApiOperation(value = "Get all of the certification results for a specified certified "
             + "product based on a CHPL Product Number.",
@@ -485,12 +493,6 @@ public class CertifiedProductController {
         return results;
     }
 
-    /**
-     * Download all SED details that are certified to 170.315(g)(3).
-     * @param response http response
-     * @throws EntityRetrievalException if cannot retrieve entity
-     * @throws IOException if IO Exception
-     */
     @ApiOperation(value = "Download all SED details that are certified to 170.315(g)(3).",
             notes = "Download a specific file that is generated overnight.")
     @RequestMapping(value = "/sed_details", method = RequestMethod.GET)
@@ -500,12 +502,6 @@ public class CertifiedProductController {
         fileUtils.streamFileAsResponse(downloadFile, "text/csv", response);
     }
 
-    /**
-     * Get the ICS family tree for the specified certified product.
-     * @param certifiedProductId specified product
-     * @return list of ICS Family Tree nodes
-     * @throws EntityRetrievalException if cannot retrieve entity
-     */
     @ApiOperation(value = "Get the ICS family tree for the specified certified product.",
             notes = "Returns all member of the family tree connected to the specified certified product.")
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/ics_relationships", method = RequestMethod.GET,
@@ -616,11 +612,6 @@ public class CertifiedProductController {
         return new ResponseEntity<CertifiedProductSearchDetails>(changedProduct, responseHeaders, HttpStatus.OK);
     }
 
-    /**
-     * Get metadata for all pending listing that the user has access to.
-     * @return list of pending listing metadata.
-     * @throws AccessDeniedException if user doesn't have access
-     */
     @ApiOperation(value = "Get metadata for all pending listings the user has access to.",
             notes = "Pending listings are created via CSV file upload and are left in the 'pending' state "
                     + " until validated and confirmed.  Security Restrictions: ROLE_ADMIN, ROLE_ACB and have "
@@ -638,12 +629,6 @@ public class CertifiedProductController {
         return result;
     }
 
-    /**
-     * Get all pending Certified Products.
-     * @return list of pending Listings
-     * @throws EntityRetrievalException if cannot retrieve entity
-     * @throws AccessDeniedException if user doesn't have access
-     */
     @Deprecated
     @ApiOperation(value = "DEPRECATED. List pending certified products.",
     notes = "Pending certified products are created via CSV file upload and are left in the 'pending' state "
@@ -677,15 +662,6 @@ public class CertifiedProductController {
         return results;
     }
 
-    /**
-     * Get a specific pending Listing.
-     * @param pcpId the listing's id
-     * @return the pending listing
-     * @throws EntityRetrievalException if entity could not be retrieved
-     * @throws EntityNotFoundException if entity could not be found
-     * @throws AccessDeniedException if user does not have access to listing
-     * @throws ObjectMissingValidationException if validation is missing
-     */
     @ApiOperation(value = "List a specific pending certified product.",
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ACB and administrative authority "
                     + "on the ACB for each pending certified product is required.")
@@ -827,13 +803,6 @@ public class CertifiedProductController {
         return null;
     }
 
-    /**
-     * Upload a file with certified products.
-     * @param file the file
-     * @return the list of pending listings
-     * @throws ValidationException if validation fails
-     * @throws MaxUploadSizeExceededException if the file is too large
-     */
     @ApiOperation(value = "Upload a file with certified products",
             notes = "Accepts a CSV file with very specific fields to create pending certified products. "
                     + "Security Restrictions: ROLE_ADMIN or user uploading the file must have ROLE_ACB "
@@ -879,14 +848,6 @@ public class CertifiedProductController {
         return new ResponseEntity<PendingCertifiedProductResults>(results, responseHeaders, HttpStatus.OK);
     }
 
-    /**
-     * Creates an email message to the configured recipients
-     * with configured subject and uses the stack trace as the
-     * email body. Creates a temporary file that is the uploaded
-     * CSV and attaches it to the email.
-     * @param file
-     * @param ex
-     */
     private void sendUploadError(MultipartFile file, Exception ex) {
         if (StringUtils.isEmpty(uploadErrorEmailRecipients)) {
             return;
