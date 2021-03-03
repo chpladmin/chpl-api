@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.domain.ApiKey;
-import gov.healthit.chpl.domain.ApiKeyActivity;
 import gov.healthit.chpl.domain.ApiKeyRegistration;
 import gov.healthit.chpl.dto.ApiKeyDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -124,71 +123,6 @@ public class ApiKeyController {
         }
 
         return keys;
-    }
-
-    @ApiOperation(value = "View the calls made per API key.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
-    @RequestMapping(value = "/activity", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ApiKeyActivity> listActivity(
-            @RequestParam(value = "pageNumber", required = false) final Integer pageNumber,
-            @RequestParam(value = "pageSize", required = false) final Integer pageSize,
-            @RequestParam(value = "filter", required = false) final String apiKeyFilter,
-            @RequestParam(value = "dateAscending", required = false) final boolean dateAscending,
-            @RequestParam(value = "start", required = false) final Long startDateMilli,
-            @RequestParam(value = "end", required = false) final Long endDateMilli) throws EntityRetrievalException {
-
-        return getActivity(pageNumber, pageSize, apiKeyFilter, dateAscending, startDateMilli, endDateMilli);
-    }
-
-    private List<ApiKeyActivity> getActivity(Integer pageNumber, Integer pageSize,
-            String apiKeyFilter, final boolean dateAscending, final Long startDateMilli,
-            final Long endDateMilli) throws EntityRetrievalException {
-        if (pageNumber == null) {
-            pageNumber = 0;
-        }
-
-        if (pageSize == null) {
-            pageSize = 100;
-        }
-
-        if (apiKeyFilter != null && apiKeyFilter.isEmpty()) {
-            apiKeyFilter = null;
-        }
-
-        List<ApiKeyActivity> apiKeyActivitiesList = apiKeyManager.getApiKeyActivity(apiKeyFilter, pageNumber, pageSize,
-                dateAscending, startDateMilli, endDateMilli);
-
-        return apiKeyActivitiesList;
-    }
-
-    @ApiOperation(value = "View the calls made by a specific API key.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
-    @RequestMapping(value = "/activity/{apiKey}", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
-    public List<ApiKeyActivity> listActivityByKey(@PathVariable("apiKey") final String apiKey,
-            @RequestParam(value = "pageNumber", required = false) final Integer pageNumber,
-            @RequestParam(value = "pageSize", required = false) final Integer pageSize)
-                    throws EntityRetrievalException {
-
-        return getActivityByKey(apiKey, pageNumber, pageSize);
-    }
-
-    private List<ApiKeyActivity> getActivityByKey(@PathVariable("apiKey") final String apiKey,
-            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
-            @RequestParam(value = "pageSize", required = false) Integer pageSize)
-                    throws EntityRetrievalException {
-        if (pageNumber == null) {
-            pageNumber = 0;
-        }
-
-        if (pageSize == null) {
-            pageSize = 100;
-        }
-
-        List<ApiKeyActivity> activity = apiKeyManager.getApiKeyActivity(apiKey, pageNumber, pageSize);
-
-        return activity;
-
     }
 
     private void sendRegistrationEmail(final String email, final String orgName, final String apiKey)

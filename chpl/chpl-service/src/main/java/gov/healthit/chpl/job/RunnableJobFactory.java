@@ -39,12 +39,6 @@ public class RunnableJobFactory {
         case SURV_UPLOAD:
             result = getSurveillanceUploadJob();
             break;
-        case EXPORT_QUARTERLY:
-            result = getExportQuarterlySurveillanceReportJob();
-            break;
-        case EXPORT_ANNUAL:
-            result = getExportAnnualSurveillanceReportJob();
-            break;
         default:
             throw new NoJobTypeException();
         }
@@ -83,20 +77,6 @@ public class RunnableJobFactory {
     public SurveillanceUploadJob getSurveillanceUploadJob() {
         // spring will override this method
         // and create a new instance of SurveillanceUploadJob
-        return null;
-    }
-
-    @Lookup
-    public ExportQuarterlySurveillanceReportJob getExportQuarterlySurveillanceReportJob() {
-        // spring will override this method
-        // and create a new instance of ExportQuarterlySurveillanceReportJob
-        return null;
-    }
-
-    @Lookup
-    public ExportAnnualSurveillanceReportJob getExportAnnualSurveillanceReportJob() {
-        // spring will override this method
-        // and create a new instance of ExportQuarterlySurveillanceReportJob
         return null;
     }
 }

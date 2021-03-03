@@ -4,10 +4,10 @@
   "repository": "chpladmin/chpl-api",
   "scripts": {
     "e2e:lint": "eslint chpl",
-    "e2e:local": "node ./chpl/chpl-api/e2e/script/newman-run-local.js",
-    "e2e:dev": "node ./chpl/chpl-api/e2e/script/newman-run-dev.js",
-    "e2e:qa": "node ./chpl/chpl-api/e2e/script/newman-run-qa.js",
-    "e2e:stg": "node ./chpl/chpl-api/e2e/script/newman-run-stg.js"
+    "e2e:local": "node ./chpl/chpl-api/e2e/script/newman-run.js local",
+    "e2e:dev": "node ./chpl/chpl-api/e2e/script/newman-run.js dev",
+    "e2e:qa": "node ./chpl/chpl-api/e2e/script/newman-run.js qa",
+    "e2e:stg": "node ./chpl/chpl-api/e2e/script/newman-run.js stg"
   },
   "devDependencies": {
     "newman": "^5.1.0"
