@@ -100,7 +100,7 @@ public class ListingUploadValidationJob implements Job {
                     if (listingUpload != null && validatedListingUpload != null) {
                         listingUpload.setErrorCount(validatedListingUpload.getErrorMessages() == null ? 0 : validatedListingUpload.getErrorMessages().size());
                         listingUpload.setWarningCount(validatedListingUpload.getWarningMessages() == null ? 0 : validatedListingUpload.getWarningMessages().size());
-                        LOGGER.debug("Listing upload with ID " + listingUpload.getId() + " had "
+                        LOGGER.info("Listing upload with ID " + listingUpload.getId() + " had "
                                 + listingUpload.getErrorCount() + " errors and " + listingUpload.getWarningCount()
                                 + " warnings.");
                         listingUploadDao.updateErrorAndWarningCounts(listingUpload);

@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.CertificationBody;
@@ -170,6 +172,7 @@ public class ListingUploadManager {
     }
 
     @Transactional
+    @Cacheable(CacheNames.UPLOADED_LISTING_DETAILS)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
             + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).GET_BY_ID, #id)")
     public CertifiedProductSearchDetails getDetailsById(Long id) throws ValidationException, EntityRetrievalException {
