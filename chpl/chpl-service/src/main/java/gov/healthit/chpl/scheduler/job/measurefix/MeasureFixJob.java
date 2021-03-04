@@ -27,9 +27,12 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
+import gov.healthit.chpl.validation.listing.Validator;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "measureFixJobLogger")
@@ -47,6 +50,9 @@ public class MeasureFixJob implements Job {
     @Autowired
     private CertifiedProductManager certifiedProductManager;
 
+    @Autowired
+    private ListingValidatorFactory validatorFactory;
+
     @Value("${executorThreadCountForQuartzJobs}")
     private Integer threadCount;
 
@@ -60,7 +66,7 @@ public class MeasureFixJob implements Job {
 
             List<CompletableFuture<Boolean>> futures = getAll2015CertifiedProducts().stream()
                     .map(cp -> CompletableFuture.supplyAsync(() ->
-                            resaveListing(cp), executorService))
+                            processListing(cp), executorService))
                     .collect(Collectors.toList());
 
             CompletableFuture<Void> combinedFutures = CompletableFuture
@@ -83,7 +89,28 @@ public class MeasureFixJob implements Job {
         return listings;
     }
 
-    private Boolean resaveListing(CertifiedProductDetailsDTO cp) {
+    private Boolean processListing(CertifiedProductDetailsDTO cp) {
+        try {
+            CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetails(cp.getId());
+            listing = validateListing(listing);
+            if (listing.getErrorMessages().size() > 0) {
+                return resaveListing(listing);
+            }
+        } catch (EntityRetrievalException e) {
+            LOGGER.catching(e);
+            return false;
+        }
+        return false;
+    }
+
+    private CertifiedProductSearchDetails validateListing(CertifiedProductSearchDetails listing) {
+        Validator validator = validatorFactory.getValidator(listing);
+        validator.validate(listing);
+        LOGGER.info("Completed validation of listing: " + listing.getId());
+        return listing;
+    }
+
+    private Boolean resaveListing(CertifiedProductSearchDetails listing) {
         // We need to manually create a transaction in this case because of how AOP works. When a method is
         // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
         // The object's proxy is not called when the method is called from within this class. The object's proxy
@@ -95,7 +122,6 @@ public class MeasureFixJob implements Job {
             @Override
             public Boolean doInTransaction(TransactionStatus status) {
                 try {
-                    CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetails(cp.getId());
                     ListingUpdateRequest request = ListingUpdateRequest.builder()
                             .listing(listing)
                             .acknowledgeWarnings(true)
@@ -103,15 +129,15 @@ public class MeasureFixJob implements Job {
                             .build();
 
                     certifiedProductManager.update(request, false);
-                    LOGGER.info(String.format("Successfully updated listing %s (%s).", cp.getChplProductNumber(), cp.getId().toString()));
+                    LOGGER.info(String.format("Successfully updated listing %s (%s).", listing.getChplProductNumber(), listing.getId().toString()));
                     return true;
                 } catch (ValidationException e) {
-                    LOGGER.info(String.format("Could not update listing %s (%s) for the following reasons:", cp.getChplProductNumber(), cp.getId().toString()));
+                    LOGGER.info(String.format("Could not update listing %s (%s) for the following reasons:", listing.getChplProductNumber(), listing.getId().toString()));
                     e.getErrorMessages().stream()
                         .forEach(message -> LOGGER.info(message));
                     return false;
                 } catch (Exception e) {
-                    LOGGER.info(String.format("Could not update listing %s (%s) for the following reasons:", cp.getChplProductNumber(), cp.getId().toString()));
+                    LOGGER.info(String.format("Could not update listing %s (%s) for the following reasons:", listing.getChplProductNumber(), listing.getId().toString()));
                     LOGGER.catching(e);
                     return false;
                 }
