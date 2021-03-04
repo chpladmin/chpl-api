@@ -141,14 +141,14 @@ public class CertificationBodyController {
     produces = "application/json; charset=utf-8")
     public CertificationBody updateAcb(@RequestBody final CertificationBody acbInfo) throws InvalidArgumentsException,
             EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException,
-            SchedulerException, ValidationException, IllegalArgumentException, MessagingException {
+            SchedulerException, ValidationException, MessagingException {
 
         return update(acbInfo);
     }
 
     private CertificationBody update(final CertificationBody updatedAcb) throws InvalidArgumentsException,
             EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException,
-            SchedulerException, ValidationException, IllegalArgumentException, MessagingException {
+            SchedulerException, ValidationException, MessagingException {
         //Get the ACB as it is currently in the database to find out if
         //the retired flag was changed.
         //Retirement and un-retirement is done as a separate manager action because
