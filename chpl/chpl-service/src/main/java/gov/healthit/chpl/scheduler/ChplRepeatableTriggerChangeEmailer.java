@@ -19,7 +19,6 @@ import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.HtmlEmailTemplate;
 import lombok.extern.log4j.Log4j2;
 
-
 @Service
 @Log4j2
 public class ChplRepeatableTriggerChangeEmailer {
