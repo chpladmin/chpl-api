@@ -147,4 +147,8 @@
         additivity="false">
         <AppenderRef ref="annualReportGenerationJob" />
     </Logger>
+    <Logger name="listingUploadValidationJobLogger" level="DEBUG"
+        additivity="false">
+        <AppenderRef ref="listingUploadValidationJob" />
+    </Logger>
 </Loggers>

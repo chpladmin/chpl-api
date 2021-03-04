@@ -8,12 +8,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.ff4j.FF4j;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -109,21 +111,31 @@ public class ListingUploadController {
         }
 
         List<ListingUpload> createdListingUploads = new ArrayList<ListingUpload>();
-            try {
-                List<ListingUpload> listingsToAdd = listingUploadManager.parseUploadFile(file);
-                for (ListingUpload listingToAdd : listingsToAdd) {
-                    ListingUpload created = listingUploadManager.createOrReplaceListingUpload(listingToAdd);
-                    createdListingUploads.add(created);
-                }
-            } catch (NullPointerException | IndexOutOfBoundsException | JsonProcessingException
-                    | EntityRetrievalException | EntityCreationException ex) {
-                String error = "Error uploading listing(s) from file " + file.getOriginalFilename()
-                + ". Error was: " + ex.getMessage();
-                LOGGER.error(error);
-                //send an email that something weird happened
-                sendUploadError(file, ex);
-                throw new ValidationException(error);
+        try {
+            List<ListingUpload> listingsToAdd = listingUploadManager.parseUploadFile(file);
+            for (ListingUpload listingToAdd : listingsToAdd) {
+                ListingUpload created = listingUploadManager.createOrReplaceListingUpload(listingToAdd);
+                createdListingUploads.add(created);
             }
+        } catch (NullPointerException | IndexOutOfBoundsException | JsonProcessingException
+                | EntityRetrievalException | EntityCreationException ex) {
+            String error = "Error uploading listing(s) from file " + file.getOriginalFilename()
+            + ". Error was: " + ex.getMessage();
+            LOGGER.error(error);
+            //send an email that something weird happened
+            sendUploadError(file, ex);
+            throw new ValidationException(error);
+        }
+
+        try {
+            if (createdListingUploads != null && createdListingUploads.size() > 0) {
+                listingUploadManager.calculateErrorAndWarningCounts(createdListingUploads.stream()
+                    .map(lu -> lu.getId())
+                    .collect(Collectors.toList()));
+            }
+        } catch (SchedulerException | ValidationException ex) {
+            LOGGER.error("Unable to start job to calculate error and warning counts for uploaded listings.", ex);
+        }
         return createdListingUploads;
     }
 

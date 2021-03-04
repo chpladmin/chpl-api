@@ -19,6 +19,8 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
+import org.quartz.JobDataMap;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostFilter;
@@ -35,6 +37,8 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.auth.User;
+import gov.healthit.chpl.domain.schedule.ChplJob;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -43,9 +47,13 @@ import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.SchedulerManager;
+import gov.healthit.chpl.scheduler.job.ListingUploadValidationJob;
 import gov.healthit.chpl.upload.listing.handler.CertificationDateHandler;
 import gov.healthit.chpl.upload.listing.handler.ListingDetailsUploadHandler;
 import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
+import gov.healthit.chpl.upload.listing.validation.ListingUploadValidator;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
@@ -62,8 +70,10 @@ public class ListingUploadManager {
     private ListingUploadHandlerUtil uploadUtil;
     private ChplProductNumberUtil chplProductNumberUtil;
     private ListingUploadDao listingUploadDao;
+    private ListingUploadValidator listingUploadValidator;
     private CertificationBodyDAO acbDao;
     private UserDAO userDao;
+    private SchedulerManager schedulerManager;
     private ActivityManager activityManager;
     private ErrorMessageUtil msgUtil;
 
@@ -72,17 +82,20 @@ public class ListingUploadManager {
     public ListingUploadManager(ListingDetailsUploadHandler listingDetailsHandler,
             CertificationDateHandler certDateHandler,
             ListingDetailsNormalizer listingNormalizer,
+            ListingUploadValidator listingUploadValidator,
             ListingUploadHandlerUtil uploadUtil, ChplProductNumberUtil chplProductNumberUtil,
             ListingUploadDao listingUploadDao, CertificationBodyDAO acbDao, UserDAO userDao,
-            ActivityManager activityManager, ErrorMessageUtil msgUtil) {
+            SchedulerManager schedulerManager, ActivityManager activityManager, ErrorMessageUtil msgUtil) {
         this.listingDetailsHandler = listingDetailsHandler;
         this.certDateHandler = certDateHandler;
         this.listingNormalizer = listingNormalizer;
+        this.listingUploadValidator = listingUploadValidator;
         this.uploadUtil = uploadUtil;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.listingUploadDao = listingUploadDao;
         this.acbDao = acbDao;
         this.userDao = userDao;
+        this.schedulerManager = schedulerManager;
         this.activityManager = activityManager;
         this.msgUtil = msgUtil;
     }
@@ -161,18 +174,50 @@ public class ListingUploadManager {
             + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).GET_BY_ID, #id)")
     public CertifiedProductSearchDetails getDetailsById(Long id) throws ValidationException, EntityRetrievalException {
         ListingUpload listingUpload = listingUploadDao.getByIdIncludingRecords(id);
+        LOGGER.debug("Got listing upload with ID " + id);
         List<CSVRecord> allCsvRecords = listingUpload.getRecords();
         if (allCsvRecords == null) {
+            LOGGER.debug("Listing upload with ID " + id + " has no CSV records associated with it.");
             return null;
         }
+        LOGGER.debug("Listing upload with ID " + id + " has " + allCsvRecords.size() + " CSV records associated with it.");
         int headingRowIndex = uploadUtil.getHeadingRecordIndex(allCsvRecords);
         CSVRecord headingRecord = uploadUtil.getHeadingRecord(allCsvRecords);
         List<CSVRecord> allListingRecords = allCsvRecords.subList(headingRowIndex + 1, allCsvRecords.size());
+        LOGGER.debug("Converting listing upload with ID " + id + " into CertifiedProductSearchDetails object");
         CertifiedProductSearchDetails listing =
                 listingDetailsHandler.parseAsListing(headingRecord, allListingRecords);
         listing.setId(id);
+        LOGGER.debug("Converted listing upload with ID " + id + " into CertifiedProductSearchDetails object");
         listingNormalizer.normalize(listing);
+        LOGGER.debug("Normalized listing upload with ID " + id);
+        listingUploadValidator.review(listingUpload, listing);
+        LOGGER.debug("Validated listing upload with ID " + id);
         return listing;
+    }
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
+            + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).VALIDATE_BY_IDS)")
+    public void calculateErrorAndWarningCounts(List<Long> listingUploadIds)
+            throws ValidationException, SchedulerException {
+        UserDTO jobUser = null;
+        try {
+            jobUser = userDao.getById(AuthUtil.getCurrentUser().getId());
+        } catch (UserRetrievalException ex) {
+            LOGGER.error("Could not find user to execute job.");
+        }
+
+        ChplOneTimeTrigger validateListingUploadTrigger = new ChplOneTimeTrigger();
+        ChplJob validateListingUploadJob = new ChplJob();
+        validateListingUploadJob.setName(ListingUploadValidationJob.JOB_NAME);
+        validateListingUploadJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put(ListingUploadValidationJob.LISTING_UPLOAD_IDS, listingUploadIds);
+        jobDataMap.put(ListingUploadValidationJob.USER_KEY, jobUser);
+        validateListingUploadJob.setJobDataMap(jobDataMap);
+        validateListingUploadTrigger.setJob(validateListingUploadJob);
+        validateListingUploadTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
+        validateListingUploadTrigger = schedulerManager.createBackgroundJobTrigger(validateListingUploadTrigger);
     }
 
     @Transactional
