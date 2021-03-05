@@ -14,8 +14,10 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import lombok.extern.log4j.Log4j2;
 
 @Component("inheritanceReviewer")
+@Log4j2
 public class InheritanceReviewer implements Reviewer {
     private CertifiedProductSearchDAO searchDao;
     private ListingGraphDAO inheritanceDao;
@@ -38,63 +40,71 @@ public class InheritanceReviewer implements Reviewer {
             return;
         }
 
-        Integer icsCodeInteger = productNumUtil.getIcsCode(listing.getChplProductNumber());
-        if (listing.getIcs().getInherits().equals(Boolean.TRUE) && icsCodeInteger.intValue() > 0) {
-            // if ICS is nonzero, and no parents are found, give error
-            if (listing.getIcs().getParents() == null
-                    || listing.getIcs().getParents().size() == 0) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.icsTrueAndNoParentsFound"));
-            } else {
-                // parents are non-empty - check inheritance rules
-                // certification edition must be the same as this listings
-                List<Long> parentIds = new ArrayList<Long>();
-                for (CertifiedProduct potentialParent : listing.getIcs().getParents()) {
-                    //the id might be null if the user changed it in the UI
-                    //even though it's a valid CHPL product number
-                    if (potentialParent.getId() == null) {
-                        try {
-                            CertifiedProduct found = searchDao.getByChplProductNumber(potentialParent.getChplProductNumber());
-                            if (found != null) {
-                                potentialParent.setId(found.getId());
-                            }
-                        } catch (Exception ignore) { }
-                    }
+        if (!listing.getIcs().getInherits() && listing.getIcs().getParents() != null
+                && listing.getIcs().getParents().size() > 0) {
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.icsFalseAndParentsFound"));
+        } else if (listing.getIcs().getInherits() && (listing.getIcs().getParents() == null
+                || listing.getIcs().getParents().size() == 0)) {
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.icsTrueAndNoParentsFound"));
+        }
 
-                    //if the ID is still null after trying to look it up, that's a problem
-                    if (potentialParent.getId() == null) {
-                        listing.getErrorMessages().add(
-                                msgUtil.getMessage("listing.icsUniqueIdNotFound", potentialParent.getChplProductNumber()));
-                    } else if (potentialParent.getId().toString().equals(listing.getId().toString())) {
-                        listing.getErrorMessages().add(
-                                msgUtil.getMessage("listing.icsSelfInheritance"));
-                    } else {
-                        parentIds.add(potentialParent.getId());
-                    }
-                }
+        if (listing.getIcs().getParents() != null && listing.getIcs().getParents().size() > 0) {
+            List<Long> parentListingIds = new ArrayList<Long>();
+            for (CertifiedProduct icsParent : listing.getIcs().getParents()) {
+                lookupListingId(icsParent);
 
-                if (parentIds != null && parentIds.size() > 0) {
-                    List<CertificationEditionDTO> parentEditions = certEditionDao.getEditions(parentIds);
-                    for (CertificationEditionDTO parentEdition : parentEditions) {
-                        if (!listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString()
-                                .equals(parentEdition.getId().toString())) {
-                            listing.getErrorMessages().add(
-                                    msgUtil.getMessage("listing.icsEditionMismatch", parentEdition.getYear()));
-                        }
-                    }
-
-                    // this listing's ICS code must be greater than the max of
-                    // parent ICS codes
-                    Integer largestIcs = inheritanceDao.getLargestIcs(parentIds);
-
-                    //Findbugs says this cannot be null since it used above - an NPE would have been thrown
-                    //if (largestIcs != null && icsCodeInteger != null
-                    //        && icsCodeInteger.intValue() != (largestIcs.intValue() + 1)) {
-                    if (largestIcs != null && icsCodeInteger.intValue() != (largestIcs.intValue() + 1)) {
-                        listing.getErrorMessages().add(
-                                   msgUtil.getMessage("listing.icsNotLargestCode", icsCodeInteger, largestIcs));
-                    }
+                //if the ID is still null after trying to look it up, that's a problem
+                if (icsParent.getId() == null) {
+                    listing.getErrorMessages().add(msgUtil.getMessage("listing.icsUniqueIdNotFound", icsParent.getChplProductNumber()));
+                } else if (icsParent.getId().equals(listing.getId())) {
+                    listing.getErrorMessages().add(msgUtil.getMessage("listing.icsSelfInheritance"));
+                } else {
+                    parentListingIds.add(icsParent.getId());
                 }
             }
+
+            if (parentListingIds != null && parentListingIds.size() > 0) {
+                reviewListingParentsHaveSameEditionAsListing(parentListingIds, listing);
+                reviewListingIcsCodeIsOneGreaterThanParents(parentListingIds, listing);
+            }
+        }
+    }
+
+    private void lookupListingId(CertifiedProduct certifiedProduct) {
+        if (certifiedProduct.getId() == null) {
+            try {
+                CertifiedProduct found = searchDao.getByChplProductNumber(certifiedProduct.getChplProductNumber());
+                if (found != null) {
+                    certifiedProduct.setId(found.getId());
+                }
+            } catch (Exception ex) {
+                LOGGER.catching(ex);
+            }
+        }
+    }
+
+    private void reviewListingParentsHaveSameEditionAsListing(List<Long> parentIds, CertifiedProductSearchDetails listing) {
+        List<CertificationEditionDTO> parentEditions = certEditionDao.getEditions(parentIds);
+        parentEditions.stream()
+            .filter(parentEdition -> !listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString()
+                    .equals(parentEdition.getId().toString()))
+            .forEach(parentEdition -> listing.getErrorMessages().add(
+                        msgUtil.getMessage("listing.icsEditionMismatch", parentEdition.getYear())));
+    }
+
+    private void reviewListingIcsCodeIsOneGreaterThanParents(List<Long> parentIds, CertifiedProductSearchDetails listing) {
+        Integer largestIcs = inheritanceDao.getLargestIcs(parentIds);
+        Integer icsCodeInteger = null;
+        try {
+            icsCodeInteger = productNumUtil.getIcsCode(listing.getChplProductNumber());
+        } catch (Exception ex) {
+            LOGGER.catching(ex);
+        }
+
+        if (largestIcs != null && icsCodeInteger != null
+                && icsCodeInteger.intValue() != (largestIcs.intValue() + 1)) {
+            listing.getErrorMessages().add(
+                       msgUtil.getMessage("listing.icsNotLargestCode", icsCodeInteger, largestIcs));
         }
     }
 }

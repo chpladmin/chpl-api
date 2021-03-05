@@ -33,9 +33,10 @@ public class CertificationDateReviewerTest {
         Mockito.when(errorMessageUtil.getMessage("listing.certificationDateMissing"))
                 .thenReturn(MISSING_CERT_DATE);
 
-        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        listing.setCertificationDate(null);
-        listing.setCertificationDateStr(null);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(null)
+                .certificationDateStr(null)
+                .build();
 
         reviewer.review(listing);
 
@@ -47,10 +48,10 @@ public class CertificationDateReviewerTest {
     public void review_nullCertDateAndEmptyCertDateString_errorMessage() throws ParseException {
         Mockito.when(errorMessageUtil.getMessage("listing.certificationDateMissing"))
                 .thenReturn(MISSING_CERT_DATE);
-
-        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        listing.setCertificationDate(null);
-        listing.setCertificationDateStr("");
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(null)
+                .certificationDateStr("")
+                .build();
 
         reviewer.review(listing);
 
@@ -63,9 +64,10 @@ public class CertificationDateReviewerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badCertificationDate"), ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(BAD_CERT_DATE, i.getArgument(1), ""));
 
-        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        listing.setCertificationDate(null);
-        listing.setCertificationDateStr("baddate");
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(null)
+                .certificationDateStr("baddate")
+                .build();
 
         reviewer.review(listing);
 
@@ -81,9 +83,10 @@ public class CertificationDateReviewerTest {
         Calendar tomorrow = Calendar.getInstance();
         tomorrow.add(Calendar.DAY_OF_MONTH, 1);
 
-        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        listing.setCertificationDate(tomorrow.getTimeInMillis());
-        listing.setCertificationDateStr("150101");
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(tomorrow.getTimeInMillis())
+                .certificationDateStr("150101")
+                .build();
 
         reviewer.review(listing);
 
@@ -99,9 +102,10 @@ public class CertificationDateReviewerTest {
         Calendar tomorrow = Calendar.getInstance();
         tomorrow.add(Calendar.DAY_OF_MONTH, 1);
 
-        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        listing.setCertificationDate(tomorrow.getTimeInMillis());
-        listing.setCertificationDateStr(null);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(tomorrow.getTimeInMillis())
+                .certificationDateStr(null)
+                .build();
 
         reviewer.review(listing);
 
@@ -111,11 +115,13 @@ public class CertificationDateReviewerTest {
 
     @Test
     public void review_goodCertDateWithCertDateString_noError() throws ParseException {
-        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         Calendar yesterday = Calendar.getInstance();
         yesterday.add(Calendar.DAY_OF_MONTH, -1);
-        listing.setCertificationDate(yesterday.getTimeInMillis());
-        listing.setCertificationDateStr("150101");
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(yesterday.getTimeInMillis())
+                .certificationDateStr("150101")
+                .build();
 
         reviewer.review(listing);
 
@@ -124,11 +130,13 @@ public class CertificationDateReviewerTest {
 
     @Test
     public void review_goodCertDateWithNullDateString_noError() throws ParseException {
-        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         Calendar yesterday = Calendar.getInstance();
         yesterday.add(Calendar.DAY_OF_MONTH, -1);
-        listing.setCertificationDate(yesterday.getTimeInMillis());
-        listing.setCertificationDateStr(null);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(yesterday.getTimeInMillis())
+                .certificationDateStr(null)
+                .build();
 
         reviewer.review(listing);
 

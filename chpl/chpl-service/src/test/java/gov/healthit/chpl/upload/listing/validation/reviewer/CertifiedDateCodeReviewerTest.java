@@ -41,10 +41,11 @@ public class CertifiedDateCodeReviewerTest {
         Calendar listingCertDate = Calendar.getInstance();
         listingCertDate.set(2021, 0, 2, 0, 0, 0);
 
-        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        listing.setCertificationDate(listingCertDate.getTimeInMillis());
-        listing.setChplProductNumber("15.04.04.2526.WEBe.06.00.1.210101");
-        listing.setCertificationDateStr(null);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(listingCertDate.getTimeInMillis())
+                .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
+                .certificationDateStr(null)
+                .build();
 
         reviewer.review(listing);
 
@@ -57,12 +58,11 @@ public class CertifiedDateCodeReviewerTest {
         Calendar listingCertDate = Calendar.getInstance();
         listingCertDate.set(2021, 0, 2, 0, 0, 0);
 
-        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        listing.setCertificationDate(listingCertDate.getTimeInMillis());
-        listing.setChplProductNumber("15.04.04.2526.WEBe.06.00.1.210102");
-        listing.setCertificationDateStr(null);
-
-
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(listingCertDate.getTimeInMillis())
+                .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210102")
+                .certificationDateStr(null)
+                .build();
         reviewer.review(listing);
 
         assertEquals(0, listing.getErrorMessages().size());

@@ -4,33 +4,30 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class IcsCodeReviewerTest {
-    private static final String CODE_0_MISMATCH = "The unique id indicates the product does not have additional software but some is specified in the upload file.";
-    private static final String CODE_1_MISMATCH = "The unique id indicates the product does have additional software but none is specified in the upload file.";
+    private static final String CODE_FALSE_VALUE_TRUE_MISMATCH =
+            "The unique id indicates the product does not have ICS but the value for Inherited Certification Status is true.";
+    private static final String CODE_TRUE_VALUE_FALSE_MISMATCH =
+            "The unique id indicates the product does have ICS but the value for Inherited Certification Status is false.";
 
-    private ChplProductNumberUtil chplProductNumberUtil;
     private ErrorMessageUtil errorMessageUtil;
-    private AdditionalSoftwareCodeReviewer reviewer;
+    private IcsCodeReviewer reviewer;
 
     @Before
     public void setup() {
-        chplProductNumberUtil =  new ChplProductNumberUtil();
+        ChplProductNumberUtil chplProductNumberUtil = new ChplProductNumberUtil();
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
-
-        reviewer = new AdditionalSoftwareCodeReviewer(chplProductNumberUtil, errorMessageUtil);
+        reviewer = new IcsCodeReviewer(chplProductNumberUtil, errorMessageUtil);
     }
 
     @Test
@@ -58,93 +55,98 @@ public class IcsCodeReviewerTest {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("bad.format")
                 .build();
-
         reviewer.review(listing);
 
         assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
-    public void review_falseAdditionalSoftwareCodeNoCriteria_noError() throws ParseException {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .chplProductNumber("15.04.04.2526.WEBe.06.00.0.210102")
-                .build();
-        reviewer.review(listing);
-
-        assertEquals(0, listing.getErrorMessages().size());
-    }
-
-    @Test
-    public void review_falseAdditionalSoftwareCodeNoAdditionalSoftware_noError() throws ParseException {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .chplProductNumber("15.04.04.2526.WEBe.06.00.0.210102")
-                .certificationResult(CertificationResult.builder()
-                        .build())
-                .build();
-        reviewer.review(listing);
-
-        assertEquals(0, listing.getErrorMessages().size());
-    }
-
-    @Test
-    public void review_trueAdditionalSoftwareCodeWithAdditionalSoftware_noError() throws ParseException {
-        List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
-        additionalSoftware.add(CertificationResultAdditionalSoftware.builder()
-                .grouping("A")
-                .name("Windows")
-                .version("2020")
-                .build());
+    public void review_nonzeroIcsCodeAndIcsBooleanFalse_hasError() throws ParseException {
+        Mockito.when(errorMessageUtil.getMessage("listing.icsCodeTrueValueFalse"))
+            .thenReturn(CODE_TRUE_VALUE_FALSE_MISMATCH);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210102")
-                .certificationResult(CertificationResult.builder()
-                        .additionalSoftware(additionalSoftware)
-                        .build())
-                .build();
-        reviewer.review(listing);
-
-        assertEquals(0, listing.getErrorMessages().size());
-    }
-
-    @Test
-    public void review_trueAdditionalSoftwareCodeNoAdditionalSoftware_hasError() throws ParseException {
-        Mockito.when(errorMessageUtil.getMessage("listing.additionalSoftwareCode1Mismatch"))
-            .thenReturn(CODE_1_MISMATCH);
-
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210102")
-                .certificationResult(CertificationResult.builder()
-                        .success(true)
+                .chplProductNumber("15.04.04.2526.WEBe.06.01.1.210102")
+                .ics(InheritedCertificationStatus.builder()
+                        .inherits(false)
                         .build())
                 .build();
         reviewer.review(listing);
 
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(CODE_1_MISMATCH));
+        assertTrue(listing.getErrorMessages().contains(CODE_TRUE_VALUE_FALSE_MISMATCH));
     }
 
     @Test
-    public void review_falseAdditionalSoftwareCodeWithAdditionalSoftware_hasError() throws ParseException {
-        Mockito.when(errorMessageUtil.getMessage("listing.additionalSoftwareCode0Mismatch"))
-            .thenReturn(CODE_0_MISMATCH);
-
-        List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
-        additionalSoftware.add(CertificationResultAdditionalSoftware.builder()
-                .grouping("A")
-                .name("Windows")
-                .version("2020")
-                .build());
+    public void review_zeroIcsCodeAndIcsBooleanTrue_hasError() throws ParseException {
+        Mockito.when(errorMessageUtil.getMessage("listing.icsCodeFalseValueTrue"))
+            .thenReturn(CODE_FALSE_VALUE_TRUE_MISMATCH);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .chplProductNumber("15.04.04.2526.WEBe.06.00.0.210102")
-                .certificationResult(CertificationResult.builder()
-                        .success(true)
-                        .additionalSoftware(additionalSoftware)
+                .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210102")
+                .ics(InheritedCertificationStatus.builder()
+                        .inherits(true)
                         .build())
                 .build();
         reviewer.review(listing);
 
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(CODE_0_MISMATCH));
+        assertTrue(listing.getErrorMessages().contains(CODE_FALSE_VALUE_TRUE_MISMATCH));
+    }
+
+    @Test
+    public void review_zeroIcsCodeAndIcsBooleanNull_noError() throws ParseException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210102")
+                .ics(InheritedCertificationStatus.builder()
+                        .inherits(null)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_nonzeroIcsCodeAndIcsBooleanNull_noError() throws ParseException {
+        Mockito.when(errorMessageUtil.getMessage("listing.icsCodeTrueValueFalse"))
+            .thenReturn(CODE_TRUE_VALUE_FALSE_MISMATCH);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.2526.WEBe.06.02.1.210102")
+                .ics(InheritedCertificationStatus.builder()
+                        .inherits(null)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(CODE_TRUE_VALUE_FALSE_MISMATCH));
+    }
+
+    @Test
+    public void review_nonzeroIcsCodeAndIcsBooleanTrue_noError() throws ParseException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.2526.WEBe.06.02.1.210102")
+                .ics(InheritedCertificationStatus.builder()
+                        .inherits(true)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_zeroIcsCodeAndIcsBooleanFalse_noError() throws ParseException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210102")
+                .ics(InheritedCertificationStatus.builder()
+                        .inherits(false)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
     }
 }

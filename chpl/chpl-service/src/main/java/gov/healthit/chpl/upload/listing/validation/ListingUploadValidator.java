@@ -8,35 +8,46 @@ import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.upload.listing.validation.reviewer.AdditionalSoftwareCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.CSVHeaderReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.CertifiedDateCodeReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.ChplNumberFormatReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.ChplNumberUniqueReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.DeveloperStatusReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.IcsCodeReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.InheritanceReviewer;
 
 @Component
 public class ListingUploadValidator {
     //CSV Reviewers that review the ListingUpload domain object and look for unrecognized columns to warn the user
+    //TODO: needs unit test
     private CSVHeaderReviewer csvHeaderReviewer;
 
     //Reviewers for newly uploaded listings (no comparison reviewers because nothing is changing as with edits)
+    //TODO: needs unit test
+    private ChplNumberFormatReviewer chplNumberFormatReviewer;
+    private IcsCodeReviewer icsCodeReviewer;
     private AdditionalSoftwareCodeReviewer additionalSoftwareCodeReviewer;
     private CertifiedDateCodeReviewer certifiedDateCodeReviewer;
-    private CertificationDateReviewer certDateReviewer;
-    private ChplNumberUniqueReviewer chplNumberUniqueReviewer;
 
-    //these need unit tests added
+    private ChplNumberUniqueReviewer chplNumberUniqueReviewer;
+    private CertificationDateReviewer certDateReviewer;
+    //TODO: needs unit test
     private DeveloperStatusReviewer devStatusReviewer;
+    //TODO: needs unit test
     private InheritanceReviewer inheritanceReviewer;
 
 
     @Autowired
     public ListingUploadValidator(CSVHeaderReviewer csvHeaderReviewer,
+            ChplNumberFormatReviewer chplNumberFormatReviewer,
+            IcsCodeReviewer icsCodeReviewer,
             AdditionalSoftwareCodeReviewer additionalSoftwareCodeReviewer,
             CertifiedDateCodeReviewer certifiedDateCodeReviewer,
             CertificationDateReviewer certDateReviewer,
             ChplNumberUniqueReviewer chplNumberUniqueReviewer,
             DeveloperStatusReviewer devStatusReviewer) {
         this.csvHeaderReviewer = csvHeaderReviewer;
+        this.chplNumberFormatReviewer = chplNumberFormatReviewer;
+        this.icsCodeReviewer = icsCodeReviewer;
         this.additionalSoftwareCodeReviewer = additionalSoftwareCodeReviewer;
         this.certifiedDateCodeReviewer = certifiedDateCodeReviewer;
         this.certDateReviewer = certDateReviewer;
@@ -46,10 +57,13 @@ public class ListingUploadValidator {
 
     public void review(ListingUpload uploadedMetadata, CertifiedProductSearchDetails listing) {
         csvHeaderReviewer.review(uploadedMetadata, listing);
+        chplNumberFormatReviewer.review(listing);
+        icsCodeReviewer.review(listing);
         additionalSoftwareCodeReviewer.review(listing);
         certifiedDateCodeReviewer.review(listing);
         certDateReviewer.review(listing);
         chplNumberUniqueReviewer.review(listing);
         devStatusReviewer.review(listing);
+        inheritanceReviewer.review(listing);
     }
 }
