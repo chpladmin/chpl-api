@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -26,7 +27,8 @@ public class ChplNumberUniqueReviewer {
             return;
         }
 
-        if (!chplProductNumberUtil.isUnique(chplProductNumber)) {
+        CertifiedProduct listingWithThisChplProductNumber = chplProductNumberUtil.getListing(chplProductNumber);
+        if (listingWithThisChplProductNumber != null && listingWithThisChplProductNumber.getId() != listing.getId()) {
             listing.getErrorMessages().add(msgUtil.getMessage(
                     "listing.chplProductNumber.notUnique", chplProductNumber));
         }

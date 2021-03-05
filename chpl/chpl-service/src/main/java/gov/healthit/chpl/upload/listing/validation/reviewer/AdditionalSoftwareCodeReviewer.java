@@ -7,22 +7,18 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.util.ValidationUtils;
 import lombok.extern.log4j.Log4j2;
 
 @Component("listingUploadAdditionalSoftwareReviewer")
 @Log4j2
 public class AdditionalSoftwareCodeReviewer {
     private ChplProductNumberUtil chplProductNumberUtil;
-    private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
     public AdditionalSoftwareCodeReviewer(ChplProductNumberUtil chplProductNumberUtil,
-            ValidationUtils validationUtils,
             ErrorMessageUtil msgUtil) {
         this.chplProductNumberUtil = chplProductNumberUtil;
-        this.validationUtils = validationUtils;
         this.msgUtil = msgUtil;
     }
 
@@ -49,15 +45,11 @@ public class AdditionalSoftwareCodeReviewer {
                 .findAny().isPresent();
         if (additionalSoftwareCode != null && additionalSoftwareCode.equals("0")) {
             if (certsHaveAdditionalSoftware) {
-                listing.getErrorMessages().add(
-                        "The unique id indicates the product does not have additional "
-                        + "software but some is specified in the upload file.");
+                listing.getErrorMessages().add(msgUtil.getMessage("listing.additionalSoftwareCode0Mismatch"));
             }
         } else if (additionalSoftwareCode != null && additionalSoftwareCode.equals("1")) {
             if (!certsHaveAdditionalSoftware) {
-                listing.getErrorMessages().add(
-                        "The unique id indicates the product has additional "
-                        + "software but none is specified in the upload file.");
+                listing.getErrorMessages().add(msgUtil.getMessage("listing.additionalSoftwareCode1Mismatch"));
             }
         }
     }
