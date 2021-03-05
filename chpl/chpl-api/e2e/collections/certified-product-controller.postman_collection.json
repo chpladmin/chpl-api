@@ -83,16 +83,21 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"/{chplPrefix}-{identifier} end point should return status 200 for valid API Key\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"const resultexp = pm.response.json()\r",
 									"pm.test(\"/{chplPrefix}-{identifier} end point response should have all RWT fields\", function () {\r",
+									"    var resultexp = pm.response.json()\r",
 									"    pm.expect(resultexp).to.have.property('rwtPlansUrl');\r",
 									"    pm.expect(resultexp).to.have.property('rwtPlansCheckDate');\r",
 									"    pm.expect(resultexp).to.have.property('rwtResultsUrl');\r",
 									"    pm.expect(resultexp).to.have.property('rwtResultsCheckDate');\r",
 									"    pm.expect(resultexp).to.have.property('rwtEligibilityYear');\r",
+									"});\r",
+									"pm.test(\"All RWT fields should be null for 2011 and 2014 listings\", function() {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.rwtPlansUrl).eq(null);\r",
+									"    pm.expect(jsonData.rwtPlansCheckDate).eq(null);\r",
+									"    pm.expect(jsonData.rwtResultsUrl).eq(null);\r",
+									"    pm.expect(jsonData.rwtResultsCheckDate).eq(null);\r",
+									"    pm.expect(jsonData.rwtEligibilityYear).eq(null);\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -127,73 +132,745 @@
 						"description": "GET /{chplPrefix}-{identifier} end point response returns status 200 and have all RWT fields"
 					},
 					"response": []
-				},
-				{
-					"name": "GET /{chplPrefix}-{identifier} - RWT should be null for 2011 and 2014 listings",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"const chplPrefix= pm.iterationData.get(\"chplPrefix\");\r",
-									"const identifier= pm.iterationData.get(\"identifier\");\r",
-									"pm.environment.set(\"chplPrefix\",\"chplPrefix\");\r",
-									"pm.environment.set(\"identifier\",\"identifier\");"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"All RWT fields should be null for 2011 and 2014 listings\", function() {\r",
-									"var jsonData = pm.response.json();\r",
-									"pm.expect(jsonData.rwtPlansUrl).eq(null);\r",
-									"pm.expect(jsonData.rwtPlansCheckDate).eq(null);\r",
-									"pm.expect(jsonData.rwtResultsUrl).eq(null);\r",
-									"pm.expect(jsonData.rwtResultsCheckDate).eq(null);\r",
-									"pm.expect(jsonData.rwtEligibilityYear).eq(null);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "API-Key",
-								"type": "text",
-								"value": "{{apiKey}}"
-							},
-							{
-								"key": "Content-Type",
-								"type": "text",
-								"value": "application/json"
-							}
-						],
-						"url": {
-							"raw": "{{url}}/rest/certified_products/{{chplPrefix}}-{{identifier}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"certified_products",
-								"{{chplPrefix}}-{{identifier}}"
-							]
-						},
-						"description": "All RWT fields should be null for 2011 and 2014 listings"
-					},
-					"response": []
 				}
 			]
 		},
 		{
 			"name": "GET : Certified_products: non-data driven tests",
 			"item": [
+				{
+					"name": "GET : /{certifiedProductId}",
+					"item": [
+						{
+							"name": "GET /{certifiedProductId} - valid API Key return all RWT fields",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const certifiedProductId= pm.iterationData.get(\"certifiedProductId\");\r",
+											"pm.environment.set(\"certifiedProductId\",\"certifiedProductId\");"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"/{certifiedProductId} end point should return status 200 for valid API Key\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"const expresult = pm.response.json()\r",
+											"pm.test(\"/{certifiedProductId} end point response should have all RWT fields\", function () {\r",
+											"    pm.expect(expresult).to.have.property('rwtPlansUrl');\r",
+											"    pm.expect(expresult).to.have.property('rwtPlansCheckDate');\r",
+											"    pm.expect(expresult).to.have.property('rwtResultsUrl');\r",
+											"    pm.expect(expresult).to.have.property('rwtResultsCheckDate');\r",
+											"    pm.expect(expresult).to.have.property('rwtEligibilityYear');\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "API-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/certified_products/10295",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"certified_products",
+										"10295"
+									]
+								},
+								"description": "GET /{certifiedProductId} end point should return status 200 and response should have all RWT fields for valid API Key"
+							},
+							"response": []
+						},
+						{
+							"name": "GET /{certifiedProductId}- Invalid API Key",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"/{certifiedProductId} end point should return status 401 for Invalid API Key\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "API-Key",
+										"value": "1290y7y8h8ko90b8ecd0596c98ae9094",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/certified_products/10295",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"certified_products",
+										"10295"
+									]
+								},
+								"description": "GET /{certifiedProductId} end point should return status 401 for Invalid API Key"
+							},
+							"response": []
+						},
+						{
+							"name": "GET /{certifiedProductId} - without API Key",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"/{certifiedProductId} end point should return status 400 for requests without API Key\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/certified_products/10295",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"certified_products",
+										"10295"
+									]
+								},
+								"description": "GET /{certifiedProductId} end point should return status 400 for requests without API Key"
+							},
+							"response": []
+						},
+						{
+							"name": "GET /{certifiedProductId}/measures- valid API Key",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const certifiedProductId= pm.iterationData.get(\"certifiedProductId\");\r",
+											"pm.environment.set(\"certifiedProductId\",\"certifiedProductId\");"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"/{certifiedProductId}/measures end point should return status 200 for valid API Key\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "API-KEY",
+										"value": "{{apiKey}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/certified_products/9804/measures",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"certified_products",
+										"9804",
+										"measures"
+									]
+								},
+								"description": "GET /{certifiedProductId}/measures end point returns response status 200 for valid API Key and valid certifiedProductId"
+							},
+							"response": []
+						},
+						{
+							"name": "GET /{certifiedProductId}/measures - Invalid API Key",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"/{certifiedProductId}/measures end point should return status 401 for Invalid API Key\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "API-Key",
+										"value": "1290y7y8h8ko90b8ecd0596c98ae9094",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/certified_products/10295/measures",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"certified_products",
+										"10295",
+										"measures"
+									]
+								},
+								"description": "GET /{certifiedProductId}/measures end point should return 401 response for Invalid API Key"
+							},
+							"response": []
+						},
+						{
+							"name": "GET /{certifiedProductId}/measures - without API Key",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"/{certifiedProductId}/measures end point should return status 400 for requests without API Key\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/certified_products/9544/measures",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"certified_products",
+										"9544",
+										"measures"
+									]
+								},
+								"description": "GET /{certifiedProductId}/measures should return 400 status for requests without API Key"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "GET : /{chplPrefix}-{identifier}",
+					"item": [
+						{
+							"name": "GET /{chplPrefix}-{identifier} - Invalid API Key",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"/{chplPrefix}-{identifier} end point should return status 401 for requests with Invalid API Key\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "API-Key",
+										"value": "1290y7y8h8ko90b8ecd0596c98ae9094",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/certified_products/CHP-028037",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"certified_products",
+										"CHP-028037"
+									]
+								},
+								"description": "GET /{chplPrefix}-{identifier} end point should return status 401 for requests with Invalid API Key"
+							},
+							"response": []
+						},
+						{
+							"name": "GET /{chplPrefix}-{identifier}- without API Key",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"/{chplPrefix}-{identifier} end point should return status 400 for requests without API Key\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/certified_products/CHP-028037",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"certified_products",
+										"CHP-028037"
+									]
+								},
+								"description": "GET /{chplPrefix}-{identifier} end point should return status 400 for requests without API Key"
+							},
+							"response": []
+						},
+						{
+							"name": "GET /{chplPrefix}-{identifier}/measures - Invalid API Key",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"/{chplPrefix}-{identifier}/measures end point should return status 401 for requests with Invalid API Key\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "API-Key",
+										"value": "1290y7y8h8ko90b8ecd0596c98ae9094",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/certified_products/CHP-028037/measures",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"certified_products",
+										"CHP-028037",
+										"measures"
+									]
+								},
+								"description": "GET /{chplPrefix}-{identifier}/measures end point should return status 401 for requests with Invalid API Key"
+							},
+							"response": []
+						},
+						{
+							"name": "GET /{chplPrefix}-{identifier}/measures - without API Key",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"/{chplPrefix}-{identifier}/measures end point should return status 400 for requests without API Key\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/certified_products/CHP-009321/measures",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"certified_products",
+										"CHP-009321",
+										"measures"
+									]
+								},
+								"description": "GET /{chplPrefix}-{identifier}/measures end point should return status 400 for requests without API Key"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "GET: /{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}",
+					"item": [
+						{
+							"name": "GET /certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} -valid API Key returns all RWT fields",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"/certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} end point should return status 200 for valid API Key\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"const expresp = pm.response.json()\r",
+											"pm.test(\"/certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} end point response should have all RWT fields\", function () {\r",
+											"    pm.expect(expresp).to.have.property('rwtPlansUrl');\r",
+											"    pm.expect(expresp).to.have.property('rwtPlansCheckDate');\r",
+											"    pm.expect(expresp).to.have.property('rwtResultsUrl');\r",
+											"    pm.expect(expresp).to.have.property('rwtResultsCheckDate');\r",
+											"    pm.expect(expresp).to.have.property('rwtEligibilityYear');\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "API-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/certified_products/15.02.02.2270.A106.02.01.0.210112",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"certified_products",
+										"15.02.02.2270.A106.02.01.0.210112"
+									]
+								},
+								"description": "GET /certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} end point returns status 200 and response should have all RWT fields for valid API Key"
+							},
+							"response": []
+						},
+						{
+							"name": "GET /certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} - Invalid API Key",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} end point should return status 401 for Invalid API Key\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "API-Key",
+										"value": "1290y7y8h8ko90b8ecd0596c98ae9094",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/certified_products/15.04.04.1821.Alth.02.01.1.191220",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"certified_products",
+										"15.04.04.1821.Alth.02.01.1.191220"
+									]
+								},
+								"description": "GET certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} end point should return status 401 for Invalid API Key"
+							},
+							"response": []
+						},
+						{
+							"name": "GET /certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} - without API Key",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} end point should return status 400 for request without API Key\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/certified_products/15.04.04.1821.Alth.02.01.1.191220",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"certified_products",
+										"15.04.04.1821.Alth.02.01.1.191220"
+									]
+								},
+								"description": "GET certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} end point should return status 400 for request without API Key"
+							},
+							"response": []
+						},
+						{
+							"name": "GET /certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/measures - valid API Key",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"/certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/measures end point should return status 200 for valid API Key\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "API-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/certified_products/15.04.04.1164.Well.05.00.1.201231/measures",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"certified_products",
+										"15.04.04.1164.Well.05.00.1.201231",
+										"measures"
+									]
+								},
+								"description": "GET /certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/measures end point returns 200 response status for valid API Key and valid certified product"
+							},
+							"response": []
+						},
+						{
+							"name": "GET /certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/measures -Invalid API Key",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/measures end point should return status 401 for Invalid API Key\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "API-Key",
+										"value": "1290y7y8h8ko90b8ecd0596c98ae9094",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/certified_products/15.02.02.2527.A085.01.00.1.181218/measures",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"certified_products",
+										"15.02.02.2527.A085.01.00.1.181218",
+										"measures"
+									]
+								},
+								"description": "GET certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/measures end point should return status 401 for Invalid API Key"
+							},
+							"response": []
+						},
+						{
+							"name": "GET /certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/measures - without API Key",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/measures end point should return status 400 for request without API Key\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/certified_products/15.04.04.3079.YOUR.07.00.1.201102/measures",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"certified_products",
+										"15.04.04.3079.YOUR.07.00.1.201102",
+										"measures"
+									]
+								},
+								"description": "GET certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/measures end point should return status 400 for request without API Key"
+							},
+							"response": []
+						}
+					]
+				},
 				{
 					"name": "GET /rest/certified_products/{listingId} - schema tests",
 					"event": [
@@ -236,724 +913,6 @@
 							]
 						},
 						"description": "Expect Listing Basic response to have svapResultsUrl"
-					},
-					"response": []
-				},
-				{
-					"name": "GET /certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/measures - valid API Key",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"/certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/measures end point should return status 200 for valid API Key\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "API-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{url}}/rest/certified_products/15.04.04.1164.Well.05.00.1.201231/measures",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"certified_products",
-								"15.04.04.1164.Well.05.00.1.201231",
-								"measures"
-							]
-						},
-						"description": "GET /certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/measures end point returns 200 response status for valid API Key and valid certified product"
-					},
-					"response": []
-				},
-				{
-					"name": "GET /{certifiedProductId} - valid API Key return all RWT fields",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"const certifiedProductId= pm.iterationData.get(\"certifiedProductId\");\r",
-									"pm.environment.set(\"certifiedProductId\",\"certifiedProductId\");"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"/{certifiedProductId} end point should return status 200 for valid API Key\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"const expresult = pm.response.json()\r",
-									"pm.test(\"/{certifiedProductId} end point response should have all RWT fields\", function () {\r",
-									"    pm.expect(expresult).to.have.property('rwtPlansUrl');\r",
-									"    pm.expect(expresult).to.have.property('rwtPlansCheckDate');\r",
-									"    pm.expect(expresult).to.have.property('rwtResultsUrl');\r",
-									"    pm.expect(expresult).to.have.property('rwtResultsCheckDate');\r",
-									"    pm.expect(expresult).to.have.property('rwtEligibilityYear');\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "API-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{url}}/rest/certified_products/10295",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"certified_products",
-								"10295"
-							]
-						},
-						"description": "GET /{certifiedProductId} end point should return status 200 and response should have all RWT fields for valid API Key"
-					},
-					"response": []
-				},
-				{
-					"name": "GET /{certifiedProductId}/measures- valid API Key",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"const certifiedProductId= pm.iterationData.get(\"certifiedProductId\");\r",
-									"pm.environment.set(\"certifiedProductId\",\"certifiedProductId\");"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"/{certifiedProductId}/measures end point should return status 200 for valid API Key\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "API-KEY",
-								"value": "{{apiKey}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{url}}/rest/certified_products/9804/measures",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"certified_products",
-								"9804",
-								"measures"
-							]
-						},
-						"description": "GET /{certifiedProductId}/measures end point returns response status 200 for valid API Key and valid certifiedProductId"
-					},
-					"response": []
-				},
-				{
-					"name": "GET /{certifiedProductId}/measures - Invalid API Key",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"/{certifiedProductId}/measures end point should return status 401 for Invalid API Key\", function () {\r",
-									"    pm.response.to.have.status(401);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "API-Key",
-								"value": "1290y7y8h8ko90b8ecd0596c98ae9094",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{url}}/rest/certified_products/10295/measures",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"certified_products",
-								"10295",
-								"measures"
-							]
-						},
-						"description": "GET /{certifiedProductId}/measures end point should return 401 response for Invalid API Key"
-					},
-					"response": []
-				},
-				{
-					"name": "GET /{certifiedProductId}/measures - without API Key",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"/{certifiedProductId}/measures end point should return status 400 for requests without API Key\", function () {\r",
-									"    pm.response.to.have.status(400);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{url}}/rest/certified_products/9544/measures",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"certified_products",
-								"9544",
-								"measures"
-							]
-						},
-						"description": "GET /{certifiedProductId}/measures should return 400 status for requests without API Key"
-					},
-					"response": []
-				},
-				{
-					"name": "GET /{chplPrefix}-{identifier}/measures - Invalid API Key",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"/{chplPrefix}-{identifier}/measures end point should return status 401 for requests with Invalid API Key\", function () {\r",
-									"    pm.response.to.have.status(401);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "API-Key",
-								"value": "1290y7y8h8ko90b8ecd0596c98ae9094",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{url}}/rest/certified_products/CHP-028037/measures",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"certified_products",
-								"CHP-028037",
-								"measures"
-							]
-						},
-						"description": "GET /{chplPrefix}-{identifier}/measures end point should return status 401 for requests with Invalid API Key"
-					},
-					"response": []
-				},
-				{
-					"name": "GET /{chplPrefix}-{identifier}/measures - without API Key",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"/{chplPrefix}-{identifier}/measures end point should return status 400 for requests without API Key\", function () {\r",
-									"    pm.response.to.have.status(400);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{url}}/rest/certified_products/CHP-009321/measures",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"certified_products",
-								"CHP-009321",
-								"measures"
-							]
-						},
-						"description": "GET /{chplPrefix}-{identifier}/measures end point should return status 400 for requests without API Key"
-					},
-					"response": []
-				},
-				{
-					"name": "GET /certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/measures -Invalid API Key",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/measures end point should return status 401 for Invalid API Key\", function () {\r",
-									"    pm.response.to.have.status(401);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "API-Key",
-								"value": "1290y7y8h8ko90b8ecd0596c98ae9094",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{url}}/rest/certified_products/15.02.02.2527.A085.01.00.1.181218/measures",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"certified_products",
-								"15.02.02.2527.A085.01.00.1.181218",
-								"measures"
-							]
-						},
-						"description": "GET certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/measures end point should return status 401 for Invalid API Key"
-					},
-					"response": []
-				},
-				{
-					"name": "GET /certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/measures - without API Key",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/measures end point should return status 400 for request without API Key\", function () {\r",
-									"    pm.response.to.have.status(400);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{url}}/rest/certified_products/15.04.04.3079.YOUR.07.00.1.201102/measures",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"certified_products",
-								"15.04.04.3079.YOUR.07.00.1.201102",
-								"measures"
-							]
-						},
-						"description": "GET certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/measures end point should return status 400 for request without API Key"
-					},
-					"response": []
-				},
-				{
-					"name": "GET /certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} -valid API Key returns all RWT fields",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"/certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} end point should return status 200 for valid API Key\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"const expresp = pm.response.json()\r",
-									"pm.test(\"/certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} end point response should have all RWT fields\", function () {\r",
-									"    pm.expect(expresp).to.have.property('rwtPlansUrl');\r",
-									"    pm.expect(expresp).to.have.property('rwtPlansCheckDate');\r",
-									"    pm.expect(expresp).to.have.property('rwtResultsUrl');\r",
-									"    pm.expect(expresp).to.have.property('rwtResultsCheckDate');\r",
-									"    pm.expect(expresp).to.have.property('rwtEligibilityYear');\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "API-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{url}}/rest/certified_products/15.02.02.2270.A106.02.01.0.210112",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"certified_products",
-								"15.02.02.2270.A106.02.01.0.210112"
-							]
-						},
-						"description": "GET /certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} end point returns status 200 and response should have all RWT fields for valid API Key"
-					},
-					"response": []
-				},
-				{
-					"name": "GET /certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} - Invalid API Key",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} end point should return status 401 for Invalid API Key\", function () {\r",
-									"    pm.response.to.have.status(401);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "API-Key",
-								"value": "1290y7y8h8ko90b8ecd0596c98ae9094",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{url}}/rest/certified_products/15.04.04.1821.Alth.02.01.1.191220",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"certified_products",
-								"15.04.04.1821.Alth.02.01.1.191220"
-							]
-						},
-						"description": "GET certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} end point should return status 401 for Invalid API Key"
-					},
-					"response": []
-				},
-				{
-					"name": "GET /certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} - without API Key",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} end point should return status 400 for request without API Key\", function () {\r",
-									"    pm.response.to.have.status(400);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{url}}/rest/certified_products/15.04.04.1821.Alth.02.01.1.191220",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"certified_products",
-								"15.04.04.1821.Alth.02.01.1.191220"
-							]
-						},
-						"description": "GET certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} end point should return status 400 for request without API Key"
-					},
-					"response": []
-				},
-				{
-					"name": "GET /{chplPrefix}-{identifier} - Invalid API Key",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"/{chplPrefix}-{identifier} end point should return status 401 for requests with Invalid API Key\", function () {\r",
-									"    pm.response.to.have.status(401);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "API-Key",
-								"value": "1290y7y8h8ko90b8ecd0596c98ae9094",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{url}}/rest/certified_products/CHP-028037",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"certified_products",
-								"CHP-028037"
-							]
-						},
-						"description": "GET /{chplPrefix}-{identifier} end point should return status 401 for requests with Invalid API Key"
-					},
-					"response": []
-				},
-				{
-					"name": "GET /{chplPrefix}-{identifier}- without API Key",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"/{chplPrefix}-{identifier} end point should return status 400 for requests without API Key\", function () {\r",
-									"    pm.response.to.have.status(400);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{url}}/rest/certified_products/CHP-028037",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"certified_products",
-								"CHP-028037"
-							]
-						},
-						"description": "GET /{chplPrefix}-{identifier} end point should return status 400 for requests without API Key"
-					},
-					"response": []
-				},
-				{
-					"name": "GET /{certifiedProductId}- Invalid API Key",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"/{certifiedProductId} end point should return status 401 for Invalid API Key\", function () {\r",
-									"    pm.response.to.have.status(401);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "API-Key",
-								"value": "1290y7y8h8ko90b8ecd0596c98ae9094",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{url}}/rest/certified_products/10295",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"certified_products",
-								"10295"
-							]
-						},
-						"description": "GET /{certifiedProductId} end point should return status 401 for Invalid API Key"
-					},
-					"response": []
-				},
-				{
-					"name": "GET /{certifiedProductId} - without API Key",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"/{certifiedProductId} end point should return status 400 for requests without API Key\", function () {\r",
-									"    pm.response.to.have.status(400);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{url}}/rest/certified_products/10295",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"certified_products",
-								"10295"
-							]
-						},
-						"description": "GET /{certifiedProductId} end point should return status 400 for requests without API Key"
 					},
 					"response": []
 				}
