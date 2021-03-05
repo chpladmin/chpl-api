@@ -1,4 +1,4 @@
-package gov.healthit.chpl.upload.listing.validation;
+package gov.healthit.chpl.upload.listing.validation.reviewer;
 
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;

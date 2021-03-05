@@ -301,6 +301,11 @@ public class ChplProductNumberUtil {
         return parts.getCertifiedDateCode();
     }
 
+    public String getAdditionalSoftwareCode(String chplProductNumber) {
+        ChplProductNumberParts parts = parseChplProductNumber(chplProductNumber);
+        return parts.getAdditionalSoftwareCode();
+    }
+
     public String getCertificationEditionCode(String chplProductNumber) {
         ChplProductNumberParts parts = parseChplProductNumber(chplProductNumber);
         return parts.getEditionCode();
