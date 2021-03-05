@@ -111,7 +111,7 @@ public class SchedulerManager extends SecuredManager {
             }
 
             ChplRepeatableTrigger newTrigger = new ChplRepeatableTrigger((CronTrigger) scheduler.getTrigger(triggerId));
-            emailer.sendEmail(newTrigger, ADDED);
+            emailer.sendEmail(newTrigger, trigger.getJob(),  ADDED);
             return newTrigger;
         } else {
             throw new AccessDeniedException("Can not create this trigger");
@@ -148,9 +148,9 @@ public class SchedulerManager extends SecuredManager {
             throws SchedulerException, ValidationException, MessagingException {
         Scheduler scheduler = getScheduler();
         TriggerKey triggerKey = triggerKey(triggerName, triggerGroup);
-
-        if (doesUserHavePermissionToTrigger(scheduler.getTrigger(triggerKey))) {
-            emailer.sendEmail(getChplTrigger(triggerKey), DELETED);
+        Trigger trigger = scheduler.getTrigger(triggerKey);
+        if (doesUserHavePermissionToTrigger(trigger)) {
+            emailer.sendEmail(getChplTrigger(triggerKey), getJobBasedOnTrigger(trigger), DELETED);
             scheduler.unscheduleJob(triggerKey);
         } else {
             throw new AccessDeniedException("Can not update this trigger");
@@ -236,7 +236,7 @@ public class SchedulerManager extends SecuredManager {
             scheduler.rescheduleJob(oldTrigger.getKey(), qzTrigger);
 
             ChplRepeatableTrigger newTrigger = getChplTrigger(qzTrigger.getKey());
-            emailer.sendEmail(newTrigger, UPDATED);
+            emailer.sendEmail(newTrigger, getJobBasedOnTrigger(qzTrigger), UPDATED);
             return newTrigger;
         } else {
             throw new AccessDeniedException("Can not update this trigger");
@@ -451,4 +451,7 @@ public class SchedulerManager extends SecuredManager {
         return UUID.randomUUID().toString();
     }
 
-}
+    private ChplJob getJobBasedOnTrigger(Trigger trigger) throws SchedulerException {
+        return new ChplJob(getScheduler().getJobDetail(trigger.getJobKey()));
+    }
+ }

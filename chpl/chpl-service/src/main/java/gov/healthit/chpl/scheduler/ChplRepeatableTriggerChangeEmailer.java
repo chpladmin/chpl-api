@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
@@ -41,27 +42,27 @@ public class ChplRepeatableTriggerChangeEmailer {
         this.emailStyles = emailStyles;
     }
 
-    public void sendEmail(ChplRepeatableTrigger trigger, String action) throws MessagingException {
+    public void sendEmail(ChplRepeatableTrigger trigger, ChplJob job, String action) throws MessagingException {
         EmailBuilder email = new EmailBuilder(environment);
         email.recipient(trigger.getEmail())
                 .subject(emailSubject)
-                .htmlMessage(getEmailText(trigger, action))
+                .htmlMessage(getEmailText(trigger, job, action))
                 .sendEmail();
     }
 
-    private String getEmailText(ChplRepeatableTrigger trigger, String action) {
+    private String getEmailText(ChplRepeatableTrigger trigger, ChplJob job, String action) {
         HtmlEmailTemplate email = new HtmlEmailTemplate();
         email.setStyles(emailStyles);
-        email.setBody(getBody(trigger, action));
+        email.setBody(getBody(trigger, job, action));
         return email.build();
     }
 
-    private String getBody(ChplRepeatableTrigger trigger, String action) {
-        return String.format(emailBody, trigger.getJob().getName(), action, getTable(trigger));
+    private String getBody(ChplRepeatableTrigger trigger, ChplJob job, String action) {
+        return String.format(emailBody, trigger.getJob().getName(), action, getTable(trigger, job));
 
     }
 
-    private String getTable(ChplRepeatableTrigger trigger) {
+    private String getTable(ChplRepeatableTrigger trigger, ChplJob job) {
         StringBuilder table = new StringBuilder();
         table.append("<table class='blueTable'>\n");
         table.append("    <thead>\n");
@@ -77,19 +78,17 @@ public class ChplRepeatableTriggerChangeEmailer {
         table.append("                Job Name\n");
         table.append("            </td>\n");
         table.append("            <td>\n");
-        table.append("                " + trigger.getJob().getName() + "\n");
+        table.append("                " + job.getName() + "\n");
         table.append("            </td>\n");
         table.append("        </tr>\n");
-        if (!StringUtils.isEmpty(trigger.getJob().getDescription())) {
-            table.append("        <tr class='even'>\n");
-            table.append("            <td>\n");
-            table.append("                Job Description\n");
-            table.append("            </td>\n");
-            table.append("            <td>\n");
-            table.append("                " + trigger.getJob().getDescription() + "\n");
-            table.append("            </td>\n");
-            table.append("        </tr>\n");
-        }
+        table.append("        <tr class='even'>\n");
+        table.append("            <td>\n");
+        table.append("                Job Description\n");
+        table.append("            </td>\n");
+        table.append("            <td>\n");
+        table.append("                " + job.getDescription() + "\n");
+        table.append("            </td>\n");
+        table.append("        </tr>\n");
         table.append("        <tr class='odd'>\n");
         table.append("            <td>\n");
         table.append("                Schedule\n");
