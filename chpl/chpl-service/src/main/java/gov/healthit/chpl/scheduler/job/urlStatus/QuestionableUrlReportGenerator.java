@@ -62,15 +62,13 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
     private QuestionableUrlLookupDao urlLookupDao;
 
     private FailedUrlCsvFormatter csvFormatter = new FailedUrlCsvFormatter();
-    private List<CertificationStatusType> activeAndSuspendedStatuses = new ArrayList<CertificationStatusType>();
+    private List<CertificationStatusType> activeStatuses = new ArrayList<CertificationStatusType>();
 
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Questionable URL Report Generator job. *********");
-        activeAndSuspendedStatuses.add(CertificationStatusType.Active);
-        activeAndSuspendedStatuses.add(CertificationStatusType.SuspendedByAcb);
-        activeAndSuspendedStatuses.add(CertificationStatusType.SuspendedByOnc);
+        activeStatuses.add(CertificationStatusType.Active);
 
         try {
             List<FailedUrlResult> questionableUrls = new ArrayList<FailedUrlResult>();
@@ -157,7 +155,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
         }
         if (urlResult.getDeveloper() != null) {
             List<CertifiedProductDetailsDTO> filteredListings
-                = cpDao.getListingsByStatusForDeveloperAndAcb(urlResult.getDeveloper().getDeveloperId(), activeAndSuspendedStatuses, acbIds);
+                = cpDao.getListingsByStatusForDeveloperAndAcb(urlResult.getDeveloper().getDeveloperId(), activeStatuses, acbIds);
             return filteredListings != null && filteredListings.size() > 0;
         }
         return false;
@@ -177,7 +175,10 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
 
     private boolean isUrlRelatedToActiveListing(FailedUrlResult urlResult) {
         if (urlResult.getListing() != null && !StringUtils.isEmpty(urlResult.getListing().getCertificationStatus())) {
-            return CertificationStatusType.Active.getName().equals(urlResult.getListing().getCertificationStatus());
+            return activeStatuses.stream()
+                    .map(status -> status.getName())
+                    .collect(Collectors.toList())
+                    .contains(urlResult.getListing().getCertificationStatus());
         }
         return false;
     }
