@@ -136,8 +136,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
     }
 
     private List<FailedUrlResult> filterUrls(List<FailedUrlResult> badUrls, JobExecutionContext jobContext) {
-        String acbSpecific = jobContext.getMergedJobDataMap().getString("acbSpecific");
-        if (!StringUtils.isEmpty(acbSpecific) && BooleanUtils.toBoolean(acbSpecific)) {
+        if (isAcbSpecific(jobContext)) {
             List<Long> acbIds = getSelectedAcbIds(jobContext);
             return badUrls.stream()
                 .filter(badUrl -> isUrlRelatedToAcbs(badUrl, acbIds))
@@ -214,11 +213,13 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
         String subject = env.getProperty("job.questionableUrlReport.emailSubject");
         String htmlMessage = env.getProperty("job.questionableUrlReport.emailBodyBegin");
         htmlMessage += createHtmlEmailBody(questionableUrls);
-        List<Long> jobAcbIds = getSelectedAcbIds(jobContext);
-        if (jobAcbIds != null && jobAcbIds.size() > 0) {
-            htmlMessage += String.format(
-                    env.getProperty("job.questionableUrlReport.acbSpecific.emailBodyEnd"),
-                    getAcbNamesAsCommaSeparatedString(jobAcbIds));
+        if (isAcbSpecific(jobContext)) {
+            List<Long> jobAcbIds = getSelectedAcbIds(jobContext);
+            if (jobAcbIds != null && jobAcbIds.size() > 0) {
+                htmlMessage += String.format(
+                        env.getProperty("job.questionableUrlReport.acbSpecific.emailBodyEnd"),
+                        getAcbNamesAsCommaSeparatedString(jobAcbIds));
+            }
         }
 
         File output = null;
@@ -336,5 +337,10 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             .filter(acb -> acb != null)
             .map(acb -> acb.getName())
             .collect(Collectors.joining(", "));
+    }
+
+    private boolean isAcbSpecific(JobExecutionContext jobContext) {
+        String acbSpecific = jobContext.getMergedJobDataMap().getString("acbSpecific");
+        return !StringUtils.isEmpty(acbSpecific) && BooleanUtils.toBoolean(acbSpecific);
     }
 }
