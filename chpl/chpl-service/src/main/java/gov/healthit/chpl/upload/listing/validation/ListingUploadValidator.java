@@ -18,7 +18,6 @@ import gov.healthit.chpl.validation.listing.reviewer.InheritanceReviewer;
 @Component
 public class ListingUploadValidator {
     //CSV Reviewers that review the ListingUpload domain object and look for unrecognized columns to warn the user
-    //TODO: needs unit test
     private CSVHeaderReviewer csvHeaderReviewer;
 
     //Reviewers for newly uploaded listings (no comparison reviewers because nothing is changing as with edits)

@@ -37,6 +37,7 @@ public enum Headings {
     ACCESSIBILITY_CERTIFIED("Accessibility Certified"),
     ACCESSIBILITY_STANDARD("Accessibility Standard"),
     K_1_URL("170.523(k)(1) URL", "170.523 (k)(1) URL"),
+    K2_ATTESTATION("170.523(k)(2) ATTESTATION"),
     CQM_NUMBER("CQM Number", "CQM_NUMBER"),
     CQM_VERSION("CQM Version", "CQM_VERSION"),
     CQM_CRITERIA("CQM Criteria", "CQM_CRITERIA"),

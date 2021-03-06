@@ -23,7 +23,7 @@ public class CSVHeaderReviewer {
     }
 
     public void review(ListingUpload uploadedMetadata, CertifiedProductSearchDetails listing) {
-        if (uploadedMetadata.getRecords() == null && uploadedMetadata.getRecords().size() == 0) {
+        if (uploadedMetadata.getRecords() == null || uploadedMetadata.getRecords().size() == 0) {
             return;
         }
         CSVRecord heading = handlerUtil.getHeadingRecord(uploadedMetadata.getRecords());
