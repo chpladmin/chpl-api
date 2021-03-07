@@ -21,13 +21,12 @@ public class AdditionalSoftwareCodeReviewerTest {
     private static final String CODE_0_MISMATCH = "The unique id indicates the product does not have additional software but some is specified in the upload file.";
     private static final String CODE_1_MISMATCH = "The unique id indicates the product does have additional software but none is specified in the upload file.";
 
-    private ChplProductNumberUtil chplProductNumberUtil;
     private ErrorMessageUtil errorMessageUtil;
     private AdditionalSoftwareCodeReviewer reviewer;
 
     @Before
     public void setup() {
-        chplProductNumberUtil =  new ChplProductNumberUtil();
+        ChplProductNumberUtil chplProductNumberUtil =  new ChplProductNumberUtil();
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
 
         reviewer = new AdditionalSoftwareCodeReviewer(chplProductNumberUtil, errorMessageUtil);

@@ -18,13 +18,12 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class CertifiedDateCodeReviewerTest {
     private static final String MISMATCHED_CERT_DATE = "The certified date code from the listing %s does not match the certification date of the listing %s.";
 
-    private ChplProductNumberUtil chplProductNumberUtil;
     private ErrorMessageUtil errorMessageUtil;
     private CertifiedDateCodeReviewer reviewer;
 
     @Before
     public void setup() {
-        chplProductNumberUtil = Mockito.mock(ChplProductNumberUtil.class);
+        ChplProductNumberUtil chplProductNumberUtil = new ChplProductNumberUtil();
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
         reviewer = new CertifiedDateCodeReviewer(chplProductNumberUtil, errorMessageUtil);
     }
@@ -33,10 +32,6 @@ public class CertifiedDateCodeReviewerTest {
     public void review_mismatchedCertDate_errorMessage() throws ParseException {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.certificationDateMismatch"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(MISMATCHED_CERT_DATE, i.getArgument(1), i.getArgument(2)));
-        Mockito.when(chplProductNumberUtil.getCertificationDateCode(ArgumentMatchers.any()))
-            .thenCallRealMethod();
-        Mockito.when(chplProductNumberUtil.parseChplProductNumber(ArgumentMatchers.any()))
-            .thenCallRealMethod();
 
         Calendar listingCertDate = Calendar.getInstance();
         listingCertDate.set(2021, 0, 2, 0, 0, 0);

@@ -11,18 +11,17 @@ import gov.healthit.chpl.upload.listing.validation.reviewer.CertifiedDateCodeRev
 import gov.healthit.chpl.upload.listing.validation.reviewer.ChplNumberFormatReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.ChplNumberUniqueReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.DeveloperStatusReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.EditionCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.IcsCodeReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.InheritanceReviewer;
 
 @Component
 public class ListingUploadValidator {
-    //CSV Reviewers that review the ListingUpload domain object and look for unrecognized columns to warn the user
     private CSVHeaderReviewer csvHeaderReviewer;
-
-    //Reviewers for newly uploaded listings (no comparison reviewers because nothing is changing as with edits)
-    //TODO: needs unit test
     private ChplNumberFormatReviewer chplNumberFormatReviewer;
+    private EditionCodeReviewer editionCodeReviewer;
+    //TODO: ATL Code, ACB Code, Developer code reviewers
     private IcsCodeReviewer icsCodeReviewer;
     private AdditionalSoftwareCodeReviewer additionalSoftwareCodeReviewer;
     private CertifiedDateCodeReviewer certifiedDateCodeReviewer;
@@ -38,6 +37,7 @@ public class ListingUploadValidator {
     @Autowired
     public ListingUploadValidator(CSVHeaderReviewer csvHeaderReviewer,
             ChplNumberFormatReviewer chplNumberFormatReviewer,
+            EditionCodeReviewer editionCodeReviewer,
             IcsCodeReviewer icsCodeReviewer,
             AdditionalSoftwareCodeReviewer additionalSoftwareCodeReviewer,
             CertifiedDateCodeReviewer certifiedDateCodeReviewer,
@@ -46,6 +46,7 @@ public class ListingUploadValidator {
             DeveloperStatusReviewer devStatusReviewer) {
         this.csvHeaderReviewer = csvHeaderReviewer;
         this.chplNumberFormatReviewer = chplNumberFormatReviewer;
+        this.editionCodeReviewer = editionCodeReviewer;
         this.icsCodeReviewer = icsCodeReviewer;
         this.additionalSoftwareCodeReviewer = additionalSoftwareCodeReviewer;
         this.certifiedDateCodeReviewer = certifiedDateCodeReviewer;
@@ -57,6 +58,7 @@ public class ListingUploadValidator {
     public void review(ListingUpload uploadedMetadata, CertifiedProductSearchDetails listing) {
         csvHeaderReviewer.review(uploadedMetadata, listing);
         chplNumberFormatReviewer.review(listing);
+        editionCodeReviewer.review(listing);
         icsCodeReviewer.review(listing);
         additionalSoftwareCodeReviewer.review(listing);
         certifiedDateCodeReviewer.review(listing);

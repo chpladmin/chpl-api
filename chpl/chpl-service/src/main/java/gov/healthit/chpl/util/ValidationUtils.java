@@ -24,9 +24,13 @@ public class ValidationUtils {
     private UrlValidator urlValidator;
     private CertificationCriterionDAO criteriaDao;
 
+    public ValidationUtils() {
+        urlValidator = new UrlValidator();
+    }
+
     @Autowired
     public ValidationUtils(CertificationCriterionDAO criteriaDao) {
-        urlValidator = new UrlValidator();
+        this();
         this.criteriaDao = criteriaDao;
     }
 

@@ -37,7 +37,8 @@ public class CertifiedDateCodeReviewer  {
                 LOGGER.catching(ex);
             }
 
-            if (StringUtils.isNoneEmpty(listingCertificationDate, certifiedDateCode)) {
+            if (StringUtils.isNoneEmpty(listingCertificationDate, certifiedDateCode)
+                    && !listingCertificationDate.equals(certifiedDateCode)) {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.certificationDateMismatch", certifiedDateCode, listingCertificationDate));
             }
         }

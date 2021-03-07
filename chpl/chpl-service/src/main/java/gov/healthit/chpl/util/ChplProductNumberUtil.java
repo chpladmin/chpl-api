@@ -29,9 +29,17 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ChplProductNumberUtil {
     public static final int EDITION_CODE_INDEX = 0;
+    public static final String EDITION_CODE_REGEX = "^[0-9]{" + ChplProductNumberUtil.EDITION_CODE_LENGTH + "}$";
+    public static final int EDITION_CODE_LENGTH = 2;
     public static final int ATL_CODE_INDEX = 1;
+    public static final String ATL_CODE_REGEX = "^[0-9]{" + ChplProductNumberUtil.ATL_CODE_LENGTH + "}$";
+    public static final int ATL_CODE_LENGTH = 2;
     public static final int ACB_CODE_INDEX = 2;
+    public static final String ACB_CODE_REGEX = "^[0-9]{" + ChplProductNumberUtil.ACB_CODE_LENGTH + "}$";
+    public static final int ACB_CODE_LENGTH = 2;
     public static final int DEVELOPER_CODE_INDEX = 3;
+    public static final String DEVELOPER_CODE_REGEX = "^[0-9]{" + ChplProductNumberUtil.DEVELOPER_CODE_LENGTH + "}$";
+    public static final int DEVELOPER_CODE_LENGTH = 4;
     public static final int PRODUCT_CODE_INDEX = 4;
     public static final String PRODUCT_CODE_REGEX = "^[a-zA-Z0-9_]{" + ChplProductNumberUtil.PRODUCT_CODE_LENGTH + "}$";
     public static final int PRODUCT_CODE_LENGTH = 4;
