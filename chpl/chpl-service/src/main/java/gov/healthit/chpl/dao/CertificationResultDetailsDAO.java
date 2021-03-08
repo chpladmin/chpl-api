@@ -58,7 +58,7 @@ public class CertificationResultDetailsDAO extends BaseDAOImpl {
         case EXPORT_DOCUMENTATION:
             queryStr += "AND crd.exportDocumentation = :url";
             break;
-        case DOCUMENTATION_URL:
+        case DOCUMENTATION:
             queryStr += "AND crd.documentationUrl = :url";
             break;
         case USE_CASES:
