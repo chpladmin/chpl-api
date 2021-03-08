@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,21 +23,18 @@ import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 import lombok.Data;
 import lombok.ToString;
-import lombok.extern.log4j.Log4j2;
 
 @Component("testFunctionalityAllowedByRoleReviewer")
-@Log4j2
 public class TestFunctionalityAllowedByRoleReviewer implements ComparisonReviewer {
 
-    private Environment env;
     private ErrorMessageUtil errorMessages;
     private ResourcePermissions permissions;
     private String jsonRestrictions;
 
     @Autowired
-    public TestFunctionalityAllowedByRoleReviewer(Environment env, ResourcePermissions permissions,
-            ErrorMessageUtil errorMessages, @Value("testFunctionalities.restrictions") String jsonRestrictions) {
-        this.env = env;
+    public TestFunctionalityAllowedByRoleReviewer(ResourcePermissions permissions, ErrorMessageUtil errorMessages,
+            @Value("${testFunctionalities.restrictions}") String jsonRestrictions) {
+
         this.errorMessages = errorMessages;
         this.permissions = permissions;
         this.jsonRestrictions = jsonRestrictions;
@@ -49,21 +45,23 @@ public class TestFunctionalityAllowedByRoleReviewer implements ComparisonReviewe
         for (CertificationResult updatedCr : updatedListing.getCertificationResults()) {
             Optional<CertificationResult> existingCr = findCertificationResult(existingListing, updatedCr.getId());
             if (existingCr.isPresent()) {
-                Optional<List<CertificationResultTestFunctionality>> listUpdateCrtfs = Optional
-                        .ofNullable(updatedCr.getTestFunctionality());
-                Optional<List<CertificationResultTestFunctionality>> listExistingCrtfs = Optional
-                        .ofNullable(existingCr.get().getTestFunctionality());
+                Optional<List<CertificationResultTestFunctionality>> listUpdateCrtfs = Optional.ofNullable(updatedCr.getTestFunctionality());
+                Optional<List<CertificationResultTestFunctionality>> listExistingCrtfs = Optional.ofNullable(existingCr.get().getTestFunctionality());
 
                 List<CertificationResultTestFunctionality> addedCrtfs = getAddedCrtfs(listUpdateCrtfs, listExistingCrtfs);
-                List<CertificationResultTestFunctionality> removedCrtfs = getRemovedCrtfs(listUpdateCrtfs, listExistingCrtfs);
-                List<CertificationResultTestFunctionality> allEditedCrtfs = Stream
-                        .concat(addedCrtfs.stream(), removedCrtfs.stream())
+
+                //Only check removed CertificationResultTestFunctionality if the criteria is attested to
+                List<CertificationResultTestFunctionality> removedCrtfs = new ArrayList<CertificationResultTestFunctionality>();
+                if (updatedCr.isSuccess()) {
+                    removedCrtfs = getRemovedCrtfs(listUpdateCrtfs, listExistingCrtfs);
+                }
+
+                List<CertificationResultTestFunctionality> allEditedCrtfs = Stream.concat(addedCrtfs.stream(), removedCrtfs.stream())
                         .collect(Collectors.toList());
 
                 allEditedCrtfs.stream()
                         .forEach(crtf -> {
-                            if (!isTestFunctionalityChangeAllowedBasedOnRole(updatedCr.getCriterion().getId(),
-                                    crtf.getTestFunctionalityId())) {
+                            if (!isTestFunctionalityChangeAllowedBasedOnRole(updatedCr.getCriterion().getId(), crtf.getTestFunctionalityId())) {
                                 updatedListing.getErrorMessages()
                                         .add(errorMessages.getMessage("listing.criteria.testFunctionalityPermissionError",
                                                 crtf.getName(), Util.formatCriteriaNumber(updatedCr.getCriterion())));
