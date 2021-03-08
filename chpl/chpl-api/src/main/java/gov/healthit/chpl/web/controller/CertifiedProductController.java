@@ -232,7 +232,7 @@ public class CertifiedProductController {
     @ApiOperation(value = "Get all basic information for a specified certified product.  Does not include "
             + "all collections that are in the 'certified_products/{identifier}/details' endpoint.",
             notes = "Returns basic information in the CHPL related to the specified certified product.  "
-                    + "The results will not include the CQM results and certification results.")
+                    + "Does not include all collections that are in the 'certified_products/{identifier}/details' endpoint.")
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}",
     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -249,7 +249,7 @@ public class CertifiedProductController {
     @ApiOperation(value = "Get all basic information for a specified certified product.  Does not include "
             + "all collections that are in the 'certified_products/{identifier}/details' endpoint.",
             notes = "Returns basic information in the CHPL related to the specified certified product.  "
-                    + "The results will not include the CQM results and certification results.  "
+                    + "Does not include all collections that are in the 'certified_products/{identifier}/details' endpoint.  "
                     + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
                     + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid "
                     + "call to this service would look like /certified_products/YY.99.99.9999.XXXX.99.99.9."
@@ -285,7 +285,7 @@ public class CertifiedProductController {
     @ApiOperation(value = "Get all basic information for a specified certified product.  Does not include "
             + "all collections that are in the 'certified_products/{identifier}/details' endpoint.",
             notes = "Returns basic information in the CHPL related to the specified certified product.  "
-                    + "The results will not include the CQM results and certification results.  "
+                    + "Does not include all collections that are in the 'certified_products/{identifier}/details' endpoint.  "
                     + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call to "
                     + "this service would look like /certified_products/CHP-999999.")
     @RequestMapping(value = "/{chplPrefix}-{identifier}",
