@@ -75,13 +75,21 @@ public class ChplRepeatableTriggerChangeEmailer {
         table.append("    <tbody>\n");
         table.append("        <tr class='odd'>\n");
         table.append("            <td>\n");
+        table.append("                Email Address\n");
+        table.append("            </td>\n");
+        table.append("            <td>\n");
+        table.append("                " + trigger.getEmail() + "\n");
+        table.append("            </td>\n");
+        table.append("        </tr>\n");
+        table.append("        <tr class='even'>\n");
+        table.append("            <td>\n");
         table.append("                Job Name\n");
         table.append("            </td>\n");
         table.append("            <td>\n");
         table.append("                " + job.getName() + "\n");
         table.append("            </td>\n");
         table.append("        </tr>\n");
-        table.append("        <tr class='even'>\n");
+        table.append("        <tr class='odd'>\n");
         table.append("            <td>\n");
         table.append("                Job Description\n");
         table.append("            </td>\n");
@@ -89,7 +97,7 @@ public class ChplRepeatableTriggerChangeEmailer {
         table.append("                " + job.getDescription() + "\n");
         table.append("            </td>\n");
         table.append("        </tr>\n");
-        table.append("        <tr class='odd'>\n");
+        table.append("        <tr class='even'>\n");
         table.append("            <td>\n");
         table.append("                Schedule\n");
         table.append("            </td>\n");
@@ -98,7 +106,7 @@ public class ChplRepeatableTriggerChangeEmailer {
         table.append("            </td>\n");
         table.append("        </tr>\n");
         if (!StringUtils.isEmpty(trigger.getAcb())) {
-            table.append("        <tr class='even'>\n");
+            table.append("        <tr class='odd'>\n");
             table.append("            <td>\n");
             table.append("                Selected ONC-ACBs\n");
             table.append("            </td>\n");
