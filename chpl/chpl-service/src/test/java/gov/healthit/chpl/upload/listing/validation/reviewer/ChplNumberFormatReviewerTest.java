@@ -11,6 +11,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
@@ -32,15 +33,26 @@ public class ChplNumberFormatReviewerTest {
 
     @Before
     public void setup() {
+        ChplProductNumberUtil chplProductNumberUtil = new ChplProductNumberUtil();
         ValidationUtils validationUtils = new ValidationUtils();
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
-        reviewer = new ChplNumberFormatReviewer(validationUtils, errorMessageUtil);
+        reviewer = new ChplNumberFormatReviewer(chplProductNumberUtil, validationUtils, errorMessageUtil);
     }
 
     @Test
     public void review_chplProductNumberValid_noError() throws ParseException {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WEeB.06.00.1.210101")
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_legacyChplProductNumber_noError() throws ParseException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("CHP-123456")
                 .build();
         reviewer.review(listing);
 
@@ -604,7 +616,6 @@ public class ChplNumberFormatReviewerTest {
         reviewer.review(listing);
 
         assertEquals(1, listing.getErrorMessages().size());
-        System.out.println(listing.getErrorMessages().iterator().next());
         assertTrue(listing.getErrorMessages().contains(String.format(BAD_CERT_DATE_CODE, "6", "")));
     }
 }

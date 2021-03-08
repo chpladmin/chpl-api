@@ -51,6 +51,16 @@ public class IcsCodeReviewerTest {
     }
 
     @Test
+    public void review_legacyChplProductNumber_noError() throws ParseException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("CHP-123456")
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
     public void review_invalidFormatOfChplProductNumber_noError() throws ParseException {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("bad.format")

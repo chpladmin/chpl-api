@@ -24,20 +24,17 @@ public class AdditionalSoftwareCodeReviewer {
 
     public void review(CertifiedProductSearchDetails listing) {
         String chplProductNumber = listing.getChplProductNumber();
-        if (StringUtils.isEmpty(chplProductNumber)) {
-            return;
-        }
-
-        String[] uniqueIdParts = chplProductNumber.split("\\.");
-        if (uniqueIdParts.length != ChplProductNumberUtil.CHPL_PRODUCT_ID_PARTS) {
+        if (StringUtils.isEmpty(chplProductNumber)
+                || chplProductNumberUtil.isLegacyChplProductNumberStyle(chplProductNumber)
+                || !chplProductNumberUtil.isCurrentChplProductNumberStyle(chplProductNumber)) {
             return;
         }
 
         String additionalSoftwareCode = null;
         try {
-            additionalSoftwareCode = chplProductNumberUtil.getAdditionalSoftwareCode(listing.getChplProductNumber());
+            additionalSoftwareCode = chplProductNumberUtil.getAdditionalSoftwareCode(chplProductNumber);
         } catch (Exception ex) {
-            LOGGER.catching(ex);
+            LOGGER.warn("Cannot find additional software code in " + chplProductNumber);
         }
 
         boolean certsHaveAdditionalSoftware = listing.getCertificationResults().stream()

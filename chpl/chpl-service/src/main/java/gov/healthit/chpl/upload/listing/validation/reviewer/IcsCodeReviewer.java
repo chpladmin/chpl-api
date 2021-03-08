@@ -24,20 +24,17 @@ public class IcsCodeReviewer {
 
     public void review(CertifiedProductSearchDetails listing) {
         String chplProductNumber = listing.getChplProductNumber();
-        if (StringUtils.isEmpty(chplProductNumber)) {
-            return;
-        }
-
-        String[] uniqueIdParts = chplProductNumber.split("\\.");
-        if (uniqueIdParts.length != ChplProductNumberUtil.CHPL_PRODUCT_ID_PARTS) {
+        if (StringUtils.isEmpty(chplProductNumber)
+                || chplProductNumberUtil.isLegacyChplProductNumberStyle(chplProductNumber)
+                || !chplProductNumberUtil.isCurrentChplProductNumberStyle(chplProductNumber)) {
             return;
         }
 
         Integer icsCodeInteger = null;
         try {
-            icsCodeInteger = chplProductNumberUtil.getIcsCode(listing.getChplProductNumber());
+            icsCodeInteger = chplProductNumberUtil.getIcsCode(chplProductNumber);
         } catch (Exception ex) {
-            LOGGER.catching(ex);
+            LOGGER.warn("Cannot find ICS code in " + chplProductNumber);
         }
 
         if (icsCodeInteger != null && icsCodeInteger.intValue() == 0) {

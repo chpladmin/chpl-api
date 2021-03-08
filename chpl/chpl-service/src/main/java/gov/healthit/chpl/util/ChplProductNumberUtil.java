@@ -259,7 +259,7 @@ public class ChplProductNumberUtil {
         return parts;
     }
 
-    public boolean isLegacy(String chplProductNumber) {
+    public boolean isLegacyChplProductNumberStyle(String chplProductNumber) {
         if (!StringUtils.isEmpty(chplProductNumber) && chplProductNumber.length() == LEGACY_ID_LENGTH
                 && chplProductNumber.startsWith(LEGACY_ID_BEGIN)) {
             return true;
@@ -267,9 +267,19 @@ public class ChplProductNumberUtil {
         return false;
     }
 
+    public boolean isCurrentChplProductNumberStyle(String chplProductNumber) {
+        if (!StringUtils.isEmpty(chplProductNumber)) {
+            String[] uniqueIdParts = chplProductNumber.split("\\.");
+            if (uniqueIdParts.length == ChplProductNumberUtil.CHPL_PRODUCT_ID_PARTS) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Integer getIcsCode(String chplProductNumber) {
         Integer icsCode = null;
-        if (!isLegacy(chplProductNumber)) {
+        if (!isLegacyChplProductNumberStyle(chplProductNumber)) {
             String[] uniqueIdParts = chplProductNumber.split("\\.");
             icsCode = Integer.valueOf(uniqueIdParts[ChplProductNumberUtil.ICS_CODE_INDEX]);
         }

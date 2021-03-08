@@ -11,18 +11,25 @@ import gov.healthit.chpl.util.ValidationUtils;
 
 @Component("listingUploadChplNumberFormatReviewer")
 public class ChplNumberFormatReviewer {
+    private ChplProductNumberUtil chplProductNumberUtil;
     private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public ChplNumberFormatReviewer(ValidationUtils validationUtils,
+    public ChplNumberFormatReviewer(ChplProductNumberUtil chplProductNumberUtil,
+            ValidationUtils validationUtils,
             ErrorMessageUtil msgUtil) {
+        this.chplProductNumberUtil = chplProductNumberUtil;
         this.validationUtils = validationUtils;
         this.msgUtil = msgUtil;
     }
 
     public void review(CertifiedProductSearchDetails listing) {
         String chplProductNumber = listing.getChplProductNumber();
+        if (chplProductNumberUtil.isLegacyChplProductNumberStyle(chplProductNumber)) {
+            return;
+        }
+
         if (StringUtils.isEmpty(chplProductNumber)) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.chplProductNumberMissing"));
             return;

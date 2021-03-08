@@ -31,6 +31,57 @@ public class CertificationEditionCodeReviewerTest {
     }
 
     @Test
+    public void review_nullEditionValidCode_noError() throws ParseException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
+                .certificationEdition(null)
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_nullEditionEmptyCode_noError() throws ParseException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber(".04.04.2526.WEBe.06.00.1.210101")
+                .certificationEdition(null)
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+
+    @Test
+    public void review_emptyEditionValidCode_noError() throws ParseException {
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.certificationEditionMismatch"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(MISMATCHED_CERT_EDITION, i.getArgument(1), i.getArgument(2)));
+
+        Map<String, Object> certEditionMap = new HashMap<String, Object>();
+        certEditionMap.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "");
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
+                .certificationEdition(certEditionMap)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_legacyChplProductNumber_noError() throws ParseException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("CHP-123456")
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
     public void review_mismatchedEdition_errorMessage() throws ParseException {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.certificationEditionMismatch"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(MISMATCHED_CERT_EDITION, i.getArgument(1), i.getArgument(2)));
@@ -63,46 +114,6 @@ public class CertificationEditionCodeReviewerTest {
 
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(String.format(INVALID_EDITION_CODE, "11", "14,15")));
-    }
-
-    @Test
-    public void review_emptyEditionValidCode_noError() throws ParseException {
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.certificationEditionMismatch"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-            .thenAnswer(i -> String.format(MISMATCHED_CERT_EDITION, i.getArgument(1), i.getArgument(2)));
-
-        Map<String, Object> certEditionMap = new HashMap<String, Object>();
-        certEditionMap.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "");
-
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
-                .certificationEdition(certEditionMap)
-                .build();
-
-        reviewer.review(listing);
-
-        assertEquals(0, listing.getErrorMessages().size());
-    }
-
-    @Test
-    public void review_nullEditionValidCode_noError() throws ParseException {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
-                .certificationEdition(null)
-                .build();
-        reviewer.review(listing);
-
-        assertEquals(0, listing.getErrorMessages().size());
-    }
-
-    @Test
-    public void review_nullEditionEmptyCode_noError() throws ParseException {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .chplProductNumber(".04.04.2526.WEBe.06.00.1.210101")
-                .certificationEdition(null)
-                .build();
-        reviewer.review(listing);
-
-        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test

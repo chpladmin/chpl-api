@@ -29,11 +29,18 @@ public class EditionCodeReviewer  {
     }
 
     public void review(CertifiedProductSearchDetails listing) {
+        String chplProductNumber = listing.getChplProductNumber();
+        if (StringUtils.isEmpty(chplProductNumber)
+                || chplProductNumberUtil.isLegacyChplProductNumberStyle(chplProductNumber)
+                || !chplProductNumberUtil.isCurrentChplProductNumberStyle(chplProductNumber)) {
+            return;
+        }
+
         String editionCode = null;
         try {
-            editionCode = chplProductNumberUtil.getCertificationEditionCode(listing.getChplProductNumber());
+            editionCode = chplProductNumberUtil.getCertificationEditionCode(chplProductNumber);
         } catch (Exception ex) {
-            LOGGER.catching(ex);
+            LOGGER.warn("Cannot find edition code in " + chplProductNumber);
         }
 
         if (!StringUtils.isEmpty(editionCode) && !Arrays.asList(EDITION_CODES).contains(editionCode)) {

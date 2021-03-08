@@ -29,6 +29,16 @@ public class CertifiedDateCodeReviewerTest {
     }
 
     @Test
+    public void review_legacyChplProductNumber_noError() throws ParseException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("CHP-123456")
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
     public void review_mismatchedCertDate_errorMessage() throws ParseException {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.certificationDateMismatch"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(MISMATCHED_CERT_DATE, i.getArgument(1), i.getArgument(2)));

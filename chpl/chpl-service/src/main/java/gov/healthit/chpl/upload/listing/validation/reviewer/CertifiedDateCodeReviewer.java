@@ -26,15 +26,22 @@ public class CertifiedDateCodeReviewer  {
     }
 
     public void review(CertifiedProductSearchDetails listing) {
+        String chplProductNumber = listing.getChplProductNumber();
+        if (StringUtils.isEmpty(chplProductNumber)
+                || chplProductNumberUtil.isLegacyChplProductNumberStyle(chplProductNumber)
+                || !chplProductNumberUtil.isCurrentChplProductNumberStyle(chplProductNumber)) {
+            return;
+        }
+
         if (listing.getCertificationDate() != null) {
             SimpleDateFormat idDateFormat = new SimpleDateFormat("yyMMdd");
             idDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
             String listingCertificationDate = idDateFormat.format(listing.getCertificationDate());
             String certifiedDateCode = null;
             try {
-                certifiedDateCode = chplProductNumberUtil.getCertificationDateCode(listing.getChplProductNumber());
+                certifiedDateCode = chplProductNumberUtil.getCertificationDateCode(chplProductNumber);
             } catch (Exception ex) {
-                LOGGER.catching(ex);
+                LOGGER.warn("Cannot find certified date code in " + chplProductNumber);
             }
 
             if (StringUtils.isNoneEmpty(listingCertificationDate, certifiedDateCode)

@@ -64,6 +64,16 @@ public class AdditionalSoftwareCodeReviewerTest {
     }
 
     @Test
+    public void review_legacyChplProductNumber_noError() throws ParseException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("CHP-123456")
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
     public void review_falseAdditionalSoftwareCodeNoCriteria_noError() throws ParseException {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WEBe.06.00.0.210102")
