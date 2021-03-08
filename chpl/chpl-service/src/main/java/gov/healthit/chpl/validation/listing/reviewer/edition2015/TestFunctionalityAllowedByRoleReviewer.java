@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -32,13 +33,15 @@ public class TestFunctionalityAllowedByRoleReviewer implements ComparisonReviewe
     private Environment env;
     private ErrorMessageUtil errorMessages;
     private ResourcePermissions permissions;
+    private String jsonRestrictions;
 
     @Autowired
     public TestFunctionalityAllowedByRoleReviewer(Environment env, ResourcePermissions permissions,
-            ErrorMessageUtil errorMessages) {
+            ErrorMessageUtil errorMessages, @Value("testFunctionalities.restrictions") String jsonRestrictions) {
         this.env = env;
         this.errorMessages = errorMessages;
         this.permissions = permissions;
+        this.jsonRestrictions = jsonRestrictions;
     }
 
     @Override
@@ -131,12 +134,12 @@ public class TestFunctionalityAllowedByRoleReviewer implements ComparisonReviewe
 
     private List<RestrictedCriteriaTestFunctionality> getRestrictedCriteriaTestFunctionality() {
         List<RestrictedCriteriaTestFunctionality> restrictedCriteria = new ArrayList<RestrictedCriteriaTestFunctionality>();
-        String json = env.getProperty("testFunctionalities.restrictions");
+
         try {
             ObjectMapper mapper = new ObjectMapper();
             CollectionType javaType = mapper.getTypeFactory().constructCollectionType(List.class,
                     RestrictedCriteriaTestFunctionality.class);
-            restrictedCriteria = mapper.readValue(json, javaType);
+            restrictedCriteria = mapper.readValue(jsonRestrictions, javaType);
         } catch (Exception e) {
             e.printStackTrace();
         }
