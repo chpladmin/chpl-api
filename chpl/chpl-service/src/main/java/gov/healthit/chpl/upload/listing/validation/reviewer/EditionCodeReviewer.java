@@ -14,7 +14,7 @@ import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
-@Component("listingUploadCertificationEditionReviewer")
+@Component("editionCodeReviewer")
 @Log4j2
 public class EditionCodeReviewer  {
     private static final String[] EDITION_CODES = {"14", "15"};

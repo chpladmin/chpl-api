@@ -9,7 +9,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-@Component("listingUploadChplNumberFormatReviewer")
+@Component("chplNumberUniqueReviewer")
 public class ChplNumberUniqueReviewer {
     private ChplProductNumberUtil chplProductNumberUtil;
     private ErrorMessageUtil msgUtil;

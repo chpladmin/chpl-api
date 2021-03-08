@@ -16,7 +16,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-public class CertificationEditionCodeReviewerTest {
+public class EditionCodeReviewerTest {
     private static final String INVALID_EDITION_CODE = "The edition code %s is not one of the allowed edition codes %s.";
     private static final String MISMATCHED_CERT_EDITION = "The edition code from the listing %s does not match the certification edition of the listing %s.";
 
@@ -72,9 +72,13 @@ public class CertificationEditionCodeReviewerTest {
     }
 
     @Test
-    public void review_legacyChplProductNumber_noError() throws ParseException {
+    public void review_legacyChplProductNumberWithEdition_noError() throws ParseException {
+        Map<String, Object> certEditionMap = new HashMap<String, Object>();
+        certEditionMap.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2014");
+
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("CHP-123456")
+                .certificationEdition(certEditionMap)
                 .build();
         reviewer.review(listing);
 
@@ -82,13 +86,23 @@ public class CertificationEditionCodeReviewerTest {
     }
 
     @Test
-    public void review_mismatchedEdition_errorMessage() throws ParseException {
+    public void review_legacyChplProductNumberNullEdition_noError() throws ParseException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("CHP-123456")
+                .certificationEdition(null)
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_mismatchedEdition_hasError() throws ParseException {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.certificationEditionMismatch"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(MISMATCHED_CERT_EDITION, i.getArgument(1), i.getArgument(2)));
 
         Map<String, Object> certEditionMap = new HashMap<String, Object>();
         certEditionMap.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2014");
-        certEditionMap.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 2L);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
@@ -120,7 +134,6 @@ public class CertificationEditionCodeReviewerTest {
     public void review_goodCertEditionCodeWithMatchingListingEdition_noError() throws ParseException {
         Map<String, Object> certEditionMap = new HashMap<String, Object>();
         certEditionMap.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
-        certEditionMap.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 3L);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")

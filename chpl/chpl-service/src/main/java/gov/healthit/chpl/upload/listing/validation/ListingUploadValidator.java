@@ -12,6 +12,7 @@ import gov.healthit.chpl.upload.listing.validation.reviewer.ChplNumberFormatRevi
 import gov.healthit.chpl.upload.listing.validation.reviewer.ChplNumberUniqueReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.DeveloperStatusReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.EditionCodeReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.EditionReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.IcsCodeReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.InheritanceReviewer;
@@ -27,6 +28,7 @@ public class ListingUploadValidator {
     private CertifiedDateCodeReviewer certifiedDateCodeReviewer;
 
     private ChplNumberUniqueReviewer chplNumberUniqueReviewer;
+    private EditionReviewer editionReviewer;
     private CertificationDateReviewer certDateReviewer;
     //TODO: needs unit test
     private DeveloperStatusReviewer devStatusReviewer;
@@ -40,6 +42,7 @@ public class ListingUploadValidator {
             EditionCodeReviewer editionCodeReviewer,
             IcsCodeReviewer icsCodeReviewer,
             AdditionalSoftwareCodeReviewer additionalSoftwareCodeReviewer,
+            EditionReviewer editionReviewer,
             CertifiedDateCodeReviewer certifiedDateCodeReviewer,
             CertificationDateReviewer certDateReviewer,
             ChplNumberUniqueReviewer chplNumberUniqueReviewer,
@@ -50,6 +53,7 @@ public class ListingUploadValidator {
         this.icsCodeReviewer = icsCodeReviewer;
         this.additionalSoftwareCodeReviewer = additionalSoftwareCodeReviewer;
         this.certifiedDateCodeReviewer = certifiedDateCodeReviewer;
+        this.editionReviewer = editionReviewer;
         this.certDateReviewer = certDateReviewer;
         this.chplNumberUniqueReviewer = chplNumberUniqueReviewer;
         this.devStatusReviewer = devStatusReviewer;
@@ -62,6 +66,7 @@ public class ListingUploadValidator {
         icsCodeReviewer.review(listing);
         additionalSoftwareCodeReviewer.review(listing);
         certifiedDateCodeReviewer.review(listing);
+        editionReviewer.review(listing);
         certDateReviewer.review(listing);
         chplNumberUniqueReviewer.review(listing);
         devStatusReviewer.review(listing);

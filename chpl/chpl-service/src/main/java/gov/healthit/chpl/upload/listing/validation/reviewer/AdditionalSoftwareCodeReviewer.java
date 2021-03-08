@@ -9,7 +9,7 @@ import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
-@Component("listingUploadAdditionalSoftwareReviewer")
+@Component("additionalSoftwareCodeReviewer")
 @Log4j2
 public class AdditionalSoftwareCodeReviewer {
     private ChplProductNumberUtil chplProductNumberUtil;

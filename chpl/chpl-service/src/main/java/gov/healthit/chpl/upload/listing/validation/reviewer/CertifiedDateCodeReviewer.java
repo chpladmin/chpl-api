@@ -12,7 +12,7 @@ import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
-@Component("listingUploadCertificationDateReviewer")
+@Component("certifiedDateCodeReviewer")
 @Log4j2
 public class CertifiedDateCodeReviewer  {
     private ChplProductNumberUtil chplProductNumberUtil;
