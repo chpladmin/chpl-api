@@ -230,7 +230,7 @@ public class CertifiedProductController {
     }
 
     @ApiOperation(value = "Get all basic information for a specified certified product.  Does not include "
-            + "the CQM results and certification results.",
+            + "all collections that are in the 'certified_products/{identifier}/details' endpoint.",
             notes = "Returns basic information in the CHPL related to the specified certified product.  "
                     + "The results will not include the CQM results and certification results.")
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}",
@@ -247,7 +247,7 @@ public class CertifiedProductController {
 
     @SuppressWarnings({"checkstyle:parameternumber"})
     @ApiOperation(value = "Get all basic information for a specified certified product.  Does not include "
-            + "the CQM results and certification results.",
+            + "all collections that are in the 'certified_products/{identifier}/details' endpoint.",
             notes = "Returns basic information in the CHPL related to the specified certified product.  "
                     + "The results will not include the CQM results and certification results.  "
                     + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
@@ -283,7 +283,7 @@ public class CertifiedProductController {
     }
 
     @ApiOperation(value = "Get all basic information for a specified certified product.  Does not include "
-            + "the CQM results and certification results.",
+            + "all collections that are in the 'certified_products/{identifier}/details' endpoint.",
             notes = "Returns basic information in the CHPL related to the specified certified product.  "
                     + "The results will not include the CQM results and certification results.  "
                     + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call to "
