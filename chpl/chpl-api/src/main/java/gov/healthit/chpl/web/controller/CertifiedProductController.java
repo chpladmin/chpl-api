@@ -368,8 +368,8 @@ public class CertifiedProductController {
         return results;
     }
 
-    @ApiOperation(value = "Get all of the CQM results for a specified certified product.",
-            notes = "Returns all of the CQM results in the CHPL related to the specified certified product.")
+    @ApiOperation(value = "Get all of the Measures for a specified certified product.",
+            notes = "Returns all of the Measures in the CHPL related to the specified certified product.")
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/measures", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
