@@ -1,16 +1,16 @@
-package gov.healthit.chpl.dto;
+package gov.healthit.chpl.api.domain;
 
 import java.io.Serializable;
 import java.util.Date;
 
-import gov.healthit.chpl.entity.ApiKeyEntity;
+import gov.healthit.chpl.api.entity.ApiKeyEntity;
 import gov.healthit.chpl.util.Util;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Data
-public class ApiKeyDTO implements Serializable {
+public class ApiKey implements Serializable {
     private static final long serialVersionUID = 7091753452944248313L;
     private Long id;
     private String apiKey;
@@ -24,7 +24,7 @@ public class ApiKeyDTO implements Serializable {
     private Date lastUsedDate;
     private Date deleteWarningSentDate;
 
-    public ApiKeyDTO(ApiKeyEntity entity) {
+    public ApiKey(ApiKeyEntity entity) {
         this.id = entity.getId();
         this.apiKey = entity.getApiKey();
         this.email = entity.getEmail();

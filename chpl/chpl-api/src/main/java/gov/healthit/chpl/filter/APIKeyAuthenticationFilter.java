@@ -14,11 +14,11 @@ import org.springframework.web.filter.GenericFilterBean;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+import gov.healthit.chpl.api.ApiKeyManager;
+import gov.healthit.chpl.api.domain.ApiKey;
 import gov.healthit.chpl.domain.error.ErrorResponse;
-import gov.healthit.chpl.dto.ApiKeyDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.ApiKeyManager;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -91,7 +91,7 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
             return;
         } else {
             try {
-                ApiKeyDTO retrievedKey = apiKeyManager.findKey(key);
+                ApiKey retrievedKey = apiKeyManager.findKey(key);
 
                 if (retrievedKey == null) {
                     // Invalid key. Don't continue.

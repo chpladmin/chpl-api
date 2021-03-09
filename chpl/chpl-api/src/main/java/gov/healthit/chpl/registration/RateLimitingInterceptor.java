@@ -19,8 +19,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import gov.healthit.chpl.dao.ApiKeyDAO;
-import gov.healthit.chpl.dto.ApiKeyDTO;
+import gov.healthit.chpl.api.dao.ApiKeyDAO;
+import gov.healthit.chpl.api.domain.ApiKey;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 /**
@@ -77,9 +77,9 @@ public class RateLimitingInterceptor extends HandlerInterceptorAdapter implement
             return false;
         }
 
-        List<ApiKeyDTO> keyDtos = apiKeyDao.findAllUnrestricted();
+        List<ApiKey> keyDtos = apiKeyDao.findAllUnrestricted();
 
-        for (ApiKeyDTO dto : keyDtos) {
+        for (ApiKey dto : keyDtos) {
             unrestrictedApiKeys.add(dto.getApiKey());
         }
 

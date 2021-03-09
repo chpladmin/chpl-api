@@ -21,13 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.api.ApiKeyManager;
+import gov.healthit.chpl.api.domain.ApiKey;
 import gov.healthit.chpl.domain.ApiKey;
 import gov.healthit.chpl.domain.ApiKeyRegistration;
-import gov.healthit.chpl.dto.ApiKeyDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.logging.Loggable;
-import gov.healthit.chpl.manager.ApiKeyManager;
 import gov.healthit.chpl.util.EmailBuilder;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -64,7 +64,7 @@ public class ApiKeyController {
 
         String apiKey = gov.healthit.chpl.util.Util.md5(registration.getName()
                 + registration.getEmail() + now.getTime());
-        ApiKeyDTO toCreate = new ApiKeyDTO();
+        ApiKey toCreate = new ApiKey();
 
         toCreate.setApiKey(apiKey);
         toCreate.setEmail(registration.getEmail());
@@ -110,9 +110,9 @@ public class ApiKeyController {
     public List<ApiKey> listKeys(@RequestParam(required = false, defaultValue = "false") final boolean includeDeleted) {
 
         List<ApiKey> keys = new ArrayList<ApiKey>();
-        List<ApiKeyDTO> dtos = apiKeyManager.findAll(includeDeleted);
+        List<ApiKey> dtos = apiKeyManager.findAll(includeDeleted);
 
-        for (ApiKeyDTO dto : dtos) {
+        for (ApiKey dto : dtos) {
             ApiKey apiKey = new ApiKey();
             apiKey.setName(dto.getNameOrganization());
             apiKey.setEmail(dto.getEmail());

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dao;
+package gov.healthit.chpl.api.dao;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -10,10 +10,10 @@ import javax.persistence.Query;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
+import gov.healthit.chpl.api.domain.ApiKey;
+import gov.healthit.chpl.api.entity.ApiKeyEntity;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.ApiKeyDTO;
-import gov.healthit.chpl.entity.ApiKeyEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
@@ -21,7 +21,7 @@ import gov.healthit.chpl.util.AuthUtil;
 @Repository("apiKeyDAO")
 public class ApiKeyDAO extends BaseDAOImpl {
 
-    public ApiKeyDTO create(ApiKeyDTO dto) throws EntityCreationException {
+    public ApiKey create(ApiKey dto) throws EntityCreationException {
 
         ApiKeyEntity entity = null;
         try {
@@ -60,10 +60,10 @@ public class ApiKeyDAO extends BaseDAOImpl {
             }
             create(entity);
         }
-        return new ApiKeyDTO(entity);
+        return new ApiKey(entity);
     }
 
-    public ApiKeyDTO update(ApiKeyDTO dto) throws EntityRetrievalException {
+    public ApiKey update(ApiKey dto) throws EntityRetrievalException {
 
         ApiKeyEntity entity = getEntityById(dto.getId());
 
@@ -87,7 +87,7 @@ public class ApiKeyDAO extends BaseDAOImpl {
         entity.setDeleteWarningSentDate(dto.getDeleteWarningSentDate());
         update(entity);
 
-        return new ApiKeyDTO(entity);
+        return new ApiKey(entity);
     }
 
     public void delete(Long id) {
@@ -96,96 +96,96 @@ public class ApiKeyDAO extends BaseDAOImpl {
         query.executeUpdate();
     }
 
-    public List<ApiKeyDTO> findAll(Boolean includeDeleted) {
+    public List<ApiKey> findAll(Boolean includeDeleted) {
 
         List<ApiKeyEntity> entities = getAllEntities(includeDeleted);
-        List<ApiKeyDTO> dtos = new ArrayList<>();
+        List<ApiKey> dtos = new ArrayList<>();
 
         for (ApiKeyEntity entity : entities) {
-            ApiKeyDTO dto = new ApiKeyDTO(entity);
+            ApiKey dto = new ApiKey(entity);
             dtos.add(dto);
         }
         return dtos;
 
     }
 
-    public List<ApiKeyDTO> findAllUnrestricted() {
+    public List<ApiKey> findAllUnrestricted() {
 
         List<ApiKeyEntity> entities = getAllUnrestrictedApiKeyEntities();
-        List<ApiKeyDTO> dtos = new ArrayList<>();
+        List<ApiKey> dtos = new ArrayList<>();
 
         for (ApiKeyEntity entity : entities) {
-            ApiKeyDTO dto = new ApiKeyDTO(entity);
+            ApiKey dto = new ApiKey(entity);
             dtos.add(dto);
         }
         return dtos;
 
     }
 
-    public ApiKeyDTO getById(Long id) throws EntityRetrievalException {
+    public ApiKey getById(Long id) throws EntityRetrievalException {
 
-        ApiKeyDTO dto = null;
+        ApiKey dto = null;
         ApiKeyEntity entity = getEntityById(id);
 
         if (entity != null) {
-            dto = new ApiKeyDTO(entity);
+            dto = new ApiKey(entity);
         }
         return dto;
 
     }
 
-    public ApiKeyDTO getByKey(String apiKey) throws EntityRetrievalException {
+    public ApiKey getByKey(String apiKey) throws EntityRetrievalException {
 
-        ApiKeyDTO dto = null;
+        ApiKey dto = null;
         ApiKeyEntity entity = getEntityByKey(apiKey);
 
         if (entity != null) {
-            dto = new ApiKeyDTO(entity);
+            dto = new ApiKey(entity);
         }
         return dto;
     }
 
-    public List<ApiKeyDTO> findAllRevoked() {
+    public List<ApiKey> findAllRevoked() {
 
         List<ApiKeyEntity> entities = getAllRevokedEntities();
-        List<ApiKeyDTO> dtos = new ArrayList<>();
+        List<ApiKey> dtos = new ArrayList<>();
 
         for (ApiKeyEntity entity : entities) {
-            ApiKeyDTO dto = new ApiKeyDTO(entity);
+            ApiKey dto = new ApiKey(entity);
             dtos.add(dto);
         }
         return dtos;
 
     }
 
-    public ApiKeyDTO getRevokedKeyByKey(String apiKey) {
+    public ApiKey getRevokedKeyByKey(String apiKey) {
 
-        ApiKeyDTO dto = null;
+        ApiKey dto = null;
         ApiKeyEntity entity = getRevokedEntityByKey(apiKey);
 
         if (entity != null) {
-            dto = new ApiKeyDTO(entity);
+            dto = new ApiKey(entity);
         }
         return dto;
     }
 
-    public List<ApiKeyDTO> findAllNotUsedInXDays(Integer days) {
+    public List<ApiKey> findAllNotUsedInXDays(Integer days) {
         List<ApiKeyEntity> entities = getAllNotUsedInXDays(days);
-        List<ApiKeyDTO> dtos = new ArrayList<>();
+        List<ApiKey> dtos = new ArrayList<>();
 
         for (ApiKeyEntity entity : entities) {
-            ApiKeyDTO dto = new ApiKeyDTO(entity);
+            ApiKey dto = new ApiKey(entity);
             dtos.add(dto);
         }
         return dtos;
     }
 
-    public List<ApiKeyDTO> findAllToBeRevoked(Integer daysSinceWarningSent) {
+    public List<ApiKey> findAllToBeRevoked(Integer daysSinceWarningSent) {
         List<ApiKeyEntity> entities = getAllToBeRevoked(daysSinceWarningSent);
-        List<ApiKeyDTO> dtos = new ArrayList<>();
+        List<ApiKey> dtos = new ArrayList<>();
 
         for (ApiKeyEntity entity : entities) {
-            ApiKeyDTO dto = new ApiKeyDTO(entity);
+            ApiKey dto = new ApiKey(entity);
             dtos.add(dto);
         }
         return dtos;
