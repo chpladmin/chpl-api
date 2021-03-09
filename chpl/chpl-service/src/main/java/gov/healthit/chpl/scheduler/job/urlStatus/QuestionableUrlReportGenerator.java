@@ -29,9 +29,11 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
@@ -153,12 +155,18 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
         if (urlResult.getListing() != null && urlResult.getListing().getAcb() != null) {
             return acbIds.contains(urlResult.getListing().getAcb().getId());
         }
-        if (urlResult.getDeveloper() != null) {
+        if (urlResult.getDeveloper() != null && isActive(urlResult.getDeveloper())) {
             List<CertifiedProductDetailsDTO> filteredListings
                 = cpDao.getListingsByStatusForDeveloperAndAcb(urlResult.getDeveloper().getDeveloperId(), activeStatuses, acbIds);
             return filteredListings != null && filteredListings.size() > 0;
         }
         return false;
+    }
+
+    private boolean isActive(Developer developer) {
+        return developer.getStatus() != null
+                && !StringUtils.isEmpty(developer.getStatus().getStatus())
+                && developer.getStatus().getStatus().equals(DeveloperStatusType.Active.getName());
     }
 
     private boolean isNotListingUrl(FailedUrlResult urlResult) {
