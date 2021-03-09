@@ -31,7 +31,7 @@ public class IcsCodeReviewerTest {
     }
 
     @Test
-    public void review_nullChplProductNumber_noError() throws ParseException {
+    public void review_nullChplProductNumber_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber(null)
                 .build();
@@ -41,7 +41,7 @@ public class IcsCodeReviewerTest {
     }
 
     @Test
-    public void review_emptyChplProductNumber_noError() throws ParseException {
+    public void review_emptyChplProductNumber_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("")
                 .build();
@@ -51,7 +51,7 @@ public class IcsCodeReviewerTest {
     }
 
     @Test
-    public void review_legacyChplProductNumber_noError() throws ParseException {
+    public void review_legacyChplProductNumber_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("CHP-123456")
                 .build();
@@ -61,7 +61,7 @@ public class IcsCodeReviewerTest {
     }
 
     @Test
-    public void review_invalidFormatOfChplProductNumber_noError() throws ParseException {
+    public void review_invalidFormatOfChplProductNumber_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("bad.format")
                 .build();
@@ -71,7 +71,7 @@ public class IcsCodeReviewerTest {
     }
 
     @Test
-    public void review_nonzeroIcsCodeAndIcsBooleanFalse_hasError() throws ParseException {
+    public void review_nonzeroIcsCodeAndIcsBooleanFalse_hasError() {
         Mockito.when(errorMessageUtil.getMessage("listing.icsCodeTrueValueFalse"))
             .thenReturn(CODE_TRUE_VALUE_FALSE_MISMATCH);
 
@@ -88,7 +88,7 @@ public class IcsCodeReviewerTest {
     }
 
     @Test
-    public void review_zeroIcsCodeAndIcsBooleanTrue_hasError() throws ParseException {
+    public void review_zeroIcsCodeAndIcsBooleanTrue_hasError() {
         Mockito.when(errorMessageUtil.getMessage("listing.icsCodeFalseValueTrue"))
             .thenReturn(CODE_FALSE_VALUE_TRUE_MISMATCH);
 
@@ -105,7 +105,7 @@ public class IcsCodeReviewerTest {
     }
 
     @Test
-    public void review_zeroIcsCodeAndIcsBooleanNull_noError() throws ParseException {
+    public void review_zeroIcsCodeAndIcsBooleanNull_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210102")
                 .ics(InheritedCertificationStatus.builder()
@@ -118,7 +118,7 @@ public class IcsCodeReviewerTest {
     }
 
     @Test
-    public void review_nonzeroIcsCodeAndIcsBooleanNull_noError() throws ParseException {
+    public void review_nonzeroIcsCodeAndIcsBooleanNull_noError() {
         Mockito.when(errorMessageUtil.getMessage("listing.icsCodeTrueValueFalse"))
             .thenReturn(CODE_TRUE_VALUE_FALSE_MISMATCH);
 
@@ -135,7 +135,7 @@ public class IcsCodeReviewerTest {
     }
 
     @Test
-    public void review_nonzeroIcsCodeAndIcsBooleanTrue_noError() throws ParseException {
+    public void review_nonzeroIcsCodeAndIcsBooleanTrue_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WEBe.06.02.1.210102")
                 .ics(InheritedCertificationStatus.builder()
@@ -148,7 +148,7 @@ public class IcsCodeReviewerTest {
     }
 
     @Test
-    public void review_zeroIcsCodeAndIcsBooleanFalse_noError() throws ParseException {
+    public void review_zeroIcsCodeAndIcsBooleanFalse_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210102")
                 .ics(InheritedCertificationStatus.builder()

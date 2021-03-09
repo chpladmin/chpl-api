@@ -21,16 +21,17 @@ public class TestingLabNormalizer {
     public void normalize(CertifiedProductSearchDetails listing) {
         if (listing.getTestingLabs() != null && listing.getTestingLabs().size() > 0) {
             listing.getTestingLabs().stream()
-                .forEach(testingLab -> populateTestingLabId(testingLab));
+                .forEach(testingLab -> populateTestingLab(testingLab));
         }
     }
 
-    private void populateTestingLabId(CertifiedProductTestingLab testingLab) {
+    private void populateTestingLab(CertifiedProductTestingLab testingLab) {
         if (testingLab != null && testingLab.getTestingLabId() == null
                 && !StringUtils.isEmpty(testingLab.getTestingLabName())) {
             TestingLabDTO testingLabDto = atlDao.getByName(testingLab.getTestingLabName());
             if (testingLabDto != null) {
                 testingLab.setTestingLabId(testingLabDto.getId());
+                testingLab.setTestingLabCode(testingLabDto.getTestingLabCode());
             }
         }
     }

@@ -3,7 +3,6 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,7 +30,7 @@ public class EditionCodeReviewerTest {
     }
 
     @Test
-    public void review_nullEditionValidCode_noError() throws ParseException {
+    public void review_nullEditionValidCode_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
                 .certificationEdition(null)
@@ -42,7 +41,7 @@ public class EditionCodeReviewerTest {
     }
 
     @Test
-    public void review_nullEditionEmptyCode_noError() throws ParseException {
+    public void review_nullEditionEmptyCode_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber(".04.04.2526.WEBe.06.00.1.210101")
                 .certificationEdition(null)
@@ -54,10 +53,7 @@ public class EditionCodeReviewerTest {
 
 
     @Test
-    public void review_emptyEditionValidCode_noError() throws ParseException {
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.certificationEditionMismatch"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-            .thenAnswer(i -> String.format(MISMATCHED_CERT_EDITION, i.getArgument(1), i.getArgument(2)));
-
+    public void review_emptyEditionValidCode_noError() {
         Map<String, Object> certEditionMap = new HashMap<String, Object>();
         certEditionMap.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "");
 
@@ -72,7 +68,7 @@ public class EditionCodeReviewerTest {
     }
 
     @Test
-    public void review_legacyChplProductNumberWithEdition_noError() throws ParseException {
+    public void review_legacyChplProductNumberWithEdition_noError() {
         Map<String, Object> certEditionMap = new HashMap<String, Object>();
         certEditionMap.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2014");
 
@@ -86,7 +82,7 @@ public class EditionCodeReviewerTest {
     }
 
     @Test
-    public void review_legacyChplProductNumberNullEdition_noError() throws ParseException {
+    public void review_legacyChplProductNumberNullEdition_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("CHP-123456")
                 .certificationEdition(null)
@@ -97,7 +93,7 @@ public class EditionCodeReviewerTest {
     }
 
     @Test
-    public void review_mismatchedEdition_hasError() throws ParseException {
+    public void review_mismatchedEdition_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.certificationEditionMismatch"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(MISMATCHED_CERT_EDITION, i.getArgument(1), i.getArgument(2)));
 
@@ -116,7 +112,7 @@ public class EditionCodeReviewerTest {
     }
 
     @Test
-    public void review_invalidCodeNullEdition_hasError() throws ParseException {
+    public void review_invalidCodeNullEdition_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.invalidEditionCode"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_EDITION_CODE, i.getArgument(1), i.getArgument(2)));
 
@@ -131,7 +127,7 @@ public class EditionCodeReviewerTest {
     }
 
     @Test
-    public void review_goodCertEditionCodeWithMatchingListingEdition_noError() throws ParseException {
+    public void review_goodCertEditionCodeWithMatchingListingEdition_noError() {
         Map<String, Object> certEditionMap = new HashMap<String, Object>();
         certEditionMap.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
 

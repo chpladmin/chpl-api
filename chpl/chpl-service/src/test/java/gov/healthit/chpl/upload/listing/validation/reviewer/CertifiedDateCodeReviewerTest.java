@@ -29,7 +29,7 @@ public class CertifiedDateCodeReviewerTest {
     }
 
     @Test
-    public void review_legacyChplProductNumber_noError() throws ParseException {
+    public void review_legacyChplProductNumber_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("CHP-123456")
                 .build();
@@ -39,7 +39,7 @@ public class CertifiedDateCodeReviewerTest {
     }
 
     @Test
-    public void review_mismatchedCertDate_errorMessage() throws ParseException {
+    public void review_mismatchedCertDate_errorMessage() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.certificationDateMismatch"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(MISMATCHED_CERT_DATE, i.getArgument(1), i.getArgument(2)));
 
@@ -59,7 +59,7 @@ public class CertifiedDateCodeReviewerTest {
     }
 
     @Test
-    public void review_goodCertDateCodeWithMatchingListingCertDate_noError() throws ParseException {
+    public void review_goodCertDateCodeWithMatchingListingCertDate_noError() {
         Calendar listingCertDate = Calendar.getInstance();
         listingCertDate.set(2021, 0, 2, 0, 0, 0);
 

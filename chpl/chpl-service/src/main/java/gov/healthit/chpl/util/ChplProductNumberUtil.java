@@ -14,6 +14,7 @@ import gov.healthit.chpl.dao.ChplProductNumberDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -314,6 +315,11 @@ public class ChplProductNumberUtil {
         return parts.getAcbCode();
     }
 
+    public String getAtlCode(String chplProductNumber) {
+        ChplProductNumberParts parts = parseChplProductNumber(chplProductNumber);
+        return parts.getAtlCode();
+    }
+
     public String getCertificationDateCode(String chplProductNumber) {
         ChplProductNumberParts parts = parseChplProductNumber(chplProductNumber);
         return parts.getCertifiedDateCode();
@@ -361,7 +367,7 @@ public class ChplProductNumberUtil {
 
     private String getTestingLabCode(final List<PendingCertifiedProductTestingLabDTO> testingLabs) {
         if (testingLabs.size() > 1) {
-            return "99";
+            return TestingLab.MULTIPLE_TESTING_LABS_CODE;
         } else {
             TestingLabDTO dto = testingLabDAO.getByName(testingLabs.get(0).getTestingLabName());
             if (dto != null) {

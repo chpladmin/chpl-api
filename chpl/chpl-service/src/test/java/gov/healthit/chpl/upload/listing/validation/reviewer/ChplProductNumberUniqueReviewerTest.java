@@ -31,7 +31,7 @@ public class ChplProductNumberUniqueReviewerTest {
     }
 
     @Test
-    public void review_nullChplProductNumber_noError() throws ParseException {
+    public void review_nullChplProductNumber_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber(null)
                 .build();
@@ -41,7 +41,7 @@ public class ChplProductNumberUniqueReviewerTest {
     }
 
     @Test
-    public void review_emptyChplProductNumber_noError() throws ParseException {
+    public void review_emptyChplProductNumber_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("")
                 .build();
@@ -51,7 +51,7 @@ public class ChplProductNumberUniqueReviewerTest {
     }
 
     @Test
-    public void review_invalidFormatOfChplProductNumberListingNotFound_noError() throws ParseException {
+    public void review_invalidFormatOfChplProductNumberListingNotFound_noError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.chplProductNumber.notUnique"), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(CHPL_NUMBER_NOT_UNIQUE, i.getArgument(1), ""));
 
@@ -67,7 +67,7 @@ public class ChplProductNumberUniqueReviewerTest {
     }
 
     @Test
-    public void review_invalidFormatOfChplProductNumberListingFound_hasError() throws ParseException {
+    public void review_invalidFormatOfChplProductNumberListingFound_hasError() {
         String badChplProductNumber = "bad.format";
 
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.chplProductNumber.notUnique"), ArgumentMatchers.anyString()))
@@ -90,7 +90,7 @@ public class ChplProductNumberUniqueReviewerTest {
     }
 
     @Test
-    public void review_badFormatOfChplProductNumberNoListingFound_noError() throws ParseException {
+    public void review_badFormatOfChplProductNumberNoListingFound_noError() {
         String badChplProductNumber = "15.04.04.2526.WEBe.06.00.0.210102";
 
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.chplProductNumber.notUnique"), ArgumentMatchers.anyString()))
@@ -109,7 +109,7 @@ public class ChplProductNumberUniqueReviewerTest {
     }
 
     @Test
-    public void review_goodFormatOfChplProductNumberListingFound_hasError() throws ParseException {
+    public void review_goodFormatOfChplProductNumberListingFound_hasError() {
         String badChplProductNumber = "15.04.04.2526.WEBe.06.00.0.210102";
 
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.chplProductNumber.notUnique"), ArgumentMatchers.anyString()))

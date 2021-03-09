@@ -33,7 +33,7 @@ public class AdditionalSoftwareCodeReviewerTest {
     }
 
     @Test
-    public void review_nullChplProductNumber_noError() throws ParseException {
+    public void review_nullChplProductNumber_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber(null)
                 .build();
@@ -43,7 +43,7 @@ public class AdditionalSoftwareCodeReviewerTest {
     }
 
     @Test
-    public void review_emptyChplProductNumber_noError() throws ParseException {
+    public void review_emptyChplProductNumber_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("")
                 .build();
@@ -53,7 +53,7 @@ public class AdditionalSoftwareCodeReviewerTest {
     }
 
     @Test
-    public void review_invalidFormatOfChplProductNumber_noError() throws ParseException {
+    public void review_invalidFormatOfChplProductNumber_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("bad.format")
                 .build();
@@ -64,7 +64,7 @@ public class AdditionalSoftwareCodeReviewerTest {
     }
 
     @Test
-    public void review_legacyChplProductNumber_noError() throws ParseException {
+    public void review_legacyChplProductNumber_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("CHP-123456")
                 .build();
@@ -74,7 +74,7 @@ public class AdditionalSoftwareCodeReviewerTest {
     }
 
     @Test
-    public void review_falseAdditionalSoftwareCodeNoCriteria_noError() throws ParseException {
+    public void review_falseAdditionalSoftwareCodeNoCriteria_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WEBe.06.00.0.210102")
                 .build();
@@ -84,7 +84,7 @@ public class AdditionalSoftwareCodeReviewerTest {
     }
 
     @Test
-    public void review_falseAdditionalSoftwareCodeNoAdditionalSoftware_noError() throws ParseException {
+    public void review_falseAdditionalSoftwareCodeNoAdditionalSoftware_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WEBe.06.00.0.210102")
                 .certificationResult(CertificationResult.builder()
@@ -96,7 +96,7 @@ public class AdditionalSoftwareCodeReviewerTest {
     }
 
     @Test
-    public void review_trueAdditionalSoftwareCodeWithAdditionalSoftware_noError() throws ParseException {
+    public void review_trueAdditionalSoftwareCodeWithAdditionalSoftware_noError() {
         List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
         additionalSoftware.add(CertificationResultAdditionalSoftware.builder()
                 .grouping("A")
@@ -116,7 +116,7 @@ public class AdditionalSoftwareCodeReviewerTest {
     }
 
     @Test
-    public void review_trueAdditionalSoftwareCodeNoAdditionalSoftware_hasError() throws ParseException {
+    public void review_trueAdditionalSoftwareCodeNoAdditionalSoftware_hasError() {
         Mockito.when(errorMessageUtil.getMessage("listing.additionalSoftwareCode1Mismatch"))
             .thenReturn(CODE_1_MISMATCH);
 
@@ -133,7 +133,7 @@ public class AdditionalSoftwareCodeReviewerTest {
     }
 
     @Test
-    public void review_falseAdditionalSoftwareCodeWithAdditionalSoftware_hasError() throws ParseException {
+    public void review_falseAdditionalSoftwareCodeWithAdditionalSoftware_hasError() {
         Mockito.when(errorMessageUtil.getMessage("listing.additionalSoftwareCode0Mismatch"))
             .thenReturn(CODE_0_MISMATCH);
 

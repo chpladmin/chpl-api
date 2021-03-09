@@ -200,6 +200,7 @@ public class ListingDetailsUploadHandler {
 
         Map<String, Object> acb = new HashMap<String, Object>();
         acb.put(CertifiedProductSearchDetails.ACB_NAME_KEY, acbName);
+        acb.put(CertifiedProductSearchDetails.ACB_CODE_KEY, null);
         acb.put(CertifiedProductSearchDetails.ACB_ID_KEY, null);
         return acb;
     }

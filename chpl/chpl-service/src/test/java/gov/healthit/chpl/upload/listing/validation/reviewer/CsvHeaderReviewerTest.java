@@ -36,7 +36,7 @@ public class CsvHeaderReviewerTest {
     }
 
     @Test
-    public void review_nullHeader_noWarning() throws ParseException {
+    public void review_nullHeader_noWarning() {
         ListingUpload listingUploadMetadata = ListingUpload.builder()
                 .records(null)
                 .build();
@@ -47,7 +47,7 @@ public class CsvHeaderReviewerTest {
     }
 
     @Test
-    public void review_emptyHeader_noWarning() throws ParseException {
+    public void review_emptyHeader_noWarning() {
         ListingUpload listingUploadMetadata = ListingUpload.builder()
                 .records(new ArrayList<CSVRecord>())
                 .build();
@@ -58,7 +58,7 @@ public class CsvHeaderReviewerTest {
     }
 
     @Test
-    public void review_blankHeaderValue_noWarning() throws ParseException {
+    public void review_blankHeaderValue_noWarning() {
         ListingUpload listingUploadMetadata = ListingUpload.builder()
                 .records(ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,,VENDOR__C"))
                 .build();
@@ -69,7 +69,7 @@ public class CsvHeaderReviewerTest {
     }
 
     @Test
-    public void review_v18Header_noWarning() throws ParseException {
+    public void review_v18Header_noWarning() {
         ListingUpload listingUploadMetadata = ListingUpload.builder()
                 .records(ListingUploadTestUtil.getRecordsFromString(HEADER_V18))
                 .build();
@@ -80,7 +80,7 @@ public class CsvHeaderReviewerTest {
     }
 
     @Test
-    public void review_v19Header_noWarning() throws ParseException {
+    public void review_v19Header_noWarning() {
         ListingUpload listingUploadMetadata = ListingUpload.builder()
                 .records(ListingUploadTestUtil.getRecordsFromString(HEADER_V19))
                 .build();
@@ -91,7 +91,7 @@ public class CsvHeaderReviewerTest {
     }
 
     @Test
-    public void review_v20Header_noWarning() throws ParseException {
+    public void review_v20Header_noWarning() {
         ListingUpload listingUploadMetadata = ListingUpload.builder()
                 .records(ListingUploadTestUtil.getRecordsFromString(HEADER_V20))
                 .build();
@@ -102,7 +102,7 @@ public class CsvHeaderReviewerTest {
     }
 
     @Test
-    public void review_invalidHeadingInMiddle_hasWarning() throws ParseException {
+    public void review_invalidHeadingInMiddle_hasWarning() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.upload.unrecognizedHeading"), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(CSV_INVALID_HEADER, i.getArgument(1), ""));
 
@@ -117,7 +117,7 @@ public class CsvHeaderReviewerTest {
     }
 
     @Test
-    public void review_invalidHeadingInBeginning_hasWarning() throws ParseException {
+    public void review_invalidHeadingInBeginning_hasWarning() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.upload.unrecognizedHeading"), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(CSV_INVALID_HEADER, i.getArgument(1), ""));
 
@@ -132,7 +132,7 @@ public class CsvHeaderReviewerTest {
     }
 
     @Test
-    public void review_invalidHeadingAtEnd_hasWarning() throws ParseException {
+    public void review_invalidHeadingAtEnd_hasWarning() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.upload.unrecognizedHeading"), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(CSV_INVALID_HEADER, i.getArgument(1), ""));
 
@@ -147,7 +147,7 @@ public class CsvHeaderReviewerTest {
     }
 
     @Test
-    public void review_multiplIinvalidHeadings_hasWarnings() throws ParseException {
+    public void review_multiplIinvalidHeadings_hasWarnings() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.upload.unrecognizedHeading"), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(CSV_INVALID_HEADER, i.getArgument(1), ""));
 

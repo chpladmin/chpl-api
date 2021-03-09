@@ -40,7 +40,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_chplProductNumberValid_noError() throws ParseException {
+    public void review_chplProductNumberValid_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WEeB.06.00.1.210101")
                 .build();
@@ -50,7 +50,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_legacyChplProductNumber_noError() throws ParseException {
+    public void review_legacyChplProductNumber_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("CHP-123456")
                 .build();
@@ -60,7 +60,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_chplProductNumberNull_hasError() throws ParseException {
+    public void review_chplProductNumberNull_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.chplProductNumberMissing")))
             .thenReturn(CHPL_PRODUCT_NUMBER_MISSING);
 
@@ -74,7 +74,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_chplProductNumberEmpty_hasError() throws ParseException {
+    public void review_chplProductNumberEmpty_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.chplProductNumberMissing")))
             .thenReturn(CHPL_PRODUCT_NUMBER_MISSING);
 
@@ -88,7 +88,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_chplProductNumberNotEnoughSections_hasError() throws ParseException {
+    public void review_chplProductNumberNotEnoughSections_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.chplProductNumberInvalidFormat"), ArgumentMatchers.any()))
         .thenAnswer(i -> String.format(BAD_CHPL_PRODUCT_NUMBER_FORMAT, i.getArgument(1), ""));
 
@@ -102,7 +102,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_chplProductNumberNoSections_hasError() throws ParseException {
+    public void review_chplProductNumberNoSections_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.chplProductNumberInvalidFormat"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_CHPL_PRODUCT_NUMBER_FORMAT, i.getArgument(1), ""));
 
@@ -116,7 +116,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_editionCodeTooLong_hasError() throws ParseException {
+    public void review_editionCodeTooLong_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badEditionCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_EDITION_CODE, i.getArgument(1), ""));
 
@@ -130,7 +130,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_editionCodeTooShort_hasError() throws ParseException {
+    public void review_editionCodeTooShort_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badEditionCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_EDITION_CODE, i.getArgument(1), ""));
 
@@ -144,7 +144,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_editionCodeInvalidCharacter_hasError() throws ParseException {
+    public void review_editionCodeInvalidCharacter_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badEditionCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_EDITION_CODE, i.getArgument(1), ""));
 
@@ -158,7 +158,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_editionCodeMissing_hasError() throws ParseException {
+    public void review_editionCodeMissing_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badEditionCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_EDITION_CODE, i.getArgument(1), ""));
 
@@ -172,7 +172,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_atlCodeTooLong_hasError() throws ParseException {
+    public void review_atlCodeTooLong_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badAtlCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_ATL_CODE, i.getArgument(1), ""));
 
@@ -186,7 +186,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_atlCodeTooShort_hasError() throws ParseException {
+    public void review_atlCodeTooShort_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badAtlCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_ATL_CODE, i.getArgument(1), ""));
 
@@ -200,7 +200,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_atlCodeInvalidCharacter_hasError() throws ParseException {
+    public void review_atlCodeInvalidCharacter_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badAtlCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_ATL_CODE, i.getArgument(1), ""));
 
@@ -214,7 +214,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_atlCodeMissing_hasError() throws ParseException {
+    public void review_atlCodeMissing_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badAtlCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_ATL_CODE, i.getArgument(1), ""));
 
@@ -228,7 +228,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_acbCodeTooLong_hasError() throws ParseException {
+    public void review_acbCodeTooLong_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badAcbCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_ACB_CODE, i.getArgument(1), ""));
 
@@ -242,7 +242,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_acbCodeTooShort_hasError() throws ParseException {
+    public void review_acbCodeTooShort_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badAcbCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_ACB_CODE, i.getArgument(1), ""));
 
@@ -256,7 +256,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_acbCodeInvalidCharacter_hasError() throws ParseException {
+    public void review_acbCodeInvalidCharacter_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badAcbCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_ACB_CODE, i.getArgument(1), ""));
 
@@ -270,7 +270,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_acbCodeMissing_hasError() throws ParseException {
+    public void review_acbCodeMissing_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badAcbCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_ACB_CODE, i.getArgument(1), ""));
 
@@ -284,7 +284,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_developerCodeTooLong_hasError() throws ParseException {
+    public void review_developerCodeTooLong_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badDeveloperCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_DEVELOPER_CODE, i.getArgument(1), ""));
 
@@ -298,7 +298,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_developerCodeTooShort_hasError() throws ParseException {
+    public void review_developerCodeTooShort_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badDeveloperCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_DEVELOPER_CODE, i.getArgument(1), ""));
 
@@ -312,7 +312,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_developerCodeInvalidCharacter_hasError() throws ParseException {
+    public void review_developerCodeInvalidCharacter_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badDeveloperCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_DEVELOPER_CODE, i.getArgument(1), ""));
 
@@ -326,7 +326,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_developerCodeMissing_hasError() throws ParseException {
+    public void review_developerCodeMissing_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badDeveloperCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_DEVELOPER_CODE, i.getArgument(1), ""));
 
@@ -340,7 +340,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_productCodeTooLong_hasError() throws ParseException {
+    public void review_productCodeTooLong_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badProductCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_PRODUCT_CODE, i.getArgument(1), ""));
 
@@ -354,7 +354,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_productCodeTooShort_hasError() throws ParseException {
+    public void review_productCodeTooShort_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badProductCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_PRODUCT_CODE, i.getArgument(1), ""));
 
@@ -368,7 +368,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_productCodeInvalidCharacter_hasError() throws ParseException {
+    public void review_productCodeInvalidCharacter_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badProductCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_PRODUCT_CODE, i.getArgument(1), ""));
 
@@ -382,7 +382,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_productCodeMissing_hasError() throws ParseException {
+    public void review_productCodeMissing_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badProductCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_PRODUCT_CODE, i.getArgument(1), ""));
 
@@ -396,7 +396,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_versionCodeTooLong_hasError() throws ParseException {
+    public void review_versionCodeTooLong_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badVersionCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_VERSION_CODE, i.getArgument(1), ""));
 
@@ -410,7 +410,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_versionCodeTooShort_hasError() throws ParseException {
+    public void review_versionCodeTooShort_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badVersionCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_VERSION_CODE, i.getArgument(1), ""));
 
@@ -424,7 +424,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_versionCodeInvalidCharacter_hasError() throws ParseException {
+    public void review_versionCodeInvalidCharacter_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badVersionCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_VERSION_CODE, i.getArgument(1), ""));
 
@@ -438,7 +438,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_versionCodeMissing_hasError() throws ParseException {
+    public void review_versionCodeMissing_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badVersionCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_VERSION_CODE, i.getArgument(1), ""));
 
@@ -452,7 +452,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_icsCodeTooLong_hasError() throws ParseException {
+    public void review_icsCodeTooLong_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badIcsCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_ICS_CODE, i.getArgument(1), ""));
 
@@ -466,7 +466,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_icsCodeTooShort_hasError() throws ParseException {
+    public void review_icsCodeTooShort_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badIcsCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_ICS_CODE, i.getArgument(1), ""));
 
@@ -480,7 +480,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_icsCodeInvalidCharacter_hasError() throws ParseException {
+    public void review_icsCodeInvalidCharacter_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badIcsCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_ICS_CODE, i.getArgument(1), ""));
 
@@ -494,7 +494,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_icsCodeMissing_hasError() throws ParseException {
+    public void review_icsCodeMissing_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badIcsCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_ICS_CODE, i.getArgument(1), ""));
 
@@ -508,7 +508,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_additionalSoftwareCodeTooLong_hasError() throws ParseException {
+    public void review_additionalSoftwareCodeTooLong_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badAdditionalSoftwareCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_ADDITIONAL_SOFTWARE_CODE, i.getArgument(1), ""));
 
@@ -522,7 +522,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_additionalSoftwareCodeInvalidNumber_hasError() throws ParseException {
+    public void review_additionalSoftwareCodeInvalidNumber_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badAdditionalSoftwareCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_ADDITIONAL_SOFTWARE_CODE, i.getArgument(1), ""));
 
@@ -536,7 +536,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_additionalSoftwareCodeInvalidCharacter_hasError() throws ParseException {
+    public void review_additionalSoftwareCodeInvalidCharacter_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badAdditionalSoftwareCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_ADDITIONAL_SOFTWARE_CODE, i.getArgument(1), ""));
 
@@ -550,7 +550,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_additionalSoftwareCodeMissing_hasError() throws ParseException {
+    public void review_additionalSoftwareCodeMissing_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badAdditionalSoftwareCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_ADDITIONAL_SOFTWARE_CODE, i.getArgument(1), ""));
 
@@ -564,7 +564,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_certificationDateCodeTooLong_hasError() throws ParseException {
+    public void review_certificationDateCodeTooLong_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badCertifiedDateCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_CERT_DATE_CODE, i.getArgument(1), ""));
 
@@ -578,7 +578,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_certificationDateCodeTooShort_hasError() throws ParseException {
+    public void review_certificationDateCodeTooShort_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badCertifiedDateCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_CERT_DATE_CODE, i.getArgument(1), ""));
 
@@ -592,7 +592,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_certificationDateCodeInvalidCharacter_hasError() throws ParseException {
+    public void review_certificationDateCodeInvalidCharacter_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badCertifiedDateCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_CERT_DATE_CODE, i.getArgument(1), ""));
 
@@ -606,7 +606,7 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_certificationDateCodeMissing_hasError() throws ParseException {
+    public void review_certificationDateCodeMissing_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badCertifiedDateCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_CERT_DATE_CODE, i.getArgument(1), ""));
 

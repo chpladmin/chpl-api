@@ -31,6 +31,7 @@ public class CertificationBodyNormalizer {
             CertificationBodyDTO foundAcb = acbDao.getByName(acbName);
             if (foundAcb != null) {
                 listing.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_ID_KEY, foundAcb.getId());
+                listing.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_CODE_KEY, foundAcb.getAcbCode());
             }
         } else if (!StringUtils.isEmpty(listing.getChplProductNumber())) {
             String acbCode = chplProductNumberUtil.getAcbCode(listing.getChplProductNumber());
@@ -40,6 +41,7 @@ public class CertificationBodyNormalizer {
                     Map<String, Object> certifyingBody = new HashMap<String, Object>();
                     certifyingBody.put(CertifiedProductSearchDetails.ACB_ID_KEY, foundAcb.getId());
                     certifyingBody.put(CertifiedProductSearchDetails.ACB_NAME_KEY, foundAcb.getName());
+                    certifyingBody.put(CertifiedProductSearchDetails.ACB_CODE_KEY, foundAcb.getAcbCode());
                     listing.setCertifyingBody(certifyingBody);
                 }
             }
