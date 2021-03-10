@@ -32,26 +32,14 @@ const apiKeyControllerTests = {
     },
 };
 
-const certifiedProductControllerDataTests2015listings = {
+const certifiedProductControllerDataTests = {
   ...commonOptions,
   collection: collection_path + '/certified-product-controller.postman_collection.json',
-  folder: 'GET /certified_products- 2015 listings',
-  iterationData: data_path + '/2015chplids-test-data.json',
+  folder: 'GET : certified_product: data driven tests',
+  iterationData: data_path + '/chplIds-test-data.json',
   reporter: {
     junit: {
-      export: reports_path + '/certified-product-controller-data-tests1.xml',
-    },
-  },
-};
-
-const certifiedProductControllerDataTests2014listings = {
-  ...commonOptions,
-  collection: collection_path + '/certified-product-controller.postman_collection.json',
-  folder: 'GET /certified_products -2014 and 2011 listings',
-  iterationData: data_path + '/2014chplids-test-data.json',
-  reporter: {
-    junit: {
-      export: reports_path + '/certified-product-controller-data-tests2.xml',
+      export: reports_path + '/certified-product-controller-data-tests.xml',
     },
   },
 };
@@ -163,8 +151,7 @@ const searchviewControllerTests = {
 const jobs = [
   cb => newman.run(acbControllerTests,cb),
   cb => newman.run(apiKeyControllerTests,cb),
-  cb => newman.run(certifiedProductControllerDataTests2015listings,cb),
-  cb => newman.run(certifiedProductControllerDataTests2014listings,cb),
+  cb => newman.run(certifiedProductControllerDataTests,cb),
   cb => newman.run(certifiedProductControllerNoDataTests,cb),
   cb => newman.run(developerControllerDataTests,cb),
   cb => newman.run(developerControllerNoDataTests,cb),
