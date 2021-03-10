@@ -150,7 +150,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"var chplIdtest= pm.iterationData.get(\"chplid\");\r",
+									"var chplIdtest=  pm.iterationData.get(\"certifiedlistings2015\");\r",
 									"pm.environment.set(\"year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode\",chplIdtest);"
 								],
 								"type": "text/javascript"
@@ -193,7 +193,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"var chplIdtest= pm.iterationData.get(\"chplid\");\r",
+									"var chplIdtest= pm.iterationData.get(\"certifiedlistings2015\");\r",
 									"pm.environment.set(\"year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode\",chplIdtest);"
 								],
 								"type": "text/javascript"
@@ -248,7 +248,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"var chplidtest= pm.iterationData.get(\"chplid\");\r",
+									"var chplidtest= pm.iterationData.get(\"certifiedlistings2014\");\r",
 									"pm.environment.set(\"chplPrefix-identifier\",chplidtest);"
 								],
 								"type": "text/javascript"
@@ -268,6 +268,14 @@
 									"    pm.expect(expresult).to.have.property('rwtResultsUrl');\r",
 									"    pm.expect(expresult).to.have.property('rwtResultsCheckDate');\r",
 									"    pm.expect(expresult).to.have.property('rwtEligibilityYear');\r",
+									"});\r",
+									"pm.test(\"All RWT fields should be null for 2014/2011 listings\", function() {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.rwtPlansUrl).eq(null);\r",
+									"    pm.expect(jsonData.rwtPlansCheckDate).eq(null);\r",
+									"    pm.expect(jsonData.rwtResultsUrl).eq(null);\r",
+									"    pm.expect(jsonData.rwtResultsCheckDate).eq(null);\r",
+									"    pm.expect(jsonData.rwtEligibilityYear).eq(null);\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -310,7 +318,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"var chplidtest= pm.iterationData.get(\"chplid\");\r",
+									"var chplidtest= pm.iterationData.get(\"certifiedlistings2014\");\r",
 									"pm.environment.set(\"chplPrefix-identifier\",chplidtest);"
 								],
 								"type": "text/javascript"
@@ -322,6 +330,10 @@
 								"exec": [
 									"pm.test(\"/{chplPrefix-identifier}/measures end point should return status 200 for valid API Key\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"/{chplPrefix-identifier}/measures end point should return empty array for 2014/2011 listings\", function() {\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.expect(jsonData.results.length).eql(0);\r",
 									"});"
 								],
 								"type": "text/javascript"

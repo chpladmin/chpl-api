@@ -36,7 +36,7 @@ const certifiedProductControllerDataTests = {
   ...commonOptions,
   collection: collection_path + '/certified-product-controller.postman_collection.json',
   folder: 'GET : certified_product: data driven tests',
-  iterationData: data_path + '/chplIds-test-data.json',
+  iterationData: data_path + '/chplids-test-data.json',
   reporter: {
     junit: {
       export: reports_path + '/certified-product-controller-data-tests.xml',
@@ -47,7 +47,7 @@ const certifiedProductControllerDataTests = {
 const certifiedProductControllerNoDataTests = {
   ...commonOptions,
   collection: collection_path + '/certified-product-controller.postman_collection.json',
-  folder: 'GET : Certified_products: non-data driven tests',
+  folder: 'GET : certified_products: non-data driven tests',
   reporter: {
     junit: {
       export: reports_path + '/certified-product-controller-nodata-tests.xml',
