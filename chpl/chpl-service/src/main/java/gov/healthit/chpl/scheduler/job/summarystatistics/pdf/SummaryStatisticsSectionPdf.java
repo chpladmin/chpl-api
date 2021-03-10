@@ -49,7 +49,7 @@ public abstract class SummaryStatisticsSectionPdf {
                     cell.setFont(SummaryStatisticsPdfDefaults.getDefaultTableHeaderFont());
                     cell.setFontSize(SummaryStatisticsPdfDefaults.DEFAULT_FONT_SIZE);
                     cell.add(new Paragraph(text));
-                    table.addCell(cell);
+                    table.addHeaderCell(cell);
                 });
         return table;
     }
