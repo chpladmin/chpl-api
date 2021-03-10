@@ -19,7 +19,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.api.ApiKeyManager;
 import gov.healthit.chpl.api.dao.ApiKeyDAO;
-import gov.healthit.chpl.api.domain.ApiKey;
+import gov.healthit.chpl.api.domain.ApiKeyDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.EmailBuilder;
 
@@ -41,11 +41,11 @@ private static final Logger LOGGER = LogManager.getLogger("apiKeyDeleteJobLogger
         LOGGER.info("********* Starting the API Key Deletion job. *********");
         LOGGER.info("Looking for API keys where the warning email was sent " + getNumberOfDaysUntilDelete() + " days ago.");
 
-        List<ApiKey> apiKeyDTOs = apiKeyDAO.findAllToBeRevoked(getNumberOfDaysUntilDelete());
+        List<ApiKeyDTO> apiKeyDTOs = apiKeyDAO.findAllToBeRevoked(getNumberOfDaysUntilDelete());
 
         LOGGER.info("Found " + apiKeyDTOs.size() + " API keys to delete.");
 
-        for (ApiKey dto : apiKeyDTOs) {
+        for (ApiKeyDTO dto : apiKeyDTOs) {
 
             try {
                 updateDeleted(dto);
@@ -60,12 +60,12 @@ private static final Logger LOGGER = LogManager.getLogger("apiKeyDeleteJobLogger
         LOGGER.info("********* Completed the API Key Deletion job. *********");
     }
 
-    private void updateDeleted(final ApiKey dto) throws EntityRetrievalException {
+    private void updateDeleted(final ApiKeyDTO dto) throws EntityRetrievalException {
         dto.setDeleted(true);
         apiKeyManager.updateApiKey(dto);
     }
 
-    private void sendEmail(final ApiKey dto) throws AddressException, MessagingException {
+    private void sendEmail(final ApiKeyDTO dto) throws AddressException, MessagingException {
         List<String> recipients = new ArrayList<String>();
         recipients.add(dto.getEmail());
 
@@ -77,7 +77,7 @@ private static final Logger LOGGER = LogManager.getLogger("apiKeyDeleteJobLogger
         LOGGER.info("Email sent to: " + dto.getEmail());
     }
 
-    private String getHtmlMessage(final ApiKey dto) {
+    private String getHtmlMessage(final ApiKeyDTO dto) {
         String message = String.format(
                 env.getProperty("job.apiKeyDeleteJob.config.message"),
                 dto.getNameOrganization(),

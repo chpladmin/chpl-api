@@ -20,7 +20,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import gov.healthit.chpl.api.dao.ApiKeyDAO;
-import gov.healthit.chpl.api.domain.ApiKey;
+import gov.healthit.chpl.api.domain.ApiKeyDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 /**
@@ -77,9 +77,9 @@ public class RateLimitingInterceptor extends HandlerInterceptorAdapter implement
             return false;
         }
 
-        List<ApiKey> keyDtos = apiKeyDao.findAllUnrestricted();
+        List<ApiKeyDTO> keyDtos = apiKeyDao.findAllUnrestricted();
 
-        for (ApiKey dto : keyDtos) {
+        for (ApiKeyDTO dto : keyDtos) {
             unrestrictedApiKeys.add(dto.getApiKey());
         }
 

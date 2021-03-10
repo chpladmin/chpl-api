@@ -3,55 +3,38 @@ package gov.healthit.chpl.api.domain;
 import java.io.Serializable;
 import java.util.Date;
 
-import gov.healthit.chpl.api.entity.ApiKeyEntity;
 import gov.healthit.chpl.util.Util;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
-@Data
 public class ApiKey implements Serializable {
-    private static final long serialVersionUID = 7091753452944248313L;
-    private Long id;
-    private String apiKey;
+    private static final long serialVersionUID = -3412202704187626073L;
+    private String name;
     private String email;
-    private String nameOrganization;
-    private Boolean unrestricted;
-    private Date creationDate;
-    private Date lastModifiedDate;
-    private Long lastModifiedUser;
-    private Boolean deleted;
+    private String key;
     private Date lastUsedDate;
     private Date deleteWarningSentDate;
 
-    public ApiKey(ApiKeyEntity entity) {
-        this.id = entity.getId();
-        this.apiKey = entity.getApiKey();
-        this.email = entity.getEmail();
-        this.nameOrganization = entity.getNameOrganization();
-        this.unrestricted = entity.getUnrestricted();
-        this.creationDate = entity.getCreationDate();
-        this.lastModifiedDate = entity.getLastModifiedDate();
-        this.lastModifiedUser = entity.getLastModifiedUser();
-        this.deleted = entity.getDeleted();
-        this.setLastUsedDate(entity.getLastUsedDate());
-        this.setDeleteWarningSentDate(entity.getDeleteWarningSentDate());
+    public String getName() {
+        return name;
     }
 
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
+    public void setName(final String name) {
+        this.name = name;
     }
 
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
+    public String getEmail() {
+        return email;
     }
 
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
+    public void setEmail(final String email) {
+        this.email = email;
     }
 
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(final String key) {
+        this.key = key;
     }
 
     public Date getLastUsedDate() {
@@ -66,7 +49,7 @@ public class ApiKey implements Serializable {
         return Util.getNewDate(deleteWarningSentDate);
     }
 
-    public void setDeleteWarningSentDate(final Date deleteWarningSentDate) {
+    public void setDeleteWarningSentDate(Date deleteWarningSentDate) {
         this.deleteWarningSentDate = Util.getNewDate(deleteWarningSentDate);
     }
 }

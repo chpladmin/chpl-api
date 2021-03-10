@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.api.dao.ApiKeyDAO;
-import gov.healthit.chpl.api.domain.ApiKey;
+import gov.healthit.chpl.api.domain.ApiKeyDTO;
 import gov.healthit.chpl.dao.ApiKeyActivityDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ApiKeyActivityDTO;
@@ -35,10 +35,10 @@ public class ApiKeyManager {
     }
 
     @Transactional
-    public ApiKey createKey(final ApiKey toCreate)
+    public ApiKeyDTO createKey(final ApiKeyDTO toCreate)
             throws EntityCreationException, JsonProcessingException, EntityRetrievalException {
 
-        ApiKey created = apiKeyDAO.create(toCreate);
+        ApiKeyDTO created = apiKeyDAO.create(toCreate);
 
         String activityMsg = "API Key " + created.getApiKey() + " was created.";
         activityManager.addActivity(ActivityConcept.API_KEY, created.getId(), activityMsg, null,
@@ -48,7 +48,7 @@ public class ApiKeyManager {
     }
 
     @Transactional
-    public ApiKey updateApiKey(final ApiKey dto) throws EntityRetrievalException {
+    public ApiKeyDTO updateApiKey(final ApiKeyDTO dto) throws EntityRetrievalException {
         return apiKeyDAO.update(dto);
     }
 
@@ -57,7 +57,7 @@ public class ApiKeyManager {
     public void deleteKey(final Long keyId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 
-        ApiKey toDelete = apiKeyDAO.getById(keyId);
+        ApiKeyDTO toDelete = apiKeyDAO.getById(keyId);
 
         String activityMsg = "API Key " + toDelete.getApiKey() + " was revoked.";
 
@@ -71,7 +71,7 @@ public class ApiKeyManager {
     public void deleteKey(final String keyString)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
 
-        ApiKey toDelete = apiKeyDAO.getByKey(keyString);
+        ApiKeyDTO toDelete = apiKeyDAO.getByKey(keyString);
 
         String activityMsg = "API Key " + toDelete.getApiKey() + " was revoked.";
 
@@ -81,12 +81,12 @@ public class ApiKeyManager {
     }
 
     @Transactional
-    public ApiKey findKey(final Long keyId) throws EntityRetrievalException {
+    public ApiKeyDTO findKey(final Long keyId) throws EntityRetrievalException {
         return apiKeyDAO.getById(keyId);
     }
 
     @Transactional
-    public ApiKey findKey(final String keyString) throws EntityRetrievalException {
+    public ApiKeyDTO findKey(final String keyString) throws EntityRetrievalException {
         return apiKeyDAO.getByKey(keyString);
     }
 
@@ -94,7 +94,7 @@ public class ApiKeyManager {
     public void logApiKeyActivity(final String keyString, final String apiCallPath, final String apiCallMethod)
             throws EntityRetrievalException, EntityCreationException {
 
-        ApiKey apiKey = findKey(keyString);
+        ApiKeyDTO apiKey = findKey(keyString);
         ApiKeyActivityDTO apiKeyActivityDto = new ApiKeyActivityDTO();
 
         apiKeyActivityDto.setApiCallPath(apiCallPath);
@@ -110,7 +110,7 @@ public class ApiKeyManager {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public List<ApiKey> findAll(final Boolean includeDeleted) {
+    public List<ApiKeyDTO> findAll(final Boolean includeDeleted) {
         return apiKeyDAO.findAll(includeDeleted);
     }
 }

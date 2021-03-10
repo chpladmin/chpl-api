@@ -20,7 +20,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.api.ApiKeyManager;
 import gov.healthit.chpl.api.dao.ApiKeyDAO;
-import gov.healthit.chpl.api.domain.ApiKey;
+import gov.healthit.chpl.api.domain.ApiKeyDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.EmailBuilder;
 
@@ -42,11 +42,11 @@ public class ApiKeyWarningEmailJob implements Job {
         LOGGER.info("********* Starting the API Key Warning Email job. *********");
         LOGGER.info("Looking for API keys that have not been used in " + getNumberOfDaysForWarning() + " days.");
 
-        List<ApiKey> apiKeyDTOs = apiKeyDAO.findAllNotUsedInXDays(getNumberOfDaysForWarning());
+        List<ApiKeyDTO> apiKeyDTOs = apiKeyDAO.findAllNotUsedInXDays(getNumberOfDaysForWarning());
 
         LOGGER.info("Found " + apiKeyDTOs.size() + " API keys to send warnings for.");
 
-        for (ApiKey dto : apiKeyDTOs) {
+        for (ApiKeyDTO dto : apiKeyDTOs) {
             try {
                 updateDeleteWarningSentDate(dto);
                 sendEmail(dto);
@@ -60,12 +60,12 @@ public class ApiKeyWarningEmailJob implements Job {
         LOGGER.info("********* Completed the API Key Warning Email job. *********");
     }
 
-    private void updateDeleteWarningSentDate(ApiKey dto) throws EntityRetrievalException {
+    private void updateDeleteWarningSentDate(ApiKeyDTO dto) throws EntityRetrievalException {
         dto.setDeleteWarningSentDate(new Date());
         apiKeyManager.updateApiKey(dto);
     }
 
-    private void sendEmail(ApiKey dto) throws AddressException, MessagingException {
+    private void sendEmail(ApiKeyDTO dto) throws AddressException, MessagingException {
         List<String> recipients = new ArrayList<String>();
         recipients.add(dto.getEmail());
 
@@ -77,7 +77,7 @@ public class ApiKeyWarningEmailJob implements Job {
         LOGGER.info("Email sent to: " + dto.getEmail());
     }
 
-    private String getHtmlMessage(ApiKey dto) {
+    private String getHtmlMessage(ApiKeyDTO dto) {
         String message = String.format(
                 env.getProperty("job.apiKeyWarningEmailJob.config.message"),
                 dto.getNameOrganization(),

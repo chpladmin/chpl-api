@@ -22,9 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.api.ApiKeyManager;
-import gov.healthit.chpl.api.domain.ApiKey;
-import gov.healthit.chpl.domain.ApiKey;
-import gov.healthit.chpl.domain.ApiKeyRegistration;
+import gov.healthit.chpl.api.domain.ApiKeyDTO;
+import gov.healthit.chpl.api.domain.ApiKeyRegistration;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.logging.Loggable;
@@ -64,7 +63,7 @@ public class ApiKeyController {
 
         String apiKey = gov.healthit.chpl.util.Util.md5(registration.getName()
                 + registration.getEmail() + now.getTime());
-        ApiKey toCreate = new ApiKey();
+        ApiKeyDTO toCreate = new ApiKeyDTO();
 
         toCreate.setApiKey(apiKey);
         toCreate.setEmail(registration.getEmail());
@@ -107,13 +106,13 @@ public class ApiKeyController {
     @ApiOperation(value = "List all API keys that have been created.",
             notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ApiKey> listKeys(@RequestParam(required = false, defaultValue = "false") final boolean includeDeleted) {
+    public List<ApiKeyDTO> listKeys(@RequestParam(required = false, defaultValue = "false") final boolean includeDeleted) {
 
-        List<ApiKey> keys = new ArrayList<ApiKey>();
-        List<ApiKey> dtos = apiKeyManager.findAll(includeDeleted);
+        List<ApiKeyDTO> keys = new ArrayList<ApiKeyDTO>();
+        List<ApiKeyDTO> dtos = apiKeyManager.findAll(includeDeleted);
 
-        for (ApiKey dto : dtos) {
-            ApiKey apiKey = new ApiKey();
+        for (ApiKeyDTO dto : dtos) {
+            ApiKeyDTO apiKey = new ApiKeyDTO();
             apiKey.setName(dto.getNameOrganization());
             apiKey.setEmail(dto.getEmail());
             apiKey.setKey(dto.getApiKey());
