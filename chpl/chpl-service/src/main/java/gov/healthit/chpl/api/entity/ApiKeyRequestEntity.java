@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.api.domain.ApiKeyRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -55,5 +56,16 @@ public class ApiKeyRequestEntity {
     @Basic(optional = false)
     @Column(name = "deleted", nullable = false)
     private Boolean deleted;
+
+    public ApiKeyRequestEntity(ApiKeyRequest request) {
+        this.id = request.getId();
+        this.email = request.getEmail();
+        this.nameOrganization = request.getNameOrganization();
+        this.apiRequestToken = request.getApiRequestToken();
+        this.creationDate = request.getCreationDate();
+        this.lastModifiedDate = request.getLastModifiedDate();
+        this.lastModifiedUser = request.getLastModifiedUser();
+        this.deleted = request.getDeleted();
+    }
 
 }
