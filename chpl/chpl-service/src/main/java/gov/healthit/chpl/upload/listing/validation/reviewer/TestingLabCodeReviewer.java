@@ -46,8 +46,8 @@ public class TestingLabCodeReviewer implements Reviewer {
         if (testingLabs != null && testingLabs.size() > 0) {
             if (!StringUtils.isEmpty(atlCode) && testingLabs.size() > 1
                     && !atlCode.equals(TestingLab.MULTIPLE_TESTING_LABS_CODE)) {
-                listing.getErrorMessages().add(msgUtil.getMessage("atl.shouldBe99"));
-                //TODO: should it actually do the code fix in here?
+                listing.getErrorMessages().add(msgUtil.getMessage("listing.atl.codeIsNotForMultiple"));
+                //should it actually do the code fix in here?
                 //I think for edit it would have to because the user can't change it otherwise
                 //but for newly uploaded listings it does not have to do the fix - the user can re-upload.
             } else if (!StringUtils.isEmpty(atlCode) && testingLabs.size() == 1

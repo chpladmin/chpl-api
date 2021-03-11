@@ -17,7 +17,7 @@ import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class TestingLabCodeReviewerTest {
-    private static final String ATL_99 = "There are more than one Testing Lab but the ATL code is not '99'. The ATL Code in the CHPL ID will be replaced with '99'.";
+    private static final String ATL_99 = "There is more than one Testing Lab but the ATL code is not '99'.";
     private static final String ATL_NOT_99 = "There is only one Testing Lab but the ATL code is '99'.";
     private static final String ATL_MISMATCH = "The ONC-ATL code from the CHPL Product Number %s does not match the code of the responsible ONC-ATL %s.";
     private static final String ATL_MISSING_CODE = "Testing Lab code is required but not found.";
@@ -165,7 +165,7 @@ public class TestingLabCodeReviewerTest {
 
     @Test
     public void review_atlCodeNot99MultipleTestingLabs_hasError() {
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("atl.shouldBe99")))
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.atl.codeIsNotForMultiple")))
             .thenReturn(ATL_99);
 
         CertifiedProductTestingLab atl = new CertifiedProductTestingLab();
@@ -183,8 +183,8 @@ public class TestingLabCodeReviewerTest {
 
         reviewer.review(listing);
 
-        assertEquals(1, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(ATL_99));
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(ATL_99));
     }
 
     @Test
