@@ -57,29 +57,37 @@ public class DeveloperReviewer implements Reviewer {
     }
 
     private void reviewDeveloperAddressHasRequiredData(CertifiedProductSearchDetails listing, Address address) {
-        if (StringUtils.isEmpty(address.getLine1())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("developer.address.streetRequired"));
-        }
-        if (StringUtils.isEmpty(address.getCity())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("developer.address.cityRequired"));
-        }
-        if (StringUtils.isEmpty(address.getState())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("developer.address.stateRequired"));
-        }
-        if (StringUtils.isEmpty(address.getZipcode())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("developer.address.zipRequired"));
+        if (address == null) {
+            listing.getErrorMessages().add(msgUtil.getMessage("developer.addressRequired"));
+        } else {
+            if (StringUtils.isEmpty(address.getLine1())) {
+                listing.getErrorMessages().add(msgUtil.getMessage("developer.address.streetRequired"));
+            }
+            if (StringUtils.isEmpty(address.getCity())) {
+                listing.getErrorMessages().add(msgUtil.getMessage("developer.address.cityRequired"));
+            }
+            if (StringUtils.isEmpty(address.getState())) {
+                listing.getErrorMessages().add(msgUtil.getMessage("developer.address.stateRequired"));
+            }
+            if (StringUtils.isEmpty(address.getZipcode())) {
+                listing.getErrorMessages().add(msgUtil.getMessage("developer.address.zipRequired"));
+            }
         }
     }
 
     private void reviewDeveloperContactHasRequiredData(CertifiedProductSearchDetails listing, PointOfContact contact) {
-        if (StringUtils.isEmpty(contact.getEmail())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("developer.contact.emailRequired"));
-        }
-        if (StringUtils.isEmpty(contact.getPhoneNumber())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("developer.contact.phoneRequired"));
-        }
-        if (StringUtils.isEmpty(contact.getFullName())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("developer.contact.nameRequired"));
+        if (contact == null) {
+            listing.getErrorMessages().add(msgUtil.getMessage("developer.contactRequired"));
+        } else {
+            if (StringUtils.isEmpty(contact.getEmail())) {
+                listing.getErrorMessages().add(msgUtil.getMessage("developer.contact.emailRequired"));
+            }
+            if (StringUtils.isEmpty(contact.getPhoneNumber())) {
+                listing.getErrorMessages().add(msgUtil.getMessage("developer.contact.phoneRequired"));
+            }
+            if (StringUtils.isEmpty(contact.getFullName())) {
+                listing.getErrorMessages().add(msgUtil.getMessage("developer.contact.nameRequired"));
+            }
         }
     }
 
@@ -87,8 +95,7 @@ public class DeveloperReviewer implements Reviewer {
         Developer developer = listing.getDeveloper();
         DeveloperStatus mostRecentStatus = developer.getStatus();
         if (mostRecentStatus == null || StringUtils.isEmpty(mostRecentStatus.getStatus())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.developer.noStatusFound.noUpdate",
-                    developer.getName() != null ? developer.getName() : "?"));
+            listing.getErrorMessages().add(msgUtil.getMessage("developer.status.noCurrent"));
         } else if (!mostRecentStatus.getStatus().equals(DeveloperStatusType.Active.getName())) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.developer.notActive.noCreate",
                     developer.getName() != null ? developer.getName() : "?",
