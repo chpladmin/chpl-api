@@ -41,7 +41,9 @@ public class DeveloperReviewer implements Reviewer {
 
         }
 
-        //TODO: developer name is required
+        if (StringUtils.isEmpty(developer.getName())) {
+            listing.getErrorMessages().add(msgUtil.getMessage("developer.nameRequired"));
+        }
         //TODO: is self developer allowed to be null?
         reviewDeveloperWebsiteIsPresentAndValid(listing, developer.getWebsite());
         reviewDeveloperAddressHasRequiredData(listing, developer.getAddress());
