@@ -11,20 +11,16 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
-import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
 @Component("developerReviewer")
 public class DeveloperReviewer implements Reviewer {
-    private ChplProductNumberUtil chplProductNumberUtil;
     private ErrorMessageUtil msgUtil;
     private UrlValidator urlValidator;
 
     @Autowired
-    public DeveloperReviewer(ChplProductNumberUtil chplProductNumberUtil,
-            ErrorMessageUtil msgUtil) {
-        this.chplProductNumberUtil = chplProductNumberUtil;
+    public DeveloperReviewer(ErrorMessageUtil msgUtil) {
         this.msgUtil = msgUtil;
         this.urlValidator = new UrlValidator();
     }
@@ -36,15 +32,16 @@ public class DeveloperReviewer implements Reviewer {
             return;
         }
 
-        //TODO: check for no developer ID if dev code is not XXXX
-        if (developer.getDeveloperId() == null) {
-
-        }
-
         if (StringUtils.isEmpty(developer.getName())) {
             listing.getErrorMessages().add(msgUtil.getMessage("developer.nameRequired"));
         }
-        //TODO: is self developer allowed to be null?
+
+        if (developer.getSelfDeveloper() == null && !StringUtils.isEmpty(developer.getSelfDeveloperStr())) {
+            listing.getErrorMessages().add(msgUtil.getMessage("developer.selfDeveloper.invalid", developer.getSelfDeveloperStr()));
+        } else if (developer.getSelfDeveloper() == null && StringUtils.isEmpty(developer.getSelfDeveloperStr())) {
+            listing.getErrorMessages().add(msgUtil.getMessage("developer.selfDeveloper.missing"));
+        }
+
         reviewDeveloperWebsiteIsPresentAndValid(listing, developer.getWebsite());
         reviewDeveloperAddressHasRequiredData(listing, developer.getAddress());
         reviewDeveloperContactHasRequiredData(listing, developer.getContact());
