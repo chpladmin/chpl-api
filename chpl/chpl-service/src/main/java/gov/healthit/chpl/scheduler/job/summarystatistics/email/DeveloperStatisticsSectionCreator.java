@@ -3,6 +3,7 @@ package gov.healthit.chpl.scheduler.job.summarystatistics.email;
 import java.util.List;
 
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.scheduler.job.summarystatistics.StatisticsMassager;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatistics;
 
 public class DeveloperStatisticsSectionCreator extends StatisticsSectionCreator {
