@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.summarystatistics.email;
+package gov.healthit.chpl.scheduler.job.summarystatistics;
 
 import java.util.ArrayList;
 import java.util.Comparator;
