@@ -152,8 +152,6 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
-                    summaryStatisticsDAO.deleteAll();
-
                     SummaryStatisticsEntity entity = new SummaryStatisticsEntity();
                     entity.setEndDate(new Date());
                     entity.setSummaryStatistics(getJson(statistics));
