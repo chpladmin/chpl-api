@@ -72,7 +72,7 @@ public class Edition2015ListingValidator extends Validator {
     private RequiredAndRelatedCriteriaReviewer requiredAndRelatedCriteriaReviewer;
 
     @Autowired
-    @Qualifier("testingLabReviewer")
+    @Qualifier("edition20142015testingLabReviewer")
     private TestingLabReviewer testingLabReviewer;
 
     @Autowired

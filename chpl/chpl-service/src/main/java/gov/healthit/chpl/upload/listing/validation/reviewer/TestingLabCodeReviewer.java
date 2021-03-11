@@ -11,11 +11,12 @@ import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import lombok.extern.log4j.Log4j2;
 
 @Component("testingLabCodeReviewer")
 @Log4j2
-public class TestingLabCodeReviewer  {
+public class TestingLabCodeReviewer implements Reviewer {
     private ChplProductNumberUtil chplProductNumberUtil;
     private ErrorMessageUtil msgUtil;
 
@@ -45,8 +46,10 @@ public class TestingLabCodeReviewer  {
         if (testingLabs != null && testingLabs.size() > 0) {
             if (!StringUtils.isEmpty(atlCode) && testingLabs.size() > 1
                     && !atlCode.equals(TestingLab.MULTIPLE_TESTING_LABS_CODE)) {
-                listing.getWarningMessages().add(msgUtil.getMessage("atl.shouldBe99"));
+                listing.getErrorMessages().add(msgUtil.getMessage("atl.shouldBe99"));
                 //TODO: should it actually do the code fix in here?
+                //I think for edit it would have to because the user can't change it otherwise
+                //but for newly uploaded listings it does not have to do the fix - the user can re-upload.
             } else if (!StringUtils.isEmpty(atlCode) && testingLabs.size() == 1
                     && atlCode.equals(TestingLab.MULTIPLE_TESTING_LABS_CODE)) {
                 listing.getErrorMessages().add(msgUtil.getMessage("atl.shouldNotBe99"));

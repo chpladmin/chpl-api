@@ -10,11 +10,12 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import lombok.extern.log4j.Log4j2;
 
 @Component("certifiedDateCodeReviewer")
 @Log4j2
-public class CertifiedDateCodeReviewer  {
+public class CertifiedDateCodeReviewer implements Reviewer {
     private ChplProductNumberUtil chplProductNumberUtil;
     private ErrorMessageUtil msgUtil;
 

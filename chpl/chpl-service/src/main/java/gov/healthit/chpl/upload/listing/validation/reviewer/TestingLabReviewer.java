@@ -8,22 +8,33 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
 @Component("testingLabReviewer")
-public class TestingLabReviewer  {
+public class TestingLabReviewer implements Reviewer {
+    private ChplProductNumberUtil chplProductNumberUtil;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public TestingLabReviewer(ErrorMessageUtil msgUtil) {
+    public TestingLabReviewer(ChplProductNumberUtil chplProductNumberUtil,
+            ErrorMessageUtil msgUtil) {
+        this.chplProductNumberUtil = chplProductNumberUtil;
         this.msgUtil = msgUtil;
     }
 
     public void review(CertifiedProductSearchDetails listing) {
-        List<CertifiedProductTestingLab> atls = listing.getTestingLabs();
-        if (atls == null || atls.size() == 0) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.missingTestingLab"));
+        String chplProductNumber = listing.getChplProductNumber();
+        if (chplProductNumberUtil.isLegacyChplProductNumberStyle(chplProductNumber)) {
+            //testing labs are not required for legacy listings
             return;
+        } else {
+            List<CertifiedProductTestingLab> atls = listing.getTestingLabs();
+            if (atls == null || atls.size() == 0) {
+                listing.getErrorMessages().add(msgUtil.getMessage("listing.missingTestingLab"));
+                return;
+            }
         }
 
         listing.getTestingLabs().stream()

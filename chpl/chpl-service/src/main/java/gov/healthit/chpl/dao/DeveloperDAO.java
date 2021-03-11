@@ -7,8 +7,6 @@ import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,18 +38,20 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.DeveloperMapper;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import lombok.extern.log4j.Log4j2;
 
 @Repository("developerDAO")
 @Loggable
+@Log4j2
 public class DeveloperDAO extends BaseDAOImpl {
-
-    private static final Logger LOGGER = LogManager.getLogger(DeveloperDAO.class);
     private static final DeveloperStatusType DEFAULT_STATUS = DeveloperStatusType.Active;
     private AddressDAO addressDao;
     private ContactDAO contactDao;
     private DeveloperStatusDAO statusDao;
     private ErrorMessageUtil msgUtil;
+    private DeveloperMapper developerMapper;
 
     @Autowired
     public DeveloperDAO(AddressDAO addressDao, ContactDAO contactDao, DeveloperStatusDAO statusDao,
@@ -60,6 +60,7 @@ public class DeveloperDAO extends BaseDAOImpl {
        this.contactDao = contactDao;
        this.statusDao = statusDao;
        this.msgUtil = msgUtil;
+       this.developerMapper = new DeveloperMapper();
     }
 
     public DeveloperDTO create(DeveloperDTO dto) throws EntityCreationException, EntityRetrievalException {
@@ -379,7 +380,7 @@ public class DeveloperDAO extends BaseDAOImpl {
         List<DeveloperDTO> dtos = new ArrayList<>();
 
         for (DeveloperEntitySimple entity : entities) {
-            DeveloperDTO dto = new DeveloperDTO(entity);
+            DeveloperDTO dto = developerMapper.from(entity);
             dtos.add(dto);
         }
         return dtos;
@@ -391,7 +392,7 @@ public class DeveloperDAO extends BaseDAOImpl {
         List<DeveloperDTO> dtos = new ArrayList<>();
 
         for (DeveloperEntity entity : entities) {
-            DeveloperDTO dto = new DeveloperDTO(entity);
+            DeveloperDTO dto = developerMapper.from(entity);
             dtos.add(dto);
         }
         return dtos;
@@ -403,7 +404,7 @@ public class DeveloperDAO extends BaseDAOImpl {
         List<DeveloperDTO> dtos = new ArrayList<>();
 
         for (DeveloperEntity entity : entities) {
-            DeveloperDTO dto = new DeveloperDTO(entity);
+            DeveloperDTO dto = developerMapper.from(entity);
             dtos.add(dto);
         }
         return dtos;
@@ -464,7 +465,7 @@ public class DeveloperDAO extends BaseDAOImpl {
         DeveloperEntity entity = getEntityById(id, includeDeleted);
         DeveloperDTO dto = null;
         if (entity != null) {
-            dto = new DeveloperDTO(entity);
+            dto = developerMapper.from(entity);
         }
         return dto;
     }
@@ -489,7 +490,7 @@ public class DeveloperDAO extends BaseDAOImpl {
         } else if (entities.size() > 1) {
             throw new EntityRetrievalException("Data error. Duplicate developer id in database.");
         } else if (entities.size() == 1) {
-            result = new DeveloperDTO(entities.get(0));
+            result = developerMapper.from(entities.get(0));
         }
 
         return result;
@@ -499,7 +500,7 @@ public class DeveloperDAO extends BaseDAOImpl {
         DeveloperEntity entity = getEntityByName(name);
         DeveloperDTO dto = null;
         if (entity != null) {
-            dto = new DeveloperDTO(entity);
+            dto = developerMapper.from(entity);
         }
         return dto;
     }
@@ -508,7 +509,7 @@ public class DeveloperDAO extends BaseDAOImpl {
         DeveloperEntity entity = getEntityByCode(code);
         DeveloperDTO dto = null;
         if (entity != null) {
-            dto = new DeveloperDTO(entity);
+            dto = developerMapper.from(entity);
         }
         return dto;
     }
@@ -524,7 +525,7 @@ public class DeveloperDAO extends BaseDAOImpl {
         getDeveloperByVersionIdQuery.setParameter("versionId", productVersionId);
         @SuppressWarnings("unchecked") List<DeveloperEntity> results = getDeveloperByVersionIdQuery.getResultList();
         if (results != null && results.size() > 0) {
-            return new DeveloperDTO(results.get(0));
+            return developerMapper.from(results.get(0));
         }
         return null;
     }
@@ -548,7 +549,7 @@ public class DeveloperDAO extends BaseDAOImpl {
         @SuppressWarnings("unchecked") List<DeveloperEntity> results = query.getResultList();
         List<DeveloperDTO> resultDtos = new ArrayList<DeveloperDTO>();
         for (DeveloperEntity entity : results) {
-            resultDtos.add(new DeveloperDTO(entity));
+            resultDtos.add(developerMapper.from(entity));
         }
         return resultDtos;
     }
@@ -672,7 +673,7 @@ public class DeveloperDAO extends BaseDAOImpl {
 
     public List<DeveloperDTO> getByCertificationBodyId(final List<Long> certificationBodyIds) {
         return getEntitiesByCertificationBodyId(certificationBodyIds).stream()
-                .map(dev -> new DeveloperDTO(dev))
+                .map(dev -> developerMapper.from(dev))
                 .collect(Collectors.<DeveloperDTO> toList());
     }
 
@@ -691,7 +692,7 @@ public class DeveloperDAO extends BaseDAOImpl {
         List<DeveloperDTO> dtos = new ArrayList<DeveloperDTO>();
         if (result != null) {
             for (UserDeveloperMapEntity entity : result) {
-                dtos.add(new DeveloperDTO(entity.getDeveloper()));
+                dtos.add(developerMapper.from(entity.getDeveloper()));
             }
         }
         return dtos;

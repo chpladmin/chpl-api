@@ -7,11 +7,12 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import lombok.extern.log4j.Log4j2;
 
 @Component("icsCodeReviewer")
 @Log4j2
-public class IcsCodeReviewer {
+public class IcsCodeReviewer implements Reviewer {
     private ChplProductNumberUtil chplProductNumberUtil;
     private ErrorMessageUtil msgUtil;
 

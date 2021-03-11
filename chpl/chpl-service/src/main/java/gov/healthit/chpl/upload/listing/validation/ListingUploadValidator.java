@@ -1,6 +1,7 @@
 package gov.healthit.chpl.upload.listing.validation;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -12,7 +13,8 @@ import gov.healthit.chpl.upload.listing.validation.reviewer.CertificationBodyRev
 import gov.healthit.chpl.upload.listing.validation.reviewer.CertifiedDateCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.ChplNumberFormatReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.ChplNumberUniqueReviewer;
-import gov.healthit.chpl.upload.listing.validation.reviewer.DeveloperStatusReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.DeveloperCodeReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.DeveloperReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.EditionCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.EditionReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.IcsCodeReviewer;
@@ -20,6 +22,7 @@ import gov.healthit.chpl.upload.listing.validation.reviewer.TestingLabCodeReview
 import gov.healthit.chpl.upload.listing.validation.reviewer.TestingLabReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.InheritanceReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
 
 @Component
 public class ListingUploadValidator {
@@ -28,7 +31,7 @@ public class ListingUploadValidator {
     private EditionCodeReviewer editionCodeReviewer;
     private TestingLabCodeReviewer atlCodeReviewer;
     private CertificationBodyCodeReviewer acbCodeReviewer;
-    //TODO: Developer code reviewers
+    private DeveloperCodeReviewer developerCodeReviewer;
     private IcsCodeReviewer icsCodeReviewer;
     private AdditionalSoftwareCodeReviewer additionalSoftwareCodeReviewer;
     private CertifiedDateCodeReviewer certifiedDateCodeReviewer;
@@ -37,13 +40,10 @@ public class ListingUploadValidator {
     private EditionReviewer editionReviewer;
     private TestingLabReviewer atlReviewer;
     private CertificationBodyReviewer acbReviewer;
-    //TODO: Developer reviewers
+    private DeveloperReviewer devReviewer;
     private CertificationDateReviewer certDateReviewer;
-    //TODO: needs unit test
-    private DeveloperStatusReviewer devStatusReviewer;
-    //TODO: needs unit test
     private InheritanceReviewer inheritanceReviewer;
-
+    private UnsupportedCharacterReviewer unsupportedCharacterReviewer;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
@@ -52,29 +52,35 @@ public class ListingUploadValidator {
             EditionCodeReviewer editionCodeReviewer,
             TestingLabCodeReviewer atlCodeReviewer,
             CertificationBodyCodeReviewer acbCodeReviewer,
+            DeveloperCodeReviewer developerCodeReviewer,
             IcsCodeReviewer icsCodeReviewer,
             AdditionalSoftwareCodeReviewer additionalSoftwareCodeReviewer,
             EditionReviewer editionReviewer,
-            TestingLabReviewer atlReviewer,
+            @Qualifier("testingLabReviewer") TestingLabReviewer atlReviewer,
             CertificationBodyReviewer acbReviewer,
+            DeveloperReviewer devReviewer,
             CertifiedDateCodeReviewer certifiedDateCodeReviewer,
             CertificationDateReviewer certDateReviewer,
             ChplNumberUniqueReviewer chplNumberUniqueReviewer,
-            DeveloperStatusReviewer devStatusReviewer) {
+            InheritanceReviewer inheritanceReviewer,
+            UnsupportedCharacterReviewer unsupportedCharacterReviewer) {
         this.csvHeaderReviewer = csvHeaderReviewer;
         this.chplNumberFormatReviewer = chplNumberFormatReviewer;
         this.editionCodeReviewer = editionCodeReviewer;
         this.atlCodeReviewer = atlCodeReviewer;
         this.acbCodeReviewer = acbCodeReviewer;
+        this.developerCodeReviewer = developerCodeReviewer;
         this.icsCodeReviewer = icsCodeReviewer;
         this.additionalSoftwareCodeReviewer = additionalSoftwareCodeReviewer;
         this.certifiedDateCodeReviewer = certifiedDateCodeReviewer;
         this.editionReviewer = editionReviewer;
         this.atlReviewer = atlReviewer;
         this.acbReviewer = acbReviewer;
+        this.devReviewer = devReviewer;
         this.certDateReviewer = certDateReviewer;
         this.chplNumberUniqueReviewer = chplNumberUniqueReviewer;
-        this.devStatusReviewer = devStatusReviewer;
+        this.inheritanceReviewer = inheritanceReviewer;
+        this.unsupportedCharacterReviewer = unsupportedCharacterReviewer;
     }
 
     public void review(ListingUpload uploadedMetadata, CertifiedProductSearchDetails listing) {
@@ -83,15 +89,17 @@ public class ListingUploadValidator {
         editionCodeReviewer.review(listing);
         atlCodeReviewer.review(listing);
         acbCodeReviewer.review(listing);
+        developerCodeReviewer.review(listing);
         icsCodeReviewer.review(listing);
         additionalSoftwareCodeReviewer.review(listing);
         certifiedDateCodeReviewer.review(listing);
         editionReviewer.review(listing);
         atlReviewer.review(listing);
         acbReviewer.review(listing);
+        devReviewer.review(listing);
         certDateReviewer.review(listing);
         chplNumberUniqueReviewer.review(listing);
-        devStatusReviewer.review(listing);
         inheritanceReviewer.review(listing);
+        unsupportedCharacterReviewer.review(listing);
     }
 }

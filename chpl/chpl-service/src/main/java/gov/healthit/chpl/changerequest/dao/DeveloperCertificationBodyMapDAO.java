@@ -9,10 +9,11 @@ import gov.healthit.chpl.changerequest.entity.DeveloperCertificationBodyMapEntit
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.util.DeveloperMapper;
 
 @Repository
 public class DeveloperCertificationBodyMapDAO extends BaseDAOImpl {
+    private DeveloperMapper developerMapper = new DeveloperMapper();
 
     public List<CertificationBody> getCertificationBodiesForDeveloper(Long developerId) {
         String hql = "FROM DeveloperCertificationBodyMapEntity main "
@@ -41,7 +42,7 @@ public class DeveloperCertificationBodyMapDAO extends BaseDAOImpl {
                 .createQuery(hql, DeveloperCertificationBodyMapEntity.class)
                 .setParameter("certificationBodyId", certificationBodyId)
                 .getResultList().stream()
-                .map(item -> new Developer(new DeveloperDTO(item.getDeveloper())))
+                .map(item -> new Developer(developerMapper.from(item.getDeveloper())))
                 .collect(Collectors.<Developer>toList());
     }
 }

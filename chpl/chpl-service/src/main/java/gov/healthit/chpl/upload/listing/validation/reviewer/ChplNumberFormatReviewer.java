@@ -8,9 +8,10 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
+import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
 @Component("chplNumberFormatReviewer")
-public class ChplNumberFormatReviewer {
+public class ChplNumberFormatReviewer implements Reviewer {
     private ChplProductNumberUtil chplProductNumberUtil;
     private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;

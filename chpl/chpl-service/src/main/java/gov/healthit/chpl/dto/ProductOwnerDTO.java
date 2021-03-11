@@ -5,24 +5,29 @@ import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.entity.ProductOwnerEntity;
+import gov.healthit.chpl.util.DeveloperMapper;
+import lombok.Data;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Data
 public class ProductOwnerDTO implements Serializable {
     private static final long serialVersionUID = 6840423832565720086L;
     private Long id;
     private Long productId;
     private DeveloperDTO developer;
     private Long transferDate;
+    private DeveloperMapper developerMapper;
 
     public ProductOwnerDTO() {
+        this.developerMapper = new DeveloperMapper();
     }
 
     public ProductOwnerDTO(ProductOwnerEntity entity) {
-
+        this();
         this.id = entity.getId();
         this.productId = entity.getProductId();
         if (entity.getDeveloper() != null) {
-            this.developer = new DeveloperDTO(entity.getDeveloper());
+            this.developer = developerMapper.from(entity.getDeveloper());
         } else {
             this.developer = new DeveloperDTO();
             this.developer.setId(entity.getDeveloperId());
@@ -30,37 +35,5 @@ public class ProductOwnerDTO implements Serializable {
         if (entity.getTransferDate() != null) {
             this.transferDate = entity.getTransferDate().getTime();
         }
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Long getProductId() {
-        return productId;
-    }
-
-    public void setProductId(final Long productId) {
-        this.productId = productId;
-    }
-
-    public Long getTransferDate() {
-        return transferDate;
-    }
-
-    public void setTransferDate(final Long transferDate) {
-        this.transferDate = transferDate;
-    }
-
-    public DeveloperDTO getDeveloper() {
-        return developer;
-    }
-
-    public void setDeveloper(final DeveloperDTO developer) {
-        this.developer = developer;
     }
 }

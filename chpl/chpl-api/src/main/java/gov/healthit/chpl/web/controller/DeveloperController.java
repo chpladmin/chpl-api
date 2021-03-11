@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,27 +29,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.MergeDevelopersRequest;
 import gov.healthit.chpl.domain.PermissionDeletedResponse;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.SplitDeveloperRequest;
-import gov.healthit.chpl.domain.TransparencyAttestationMap;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.domain.compliance.DirectReview;
-import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.domain.developer.hierarchy.DeveloperTree;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
-import gov.healthit.chpl.dto.AddressDTO;
-import gov.healthit.chpl.dto.ContactDTO;
-import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusDTO;
-import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
-import gov.healthit.chpl.dto.TransparencyAttestationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -63,6 +52,7 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.service.DirectReviewCachingService;
+import gov.healthit.chpl.util.DeveloperMapper;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
@@ -90,6 +80,8 @@ public class DeveloperController {
     @Value("${schemaDirectReviewsName}")
     private String directReviewsSchemaName;
 
+    private DeveloperMapper developerMapper;
+
     @Autowired
     public DeveloperController(DeveloperManager developerManager,
             CertifiedProductManager cpManager,
@@ -104,6 +96,7 @@ public class DeveloperController {
         this.directReviewService = directReviewService;
         this.fileUtils = fileUtils;
         this.ff4j = ff4j;
+        this.developerMapper = new DeveloperMapper();
     }
 
     @ApiOperation(value = "List all developers in the system.",
@@ -210,7 +203,7 @@ public class DeveloperController {
             @RequestBody(required = true) Developer developerToUpdate)
             throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException,
             JsonProcessingException, ValidationException, MissingReasonException {
-        DeveloperDTO toUpdate = toDto(developerToUpdate);
+        DeveloperDTO toUpdate = developerMapper.to(developerToUpdate);
         toUpdate.setId(developerId);
 
         DeveloperDTO result = developerManager.update(toUpdate, true);
@@ -238,7 +231,7 @@ public class DeveloperController {
             throw new InvalidArgumentsException(
                     "More than 1 developer ID must be present in the request body to perform a merge.");
         }
-        DeveloperDTO toCreate = toDto(mergeRequest.getDeveloper());
+        DeveloperDTO toCreate = developerMapper.to(mergeRequest.getDeveloper());
         return developerManager.merge(mergeRequest.getDeveloperIds(), toCreate);
     }
 
@@ -275,7 +268,7 @@ public class DeveloperController {
         }
 
         DeveloperDTO oldDeveloper = developerManager.getById(splitRequest.getOldDeveloper().getDeveloperId());
-        DeveloperDTO newDeveloper = toDto(splitRequest.getNewDeveloper());
+        DeveloperDTO newDeveloper = developerMapper.to(splitRequest.getNewDeveloper());
         List<Long> newDeveloperProductIds = new ArrayList<Long>(splitRequest.getNewProducts().size());
         for (Product newDeveloperProduct : splitRequest.getNewProducts()) {
             newDeveloperProductIds.add(newDeveloperProduct.getProductId());
@@ -326,61 +319,5 @@ public class DeveloperController {
         UsersResponse results = new UsersResponse();
         results.setUsers(domainUsers);
         return results;
-    }
-
-    private DeveloperDTO toDto(Developer developer) {
-        DeveloperDTO dto = new DeveloperDTO();
-        dto.setDeveloperCode(developer.getDeveloperCode());
-        dto.setName(developer.getName());
-        dto.setWebsite(developer.getWebsite());
-        dto.setSelfDeveloper(developer.getSelfDeveloper());
-
-        if (developer.getStatusEvents() != null && developer.getStatusEvents().size() > 0) {
-            for (DeveloperStatusEvent newDeveloperStatusEvent : developer.getStatusEvents()) {
-                DeveloperStatusEventDTO statusEvent = new DeveloperStatusEventDTO();
-                DeveloperStatusDTO statusDto = new DeveloperStatusDTO();
-                statusDto.setId(newDeveloperStatusEvent.getStatus().getId());
-                statusDto.setStatusName(newDeveloperStatusEvent.getStatus().getStatus());
-                statusEvent.setStatus(statusDto);
-                statusEvent.setId(newDeveloperStatusEvent.getId());
-                statusEvent.setDeveloperId(newDeveloperStatusEvent.getDeveloperId());
-                statusEvent.setReason(newDeveloperStatusEvent.getReason());
-                statusEvent.setStatusDate(newDeveloperStatusEvent.getStatusDate());
-                dto.getStatusEvents().add(statusEvent);
-            }
-        }
-
-        for (TransparencyAttestationMap attMap : developer.getTransparencyAttestations()) {
-            DeveloperACBMapDTO devMap = new DeveloperACBMapDTO();
-            devMap.setAcbId(attMap.getAcbId());
-            devMap.setAcbName(attMap.getAcbName());
-            if (attMap.getAttestation() != null && !StringUtils.isEmpty(attMap.getAttestation().getTransparencyAttestation())) {
-                devMap.setTransparencyAttestation(
-                        new TransparencyAttestationDTO(attMap.getAttestation().getTransparencyAttestation()));
-            }
-            dto.getTransparencyAttestationMappings().add(devMap);
-        }
-
-        Address developerAddress = developer.getAddress();
-        if (developerAddress != null) {
-            AddressDTO toCreateAddress = new AddressDTO();
-            toCreateAddress.setStreetLineOne(developerAddress.getLine1());
-            toCreateAddress.setStreetLineTwo(developerAddress.getLine2());
-            toCreateAddress.setCity(developerAddress.getCity());
-            toCreateAddress.setState(developerAddress.getState());
-            toCreateAddress.setZipcode(developerAddress.getZipcode());
-            toCreateAddress.setCountry(developerAddress.getCountry());
-            dto.setAddress(toCreateAddress);
-        }
-        PointOfContact developerContact = developer.getContact();
-        if (developerContact != null) {
-            ContactDTO toCreateContact = new ContactDTO();
-            toCreateContact.setEmail(developerContact.getEmail());
-            toCreateContact.setFullName(developerContact.getFullName());
-            toCreateContact.setPhoneNumber(developerContact.getPhoneNumber());
-            toCreateContact.setTitle(developerContact.getTitle());
-            dto.setContact(toCreateContact);
-        }
-        return dto;
     }
 }

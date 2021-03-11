@@ -8,9 +8,10 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
 @Component("certificationBodyReviewer")
-public class CertificationBodyReviewer  {
+public class CertificationBodyReviewer implements Reviewer {
     private ErrorMessageUtil msgUtil;
 
     @Autowired

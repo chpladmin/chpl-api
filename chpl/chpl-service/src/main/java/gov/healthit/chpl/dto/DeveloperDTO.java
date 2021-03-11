@@ -10,9 +10,6 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.domain.Statuses;
-import gov.healthit.chpl.entity.developer.DeveloperEntity;
-import gov.healthit.chpl.entity.developer.DeveloperEntitySimple;
-import gov.healthit.chpl.entity.developer.DeveloperStatusEventEntity;
 import lombok.Data;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -38,53 +35,6 @@ public class DeveloperDTO implements Serializable {
     public DeveloperDTO() {
         this.transparencyAttestationMappings = new ArrayList<DeveloperACBMapDTO>();
         this.statusEvents = new ArrayList<DeveloperStatusEventDTO>();
-    }
-
-    public DeveloperDTO(DeveloperEntitySimple entity) {
-        this();
-        this.id = entity.getId();
-        this.developerCode = entity.getDeveloperCode();
-        this.creationDate = entity.getCreationDate();
-        this.deleted = entity.isDeleted();
-        this.lastModifiedDate = entity.getLastModifiedDate();
-        this.lastModifiedUser = entity.getLastModifiedUser();
-        this.name = entity.getName();
-        this.website = entity.getWebsite();
-        this.selfDeveloper = entity.getSelfDeveloper();
-    }
-
-    public DeveloperDTO(DeveloperEntity entity) {
-        this();
-        this.id = entity.getId();
-        this.developerCode = entity.getDeveloperCode();
-        if (entity.getAddress() != null) {
-            this.address = new AddressDTO(entity.getAddress());
-        }
-        if (entity.getContact() != null) {
-            this.contact = new ContactDTO(entity.getContact());
-        }
-        if (entity.getStatusEvents() != null && entity.getStatusEvents().size() > 0) {
-            for (DeveloperStatusEventEntity statusEntity : entity.getStatusEvents()) {
-                this.statusEvents.add(new DeveloperStatusEventDTO(statusEntity));
-            }
-        }
-
-        this.creationDate = entity.getCreationDate();
-        this.deleted = entity.isDeleted();
-        this.lastModifiedDate = entity.getLastModifiedDate();
-        this.lastModifiedUser = entity.getLastModifiedUser();
-        this.name = entity.getName();
-        this.website = entity.getWebsite();
-        this.selfDeveloper = entity.getSelfDeveloper();
-        if (entity.getDeveloperCertificationStatusesEntity() != null) {
-            this.statuses = new Statuses(entity.getDeveloperCertificationStatusesEntity().getActive(),
-                    entity.getDeveloperCertificationStatusesEntity().getRetired(),
-                    entity.getDeveloperCertificationStatusesEntity().getWithdrawnByDeveloper(),
-                    entity.getDeveloperCertificationStatusesEntity().getWithdrawnByAcb(),
-                    entity.getDeveloperCertificationStatusesEntity().getSuspendedByAcb(),
-                    entity.getDeveloperCertificationStatusesEntity().getSuspendedByOnc(),
-                    entity.getDeveloperCertificationStatusesEntity().getTerminatedByOnc());
-        }
     }
 
     public DeveloperStatusEventDTO getStatus() {

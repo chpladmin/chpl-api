@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class TestingLabReviewerTest {
@@ -39,12 +40,23 @@ public class TestingLabReviewerTest {
             .thenReturn(MISSING_ATL_CODE);
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("atl.notFound")))
             .thenReturn(NOT_FOUND);
-        reviewer = new TestingLabReviewer(errorMessageUtil);
+        reviewer = new TestingLabReviewer(new ChplProductNumberUtil(), errorMessageUtil);
+    }
+
+    @Test
+    public void review_nullAtlLegacyListing_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("CHP-123456")
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
     public void review_nullAtl_hasError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.2526.WEBe.06.01.1.210102")
                 .build();
         reviewer.review(listing);
 
