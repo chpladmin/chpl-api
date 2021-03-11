@@ -1,30 +1,27 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
-import java.util.Set;
-
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.manager.DeveloperManager;
-import gov.healthit.chpl.util.DeveloperMapper;
+import gov.healthit.chpl.domain.DeveloperStatus;
+import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
 @Component("developerReviewer")
 public class DeveloperReviewer implements Reviewer {
-    private DeveloperManager developerManager;
+    private DeveloperDAO developerDao;
     private ErrorMessageUtil msgUtil;
-    private DeveloperMapper developerMapper;
 
     @Autowired
-    public DeveloperReviewer(DeveloperManager developerManager,
+    public DeveloperReviewer(DeveloperDAO developerDao,
             ErrorMessageUtil msgUtil) {
-        this.developerManager = developerManager;
+        this.developerDao = developerDao;
         this.msgUtil = msgUtil;
-        this.developerMapper = new DeveloperMapper();
     }
 
     public void review(CertifiedProductSearchDetails listing) {
@@ -34,17 +31,19 @@ public class DeveloperReviewer implements Reviewer {
             return;
         }
 
-        Set<String> developerErrorMessages = null;
-        DeveloperDTO developerDto = developerMapper.to(developer);
-        if (developer.getDeveloperId() != null) {
-            developerErrorMessages = developerManager.runSystemValidations(developerDto);
-        } else {
-            developerErrorMessages = developerManager.runCreateValidations(developerDto);
-        }
+        checkDeveloperStatus(listing);
+    }
 
-        if (developerErrorMessages != null) {
-            developerErrorMessages.stream()
-                .forEach(errMsg -> listing.getErrorMessages().add(errMsg));
+    private void checkDeveloperStatus(CertifiedProductSearchDetails listing) {
+        Developer developer = listing.getDeveloper();
+        DeveloperStatus mostRecentStatus = developer.getStatus();
+        if (mostRecentStatus == null || StringUtils.isEmpty(mostRecentStatus.getStatus())) {
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.developer.noStatusFound.noUpdate",
+                    developer.getName() != null ? developer.getName() : "?"));
+        } else if (!mostRecentStatus.getStatus().equals(DeveloperStatusType.Active.getName())) {
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.developer.notActive.noCreate",
+                    developer.getName() != null ? developer.getName() : "?",
+                    mostRecentStatus.getStatus()));
         }
     }
 }

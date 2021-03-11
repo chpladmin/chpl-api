@@ -2,17 +2,14 @@ package gov.healthit.chpl.dto.questionableActivity;
 
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityDeveloperEntity;
-import gov.healthit.chpl.util.DeveloperMapper;
 
 public class QuestionableActivityDeveloperDTO extends QuestionableActivityDTO {
     private Long developerId;
     private DeveloperDTO developer;
     private String reason;
-    private DeveloperMapper developerMapper;
 
     public QuestionableActivityDeveloperDTO() {
         super();
-        this.developerMapper = new DeveloperMapper();
     }
 
     public QuestionableActivityDeveloperDTO(QuestionableActivityDeveloperEntity entity) {
@@ -20,7 +17,7 @@ public class QuestionableActivityDeveloperDTO extends QuestionableActivityDTO {
         this.developerId = entity.getDeveloperId();
         this.reason = entity.getReason();
         if (entity.getDeveloper() != null) {
-            this.developer = developerMapper.from(entity.getDeveloper());
+            this.developer = new DeveloperDTO(entity.getDeveloper());
         }
     }
 

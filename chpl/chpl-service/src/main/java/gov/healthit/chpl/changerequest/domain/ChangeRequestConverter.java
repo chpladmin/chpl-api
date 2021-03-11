@@ -12,14 +12,10 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.auth.UserPermission;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.auth.UserPermissionDTO;
-import gov.healthit.chpl.util.DeveloperMapper;
 
-public final class ChangeRequestConverter {
-    private static DeveloperMapper developerMapper = new DeveloperMapper();
-
-    private ChangeRequestConverter() {
-    }
+public class ChangeRequestConverter {
 
     public static ChangeRequestStatusType convert(ChangeRequestStatusTypeEntity entity) {
         ChangeRequestStatusType status = new ChangeRequestStatusType();
@@ -39,7 +35,7 @@ public final class ChangeRequestConverter {
         ChangeRequest cr = new ChangeRequest();
         cr.setId(entity.getId());
         cr.setChangeRequestType(convert(entity.getChangeRequestType()));
-        cr.setDeveloper(new Developer(developerMapper.from(entity.getDeveloper())));
+        cr.setDeveloper(new Developer(new DeveloperDTO(entity.getDeveloper())));
         cr.setSubmittedDate(entity.getCreationDate());
         return cr;
     }
