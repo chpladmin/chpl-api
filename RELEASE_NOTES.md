@@ -1,5 +1,20 @@
 # Release Notes
 
+## Version 28.0.0
+_8 March 2021_
+
+### Breaking Changes
+* Remove /key/activity endpoints
+
+### Features
+* Update quarterly/annual surveillance reports to have 2019 and 2021+ formats
+* Remove dependency on tables that used to be used for security, but are now obsolete
+* Add v20 upload template parsing to include old b3 criterion
+* Store HTTP Method in API Key Activity table
+* Support edit and display of SVAP Notice URL
+
+---
+
 ## Version 27.2.0
 _22 February 2021_
 
