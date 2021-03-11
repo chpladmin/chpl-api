@@ -36,7 +36,7 @@ const certifiedProductControllerDataTests = {
   ...commonOptions,
   collection: collection_path + '/certified-product-controller.postman_collection.json',
   folder: 'GET : certified_product: data driven tests',
-  iterationData: data_path + '/chplids-test-data.json',
+  iterationData: data_path + '/chplproductnumbers-test-data.json',
   reporter: {
     junit: {
       export: reports_path + '/certified-product-controller-data-tests.xml',

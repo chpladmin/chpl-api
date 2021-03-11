@@ -150,7 +150,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"var chplIdtest=  pm.iterationData.get(\"certifiedlistings2015\");\r",
+									"var chplIdtest=  pm.iterationData.get(\"newChplProductNumber\");\r",
 									"pm.environment.set(\"year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode\",chplIdtest);"
 								],
 								"type": "text/javascript"
@@ -193,7 +193,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"var chplIdtest= pm.iterationData.get(\"certifiedlistings2015\");\r",
+									"var chplIdtest= pm.iterationData.get(\"newChplProductNumber\");\r",
 									"pm.environment.set(\"year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode\",chplIdtest);"
 								],
 								"type": "text/javascript"
@@ -248,7 +248,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"var chplidtest= pm.iterationData.get(\"certifiedlistings2014\");\r",
+									"var chplidtest= pm.iterationData.get(\"oldChplProductNumber\");\r",
 									"pm.environment.set(\"chplPrefix-identifier\",chplidtest);"
 								],
 								"type": "text/javascript"
@@ -318,7 +318,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"var chplidtest= pm.iterationData.get(\"certifiedlistings2014\");\r",
+									"var chplidtest= pm.iterationData.get(\"oldChplProductNumber\");\r",
 									"pm.environment.set(\"chplPrefix-identifier\",chplidtest);"
 								],
 								"type": "text/javascript"
@@ -345,13 +345,13 @@
 						"header": [
 							{
 								"key": "API-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
+								"type": "text",
+								"value": "{{apiKey}}"
 							},
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
+								"type": "text",
+								"value": "application/json"
 							}
 						],
 						"url": {
