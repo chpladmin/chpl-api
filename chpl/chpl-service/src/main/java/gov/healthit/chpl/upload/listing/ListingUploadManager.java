@@ -64,8 +64,6 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 public class ListingUploadManager {
-    public static final String NEW_DEVELOPER_CODE = "XXXX";
-
     private ListingDetailsUploadHandler listingDetailsHandler;
     private CertificationDateHandler certDateHandler;
     private ListingDetailsNormalizer listingNormalizer;

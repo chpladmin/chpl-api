@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.upload.listing.ListingUploadManager;
+import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
@@ -42,16 +42,16 @@ public class DeveloperCodeReviewer implements Reviewer {
 
         Developer developer = listing.getDeveloper();
         if (developer != null && !StringUtils.isEmpty(developerCode)) {
-            if (ListingUploadManager.NEW_DEVELOPER_CODE.equals(developerCode)
+            if (DeveloperManager.NEW_DEVELOPER_CODE.equals(developerCode)
                     && developer.getDeveloperId() != null) {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.shouldNotHaveXXXXCode"));
-            } else if (!ListingUploadManager.NEW_DEVELOPER_CODE.equals(developerCode)
+            } else if (!DeveloperManager.NEW_DEVELOPER_CODE.equals(developerCode)
                     && developer.getDeveloperId() == null) {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.shouldHaveXXXXCode", developerCode));
             } else if (!StringUtils.isEmpty(developer.getDeveloperCode())
                     && !developerCode.equals(developer.getDeveloperCode())) {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.developerCodeMismatch", developerCode, developer.getDeveloperCode()));
-            } else if (!ListingUploadManager.NEW_DEVELOPER_CODE.equals(developerCode)
+            } else if (!DeveloperManager.NEW_DEVELOPER_CODE.equals(developerCode)
                     && StringUtils.isEmpty(developer.getDeveloperCode())) {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.missingDeveloperCode"));
             }
