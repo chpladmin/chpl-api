@@ -378,6 +378,22 @@
             <artifactId>streamex</artifactId> 
             <version>0.7.3</version> 
         </dependency>
+        
+        <!-- iText for PDF Creation -->
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itext7-core</artifactId>
+            <version>7.1.14</version>
+            <type>pom</type>
+        </dependency>
+
+        <!-- jFreeChart for generating charts -->
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>1.5.2</version>
+        </dependency>
+
     </dependencies>
 
     <build>
