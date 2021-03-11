@@ -65,16 +65,16 @@ public class PrivacyAndSecurityCriteriaReviewer implements ComparisonReviewer {
                 addedCriteria.removeAll(existingAttestedToCriteria);
 
                 if (!addedCriteria.isEmpty()) {
-                    LOGGER.info("Criteria of some kind were added");
+                    LOGGER.debug("Criteria of some kind were added");
                     updatedListing.getErrorMessages()
                             .addAll(validationUtils.checkSubordinateCriteriaAllRequired(
                                     privacyAndSecurityCriteria, privacyAndSecurityRequiredCriteria,
                                     updatedAttestedToCriteria, errorMessageUtil));
                 } else {
-                    LOGGER.info("No criteria of any kind were added, no further review required");
+                    LOGGER.debug("No criteria of any kind were added, no further review required");
                 }
             } else {
-                LOGGER.info("Certification Status is not Active or Suspended, no further review required");
+                LOGGER.debug("Certification Status is not Active or Suspended, no further review required");
             }
         } catch (ValidationException e) {
             LOGGER.warn("Treating null or empty Status as not Active or Suspended.");

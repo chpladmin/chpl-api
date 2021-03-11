@@ -648,5 +648,21 @@
                 </entry>
             </job-data-map>
         </job>
+
+        <!-- G1/G2 Measure Data Fix -->
+        <job>
+            <name>G1/G2 Measure Data Fix</name>
+            <group>systemJobs</group>
+            <description>Fixes the G1/G2 Measure data </description>
+            <job-class>gov.healthit.chpl.scheduler.job.measurefix.MeasureFixJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+            </job-data-map>
+        </job>
     </schedule>
 </job-scheduling-data>
