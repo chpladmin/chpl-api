@@ -71,7 +71,7 @@ public class DeveloperDetailsNormalizer {
         if (StringUtils.isEmpty(entered.getWebsite())) {
             entered.setWebsite(stored.getWebsite());
         }
-        if (entered.getSelfDeveloper() == null) {
+        if (entered.getSelfDeveloper() == null && StringUtils.isEmpty(entered.getSelfDeveloperStr())) {
             entered.setSelfDeveloper(stored.getSelfDeveloper());
         }
         if (entered.getContact() == null && stored.getContact() != null) {
@@ -120,5 +120,8 @@ public class DeveloperDetailsNormalizer {
                 && stored.getAddress() != null && !StringUtils.isEmpty(stored.getAddress().getCountry())) {
             entered.getAddress().setCountry(stored.getAddress().getCountry());
         }
+        entered.setStatus(stored.getStatus());
+        entered.setStatusEvents(stored.getStatusEvents());
+        entered.setTransparencyAttestations(stored.getTransparencyAttestations());
     }
 }
