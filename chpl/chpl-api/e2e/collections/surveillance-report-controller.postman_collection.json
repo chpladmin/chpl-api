@@ -1,6 +1,5 @@
 {
 	"info": {
-		"_postman_id": "098c50a6-b0d1-4366-bce3-327d47826f05",
 		"name": "surveillance-report-controller",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -14,15 +13,6 @@
 						{
 							"name": "GET /surveillance-report/annual  - ONC STAFF",
 							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
 								{
 									"listen": "test",
 									"script": {
@@ -86,15 +76,6 @@
 							"name": "GET /surveillance-report/annual/{annualReportId}  - ONC STAFF",
 							"event": [
 								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
 									"listen": "test",
 									"script": {
 										"exec": [
@@ -154,15 +135,6 @@
 						{
 							"name": "POST /surveillance-report/annual  - ONC STAFF",
 							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
 								{
 									"listen": "test",
 									"script": {
@@ -226,15 +198,6 @@
 							"name": "PUT /surveillance-report/annual  - ONC STAFF",
 							"event": [
 								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
 									"listen": "test",
 									"script": {
 										"exec": [
@@ -296,15 +259,6 @@
 						{
 							"name": "DELETE /surveillance-report/annual/{annualReportId} - ONC STAFF",
 							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
 								{
 									"listen": "test",
 									"script": {
@@ -374,15 +328,6 @@
 							"name": "GET /surveillance-report/quarterly - ONC STAFF",
 							"event": [
 								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
 									"listen": "test",
 									"script": {
 										"exec": [
@@ -449,15 +394,6 @@
 							"name": "GET /surveillance-report/quarterly/{quarterlyReportId}  - ONC STAFF",
 							"event": [
 								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
 									"listen": "test",
 									"script": {
 										"exec": [
@@ -519,29 +455,6 @@
 							"name": "GET /surveillance-report/quarterly/{quarterlyReportId}/complaints  - ONC STAFF",
 							"event": [
 								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											"var ReqBody= {\r",
-											"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")\r",
-											"    };\r",
-											"pm.sendRequest({\r",
-											"    url: pm.environment.get(\"authurl\"),\r",
-											"    method: \"POST\",\r",
-											"    header: {\r",
-											"        \"Content-Type\": \"application/json\",\r",
-											"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
-											"    },\r",
-											"    body: JSON.stringify(ReqBody)\r",
-											"}, function (err, response) {\r",
-											"   var jsonData = response.json();\r",
-											"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
 									"listen": "test",
 									"script": {
 										"exec": [
@@ -601,15 +514,6 @@
 						{
 							"name": "POST /surveillance-report/quarterly - ONC STAFF",
 							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
 								{
 									"listen": "test",
 									"script": {
@@ -673,15 +577,6 @@
 							"name": "PUT /surveillance-report/quarterly - ONC STAFF",
 							"event": [
 								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
 									"listen": "test",
 									"script": {
 										"exec": [
@@ -743,15 +638,6 @@
 						{
 							"name": "DELETE /surveillance-report/annual/{quarterlyReportId} - ONC STAFF",
 							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
 								{
 									"listen": "test",
 									"script": {
@@ -860,15 +746,6 @@
 							"name": "GET /surveillance-report/annual  - ONC",
 							"event": [
 								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
 									"listen": "test",
 									"script": {
 										"exec": [
@@ -931,15 +808,6 @@
 							"name": "GET /surveillance-report/annual/{annualReportId}  - ONC",
 							"event": [
 								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
 									"listen": "test",
 									"script": {
 										"exec": [
@@ -999,15 +867,6 @@
 						{
 							"name": "POST /surveillance-report/annual  - ONC",
 							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
 								{
 									"listen": "test",
 									"script": {
@@ -1071,15 +930,6 @@
 							"name": "PUT /surveillance-report/annual  - ONC",
 							"event": [
 								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
 									"listen": "test",
 									"script": {
 										"exec": [
@@ -1141,15 +991,6 @@
 						{
 							"name": "DELETE /surveillance-report/annual/{annualReportId} - ONC",
 							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
 								{
 									"listen": "test",
 									"script": {
@@ -1219,15 +1060,6 @@
 							"name": "GET /surveillance-report/quarterly - ONC",
 							"event": [
 								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
 									"listen": "test",
 									"script": {
 										"exec": [
@@ -1294,15 +1126,6 @@
 							"name": "GET /surveillance-report/quarterly/{quarterlyReportId}  - ONC",
 							"event": [
 								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
 									"listen": "test",
 									"script": {
 										"exec": [
@@ -1364,29 +1187,6 @@
 							"name": "GET /surveillance-report/quarterly/{quarterlyReportId}/complaints  - ONC",
 							"event": [
 								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											"var ReqBody= {\r",
-											"        userName:pm.environment.get(\"usernameONC\"),password:pm.environment.get(\"passwordONC\")\r",
-											"    };\r",
-											"pm.sendRequest({\r",
-											"    url: pm.environment.get(\"authurl\"),\r",
-											"    method: \"POST\",\r",
-											"    header: {\r",
-											"        \"Content-Type\": \"application/json\",\r",
-											"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
-											"    },\r",
-											"    body: JSON.stringify(ReqBody)\r",
-											"}, function (err, response) {\r",
-											"   var jsonData = response.json();\r",
-											"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
 									"listen": "test",
 									"script": {
 										"exec": [
@@ -1443,15 +1243,6 @@
 						{
 							"name": "POST /surveillance-report/quarterly - ONC",
 							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
 								{
 									"listen": "test",
 									"script": {
@@ -1515,15 +1306,6 @@
 							"name": "PUT /surveillance-report/quarterly - ONC",
 							"event": [
 								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
 									"listen": "test",
 									"script": {
 										"exec": [
@@ -1585,15 +1367,6 @@
 						{
 							"name": "DELETE /surveillance-report/quarterly/{quarterlyReportId} - ONC",
 							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
 								{
 									"listen": "test",
 									"script": {
@@ -1702,15 +1475,6 @@
 							"name": "GET /surveillance-report/annual  - ADMIN",
 							"event": [
 								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
 									"listen": "test",
 									"script": {
 										"exec": [
@@ -1772,15 +1536,6 @@
 						{
 							"name": "GET /surveillance-report/annual/{annualReportId}  - ADMIN",
 							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
 								{
 									"listen": "test",
 									"script": {
@@ -1846,15 +1601,6 @@
 						{
 							"name": "GET /surveillance-report/quarterly - ADMIN",
 							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
 								{
 									"listen": "test",
 									"script": {
@@ -1922,15 +1668,6 @@
 							"name": "GET /surveillance-report/quarterly/{quarterlyReportId}  - ADMIN",
 							"event": [
 								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
 									"listen": "test",
 									"script": {
 										"exec": [
@@ -1991,15 +1728,6 @@
 						{
 							"name": "GET /surveillance-report/quarterly/{quarterlyReportId}/complaints  - ADMIN",
 							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
 								{
 									"listen": "test",
 									"script": {
@@ -2102,15 +1830,6 @@
 							"name": "GET /surveillance-report/annual  - ACB",
 							"event": [
 								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
 									"listen": "test",
 									"script": {
 										"exec": [
@@ -2168,15 +1887,6 @@
 						{
 							"name": "GET /surveillance-report/annual/{annualReportId}  - ACB",
 							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
 								{
 									"listen": "test",
 									"script": {
@@ -2243,15 +1953,6 @@
 							"name": "GET /surveillance-report/quarterly - ACB",
 							"event": [
 								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
 									"listen": "test",
 									"script": {
 										"exec": [
@@ -2313,15 +2014,6 @@
 						{
 							"name": "GET /surveillance-report/quarterly/quarterlyReportId}  - ACB",
 							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
 								{
 									"listen": "test",
 									"script": {
@@ -2428,15 +2120,6 @@
 							"name": "GET /surveillance-report/annual  - anonymous",
 							"event": [
 								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
 									"listen": "test",
 									"script": {
 										"exec": [
@@ -2487,15 +2170,6 @@
 						{
 							"name": "POST /surveillance-report/annual  - anonymous",
 							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
 								{
 									"listen": "test",
 									"script": {
@@ -2552,15 +2226,6 @@
 							"name": "PUT /surveillance-report/annual  - anonymous",
 							"event": [
 								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
 									"listen": "test",
 									"script": {
 										"exec": [
@@ -2615,15 +2280,6 @@
 						{
 							"name": "DELETE /surveillance-report/annual/{annualReportId} - anonymous",
 							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
 								{
 									"listen": "test",
 									"script": {
@@ -2686,15 +2342,6 @@
 							"name": "GET /surveillance-report/quarterly - anonymous",
 							"event": [
 								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
 									"listen": "test",
 									"script": {
 										"exec": [
@@ -2745,15 +2392,6 @@
 						{
 							"name": "POST /surveillance-report/quarterly - anonymous",
 							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
 								{
 									"listen": "test",
 									"script": {
@@ -2810,15 +2448,6 @@
 							"name": "PUT /surveillance-report/quarterly - anonymous",
 							"event": [
 								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
 									"listen": "test",
 									"script": {
 										"exec": [
@@ -2873,15 +2502,6 @@
 						{
 							"name": "DELETE /surveillance-report/quarterly/{quarterlyReportId} - anonymous",
 							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
 								{
 									"listen": "test",
 									"script": {
@@ -2938,26 +2558,6 @@
 					]
 				}
 			]
-		}
-	],
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
 		}
 	]
 }

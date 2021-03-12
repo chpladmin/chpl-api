@@ -1,6 +1,5 @@
 {
 	"info": {
-		"_postman_id": "fc99a054-7ea2-4419-a63b-4b362340cbd6",
 		"name": "complaint-controller",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -11,15 +10,6 @@
 				{
 					"name": "GET /complaints  - ONC STAFF",
 					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
 						{
 							"listen": "test",
 							"script": {
@@ -77,15 +67,6 @@
 				{
 					"name": "POST /complaints  - ONC STAFF",
 					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
 						{
 							"listen": "test",
 							"script": {
@@ -146,15 +127,6 @@
 				{
 					"name": "DELETE  /complaints/{complaintId} - ONC STAFF",
 					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
 						{
 							"listen": "test",
 							"script": {
@@ -252,15 +224,6 @@
 					"name": "GET /complaints  - ONC",
 					"event": [
 						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
 							"listen": "test",
 							"script": {
 								"exec": [
@@ -317,15 +280,6 @@
 				{
 					"name": "POST /complaints  - ONC",
 					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
 						{
 							"listen": "test",
 							"script": {
@@ -386,15 +340,6 @@
 				{
 					"name": "DELETE  /complaints/{complaintId} - ONC",
 					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
 						{
 							"listen": "test",
 							"script": {
@@ -491,15 +436,6 @@
 				{
 					"name": "GET /complaints  - ADMIN",
 					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
 						{
 							"listen": "test",
 							"script": {
