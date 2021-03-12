@@ -32,12 +32,35 @@ const apiKeyControllerTests = {
     },
 };
 
-const certifiedProductControllerTests = {
+const certifiedProductControllerDataTests = {
   ...commonOptions,
   collection: collection_path + '/certified-product-controller.postman_collection.json',
+  folder: 'GET : certified_product: data driven tests',
+  iterationData: data_path + '/chplproductnumbers-test-data.json',
   reporter: {
     junit: {
-      export: reports_path + '/certified-product-controller-tests.xml',
+      export: reports_path + '/certified-product-controller-data-tests.xml',
+    },
+  },
+};
+
+const certifiedProductControllerNoDataTests = {
+  ...commonOptions,
+  collection: collection_path + '/certified-product-controller.postman_collection.json',
+  folder: 'GET : certified_products: non-data driven tests',
+  reporter: {
+    junit: {
+      export: reports_path + '/certified-product-controller-nodata-tests.xml',
+    },
+  },
+};
+
+const complaintControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/complaint-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/complaint-controller-tests.xml',
     },
   },
 };
@@ -65,6 +88,16 @@ const developerControllerNoDataTests = {
   },
 };
 
+const jobControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/job-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/job-controller-tests.xml',
+    },
+  },
+};
+
 const productsControllerTests = {
   ...commonOptions,
   collection: collection_path + '/products-controller.postman_collection.json',
@@ -81,6 +114,16 @@ const productVersionControllerTests = {
   reporter: {
     junit: {
       export: reports_path + '/product-version-controller-tests.xml',
+    },
+  },
+};
+
+const schedulerControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/scheduler-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/scheduler-controller-tests.xml',
     },
   },
 };
@@ -125,27 +168,20 @@ const surveillanceReportControllerTests = {
   },
 };
 
-const complaintControllerTests = {
-  ...commonOptions,
-  collection: collection_path + '/complaint-controller.postman_collection.json',
-  reporter: {
-    junit: {
-      export: reports_path + '/complaint-controller-tests.xml',
-    },
-  },
-};
-
 const jobs = [
   cb => newman.run(acbControllerTests,cb),
   cb => newman.run(apiKeyControllerTests,cb),
-  cb => newman.run(certifiedProductControllerTests,cb),
+  cb => newman.run(certifiedProductControllerDataTests,cb),
+  cb => newman.run(certifiedProductControllerNoDataTests,cb),
   cb => newman.run(complaintControllerTests,cb),
   cb => newman.run(developerControllerDataTests,cb),
   cb => newman.run(developerControllerNoDataTests,cb),
+  cb => newman.run(jobControllerTests,cb),
   cb => newman.run(productsControllerTests,cb),
   cb => newman.run(productVersionControllerTests,cb),
   cb => newman.run(statusControllerTests,cb),
   cb => newman.run(testinglabControllerTests,cb),
+  cb => newman.run(schedulerControllerTests,cb),
   cb => newman.run(searchviewControllerTests,cb),
   cb => newman.run(surveillanceReportControllerTests,cb)
 ];
