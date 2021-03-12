@@ -45,10 +45,11 @@ public class ApiKeyController {
             notes = "Anyone wishing to access the methods listed in this API must have an API key. This request "
                       + "will create an email invitation and send it to the supplied email address.  The "
                       + "purpose of the invitation is to validate the email address of the potential API user.")
-    @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
+    @RequestMapping(value = "/request", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public Boolean register(@RequestBody ApiKeyRegistration registration) throws ValidationException {
-        return apiKeyManager.sendInvitation(registration);
+    public String request(@RequestBody ApiKeyRegistration registration) throws ValidationException {
+        apiKeyManager.createRequest(registration);
+        return "{\"success\" : \"" + apiKeyManager.createRequest(registration).toString() + "\"}";
     }
 
     @ApiOperation(value = "Remove an API key.",

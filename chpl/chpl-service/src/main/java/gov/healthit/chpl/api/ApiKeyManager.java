@@ -49,19 +49,12 @@ public class ApiKeyManager {
     }
 
     @Transactional
-    public Boolean sendInvitation(ApiKeyRegistration apiKeyRegistration) throws ValidationException {
+    public Boolean createRequest(ApiKeyRegistration apiKeyRegistration) throws ValidationException {
         if (!Util.isEmailAddressValidFormat(apiKeyRegistration.getEmail())) {
             throw new ValidationException(String.format("%s is not a valid email address", apiKeyRegistration.getEmail()));
         }
 
-        //If API key request already exists for email address, use that one...
-        Optional<ApiKeyRequest> existingRequest = apiKeyRequestDAO.getByEmail(apiKeyRegistration.getEmail());
-        ApiKeyRequest apiKeyRequest = null;
-        if (existingRequest.isPresent()) {
-            apiKeyRequest = existingRequest.get();
-        } else {
-            apiKeyRequest = apiKeyRequestDAO.create(apiKeyRegistration);
-        }
+        ApiKeyRequest apiKeyRequest = getApiKeyRequest(apiKeyRegistration);
 
         EmailBuilder emailBuilder = new EmailBuilder(env);
         try {
@@ -156,4 +149,14 @@ public class ApiKeyManager {
     }
 
 
+    private ApiKeyRequest getApiKeyRequest(ApiKeyRegistration apiKeyRegistration) {
+        //If API key request already exists for email address, use that one...
+        Optional<ApiKeyRequest> existingRequest = apiKeyRequestDAO.getByEmail(apiKeyRegistration.getEmail());
+        if (existingRequest.isPresent()) {
+            return existingRequest.get();
+        } else {
+            return apiKeyRequestDAO.create(apiKeyRegistration);
+        }
+
+    }
 }
