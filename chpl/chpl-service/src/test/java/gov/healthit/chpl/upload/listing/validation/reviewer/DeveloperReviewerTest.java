@@ -41,7 +41,6 @@ public class DeveloperReviewerTest {
     @Before
     public void setup() {
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
-
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.missingDeveloper")))
             .thenReturn(MISSING_DEVELOPER);
         Mockito.when(errorMessageUtil.getMessage("developer.nameRequired"))

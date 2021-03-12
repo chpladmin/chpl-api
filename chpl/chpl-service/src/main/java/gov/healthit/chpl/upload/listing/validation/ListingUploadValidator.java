@@ -18,8 +18,10 @@ import gov.healthit.chpl.upload.listing.validation.reviewer.DeveloperReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.EditionCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.EditionReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.IcsCodeReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.ProductReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.TestingLabCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.TestingLabReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.VersionReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.InheritanceReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
@@ -41,6 +43,8 @@ public class ListingUploadValidator {
     private TestingLabReviewer atlReviewer;
     private CertificationBodyReviewer acbReviewer;
     private DeveloperReviewer devReviewer;
+    private ProductReviewer productReviewer;
+    private VersionReviewer versionReviewer;
     private CertificationDateReviewer certDateReviewer;
     private InheritanceReviewer inheritanceReviewer;
     private UnsupportedCharacterReviewer unsupportedCharacterReviewer;
@@ -59,6 +63,8 @@ public class ListingUploadValidator {
             @Qualifier("testingLabReviewer") TestingLabReviewer atlReviewer,
             CertificationBodyReviewer acbReviewer,
             DeveloperReviewer devReviewer,
+            ProductReviewer productReviewer,
+            VersionReviewer versionReviewer,
             CertifiedDateCodeReviewer certifiedDateCodeReviewer,
             CertificationDateReviewer certDateReviewer,
             ChplNumberUniqueReviewer chplNumberUniqueReviewer,
@@ -77,6 +83,8 @@ public class ListingUploadValidator {
         this.atlReviewer = atlReviewer;
         this.acbReviewer = acbReviewer;
         this.devReviewer = devReviewer;
+        this.productReviewer = productReviewer;
+        this.versionReviewer = versionReviewer;
         this.certDateReviewer = certDateReviewer;
         this.chplNumberUniqueReviewer = chplNumberUniqueReviewer;
         this.inheritanceReviewer = inheritanceReviewer;
@@ -97,6 +105,8 @@ public class ListingUploadValidator {
         atlReviewer.review(listing);
         acbReviewer.review(listing);
         devReviewer.review(listing);
+        productReviewer.review(listing);
+        versionReviewer.review(listing);
         certDateReviewer.review(listing);
         chplNumberUniqueReviewer.review(listing);
         inheritanceReviewer.review(listing);
