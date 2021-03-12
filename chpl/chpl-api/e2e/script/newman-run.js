@@ -125,10 +125,21 @@ const surveillanceReportControllerTests = {
   },
 };
 
+const complaintControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/complaint-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/complaint-controller-tests.xml',
+    },
+  },
+};
+
 const jobs = [
   cb => newman.run(acbControllerTests,cb),
   cb => newman.run(apiKeyControllerTests,cb),
   cb => newman.run(certifiedProductControllerTests,cb),
+  cb => newman.run(complaintControllerTests,cb),
   cb => newman.run(developerControllerDataTests,cb),
   cb => newman.run(developerControllerNoDataTests,cb),
   cb => newman.run(productsControllerTests,cb),
