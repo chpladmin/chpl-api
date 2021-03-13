@@ -140,8 +140,8 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             List<Long> acbIds = getSelectedAcbIds(jobContext);
             return badUrls.stream()
                 .filter(badUrl -> isUrlRelatedToAcbs(badUrl, acbIds))
-                .filter(badUrl -> isNotListingUrl(badUrl) || isUrlRelatedTo2015Edition(badUrl))
-                .filter(badUrl -> isNotListingUrl(badUrl) || isUrlRelatedToActiveListing(badUrl))
+                .filter(badUrl -> isNotListingUrl(badUrl) || isUrlRelatedTo2015Edition(badUrl)
+                                    || isUrlRelatedToActiveListing(badUrl))
                 .filter(badUrl -> doesUrlResultMatchAllowedStatusCodes(badUrl, jobContext))
                 .collect(Collectors.toList());
         }
