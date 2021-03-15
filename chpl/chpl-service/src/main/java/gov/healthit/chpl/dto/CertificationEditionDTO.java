@@ -7,11 +7,19 @@ import java.util.Set;
 
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.CertificationEditionEntity;
-import gov.healthit.chpl.util.Util;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CertificationEditionDTO implements Serializable {
     private static final long serialVersionUID = -2554595626818018414L;
     private Long id;
+    @Builder.Default
     private Set<CertificationCriterionDTO> certificationCriterions = new HashSet<CertificationCriterionDTO>();
     private Date creationDate;
     private Boolean deleted;
@@ -20,11 +28,7 @@ public class CertificationEditionDTO implements Serializable {
     private String year;
     private Boolean retired;
 
-    public CertificationEditionDTO() {
-    }
-
     public CertificationEditionDTO(CertificationEditionEntity entity) {
-
         this.id = entity.getId();
         this.creationDate = entity.getCreationDate();
         this.deleted = entity.isDeleted();
@@ -40,77 +44,4 @@ public class CertificationEditionDTO implements Serializable {
             }
         }
     }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Set<CertificationCriterionDTO> getCertificationCriterions() {
-        return certificationCriterions;
-    }
-
-    public void setCertificationCriterions(final Set<CertificationCriterionDTO> certificationCriterions) {
-        this.certificationCriterions = certificationCriterions;
-    }
-
-    public void addCertificationCriterion(CertificationCriterionDTO certificationCriterion) {
-        this.certificationCriterions.add(certificationCriterion);
-    }
-
-    public void removeCertificationCriterion(CertificationCriterionDTO certificationCriterion) {
-        this.certificationCriterions.remove(certificationCriterion);
-    }
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public String getYear() {
-        return year;
-    }
-
-    public void setYear(final String year) {
-        this.year = year;
-    }
-
-    public Boolean getRetired() {
-        return retired;
-    }
-
-    public void setRetired(final Boolean retired) {
-        this.retired = retired;
-    }
-
 }
