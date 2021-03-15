@@ -10,10 +10,8 @@ import gov.healthit.chpl.entity.CertificationEditionEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class CertificationEditionDTO implements Serializable {
@@ -28,7 +26,12 @@ public class CertificationEditionDTO implements Serializable {
     private String year;
     private Boolean retired;
 
+    public CertificationEditionDTO() {
+        certificationCriterions = new HashSet<CertificationCriterionDTO>();
+    }
+
     public CertificationEditionDTO(CertificationEditionEntity entity) {
+        this();
         this.id = entity.getId();
         this.creationDate = entity.getCreationDate();
         this.deleted = entity.isDeleted();
