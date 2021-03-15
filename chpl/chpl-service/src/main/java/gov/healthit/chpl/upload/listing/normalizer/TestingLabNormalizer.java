@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
-import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import lombok.extern.log4j.Log4j2;
 
@@ -41,8 +40,7 @@ public class TestingLabNormalizer {
                 testingLab.setTestingLabCode(testingLabDto.getTestingLabCode());
             }
         } else if (testingLab.getTestingLabId() == null
-                && !StringUtils.isEmpty(testingLab.getTestingLabCode())
-                && !testingLab.getTestingLabCode().equals(TestingLab.MULTIPLE_TESTING_LABS_CODE)) {
+                && !StringUtils.isEmpty(testingLab.getTestingLabCode())) {
             TestingLabDTO testingLabDto = atlDao.getByCode(testingLab.getTestingLabCode());
             if (testingLabDto != null) {
                 testingLab.setTestingLabId(testingLabDto.getId());
