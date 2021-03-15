@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.urlStatus;
+package gov.healthit.chpl.scheduler.job.urlStatus.data;
 
 import java.util.concurrent.Future;
 
@@ -15,24 +15,12 @@ import org.springframework.stereotype.Service;
 
 import io.netty.handler.codec.http.HttpHeaders;
 
-/**
- * Provides asynchronous support to scheduler classes for getting the response from a URL.
- * @author kekey
- *
- */
 @Service("urlCallerAsync")
 public class UrlCallerAsync {
-    /**
-     * Retrieves the associated URL Response object as a Future<>.
-     * @param urlToCheck url object
-     * @param httpClient a configured http client to use
-     * @param logger a configured logger
-     * @return Response object
-     * @throws Exception any one of a number of exceptions (not sure of all the ones that are possible here)
-     */
+
     @Async("jobAsyncDataExecutor")
     public Future<Integer> getUrlResponseCode(
-            UrlResult urlToCheck, final AsyncHttpClient httpClient, Logger logger) throws Exception {
+            UrlResult urlToCheck, AsyncHttpClient httpClient, Logger logger) throws Exception {
         logger.info("Checking URL " + urlToCheck.getUrl());
         Request getRequest = new RequestBuilder(HttpConstants.Methods.GET)
                 .setFollowRedirect(false)
