@@ -7,13 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.compliance.DirectReview;
+import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.service.DirectReviewSearchService;
 import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2(topic = "summaryStatisticsCreatorJobLogger")
 public class DirectReviewDataCreator extends StatisticsDataCreator  {
-    private static final String DR_NON_CONFIRMITY_STATUS_OPEN = "Open";
     private DirectReviewSearchService directReviewSearchService;
 
     @Autowired
@@ -45,7 +45,7 @@ public class DirectReviewDataCreator extends StatisticsDataCreator  {
                 .longValue();
     }
 
-    public Long getTotaNonConformities() {
+    public Long getTotalNonConformities() {
         return directReviewSearchService.getAll().stream()
                 .flatMap(dr -> dr.getNonConformities().stream())
                 .count();
@@ -54,14 +54,14 @@ public class DirectReviewDataCreator extends StatisticsDataCreator  {
     public Long getOpenNonConformities() {
         return directReviewSearchService.getAll().stream()
                 .flatMap(dr -> dr.getNonConformities().stream())
-                .filter(nc -> nc.getNonConformityStatus().equals(DR_NON_CONFIRMITY_STATUS_OPEN))
+                .filter(nc -> nc.getNonConformityStatus().equals(DirectReviewNonConformity.STATUS_OPEN))
                 .count();
     }
 
     public Long getClosedNonConformities() {
         return directReviewSearchService.getAll().stream()
                 .flatMap(dr -> dr.getNonConformities().stream())
-                .filter(nc -> !nc.getNonConformityStatus().equals(DR_NON_CONFIRMITY_STATUS_OPEN))
+                .filter(nc -> !nc.getNonConformityStatus().equals(DirectReviewNonConformity.STATUS_CLOSED))
                 .count();
     }
 
