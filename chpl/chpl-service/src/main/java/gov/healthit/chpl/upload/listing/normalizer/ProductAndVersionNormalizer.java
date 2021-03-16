@@ -37,7 +37,7 @@ public class ProductAndVersionNormalizer {
             }
         }
 
-        if (listing.getProduct().getProductId() != null
+        if (listing.getProduct() != null && listing.getProduct().getProductId() != null
                 && listing.getVersion() != null && listing.getVersion().getVersionId() == null
                 && !StringUtils.isEmpty(listing.getVersion().getVersion())) {
             ProductVersionDTO foundVersion = versionDao.getByProductAndVersion(listing.getProduct().getProductId(),
