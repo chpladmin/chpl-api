@@ -22,61 +22,96 @@ public class DirectReviewDataCreator extends StatisticsDataCreator  {
     }
 
     public Long getTotalDirectReviews() {
-        return Long.valueOf(directReviewSearchService.getAll().size());
+        if (directReviewSearchService.getDirectReviewsAvailable()) {
+            return Long.valueOf(directReviewSearchService.getAll().size());
+        } else {
+            return null;
+        }
     }
 
-    public long getOpenDirectReviews() {
-        return directReviewSearchService.getAll().stream()
-                .filter(dr -> isDirectReviewOpen(dr))
-                .collect(Collectors.counting());
-
+    public Long getOpenDirectReviews() {
+        if (directReviewSearchService.getDirectReviewsAvailable()) {
+            return directReviewSearchService.getAll().stream()
+                    .filter(dr -> isDirectReviewOpen(dr))
+                    .collect(Collectors.counting());
+        } else {
+            return null;
+        }
     }
 
-    public long getClosedDirectReviews() {
-        return directReviewSearchService.getAll().stream()
-                .filter(dr -> !isDirectReviewOpen(dr))
-                .collect(Collectors.counting());
+    public Long getClosedDirectReviews() {
+        if (directReviewSearchService.getDirectReviewsAvailable()) {
+            return directReviewSearchService.getAll().stream()
+                    .filter(dr -> !isDirectReviewOpen(dr))
+                    .collect(Collectors.counting());
+        } else {
+            return null;
+        }
     }
 
     public Long getAverageTimeToCloseDirectReview() {
-        return directReviewSearchService.getAll().stream()
-                .filter(dr -> !isDirectReviewOpen(dr))
-                .collect(Collectors.averagingLong(dr -> getDirectReviewDaysOpen(dr)))
-                .longValue();
+        if (directReviewSearchService.getDirectReviewsAvailable()) {
+            return directReviewSearchService.getAll().stream()
+                    .filter(dr -> !isDirectReviewOpen(dr))
+                    .collect(Collectors.averagingLong(dr -> getDirectReviewDaysOpen(dr)))
+                    .longValue();
+        } else {
+            return null;
+        }
     }
 
     public Long getTotalNonConformities() {
+        if (directReviewSearchService.getDirectReviewsAvailable()) {
         return directReviewSearchService.getAll().stream()
                 .flatMap(dr -> dr.getNonConformities().stream())
                 .count();
+        } else {
+            return null;
+        }
     }
 
     public Long getOpenNonConformities() {
+        if (directReviewSearchService.getDirectReviewsAvailable()) {
         return directReviewSearchService.getAll().stream()
                 .flatMap(dr -> dr.getNonConformities().stream())
                 .filter(nc -> nc.getNonConformityStatus().equals(DirectReviewNonConformity.STATUS_OPEN))
                 .count();
+        } else {
+            return null;
+        }
     }
 
     public Long getClosedNonConformities() {
-        return directReviewSearchService.getAll().stream()
-                .flatMap(dr -> dr.getNonConformities().stream())
-                .filter(nc -> !nc.getNonConformityStatus().equals(DirectReviewNonConformity.STATUS_CLOSED))
-                .count();
+        if (directReviewSearchService.getDirectReviewsAvailable()) {
+            return directReviewSearchService.getAll().stream()
+                    .flatMap(dr -> dr.getNonConformities().stream())
+                    .filter(nc -> !nc.getNonConformityStatus().equals(DirectReviewNonConformity.STATUS_CLOSED))
+                    .count();
+        } else {
+            return null;
+        }
     }
 
     public Long getOpenCaps() {
-        return directReviewSearchService.getAll().stream()
-                .flatMap(dr -> dr.getNonConformities().stream())
-                .filter(nc -> nc.getCapApprovalDate() != null && nc.getCapEndDate() == null)
-                .count();
+        if (directReviewSearchService.getDirectReviewsAvailable()) {
+            return directReviewSearchService.getAll().stream()
+                    .flatMap(dr -> dr.getNonConformities().stream())
+                    .filter(nc -> nc.getCapApprovalDate() != null && nc.getCapEndDate() == null)
+                    .count();
+        } else {
+            return null;
+        }
     }
 
     public Long getClosedCaps() {
-        return directReviewSearchService.getAll().stream()
-                .flatMap(dr -> dr.getNonConformities().stream())
-                .filter(nc -> nc.getCapApprovalDate() != null && nc.getCapEndDate() != null)
-                .count();
+        if (directReviewSearchService.getDirectReviewsAvailable()) {
+            return directReviewSearchService.getAll().stream()
+                    .flatMap(dr -> dr.getNonConformities().stream())
+                    .filter(nc -> nc.getCapApprovalDate() != null && nc.getCapEndDate() != null)
+                    .count();
+        } else {
+            return null;
+        }
     }
 
     private Boolean isDirectReviewOpen(DirectReview dr) {
