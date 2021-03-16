@@ -362,7 +362,7 @@ public class CertifiedProductDetailsManager {
     private CertifiedProductSearchDetails populateDirectReviews(CertifiedProductSearchDetails listing) {
         List<DirectReview> drs = new ArrayList<DirectReview>();
         if (listing.getDeveloper() != null && listing.getDeveloper().getDeveloperId() != null) {
-            drs = drService.getDirectReviewsRelatedToListing(listing.getId(), listing.getDeveloper().getDeveloperId());
+            drs = drService.getDirectReviewsRelatedToListing(listing);
         }
         listing.setDirectReviews(drs);
         return listing;

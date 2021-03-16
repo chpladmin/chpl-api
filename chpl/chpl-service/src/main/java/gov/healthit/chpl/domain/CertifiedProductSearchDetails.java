@@ -865,22 +865,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         }
 
         // first we need to make sure the status events are in ascending order
-        this.getCertificationEvents().sort(new Comparator<CertificationStatusEvent>() {
-            @Override
-            public int compare(CertificationStatusEvent o1, CertificationStatusEvent o2) {
-                if (o1.getEventDate() == null || o2.getEventDate() == null
-                        || o1.getEventDate().equals(o2.getEventDate())) {
-                    return 0;
-                }
-                if (o1.getEventDate() < o2.getEventDate()) {
-                    return -1;
-                }
-                if (o1.getEventDate() > o2.getEventDate()) {
-                    return 1;
-                }
-                return 0;
-            }
-        });
+        this.getCertificationEvents().sort(new CertificationStatusEventComparator());
 
         CertificationStatusEvent result = null;
         for (int i = 0; i < this.getCertificationEvents().size() && result == null; i++) {
