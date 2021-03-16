@@ -53,7 +53,7 @@ public class ApiKeyController {
                     + " named 'api_key'.")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public String register(@RequestBody final ApiKeyRegistration registration) throws EntityCreationException,
+    public String register(@RequestBody ApiKeyRegistration registration) throws EntityCreationException,
     AddressException, MessagingException, JsonProcessingException, EntityRetrievalException {
 
         return create(registration);
@@ -88,11 +88,21 @@ public class ApiKeyController {
             notes = "Anyone wishing to access the methods listed in this API must have an API key. This request "
                       + "will create an email invitation and send it to the supplied email address.  The "
                       + "purpose of the invitation is to validate the email address of the potential API user.")
-    @RequestMapping(value = "/request", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/request", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public String request(@RequestBody ApiKeyRegistration registration) throws ValidationException {
         apiKeyManager.createRequest(registration);
         return "{\"success\" : \"" + apiKeyManager.createRequest(registration).toString() + "\"}";
+    }
+
+    @ApiOperation(value = "Confirms a user's email address and provide the new API key.",
+            notes = "Anyone wishing to access the methods listed in this API must have an API key. This service "
+                    + "will validate that the user has provided a valid email address and provide them with a new "
+                    + "API key. It must be included in subsequent API calls via either a header with the name "
+                    + "'API-Key' or as a URL parameter named 'api_key'.")
+    @RequestMapping(value = "/confirm", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE, produces = "application/json; charset=utf-8")
+    public String confirm(@RequestBody String apiKeyRequestToken) throws JsonProcessingException, ValidationException, EntityCreationException, EntityRetrievalException {
+        ApiKeyDTO apiKeyDTO = apiKeyManager.confirmRequest(apiKeyRequestToken);
+        return "{\"keyRegistered\" : \"" + apiKeyDTO.getApiKey() + "\"}";
     }
 
     @ApiOperation(value = "Remove an API key.",

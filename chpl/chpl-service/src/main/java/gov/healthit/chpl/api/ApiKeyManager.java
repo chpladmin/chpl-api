@@ -19,6 +19,7 @@ import gov.healthit.chpl.api.dao.ApiKeyRequestDAO;
 import gov.healthit.chpl.api.domain.ApiKeyDTO;
 import gov.healthit.chpl.api.domain.ApiKeyRegistration;
 import gov.healthit.chpl.api.domain.ApiKeyRequest;
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.ApiKeyActivityDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ApiKeyActivityDTO;
@@ -27,6 +28,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.util.EmailBuilder;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 
 @Service
@@ -36,16 +38,19 @@ public class ApiKeyManager {
     private ApiKeyActivityDAO apiKeyActivityDAO;
     private ActivityManager activityManager;
     private ApiKeyRequestDAO apiKeyRequestDAO;
+    private ErrorMessageUtil errorMessages;
     private Environment env;
 
     @Autowired
-    public ApiKeyManager(ApiKeyDAO apiKeyDAO, ApiKeyActivityDAO apiKeyActivityDAO,
-        ActivityManager activityManager, ApiKeyRequestDAO apiKeyRequestDAO, Environment env) {
+    public ApiKeyManager(ApiKeyDAO apiKeyDAO, ApiKeyActivityDAO apiKeyActivityDAO, ActivityManager activityManager, ApiKeyRequestDAO apiKeyRequestDAO,
+            Environment env, ErrorMessageUtil errorMessages) {
+
         this.apiKeyDAO = apiKeyDAO;
         this.apiKeyActivityDAO = apiKeyActivityDAO;
         this.activityManager = activityManager;
         this.apiKeyRequestDAO = apiKeyRequestDAO;
         this.env = env;
+        this.errorMessages = errorMessages;
     }
 
     @Transactional
@@ -69,6 +74,33 @@ public class ApiKeyManager {
     }
 
     @Transactional
+    public ApiKeyDTO confirmRequest(String token) throws ValidationException, JsonProcessingException, EntityCreationException, EntityRetrievalException {
+        Optional<ApiKeyRequest> request = apiKeyRequestDAO.getByApiRequestToken(token);
+        if (!request.isPresent()) {
+            throw new ValidationException(errorMessages.getMessage("apiKeyRequest.notFound"));
+        }
+
+        try {
+            apiKeyRequestDAO.delete(request.get().getId());
+        } catch (EntityRetrievalException e) {
+            throw new ValidationException(errorMessages.getMessage("apiKeyRequest.notFound"));
+        }
+
+        ApiKeyDTO apiKey = ApiKeyDTO.builder()
+                .apiKey(generateApiKey(request.get().getNameOrganization(), request.get().getEmail()))
+                .email(request.get().getEmail())
+                .nameOrganization(request.get().getNameOrganization())
+                .creationDate(new Date())
+                .lastUsedDate(new Date())
+                .lastModifiedDate(new Date())
+                .lastModifiedUser(User.SYSTEM_USER_ID)
+                .deleted(false)
+                .build();
+
+        return createKey(apiKey);
+    }
+
+    @Transactional
     public ApiKeyDTO createKey(final ApiKeyDTO toCreate)
             throws EntityCreationException, JsonProcessingException, EntityRetrievalException {
 
@@ -88,9 +120,7 @@ public class ApiKeyManager {
 
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public void deleteKey(final Long keyId)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-
+    public void deleteKey(final Long keyId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         ApiKeyDTO toDelete = apiKeyDAO.getById(keyId);
 
         String activityMsg = "API Key " + toDelete.getApiKey() + " was revoked.";
@@ -102,9 +132,7 @@ public class ApiKeyManager {
 
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public void deleteKey(final String keyString)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
-
+    public void deleteKey(final String keyString) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
         ApiKeyDTO toDelete = apiKeyDAO.getByKey(keyString);
 
         String activityMsg = "API Key " + toDelete.getApiKey() + " was revoked.";
@@ -157,6 +185,11 @@ public class ApiKeyManager {
         } else {
             return apiKeyRequestDAO.create(apiKeyRegistration);
         }
-
     }
+
+    private String generateApiKey(String nameOrOrganization, String email) {
+        Date now = new Date();
+        return Util.md5(nameOrOrganization + email + now.getTime());
+    }
+
 }

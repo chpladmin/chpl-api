@@ -5,11 +5,15 @@ import java.util.Date;
 
 import gov.healthit.chpl.api.entity.ApiKeyEntity;
 import gov.healthit.chpl.util.Util;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Data
+@Builder
 public class ApiKeyDTO implements Serializable {
     private static final long serialVersionUID = 7091753452944248313L;
     private Long id;
