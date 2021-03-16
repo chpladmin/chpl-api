@@ -19,10 +19,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.api.ApiKeyManager;
 import gov.healthit.chpl.api.domain.ApiKey;
 import gov.healthit.chpl.api.domain.ApiKeyDTO;
 import gov.healthit.chpl.api.domain.ApiKeyRegistration;
+import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.util.EmailBuilder;
@@ -41,7 +46,45 @@ public class ApiKeyController {
     @Autowired
     private Environment env;
 
-    @ApiOperation(value = "Send an invitation for a new API key.",
+    @ApiOperation(value = "Sign up for a new API key.",
+            notes = "Anyone wishing to access the methods listed in this API must have an API key. This service "
+                    + " will auto-generate a key and send it to the supplied email address. It must be included "
+                    + " in subsequent API calls via either a header with the name 'API-Key' or as a URL parameter"
+                    + " named 'api_key'.")
+    @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
+    produces = "application/json; charset=utf-8")
+    public String register(@RequestBody final ApiKeyRegistration registration) throws EntityCreationException,
+    AddressException, MessagingException, JsonProcessingException, EntityRetrievalException {
+
+        return create(registration);
+    }
+
+    private String create(final ApiKeyRegistration registration) throws JsonProcessingException, EntityCreationException,
+            EntityRetrievalException, AddressException, MessagingException  {
+
+        Date now = new Date();
+
+        String apiKey = gov.healthit.chpl.util.Util.md5(registration.getName()
+                + registration.getEmail() + now.getTime());
+        ApiKeyDTO toCreate = new ApiKeyDTO();
+
+        toCreate.setApiKey(apiKey);
+        toCreate.setEmail(registration.getEmail());
+        toCreate.setNameOrganization(registration.getName());
+        toCreate.setCreationDate(now);
+        toCreate.setLastUsedDate(now);
+        toCreate.setLastModifiedDate(now);
+        toCreate.setLastModifiedUser(User.SYSTEM_USER_ID);
+        toCreate.setDeleted(false);
+
+        apiKeyManager.createKey(toCreate);
+
+        sendRegistrationEmail(registration.getEmail(), registration.getName(), apiKey);
+
+        return "{\"keyRegistered\" : \"" + apiKey + "\"}";
+    }
+
+    @ApiOperation(value = "Sends an email validation to user requesting a new API key.",
             notes = "Anyone wishing to access the methods listed in this API must have an API key. This request "
                       + "will create an email invitation and send it to the supplied email address.  The "
                       + "purpose of the invitation is to validate the email address of the potential API user.")
