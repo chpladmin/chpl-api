@@ -14,7 +14,7 @@ public class DirectReviewStatisticsSectionCreator extends StatisticsSectionCreat
         section.append(buildHeader("Total # of Direct Review Activities", handleNullValue(stats.getTotalDirectReviews())));
         section.append("<ul>");
         section.append(buildItem("Open Direct Review Activities", handleNullValue(stats.getOpenDirectReviews())));
-        section.append(buildItem("Closed Direct Review Activities", handleNullValue(stats.getOpenDirectReviews())));
+        section.append(buildItem("Closed Direct Review Activities", handleNullValue(stats.getClosedDirectReviews())));
         section.append(buildItem("Average Duration of Closed Direct Review Activities (in days)", handleNullValue(stats.getAverageDaysOpenDirectReviews())));
         section.append("</ul>");
 

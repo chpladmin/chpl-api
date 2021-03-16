@@ -50,6 +50,7 @@ public class SummaryStatisticsPdf {
     private ListingSummaryStatisticsSectionPdf listingSummaryStatisticsSectionPdf;
     private SurveillanceSummaryStatisticsSectionPdf surveillanceSummaryStatisticsSectionPdf;
     private NonConformitySummaryStatisticsSectionPdf nonConformitySummaryStatisticsSectionPdf;
+    private DirectReviewSummaryStatisticsSectionPdf directReviewSummaryStatisticsSectionPdf;
 
     @Autowired
     public SummaryStatisticsPdf(SummaryStatisticsDAO summaryStatisticsDAO,
@@ -57,7 +58,8 @@ public class SummaryStatisticsPdf {
             ProductSummaryStatisticsSectionPdf productSummaryStatisticsSectionPdf,
             ListingSummaryStatisticsSectionPdf listingSummaryStatisticsSectionPdf,
             SurveillanceSummaryStatisticsSectionPdf surveillanceSummaryStatisticsSectionPdf,
-            NonConformitySummaryStatisticsSectionPdf nonConformitySummaryStatisticsSectionPdf) {
+            NonConformitySummaryStatisticsSectionPdf nonConformitySummaryStatisticsSectionPdf,
+            DirectReviewSummaryStatisticsSectionPdf directReviewSummaryStatisticsSectionPdf) {
 
         this.summaryStatisticsDAO = summaryStatisticsDAO;
         this.developerSummaryStatisticsSectionPdf = developerSummaryStatisticsSectionPdf;
@@ -65,6 +67,7 @@ public class SummaryStatisticsPdf {
         this.listingSummaryStatisticsSectionPdf = listingSummaryStatisticsSectionPdf;
         this.surveillanceSummaryStatisticsSectionPdf = surveillanceSummaryStatisticsSectionPdf;
         this.nonConformitySummaryStatisticsSectionPdf = nonConformitySummaryStatisticsSectionPdf;
+        this.directReviewSummaryStatisticsSectionPdf = directReviewSummaryStatisticsSectionPdf;
     }
 
     @SuppressWarnings("resource")
@@ -118,7 +121,8 @@ public class SummaryStatisticsPdf {
                 productSummaryStatisticsSectionPdf,
                 listingSummaryStatisticsSectionPdf,
                 surveillanceSummaryStatisticsSectionPdf,
-                nonConformitySummaryStatisticsSectionPdf);
+                nonConformitySummaryStatisticsSectionPdf,
+                directReviewSummaryStatisticsSectionPdf);
 
         tableGenerators.forEach(generator -> {
             addTable(document,

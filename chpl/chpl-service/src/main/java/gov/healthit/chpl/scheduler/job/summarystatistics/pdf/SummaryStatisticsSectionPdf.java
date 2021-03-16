@@ -81,8 +81,8 @@ public abstract class SummaryStatisticsSectionPdf {
 
     public List<String> createDataForRow(String description, Long recentValue, Long previousValue) {
         return Arrays.asList(description,
-                recentValue.toString(),
-                previousValue.toString(),
+                recentValue != null ? recentValue.toString() : "Not Available",
+                previousValue != null ? previousValue.toString() : "Not Available",
                 getDelta(recentValue, previousValue));
     }
 
