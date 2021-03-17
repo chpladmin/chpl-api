@@ -33,7 +33,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.DevelopersOverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.Listing2014OverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.Listing2015OverTimeChart;
-import gov.healthit.chpl.scheduler.job.summarystatistics.chart.NonConformitiesOverTimeChart;
+import gov.healthit.chpl.scheduler.job.summarystatistics.chart.SurveillanceNonConformitiesOverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.SummaryStatisticChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.SurveillanceActivitiesOverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.TotalListingsOverTimeChart;
@@ -148,7 +148,7 @@ public class SummaryStatisticsPdf {
                 new Listing2014OverTimeChart(),
                 new Listing2015OverTimeChart(),
                 new SurveillanceActivitiesOverTimeChart(),
-                new NonConformitiesOverTimeChart());
+                new SurveillanceNonConformitiesOverTimeChart());
 
         chartGenerators.forEach(chartGenerator -> {
             document.add(new Paragraph(""));
