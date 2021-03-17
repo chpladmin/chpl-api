@@ -278,7 +278,6 @@ public class CertifiedProductSearchDetails implements Serializable {
     /**
      * Direct reviews that were conducted against this listing or its developer.
      */
-    @JsonIgnore
     @XmlElementWrapper(name = "directReviews", nillable = true, required = false)
     @XmlElement(name = "directReview")
     private List<DirectReview> directReviews = new ArrayList<DirectReview>();

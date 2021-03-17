@@ -76,12 +76,11 @@ public class DirectReviewSearchService {
      */
     public List<DirectReview> getDirectReviewsRelatedToListing(CertifiedProductSearchDetails listing) {
         List<DirectReview> drs = new ArrayList<DirectReview>();
-        drs.addAll(getDirectReviewsWithDeveloperAssociatedListing(listing));
+        drs.addAll(getDirectReviewsWithDeveloperAssociatedListingId(listing.getId()));
 
         String editionYear = MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY);
         if (!StringUtils.isEmpty(editionYear) && editionYear.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())) {
-            Long developerId = listing.getDeveloper().getDeveloperId();
-            drs.addAll(getDeveloperDirectReviewsWithoutAssociatedListings(developerId));
+            drs.addAll(getDeveloperDirectReviewsWithoutAssociatedListings(listing));
         }
 
         drs = StreamEx.of(drs)
@@ -103,6 +102,23 @@ public class DirectReviewSearchService {
         return drs;
     }
 
+    private List<DirectReview> getDeveloperDirectReviewsWithoutAssociatedListings(CertifiedProductSearchDetails listing) {
+        Long developerId = listing.getDeveloper().getDeveloperId();
+        List<DirectReview> allDeveloperDirectReviews = getDeveloperDirectReviews(developerId);
+        List<DirectReview> drsWithoutAssociatedListings = Stream.of(
+                allDeveloperDirectReviews.stream()
+                .filter(dr -> dr.getNonConformities() == null || dr.getNonConformities().size() == 0)
+                .collect(Collectors.toList()),
+                allDeveloperDirectReviews.stream()
+                .filter(dr -> hasNoDeveloperAssociatedListings(dr.getNonConformities()))
+                .collect(Collectors.toList()))
+          .flatMap(List::stream)
+          .collect(Collectors.toList());
+        return drsWithoutAssociatedListings.stream()
+            .filter(dr -> isOpenWhileListingIsActive(dr, listing))
+            .collect(Collectors.toList());
+    }
+
     private List<DirectReview> getDeveloperDirectReviewsWithoutAssociatedListings(Long developerId) {
         List<DirectReview> allDeveloperDirectReviews = getDeveloperDirectReviews(developerId);
         List<DirectReview> drsWithoutAssociatedListings = Stream.of(
@@ -122,14 +138,6 @@ public class DirectReviewSearchService {
             .filter(nc -> nc.getDeveloperAssociatedListings() == null || nc.getDeveloperAssociatedListings().size() == 0)
             .findAny()
             .isPresent();
-    }
-
-    private List<DirectReview> getDirectReviewsWithDeveloperAssociatedListing(CertifiedProductSearchDetails listing) {
-        List<DirectReview> allDirectReviews = getAll();
-        return allDirectReviews.stream()
-                .filter(dr -> isAssociatedWithListing(dr, listing.getId()))
-                .filter(dr -> isOpenWhileListingIsActive(dr, listing))
-                .collect(Collectors.toList());
     }
 
     private List<DirectReview> getDirectReviewsWithDeveloperAssociatedListingId(Long listingId) {
@@ -156,12 +164,13 @@ public class DirectReviewSearchService {
             return false;
         }
         Date drStartDate = dr.getStartDate();
+        Date drEndDate = dr.getEndDate() != null ? dr.getEndDate() : new Date();
 
         List<DateRange> activeDateRanges = getDateRangesWithActiveStatus(listing);
-        activeDateRanges.stream()
-            .filter(activeDates -> activeDates.getUpperMillis() >= drStartDate.getTime())
+        return activeDateRanges.stream()
+            .filter(activeDates -> drStartDate.getTime() <= activeDates.getUpperMillis()
+                    && drEndDate.getTime() >= activeDates.getLowerMillis())
             .findAny().isPresent();
-        return true;
     }
 
     private List<DateRange> getDateRangesWithActiveStatus(CertifiedProductSearchDetails listing) {
@@ -176,7 +185,7 @@ public class DirectReviewSearchService {
                 && !StringUtils.isEmpty(listingStatusEvents.get(i).getStatus().getName()))
             .filter(i -> activeStatuses.contains(listingStatusEvents.get(i).getStatus().getName()))
             .mapToObj(i -> new DateRange(new Date(listingStatusEvents.get(i).getEventDate()),
-                    i < (listingStatusEvents.size() - 1) ? new Date() : new Date(listingStatusEvents.get(i + 1).getEventDate())))
+                    i < (listingStatusEvents.size() - 1) ? new Date(listingStatusEvents.get(i + 1).getEventDate()) : new Date()))
             .collect(Collectors.toList());
     }
 
