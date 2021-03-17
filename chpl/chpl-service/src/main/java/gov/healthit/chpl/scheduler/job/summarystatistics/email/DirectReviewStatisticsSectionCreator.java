@@ -20,8 +20,8 @@ public class DirectReviewStatisticsSectionCreator extends StatisticsSectionCreat
 
         section.append(buildHeader("Total # of Direct Review NCs", handleNullValue(stats.getTotalNonConformities())));
         section.append("<ul>");
-        section.append(buildItem("Open NCs", handleNullValue(stats.getOpenNonConformities())));
-        section.append(buildItem("Closed NCs", handleNullValue(stats.getClosedNonConformities())));
+        section.append(buildItem("Open Direct Review NCs", handleNullValue(stats.getOpenNonConformities())));
+        section.append(buildItem("Closed Direct Review NCs", handleNullValue(stats.getClosedNonConformities())));
         section.append(buildItem("Number of Open CAPs", handleNullValue(stats.getOpenCaps())));
         section.append(buildItem("Number of Closed CAPs", handleNullValue(stats.getClosedCaps())));
         section.append("</ul>");

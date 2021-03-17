@@ -49,7 +49,6 @@ public class SummaryStatisticsPdf {
     private ProductSummaryStatisticsSectionPdf productSummaryStatisticsSectionPdf;
     private ListingSummaryStatisticsSectionPdf listingSummaryStatisticsSectionPdf;
     private SurveillanceSummaryStatisticsSectionPdf surveillanceSummaryStatisticsSectionPdf;
-    private NonConformitySummaryStatisticsSectionPdf nonConformitySummaryStatisticsSectionPdf;
     private DirectReviewSummaryStatisticsSectionPdf directReviewSummaryStatisticsSectionPdf;
 
     @Autowired
@@ -58,7 +57,6 @@ public class SummaryStatisticsPdf {
             ProductSummaryStatisticsSectionPdf productSummaryStatisticsSectionPdf,
             ListingSummaryStatisticsSectionPdf listingSummaryStatisticsSectionPdf,
             SurveillanceSummaryStatisticsSectionPdf surveillanceSummaryStatisticsSectionPdf,
-            NonConformitySummaryStatisticsSectionPdf nonConformitySummaryStatisticsSectionPdf,
             DirectReviewSummaryStatisticsSectionPdf directReviewSummaryStatisticsSectionPdf) {
 
         this.summaryStatisticsDAO = summaryStatisticsDAO;
@@ -66,7 +64,6 @@ public class SummaryStatisticsPdf {
         this.productSummaryStatisticsSectionPdf = productSummaryStatisticsSectionPdf;
         this.listingSummaryStatisticsSectionPdf = listingSummaryStatisticsSectionPdf;
         this.surveillanceSummaryStatisticsSectionPdf = surveillanceSummaryStatisticsSectionPdf;
-        this.nonConformitySummaryStatisticsSectionPdf = nonConformitySummaryStatisticsSectionPdf;
         this.directReviewSummaryStatisticsSectionPdf = directReviewSummaryStatisticsSectionPdf;
     }
 
@@ -121,7 +118,6 @@ public class SummaryStatisticsPdf {
                 productSummaryStatisticsSectionPdf,
                 listingSummaryStatisticsSectionPdf,
                 surveillanceSummaryStatisticsSectionPdf,
-                nonConformitySummaryStatisticsSectionPdf,
                 directReviewSummaryStatisticsSectionPdf);
 
         tableGenerators.forEach(generator -> {
