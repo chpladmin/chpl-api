@@ -2023,7 +2023,7 @@
 											"});\r",
 											"\r",
 											"pm.test(\"expect response for ACB to include details of requested quarterly report of their own\", function () {\r",
-											"     pm.expect(pm.response.text()).to.include(\"SLI Compliance\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"Drummond Group\");\r",
 											"     pm.expect(pm.response.text()).to.include(\"Q1\");\r",
 											"});\r",
 											""
@@ -2057,7 +2057,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{url}}/rest/surveillance-report/quarterly/9",
+									"raw": "{{url}}/rest/surveillance-report/quarterly/13",
 									"host": [
 										"{{url}}"
 									],
@@ -2065,7 +2065,7 @@
 										"rest",
 										"surveillance-report",
 										"quarterly",
-										"9"
+										"13"
 									]
 								},
 								"description": "Expect ROLE_ACB to get details of own quarterly surveillance report for specific year"
