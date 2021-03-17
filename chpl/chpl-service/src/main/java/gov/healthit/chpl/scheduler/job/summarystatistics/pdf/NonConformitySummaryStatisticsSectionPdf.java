@@ -26,7 +26,7 @@ public class NonConformitySummaryStatisticsSectionPdf extends SummaryStatisticsS
         Table table = new Table(getRelativeColumnWidths());
         table.useAllAvailableWidth();
         table = addHeaders(table, "Non-conformity Statistics", recent, previous);
-        table = addTableRow(table, createDataForRow("5. Total # of NCs",
+        table = addTableRow(table, createDataForRow("1. Total # of NCs",
                                     recentEmailStatistics.getNonconfStatusAllTotal(),
                                     previousEmailStatistics.getNonconfStatusAllTotal()), true);
 
@@ -75,7 +75,7 @@ public class NonConformitySummaryStatisticsSectionPdf extends SummaryStatisticsS
                 NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
 
         // These are calculated differently than all of the other rows.  The data is a little different
-        table = addTableRow(table, createDataForRow("6. Total Number of CAPs",
+        table = addTableRow(table, createDataForRow("2. Total Number of CAPs",
                 sumEmailAcbStatisticList(recentEmailStatistics.getNonconfCAPStatusOpen()) + sumEmailAcbStatisticList(recentEmailStatistics.getNonconfCAPStatusClosed()),
                 sumEmailAcbStatisticList(previousEmailStatistics.getNonconfCAPStatusOpen()) + sumEmailAcbStatisticList(previousEmailStatistics.getNonconfCAPStatusClosed()))
                 , true);

@@ -23,7 +23,7 @@ public class ProductSummaryStatisticsSectionPdf extends SummaryStatisticsSection
         Table table = new Table(getRelativeColumnWidths());
         table.useAllAvailableWidth();
         table = addHeaders(table, "Product Statistics", recent, previous);
-        table = addTableRow(table, createDataForRow("2. Total # of Certified Unique Products (Regardless of Status or Edition –Including 2011)",
+        table = addTableRow(table, createDataForRow("1. Total # of Certified Unique Products (Regardless of Status or Edition –Including 2011)",
                                     recentEmailStatistics.getProductsForEditionAllAndAllStatuses(),
                                     previousEmailStatistics.getProductsForEditionAllAndAllStatuses()), true);
 

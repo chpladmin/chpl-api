@@ -24,7 +24,7 @@ public class DirectReviewSummaryStatisticsSectionPdf extends SummaryStatisticsSe
         table.useAllAvailableWidth();
         table = addHeaders(table, "Direct Review Statistics", recent, previous);
 
-        table = addTableRow(table, createDataForRow("7. Total # of Direct Review Activities",
+        table = addTableRow(table, createDataForRow("1. Total # of Direct Review Activities",
                 recentEmailStatistics.getTotalDirectReviews(),
                 previousEmailStatistics.getTotalDirectReviews()), true);
 
@@ -43,7 +43,7 @@ public class DirectReviewSummaryStatisticsSectionPdf extends SummaryStatisticsSe
                 previousEmailStatistics.getAverageDaysOpenDirectReviews()),
                 NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
 
-        table = addTableRow(table, createDataForRow("8. Total # of Direct Review NCs",
+        table = addTableRow(table, createDataForRow("2. Total # of Direct Review NCs",
                 recentEmailStatistics.getTotalNonConformities(),
                 previousEmailStatistics.getTotalNonConformities()), true);
 

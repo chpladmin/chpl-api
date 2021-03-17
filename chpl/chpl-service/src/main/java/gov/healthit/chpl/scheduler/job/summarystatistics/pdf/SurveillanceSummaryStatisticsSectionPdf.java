@@ -23,7 +23,7 @@ public class SurveillanceSummaryStatisticsSectionPdf extends SummaryStatisticsSe
         Table table = new Table(getRelativeColumnWidths());
         table.useAllAvailableWidth();
         table = addHeaders(table, "Surveillance Statistics", recent, previous);
-        table = addTableRow(table, createDataForRow("4. Total # of Surveillance Activities",
+        table = addTableRow(table, createDataForRow("1. Total # of Surveillance Activities",
                                     recentEmailStatistics.getSurveillanceAllStatusTotal(),
                                     previousEmailStatistics.getSurveillanceAllStatusTotal()), true);
 
