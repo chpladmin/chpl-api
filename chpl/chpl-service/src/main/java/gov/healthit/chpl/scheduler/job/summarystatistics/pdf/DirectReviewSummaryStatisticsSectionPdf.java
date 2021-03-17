@@ -1,11 +1,15 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics.pdf;
 
 import java.time.LocalDate;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.element.Text;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatistics;
@@ -70,5 +74,42 @@ public class DirectReviewSummaryStatisticsSectionPdf extends SummaryStatisticsSe
         return table;
     }
 
+    @SuppressWarnings("resource")
+    @Override
+    public Document addTableEndNote(Document document, EmailStatistics recentEmailStatistics, EmailStatistics previousEmailStatistics) {
+        if (displayEndNote(recentEmailStatistics, previousEmailStatistics)) {
+            Text first = new Text("Not Available (N/A) ").setFont(SummaryStatisticsPdfDefaults.getDefaultBoldFont());
+            first.setFontSize(SummaryStatisticsPdfDefaults.FOOTER_FONT_SIZE);
+            Text second = new Text("indicates that data was not available at the time the report was generated.").setFont(SummaryStatisticsPdfDefaults.getDefaultFont());
+            second.setFontSize(SummaryStatisticsPdfDefaults.FOOTER_FONT_SIZE);
+            Paragraph paragraph = new Paragraph().add(first).add(second);
+            document.add(paragraph);
+        }
+        return document;
+    }
+
+
+    private Boolean displayEndNote(EmailStatistics recentEmailStatistics, EmailStatistics previousEmailStatistics) {
+        return Stream.of(
+                recentEmailStatistics.getTotalDirectReviews(),
+                previousEmailStatistics.getTotalDirectReviews(),
+                recentEmailStatistics.getOpenDirectReviews(),
+                previousEmailStatistics.getOpenDirectReviews(),
+                recentEmailStatistics.getClosedDirectReviews(),
+                previousEmailStatistics.getClosedDirectReviews(),
+                recentEmailStatistics.getAverageDaysOpenDirectReviews(),
+                previousEmailStatistics.getAverageDaysOpenDirectReviews(),
+                recentEmailStatistics.getTotalNonConformities(),
+                previousEmailStatistics.getTotalNonConformities(),
+                recentEmailStatistics.getOpenNonConformities(),
+                previousEmailStatistics.getOpenNonConformities(),
+                recentEmailStatistics.getClosedNonConformities(),
+                previousEmailStatistics.getClosedNonConformities(),
+                recentEmailStatistics.getOpenCaps(),
+                previousEmailStatistics.getOpenCaps(),
+                recentEmailStatistics.getClosedCaps(),
+                previousEmailStatistics.getClosedCaps())
+        .anyMatch(x -> x == null);
+    }
 
 }

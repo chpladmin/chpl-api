@@ -33,9 +33,9 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.DevelopersOverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.Listing2014OverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.Listing2015OverTimeChart;
-import gov.healthit.chpl.scheduler.job.summarystatistics.chart.SurveillanceNonConformitiesOverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.SummaryStatisticChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.SurveillanceActivitiesOverTimeChart;
+import gov.healthit.chpl.scheduler.job.summarystatistics.chart.SurveillanceNonConformitiesOverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.TotalListingsOverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.TotalUniqueProductsOverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.UniqueProductsWithActiveListingsOverTimeChart;
@@ -126,6 +126,7 @@ public class SummaryStatisticsPdf {
                     convertDateToLocalDate(recentStats.getEndDate()),
                     convertDateToLocalDate(previousStats.getEndDate()),
                     recentEmailStats, previousEmailStats);
+            generator.addTableEndNote(document, recentEmailStats, previousEmailStats);
             document.add(new Paragraph(""));
         });
     }

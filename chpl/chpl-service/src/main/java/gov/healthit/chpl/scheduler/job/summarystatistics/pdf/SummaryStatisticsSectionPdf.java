@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
@@ -34,6 +35,11 @@ public abstract class SummaryStatisticsSectionPdf {
     }
 
     public abstract Table generateTable(LocalDate recent, LocalDate previous, EmailStatistics recentEmailStatistics, EmailStatistics previousEmailStatistics);
+
+    public Document addTableEndNote(Document document, EmailStatistics recentEmailStatistics, EmailStatistics previousEmailStatistics) {
+        //By default, do nothing
+        return document;
+    }
 
     public float[] getRelativeColumnWidths() {
         return new float[] {SECTION_DESCRIPTION_RELATIVE_WIDTH, RECENT_DATE_RELATIVE_WIDTH, PREVIOUS_DATE_RELATIVE_WIDTH, DELTA_RELATIVE_WIDTH};
