@@ -100,7 +100,7 @@ public class ApiKeyController {
                     + "API key. It must be included in subsequent API calls via either a header with the name "
                     + "'API-Key' or as a URL parameter named 'api_key'.")
     @RequestMapping(value = "/confirm", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    public ApiKeyDTO confirm(@RequestBody String apiKeyRequestToken) throws JsonProcessingException, ValidationException, EntityCreationException, EntityRetrievalException {
+    public ApiKeyDTO confirm(@RequestBody String apiKeyRequestToken) throws JsonProcessingException, ValidationException, EntityCreationException, EntityRetrievalException, MessagingException {
         return apiKeyManager.confirmRequest(apiKeyRequestToken);
     }
 
@@ -150,8 +150,8 @@ public class ApiKeyController {
     private void sendRegistrationEmail(String email, String orgName, String apiKey)
             throws AddressException, MessagingException {
 
-        String subject = env.getProperty("registrationEmailSubject");
-        String htmlMessage = String.format(env.getProperty("registrationEmailBody"),
+        String subject = env.getProperty("apiKey.confirm.email.subject");
+        String htmlMessage = String.format(env.getProperty("apiKey.confirm.email.body"),
                 apiKey, env.getProperty("chplUrlBegin"));
 
         String[] toEmails = {

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,12 +44,18 @@ public class ApiKeyManager {
     private Environment env;
     private String requestEmailSubject;
     private String requestEmailBody;
+    private String confirmEmailSubject;
+    private String confirmEmailBody;
     private String chplUrl;
 
     @Autowired
     public ApiKeyManager(ApiKeyDAO apiKeyDAO, ApiKeyActivityDAO apiKeyActivityDAO, ActivityManager activityManager, ApiKeyRequestDAO apiKeyRequestDAO,
-            Environment env, ErrorMessageUtil errorMessages, @Value("${apiKey.request.email.subject}") String requestEmailSubject,
-            @Value("${apiKey.request.email.body}") String requestEmailBody, @Value("${chplUrlBegin}") String chplUrl) {
+            Environment env, ErrorMessageUtil errorMessages,
+            @Value("${apiKey.request.email.subject}") String requestEmailSubject,
+            @Value("${apiKey.request.email.body}") String requestEmailBody,
+            @Value("${apiKey.confirm.email.subject}") String confirmEmailSubject,
+            @Value("${apiKey.confirm.email.body}") String confirmEmailBody,
+            @Value("${chplUrlBegin}") String chplUrl) {
 
         this.apiKeyDAO = apiKeyDAO;
         this.apiKeyActivityDAO = apiKeyActivityDAO;
@@ -58,6 +65,8 @@ public class ApiKeyManager {
         this.errorMessages = errorMessages;
         this.requestEmailSubject = requestEmailSubject;
         this.requestEmailBody = requestEmailBody;
+        this.confirmEmailSubject = confirmEmailSubject;
+        this.confirmEmailBody = confirmEmailBody;
         this.chplUrl = chplUrl;
     }
 
@@ -83,7 +92,7 @@ public class ApiKeyManager {
     }
 
     @Transactional
-    public ApiKeyDTO confirmRequest(String token) throws ValidationException, JsonProcessingException, EntityCreationException, EntityRetrievalException {
+    public ApiKeyDTO confirmRequest(String token) throws ValidationException, JsonProcessingException, EntityCreationException, EntityRetrievalException, MessagingException {
         Optional<ApiKeyRequest> request = apiKeyRequestDAO.getByApiRequestToken(token);
         if (!request.isPresent()) {
             throw new ValidationException(errorMessages.getMessage("apiKeyRequest.notFound"));
@@ -106,7 +115,15 @@ public class ApiKeyManager {
                 .deleted(false)
                 .build();
 
-        return createKey(apiKey);
+        apiKey = createKey(apiKey);
+
+        (new EmailBuilder(env))
+            .recipient(apiKey.getEmail())
+            .subject(confirmEmailBody)
+            .htmlMessage(String.format(confirmEmailBody, apiKey.getApiKey(), chplUrl))
+            .sendEmail();
+
+        return apiKey;
     }
 
     @Transactional
@@ -200,5 +217,19 @@ public class ApiKeyManager {
         Date now = new Date();
         return Util.md5(nameOrOrganization + email + now.getTime());
     }
+
+    private void sendRegistrationEmail(String email, String orgName, String apiKey)
+            throws AddressException, MessagingException {
+
+        String subject = env.getProperty("registrationEmailSubject");
+        String htmlMessage = String.format(env.getProperty("registrationEmailBody"),
+                apiKey, env.getProperty("chplUrlBegin"));
+
+        String[] toEmails = {
+                email
+        };
+
+    }
+
 
 }
