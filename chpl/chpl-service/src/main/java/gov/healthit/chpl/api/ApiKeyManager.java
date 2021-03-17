@@ -7,6 +7,7 @@ import java.util.Optional;
 import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -40,10 +41,14 @@ public class ApiKeyManager {
     private ApiKeyRequestDAO apiKeyRequestDAO;
     private ErrorMessageUtil errorMessages;
     private Environment env;
+    private String requestEmailSubject;
+    private String requestEmailBody;
+    private String chplUrl;
 
     @Autowired
     public ApiKeyManager(ApiKeyDAO apiKeyDAO, ApiKeyActivityDAO apiKeyActivityDAO, ActivityManager activityManager, ApiKeyRequestDAO apiKeyRequestDAO,
-            Environment env, ErrorMessageUtil errorMessages) {
+            Environment env, ErrorMessageUtil errorMessages, @Value("${apiKey.request.email.subject}") String requestEmailSubject,
+            @Value("${apiKey.request.email.body}") String requestEmailBody, @Value("${chplUrlBegin}") String chplUrl) {
 
         this.apiKeyDAO = apiKeyDAO;
         this.apiKeyActivityDAO = apiKeyActivityDAO;
@@ -51,6 +56,9 @@ public class ApiKeyManager {
         this.apiKeyRequestDAO = apiKeyRequestDAO;
         this.env = env;
         this.errorMessages = errorMessages;
+        this.requestEmailSubject = requestEmailSubject;
+        this.requestEmailBody = requestEmailBody;
+        this.chplUrl = chplUrl;
     }
 
     @Transactional
@@ -64,7 +72,8 @@ public class ApiKeyManager {
         EmailBuilder emailBuilder = new EmailBuilder(env);
         try {
             emailBuilder.recipient(apiKeyRequest.getEmail())
-                .htmlMessage("Here is your token: " + apiKeyRequest.getApiRequestToken())
+                .subject(requestEmailSubject)
+                .htmlMessage(String.format(requestEmailBody, chplUrl, apiKeyRequest.getApiRequestToken()))
                 .sendEmail();
         } catch (MessagingException e) {
             return false;
@@ -101,7 +110,7 @@ public class ApiKeyManager {
     }
 
     @Transactional
-    public ApiKeyDTO createKey(final ApiKeyDTO toCreate)
+    public ApiKeyDTO createKey(ApiKeyDTO toCreate)
             throws EntityCreationException, JsonProcessingException, EntityRetrievalException {
 
         ApiKeyDTO created = apiKeyDAO.create(toCreate);

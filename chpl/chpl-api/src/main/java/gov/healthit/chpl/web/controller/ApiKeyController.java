@@ -99,10 +99,9 @@ public class ApiKeyController {
                     + "will validate that the user has provided a valid email address and provide them with a new "
                     + "API key. It must be included in subsequent API calls via either a header with the name "
                     + "'API-Key' or as a URL parameter named 'api_key'.")
-    @RequestMapping(value = "/confirm", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE, produces = "application/json; charset=utf-8")
-    public String confirm(@RequestBody String apiKeyRequestToken) throws JsonProcessingException, ValidationException, EntityCreationException, EntityRetrievalException {
-        ApiKeyDTO apiKeyDTO = apiKeyManager.confirmRequest(apiKeyRequestToken);
-        return "{\"keyRegistered\" : \"" + apiKeyDTO.getApiKey() + "\"}";
+    @RequestMapping(value = "/confirm", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    public ApiKeyDTO confirm(@RequestBody String apiKeyRequestToken) throws JsonProcessingException, ValidationException, EntityCreationException, EntityRetrievalException {
+        return apiKeyManager.confirmRequest(apiKeyRequestToken);
     }
 
     @ApiOperation(value = "Remove an API key.",
