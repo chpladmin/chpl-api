@@ -47,7 +47,7 @@ public class DirectReviewSummaryStatisticsSectionPdf extends SummaryStatisticsSe
                 previousEmailStatistics.getAverageDaysOpenDirectReviews()),
                 NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
 
-        table = addTableRow(table, createDataForRow("2. Total # of Direct Review NCs",
+        table = addTableRow(table, createDataForRow("2. Total # of Direct Review Non-comformities",
                 recentEmailStatistics.getTotalNonConformities(),
                 previousEmailStatistics.getTotalNonConformities()), true);
 
