@@ -3,6 +3,7 @@ package gov.healthit.chpl.dao;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
@@ -16,13 +17,14 @@ import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductSummaryDTO;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductSummaryEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.logging.Loggable;
-import gov.healthit.chpl.scheduler.job.urlStatus.UrlType;
+import gov.healthit.chpl.scheduler.job.urlStatus.data.UrlType;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.NoArgsConstructor;
@@ -247,6 +249,31 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             products.add(product);
         }
         return products;
+    }
+
+    @Transactional(readOnly = true)
+    public List<CertifiedProductDetailsDTO> getListingsByStatusForDeveloperAndAcb(Long developerId,
+            List<CertificationStatusType> listingStatuses, List<Long> acbIds) {
+        String hql = "FROM CertifiedProductDetailsEntity "
+                + "WHERE developerId = :developerId "
+                + "AND certificationStatusName IN (:listingStatusNames) "
+                + "AND certificationBodyId IN (:acbIds) "
+                + "AND deleted = false ";
+        Query query = entityManager.createQuery(hql, CertifiedProductDetailsEntity.class);
+        List<String> listingStatusNames = listingStatuses.stream()
+                .map(CertificationStatusType::getName)
+                .collect(Collectors.toList());
+        query.setParameter("developerId", developerId);
+        query.setParameter("listingStatusNames", listingStatusNames);
+        query.setParameter("acbIds", acbIds);
+
+        List<CertifiedProductDetailsEntity> queryResults = query.getResultList();
+        if (queryResults == null || queryResults.size() == 0) {
+            return new ArrayList<CertifiedProductDetailsDTO>();
+        }
+        return queryResults.stream()
+                .map(entity -> new CertifiedProductDetailsDTO(entity))
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

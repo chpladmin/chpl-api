@@ -286,6 +286,26 @@ public class CertifiedProductDetailsManager {
         return getCertificationResults(certificationResultsFuture, searchDetails, svapCriteriaMap);
     }
 
+    @Transactional(readOnly = true)
+    public List<ListingMeasure> getCertifiedProductMeasures(Long listingId) throws EntityRetrievalException {
+        return getCertifiedProductMeasures(listingId, false);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ListingMeasure> getCertifiedProductMeasures(Long listingId, Boolean checkIfListingExists) throws EntityRetrievalException {
+        //This is used when called from the controller to ensure that the listing exists
+        if (checkIfListingExists) {
+            certifiedProductSearchResultDAO.getById(listingId);
+        }
+        return listingMeasureDao.getMeasuresByListingId(listingId);
+    }
+
+    @Transactional
+    public List<ListingMeasure> getCertifiedProductMeasures(String chplProductNumber) throws EntityRetrievalException {
+        CertifiedProductDetailsDTO dto = getCertifiedProductDetailsDtoByChplProductNumber(chplProductNumber);
+        return getCertifiedProductMeasures(dto.getId());
+    }
+
     private CertifiedProductSearchDetails createCertifiedSearchDetails(CertifiedProductDetailsDTO dto,
             Boolean retrieveAsynchronously) throws EntityRetrievalException {
 
@@ -810,11 +830,6 @@ public class CertifiedProductDetailsManager {
             qmsStandardResults.add(result);
         }
         return qmsStandardResults;
-    }
-
-    private List<ListingMeasure> getCertifiedProductMeasures(Long listingId)
-            throws EntityRetrievalException {
-        return listingMeasureDao.getMeasuresByListingId(listingId);
     }
 
     private List<CertifiedProductTargetedUser> getCertifiedProductTargetedUsers(Long id)
