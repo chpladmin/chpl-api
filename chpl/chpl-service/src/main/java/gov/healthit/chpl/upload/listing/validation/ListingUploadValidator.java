@@ -94,22 +94,22 @@ public class ListingUploadValidator {
     public void review(ListingUpload uploadedMetadata, CertifiedProductSearchDetails listing) {
         csvHeaderReviewer.review(uploadedMetadata, listing);
         chplNumberFormatReviewer.review(listing);
+        chplNumberUniqueReviewer.review(listing);
         editionCodeReviewer.review(listing);
-        atlCodeReviewer.review(listing);
-        acbCodeReviewer.review(listing);
-        developerCodeReviewer.review(listing);
-        icsCodeReviewer.review(listing);
-        additionalSoftwareCodeReviewer.review(listing);
-        certifiedDateCodeReviewer.review(listing);
         editionReviewer.review(listing);
+        atlCodeReviewer.review(listing);
         atlReviewer.review(listing);
+        acbCodeReviewer.review(listing);
         acbReviewer.review(listing);
+        developerCodeReviewer.review(listing);
         devReviewer.review(listing);
         productReviewer.review(listing);
         versionReviewer.review(listing);
-        certDateReviewer.review(listing);
-        chplNumberUniqueReviewer.review(listing);
+        icsCodeReviewer.review(listing);
         inheritanceReviewer.review(listing);
+        additionalSoftwareCodeReviewer.review(listing);
+        certifiedDateCodeReviewer.review(listing);
+        certDateReviewer.review(listing);
         unsupportedCharacterReviewer.review(listing);
     }
 }

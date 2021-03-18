@@ -62,7 +62,7 @@ public class CertificationDateHandler {
             String chplProductNumber = uploadUtil.parseRequiredSingleRowField(Headings.UNIQUE_ID, headingRecord, listingRecords);
             if (!StringUtils.isEmpty(chplProductNumber)) {
                 String certDateCode = chplProductNumberUtil.getCertificationDateCode(chplProductNumber);
-                if (!StringUtils.isEmpty(certDateCode)) {
+                if (!StringUtils.isEmpty(certDateCode) && certDateCode.matches("[0-9]{4}")) {
                     try {
                         Date certDateFromChplNumber = dateFormat.parse(certDateCode);
                         certificationDate = certDateFromChplNumber.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -70,7 +70,7 @@ public class CertificationDateHandler {
                         LOGGER.error("Could not determine certification date from string " + certDateCode, ex);
                     }
                 } else {
-                    LOGGER.warn("Certification date code in the chpl product number " + chplProductNumber + " was empty.");
+                    LOGGER.warn("Certification date code in the chpl product number " + chplProductNumber + " was not in the yyMMdd format.");
                 }
             } else {
                 LOGGER.warn("No chpl product number was found in the file.");

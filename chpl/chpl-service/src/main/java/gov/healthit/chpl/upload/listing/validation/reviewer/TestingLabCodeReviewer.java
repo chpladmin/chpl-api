@@ -43,14 +43,14 @@ public class TestingLabCodeReviewer implements Reviewer {
         }
 
         List<CertifiedProductTestingLab> testingLabs = listing.getTestingLabs();
-        if (testingLabs != null && testingLabs.size() > 0) {
+        if (testingLabs != null) {
             if (!StringUtils.isEmpty(atlCode) && testingLabs.size() > 1
                     && !atlCode.equals(TestingLab.MULTIPLE_TESTING_LABS_CODE)) {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.atl.codeIsNotForMultiple"));
                 //should it actually do the code fix in here?
                 //I think for edit it would have to because the user can't change it otherwise
                 //but for newly uploaded listings it does not have to do the fix - the user can re-upload.
-            } else if (!StringUtils.isEmpty(atlCode) && testingLabs.size() == 1
+            } else if (!StringUtils.isEmpty(atlCode) && testingLabs.size() < 2
                     && atlCode.equals(TestingLab.MULTIPLE_TESTING_LABS_CODE)) {
                 listing.getErrorMessages().add(msgUtil.getMessage("atl.shouldNotBe99"));
             } else if (!StringUtils.isEmpty(atlCode) && testingLabs.size() == 1) {
@@ -61,7 +61,11 @@ public class TestingLabCodeReviewer implements Reviewer {
                 } else if (StringUtils.isEmpty(atl.getTestingLabCode())) {
                     listing.getErrorMessages().add(msgUtil.getMessage("listing.missingTestingLabCode"));
                 }
+            } else if (!StringUtils.isEmpty(atlCode) && testingLabs.size() == 0) {
+                listing.getErrorMessages().add(msgUtil.getMessage("listing.invalidTestingLabCode", atlCode));
             }
+        } else if (!StringUtils.isEmpty(atlCode) && testingLabs == null) {
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.invalidTestingLabCode", atlCode));
         }
     }
 }

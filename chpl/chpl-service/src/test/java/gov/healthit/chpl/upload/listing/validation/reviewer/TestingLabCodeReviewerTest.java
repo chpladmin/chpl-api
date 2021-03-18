@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -21,6 +22,7 @@ public class TestingLabCodeReviewerTest {
     private static final String ATL_NOT_99 = "There is only one Testing Lab but the ATL code is '99'.";
     private static final String ATL_MISMATCH = "The ONC-ATL code from the CHPL Product Number %s does not match the code of the responsible ONC-ATL %s.";
     private static final String ATL_MISSING_CODE = "Testing Lab code is required but not found.";
+    private static final String ATL_INVALID_CODE = "The ONC-ATL code from the CHPL Product Number %s does not match any ONC-ATL code in the system.";
 
     private ErrorMessageUtil errorMessageUtil;
     private TestingLabCodeReviewer reviewer;
@@ -33,24 +35,33 @@ public class TestingLabCodeReviewerTest {
     }
 
     @Test
-    public void review_nullAtlValidCodeInChplProductNumber_noError() {
+    public void review_emptyAtlValidCodeInChplProductNumber_hasError() {
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.invalidTestingLabCode"), ArgumentMatchers.anyString()))
+        .thenAnswer(i -> String.format(ATL_INVALID_CODE, i.getArgument(1), ""));
+
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
                 .build();
+
         reviewer.review(listing);
 
-        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(ATL_INVALID_CODE, "04", "")));
     }
 
     @Test
-    public void review_emptyAtlValidCodeInChplProductNumber_noError() {
+    public void review_nullAtlValidCodeInChplProductNumber_hasError() {
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.invalidTestingLabCode"), ArgumentMatchers.anyString()))
+        .thenAnswer(i -> String.format(ATL_INVALID_CODE, i.getArgument(1), ""));
+
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
-                .testingLabs(new ArrayList<CertifiedProductTestingLab>())
                 .build();
+        listing.setTestingLabs(null);
         reviewer.review(listing);
 
-        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(ATL_INVALID_CODE, "04", "")));
     }
 
     @Test
@@ -58,8 +69,10 @@ public class TestingLabCodeReviewerTest {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15..04.2526.WEBe.06.00.1.210101")
                 .build();
+        listing.setTestingLabs(null);
         reviewer.review(listing);
 
+        assertNull(listing.getTestingLabs());
         assertEquals(0, listing.getErrorMessages().size());
     }
 
@@ -155,6 +168,21 @@ public class TestingLabCodeReviewerTest {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.99.04.2526.WEBe.06.00.1.210101")
                 .testingLabs(atls)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(ATL_NOT_99));
+    }
+
+    @Test
+    public void review_atlCode99NoTestingLabs_hasError() {
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("atl.shouldNotBe99")))
+            .thenReturn(ATL_NOT_99);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.99.04.2526.WEBe.06.00.1.210101")
                 .build();
 
         reviewer.review(listing);

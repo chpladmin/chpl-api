@@ -3,8 +3,6 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.text.ParseException;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -105,11 +103,37 @@ public class IcsCodeReviewerTest {
     }
 
     @Test
-    public void review_zeroIcsCodeAndIcsBooleanNull_noError() {
+    public void review_notNumberIcsCodeAndIcsBooleanNull_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210102")
+                .chplProductNumber("15.04.04.2526.WEBe.06.AB.1.210102")
                 .ics(InheritedCertificationStatus.builder()
                         .inherits(null)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_notNumberIcsCodeAndIcsBooleanTrue_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.2526.WEBe.06.AB.1.210102")
+                .ics(InheritedCertificationStatus.builder()
+                        .inherits(true)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_notNumberIcsCodeAndIcsBooleanFalse_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.2526.WEBe.06.AB.1.210102")
+                .ics(InheritedCertificationStatus.builder()
+                        .inherits(false)
                         .build())
                 .build();
         reviewer.review(listing);

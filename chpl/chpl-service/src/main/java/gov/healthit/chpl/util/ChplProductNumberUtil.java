@@ -279,10 +279,13 @@ public class ChplProductNumberUtil {
     }
 
     public Integer getIcsCode(String chplProductNumber) {
+        ChplProductNumberParts parts = parseChplProductNumber(chplProductNumber);
+        String icsCodeStr = parts.getIcsCode();
         Integer icsCode = null;
-        if (!isLegacyChplProductNumberStyle(chplProductNumber)) {
-            String[] uniqueIdParts = chplProductNumber.split("\\.");
-            icsCode = Integer.valueOf(uniqueIdParts[ChplProductNumberUtil.ICS_CODE_INDEX]);
+        try {
+            icsCode = Integer.valueOf(icsCodeStr);
+        } catch (NumberFormatException ex) {
+            LOGGER.error("Cannot convert " + icsCodeStr + " to an integer.");
         }
         return icsCode;
     }
