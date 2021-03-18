@@ -32,25 +32,25 @@ public class SurveillanceReportDomainPermissions extends DomainPermissions {
     @Autowired
     public SurveillanceReportDomainPermissions(
             @Qualifier("surveillanceReportGetAnnualReportActionPermissions")
-            final GetAnnualReportActionPermissions getAnnualReportActionPermissions,
+            GetAnnualReportActionPermissions getAnnualReportActionPermissions,
             @Qualifier("surveillanceReportCreateAnnualReportActionPermissions")
-            final CreateAnnualReportActionPermissions createAnnualReportActionPermissions,
+            CreateAnnualReportActionPermissions createAnnualReportActionPermissions,
             @Qualifier("surveillanceReportUpdateAnnualReportActionPermissions")
-            final UpdateAnnualReportActionPermissions updateAnnualReportActionPermissions,
+            UpdateAnnualReportActionPermissions updateAnnualReportActionPermissions,
             @Qualifier("surveillanceReportDeleteAnnualReportActionPermissions")
-            final DeleteAnnualReportActionPermissions deleteAnnualReportActionPermissions,
+            DeleteAnnualReportActionPermissions deleteAnnualReportActionPermissions,
             @Qualifier("surveillanceReportExportAnnualReportActionPermissions")
-            final ExportAnnualReportActionPermissions exportAnnualReportActionPermissions,
+            ExportAnnualReportActionPermissions exportAnnualReportActionPermissions,
             @Qualifier("surveillanceReportGetQuarterlyReportActionPermissions")
-            final GetQuarterlyReportActionPermissions getQuarterlyReportActionPermissions,
+            GetQuarterlyReportActionPermissions getQuarterlyReportActionPermissions,
             @Qualifier("surveillanceReportCreateQuarterlyReportActionPermissions")
-            final CreateQuarterlyReportActionPermissions createQuarterlyReportActionPermissions,
+            CreateQuarterlyReportActionPermissions createQuarterlyReportActionPermissions,
             @Qualifier("surveillanceReportUpdateQuarterlyReportActionPermissions")
-            final UpdateQuarterlyReportActionPermissions updateQuarterlyReportActionPermissions,
+            UpdateQuarterlyReportActionPermissions updateQuarterlyReportActionPermissions,
             @Qualifier("surveillanceReportDeleteQuarterlyReportActionPermissions")
-            final DeleteQuarterlyReportActionPermissions deleteQuarterlyReportActionPermissions,
+            DeleteQuarterlyReportActionPermissions deleteQuarterlyReportActionPermissions,
             @Qualifier("surveillanceReportExportQuarterlyReportActionPermissions")
-            final ExportQuarterlyReportActionPermissions exportQuarterlyReportActionPermissions) {
+            ExportQuarterlyReportActionPermissions exportQuarterlyReportActionPermissions) {
 
         getActionPermissions().put(GET_ANNUAL, getAnnualReportActionPermissions);
         getActionPermissions().put(CREATE_ANNUAL, createAnnualReportActionPermissions);
