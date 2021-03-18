@@ -62,7 +62,7 @@ public class CertificationDateHandler {
             String chplProductNumber = uploadUtil.parseRequiredSingleRowField(Headings.UNIQUE_ID, headingRecord, listingRecords);
             if (!StringUtils.isEmpty(chplProductNumber)) {
                 String certDateCode = chplProductNumberUtil.getCertificationDateCode(chplProductNumber);
-                if (!StringUtils.isEmpty(certDateCode) && certDateCode.matches("[0-9]{4}")) {
+                if (!StringUtils.isEmpty(certDateCode) && certDateCode.matches("[0-9]{6}")) {
                     try {
                         Date certDateFromChplNumber = dateFormat.parse(certDateCode);
                         certificationDate = certDateFromChplNumber.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();

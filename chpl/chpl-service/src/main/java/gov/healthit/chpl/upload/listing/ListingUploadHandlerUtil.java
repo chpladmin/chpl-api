@@ -383,7 +383,7 @@ public class ListingUploadHandlerUtil {
 
         //TODO: look for more date formats
         Date certificationDate = null;
-        if (value.matches("[0-9]{6}")) {
+        if (value.matches("[0-9]{8}")) {
             try {
                 certificationDate = dateFormat.parse(value);
             } catch (ParseException ex) {

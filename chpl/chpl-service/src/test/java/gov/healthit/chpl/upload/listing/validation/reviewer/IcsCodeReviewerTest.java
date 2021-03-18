@@ -25,6 +25,11 @@ public class IcsCodeReviewerTest {
     public void setup() {
         ChplProductNumberUtil chplProductNumberUtil = new ChplProductNumberUtil();
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
+
+        Mockito.when(errorMessageUtil.getMessage("listing.icsCodeTrueValueFalse"))
+            .thenReturn(CODE_TRUE_VALUE_FALSE_MISMATCH);
+        Mockito.when(errorMessageUtil.getMessage("listing.icsCodeFalseValueTrue"))
+            .thenReturn(CODE_FALSE_VALUE_TRUE_MISMATCH);
         reviewer = new IcsCodeReviewer(chplProductNumberUtil, errorMessageUtil);
     }
 
@@ -70,9 +75,6 @@ public class IcsCodeReviewerTest {
 
     @Test
     public void review_nonzeroIcsCodeAndIcsBooleanFalse_hasError() {
-        Mockito.when(errorMessageUtil.getMessage("listing.icsCodeTrueValueFalse"))
-            .thenReturn(CODE_TRUE_VALUE_FALSE_MISMATCH);
-
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WEBe.06.01.1.210102")
                 .ics(InheritedCertificationStatus.builder()
@@ -87,9 +89,6 @@ public class IcsCodeReviewerTest {
 
     @Test
     public void review_zeroIcsCodeAndIcsBooleanTrue_hasError() {
-        Mockito.when(errorMessageUtil.getMessage("listing.icsCodeFalseValueTrue"))
-            .thenReturn(CODE_FALSE_VALUE_TRUE_MISMATCH);
-
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210102")
                 .ics(InheritedCertificationStatus.builder()
@@ -143,9 +142,6 @@ public class IcsCodeReviewerTest {
 
     @Test
     public void review_nonzeroIcsCodeAndIcsBooleanNull_noError() {
-        Mockito.when(errorMessageUtil.getMessage("listing.icsCodeTrueValueFalse"))
-            .thenReturn(CODE_TRUE_VALUE_FALSE_MISMATCH);
-
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WEBe.06.02.1.210102")
                 .ics(InheritedCertificationStatus.builder()

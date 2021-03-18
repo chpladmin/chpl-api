@@ -43,8 +43,8 @@ public class IcsCodeReviewer implements Reviewer {
                     && listing.getIcs().getInherits().equals(Boolean.TRUE)) {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.icsCodeFalseValueTrue"));
             }
-        } else if (listing.getIcs() == null || (listing.getIcs().getInherits() == null
-                || listing.getIcs().getInherits().equals(Boolean.FALSE)) && icsCodeInteger != null
+        } else if ((listing.getIcs() == null || (listing.getIcs().getInherits() == null
+                || listing.getIcs().getInherits().equals(Boolean.FALSE))) && icsCodeInteger != null
                 && icsCodeInteger.intValue() > 0) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.icsCodeTrueValueFalse"));
         }

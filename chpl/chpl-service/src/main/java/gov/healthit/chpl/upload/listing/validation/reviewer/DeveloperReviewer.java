@@ -93,13 +93,15 @@ public class DeveloperReviewer implements Reviewer {
 
     private void reviewDeveloperStatusIsActive(CertifiedProductSearchDetails listing) {
         Developer developer = listing.getDeveloper();
-        DeveloperStatus mostRecentStatus = developer.getStatus();
-        if (mostRecentStatus == null || StringUtils.isEmpty(mostRecentStatus.getStatus())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("developer.status.noCurrent"));
-        } else if (!mostRecentStatus.getStatus().equals(DeveloperStatusType.Active.getName())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.developer.notActive.noCreate",
-                    developer.getName() != null ? developer.getName() : "?",
-                    mostRecentStatus.getStatus()));
+        if (developer.getDeveloperId() != null) {
+            DeveloperStatus mostRecentStatus = developer.getStatus();
+            if (mostRecentStatus == null || StringUtils.isEmpty(mostRecentStatus.getStatus())) {
+                listing.getErrorMessages().add(msgUtil.getMessage("developer.status.noCurrent"));
+            } else if (!mostRecentStatus.getStatus().equals(DeveloperStatusType.Active.getName())) {
+                listing.getErrorMessages().add(msgUtil.getMessage("listing.developer.notActive.noCreate",
+                        developer.getName() != null ? developer.getName() : "?",
+                        mostRecentStatus.getStatus()));
+            }
         }
     }
 }
