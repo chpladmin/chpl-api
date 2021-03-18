@@ -86,7 +86,6 @@ public class DirectReviewCsvPresenter {
         result.add("Was Complete Date");
         result.add("Non-Conformity Summary");
         result.add("Non-Conformity Findings");
-        result.add("Developer Explanation");
         result.add("Resolution Description");
         result.add("Developer-Associated Listings");
         result.add("Non-conformity Last Updated Date");
@@ -179,7 +178,6 @@ public class DirectReviewCsvPresenter {
         }
         csvRow.add(nc != null && nc.getNonConformitySummary() != null ? nc.getNonConformitySummary() : "");
         csvRow.add(nc != null && nc.getNonConformityFindings() != null ? nc.getNonConformityFindings() : "");
-        csvRow.add(nc != null && nc.getDeveloperExplanation() != null ? nc.getDeveloperExplanation() : "");
         csvRow.add(nc != null && nc.getResolution() != null ? nc.getResolution() : "");
         if (nc != null && nc.getDeveloperAssociatedListings() != null && nc.getDeveloperAssociatedListings().size() > 0) {
             List<String> dalChplIds = nc.getDeveloperAssociatedListings().stream()

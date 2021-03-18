@@ -144,27 +144,6 @@ public class DirectReviewNonConformityDeserializationTest {
     }
 
     @Test
-    public void deserializeJson_parsesDeveloperExplanation() {
-        String devExplanation = "explanation";
-        String json = "{"
-                + "\"total\": 1,"
-                + "\"issues\": ["
-                + "{ "
-                + "\"key\": \"DR-12345\", "
-                + "\"fields\": {"
-                + "\"customfield_11028\": \"" + devExplanation + "\" "
-                + "}"
-                + "}"
-                + "]"
-                + "}";
-
-        DirectReviewNonConformity nc = parseJsonToNonConformity(json);
-        assertNotNull(nc);
-        assertNotNull(nc.getDeveloperExplanation());
-        assertEquals(devExplanation, nc.getDeveloperExplanation());
-    }
-
-    @Test
     public void deserializeJson_parsesResolution() {
         String resolution = "resolution";
         String json = "{"
