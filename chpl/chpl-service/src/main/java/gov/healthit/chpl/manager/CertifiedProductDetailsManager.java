@@ -385,6 +385,7 @@ public class CertifiedProductDetailsManager {
             drs = drService.getDirectReviewsRelatedToListing(listing);
         }
         listing.setDirectReviews(drs);
+        listing.setDirectReviewsAvailable(drService.getDirectReviewsAvailable());
         return listing;
     }
 

@@ -282,6 +282,9 @@ public class CertifiedProductSearchDetails implements Serializable {
     @XmlElement(name = "directReview")
     private List<DirectReview> directReviews = new ArrayList<DirectReview>();
 
+    @XmlTransient
+    private boolean directReviewsAvailable;
+
     /**
      * This variable indicates that if there is the standard(s) or lack thereof used to meet the accessibility-centered
      * design certification criterion for 2015 Certification Edtion. It is a string variable that does not have any
@@ -749,6 +752,14 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     public void setDirectReviews(List<DirectReview> directReviews) {
         this.directReviews = directReviews;
+    }
+
+    public boolean isDirectReviewsAvailable() {
+        return directReviewsAvailable;
+    }
+
+    public void setDirectReviewsAvailable(boolean directReviewsAvailable) {
+        this.directReviewsAvailable = directReviewsAvailable;
     }
 
     public List<MeaningfulUseUser> getMeaningfulUseUserHistory() {
