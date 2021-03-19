@@ -1,6 +1,7 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -14,12 +15,16 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.util.Util;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 /**
  * Certified Product Search Basic Details entity.
  */
 @Data
+@Builder
+@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CertifiedProductSearchBasicDetails implements Serializable {
 
@@ -258,6 +263,32 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
      * A hyperlink to SVAP Notice URL.
      */
     private String svapNoticeUrl;
+
+    /**
+     * URL where the listing's Real World Testing Plan is located
+     */
+    private String rwtPlansUrl;
+
+    /**
+     * Date the listing's Real World Testing Plan was submitted
+     */
+    private LocalDate rwtPlansCheckDate;
+
+    /**
+     * URL where the listing's Real World Testing Results is located
+     */
+    private String rwtResultsUrl;
+
+    /**
+     * Date the listing's Real World Testing Results was submitted
+     */
+    private LocalDate rwtResultsCheckDate;
+
+    /**
+     * First year that the listing is eligible for Real World Testing data
+     */
+    private Integer rwtEligibilityYear;
+
 
     public CertifiedProductSearchBasicDetails() {
         sed = new CertifiedProductSed();
