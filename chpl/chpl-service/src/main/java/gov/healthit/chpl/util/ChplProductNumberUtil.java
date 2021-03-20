@@ -39,7 +39,7 @@ public class ChplProductNumberUtil {
     public static final String ACB_CODE_REGEX = "^[0-9]{" + ChplProductNumberUtil.ACB_CODE_LENGTH + "}$";
     public static final int ACB_CODE_LENGTH = 2;
     public static final int DEVELOPER_CODE_INDEX = 3;
-    public static final String DEVELOPER_CODE_REGEX = "^[0-9]{" + ChplProductNumberUtil.DEVELOPER_CODE_LENGTH + "}$";
+    public static final String DEVELOPER_CODE_REGEX = "^[0-9]{" + ChplProductNumberUtil.DEVELOPER_CODE_LENGTH + "}|XXXX$";
     public static final int DEVELOPER_CODE_LENGTH = 4;
     public static final int PRODUCT_CODE_INDEX = 4;
     public static final String PRODUCT_CODE_REGEX = "^[a-zA-Z0-9_]{" + ChplProductNumberUtil.PRODUCT_CODE_LENGTH + "}$";

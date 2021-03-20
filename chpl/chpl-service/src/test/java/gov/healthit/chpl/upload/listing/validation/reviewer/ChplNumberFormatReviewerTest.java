@@ -3,8 +3,6 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.text.ParseException;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -337,6 +335,16 @@ public class ChplNumberFormatReviewerTest {
 
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(String.format(BAD_DEVELOPER_CODE, "4", "")));
+    }
+
+    @Test
+    public void review_developerCodeForNewDeveloper_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WErB.06.00.1.210101")
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
