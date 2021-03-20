@@ -36,14 +36,14 @@ public class InheritanceReviewer implements Reviewer {
     }
 
     public void review(CertifiedProductSearchDetails listing) {
-        if (listing.getIcs() == null || listing.getIcs().getInherits() == null) {
+        if (listing.getIcs() == null) {
             return;
         }
 
-        if (!listing.getIcs().getInherits() && listing.getIcs().getParents() != null
+        if (!inherits(listing) && listing.getIcs().getParents() != null
                 && listing.getIcs().getParents().size() > 0) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.icsFalseAndParentsFound"));
-        } else if (listing.getIcs().getInherits() && (listing.getIcs().getParents() == null
+        } else if (inherits(listing) && (listing.getIcs().getParents() == null
                 || listing.getIcs().getParents().size() == 0)) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.icsTrueAndNoParentsFound"));
         }
@@ -68,6 +68,11 @@ public class InheritanceReviewer implements Reviewer {
                 reviewListingIcsCodeIsOneGreaterThanParents(parentListingIds, listing);
             }
         }
+    }
+
+    private boolean inherits(CertifiedProductSearchDetails listing) {
+        return listing.getIcs() != null && listing.getIcs().getInherits() != null
+                && listing.getIcs().getInherits();
     }
 
     private void lookupListingId(CertifiedProduct certifiedProduct) {
