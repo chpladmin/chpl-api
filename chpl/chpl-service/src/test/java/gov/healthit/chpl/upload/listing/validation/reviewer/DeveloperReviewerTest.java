@@ -14,9 +14,12 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
+import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class DeveloperReviewerTest {
+    private static final String SYSTEM_AND_USER_DATA_MISMATCH = "The user-entered developer %s field of '%s' does not match the system value of '%s'.";
     private static final String MISSING_DEVELOPER = "A developer is required to be associated with the listing.";
     private static final String MISSING_DEVELOPER_NAME = "A developer name is required.";
     private static final String INVALID_SELF_DEVELOPER = "Self developer value %s is invalid. It must be true or false.";
@@ -34,6 +37,7 @@ public class DeveloperReviewerTest {
     private static final String MISSING_CONTACT_NAME = "Developer contact name is required.";
     private static final String MISSING_STATUS = "The developer must have a current status specified.";
     private static final String INVALID_STATUS = "The developer %s has a status of %s. Certified products belonging to this developer cannot be created until its status returns to Active.";
+    private static final String NOT_FOUND = "The developer %s was not found in the system.";
 
     private ErrorMessageUtil errorMessageUtil;
     private DeveloperReviewer reviewer;
@@ -41,6 +45,8 @@ public class DeveloperReviewerTest {
     @Before
     public void setup() {
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.developer.userAndSystemMismatch"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(SYSTEM_AND_USER_DATA_MISMATCH, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.missingDeveloper")))
             .thenReturn(MISSING_DEVELOPER);
         Mockito.when(errorMessageUtil.getMessage("developer.nameRequired"))
@@ -75,7 +81,11 @@ public class DeveloperReviewerTest {
             .thenReturn(MISSING_STATUS);
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.developer.notActive.noCreate"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_STATUS, i.getArgument(1), i.getArgument(2)));
-        reviewer = new DeveloperReviewer(errorMessageUtil);
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.developer.notFound"), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(NOT_FOUND, i.getArgument(1), ""));
+
+        reviewer = new DeveloperReviewer(errorMessageUtil,
+                new ChplProductNumberUtil(), new ListingUploadHandlerUtil(errorMessageUtil));
     }
 
     @Test
@@ -101,10 +111,11 @@ public class DeveloperReviewerTest {
     }
 
     @Test
-    public void review_developerWithNullName_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_newDeveloperWithNullName_hasError() {
+        Developer developer = buildNewDeveloper();
         developer.setName(null);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
                 .developer(developer)
                 .build();
 
@@ -115,11 +126,26 @@ public class DeveloperReviewerTest {
     }
 
     @Test
-    public void review_developerWithNullSelfDeveloperNullString_hasError() {
-        Developer developer = buildValidDeveloper();
-        developer.setSelfDeveloper(null);
-        developer.setSelfDeveloperStr(null);
+    public void review_systemDeveloperWithNullName_hasWarning() {
+        Developer developer = buildSystemDeveloper();
+        developer.setName(null);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(MISSING_DEVELOPER_NAME));
+    }
+
+    @Test
+    public void review_newDeveloperWithNullSelfDeveloperNullString_hasError() {
+        Developer developer = buildNewDeveloper();
+        developer.setSelfDeveloper(null);
+        developer.setUserEnteredSelfDeveloper(null);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
                 .developer(developer)
                 .build();
 
@@ -130,11 +156,27 @@ public class DeveloperReviewerTest {
     }
 
     @Test
-    public void review_developerWithNullSelfDeveloperEmptyString_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_systemDeveloperWithNullSelfDeveloperNullString_hasWarning() {
+        Developer developer = buildSystemDeveloper();
         developer.setSelfDeveloper(null);
-        developer.setSelfDeveloperStr("");
+        developer.setUserEnteredSelfDeveloper(null);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(MISSING_SELF_DEVELOPER));
+    }
+
+    @Test
+    public void review_newDeveloperWithNullSelfDeveloperEmptyString_hasError() {
+        Developer developer = buildNewDeveloper();
+        developer.setSelfDeveloper(null);
+        developer.setUserEnteredSelfDeveloper("");
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
                 .developer(developer)
                 .build();
 
@@ -145,11 +187,27 @@ public class DeveloperReviewerTest {
     }
 
     @Test
-    public void review_developerWithNullSelfDeveloperInvalidString_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_systemDeveloperWithNullSelfDeveloperEmptyString_hasWarning() {
+        Developer developer = buildSystemDeveloper();
         developer.setSelfDeveloper(null);
-        developer.setSelfDeveloperStr("Junk");
+        developer.setUserEnteredSelfDeveloper("");
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(MISSING_SELF_DEVELOPER));
+    }
+
+    @Test
+    public void review_newDeveloperWithNullSelfDeveloperInvalidString_hasError() {
+        Developer developer = buildNewDeveloper();
+        developer.setSelfDeveloper(null);
+        developer.setUserEnteredSelfDeveloper("Junk");
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
                 .developer(developer)
                 .build();
 
@@ -160,8 +218,38 @@ public class DeveloperReviewerTest {
     }
 
     @Test
-    public void review_developerWithNullWebsite_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_systemDeveloperWithNullSelfDeveloperInvalidString_hasWarning() {
+        Developer developer = buildSystemDeveloper();
+        developer.setSelfDeveloper(null);
+        developer.setUserEnteredSelfDeveloper("Junk");
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(INVALID_SELF_DEVELOPER, "Junk", "")));
+    }
+
+    @Test
+    public void review_newDeveloperWithNullWebsite_hasError() {
+        Developer developer = buildNewDeveloper();
+        developer.setWebsite(null);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(MISSING_WEBSITE));
+    }
+
+    @Test
+    public void review_systemDeveloperWithNullWebsite_hasWarning() {
+        Developer developer = buildSystemDeveloper();
         developer.setWebsite(null);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
@@ -169,13 +257,28 @@ public class DeveloperReviewerTest {
 
         reviewer.review(listing);
 
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(MISSING_WEBSITE));
+    }
+
+    @Test
+    public void review_newDeveloperWithEmptyWebsite_hasError() {
+        Developer developer = buildNewDeveloper();
+        developer.setWebsite("");
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(MISSING_WEBSITE));
     }
 
     @Test
-    public void review_developerWithEmptyWebsite_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_systemDeveloperWithEmptyWebsite_hasWarning() {
+        Developer developer = buildSystemDeveloper();
         developer.setWebsite("");
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
@@ -183,13 +286,28 @@ public class DeveloperReviewerTest {
 
         reviewer.review(listing);
 
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(MISSING_WEBSITE));
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(MISSING_WEBSITE));
     }
 
     @Test
-    public void review_developerWithMalformedWebsite_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_newDeveloperWithMalformedWebsite_hasError() {
+        Developer developer = buildNewDeveloper();
+        developer.setWebsite("junk");
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(INVALID_WEBSITE));
+    }
+
+    @Test
+    public void review_systemDeveloperWithMalformedWebsite_hasWarning() {
+        Developer developer = buildSystemDeveloper();
         developer.setWebsite("junk");
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
@@ -197,15 +315,16 @@ public class DeveloperReviewerTest {
 
         reviewer.review(listing);
 
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(INVALID_WEBSITE));
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(INVALID_WEBSITE));
     }
 
     @Test
-    public void review_developerWithMalformedWebsiteWithNewline_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_newDeveloperWithMalformedWebsiteWithNewline_hasError() {
+        Developer developer = buildNewDeveloper();
         developer.setWebsite("ju\r\nnk");
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
                 .developer(developer)
                 .build();
 
@@ -216,10 +335,25 @@ public class DeveloperReviewerTest {
     }
 
     @Test
-    public void review_developerWithNullAddress_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_systemDeveloperWithMalformedWebsiteWithNewline_hasWarning() {
+        Developer developer = buildSystemDeveloper();
+        developer.setWebsite("ju\r\nnk");
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(INVALID_WEBSITE));
+    }
+
+    @Test
+    public void review_newDeveloperWithNullAddress_hasError() {
+        Developer developer = buildNewDeveloper();
         developer.setAddress(null);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
                 .developer(developer)
                 .build();
 
@@ -230,8 +364,37 @@ public class DeveloperReviewerTest {
     }
 
     @Test
-    public void review_developerWithNullStreetAddress_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_sysemDeveloperWithNullAddress_hasWarning() {
+        Developer developer = buildSystemDeveloper();
+        developer.setAddress(null);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(MISSING_ADDRESS));
+    }
+
+    @Test
+    public void review_newDeveloperWithNullStreetAddress_hasError() {
+        Developer developer = buildNewDeveloper();
+        developer.getAddress().setLine1(null);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(MISSING_STREET_ADDRESS));
+    }
+
+    @Test
+    public void review_systemDeveloperWithNullStreetAddress_hasWarning() {
+        Developer developer = buildSystemDeveloper();
         developer.getAddress().setLine1(null);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
@@ -239,13 +402,28 @@ public class DeveloperReviewerTest {
 
         reviewer.review(listing);
 
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(MISSING_STREET_ADDRESS));
+    }
+
+    @Test
+    public void review_newDeveloperWithEmptyStreetAddress_hasError() {
+        Developer developer = buildNewDeveloper();
+        developer.getAddress().setLine1("");
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(MISSING_STREET_ADDRESS));
     }
 
     @Test
-    public void review_developerWithEmptyStreetAddress_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_systemDeveloperWithEmptyStreetAddress_hasWarning() {
+        Developer developer = buildSystemDeveloper();
         developer.getAddress().setLine1("");
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
@@ -253,13 +431,28 @@ public class DeveloperReviewerTest {
 
         reviewer.review(listing);
 
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(MISSING_STREET_ADDRESS));
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(MISSING_STREET_ADDRESS));
     }
 
     @Test
-    public void review_developerWithNullCity_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_newDeveloperWithNullCity_hasError() {
+        Developer developer = buildNewDeveloper();
+        developer.getAddress().setCity(null);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(MISSING_CITY));
+    }
+
+    @Test
+    public void review_systemDeveloperWithNullCity_hasWarning() {
+        Developer developer = buildSystemDeveloper();
         developer.getAddress().setCity(null);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
@@ -267,13 +460,28 @@ public class DeveloperReviewerTest {
 
         reviewer.review(listing);
 
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(MISSING_CITY));
+    }
+
+    @Test
+    public void review_newDeveloperWithEmptyCity_hasError() {
+        Developer developer = buildNewDeveloper();
+        developer.getAddress().setCity("");
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(MISSING_CITY));
     }
 
     @Test
-    public void review_developerWithEmptyCity_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_systemDeveloperWithEmptyCity_hasWarning() {
+        Developer developer = buildSystemDeveloper();
         developer.getAddress().setCity("");
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
@@ -281,13 +489,28 @@ public class DeveloperReviewerTest {
 
         reviewer.review(listing);
 
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(MISSING_CITY));
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(MISSING_CITY));
     }
 
     @Test
-    public void review_developerWithNullState_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_newDeveloperWithNullState_hasError() {
+        Developer developer = buildNewDeveloper();
+        developer.getAddress().setState(null);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(MISSING_STATE));
+    }
+
+    @Test
+    public void review_systemDeveloperWithNullState_hasWarning() {
+        Developer developer = buildSystemDeveloper();
         developer.getAddress().setState(null);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
@@ -295,13 +518,28 @@ public class DeveloperReviewerTest {
 
         reviewer.review(listing);
 
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(MISSING_STATE));
+    }
+
+    @Test
+    public void review_newDeveloperWithEmptyState_hasError() {
+        Developer developer = buildNewDeveloper();
+        developer.getAddress().setState("");
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(MISSING_STATE));
     }
 
     @Test
-    public void review_developerWithEmptyState_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_systemDeveloperWithEmptyState_hasWarning() {
+        Developer developer = buildSystemDeveloper();
         developer.getAddress().setState("");
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
@@ -309,13 +547,28 @@ public class DeveloperReviewerTest {
 
         reviewer.review(listing);
 
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(MISSING_STATE));
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(MISSING_STATE));
     }
 
     @Test
-    public void review_developerWithNullZipcode_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_newDeveloperWithNullZipcode_hasError() {
+        Developer developer = buildNewDeveloper();
+        developer.getAddress().setZipcode(null);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(MISSING_ZIP));
+    }
+
+    @Test
+    public void review_systemDeveloperWithNullZipcode_hasWarning() {
+        Developer developer = buildSystemDeveloper();
         developer.getAddress().setZipcode(null);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
@@ -323,15 +576,16 @@ public class DeveloperReviewerTest {
 
         reviewer.review(listing);
 
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(MISSING_ZIP));
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(MISSING_ZIP));
     }
 
     @Test
-    public void review_developerWithEmptyZipcode_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_newDeveloperWithEmptyZipcode_hasError() {
+        Developer developer = buildNewDeveloper();
         developer.getAddress().setZipcode("");
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
                 .developer(developer)
                 .build();
 
@@ -342,10 +596,25 @@ public class DeveloperReviewerTest {
     }
 
     @Test
-    public void review_developerWithNullContact_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_systemDeveloperWithEmptyZipcode_hasWarning() {
+        Developer developer = buildSystemDeveloper();
+        developer.getAddress().setZipcode("");
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(MISSING_ZIP));
+    }
+
+    @Test
+    public void review_newDeveloperWithNullContact_hasError() {
+        Developer developer = buildNewDeveloper();
         developer.setContact(null);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
                 .developer(developer)
                 .build();
 
@@ -356,8 +625,37 @@ public class DeveloperReviewerTest {
     }
 
     @Test
-    public void review_developerWithNullContactName_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_systemDeveloperWithNullContact_hasWarning() {
+        Developer developer = buildSystemDeveloper();
+        developer.setContact(null);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(MISSING_CONTACT));
+    }
+
+    @Test
+    public void review_newDeveloperWithNullContactName_hasError() {
+        Developer developer = buildNewDeveloper();
+        developer.getContact().setFullName(null);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(MISSING_CONTACT_NAME));
+    }
+
+    @Test
+    public void review_systemDeveloperWithNullContactName_hasWarning() {
+        Developer developer = buildSystemDeveloper();
         developer.getContact().setFullName(null);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
@@ -365,13 +663,28 @@ public class DeveloperReviewerTest {
 
         reviewer.review(listing);
 
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(MISSING_CONTACT_NAME));
+    }
+
+    @Test
+    public void review_newDeveloperWithEmptyContactName_hasError() {
+        Developer developer = buildNewDeveloper();
+        developer.getContact().setFullName("");
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(MISSING_CONTACT_NAME));
     }
 
     @Test
-    public void review_developerWithEmptyContactName_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_systemDeveloperWithEmptyContactName_hasWarning() {
+        Developer developer = buildSystemDeveloper();
         developer.getContact().setFullName("");
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
@@ -379,13 +692,28 @@ public class DeveloperReviewerTest {
 
         reviewer.review(listing);
 
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(MISSING_CONTACT_NAME));
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(MISSING_CONTACT_NAME));
     }
 
     @Test
-    public void review_developerWithNullEmail_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_newDeveloperWithNullEmail_hasError() {
+        Developer developer = buildNewDeveloper();
+        developer.getContact().setEmail(null);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(MISSING_EMAIL));
+    }
+
+    @Test
+    public void review_systemDeveloperWithNullEmail_hasWarning() {
+        Developer developer = buildSystemDeveloper();
         developer.getContact().setEmail(null);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
@@ -393,13 +721,28 @@ public class DeveloperReviewerTest {
 
         reviewer.review(listing);
 
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(MISSING_EMAIL));
+    }
+
+    @Test
+    public void review_newDeveloperWithEmptyEmail_hasError() {
+        Developer developer = buildNewDeveloper();
+        developer.getContact().setEmail("");
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(MISSING_EMAIL));
     }
 
     @Test
-    public void review_developerWithEmptyEmail_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_systemDeveloperWithEmptyEmail_hasWarning() {
+        Developer developer = buildSystemDeveloper();
         developer.getContact().setEmail("");
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
@@ -407,13 +750,28 @@ public class DeveloperReviewerTest {
 
         reviewer.review(listing);
 
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(MISSING_EMAIL));
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(MISSING_EMAIL));
     }
 
     @Test
-    public void review_developerWithNullPhoneNumber_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_newDeveloperWithNullPhoneNumber_hasError() {
+        Developer developer = buildNewDeveloper();
+        developer.getContact().setPhoneNumber(null);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(MISSING_PHONE_NUMBER));
+    }
+
+    @Test
+    public void review_systemDeveloperWithNullPhoneNumber_hasWarning() {
+        Developer developer = buildSystemDeveloper();
         developer.getContact().setPhoneNumber(null);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
@@ -421,15 +779,16 @@ public class DeveloperReviewerTest {
 
         reviewer.review(listing);
 
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(MISSING_PHONE_NUMBER));
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(MISSING_PHONE_NUMBER));
     }
 
     @Test
-    public void review_developerWithEmptyPhoneNumber_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_newDeveloperWithEmptyPhoneNumber_hasError() {
+        Developer developer = buildNewDeveloper();
         developer.getContact().setPhoneNumber("");
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
                 .developer(developer)
                 .build();
 
@@ -440,8 +799,35 @@ public class DeveloperReviewerTest {
     }
 
     @Test
-    public void review_developerWithNoCurrentStatus_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_systemDeveloperWithEmptyPhoneNumber_hasWarning() {
+        Developer developer = buildSystemDeveloper();
+        developer.getContact().setPhoneNumber("");
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(MISSING_PHONE_NUMBER));
+    }
+
+    @Test
+    public void review_newDeveloperWithNoCurrentStatus_noError() {
+        Developer developer = buildNewDeveloper();
+        developer.setStatus(null);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_systemDeveloperWithNoCurrentStatus_hasError() {
+        Developer developer = buildSystemDeveloper();
         developer.setStatus(null);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
@@ -454,8 +840,21 @@ public class DeveloperReviewerTest {
     }
 
     @Test
-    public void review_developerWithNullStatusName_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_newDeveloperWithNullStatus_noError() {
+        Developer developer = buildNewDeveloper();
+        developer.getStatus().setStatus(null);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_systemDeveloperWithNullStatus_hasError() {
+        Developer developer = buildSystemDeveloper();
         developer.getStatus().setStatus(null);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
@@ -468,8 +867,22 @@ public class DeveloperReviewerTest {
     }
 
     @Test
-    public void review_developerWithEmptyStatusName_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_newDeveloperWithEmptyStatusName_noError() {
+        Developer developer = buildNewDeveloper();
+        developer.getStatus().setStatus("");
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_systemDeveloperWithEmptyStatusName_hasError() {
+        Developer developer = buildSystemDeveloper();
         developer.getStatus().setStatus("");
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
@@ -482,8 +895,8 @@ public class DeveloperReviewerTest {
     }
 
     @Test
-    public void review_developerWithUnderOncBanStatusName_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_systemDeveloperWithUnderOncBanStatusName_hasError() {
+        Developer developer = buildSystemDeveloper();
         developer.getStatus().setStatus(DeveloperStatusType.UnderCertificationBanByOnc.getName());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
@@ -496,8 +909,8 @@ public class DeveloperReviewerTest {
     }
 
     @Test
-    public void review_developerWithSuspendedStatusName_hasError() {
-        Developer developer = buildValidDeveloper();
+    public void review_systemDeveloperWithSuspendedStatusName_hasError() {
+        Developer developer = buildSystemDeveloper();
         developer.getStatus().setStatus(DeveloperStatusType.SuspendedByOnc.getName());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
@@ -510,21 +923,128 @@ public class DeveloperReviewerTest {
     }
 
     @Test
-    public void review_developerWithAllFields_noError() {
-        Developer developer = buildValidDeveloper();
+    public void review_newDeveloperWithAllFields_noError() {
+        Developer developer = buildNewDeveloper();
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(0, listing.getWarningMessages().size());
+    }
+
+    @Test
+    public void review_systemDeveloperWithAllFields_noError() {
+        Developer developer = buildSystemDeveloper();
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
                 .build();
 
         reviewer.review(listing);
         assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(0, listing.getWarningMessages().size());
     }
 
-    private Developer buildValidDeveloper() {
+    @Test
+    public void review_systemDeveloperNameDoesNotMatchEnteredDeveloperName_hasWarning() {
+        Developer developer = buildSystemDeveloper();
+        developer.setUserEnteredName("Other Name");
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(SYSTEM_AND_USER_DATA_MISMATCH, "name", "Other Name", "Test Name")));
+    }
+
+    @Test
+    public void review_systemDeveloperWebsiteDoesNotMatchEnteredDeveloperWebsite_hasWarning() {
+        Developer developer = buildSystemDeveloper();
+        developer.setUserEnteredWebsite("http://www.test2.com");
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(SYSTEM_AND_USER_DATA_MISMATCH, "website",
+                "http://www.test2.com", "http://www.test.com")));
+    }
+
+    @Test
+    public void review_systemSelfDeveloperInvalidAndDoesNotMatchEnteredSelfDeveloper_noWarning() {
+        Developer developer = buildSystemDeveloper();
+        developer.setUserEnteredSelfDeveloper("blah");
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(0, listing.getWarningMessages().size());
+    }
+
+    @Test
+    public void review_systemDeveloperDoesNotExist_hasError() {
+        Developer developer = Developer.builder()
+                .name("test dev")
+                .website("http://www.test.com")
+                .address(Address.builder()
+                        .line1("test")
+                        .city("test")
+                        .state("test")
+                        .zipcode("12345")
+                        .build())
+                .selfDeveloper(true)
+                .contact(PointOfContact.builder()
+                        .fullName("test")
+                        .email("test@test.com")
+                        .phoneNumber("123-456-7890")
+                        .build())
+                .userEnteredName("test dev")
+                .userEnteredWebsite("http://www.test.com")
+                .userEnteredAddress(Address.builder()
+                        .line1("test")
+                        .city("test")
+                        .state("test")
+                        .zipcode("12345")
+                        .build())
+                .userEnteredSelfDeveloper("true")
+                .userEnteredPointOfContact(PointOfContact.builder()
+                        .fullName("test")
+                        .email("test@test.com")
+                        .phoneNumber("123-456-7890")
+                        .build())
+                .build();
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(NOT_FOUND, "test dev", "")));
+    }
+
+    private Developer buildNewDeveloper() {
+        return buildDeveloper(null, null);
+    }
+
+    private Developer buildSystemDeveloper() {
+        return buildDeveloper(1L, "1234");
+    }
+
+    private Developer buildDeveloper(Long id, String code) {
         return Developer.builder()
+                .developerId(id)
+                .developerCode(code)
                 .name("Test Name")
                 .selfDeveloper(true)
-                .selfDeveloperStr("1")
+                .userEnteredSelfDeveloper("1")
                 .website("http://www.test.com")
                 .address(Address.builder()
                         .line1("test")

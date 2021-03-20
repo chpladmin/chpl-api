@@ -129,8 +129,8 @@ public class DeveloperDetailsUploadHandlerTest {
         assertNotNull(listingRecords);
         Developer developer = handler.handle(headingRecord, listingRecords);
         assertNull(developer.getSelfDeveloper());
-        assertNotNull(developer.getSelfDeveloperStr());
-        assertEquals("BAD", developer.getSelfDeveloperStr());
+        assertNotNull(developer.getUserEnteredSelfDeveloper());
+        assertEquals("BAD", developer.getUserEnteredSelfDeveloper());
     }
 
     @Test
