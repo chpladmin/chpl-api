@@ -18,7 +18,7 @@ import lombok.extern.log4j.Log4j2;
 @Component("editionCodeReviewer")
 @Log4j2
 public class EditionCodeReviewer implements Reviewer {
-    private static final String[] EDITION_CODES = {"14", "15"};
+    private static final String[] EDITION_CODES = {"15"};
     private ChplProductNumberUtil chplProductNumberUtil;
     private ErrorMessageUtil msgUtil;
 

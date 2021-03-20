@@ -123,7 +123,7 @@ public class EditionCodeReviewerTest {
         reviewer.review(listing);
 
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_EDITION_CODE, "11", "14,15")));
+        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_EDITION_CODE, "11", "15")));
     }
 
     @Test
