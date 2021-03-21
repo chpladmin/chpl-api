@@ -23,7 +23,6 @@ public class IcsNormalizer {
 
     public void normalize(CertifiedProductSearchDetails listing) {
         if (listing.getIcs() != null && listing.getIcs().getParents() != null && listing.getIcs().getParents().size() > 0) {
-            listing.getIcs().setInherits(true);
             listing.getIcs().getParents().stream()
                 .forEach(icsParent -> populateParent(icsParent));
         }
