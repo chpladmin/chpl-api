@@ -19,7 +19,6 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class TestingLabReviewerTest {
     private static final String MISSING_ATL = "Testing Lab is required but not found.";
     private static final String MISSING_ATL_NAME = "Testing Lab name is required but was not found.";
-    private static final String MISSING_ATL_CODE = "Testing Lab code is required but was not found.";
     private static final String INVALID_ATL = "The ONC-ATL %s is not valid.";
     private static final String NOT_FOUND = "Testing lab not found.";
 
@@ -36,8 +35,6 @@ public class TestingLabReviewerTest {
             .thenReturn(MISSING_ATL);
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.missingTestingLabName")))
             .thenReturn(MISSING_ATL_NAME);
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.missingTestingLabCode")))
-            .thenReturn(MISSING_ATL_CODE);
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("atl.notFound")))
             .thenReturn(NOT_FOUND);
         reviewer = new TestingLabReviewer(new ChplProductNumberUtil(), errorMessageUtil);
@@ -76,8 +73,7 @@ public class TestingLabReviewerTest {
 
         reviewer.review(listing);
 
-        assertEquals(2, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(MISSING_ATL_CODE));
+        assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(MISSING_ATL_NAME));
     }
 
@@ -95,8 +91,7 @@ public class TestingLabReviewerTest {
 
         reviewer.review(listing);
 
-        assertEquals(2, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(MISSING_ATL_CODE));
+        assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(MISSING_ATL_NAME));
     }
 

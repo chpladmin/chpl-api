@@ -51,64 +51,6 @@ public class CertificationBodyCodeReviewerTest {
         assertEquals(0, listing.getErrorMessages().size());
     }
 
-
-    @Test
-    public void review_emptyCodeInListingValidCodeInChplProductNumber_hasError() {
-        Mockito.when(errorMessageUtil.getMessage("listing.missingCertificationBodyCode"))
-            .thenReturn(MISSING_ACB_CODE);
-
-        Map<String, Object> acbMap = new HashMap<String, Object>();
-        acbMap.put(CertifiedProductSearchDetails.ACB_CODE_KEY, "");
-
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
-                .certifyingBody(acbMap)
-                .build();
-
-        reviewer.review(listing);
-
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(MISSING_ACB_CODE));
-    }
-
-    @Test
-    public void review_nullCodeInListingValidCodeInChplProductNumber_hasError() {
-        Mockito.when(errorMessageUtil.getMessage("listing.missingCertificationBodyCode"))
-            .thenReturn(MISSING_ACB_CODE);
-
-        Map<String, Object> acbMap = new HashMap<String, Object>();
-        acbMap.put(CertifiedProductSearchDetails.ACB_CODE_KEY, null);
-
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
-                .certifyingBody(acbMap)
-                .build();
-
-        reviewer.review(listing);
-
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(MISSING_ACB_CODE));
-    }
-
-    @Test
-    public void review_missingCodeInListingValidCodeInChplProductNumber_hasError() {
-        Mockito.when(errorMessageUtil.getMessage("listing.missingCertificationBodyCode"))
-            .thenReturn(MISSING_ACB_CODE);
-
-        Map<String, Object> acbMap = new HashMap<String, Object>();
-        acbMap.put(CertifiedProductSearchDetails.ACB_ID_KEY, 1L);
-
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
-                .certifyingBody(acbMap)
-                .build();
-
-        reviewer.review(listing);
-
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(MISSING_ACB_CODE));
-    }
-
     @Test
     public void review_legacyChplProductNumberWithAcb_noError() {
         Map<String, Object> acbMap = new HashMap<String, Object>();

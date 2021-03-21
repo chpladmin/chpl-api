@@ -46,10 +46,6 @@ public class TestingLabReviewer implements Reviewer {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.missingTestingLabName"));
         }
 
-        if (StringUtils.isEmpty(atl.getTestingLabCode())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.missingTestingLabCode"));
-        }
-
         if (atl.getTestingLabId() == null && !StringUtils.isEmpty(atl.getTestingLabName())) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.invalidTestingLab", atl.getTestingLabName()));
         }

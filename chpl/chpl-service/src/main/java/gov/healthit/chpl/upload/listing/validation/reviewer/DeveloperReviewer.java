@@ -102,7 +102,7 @@ public class DeveloperReviewer implements Reviewer {
         }
         if (developer.getUserEnteredPointOfContact() != null && developer.getContact() != null) {
             PointOfContact userEnteredContact = developer.getUserEnteredPointOfContact();
-            PointOfContact contact = developer.getUserEnteredPointOfContact();
+            PointOfContact contact = developer.getContact();
             if (!StringUtils.isEmpty(userEnteredContact.getFullName()) && !userEnteredContact.getFullName().equals(contact.getFullName())) {
                 listing.getWarningMessages().add(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "point of contact name", userEnteredContact.getFullName(), contact.getFullName()));
             }

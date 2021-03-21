@@ -58,8 +58,6 @@ public class TestingLabCodeReviewer implements Reviewer {
                 if (!StringUtils.isEmpty(atl.getTestingLabCode())
                         && !atl.getTestingLabCode().equals(atlCode)) {
                     listing.getErrorMessages().add(msgUtil.getMessage("listing.testingLabMismatch", atlCode, atl.getTestingLabCode()));
-                } else if (StringUtils.isEmpty(atl.getTestingLabCode())) {
-                    listing.getErrorMessages().add(msgUtil.getMessage("listing.missingTestingLabCode"));
                 }
             } else if (!StringUtils.isEmpty(atlCode) && testingLabs.size() == 0) {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.invalidTestingLabCode", atlCode));

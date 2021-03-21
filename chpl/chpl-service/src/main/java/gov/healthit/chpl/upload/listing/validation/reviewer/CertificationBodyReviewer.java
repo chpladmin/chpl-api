@@ -26,7 +26,7 @@ public class CertificationBodyReviewer implements Reviewer {
             return;
         }
 
-        String acbId = null, acbName = null, acbCode = null;
+        String acbId = null, acbName = null;
 
         Object acbNameValue = acbMap.get(CertifiedProductSearchDetails.ACB_NAME_KEY);
         if (acbNameValue != null) {
@@ -36,16 +36,6 @@ public class CertificationBodyReviewer implements Reviewer {
             }
         } else {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.missingCertificationBodyName"));
-        }
-
-        Object acbCodeValue = acbMap.get(CertifiedProductSearchDetails.ACB_CODE_KEY);
-        if (acbCodeValue != null) {
-            acbCode = acbCodeValue.toString();
-            if (StringUtils.isEmpty(acbCode)) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.missingCertificationBodyCode"));
-            }
-        } else {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.missingCertificationBodyCode"));
         }
 
         Object acbIdValue = acbMap.get(CertifiedProductSearchDetails.ACB_ID_KEY);

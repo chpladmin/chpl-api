@@ -17,7 +17,6 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class CertificationBodyReviewerTest {
     private static final String MISSING_ACB = "A Certification Body is required.";
     private static final String MISSING_ACB_NAME = "A Certification Body name is required.";
-    private static final String MISSING_ACB_CODE = "A Certification Body code is required.";
     private static final String INVALID_ACB = "The ONC-ACB %s is not valid.";
 
     private ErrorMessageUtil errorMessageUtil;
@@ -33,8 +32,6 @@ public class CertificationBodyReviewerTest {
             .thenReturn(MISSING_ACB);
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.missingCertificationBodyName")))
             .thenReturn(MISSING_ACB_NAME);
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.missingCertificationBodyCode")))
-            .thenReturn(MISSING_ACB_CODE);
         reviewer = new CertificationBodyReviewer(errorMessageUtil);
     }
 
@@ -62,8 +59,7 @@ public class CertificationBodyReviewerTest {
 
         reviewer.review(listing);
 
-        assertEquals(2, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(MISSING_ACB_CODE));
+        assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(MISSING_ACB_NAME));
     }
 
@@ -80,8 +76,7 @@ public class CertificationBodyReviewerTest {
 
         reviewer.review(listing);
 
-        assertEquals(2, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(MISSING_ACB_CODE));
+        assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(MISSING_ACB_NAME));
     }
 

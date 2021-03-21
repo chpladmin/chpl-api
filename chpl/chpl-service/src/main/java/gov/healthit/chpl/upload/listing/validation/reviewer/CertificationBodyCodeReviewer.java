@@ -48,11 +48,7 @@ public class CertificationBodyCodeReviewer implements Reviewer {
                 if (StringUtils.isNoneEmpty(acbCode, listingAcbCode)
                         && !acbCode.equals(listingAcbCode)) {
                     listing.getErrorMessages().add(msgUtil.getMessage("listing.certificationBodyMismatch", acbCode, listingAcbCode));
-                } else if (StringUtils.isEmpty(listingAcbCode)) {
-                    listing.getErrorMessages().add(msgUtil.getMessage("listing.missingCertificationBodyCode"));
                 }
-            } else {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.missingCertificationBodyCode"));
             }
         }
     }

@@ -21,7 +21,6 @@ public class TestingLabCodeReviewerTest {
     private static final String ATL_99 = "There is more than one Testing Lab but the ATL code is not '99'.";
     private static final String ATL_NOT_99 = "There is only one Testing Lab but the ATL code is '99'.";
     private static final String ATL_MISMATCH = "The ONC-ATL code from the CHPL Product Number %s does not match the code of the responsible ONC-ATL %s.";
-    private static final String ATL_MISSING_CODE = "Testing Lab code is required but not found.";
     private static final String ATL_INVALID_CODE = "The ONC-ATL code from the CHPL Product Number %s does not match any ONC-ATL code in the system.";
 
     private ErrorMessageUtil errorMessageUtil;
@@ -85,48 +84,6 @@ public class TestingLabCodeReviewerTest {
         reviewer.review(listing);
 
         assertEquals(0, listing.getErrorMessages().size());
-    }
-
-    @Test
-    public void review_emptyCodeInListingValidCodeInChplProductNumber_hasError() {
-        Mockito.when(errorMessageUtil.getMessage("listing.missingTestingLabCode"))
-            .thenReturn(ATL_MISSING_CODE);
-
-        CertifiedProductTestingLab atl = new CertifiedProductTestingLab();
-        atl.setTestingLabCode("");
-        List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
-        atls.add(atl);
-
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
-                .testingLabs(atls)
-                .build();
-
-        reviewer.review(listing);
-
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(ATL_MISSING_CODE));
-    }
-
-    @Test
-    public void review_nullCodeInListingValidCodeInChplProductNumber_hasError() {
-        Mockito.when(errorMessageUtil.getMessage("listing.missingTestingLabCode"))
-        .thenReturn(ATL_MISSING_CODE);
-
-        CertifiedProductTestingLab atl = new CertifiedProductTestingLab();
-        atl.setTestingLabCode(null);
-        List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
-        atls.add(atl);
-
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
-                .testingLabs(atls)
-                .build();
-
-        reviewer.review(listing);
-
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(ATL_MISSING_CODE));
     }
 
     @Test
