@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -119,7 +118,7 @@ public class ApiKeyManager {
 
         (new EmailBuilder(env))
             .recipient(apiKey.getEmail())
-            .subject(confirmEmailBody)
+            .subject(confirmEmailSubject)
             .htmlMessage(String.format(confirmEmailBody, apiKey.getApiKey(), chplUrl))
             .sendEmail();
 
@@ -140,13 +139,13 @@ public class ApiKeyManager {
     }
 
     @Transactional
-    public ApiKeyDTO updateApiKey(final ApiKeyDTO dto) throws EntityRetrievalException {
+    public ApiKeyDTO updateApiKey(ApiKeyDTO dto) throws EntityRetrievalException {
         return apiKeyDAO.update(dto);
     }
 
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public void deleteKey(final Long keyId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+    public void deleteKey(Long keyId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         ApiKeyDTO toDelete = apiKeyDAO.getById(keyId);
 
         String activityMsg = "API Key " + toDelete.getApiKey() + " was revoked.";
@@ -158,7 +157,7 @@ public class ApiKeyManager {
 
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public void deleteKey(final String keyString) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+    public void deleteKey(String keyString) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
         ApiKeyDTO toDelete = apiKeyDAO.getByKey(keyString);
 
         String activityMsg = "API Key " + toDelete.getApiKey() + " was revoked.";
@@ -169,27 +168,25 @@ public class ApiKeyManager {
     }
 
     @Transactional
-    public ApiKeyDTO findKey(final Long keyId) throws EntityRetrievalException {
+    public ApiKeyDTO findKey(Long keyId) throws EntityRetrievalException {
         return apiKeyDAO.getById(keyId);
     }
 
     @Transactional
-    public ApiKeyDTO findKey(final String keyString) throws EntityRetrievalException {
+    public ApiKeyDTO findKey(String keyString) throws EntityRetrievalException {
         return apiKeyDAO.getByKey(keyString);
     }
 
     @Transactional
-    public void logApiKeyActivity(final String keyString, final String apiCallPath, final String apiCallMethod)
+    public void logApiKeyActivity(String keyString, String apiCallPath, String apiCallMethod)
             throws EntityRetrievalException, EntityCreationException {
 
         ApiKeyDTO apiKey = findKey(keyString);
         ApiKeyActivityDTO apiKeyActivityDto = new ApiKeyActivityDTO();
-
         apiKeyActivityDto.setApiCallPath(apiCallPath);
         apiKeyActivityDto.setApiCallMethod(apiCallMethod);
         apiKeyActivityDto.setApiKeyId(apiKey.getId());
         apiKeyActivityDto.setDeleted(false);
-
         apiKeyActivityDAO.create(apiKeyActivityDto);
 
         // Update the lastUsedDate...
@@ -198,10 +195,9 @@ public class ApiKeyManager {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public List<ApiKeyDTO> findAll(final Boolean includeDeleted) {
+    public List<ApiKeyDTO> findAll(Boolean includeDeleted) {
         return apiKeyDAO.findAll(includeDeleted);
     }
-
 
     private ApiKeyRequest getApiKeyRequest(ApiKeyRegistration apiKeyRegistration) {
         //If API key request already exists for email address, use that one...
@@ -217,19 +213,4 @@ public class ApiKeyManager {
         Date now = new Date();
         return Util.md5(nameOrOrganization + email + now.getTime());
     }
-
-    private void sendRegistrationEmail(String email, String orgName, String apiKey)
-            throws AddressException, MessagingException {
-
-        String subject = env.getProperty("registrationEmailSubject");
-        String htmlMessage = String.format(env.getProperty("registrationEmailBody"),
-                apiKey, env.getProperty("chplUrlBegin"));
-
-        String[] toEmails = {
-                email
-        };
-
-    }
-
-
 }

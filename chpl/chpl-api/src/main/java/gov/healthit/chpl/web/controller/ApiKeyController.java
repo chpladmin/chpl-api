@@ -33,11 +33,13 @@ import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.util.EmailBuilder;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.log4j.Log4j2;
 
 @Api(value = "api-key")
 @RestController
 @RequestMapping("/key")
 @Loggable
+@Log4j2
 public class ApiKeyController {
 
     @Autowired
@@ -90,8 +92,7 @@ public class ApiKeyController {
                       + "purpose of the invitation is to validate the email address of the potential API user.")
     @RequestMapping(value = "/request", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public String request(@RequestBody ApiKeyRegistration registration) throws ValidationException {
-        apiKeyManager.createRequest(registration);
-        return "{\"success\" : \"" + apiKeyManager.createRequest(registration).toString() + "\"}";
+    	return "{\"success\" : \"" + apiKeyManager.createRequest(registration).toString() + "\"}";
     }
 
     @ApiOperation(value = "Confirms a user's email address and provide the new API key.",
