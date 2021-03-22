@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.dao.ComplaintDAO;
+import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.ComplaintDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -49,9 +50,9 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
     @Test
     public void hasAccess_Onc() throws Exception {
         setupForOncUser(resourcePermissions);
-        assertFalse(permissions.hasAccess());
 
-        assertTrue(permissions.hasAccess(1L));
+        assertFalse(permissions.hasAccess());
+        assertFalse(permissions.hasAccess(new Complaint()));
     }
 
     @Override

@@ -36,7 +36,7 @@ import gov.healthit.chpl.scheduler.job.summarystatistics.email.ListingStatistics
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.NonConformityStatisticsSectionCreator;
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.ProductStatisticsSectionCreator;
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.SurveillanceStatisticsSectionCreator;
-import gov.healthit.chpl.util.DateUtil;
+import gov.healthit.chpl.scheduler.job.summarystatistics.pdf.SummaryStatisticsPdf;
 import gov.healthit.chpl.util.EmailBuilder;
 
 public class SummaryStatisticsEmailJob extends QuartzJob {
@@ -47,6 +47,9 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
     @Autowired
     private CertificationBodyDAO certificationBodyDAO;
+
+    @Autowired
+    private SummaryStatisticsPdf summaryStatisticsPdf;
 
     @Autowired
     private Environment env;
@@ -78,22 +81,26 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         }
     }
 
-    private void sendEmail(String message, String address) throws AddressException, MessagingException {
+    private void sendEmail(String message, String address) throws AddressException, MessagingException, IOException {
         String subject = env.getProperty("summaryEmailSubject").toString();
 
         List<String> addresses = new ArrayList<String>();
         addresses.add(address);
 
         EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipients(addresses).subject(subject).htmlMessage(message)
-        .fileAttachments(getSummaryStatisticsFile()).sendEmail();
+        emailBuilder.recipients(addresses)
+                .subject(subject).htmlMessage(message)
+                .fileAttachments(getSummaryStatisticsFile())
+                .sendEmail();
     }
 
-    private List<File> getSummaryStatisticsFile() {
+    private List<File> getSummaryStatisticsFile() throws IOException {
         List<File> files = new ArrayList<File>();
         File file = new File(env.getProperty("downloadFolderPath") + File.separator
                 + env.getProperty("summaryEmailName", "summaryStatistics.csv"));
         files.add(file);
+
+        files.add(summaryStatisticsPdf.generate(file));
         return files;
     }
 
@@ -126,22 +133,14 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         Calendar endDateCal = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
         endDateCal.setTime(endDate);
         StringBuilder ret = new StringBuilder();
-        ret.append("Email body has current statistics as of " + getReportDateAsString(currDateCal.getTime()));
+        ret.append("Email body has current statistics as of " + currDateCal.getTime());
         ret.append("<br/>");
-        ret.append("Email attachment has weekly statistics ending " + getReportDateAsString(endDateCal.getTime()));
+        ret.append("Email attachment has weekly statistics ending " + endDateCal.getTime());
         ret.append("<br/>");
         ret.append("In the attached CSV file: <br/>");
         ret.append("<ul>");
         ret.append("<li>Total Closed Non-Conformities - Some Non-Conformities may be closed that are not counted in these statistics</li>");
         ret.append("</ul>");
         return ret.toString();
-    }
-
-    private String getReportDateAsString(Date date) {
-        if (date != null) {
-             return DateUtil.formatInEasternTime(date);
-        } else {
-            return "UNKNOWN";
-        }
     }
 }

@@ -32,7 +32,6 @@ public class DirectReviewNonConformityXmlGenerator extends XmlGenerator {
         createSimpleElement(nonconformity.getDateOfDetermination() != null
                 ? nonconformity.getDateOfDetermination().toString() : null, "dateOfDetermination", sw);
         DeveloperAssociatedListingXmlGenerator.add(nonconformity.getDeveloperAssociatedListings(), "developerAssociatedListings", sw);
-        createSimpleElement(nonconformity.getDeveloperExplanation(), "developerExplanation", sw);
         createSimpleElement(nonconformity.getLastUpdated(), "lastUpdated", sw);
         createSimpleElement(nonconformity.getNonConformityFindings(), "nonConformityFindings", sw);
         createSimpleElement(nonconformity.getNonConformityStatus(), "nonConformityStatus", sw);

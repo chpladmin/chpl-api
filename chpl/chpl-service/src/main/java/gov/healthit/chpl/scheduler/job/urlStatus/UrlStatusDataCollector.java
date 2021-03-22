@@ -9,8 +9,6 @@ import java.util.concurrent.Future;
 import javax.net.ssl.SSLException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig;
 import org.asynchttpclient.Dsl;
@@ -27,17 +25,16 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
+import gov.healthit.chpl.scheduler.job.urlStatus.data.UrlCallerAsync;
+import gov.healthit.chpl.scheduler.job.urlStatus.data.UrlCheckerDao;
+import gov.healthit.chpl.scheduler.job.urlStatus.data.UrlResult;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import lombok.extern.log4j.Log4j2;
 
-/**
- * Quartz job to check every URl in the system and log its response code to the database.
- * @author kekey
- *
- */
+@Log4j2(topic = "urlStatusDataCollectorJobLogger")
 public class UrlStatusDataCollector extends QuartzJob implements InterruptableJob {
-    private static final Logger LOGGER = LogManager.getLogger("urlStatusDataCollectorJobLogger");
     private static final int SECONDS_TO_MILLIS = 1000;
     private static final long DAYS_TO_MILLIS = 24 * 60 * 60 * SECONDS_TO_MILLIS;
     private static final int BATCH_SIZE = 100;
@@ -222,10 +219,6 @@ public class UrlStatusDataCollector extends QuartzJob implements InterruptableJo
         urlResponseCodeFuturesMap.clear();
     }
 
-    /**
-     * Initialize values and objects needed by the job.
-     * Read properties.
-     */
     private void completeSetup() {
         if (this.env != null) {
             String successCheckIntervalDaysStr = env.getProperty("job.urlStatusChecker.successCheckIntervalDays");
@@ -317,8 +310,6 @@ public class UrlStatusDataCollector extends QuartzJob implements InterruptableJo
      *  - Has the url been checked before?
      *  - Was the last check within the last <property> amount of time and successful?
      *  - Was the last check within the last <property> amount of time and failed?
-     * @param systemUrl
-     * @return
      */
     private boolean shouldUrlBeChecked(final UrlResult systemUrl) {
         if (systemUrl.getLastChecked() == null) {
@@ -342,11 +333,6 @@ public class UrlStatusDataCollector extends QuartzJob implements InterruptableJo
         return false;
     }
 
-    /**
-     * Determines if a given HTTP response code means "success"
-     * @param responseCode
-     * @return
-     */
     private boolean isSuccess(final Integer responseCode) {
         if (responseCode == null) {
             return false;
@@ -357,11 +343,6 @@ public class UrlStatusDataCollector extends QuartzJob implements InterruptableJo
         return false;
     }
 
-    /**
-     * Determines if a given HTTP response code means "redirect"
-     * @param responseCode
-     * @return
-     */
     private boolean isRedirect(final Integer responseCode) {
         if (responseCode == null) {
             return false;
