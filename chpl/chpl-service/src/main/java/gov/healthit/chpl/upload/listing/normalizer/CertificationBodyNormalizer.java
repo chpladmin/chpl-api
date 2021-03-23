@@ -13,6 +13,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -20,11 +21,14 @@ import lombok.extern.log4j.Log4j2;
 public class CertificationBodyNormalizer {
     private CertificationBodyDAO acbDao;
     private ChplProductNumberUtil chplProductNumberUtil;
+    private ValidationUtils validationUtils;
 
     @Autowired
-    public CertificationBodyNormalizer(ChplProductNumberUtil chplProductNumberUtil, CertificationBodyDAO acbDao) {
+    public CertificationBodyNormalizer(CertificationBodyDAO acbDao, ChplProductNumberUtil chplProductNumberUtil,
+            ValidationUtils validationUtils) {
         this.acbDao = acbDao;
         this.chplProductNumberUtil = chplProductNumberUtil;
+        this.validationUtils = validationUtils;
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
@@ -57,8 +61,10 @@ public class CertificationBodyNormalizer {
                 listing.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_NAME_KEY, foundAcb.getName());
             }
         } else if (!StringUtils.isEmpty(listing.getChplProductNumber())) {
-            String acbCodeFromChplProductNumber = chplProductNumberUtil.getAcbCode(listing.getChplProductNumber());
-            if (!StringUtils.isEmpty(acbCodeFromChplProductNumber)) {
+            if (validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
+                            ChplProductNumberUtil.ACB_CODE_INDEX,
+                            ChplProductNumberUtil.ACB_CODE_REGEX)) {
+                String acbCodeFromChplProductNumber = chplProductNumberUtil.getAcbCode(listing.getChplProductNumber());
                 CertificationBodyDTO foundAcb = acbDao.getByCode(acbCodeFromChplProductNumber);
                 if (foundAcb != null) {
                     Map<String, Object> certifyingBody = new HashMap<String, Object>();

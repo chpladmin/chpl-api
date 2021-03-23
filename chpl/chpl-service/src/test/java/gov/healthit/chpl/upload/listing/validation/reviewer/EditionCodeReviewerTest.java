@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 
 public class EditionCodeReviewerTest {
     private static final String INVALID_EDITION_CODE = "The edition code %s is not one of the allowed edition codes %s.";
@@ -24,9 +25,8 @@ public class EditionCodeReviewerTest {
 
     @Before
     public void setup() {
-        ChplProductNumberUtil chplProductNumberUtil = new ChplProductNumberUtil();
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
-        reviewer = new EditionCodeReviewer(chplProductNumberUtil, errorMessageUtil);
+        reviewer = new EditionCodeReviewer(new ChplProductNumberUtil(), new ValidationUtils(), errorMessageUtil);
     }
 
     @Test
@@ -109,6 +109,21 @@ public class EditionCodeReviewerTest {
 
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(String.format(MISMATCHED_CERT_EDITION, "15", "2014")));
+    }
+
+    @Test
+    public void review_mismatchedEditionInvalidChplProductNumber_noError() {
+        Map<String, Object> certEditionMap = new HashMap<String, Object>();
+        certEditionMap.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2014");
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("ED.04.04.2526.WEBe.06.00.1.210101")
+                .certificationEdition(certEditionMap)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test

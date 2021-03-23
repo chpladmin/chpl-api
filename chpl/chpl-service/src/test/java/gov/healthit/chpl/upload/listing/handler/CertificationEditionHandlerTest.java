@@ -17,6 +17,7 @@ import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 
 public class CertificationEditionHandlerTest {
     private static final String HEADER_ROW_BEGIN = "UNIQUE_CHPL_ID__C";
@@ -24,15 +25,13 @@ public class CertificationEditionHandlerTest {
 
     private ErrorMessageUtil msgUtil;
     private ListingUploadHandlerUtil handlerUtil;
-    private ChplProductNumberUtil chplProductNumberUtil;
     private CertificationEditionHandler handler;
 
     @Before
     public void setup() {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         handlerUtil = new ListingUploadHandlerUtil(msgUtil);
-        chplProductNumberUtil = new ChplProductNumberUtil();
-        handler = new CertificationEditionHandler(handlerUtil, chplProductNumberUtil);
+        handler = new CertificationEditionHandler(handlerUtil, new ChplProductNumberUtil(), new ValidationUtils());
     }
 
     @Test
@@ -68,6 +67,28 @@ public class CertificationEditionHandlerTest {
         assertNotNull(edition);
         assertEquals("2015", edition.get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString());
         assertNull(edition.get(CertifiedProductSearchDetails.EDITION_ID_KEY));
+    }
+
+    @Test
+    public void parseEdition_blankEditionColumnBlankEditionCodeInChplProductNumber_ReturnsValueFromChplProductNumber() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",CERT_YEAR__C").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(".02.02.3007.A056.01.00.0.180214,");
+        assertNotNull(listingRecords);
+
+        Map<String, Object> edition = handler.handle(headingRecord, listingRecords);
+        assertNull(edition);
+    }
+
+    @Test
+    public void parseEdition_blankEditionColumnInvalidEditionCodeInChplProductNumber_ReturnsValueFromChplProductNumber() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",CERT_YEAR__C").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("?5.02.02.3007.A056.01.00.0.180214,");
+        assertNotNull(listingRecords);
+
+        Map<String, Object> edition = handler.handle(headingRecord, listingRecords);
+        assertNull(edition);
     }
 
     @Test

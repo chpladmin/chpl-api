@@ -1,5 +1,8 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -8,22 +11,44 @@ import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.dto.TestingLabDTO;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2
 public class TestingLabNormalizer {
     private TestingLabDAO atlDao;
+    private ChplProductNumberUtil chplProductNumberUtil;
+    private ValidationUtils validationUtils;
 
     @Autowired
-    public TestingLabNormalizer(TestingLabDAO atlDao) {
+    public TestingLabNormalizer(TestingLabDAO atlDao, ChplProductNumberUtil chplProductNumberUtil,
+            ValidationUtils validationUtils) {
         this.atlDao = atlDao;
+        this.chplProductNumberUtil = chplProductNumberUtil;
+        this.validationUtils = validationUtils;
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
         if (listing.getTestingLabs() != null && listing.getTestingLabs().size() > 0) {
             listing.getTestingLabs().stream()
                 .forEach(testingLab -> populateTestingLab(testingLab));
+        } else if (!StringUtils.isEmpty(listing.getChplProductNumber())) {
+            if (validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
+                    ChplProductNumberUtil.ATL_CODE_INDEX,
+                    ChplProductNumberUtil.ATL_CODE_REGEX)) {
+                String atlCodeFromChplProductNumber = chplProductNumberUtil.getAtlCode(listing.getChplProductNumber());
+                TestingLabDTO testingLabDto = atlDao.getByCode(atlCodeFromChplProductNumber);
+                if (testingLabDto != null) {
+                    CertifiedProductTestingLab testingLab = CertifiedProductTestingLab.builder()
+                            .testingLabId(testingLabDto.getId())
+                            .testingLabName(testingLabDto.getName())
+                            .testingLabCode(testingLabDto.getTestingLabCode())
+                            .build();
+                    listing.setTestingLabs(Stream.of(testingLab).collect(Collectors.toList()));
+                }
+            }
         }
     }
 

@@ -11,6 +11,7 @@ import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import lombok.extern.log4j.Log4j2;
 
@@ -18,12 +19,15 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class TestingLabCodeReviewer implements Reviewer {
     private ChplProductNumberUtil chplProductNumberUtil;
+    private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
     public TestingLabCodeReviewer(ChplProductNumberUtil chplProductNumberUtil,
+            ValidationUtils validationUtils,
             ErrorMessageUtil msgUtil) {
         this.chplProductNumberUtil = chplProductNumberUtil;
+        this.validationUtils = validationUtils;
         this.msgUtil = msgUtil;
     }
 
@@ -44,26 +48,32 @@ public class TestingLabCodeReviewer implements Reviewer {
 
         List<CertifiedProductTestingLab> testingLabs = listing.getTestingLabs();
         if (testingLabs != null) {
-            if (!StringUtils.isEmpty(atlCode) && testingLabs.size() > 1
+            if (isValidAtlCode(chplProductNumber) && testingLabs.size() > 1
                     && !atlCode.equals(TestingLab.MULTIPLE_TESTING_LABS_CODE)) {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.atl.codeIsNotForMultiple"));
                 //should it actually do the code fix in here?
                 //I think for edit it would have to because the user can't change it otherwise
                 //but for newly uploaded listings it does not have to do the fix - the user can re-upload.
-            } else if (!StringUtils.isEmpty(atlCode) && testingLabs.size() < 2
+            } else if (isValidAtlCode(chplProductNumber) && testingLabs.size() < 2
                     && atlCode.equals(TestingLab.MULTIPLE_TESTING_LABS_CODE)) {
                 listing.getErrorMessages().add(msgUtil.getMessage("atl.shouldNotBe99"));
-            } else if (!StringUtils.isEmpty(atlCode) && testingLabs.size() == 1) {
+            } else if (isValidAtlCode(chplProductNumber) && testingLabs.size() == 1) {
                 CertifiedProductTestingLab atl = testingLabs.get(0);
                 if (!StringUtils.isEmpty(atl.getTestingLabCode())
                         && !atl.getTestingLabCode().equals(atlCode)) {
                     listing.getErrorMessages().add(msgUtil.getMessage("listing.testingLabMismatch", atlCode, atl.getTestingLabCode()));
                 }
-            } else if (!StringUtils.isEmpty(atlCode) && testingLabs.size() == 0) {
+            } else if (testingLabs.size() == 0 && isValidAtlCode(chplProductNumber)) {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.invalidTestingLabCode", atlCode));
             }
-        } else if (!StringUtils.isEmpty(atlCode) && testingLabs == null) {
+        } else if (testingLabs == null && isValidAtlCode(chplProductNumber)) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.invalidTestingLabCode", atlCode));
         }
+    }
+
+    private boolean isValidAtlCode(String chplProductNumber) {
+        return validationUtils.chplNumberPartIsValid(chplProductNumber,
+                ChplProductNumberUtil.ATL_CODE_INDEX,
+                ChplProductNumberUtil.ATL_CODE_REGEX);
     }
 }

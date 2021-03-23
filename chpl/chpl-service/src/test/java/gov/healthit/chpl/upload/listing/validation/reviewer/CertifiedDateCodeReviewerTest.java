@@ -3,7 +3,6 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.text.ParseException;
 import java.util.Calendar;
 
 import org.junit.Before;
@@ -14,6 +13,7 @@ import org.mockito.Mockito;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 
 public class CertifiedDateCodeReviewerTest {
     private static final String MISMATCHED_CERT_DATE = "The certified date code from the listing %s does not match the certification date of the listing %s.";
@@ -23,9 +23,8 @@ public class CertifiedDateCodeReviewerTest {
 
     @Before
     public void setup() {
-        ChplProductNumberUtil chplProductNumberUtil = new ChplProductNumberUtil();
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
-        reviewer = new CertifiedDateCodeReviewer(chplProductNumberUtil, errorMessageUtil);
+        reviewer = new CertifiedDateCodeReviewer(new ChplProductNumberUtil(), new ValidationUtils(), errorMessageUtil);
     }
 
     @Test
@@ -56,6 +55,22 @@ public class CertifiedDateCodeReviewerTest {
 
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(String.format(MISMATCHED_CERT_DATE, "210101", "210102")));
+    }
+
+    @Test
+    public void review_mismatchedCertDateInvalidChplProductNumberFormat_noError() {
+        Calendar listingCertDate = Calendar.getInstance();
+        listingCertDate.set(2021, 0, 2, 0, 0, 0);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(listingCertDate.getTimeInMillis())
+                .chplProductNumber("15.04.04.2526.WEBe.06.00.1.RT789364")
+                .certificationDateStr(null)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test

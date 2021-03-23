@@ -12,6 +12,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 
 public class DeveloperCodeReviewerTest {
     private static final String CODE_XXXX = "The CHPL Product Number has a new developer code of 'XXXX' but the developer already exists in the system.";
@@ -24,9 +25,8 @@ public class DeveloperCodeReviewerTest {
 
     @Before
     public void setup() {
-        ChplProductNumberUtil chplProductNumberUtil = new ChplProductNumberUtil();
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
-        reviewer = new DeveloperCodeReviewer(chplProductNumberUtil, errorMessageUtil);
+        reviewer = new DeveloperCodeReviewer(new ChplProductNumberUtil(), new ValidationUtils(), errorMessageUtil);
     }
 
     @Test
@@ -178,6 +178,24 @@ public class DeveloperCodeReviewerTest {
 
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(String.format(CODE_MISMATCH, "2526", "1234")));
+    }
+
+    @Test
+    public void review_mismatchedDeveloperCodeInvalidChplProductNumber_noError() {
+        Developer dev = Developer.builder()
+                .developerId(1L)
+                .developerCode("1234")
+                .name("Test")
+                .build();
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.??LJ.WEBe.06.00.1.210101")
+                .developer(dev)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test

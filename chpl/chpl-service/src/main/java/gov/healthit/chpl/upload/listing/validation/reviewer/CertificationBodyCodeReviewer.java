@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import lombok.extern.log4j.Log4j2;
 
@@ -16,12 +17,15 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class CertificationBodyCodeReviewer implements Reviewer {
     private ChplProductNumberUtil chplProductNumberUtil;
+    private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
     public CertificationBodyCodeReviewer(ChplProductNumberUtil chplProductNumberUtil,
+            ValidationUtils validationUtils,
             ErrorMessageUtil msgUtil) {
         this.chplProductNumberUtil = chplProductNumberUtil;
+        this.validationUtils = validationUtils;
         this.msgUtil = msgUtil;
     }
 
@@ -45,11 +49,17 @@ public class CertificationBodyCodeReviewer implements Reviewer {
             Object listingAcbCodeValue = listingAcbMap.get(CertifiedProductSearchDetails.ACB_CODE_KEY);
             if (listingAcbCodeValue != null) {
                 String listingAcbCode = listingAcbCodeValue.toString();
-                if (StringUtils.isNoneEmpty(acbCode, listingAcbCode)
+                if (isValidAcbCode(listing.getChplProductNumber()) && !StringUtils.isEmpty(listingAcbCode)
                         && !acbCode.equals(listingAcbCode)) {
                     listing.getErrorMessages().add(msgUtil.getMessage("listing.certificationBodyMismatch", acbCode, listingAcbCode));
                 }
             }
         }
+    }
+
+    private boolean isValidAcbCode(String chplProductNumber) {
+        return validationUtils.chplNumberPartIsValid(chplProductNumber,
+                ChplProductNumberUtil.ACB_CODE_INDEX,
+                ChplProductNumberUtil.ACB_CODE_REGEX);
     }
 }

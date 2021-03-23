@@ -9,6 +9,7 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import lombok.extern.log4j.Log4j2;
 
@@ -16,12 +17,15 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class DeveloperCodeReviewer implements Reviewer {
     private ChplProductNumberUtil chplProductNumberUtil;
+    private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
     public DeveloperCodeReviewer(ChplProductNumberUtil chplProductNumberUtil,
+            ValidationUtils validationUtils,
             ErrorMessageUtil msgUtil) {
         this.chplProductNumberUtil = chplProductNumberUtil;
+        this.validationUtils = validationUtils;
         this.msgUtil = msgUtil;
     }
 
@@ -41,7 +45,7 @@ public class DeveloperCodeReviewer implements Reviewer {
         }
 
         Developer developer = listing.getDeveloper();
-        if (developer != null && !StringUtils.isEmpty(developerCode)) {
+        if (developer != null && isValidDeveloperCode(listing.getChplProductNumber())) {
             if (DeveloperManager.NEW_DEVELOPER_CODE.equals(developerCode)
                     && developer.getDeveloperId() != null) {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.shouldNotHaveXXXXCode"));
@@ -56,5 +60,11 @@ public class DeveloperCodeReviewer implements Reviewer {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.missingDeveloperCode"));
             }
         }
+    }
+
+    private boolean isValidDeveloperCode(String chplProductNumber) {
+        return validationUtils.chplNumberPartIsValid(chplProductNumber,
+                ChplProductNumberUtil.DEVELOPER_CODE_INDEX,
+                ChplProductNumberUtil.DEVELOPER_CODE_REGEX);
     }
 }

@@ -17,6 +17,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 
 public class CertificationBodyNormalizerTest {
 
@@ -26,7 +27,7 @@ public class CertificationBodyNormalizerTest {
     @Before
     public void setup() {
         acbDao = Mockito.mock(CertificationBodyDAO.class);
-        normalizer = new CertificationBodyNormalizer(new ChplProductNumberUtil(), acbDao);
+        normalizer = new CertificationBodyNormalizer(acbDao, new ChplProductNumberUtil(), new ValidationUtils());
     }
 
     @Test
@@ -281,5 +282,47 @@ public class CertificationBodyNormalizerTest {
         assertNull(MapUtils.getLong(listing.getCertifyingBody(), CertifiedProductSearchDetails.ACB_ID_KEY));
         assertNull(MapUtils.getString(listing.getCertifyingBody(), CertifiedProductSearchDetails.ACB_NAME_KEY));
         assertEquals("Unknown", MapUtils.getString(listing.getCertifyingBody(), CertifiedProductSearchDetails.ACB_CODE_KEY));
+    }
+
+    @Test
+    public void normalize_acbMissingAcbCodeInChplProductNumber_acbFound() throws EntityRetrievalException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.07.04.2663.ABCD.R2.01.0.200511")
+                .build();
+
+        Mockito.when(acbDao.getByCode(ArgumentMatchers.anyString()))
+        .thenReturn(CertificationBodyDTO.builder()
+                .id(1L)
+                .name("Test")
+                .acbCode("04")
+                .build());
+
+        normalizer.normalize(listing);
+
+        assertEquals(1L, MapUtils.getLong(listing.getCertifyingBody(), CertifiedProductSearchDetails.ACB_ID_KEY));
+        assertEquals("Test", MapUtils.getString(listing.getCertifyingBody(), CertifiedProductSearchDetails.ACB_NAME_KEY));
+        assertEquals("04", MapUtils.getString(listing.getCertifyingBody(), CertifiedProductSearchDetails.ACB_CODE_KEY));
+    }
+
+    @Test
+    public void normalize_acbMissingAcbCodeMissingInChplProductNumber_noLookup() throws EntityRetrievalException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.07..2663.ABCD.R2.01.0.200511")
+                .build();
+
+        normalizer.normalize(listing);
+
+        assertNull(listing.getCertifyingBody());
+    }
+
+    @Test
+    public void normalize_acbInvalidAcbCodeMissingInChplProductNumber_noLookup() throws EntityRetrievalException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.07.?M.2663.ABCD.R2.01.0.200511")
+                .build();
+
+        normalizer.normalize(listing);
+
+        assertNull(listing.getCertifyingBody());
     }
 }

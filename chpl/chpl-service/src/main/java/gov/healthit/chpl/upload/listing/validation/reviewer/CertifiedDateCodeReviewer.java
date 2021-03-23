@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import lombok.extern.log4j.Log4j2;
 
@@ -17,12 +18,15 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class CertifiedDateCodeReviewer implements Reviewer {
     private ChplProductNumberUtil chplProductNumberUtil;
+    private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
     public CertifiedDateCodeReviewer(ChplProductNumberUtil chplProductNumberUtil,
+            ValidationUtils validationUtils,
             ErrorMessageUtil msgUtil) {
         this.chplProductNumberUtil = chplProductNumberUtil;
+        this.validationUtils = validationUtils;
         this.msgUtil = msgUtil;
     }
 
@@ -45,10 +49,16 @@ public class CertifiedDateCodeReviewer implements Reviewer {
                 LOGGER.warn("Cannot find certified date code in " + chplProductNumber);
             }
 
-            if (StringUtils.isNoneEmpty(listingCertificationDate, certifiedDateCode)
+            if (isValidCertifiedDateCode(listing.getChplProductNumber()) && !StringUtils.isEmpty(listingCertificationDate)
                     && !listingCertificationDate.equals(certifiedDateCode)) {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.certificationDateMismatch", certifiedDateCode, listingCertificationDate));
             }
         }
+    }
+
+    private boolean isValidCertifiedDateCode(String chplProductNumber) {
+        return validationUtils.chplNumberPartIsValid(chplProductNumber,
+                ChplProductNumberUtil.CERTIFIED_DATE_CODE_INDEX,
+                ChplProductNumberUtil.CERTIFIED_DATE_CODE_REGEX);
     }
 }

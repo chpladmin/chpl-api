@@ -15,6 +15,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 import lombok.extern.log4j.Log4j2;
 
 @Component("certificationEditionUploadHandler")
@@ -22,12 +23,15 @@ import lombok.extern.log4j.Log4j2;
 public class CertificationEditionHandler {
     private ListingUploadHandlerUtil uploadUtil;
     private ChplProductNumberUtil chplProductNumberUtil;
+    private ValidationUtils validationUtils;
 
     @Autowired
     public CertificationEditionHandler(ListingUploadHandlerUtil uploadUtil,
-            ChplProductNumberUtil chplProductNumberUtil) {
+            ChplProductNumberUtil chplProductNumberUtil,
+            ValidationUtils validationUtils) {
         this.uploadUtil = uploadUtil;
         this.chplProductNumberUtil = chplProductNumberUtil;
+        this.validationUtils = validationUtils;
     }
 
     public Map<String, Object> handle(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
@@ -52,7 +56,10 @@ public class CertificationEditionHandler {
         String certificationYear = null;
         try {
             String chplProductNumber = uploadUtil.parseRequiredSingleRowField(Headings.UNIQUE_ID, headingRecord, listingRecords);
-            if (!StringUtils.isEmpty(chplProductNumber)) {
+            if (!StringUtils.isEmpty(chplProductNumber)
+                    && validationUtils.chplNumberPartIsValid(chplProductNumber,
+                            ChplProductNumberUtil.EDITION_CODE_INDEX,
+                            ChplProductNumberUtil.EDITION_CODE_REGEX)) {
                 String editionCode = chplProductNumberUtil.getCertificationEditionCode(chplProductNumber);
                 if (!StringUtils.isEmpty(editionCode)) {
                     if (editionCode.length() == 1) {

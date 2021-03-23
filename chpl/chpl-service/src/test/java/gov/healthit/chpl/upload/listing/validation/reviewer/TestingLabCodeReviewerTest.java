@@ -16,6 +16,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 
 public class TestingLabCodeReviewerTest {
     private static final String ATL_99 = "There is more than one Testing Lab but the ATL code is not '99'.";
@@ -28,9 +29,8 @@ public class TestingLabCodeReviewerTest {
 
     @Before
     public void setup() {
-        ChplProductNumberUtil chplProductNumberUtil = new ChplProductNumberUtil();
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
-        reviewer = new TestingLabCodeReviewer(chplProductNumberUtil, errorMessageUtil);
+        reviewer = new TestingLabCodeReviewer(new ChplProductNumberUtil(), new ValidationUtils(), errorMessageUtil);
     }
 
     @Test
@@ -191,6 +191,23 @@ public class TestingLabCodeReviewerTest {
 
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(String.format(ATL_MISMATCH, "04", "01")));
+    }
+
+    @Test
+    public void review_mismatchedAtlCodeInvalidChplProductNumber_noError() {
+        CertifiedProductTestingLab atl = new CertifiedProductTestingLab();
+        atl.setTestingLabCode("01");
+        List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
+        atls.add(atl);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.R?.04.2526.WEBe.06.00.1.210101")
+                .testingLabs(atls)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test

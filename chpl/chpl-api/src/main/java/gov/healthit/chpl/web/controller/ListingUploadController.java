@@ -111,20 +111,30 @@ public class ListingUploadController {
         }
 
         List<ListingUpload> createdListingUploads = new ArrayList<ListingUpload>();
+        List<ListingUpload> listingsToAdd = new ArrayList<ListingUpload>();
         try {
-            List<ListingUpload> listingsToAdd = listingUploadManager.parseUploadFile(file);
-            for (ListingUpload listingToAdd : listingsToAdd) {
-                ListingUpload created = listingUploadManager.createOrReplaceListingUpload(listingToAdd);
-                createdListingUploads.add(created);
-            }
-        } catch (NullPointerException | IndexOutOfBoundsException | JsonProcessingException
-                | EntityRetrievalException | EntityCreationException ex) {
-            String error = "Error uploading listing(s) from file " + file.getOriginalFilename()
-            + ". Error was: " + ex.getMessage();
-            LOGGER.error(error);
+           listingsToAdd = listingUploadManager.parseUploadFile(file);
+        } catch (AccessDeniedException | ValidationException | NullPointerException | IndexOutOfBoundsException ex) {
+            LOGGER.error("Error uploading listing(s) from file " + file.getOriginalFilename() + ". " + ex.getMessage());
             //send an email that something weird happened
             sendUploadError(file, ex);
-            throw new ValidationException(error);
+            throw new ValidationException(ex.getMessage());
+        }
+
+        List<String> processingMessages = new ArrayList<String>();
+        if (listingsToAdd != null && listingsToAdd.size() > 0) {
+            for (ListingUpload listingToAdd : listingsToAdd) {
+                try {
+                    ListingUpload created = listingUploadManager.createOrReplaceListingUpload(listingToAdd);
+                    createdListingUploads.add(created);
+                } catch (AccessDeniedException | ValidationException | NullPointerException | IndexOutOfBoundsException
+                        | JsonProcessingException | EntityRetrievalException | EntityCreationException ex) {
+                    LOGGER.error("Error uploading listing(s) from file " + file.getOriginalFilename() + ". " + ex.getMessage());
+                    //send an email that something weird happened
+                    sendUploadError(file, ex);
+                    processingMessages.add(ex.getMessage());
+                }
+            }
         }
 
         try {
@@ -135,6 +145,10 @@ public class ListingUploadController {
             }
         } catch (SchedulerException | ValidationException ex) {
             LOGGER.error("Unable to start job to calculate error and warning counts for uploaded listings.", ex);
+        }
+
+        if (processingMessages != null && processingMessages.size() > 0) {
+            throw new ValidationException(processingMessages.stream().collect(Collectors.toSet()));
         }
         return createdListingUploads;
     }

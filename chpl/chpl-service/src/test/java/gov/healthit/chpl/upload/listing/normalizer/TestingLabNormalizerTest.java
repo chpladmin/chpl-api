@@ -17,6 +17,8 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 
 public class TestingLabNormalizerTest {
 
@@ -26,7 +28,7 @@ public class TestingLabNormalizerTest {
     @Before
     public void setup() {
         atlDao = Mockito.mock(TestingLabDAO.class);
-        normalizer = new TestingLabNormalizer(atlDao);
+        normalizer = new TestingLabNormalizer(atlDao, new ChplProductNumberUtil(), new ValidationUtils());
     }
 
     @Test
@@ -229,5 +231,68 @@ public class TestingLabNormalizerTest {
         assertNull(listing.getTestingLabs().get(0).getTestingLabId());
         assertEquals("", listing.getTestingLabs().get(0).getTestingLabName());
         assertEquals("01", listing.getTestingLabs().get(0).getTestingLabCode());
+    }
+
+    @Test
+    public void normalize_atlsEmptyFindByChplProductNumber_lookupByCodeFound() throws EntityRetrievalException {
+        List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.07.04.2663.ABCD.R2.01.0.200511")
+                .testingLabs(atls)
+                .build();
+
+        Mockito.when(atlDao.getByCode(ArgumentMatchers.anyString()))
+        .thenReturn(TestingLabDTO.builder()
+                .id(1L)
+                .name("ICSA")
+                .testingLabCode("07")
+                .build());
+        normalizer.normalize(listing);
+
+        assertEquals(1, listing.getTestingLabs().size());
+        assertEquals(1L, listing.getTestingLabs().get(0).getTestingLabId());
+        assertEquals("ICSA", listing.getTestingLabs().get(0).getTestingLabName());
+        assertEquals("07", listing.getTestingLabs().get(0).getTestingLabCode());
+    }
+
+    @Test
+    public void normalize_atlsEmptyFindByChplProductNumber_lookupByCodeNotFound() throws EntityRetrievalException {
+        List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.07.04.2663.ABCD.R2.01.0.200511")
+                .testingLabs(atls)
+                .build();
+
+        Mockito.when(atlDao.getByCode(ArgumentMatchers.anyString()))
+        .thenReturn(null);
+        normalizer.normalize(listing);
+
+        assertEquals(0, listing.getTestingLabs().size());
+    }
+
+    @Test
+    public void normalize_atlsEmptyAtlCodeEmpty_noLookup() throws EntityRetrievalException {
+        List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15..04.2663.ABCD.R2.01.0.200511")
+                .testingLabs(atls)
+                .build();
+
+        normalizer.normalize(listing);
+
+        assertEquals(0, listing.getTestingLabs().size());
+    }
+
+    @Test
+    public void normalize_atlsEmptyAtlCodeInvalidFormat_noLookup() throws EntityRetrievalException {
+        List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.T?.04.2663.ABCD.R2.01.0.200511")
+                .testingLabs(atls)
+                .build();
+
+        normalizer.normalize(listing);
+
+        assertEquals(0, listing.getTestingLabs().size());
     }
 }

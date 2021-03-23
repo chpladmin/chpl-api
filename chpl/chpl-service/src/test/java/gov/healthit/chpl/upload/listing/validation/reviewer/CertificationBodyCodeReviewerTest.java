@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 
 public class CertificationBodyCodeReviewerTest {
     private static final String MISSING_ACB_CODE = "A Certification Body code must be supplied with the listing.";
@@ -24,9 +25,9 @@ public class CertificationBodyCodeReviewerTest {
 
     @Before
     public void setup() {
-        ChplProductNumberUtil chplProductNumberUtil = new ChplProductNumberUtil();
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
-        reviewer = new CertificationBodyCodeReviewer(chplProductNumberUtil, errorMessageUtil);
+        reviewer = new CertificationBodyCodeReviewer(new ChplProductNumberUtil(), new ValidationUtils(),
+                errorMessageUtil);
     }
 
     @Test
@@ -92,8 +93,22 @@ public class CertificationBodyCodeReviewerTest {
         reviewer.review(listing);
 
         assertEquals(1, listing.getErrorMessages().size());
-        System.out.println(listing.getErrorMessages().iterator().next());
         assertTrue(listing.getErrorMessages().contains(String.format(MISMATCHED_ACBS, "04", "01")));
+    }
+
+    @Test
+    public void review_mismatchedAcbCodeInvalidChplProductNumberFormat_noError() {
+        Map<String, Object> acbMap = new HashMap<String, Object>();
+        acbMap.put(CertifiedProductSearchDetails.ACB_CODE_KEY, "01");
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.R&.2526.WEBe.06.00.1.210101")
+                .certifyingBody(acbMap)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
