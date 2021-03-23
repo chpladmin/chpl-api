@@ -3,10 +3,10 @@ package gov.healthit.chpl.permissions.domains.surveillance.report;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.surveillance.report.QuarterlyReportDAO;
-import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
+import gov.healthit.chpl.surveillance.report.QuarterlyReportDAO;
+import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 
 @Component("surveillanceReportDeleteQuarterlyReportActionPermissions")
 public class DeleteQuarterlyReportActionPermissions extends ActionPermissions {
@@ -20,7 +20,7 @@ public class DeleteQuarterlyReportActionPermissions extends ActionPermissions {
     }
 
     @Override
-    public boolean hasAccess(final Object obj) {
+    public boolean hasAccess(Object obj) {
         if (!(obj instanceof Long)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin()) {

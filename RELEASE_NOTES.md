@@ -1,5 +1,39 @@
 # Release Notes
 
+## Version 29.0.0
+_22 March 2021_
+
+### Breaking Changes
+* Remove developer explanation from direct review data
+
+### Features
+* Add G1-G2 measures to basic API endpoints
+* Generate email when scheduled jobs are added, updated or deleted by a user
+* Allow Test Functionality to be removed for (c)(3) if criterion is removed
+* Add temporary Quartz Job to Fix G1/G2 Cures Criteria Data
+* Enhance the current Summary Statistics report to produce PDF
+* Allow ROLE_ONC_STAFF to access Complaints
+* Allow ROLE_ONC_STAFF to access quarterly surveillance data
+* Add ONC-ACB specific Questionable URL report with filtering
+* Put CHPL Product Number in CMS ID results data
+
+---
+
+## Version 28.0.0
+_8 March 2021_
+
+### Breaking Changes
+* Remove /key/activity endpoints
+
+### Features
+* Update quarterly/annual surveillance reports to have 2019 and 2021+ formats
+* Remove dependency on tables that used to be used for security, but are now obsolete
+* Add v20 upload template parsing to include old b3 criterion
+* Store HTTP Method in API Key Activity table
+* Support edit and display of SVAP Notice URL
+
+---
+
 ## Version 27.2.0
 _22 February 2021_
 

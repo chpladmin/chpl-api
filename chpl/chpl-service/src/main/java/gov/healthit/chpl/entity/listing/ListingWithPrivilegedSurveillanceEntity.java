@@ -15,7 +15,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Where;
 
-import gov.healthit.chpl.entity.surveillance.report.PrivilegedSurveillanceEntity;
+import gov.healthit.chpl.surveillance.report.entity.PrivilegedSurveillanceEntity;
 import lombok.Data;
 import lombok.Singular;
 

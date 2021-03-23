@@ -167,13 +167,10 @@ public class CertifiedProductEntity implements Serializable {
     @Column(name = "rwt_results_check_date", nullable = true)
     private LocalDate rwtResultsCheckDate;
 
+    @Basic(optional = true)
+    @Column(name = "svap_notice_url", nullable = true)
+    private String svapNoticeUrl;
 
-    /**
-     * Constructor taking a given ID.
-     *
-     * @param id
-     *            to set
-     */
     public CertifiedProductEntity(Long id) {
         this.id = id;
     }

@@ -17,7 +17,6 @@ Must Complete Date,"Required if ""CAP Approval Date"" is not null",<MM/DD/YYYY>,
 Was Complete Date,No,<MM/DD/YYYY>,The date that the corrective action was completed
 Non-Conformity Summary,"Required if Direct Review Result = ""Non-Conformity""",<string>,A brief summary describing why the certified product and/or developer was found to be non-conformant
 Non-Conformity Findings,"Required if Direct Review Result = ""Non-Conformity""",<string>,A detailed description of the ONC findings related to the non-conformity
-Developer Explanation,No,<string>,"If available, the developer's explanation of why it agrees or disagrees with the ONC's assessment of the non-conformity and an explanation of why the non-conformity occurred"
 Resolution Description,"Required if Non-conformity Status = ""Closed""",<string>,A detailed description of how the non-conformity was resolved
 Developer-Associated Listings,No,List of CHPL IDs associated with this Direct Review,"List of all of the certified products associated with this direct review, as applicable"
 Non-conformity Last Updated Date,No,<MM/DD/YYYY HH:MM>,The updated date and time in the system of the non-conformity activity

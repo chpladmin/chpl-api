@@ -15,7 +15,7 @@ import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.scheduler.job.urlStatus.UrlType;
+import gov.healthit.chpl.scheduler.job.urlStatus.data.UrlType;
 
 @Repository(value = "certificationResultDetailsDAO")
 public class CertificationResultDetailsDAO extends BaseDAOImpl {
@@ -58,7 +58,7 @@ public class CertificationResultDetailsDAO extends BaseDAOImpl {
         case EXPORT_DOCUMENTATION:
             queryStr += "AND crd.exportDocumentation = :url";
             break;
-        case DOCUMENTATION_URL:
+        case DOCUMENTATION:
             queryStr += "AND crd.documentationUrl = :url";
             break;
         case USE_CASES:

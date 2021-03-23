@@ -2,8 +2,8 @@ package gov.healthit.chpl.permissions.domains.surveillance.report;
 
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dto.surveillance.report.QuarterlyReportDTO;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
+import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 
 @Component("surveillanceReportUpdateQuarterlyReportActionPermissions")
 public class UpdateQuarterlyReportActionPermissions extends ActionPermissions {
@@ -14,7 +14,7 @@ public class UpdateQuarterlyReportActionPermissions extends ActionPermissions {
     }
 
     @Override
-    public boolean hasAccess(final Object obj) {
+    public boolean hasAccess(Object obj) {
         if (!(obj instanceof QuarterlyReportDTO)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin()) {

@@ -328,7 +328,7 @@ public class RealWorldTestingUploadJob implements Job {
         }
 
         private String getStyles() {
-            return env.getProperty("rwt_email_styles");
+            return env.getProperty("email_styles");
         }
     }
 }

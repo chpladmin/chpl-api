@@ -91,6 +91,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
     private String rwtResultsUrl;
     private LocalDate rwtResultsCheckDate;
     private Integer rwtEligibilityYear;
+    private String svapNoticeUrl;
 
     private static final int FOUR_DIGIT_YEAR = 4;
 
@@ -124,7 +125,6 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.sedIntendedUserDescription = entity.getSedIntendedUserDescription();
         this.sedTestingEnd = entity.getSedTestingEnd();
         this.numMeaningfulUse = entity.getMeaningfulUseUsers();
-        this.rwtEligibilityYear = entity.getRwtEligibilityYear();
 
         this.developer = new DeveloperDTO();
         this.developer.setId(entity.getDeveloperId());
@@ -199,6 +199,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.rwtResultsUrl = entity.getRwtResultsUrl();
         this.rwtResultsCheckDate = entity.getRwtResultsCheckDate();
         this.rwtEligibilityYear = entity.getRwtEligibilityYear();
+        this.svapNoticeUrl = entity.getSvapNoticeUrl();
         this.lastModifiedDate = entity.getLastModifiedDate();
 
     }

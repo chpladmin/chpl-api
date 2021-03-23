@@ -1,0 +1,2563 @@
+{
+	"info": {
+		"name": "surveillance-report-controller",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "ROLE _ONC_STAFF",
+			"item": [
+				{
+					"name": "annualSurveillanceReportTests",
+					"item": [
+						{
+							"name": "GET /surveillance-report/annual  - ONC STAFF",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ONC STAFF to get status code 200 on GET annual report request\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect annual report for ONC STAFF to include data for all active ACBs\", function () {\r",
+											"     pm.expect(pm.response.text()).to.include(\"Drummond Group\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"ICSA Labs\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"SLI Compliance\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"UL LLC\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/annual",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"annual"
+									]
+								},
+								"description": "Expect ROLE_ONC_STAFF to have access to all annual surveillance reports"
+							},
+							"response": []
+						},
+						{
+							"name": "GET /surveillance-report/annual/{annualReportId}  - ONC STAFF",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect role ONC STAFF to get status code 200 on request to GET specific annual report\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect annual report for ONC STAFF to include details of requested annual report\", function () {\r",
+											"     pm.expect(pm.response.text()).to.include(\"Drummond Group\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/annual/3",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"annual",
+										"3"
+									]
+								},
+								"description": "Expect ROLE_ONC_STAFF to get details of annual surveillance report for specific year"
+							},
+							"response": []
+						},
+						{
+							"name": "POST /surveillance-report/annual  - ONC STAFF",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ONC STAFF to get 401 unauthorized response on annual surveillance report POST request\", () => {\r",
+											"  pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect ONC STAFF to get access denied error on annual surveillance report create request\", () => {\r",
+											"  pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"acb\":{\"id\":4,\"acbCode\":\"05\",\"name\":\"SLI Compliance\",\"website\":\"http://www.slicompliance.com\",\"address\":{\"addressId\":380,\"line1\":\"4720 Independence Street\",\"line2\":null,\"city\":\"Wheat Ridge\",\"state\":\"CO\",\"zipcode\":\"80033\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null},\"year\":2020}"
+								},
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/annual",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"annual"
+									]
+								},
+								"description": "Expect role ONC_STAFF user to get error on annual surveillance report POST request"
+							},
+							"response": []
+						},
+						{
+							"name": "PUT /surveillance-report/annual  - ONC STAFF",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ONC STAFF to get 401 unauthorized response on annual surveillance report PUT request\", () => {\r",
+											"  pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect ONC STAFF to get access denied error on annual surveillance report edit request\", () => {\r",
+											"  pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"id\":6,\"acb\":{\"id\":4,\"acbCode\":\"05\",\"name\":\"SLI Compliance\",\"website\":\"http://www.slicompliance.com\",\"address\":{\"addressId\":380,\"line1\":\"4720 Independence Street\",\"line2\":null,\"city\":\"Wheat Ridge\",\"state\":\"CO\",\"zipcode\":\"80033\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null},\"year\":2020,\"obstacleSummary\":\"None\",\"priorityChangesFromFindingsSummary\":\"None\"}"
+								},
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/annual",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"annual"
+									]
+								},
+								"description": "Expect role ONC_STAFF user to get error on annual surveillance report PUT request"
+							},
+							"response": []
+						},
+						{
+							"name": "DELETE /surveillance-report/annual/{annualReportId} - ONC STAFF",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ONC STAFF to get 401 unauthorized response on annual surveillance report DELETE request\", () => {\r",
+											"  pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect ONC STAFF user to get access denied error on annual surveillance report delete request\", () => {\r",
+											"  pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/annual/3",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"annual",
+										"3"
+									]
+								},
+								"description": "Expect ROLE ONC_STAFF user to get error on annual surveillance report DELETE request"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "QuarterlySurveillanceReportTests",
+					"item": [
+						{
+							"name": "GET /surveillance-report/quarterly - ONC STAFF",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ONC STAFF to get 200 status code on GET quarterly reports request\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect response for ONC STAFF to include quarterly report data for all active ACBs\", function () {\r",
+											"     pm.expect(pm.response.text()).to.include(\"Drummond Group\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"ICSA Labs\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"SLI Compliance\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"UL LLC\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"Q1\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"Q2\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"Q3\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"Q4\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/quarterly",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"quarterly"
+									]
+								},
+								"description": "Expect ROLE_ONC_STAFF to get all quarterly surveillance reports"
+							},
+							"response": []
+						},
+						{
+							"name": "GET /surveillance-report/quarterly/{quarterlyReportId}  - ONC STAFF",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ONC STAFF to get status code 200 on request to get specific quarterly report\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect response for ONC STAFF to include details of requested quarterly report\", function () {\r",
+											"     pm.expect(pm.response.text()).to.include(\"SLI Compliance\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"Q1\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/quarterly/9",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"quarterly",
+										"9"
+									]
+								},
+								"description": "Expect ROLE_ONC_STAFF to get details of quarterly surveillance report for specific year"
+							},
+							"response": []
+						},
+						{
+							"name": "GET /surveillance-report/quarterly/{quarterlyReportId}/complaints  - ONC STAFF",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ONC STAFF to get status code 200 on request to GET complaints relavnt to a specific quarterly report\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"expect ONC STAFF user to get complaints data relavnt to a specific quarterly report\", () => {\r",
+											"  pm.expect(pm.response.text()).to.include(\"complainantType\");\r",
+											"  pm.expect(pm.response.text()).to.include(\"receivedDate\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/quarterly/3/complaints",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"quarterly",
+										"3",
+										"complaints"
+									]
+								},
+								"description": "Expect ROLE_ONC_STAFF to have acces to view all complaints that are relevant to a specific quarterly report"
+							},
+							"response": []
+						},
+						{
+							"name": "POST /surveillance-report/quarterly - ONC STAFF",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ONC STAFF to get 401 unauthorized response on quarterly surveillance report POST request\", () => {\r",
+											"  pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect ONC STAFF to get access denied error on quarterly surveillance report create request\", () => {\r",
+											"  pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"acb\":{\"id\":4,\"acbCode\":\"05\",\"name\":\"SLI Compliance\",\"website\":\"http://www.slicompliance.com\",\"address\":{\"addressId\":380,\"line1\":\"4720 Independence Street\",\"line2\":null,\"city\":\"Wheat Ridge\",\"state\":\"CO\",\"zipcode\":\"80033\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null},\"year\":2020}"
+								},
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/quarterly",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"quarterly"
+									]
+								},
+								"description": "Expect role ONC_STAFF user to get error on quarterly surveillance report POST request"
+							},
+							"response": []
+						},
+						{
+							"name": "PUT /surveillance-report/quarterly - ONC STAFF",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ONC STAFF to get 401 unauthorized response on quarterly surveillance report PUT request\", () => {\r",
+											"  pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect ONC STAFF to get access denied error on quarterly surveillance report edit request\", () => {\r",
+											"  pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"id\":16,\"acb\":{\"id\":4,\"acbCode\":\"05\",\"name\":\"SLI Compliance\",\"website\":\"http://www.slicompliance.com\",\"address\":{\"addressId\":380,\"line1\":\"4720 Independence Street\",\"line2\":null,\"city\":\"Wheat Ridge\",\"state\":\"CO\",\"zipcode\":\"80033\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null},\"year\":2020,\"quarter\":\"Q1\",\"startDate\":1577836800000,\"endDate\":1585699199999,\"surveillanceActivitiesAndOutcomes\":\"NA\",\"reactiveSummary\":\"NA\",\"prioritizedElementSummary\":\"NA\",\"transparencyDisclosureSummary\":\"SLI performed routine proactive surveillance of developer websites according to our schedule. Any issues related to 170.523(k) were communicated to the developer and were resolved in a timely manner.\"}"
+								},
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/quarterly",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"quarterly"
+									]
+								},
+								"description": "Expect role ONC_STAFF user to get error on quarterly surveillance report PUT request"
+							},
+							"response": []
+						},
+						{
+							"name": "DELETE /surveillance-report/annual/{quarterlyReportId} - ONC STAFF",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ONC STAFF to get 401 unauthorized response on quarterly surveillance report DELETE request\", () => {\r",
+											"  pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect ONC STAFF user to get access denied error on quarterly surveillance report delete request\", () => {\r",
+											"  pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/quarterly/16",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"quarterly",
+										"16"
+									]
+								},
+								"description": "Expect ROLE ONC_STAFF user to get error on quarterly surveillance report DELETE request"
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var ReqBody= {",
+							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")",
+							"    };",
+							"pm.sendRequest({",
+							"    url: pm.environment.get(\"authurl\"),",
+							"    method: \"POST\",",
+							"    header: {",
+							"        \"Content-Type\": \"application/json\",",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")",
+							"    },",
+							"    body: JSON.stringify(ReqBody)",
+							"}, function (err, response) {",
+							"   var jsonData = response.json();",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "ROLE_ONC",
+			"item": [
+				{
+					"name": "annualSurveillanceReportTests",
+					"item": [
+						{
+							"name": "GET /surveillance-report/annual  - ONC",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ONC to get status code 200 on GET annual report request\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect annual report for ONC to include data for all active ACBs\", function () {\r",
+											"     pm.expect(pm.response.text()).to.include(\"Drummond Group\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"ICSA Labs\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"SLI Compliance\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"UL LLC\");     \r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/annual",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"annual"
+									]
+								},
+								"description": "Expect ROLE_ONC to have access to all annual surveillance reports"
+							},
+							"response": []
+						},
+						{
+							"name": "GET /surveillance-report/annual/{annualReportId}  - ONC",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect role ONC to get status code 200 on request to get specific annual report\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect annual report for ONC to include details of requested annual report\", function () {\r",
+											"     pm.expect(pm.response.text()).to.include(\"Drummond Group\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/annual/3",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"annual",
+										"3"
+									]
+								},
+								"description": "Expect ROLE ONC to get details of annual surveillance report for specific year"
+							},
+							"response": []
+						},
+						{
+							"name": "POST /surveillance-report/annual  - ONC",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ONC to get 401 unauthorized response on annual surveillance report POST request\", () => {\r",
+											"  pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect ONC to get access denied error on annual surveillance report POST request\", () => {\r",
+											"  pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"acb\":{\"id\":4,\"acbCode\":\"05\",\"name\":\"SLI Compliance\",\"website\":\"http://www.slicompliance.com\",\"address\":{\"addressId\":380,\"line1\":\"4720 Independence Street\",\"line2\":null,\"city\":\"Wheat Ridge\",\"state\":\"CO\",\"zipcode\":\"80033\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null},\"year\":2020}"
+								},
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/annual",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"annual"
+									]
+								},
+								"description": "Expect role ONC user to get error on annual surveillance report POST request"
+							},
+							"response": []
+						},
+						{
+							"name": "PUT /surveillance-report/annual  - ONC",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ONC to get 401 unauthorized response on annual surveillance report PUT request\", () => {\r",
+											"  pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect ONC to get access denied error on annual surveillance report edit request\", () => {\r",
+											"  pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"id\":6,\"acb\":{\"id\":4,\"acbCode\":\"05\",\"name\":\"SLI Compliance\",\"website\":\"http://www.slicompliance.com\",\"address\":{\"addressId\":380,\"line1\":\"4720 Independence Street\",\"line2\":null,\"city\":\"Wheat Ridge\",\"state\":\"CO\",\"zipcode\":\"80033\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null},\"year\":2020,\"obstacleSummary\":\"None\",\"priorityChangesFromFindingsSummary\":\"None\"}"
+								},
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/annual",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"annual"
+									]
+								},
+								"description": "Expect role ONC user to get error on annual surveillance report PUT request"
+							},
+							"response": []
+						},
+						{
+							"name": "DELETE /surveillance-report/annual/{annualReportId} - ONC",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ONC to get 401 unauthorized response on annual surveillance report DELETE request\", () => {\r",
+											"  pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect ONC user to get access denied error on annual surveillance report delete request\", () => {\r",
+											"  pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/annual/3",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"annual",
+										"3"
+									]
+								},
+								"description": "Expect ROLE ONC user to get error on annual surveillance report DELETE request"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "QuarterlySurveillanceReportTests",
+					"item": [
+						{
+							"name": "GET /surveillance-report/quarterly - ONC",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ONC to get 200 status code on GET quarterly reports request\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect response for ONC to include quarterly report data for all active ACBs\", function () {\r",
+											"     pm.expect(pm.response.text()).to.include(\"Drummond Group\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"ICSA Labs\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"SLI Compliance\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"UL LLC\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"Q1\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"Q2\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"Q3\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"Q4\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/quarterly",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"quarterly"
+									]
+								},
+								"description": "Expect ROLE_ONC to have access to all quarterly surveillance reports"
+							},
+							"response": []
+						},
+						{
+							"name": "GET /surveillance-report/quarterly/{quarterlyReportId}  - ONC",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ONC to get status code 200 on request to get specific quarterly report\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect response for ONC to include details of requested quarterly report\", function () {\r",
+											"     pm.expect(pm.response.text()).to.include(\"SLI Compliance\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"Q1\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/quarterly/9",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"quarterly",
+										"9"
+									]
+								},
+								"description": "Expect ROLE_ONC to get details of quarterly surveillance report for specific year"
+							},
+							"response": []
+						},
+						{
+							"name": "GET /surveillance-report/quarterly/{quarterlyReportId}/complaints  - ONC",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ONC to get status code 200 on request to GET complaint data\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"expect ONC user to get complaints data in response to GET complaints\", () => {\r",
+											"  pm.expect(pm.response.text()).to.include(\"complainantType\");\r",
+											"  pm.expect(pm.response.text()).to.include(\"receivedDate\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/complaints",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"complaints"
+									]
+								},
+								"description": "Expect ROLE_ONC to have acces to view all complaints that are relevant to a specific quarterly report"
+							},
+							"response": []
+						},
+						{
+							"name": "POST /surveillance-report/quarterly - ONC",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ONC to get 401 unauthorized response on quarterly surveillance report POST request\", () => {\r",
+											"  pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect ONC to get access denied error on quarterly surveillance report create request\", () => {\r",
+											"  pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"acb\":{\"id\":4,\"acbCode\":\"05\",\"name\":\"SLI Compliance\",\"website\":\"http://www.slicompliance.com\",\"address\":{\"addressId\":380,\"line1\":\"4720 Independence Street\",\"line2\":null,\"city\":\"Wheat Ridge\",\"state\":\"CO\",\"zipcode\":\"80033\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null},\"year\":2020}"
+								},
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/quarterly",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"quarterly"
+									]
+								},
+								"description": "Expect role ONC user to get error on quarterly surveillance report POST request"
+							},
+							"response": []
+						},
+						{
+							"name": "PUT /surveillance-report/quarterly - ONC",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ONC to get 401 unauthorized response on quarterly surveillance report PUT request\", () => {\r",
+											"  pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect ONC to get access denied error on quarterly surveillance report edit request\", () => {\r",
+											"  pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"id\":16,\"acb\":{\"id\":4,\"acbCode\":\"05\",\"name\":\"SLI Compliance\",\"website\":\"http://www.slicompliance.com\",\"address\":{\"addressId\":380,\"line1\":\"4720 Independence Street\",\"line2\":null,\"city\":\"Wheat Ridge\",\"state\":\"CO\",\"zipcode\":\"80033\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null},\"year\":2020,\"quarter\":\"Q1\",\"startDate\":1577836800000,\"endDate\":1585699199999,\"surveillanceActivitiesAndOutcomes\":\"NA\",\"reactiveSummary\":\"NA\",\"prioritizedElementSummary\":\"NA\",\"transparencyDisclosureSummary\":\"SLI performed routine proactive surveillance of developer websites according to our schedule. Any issues related to 170.523(k) were communicated to the developer and were resolved in a timely manner.\"}"
+								},
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/quarterly",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"quarterly"
+									]
+								},
+								"description": "Expect role ONC user to get error on quarterly surveillance report PUT request"
+							},
+							"response": []
+						},
+						{
+							"name": "DELETE /surveillance-report/quarterly/{quarterlyReportId} - ONC",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ONC to get 401 unauthorized response on quarterly surveillance report DELETE request\", () => {\r",
+											"  pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect ONC user to get access denied error on quarterly surveillance report delete request\", () => {\r",
+											"  pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/quarterly/16",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"quarterly",
+										"16"
+									]
+								},
+								"description": "Expect ROLE ONC user to get error on quarterly surveillance report DELETE request"
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var ReqBody= {",
+							"        userName:pm.environment.get(\"usernameONC\"),password:pm.environment.get(\"passwordONC\")",
+							"    };",
+							"pm.sendRequest({",
+							"    url: pm.environment.get(\"authurl\"),",
+							"    method: \"POST\",",
+							"    header: {",
+							"        \"Content-Type\": \"application/json\",",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")",
+							"    },",
+							"    body: JSON.stringify(ReqBody)",
+							"}, function (err, response) {",
+							"   var jsonData = response.json();",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "ROLE_ADMIN",
+			"item": [
+				{
+					"name": "annualSurveillanceReportTests",
+					"item": [
+						{
+							"name": "GET /surveillance-report/annual  - ADMIN",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ADMIN to get status code 200 on GET annual report request\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect annual report for ADMIN to include data for all active ACBs\", function () {\r",
+											"     pm.expect(pm.response.text()).to.include(\"Drummond Group\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"ICSA Labs\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"SLI Compliance\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"UL LLC\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/annual",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"annual"
+									]
+								},
+								"description": "Expect ROLE_ADMIN to have access to all annual surveillance reports"
+							},
+							"response": []
+						},
+						{
+							"name": "GET /surveillance-report/annual/{annualReportId}  - ADMIN",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ADMIN to get status code 200 on request to get specific annual report\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect annual report for ADMIN to include details of requested annual report\", function () {\r",
+											"     pm.expect(pm.response.text()).to.include(\"Drummond Group\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/annual/3",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"annual",
+										"3"
+									]
+								},
+								"description": "Expect ROLE ADMIN to get details of annual surveillance report for specific year"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "QuarterlySurveillanceReportTests",
+					"item": [
+						{
+							"name": "GET /surveillance-report/quarterly - ADMIN",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ADMIN to get 200 status code on GET quarterly reports request\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect response for ADMIN to include quarterly report data for all active ACBs\", function () {\r",
+											"     pm.expect(pm.response.text()).to.include(\"Drummond Group\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"ICSA Labs\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"SLI Compliance\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"UL LLC\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"Q1\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"Q2\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"Q3\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"Q4\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/quarterly",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"quarterly"
+									]
+								},
+								"description": "Expect ROLE_ADMIN to have access to all quarterly surveillance reports"
+							},
+							"response": []
+						},
+						{
+							"name": "GET /surveillance-report/quarterly/{quarterlyReportId}  - ADMIN",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ADMIN to get status code 200 on request to get specific quarterly report\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect response for ADMIN to include details of requested quarterly report\", function () {\r",
+											"     pm.expect(pm.response.text()).to.include(\"SLI Compliance\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"Q1\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/quarterly/9",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"quarterly",
+										"9"
+									]
+								},
+								"description": "Expect ROLE ADMIN to get details of quarterly surveillance report for specific year"
+							},
+							"response": []
+						},
+						{
+							"name": "GET /surveillance-report/quarterly/{quarterlyReportId}/complaints  - ADMIN",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ADMIN to get status code 200 on request to GET complaint data\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"expect ADMIN user to get complaints data in response to GET complaints\", () => {\r",
+											"  pm.expect(pm.response.text()).to.include(\"complainantType\");\r",
+											"  pm.expect(pm.response.text()).to.include(\"receivedDate\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/complaints",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"complaints"
+									]
+								},
+								"description": "Expect ROLE_ADMIN to have acces to view all complaints that are relevant to a specific quarterly report"
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var ReqBody= {",
+							"        userName:pm.environment.get(\"usernameADMIN\"),password:pm.environment.get(\"passwordADMIN\")",
+							"    };",
+							"pm.sendRequest({",
+							"    url: pm.environment.get(\"authurl\"),",
+							"    method: \"POST\",",
+							"    header: {",
+							"        \"Content-Type\": \"application/json\",",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")",
+							"    },",
+							"    body: JSON.stringify(ReqBody)",
+							"}, function (err, response) {",
+							"   var jsonData = response.json();",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "ROLE_ACB",
+			"item": [
+				{
+					"name": "annualSurveillanceReportTests",
+					"item": [
+						{
+							"name": "GET /surveillance-report/annual  - ACB",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ACB to get status code 200 on GET annual report of their own\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect annual report for ACB to include data for all active ACBs\", function () {\r",
+											"     pm.expect(pm.response.text()).to.include(\"Drummond Group\");     \r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/annual",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"annual"
+									]
+								},
+								"description": "Expect ROLE_ACB to have access to own annual surveillance reports"
+							},
+							"response": []
+						},
+						{
+							"name": "GET /surveillance-report/annual/{annualReportId}  - ACB",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ACB to get status code 200 on request to GET specific annual report\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect annual report for ACB to include details of requested annual report\", function () {\r",
+											"     pm.expect(pm.response.text()).to.include(\"Drummond Group\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/annual/3",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"annual",
+										"3"
+									]
+								},
+								"description": "Expect ROLE_ACB to get details of own annual surveillance report for specific year"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "QuarterlySurveillanceReportTests",
+					"item": [
+						{
+							"name": "GET /surveillance-report/quarterly - ACB",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ACB to get 200 status code on GET own quarterly reports request\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect response for ACB to include quarterly report data for acting ACB\", function () {\r",
+											"     pm.expect(pm.response.text()).to.include(\"Drummond Group\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"Q1\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"Q2\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"Q3\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"Q4\");  \r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/quarterly",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"quarterly"
+									]
+								},
+								"description": "Expect ROLE_ACB to have access to own quarterly surveillance reports"
+							},
+							"response": []
+						},
+						{
+							"name": "GET /surveillance-report/quarterly/quarterlyReportId}  - ACB",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect ACB to get status code 200 on request to get own quarterly report\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect response for ACB to include details of requested quarterly report of their own\", function () {\r",
+											"     pm.expect(pm.response.text()).to.include(\"Drummond Group\");\r",
+											"     pm.expect(pm.response.text()).to.include(\"Q1\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/quarterly/13",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"quarterly",
+										"13"
+									]
+								},
+								"description": "Expect ROLE_ACB to get details of own quarterly surveillance report for specific year"
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var ReqBody= {",
+							"        userName:pm.environment.get(\"usernameACB\"),password:pm.environment.get(\"passwordACB\")",
+							"    };",
+							"pm.sendRequest({",
+							"    url: pm.environment.get(\"authurl\"),",
+							"    method: \"POST\",",
+							"    header: {",
+							"        \"Content-Type\": \"application/json\",",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")",
+							"    },",
+							"    body: JSON.stringify(ReqBody)",
+							"}, function (err, response) {",
+							"   var jsonData = response.json();",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "AnonymousUsers",
+			"item": [
+				{
+					"name": "annualSurveillanceReportTests",
+					"item": [
+						{
+							"name": "GET /surveillance-report/annual  - anonymous",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect anonymous user to get 401 unauthorized response on GET annual surveillance report request\", () => {\r",
+											"  pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect anonymous user to get access denied error on annual surveillance report request\", () => {\r",
+											"  pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/annual",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"annual"
+									]
+								},
+								"description": "Expect anonymous user to get error on annual surveillance reports request"
+							},
+							"response": []
+						},
+						{
+							"name": "POST /surveillance-report/annual  - anonymous",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect anonymous user to get 401 unauthorized response on annual surveillance report POST request\", () => {\r",
+											"  pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect anonymous user to get access denied error on annual surveillance report POST request\", () => {\r",
+											"  pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"acb\":{\"id\":4,\"acbCode\":\"05\",\"name\":\"SLI Compliance\",\"website\":\"http://www.slicompliance.com\",\"address\":{\"addressId\":380,\"line1\":\"4720 Independence Street\",\"line2\":null,\"city\":\"Wheat Ridge\",\"state\":\"CO\",\"zipcode\":\"80033\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null},\"year\":2020}"
+								},
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/annual",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"annual"
+									]
+								},
+								"description": "Expect anonymousu user to get error on annual surveillance report POST request"
+							},
+							"response": []
+						},
+						{
+							"name": "PUT /surveillance-report/annual  - anonymous",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect anonymous user to get 401 unauthorized response on annual surveillance report PUT request\", () => {\r",
+											"  pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect anonymous user to get access denied error on annual surveillance report edit request\", () => {\r",
+											"  pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"id\":6,\"acb\":{\"id\":4,\"acbCode\":\"05\",\"name\":\"SLI Compliance\",\"website\":\"http://www.slicompliance.com\",\"address\":{\"addressId\":380,\"line1\":\"4720 Independence Street\",\"line2\":null,\"city\":\"Wheat Ridge\",\"state\":\"CO\",\"zipcode\":\"80033\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null},\"year\":2020,\"obstacleSummary\":\"None\",\"priorityChangesFromFindingsSummary\":\"None\"}"
+								},
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/annual",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"annual"
+									]
+								},
+								"description": "Expect anonymous user to get error on annual surveillance report PUT request"
+							},
+							"response": []
+						},
+						{
+							"name": "DELETE /surveillance-report/annual/{annualReportId} - anonymous",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect anonymous user to get 401 unauthorized response on annual surveillance report DELETE request\", () => {\r",
+											"  pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect anonymous user to get access denied error on annual surveillance report delete request\", () => {\r",
+											"  pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/annual/9",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"annual",
+										"9"
+									]
+								},
+								"description": "Expect anonymous user to get error on annual surveillance report DELETE request"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "QuarterlySurveillanceReportTests",
+					"item": [
+						{
+							"name": "GET /surveillance-report/quarterly - anonymous",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect anonymous user to get 401 unauthorized response on quarterly surveillance report request\", () => {\r",
+											"  pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect anonymous user to get access denied error on quarterly surveillance report request\", () => {\r",
+											"  pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/quarterly",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"quarterly"
+									]
+								},
+								"description": "Expect anonymous user to get error on quarterly report request"
+							},
+							"response": []
+						},
+						{
+							"name": "POST /surveillance-report/quarterly - anonymous",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect anonymous user to get 401 unauthorized response on quarterly surveillance report POST request\", () => {\r",
+											"  pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect anonymous user to get access denied error on quarterly surveillance report create request\", () => {\r",
+											"  pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"acb\":{\"id\":4,\"acbCode\":\"05\",\"name\":\"SLI Compliance\",\"website\":\"http://www.slicompliance.com\",\"address\":{\"addressId\":380,\"line1\":\"4720 Independence Street\",\"line2\":null,\"city\":\"Wheat Ridge\",\"state\":\"CO\",\"zipcode\":\"80033\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null},\"year\":2020}"
+								},
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/quarterly",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"quarterly"
+									]
+								},
+								"description": "Expect anonymousu user to get error on quarterly surveillance report POST request"
+							},
+							"response": []
+						},
+						{
+							"name": "PUT /surveillance-report/quarterly - anonymous",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect anonymous user to get 401 unauthorized response on quarterly surveillance report PUT request\", () => {\r",
+											"  pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect anonymous user to get access denied error on quarterly surveillance report edit request\", () => {\r",
+											"  pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"id\":16,\"acb\":{\"id\":4,\"acbCode\":\"05\",\"name\":\"SLI Compliance\",\"website\":\"http://www.slicompliance.com\",\"address\":{\"addressId\":380,\"line1\":\"4720 Independence Street\",\"line2\":null,\"city\":\"Wheat Ridge\",\"state\":\"CO\",\"zipcode\":\"80033\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null},\"year\":2020,\"quarter\":\"Q1\",\"startDate\":1577836800000,\"endDate\":1585699199999,\"surveillanceActivitiesAndOutcomes\":\"NA\",\"reactiveSummary\":\"NA\",\"prioritizedElementSummary\":\"NA\",\"transparencyDisclosureSummary\":\"SLI performed routine proactive surveillance of developer websites according to our schedule. Any issues related to 170.523(k) were communicated to the developer and were resolved in a timely manner.\"}"
+								},
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/quarterly ",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"quarterly "
+									]
+								},
+								"description": "Expect anonymous user to get error on quarterly surveillance report PUT request"
+							},
+							"response": []
+						},
+						{
+							"name": "DELETE /surveillance-report/quarterly/{quarterlyReportId} - anonymous",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect anonymous user to get 401 unauthorized response on quarterly surveillance report DELETE request\", () => {\r",
+											"  pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"expect anonymous user to get access denied error on quarterly surveillance report delete request\", () => {\r",
+											"  pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "API-KEY",
+										"type": "text",
+										"value": "{{apiKey}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/quarterly/16",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"quarterly",
+										"16"
+									]
+								},
+								"description": "Expect anonymous user to get error on quarterly surveillance report DELETE request"
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}

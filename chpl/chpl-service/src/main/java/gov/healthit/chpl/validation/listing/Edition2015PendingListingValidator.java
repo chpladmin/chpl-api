@@ -32,16 +32,11 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.PrivacyA
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.RequiredAndRelatedCriteriaReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.SedG32015Reviewer;
+import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.SvapReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.TestFunctionality2015Reviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.TestFunctionalityAllowedByRoleReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.edition2015.TestTool2015Reviewer;
 
-/**
- * Validation interface for 2015 listings in the pending stage of upload to the CHPL.
- *
- * @author kekey
- *
- */
 @Component
 public class Edition2015PendingListingValidator extends PendingValidator {
     @Autowired
@@ -152,6 +147,10 @@ public class Edition2015PendingListingValidator extends PendingValidator {
     @Qualifier("pendingMeasureValidityReviewer")
     private MeasureValidityReviewer measureReviewer;
 
+    @Autowired
+    @Qualifier("pendingSvapReviewer")
+    private SvapReviewer svapReviewer;
+
     private List<Reviewer> reviewers;
 
     @Override
@@ -185,6 +184,7 @@ public class Edition2015PendingListingValidator extends PendingValidator {
             reviewers.add(testStandardReviewer);
             reviewers.add(gapAllowedReviewer);
             reviewers.add(measureReviewer);
+            reviewers.add(svapReviewer);
         }
         return reviewers;
     }

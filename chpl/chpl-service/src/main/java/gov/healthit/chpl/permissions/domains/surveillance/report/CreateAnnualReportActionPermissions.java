@@ -2,8 +2,8 @@ package gov.healthit.chpl.permissions.domains.surveillance.report;
 
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dto.surveillance.report.AnnualReportDTO;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
+import gov.healthit.chpl.surveillance.report.dto.AnnualReportDTO;
 
 @Component("surveillanceReportCreateAnnualReportActionPermissions")
 public class CreateAnnualReportActionPermissions extends ActionPermissions {
@@ -14,7 +14,7 @@ public class CreateAnnualReportActionPermissions extends ActionPermissions {
     }
 
     @Override
-    public boolean hasAccess(final Object obj) {
+    public boolean hasAccess(Object obj) {
         if (!(obj instanceof AnnualReportDTO)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin()) {
