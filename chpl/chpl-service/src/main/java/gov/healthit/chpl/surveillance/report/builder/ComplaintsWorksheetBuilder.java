@@ -69,7 +69,7 @@ public class ComplaintsWorksheetBuilder {
     private static final int COL_COMPLAINT_STATUS = 18;
     private static final int COL_FLAGGED_FOR_ONC = 19;
     private static final int[] HIDDEN_COLS = {
-            COL_DEVELOPER, COL_PRODUCT, COL_VERSION, COL_FLAGGED_FOR_ONC
+            COL_DEVELOPER, COL_PRODUCT, COL_VERSION
     };
 
     private ComplaintManager complaintManager;
@@ -239,7 +239,7 @@ public class ComplaintsWorksheetBuilder {
         addHeadingCell(workbook, row, COL_DEVELOPER_CONTACTED, "Developer Contacted");
         addHeadingCell(workbook, row, COL_ATL_CONTACTED, "ONC-ATL Contacted");
         addHeadingCell(workbook, row, COL_COMPLAINT_STATUS, "Complaint Status");
-        addHeadingCell(workbook, row, COL_FLAGGED_FOR_ONC, "Flag for ONC Review");
+        addHeadingCell(workbook, row, COL_FLAGGED_FOR_ONC, "Informed ONC per §170.523(s)");
         return 1;
     }
 
