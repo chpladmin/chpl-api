@@ -14,9 +14,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -44,12 +46,6 @@ public class CertificationBodyDTO implements Serializable {
 
     public CertificationBodyDTO(final CertificationBody domain) {
         BeanUtils.copyProperties(domain, this);
-    }
-
-    @Override
-    public String toString() {
-        return "CertificationBodyDTO [id=" + id + ", acbCode=" + acbCode + ", name=" + name + ", website=" + website
-                + ", address=" + address + ", retired=" + retired + ", retirementDate=" + retirementDate + "]";
     }
 
     @Override

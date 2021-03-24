@@ -3,7 +3,6 @@ package gov.healthit.chpl.upload.listing.handler;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -18,7 +17,6 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
-import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -371,122 +369,6 @@ public class ListingDetailsUploadHandlerTest {
         CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
         assertNotNull(listing);
         assertNull(listing.getTransparencyAttestationUrl());
-    }
-
-    @Test
-    public void buildListing_K2Attestation0Exists_ReturnsNegative() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",170.523(k)(2) ATTESTATION").get(0);
-        assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",0");
-        assertNotNull(listingRecords);
-
-        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
-        assertNotNull(listing);
-        assertNotNull(listing.getTransparencyAttestation());
-        assertTrue(listing.getTransparencyAttestation().getRemoved());
-        assertEquals(AttestationType.Negative.name(), listing.getTransparencyAttestation().getTransparencyAttestation());
-    }
-
-    @Test
-    public void buildListing_K2Attestation1Exists_ReturnsAffirmative() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",170.523(k)(2) ATTESTATION").get(0);
-        assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",1");
-        assertNotNull(listingRecords);
-
-        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
-        assertNotNull(listing);
-        assertNotNull(listing.getTransparencyAttestation());
-        assertTrue(listing.getTransparencyAttestation().getRemoved());
-        assertEquals(AttestationType.Affirmative.name(), listing.getTransparencyAttestation().getTransparencyAttestation());
-    }
-
-    @Test
-    public void buildListing_K2Attestation2Exists_ReturnsNotApplicable() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",170.523(k)(2) ATTESTATION").get(0);
-        assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",2");
-        assertNotNull(listingRecords);
-
-        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
-        assertNotNull(listing);
-        assertNotNull(listing.getTransparencyAttestation());
-        assertTrue(listing.getTransparencyAttestation().getRemoved());
-        assertEquals(AttestationType.NA.name(), listing.getTransparencyAttestation().getTransparencyAttestation());
-    }
-
-    @Test
-    public void buildListing_K2Attestation2WithWhitespace_ReturnsNotApplicable() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",170.523(k)(2) ATTESTATION").get(0);
-        assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ", 2 ");
-        assertNotNull(listingRecords);
-
-        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
-        assertNotNull(listing);
-        assertNotNull(listing.getTransparencyAttestation());
-        assertTrue(listing.getTransparencyAttestation().getRemoved());
-        assertEquals(AttestationType.NA.name(), listing.getTransparencyAttestation().getTransparencyAttestation());
-    }
-
-    @Test
-    public void buildListing_K2AttestationNegativeValue_ReturnsNull() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",170.523(k)(2) ATTESTATION").get(0);
-        assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",-1");
-        assertNotNull(listingRecords);
-
-        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
-        assertNotNull(listing);
-        assertNull(listing.getTransparencyAttestation());
-    }
-
-    @Test
-    public void buildListing_K2AttestationUnexpectedIntegerValue_ReturnsNull() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",170.523(k)(2) ATTESTATION").get(0);
-        assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",9");
-        assertNotNull(listingRecords);
-
-        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
-        assertNotNull(listing);
-        assertNull(listing.getTransparencyAttestation());
-    }
-
-    @Test
-    public void buildListing_K2AttestationUnexpectedStringValue_ReturnsNull() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",170.523(k)(2) ATTESTATION").get(0);
-        assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",VAL");
-        assertNotNull(listingRecords);
-
-        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
-        assertNotNull(listing);
-        assertNull(listing.getTransparencyAttestation());
-    }
-
-    @Test
-    public void buildListing_K2AttestationMissing_ReturnsNullAttestation() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",170.523(k)(2) ATTESTATION").get(0);
-        assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",");
-        assertNotNull(listingRecords);
-
-        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
-        assertNotNull(listing);
-        assertNull(listing.getTransparencyAttestation());
-    }
-
-    @Test
-    public void buildListing_K2AttestationNoColumn_ReturnsNull() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
-        assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN);
-        assertNotNull(listingRecords);
-
-        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
-        assertNotNull(listing);
-        assertNull(listing.getTransparencyAttestation());
     }
 
     @Test

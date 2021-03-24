@@ -10,12 +10,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class TestingLabDTO implements Serializable {
     private static final long serialVersionUID = 3772645398248735019L;
     private Long id;
@@ -38,12 +40,5 @@ public class TestingLabDTO implements Serializable {
         this.accredidationNumber = entity.getAccredidationNumber();
         this.retired = entity.getRetired();
         this.retirementDate = entity.getRetirementDate();
-    }
-
-    @Override
-    public String toString() {
-        return "TestingLabDTO [id=" + id + ", testingLabCode=" + testingLabCode + ", address=" + address + ", name="
-                + name + ", website=" + website + ", accredidationNumber=" + accredidationNumber + ", retired="
-                + retired + ", retirementDate=" + retirementDate + "]";
     }
 }

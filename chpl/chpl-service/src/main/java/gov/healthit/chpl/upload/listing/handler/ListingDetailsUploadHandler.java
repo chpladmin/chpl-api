@@ -15,7 +15,6 @@ import javax.validation.ValidationException;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -25,9 +24,7 @@ import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.domain.TransparencyAttestation;
 import gov.healthit.chpl.domain.UcdProcess;
-import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 
@@ -90,7 +87,6 @@ public class ListingDetailsUploadHandler {
                 .version(parseVersion(headingRecord, listingRecords))
                 .certificationEdition(editionHandler.handle(headingRecord, listingRecords))
                 .transparencyAttestationUrl(parseTransparencyAttestationUrl(headingRecord, listingRecords))
-                .transparencyAttestation(parseTransparencyAttestation(headingRecord, listingRecords))
                 .targetedUsers(targetedUserUploadHandler.handle(headingRecord, listingRecords))
                 .accessibilityStandards(accessibilityStandardsHandler.handle(headingRecord, listingRecords))
                 .qmsStandards(qmsHandler.handle(headingRecord, listingRecords))
@@ -222,30 +218,6 @@ public class ListingDetailsUploadHandler {
 
     private String parseTransparencyAttestationUrl(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         return uploadUtil.parseSingleRowField(Headings.K_1_URL, headingRecord, listingRecords);
-    }
-
-    private TransparencyAttestation parseTransparencyAttestation(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        TransparencyAttestation attestation = null;
-        String k2AttestationStr = uploadUtil.parseSingleRowField(Headings.K2_ATTESTATION, headingRecord, listingRecords);
-        if (!StringUtils.isEmpty(k2AttestationStr)) {
-            if ("0".equals(k2AttestationStr)) {
-                attestation = TransparencyAttestation.builder()
-                        .transparencyAttestation(AttestationType.Negative.name())
-                        .removed(true)
-                        .build();
-            } else if ("1".equals(k2AttestationStr)) {
-                attestation = TransparencyAttestation.builder()
-                        .transparencyAttestation(AttestationType.Affirmative.name())
-                        .removed(true)
-                        .build();
-            } else if ("2".equals(k2AttestationStr)) {
-                attestation = TransparencyAttestation.builder()
-                        .transparencyAttestation(AttestationType.NA.name())
-                        .removed(true)
-                        .build();
-            }
-        }
-        return attestation;
     }
 
     private String parseSedReportLocationUrl(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
