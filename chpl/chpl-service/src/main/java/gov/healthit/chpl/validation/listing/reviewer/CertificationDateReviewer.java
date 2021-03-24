@@ -24,7 +24,6 @@ public class CertificationDateReviewer implements Reviewer {
         }
 
         if (listing.getCertificationDate() != null && listing.getCertificationDate() > System.currentTimeMillis()) {
-            //TODO: print out the certification date
             listing.getErrorMessages().add(msgUtil.getMessage("listing.futureCertificationDate"));
         }
     }
