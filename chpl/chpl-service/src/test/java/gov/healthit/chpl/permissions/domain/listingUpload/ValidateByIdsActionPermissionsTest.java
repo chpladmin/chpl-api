@@ -41,7 +41,7 @@ public class ValidateByIdsActionPermissionsTest extends ActionPermissionsBaseTes
     @Test
     public void hasAccess_Onc() throws Exception {
         setupForOncUser(resourcePermissions);
-        assertTrue(permissions.hasAccess());
+        assertFalse(permissions.hasAccess());
         assertFalse(permissions.hasAccess(1L));
     }
 

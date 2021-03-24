@@ -53,7 +53,7 @@ public class GetByIdActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Onc() throws Exception {
         setupForOncUser(resourcePermissions);
         assertFalse(permissions.hasAccess());
-        assertTrue(permissions.hasAccess(1L));
+        assertFalse(permissions.hasAccess(1L));
     }
 
     @Override
