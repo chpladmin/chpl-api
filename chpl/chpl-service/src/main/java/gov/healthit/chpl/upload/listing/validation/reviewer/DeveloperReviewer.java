@@ -81,7 +81,7 @@ public class DeveloperReviewer implements Reviewer {
             } catch (Exception ex) {
             }
             if (userEnteredSelfDeveloper != null && !userEnteredSelfDeveloper.equals(developer.getSelfDeveloper())) {
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "self-developer", developer.getUserEnteredSelfDeveloper(), developer.getSelfDeveloper()+""));
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "self-developer", developer.getUserEnteredSelfDeveloper(), developer.getSelfDeveloper() + ""));
             }
         }
         if (developer.getUserEnteredAddress() != null && developer.getAddress() != null) {
