@@ -185,7 +185,9 @@ public class DirectReviewSearchService {
                 && !StringUtils.isEmpty(listingStatusEvents.get(i).getStatus().getName()))
             .filter(i -> activeStatuses.contains(listingStatusEvents.get(i).getStatus().getName()))
             .mapToObj(i -> new DateRange(new Date(listingStatusEvents.get(i).getEventDate()),
-                    i < (listingStatusEvents.size() - 1) ? new Date(listingStatusEvents.get(i + 1).getEventDate()) : new Date()))
+                    i < (listingStatusEvents.size() - 1) ? new Date(listingStatusEvents.get(i + 1).getEventDate())
+                            //Math.max here to handle the case where status is a future date
+                            : new Date(Math.max(System.currentTimeMillis(), listingStatusEvents.get(i).getEventDate()))))
             .collect(Collectors.toList());
     }
 
