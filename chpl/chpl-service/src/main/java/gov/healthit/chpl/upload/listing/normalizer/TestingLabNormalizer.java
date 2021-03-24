@@ -31,59 +31,98 @@ public class TestingLabNormalizer {
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
-        if (listing.getTestingLabs() != null && listing.getTestingLabs().size() > 0) {
+        if (doesListingHaveTestingLabs(listing)) {
+            //Update each ATL in the listing with valid data
             listing.getTestingLabs().stream()
                 .forEach(testingLab -> populateTestingLab(testingLab));
-        } else if (!StringUtils.isEmpty(listing.getChplProductNumber())) {
-            if (validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
-                    ChplProductNumberUtil.ATL_CODE_INDEX,
-                    ChplProductNumberUtil.ATL_CODE_REGEX)) {
-                String atlCodeFromChplProductNumber = chplProductNumberUtil.getAtlCode(listing.getChplProductNumber());
-                TestingLabDTO testingLabDto = atlDao.getByCode(atlCodeFromChplProductNumber);
-                if (testingLabDto != null) {
-                    CertifiedProductTestingLab testingLab = CertifiedProductTestingLab.builder()
-                            .testingLabId(testingLabDto.getId())
-                            .testingLabName(testingLabDto.getName())
-                            .testingLabCode(testingLabDto.getTestingLabCode())
-                            .build();
-                    listing.setTestingLabs(Stream.of(testingLab).collect(Collectors.toList()));
-                }
-            }
+        } else if (isTestingLabPortionOfChplProductNumberValid(listing)) {
+            updateTestingLabFromChplProductNumber(listing);
         }
     }
 
-    private void populateTestingLab(CertifiedProductTestingLab testingLab) {
-        if (testingLab == null) {
-            return;
-        }
+    private CertifiedProductSearchDetails updateTestingLabFromChplProductNumber(CertifiedProductSearchDetails listing) {
+        String atlCodeFromChplProductNumber = chplProductNumberUtil.getAtlCode(listing.getChplProductNumber());
+        TestingLabDTO testingLabDto = atlDao.getByCode(atlCodeFromChplProductNumber);
 
-        if (testingLab.getTestingLabId() == null && !StringUtils.isEmpty(testingLab.getTestingLabName())) {
-            TestingLabDTO testingLabDto = atlDao.getByName(testingLab.getTestingLabName());
-            if (testingLabDto != null) {
-                testingLab.setTestingLabId(testingLabDto.getId());
-                testingLab.setTestingLabName(testingLabDto.getName());
-                testingLab.setTestingLabCode(testingLabDto.getTestingLabCode());
-            }
-        } else if (testingLab.getTestingLabId() == null
-                && !StringUtils.isEmpty(testingLab.getTestingLabCode())) {
-            TestingLabDTO testingLabDto = atlDao.getByCode(testingLab.getTestingLabCode());
-            if (testingLabDto != null) {
-                testingLab.setTestingLabId(testingLabDto.getId());
-                testingLab.setTestingLabName(testingLabDto.getName());
-                testingLab.setTestingLabCode(testingLabDto.getTestingLabCode());
-            }
-        } else if (testingLab.getTestingLabId() != null
-                && (StringUtils.isEmpty(testingLab.getTestingLabName()) || StringUtils.isEmpty(testingLab.getTestingLabCode()))) {
-            TestingLabDTO testingLabDto = null;
-            try {
-                testingLabDto = atlDao.getById(testingLab.getTestingLabId());
-            } catch (Exception ex) {
-                LOGGER.warn("Could not find Testing Lab with ID " + testingLab.getTestingLabId());
-            }
-            if (testingLabDto != null) {
-                testingLab.setTestingLabName(testingLabDto.getName());
-                testingLab.setTestingLabCode(testingLabDto.getTestingLabCode());
-            }
+        if (testingLabDto != null) {
+            CertifiedProductTestingLab testingLab = CertifiedProductTestingLab.builder()
+                    .testingLabId(testingLabDto.getId())
+                    .testingLabName(testingLabDto.getName())
+                    .testingLabCode(testingLabDto.getTestingLabCode())
+                    .build();
+            listing.setTestingLabs(Stream.of(testingLab).collect(Collectors.toList()));
         }
+        return listing;
+    }
+
+    private CertifiedProductTestingLab populateTestingLab(CertifiedProductTestingLab testingLab) {
+        if (testingLab == null) {
+            return testingLab;
+        } else if (doesTestingLabNameExist(testingLab)) {
+            return updateTestingLabBasedOnName(testingLab);
+        } else if (doesTestingLabCodeExist(testingLab)) {
+            return updateTestingLabBasedOnCode(testingLab);
+        } else if (doesTestingLabIdExist(testingLab)) {
+            return updateTestingLabBasedOnId(testingLab);
+        } else {
+            return testingLab;
+        }
+    }
+
+    private Boolean doesTestingLabNameExist(CertifiedProductTestingLab testingLab) {
+        return testingLab.getTestingLabId() == null && !StringUtils.isEmpty(testingLab.getTestingLabName());
+    }
+
+    private Boolean doesTestingLabCodeExist(CertifiedProductTestingLab testingLab) {
+        return testingLab.getTestingLabId() == null && !StringUtils.isEmpty(testingLab.getTestingLabCode());
+    }
+
+    private Boolean doesTestingLabIdExist(CertifiedProductTestingLab testingLab) {
+        return testingLab.getTestingLabId() != null
+                && (StringUtils.isEmpty(testingLab.getTestingLabName())
+                        || StringUtils.isEmpty(testingLab.getTestingLabCode()));
+    }
+
+    private CertifiedProductTestingLab updateTestingLabBasedOnName(CertifiedProductTestingLab testingLab) {
+        TestingLabDTO testingLabDto = atlDao.getByName(testingLab.getTestingLabName());
+        return updateTestingLabBasedOnTestingLabDto(testingLab, testingLabDto);
+    }
+
+    private CertifiedProductTestingLab updateTestingLabBasedOnCode(CertifiedProductTestingLab testingLab) {
+        TestingLabDTO testingLabDto = atlDao.getByCode(testingLab.getTestingLabCode());
+        return updateTestingLabBasedOnTestingLabDto(testingLab, testingLabDto);
+    }
+
+    private CertifiedProductTestingLab updateTestingLabBasedOnId(CertifiedProductTestingLab testingLab) {
+        TestingLabDTO testingLabDto = null;
+        try {
+            testingLabDto = atlDao.getById(testingLab.getTestingLabId());
+        } catch (Exception ex) {
+            LOGGER.warn("Could not find Testing Lab with ID " + testingLab.getTestingLabId());
+        }
+        if (testingLabDto != null) {
+            testingLab.setTestingLabName(testingLabDto.getName());
+            testingLab.setTestingLabCode(testingLabDto.getTestingLabCode());
+        }
+        return testingLab;
+    }
+
+    private CertifiedProductTestingLab updateTestingLabBasedOnTestingLabDto(CertifiedProductTestingLab testingLab, TestingLabDTO testingLabDto) {
+        if (testingLabDto != null) {
+            testingLab.setTestingLabId(testingLabDto.getId());
+            testingLab.setTestingLabName(testingLabDto.getName());
+            testingLab.setTestingLabCode(testingLabDto.getTestingLabCode());
+        }
+        return testingLab;
+    }
+
+    private Boolean isTestingLabPortionOfChplProductNumberValid(CertifiedProductSearchDetails listing) {
+        return !StringUtils.isEmpty(listing.getChplProductNumber())
+                && validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(), ChplProductNumberUtil.ATL_CODE_INDEX, ChplProductNumberUtil.ATL_CODE_REGEX);
+    }
+
+    private Boolean doesListingHaveTestingLabs(CertifiedProductSearchDetails listing) {
+        return listing.getTestingLabs() != null
+                && listing.getTestingLabs().size() > 0;
     }
 }
