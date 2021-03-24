@@ -40,6 +40,16 @@ public class TestingLabNormalizer {
         }
     }
 
+    private Boolean doesListingHaveTestingLabs(CertifiedProductSearchDetails listing) {
+        return listing.getTestingLabs() != null
+                && listing.getTestingLabs().size() > 0;
+    }
+
+    private Boolean isTestingLabPortionOfChplProductNumberValid(CertifiedProductSearchDetails listing) {
+        return !StringUtils.isEmpty(listing.getChplProductNumber())
+                && validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(), ChplProductNumberUtil.ATL_CODE_INDEX, ChplProductNumberUtil.ATL_CODE_REGEX);
+    }
+
     private CertifiedProductSearchDetails updateTestingLabFromChplProductNumber(CertifiedProductSearchDetails listing) {
         String atlCodeFromChplProductNumber = chplProductNumberUtil.getAtlCode(listing.getChplProductNumber());
         TestingLabDTO testingLabDto = atlDao.getByCode(atlCodeFromChplProductNumber);
@@ -116,13 +126,4 @@ public class TestingLabNormalizer {
         return testingLab;
     }
 
-    private Boolean isTestingLabPortionOfChplProductNumberValid(CertifiedProductSearchDetails listing) {
-        return !StringUtils.isEmpty(listing.getChplProductNumber())
-                && validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(), ChplProductNumberUtil.ATL_CODE_INDEX, ChplProductNumberUtil.ATL_CODE_REGEX);
-    }
-
-    private Boolean doesListingHaveTestingLabs(CertifiedProductSearchDetails listing) {
-        return listing.getTestingLabs() != null
-                && listing.getTestingLabs().size() > 0;
-    }
 }
