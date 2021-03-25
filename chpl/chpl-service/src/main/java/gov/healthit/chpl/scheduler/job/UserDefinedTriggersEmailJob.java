@@ -131,20 +131,11 @@ public class UserDefinedTriggersEmailJob extends QuartzJob {
             return "";
         }
 
-        //get a predefined instance
         CronDefinition cronDefinition = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
-
-        //create a parser based on provided definition
         CronParser parser = new CronParser(cronDefinition);
         Cron quartzCron = parser.parse(quartzCronString);
-
-        //create a descriptor for a specific Locale
         CronDescriptor descriptor = CronDescriptor.instance(Locale.US);
-
-        //parse some expression and ask descriptor for description
-        String description = descriptor.describe(quartzCron);
-        //description will be: "every 45 seconds"
-        return description;
+        return descriptor.describe(quartzCron);
     }
 
     private List<String> getHeaderRow() {
