@@ -34,6 +34,7 @@ import com.cronutils.parser.CronParser;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -149,17 +150,6 @@ public class UserDefinedTriggersEmailJob extends QuartzJob {
         return row;
     }
 
-    private List<String> getFooterRow() {
-        List<String> row = new ArrayList<String>();
-        row.add("");
-        row.add("");
-        row.add("");
-        row.add(env.getProperty("userTriggersReport.cronDescriptionUrl"));
-        row.add("");
-        row.add("");
-        return row;
-    }
-
     private void sendEmail(JobExecutionContext jobContext, List<List<String>> csvRows)
             throws MessagingException {
         LOGGER.info("Sending email to {} with contents {} and a total of {} user triggers",
@@ -212,7 +202,6 @@ public class UserDefinedTriggersEmailJob extends QuartzJob {
                 for (List<String> rowValue : rows) {
                     csvPrinter.printRecord(rowValue);
                 }
-                csvPrinter.printRecord(getFooterRow());
             } catch (IOException e) {
                 LOGGER.error(e.getMessage(), e);
             }
@@ -233,7 +222,7 @@ public class UserDefinedTriggersEmailJob extends QuartzJob {
     private void setSecurityContext() {
         JWTAuthenticatedUser adminUser = new JWTAuthenticatedUser();
         adminUser.setFullName("Administrator");
-        adminUser.setId(-2L);
+        adminUser.setId(User.ADMIN_USER_ID);
         adminUser.setFriendlyName("Admin");
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
