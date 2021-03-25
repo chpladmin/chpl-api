@@ -5,10 +5,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -25,13 +25,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import com.cronutils.descriptor.CronDescriptor;
-import com.cronutils.model.Cron;
-import com.cronutils.model.CronType;
-import com.cronutils.model.definition.CronDefinition;
-import com.cronutils.model.definition.CronDefinitionBuilder;
-import com.cronutils.parser.CronParser;
-
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
@@ -41,6 +34,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.util.EmailBuilder;
 import lombok.extern.log4j.Log4j2;
+import net.redhogs.cronparser.CronExpressionDescriptor;
 
 @Log4j2(topic = "userDefinedTriggersEmailJobLogger")
 public class UserDefinedTriggersEmailJob extends QuartzJob {
@@ -132,11 +126,13 @@ public class UserDefinedTriggersEmailJob extends QuartzJob {
             return "";
         }
 
-        CronDefinition cronDefinition = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
-        CronParser parser = new CronParser(cronDefinition);
-        Cron quartzCron = parser.parse(quartzCronString);
-        CronDescriptor descriptor = CronDescriptor.instance(Locale.US);
-        return descriptor.describe(quartzCron);
+        String parsedExpression = "";
+        try {
+            parsedExpression = CronExpressionDescriptor.getDescription(quartzCronString);
+        } catch (ParseException ex) {
+            LOGGER.error("Unable to parse " + quartzCronString + " into a readable description.", ex);
+        }
+        return parsedExpression;
     }
 
     private List<String> getHeaderRow() {

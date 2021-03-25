@@ -381,9 +381,9 @@
 
         <!-- Converting cron expressions into readable text -->
         <dependency>
-            <groupId>com.cronutils</groupId>
-            <artifactId>cron-utils</artifactId>
-            <version>9.1.3</version>
+            <groupId>net.redhogs.cronparser</groupId>
+            <artifactId>cron-parser-spring</artifactId>
+            <version>3.5</version>
         </dependency>
 
         <!-- iText for PDF Creation -->
