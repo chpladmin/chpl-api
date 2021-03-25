@@ -74,7 +74,7 @@ public class DirectReviewDataCreator extends StatisticsDataCreator  {
         if (directReviewSearchService.getDirectReviewsAvailable()) {
         return directReviewSearchService.getAll().stream()
                 .flatMap(dr -> dr.getNonConformities().stream())
-                .filter(nc -> nc.getNonConformityStatus().equals(DirectReviewNonConformity.STATUS_OPEN))
+                .filter(nc -> nc.getNonConformityStatus().equalsIgnoreCase(DirectReviewNonConformity.STATUS_OPEN))
                 .count();
         } else {
             return null;
@@ -85,7 +85,7 @@ public class DirectReviewDataCreator extends StatisticsDataCreator  {
         if (directReviewSearchService.getDirectReviewsAvailable()) {
             return directReviewSearchService.getAll().stream()
                     .flatMap(dr -> dr.getNonConformities().stream())
-                    .filter(nc -> !nc.getNonConformityStatus().equals(DirectReviewNonConformity.STATUS_CLOSED))
+                    .filter(nc -> nc.getNonConformityStatus().equalsIgnoreCase(DirectReviewNonConformity.STATUS_CLOSED))
                     .count();
         } else {
             return null;
