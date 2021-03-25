@@ -49,7 +49,7 @@ public class SurveillanceSummaryStatisticsSectionPdf extends SummaryStatisticsSe
                 previousEmailStatistics.getSurveillanceAvgTimeToClose()),
                 NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
 
-        table = addTableRow(table, createDataForRow("2. Total # of Surveillance Non-comformities",
+        table = addTableRow(table, createDataForRow("2. Total # of Surveillance Non-conformities",
                 recentEmailStatistics.getNonconfStatusAllTotal(),
                 previousEmailStatistics.getNonconfStatusAllTotal()), true);
 
