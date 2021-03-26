@@ -332,7 +332,7 @@ public class CertificationIdController {
         List<CQMMetDTO> cqmDtos = certificationIdManager.getCqmsMetByCertifiedProductIds(productIdList);
 
         boolean isValid = validator.validate(criteriaDtos, cqmDtos, new ArrayList<Integer>(yearSet));
-        results.setIsValid(isValid);
+        results.setValid(isValid);
         results.setMetPercentages(validator.getPercents());
         results.setMetCounts(validator.getCounts());
         results.setMissingCombo(validator.getMissingCombo());
@@ -348,7 +348,7 @@ public class CertificationIdController {
                 if (null != idDto) {
                     results.setEhrCertificationId(idDto.getCertificationId());
                 } else {
-                    if ((create) && (results.getIsValid())) {
+                    if ((create) && (results.isValid())) {
                         // Generate a new ID
                         idDto = certificationIdManager.create(productIdList, year);
                         results.setEhrCertificationId(idDto.getCertificationId());
