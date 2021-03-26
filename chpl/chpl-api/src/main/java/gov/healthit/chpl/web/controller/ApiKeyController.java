@@ -92,7 +92,7 @@ public class ApiKeyController {
                       + "purpose of the invitation is to validate the email address of the potential API user.")
     @RequestMapping(value = "/request", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public String request(@RequestBody ApiKeyRegistration registration) throws ValidationException {
-    	return "{\"success\" : \"" + apiKeyManager.createRequest(registration).toString() + "\"}";
+        return "{\"success\" : \"" + apiKeyManager.createRequest(registration).toString() + "\"}";
     }
 
     @ApiOperation(value = "Confirms a user's email address and provide the new API key.",
