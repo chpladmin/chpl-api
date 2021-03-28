@@ -50,7 +50,7 @@ public class TestingLabNormalizer {
                 && validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(), ChplProductNumberUtil.ATL_CODE_INDEX, ChplProductNumberUtil.ATL_CODE_REGEX);
     }
 
-    private CertifiedProductSearchDetails updateTestingLabFromChplProductNumber(CertifiedProductSearchDetails listing) {
+    private void updateTestingLabFromChplProductNumber(CertifiedProductSearchDetails listing) {
         String atlCodeFromChplProductNumber = chplProductNumberUtil.getAtlCode(listing.getChplProductNumber());
         TestingLabDTO testingLabDto = atlDao.getByCode(atlCodeFromChplProductNumber);
 
@@ -62,20 +62,17 @@ public class TestingLabNormalizer {
                     .build();
             listing.setTestingLabs(Stream.of(testingLab).collect(Collectors.toList()));
         }
-        return listing;
     }
 
-    private CertifiedProductTestingLab populateTestingLab(CertifiedProductTestingLab testingLab) {
+    private void populateTestingLab(CertifiedProductTestingLab testingLab) {
         if (testingLab == null) {
-            return testingLab;
+            return;
         } else if (doesTestingLabNameExist(testingLab)) {
-            return updateTestingLabBasedOnName(testingLab);
+            updateTestingLabBasedOnName(testingLab);
         } else if (doesTestingLabCodeExist(testingLab)) {
-            return updateTestingLabBasedOnCode(testingLab);
+            updateTestingLabBasedOnCode(testingLab);
         } else if (doesTestingLabIdExist(testingLab)) {
-            return updateTestingLabBasedOnId(testingLab);
-        } else {
-            return testingLab;
+            updateTestingLabBasedOnId(testingLab);
         }
     }
 
@@ -93,17 +90,17 @@ public class TestingLabNormalizer {
                         || StringUtils.isEmpty(testingLab.getTestingLabCode()));
     }
 
-    private CertifiedProductTestingLab updateTestingLabBasedOnName(CertifiedProductTestingLab testingLab) {
+    private void updateTestingLabBasedOnName(CertifiedProductTestingLab testingLab) {
         TestingLabDTO testingLabDto = atlDao.getByName(testingLab.getTestingLabName());
-        return updateTestingLabBasedOnTestingLabDto(testingLab, testingLabDto);
+        updateTestingLabBasedOnTestingLabDto(testingLab, testingLabDto);
     }
 
-    private CertifiedProductTestingLab updateTestingLabBasedOnCode(CertifiedProductTestingLab testingLab) {
+    private void updateTestingLabBasedOnCode(CertifiedProductTestingLab testingLab) {
         TestingLabDTO testingLabDto = atlDao.getByCode(testingLab.getTestingLabCode());
-        return updateTestingLabBasedOnTestingLabDto(testingLab, testingLabDto);
+        updateTestingLabBasedOnTestingLabDto(testingLab, testingLabDto);
     }
 
-    private CertifiedProductTestingLab updateTestingLabBasedOnId(CertifiedProductTestingLab testingLab) {
+    private void updateTestingLabBasedOnId(CertifiedProductTestingLab testingLab) {
         TestingLabDTO testingLabDto = null;
         try {
             testingLabDto = atlDao.getById(testingLab.getTestingLabId());
@@ -114,16 +111,14 @@ public class TestingLabNormalizer {
             testingLab.setTestingLabName(testingLabDto.getName());
             testingLab.setTestingLabCode(testingLabDto.getTestingLabCode());
         }
-        return testingLab;
     }
 
-    private CertifiedProductTestingLab updateTestingLabBasedOnTestingLabDto(CertifiedProductTestingLab testingLab, TestingLabDTO testingLabDto) {
+    private void updateTestingLabBasedOnTestingLabDto(CertifiedProductTestingLab testingLab, TestingLabDTO testingLabDto) {
         if (testingLabDto != null) {
             testingLab.setTestingLabId(testingLabDto.getId());
             testingLab.setTestingLabName(testingLabDto.getName());
             testingLab.setTestingLabCode(testingLabDto.getTestingLabCode());
         }
-        return testingLab;
     }
 
 }
