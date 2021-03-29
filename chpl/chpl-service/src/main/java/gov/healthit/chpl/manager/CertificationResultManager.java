@@ -545,12 +545,9 @@ private SvapDAO svapDao;
                     TestStandardDTO foundStd = testStandardDAO.getByNumberAndEdition(updatedItem.getTestStandardName(),
                             Long.valueOf(editionIdString));
                     if (foundStd == null) {
-                        TestStandardDTO stdToCreate = new TestStandardDTO();
-                        stdToCreate.setName(updatedItem.getTestStandardName());
-                        stdToCreate.setDescription(updatedItem.getTestStandardDescription());
-                        stdToCreate.setCertificationEditionId(Long.valueOf(editionIdString));
-                        TestStandardDTO created = testStandardDAO.create(stdToCreate);
-                        updatedItem.setTestStandardId(created.getId());
+                        LOGGER.error("Could not find test standard " + updatedItem.getTestStandardName()
+                                + "; will not be adding this as a test standard to certification result id "
+                                + certResult.getId() + ", criteria " + certResult.getNumber());
                     } else {
                         updatedItem.setTestStandardId(foundStd.getId());
                     }

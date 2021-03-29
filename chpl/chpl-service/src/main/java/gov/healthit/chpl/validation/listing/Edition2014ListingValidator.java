@@ -20,6 +20,7 @@ import gov.healthit.chpl.validation.listing.reviewer.ListingStatusAndUserRoleRev
 import gov.healthit.chpl.validation.listing.reviewer.RealWorldTestingReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.SvapReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.TestStandardReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestToolReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestingLabReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnattestedCriteriaWithDataReviewer;
@@ -84,6 +85,10 @@ public abstract class Edition2014ListingValidator extends Validator {
     private UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
 
     @Autowired
+    @Qualifier("testStandardReviewer")
+    private TestStandardReviewer tsReviewer;
+
+    @Autowired
     @Qualifier("testToolReviewer")
     private TestToolReviewer ttReviewer;
 
@@ -141,6 +146,7 @@ public abstract class Edition2014ListingValidator extends Validator {
             reviewers.add(certStatusReviewer);
             reviewers.add(certDateReviewer);
             reviewers.add(unattestedCriteriaWithDataReviewer);
+            reviewers.add(tsReviewer);
             reviewers.add(ttReviewer);
             reviewers.add(tt2014Reviewer);
             reviewers.add(tfReviewer);

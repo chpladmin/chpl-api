@@ -1,0 +1,255 @@
+package gov.healthit.chpl.validation.listing.reviewer;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
+
+import gov.healthit.chpl.dao.TestStandardDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationResultTestStandard;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
+import gov.healthit.chpl.dto.TestStandardDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.ErrorMessageUtil;
+
+public class TestStandardReviewerTest {
+    private TestStandardDAO testStandardDao;
+    private ErrorMessageUtil errorMessageUtil;
+    private TestStandardReviewer reviewer;
+
+    @Before
+    public void before() throws EntityRetrievalException {
+        testStandardDao = Mockito.mock(TestStandardDAO.class);
+        TestStandardDTO ts = new TestStandardDTO();
+        ts.setId(1L);
+        ts.setCertificationEditionId(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId());
+        ts.setName("mock");
+        Mockito.when(testStandardDao.getByNumberAndEdition(
+                ArgumentMatchers.eq("mock"),
+                ArgumentMatchers.eq(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId())))
+        .thenReturn(ts);
+
+        errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.missingTestStandardName"),
+                ArgumentMatchers.anyString()))
+                .thenAnswer(i -> String.format("There was no test standard name found for certification criteria %s.",
+                        i.getArgument(1), ""));
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria."),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+                .thenAnswer(i -> String.format("Criteria %s contains a test standard '%s' which does not "
+                        + "currently exist for edition %s.",
+                        i.getArgument(1), i.getArgument(2), i.getArgument(3)));
+
+        reviewer = new TestStandardReviewer(testStandardDao, errorMessageUtil);
+    }
+
+    @Test
+    public void review_UnattestedCriterionWithoutTestStandards_NoError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationEdition(buildEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId(), "2015"))
+                .certificationResult(CertificationResult.builder()
+                        .success(false)
+                        .criterion(buildCriterion(1L, "170.315 (a)(1)"))
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_AttestedCriterionWithoutTestStandards_NoError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationEdition(buildEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId(), "2015"))
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(buildCriterion(1L, "170.315 (a)(1)"))
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_UnattestedCriterionWithExistingTestStandard_NoError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationEdition(buildEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId(), "2015"))
+                .certificationResult(CertificationResult.builder()
+                        .success(false)
+                        .criterion(buildCriterion(1L, "170.315 (a)(1)"))
+                        .testStandard(getCertResultTestStandard(1L, "mock"))
+                        .build())
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_AttestedCriterionWithExistingTestStandard_NoError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationEdition(buildEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId(), "2015"))
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(buildCriterion(1L, "170.315 (a)(1)"))
+                        .testStandard(getCertResultTestStandard(1L, "mock"))
+                        .build())
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_UnattestedCriterionExistingTestStandardWithoutId_NoError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationEdition(buildEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId(), "2015"))
+                .certificationResult(CertificationResult.builder()
+                        .success(false)
+                        .criterion(buildCriterion(1L, "170.315 (a)(1)"))
+                        .testStandard(getCertResultTestStandard(null, "mock"))
+                        .build())
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_AttestedCriterionExistingTestStandardWithoutId_NoError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationEdition(buildEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId(), "2015"))
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(buildCriterion(1L, "170.315 (a)(1)"))
+                        .testStandard(getCertResultTestStandard(null, "mock"))
+                        .build())
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_UnttestedCriterionNonexistentTestStandard_NoError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationEdition(buildEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId(), "2015"))
+                .certificationResult(CertificationResult.builder()
+                        .success(false)
+                        .criterion(buildCriterion(1L, "170.315 (a)(1)"))
+                        .testStandard(getCertResultTestStandard(2L, "does not exist"))
+                        .build())
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_AttestedCriterionNonexistentTestStandard_HasError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationEdition(buildEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId(), "2015"))
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(buildCriterion(1L, "170.315 (a)(1)"))
+                        .testStandard(getCertResultTestStandard(2L, "does not exist"))
+                        .build())
+                .build();
+        listing.setErrorMessages(new HashSet<String>());
+
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_UnattestedCriterionNonexistentTestStandardNoId_NoError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationEdition(buildEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId(), "2015"))
+                .certificationResult(CertificationResult.builder()
+                        .success(false)
+                        .criterion(buildCriterion(1L, "170.315 (a)(1)"))
+                        .testStandard(getCertResultTestStandard(null, "does not exist"))
+                        .build())
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_AttestedCriterionNonexistentTestStandardNoId_HasError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationEdition(buildEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId(), "2015"))
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(buildCriterion(1L, "170.315 (a)(1)"))
+                        .testStandard(getCertResultTestStandard(null, "does not exist"))
+                        .build())
+                .build();
+        listing.setErrorMessages(new HashSet<String>());
+
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_UnattestedCriterionNoTestStandardName_NoError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationEdition(buildEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId(), "2015"))
+                .certificationResult(CertificationResult.builder()
+                        .success(false)
+                        .criterion(buildCriterion(1L, "170.315 (a)(1)"))
+                        .testStandard(getCertResultTestStandard(1L, null))
+                        .build())
+                .build();
+        listing.setErrorMessages(new HashSet<String>());
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_AttestedCriterionNoTestStandardName_HasError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationEdition(buildEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId(), "2015"))
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(buildCriterion(1L, "170.315 (a)(1)"))
+                        .testStandard(getCertResultTestStandard(1L, null))
+                        .build())
+                .build();
+        listing.setErrorMessages(new HashSet<String>());
+
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+    }
+
+    private CertificationCriterion buildCriterion(Long id, String number) {
+        return CertificationCriterion.builder()
+                .id(id)
+                .number(number)
+                .build();
+    }
+
+    private CertificationResultTestStandard getCertResultTestStandard(Long id, String name) {
+        return CertificationResultTestStandard.builder()
+                .testStandardId(id)
+                .testStandardName(name)
+                .build();
+    }
+
+    private Map<String, Object> buildEdition(Long id, String name) {
+        Map<String, Object> edition = new HashMap<String, Object>();
+        edition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, id);
+        edition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, name);
+        return edition;
+    }
+}
