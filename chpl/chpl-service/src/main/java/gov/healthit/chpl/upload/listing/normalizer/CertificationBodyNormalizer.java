@@ -103,6 +103,9 @@ public class CertificationBodyNormalizer {
 
     private void updateListingAcbFromDto(CertifiedProductSearchDetails listing, CertificationBodyDTO acbDto) {
         if (acbDto != null) {
+            if (listing.getCertifyingBody() == null) {
+                listing.setCertifyingBody(new HashMap<String, Object>());
+            }
             listing.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_ID_KEY, acbDto.getId());
             listing.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_CODE_KEY, acbDto.getAcbCode());
             listing.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_NAME_KEY, acbDto.getName());

@@ -63,7 +63,7 @@ public class EditionReviewerTest {
         reviewer.review(listing);
 
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(MISSING_YEAR));
+        assertTrue(listing.getErrorMessages().contains(MISSING_EDITION));
     }
 
     @Test
@@ -78,7 +78,7 @@ public class EditionReviewerTest {
         reviewer.review(listing);
 
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(MISSING_YEAR));
+        assertTrue(listing.getErrorMessages().contains(MISSING_EDITION));
     }
 
     @Test
@@ -94,7 +94,7 @@ public class EditionReviewerTest {
         reviewer.review(listing);
 
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(MISSING_YEAR));
+        assertTrue(listing.getErrorMessages().contains(MISSING_EDITION));
     }
 
     @Test

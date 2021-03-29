@@ -28,8 +28,7 @@ public class DeveloperDetailsNormalizer {
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
-        if (listing.getDeveloper() != null && listing.getDeveloper().getDeveloperId() == null
-                && !StringUtils.isEmpty(listing.getDeveloper().getUserEnteredName())) {
+        if (hasUserEnteredDeveloperName(listing)) {
             DeveloperDTO systemDev = devDao.getByName(listing.getDeveloper().getUserEnteredName());
             if (systemDev != null) {
                 copySystemDeveloperValues(listing.getDeveloper(), new Developer(systemDev));
@@ -57,6 +56,11 @@ public class DeveloperDetailsNormalizer {
                 copyUserEnteredDeveloperValues(listing.getDeveloper());
             }
         }
+    }
+
+    private boolean hasUserEnteredDeveloperName(CertifiedProductSearchDetails listing) {
+        return listing.getDeveloper() != null && listing.getDeveloper().getDeveloperId() == null
+                && !StringUtils.isEmpty(listing.getDeveloper().getUserEnteredName());
     }
 
     private void copySystemDeveloperValues(Developer userEnteredDev, Developer systemDev) {

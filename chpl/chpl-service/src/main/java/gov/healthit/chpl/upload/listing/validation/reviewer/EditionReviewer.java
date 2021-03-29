@@ -2,6 +2,7 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 
 import java.util.Map;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,25 +27,14 @@ public class EditionReviewer implements Reviewer {
             return;
         }
 
-        String editionYear = null, editionId = null;
+        Long editionId = MapUtils.getLong(certEditionMap, CertifiedProductSearchDetails.EDITION_ID_KEY);
+        String editionYear = MapUtils.getString(certEditionMap, CertifiedProductSearchDetails.EDITION_NAME_KEY);
 
-        Object editionYearValue = certEditionMap.get(CertifiedProductSearchDetails.EDITION_NAME_KEY);
-        if (editionYearValue != null) {
-            editionYear = editionYearValue.toString();
-            if (StringUtils.isEmpty(editionYear)) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.missingEditionYear"));
-            }
-        } else {
+        if (editionId == null && StringUtils.isEmpty(editionYear)) {
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.missingEdition"));
+        } else  if (editionId != null && StringUtils.isEmpty(editionYear)) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.missingEditionYear"));
-        }
-
-        Object editionIdValue = certEditionMap.get(CertifiedProductSearchDetails.EDITION_ID_KEY);
-        if (editionIdValue != null) {
-            editionId = editionIdValue.toString();
-            if (!StringUtils.isEmpty(editionYear) && StringUtils.isEmpty(editionId)) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.invalidEdition", editionYear));
-            }
-        } else if (editionIdValue == null && !StringUtils.isEmpty(editionYear)) {
+        } else if (!StringUtils.isEmpty(editionYear) && editionId == null) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.invalidEdition", editionYear));
         }
     }

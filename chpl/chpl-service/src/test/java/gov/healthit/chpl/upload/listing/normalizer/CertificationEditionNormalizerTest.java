@@ -16,6 +16,8 @@ import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 
 public class CertificationEditionNormalizerTest {
 
@@ -25,7 +27,7 @@ public class CertificationEditionNormalizerTest {
     @Before
     public void setup() {
         editionDao = Mockito.mock(CertificationEditionDAO.class);
-        normalizer = new CertificationEditionNormalizer(editionDao);
+        normalizer = new CertificationEditionNormalizer(editionDao, new ValidationUtils(), new ChplProductNumberUtil());
     }
 
     @Test
@@ -228,5 +230,42 @@ public class CertificationEditionNormalizerTest {
 
         assertNull(MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY));
         assertEquals("2021", MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY));
+    }
+
+    @Test
+    public void normalize_editionMissingEditionCodeInChplProductNumber_editionFound() throws EntityRetrievalException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.07.04.2663.ABCD.R2.01.0.200511")
+                .build();
+
+        Mockito.when(editionDao.getByYear(ArgumentMatchers.anyString()))
+        .thenReturn(CertificationEditionDTO.builder()
+                .id(1L)
+                .year("2015")
+                .build());
+
+        normalizer.normalize(listing);
+        assertEquals(1L, MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY));
+        assertEquals("2015", MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY));
+    }
+
+    @Test
+    public void normalize_editionMissingEditionCodeMissingInChplProductNumber_noLookup() throws EntityRetrievalException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber(".07.07.2663.ABCD.R2.01.0.200511")
+                .build();
+
+        normalizer.normalize(listing);
+        assertNull(listing.getCertificationEdition());
+    }
+
+    @Test
+    public void normalize_editionMissingEditionCodeInvalidInChplProductNumber_noLookup() throws EntityRetrievalException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("??.07.07.2663.ABCD.R2.01.0.200511")
+                .build();
+
+        normalizer.normalize(listing);
+        assertNull(listing.getCertificationEdition());
     }
 }
