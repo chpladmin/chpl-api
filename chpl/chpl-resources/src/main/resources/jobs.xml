@@ -676,7 +676,6 @@
                 </entry>
             </job-data-map>
         </job>
-
         <!-- G1/G2 Measure Data Fix -->
         <job>
             <name>G1/G2 Measure Data Fix</name>
@@ -686,6 +685,29 @@
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+            </job-data-map>
+        </job>
+        <!-- Generate email report for User-Defined Quartz Triggers-->
+        <job>
+            <name>User-Defined Triggers Job</name>
+            <group>chplJobs</group>
+            <description>Sends a report containing a list of user-defined scheduled jobs.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.UserDefinedTriggersEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN</value>
+                </entry>
                 <entry>
                     <key>frequency</key>
                     <value>DAILY</value>

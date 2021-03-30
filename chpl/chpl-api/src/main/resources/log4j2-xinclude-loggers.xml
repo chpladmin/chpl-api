@@ -151,4 +151,8 @@
         additivity="false">
         <AppenderRef ref="measureFixJob" />
     </Logger>
+    <Logger name="userDefinedTriggersEmailJobLogger" level="INFO"
+        additivity="false">
+        <AppenderRef ref="userDefinedTriggersEmailJob" />
+    </Logger>
 </Loggers>

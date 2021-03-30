@@ -121,7 +121,7 @@ public final class TriggerJob {
         }
         try {
             StdSchedulerFactory sf = new StdSchedulerFactory();
-            sf.initialize("quartz.properties");
+            sf.initialize();
             Scheduler scheduler = sf.getScheduler();
 
             TriggerKey triggerId = triggerKey("interruptJob_" + new Date().getTime(), "interruptJobTrigger");
@@ -144,7 +144,7 @@ public final class TriggerJob {
     private static void listJobs() {
         try {
             StdSchedulerFactory sf = new StdSchedulerFactory();
-            sf.initialize("quartz.properties");
+            sf.initialize();
             Scheduler scheduler = sf.getScheduler();
 
             StringBuilder output = new StringBuilder();
@@ -193,7 +193,7 @@ public final class TriggerJob {
         try {
             LOGGER.info("Starting job {} in group {}", jobName, jobGroup);
             StdSchedulerFactory sf = new StdSchedulerFactory();
-            sf.initialize("quartz.properties");
+            sf.initialize();
             Scheduler scheduler = sf.getScheduler();
 
             TriggerKey triggerId = triggerKey("triggerJobNow_" + new Date().getTime(), "triggerJob");
