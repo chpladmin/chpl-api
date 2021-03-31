@@ -23,12 +23,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.util.EmailBuilder;
 import lombok.extern.log4j.Log4j2;
 import net.sf.ehcache.CacheManager;
@@ -88,7 +88,7 @@ public class MergeDeveloperJob implements Job {
             }
 
             if (postMergeDeveloper != null) {
-                CacheManager.getInstance().clearAll();
+                clearCachesRelatedToDevelopers();
             }
 
             //send email about success/failure of job
@@ -126,6 +126,15 @@ public class MergeDeveloperJob implements Job {
         for (Long developerId : preMergeDeveloperIds) {
             devDao.getById(developerId);
         }
+    }
+
+    private void clearCachesRelatedToDevelopers() {
+        CacheManager.getInstance().getCache(CacheNames.DEVELOPER_NAMES).removeAll();
+        CacheManager.getInstance().getCache(CacheNames.ALL_DEVELOPERS).removeAll();
+        CacheManager.getInstance().getCache(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED).removeAll();
+        CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_DEVELOPERS).removeAll();
+        CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_LISTINGS).removeAll();
+        CacheManager.getInstance().getCache(CacheNames.GET_DECERTIFIED_DEVELOPERS).removeAll();
     }
 
     private void sendJobCompletionEmails(DeveloperDTO newDeveloper, List<DeveloperDTO> oldDevelopers,

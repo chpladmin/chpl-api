@@ -29,6 +29,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -112,7 +113,7 @@ public class SplitDeveloperJob implements Job {
             }
 
             if (postSplitDeveloper != null) {
-                CacheManager.getInstance().clearAll();
+                clearCachesRelatedToDevelopers();
             }
 
             directReviewEmailService.sendEmail(
@@ -233,6 +234,15 @@ public class SplitDeveloperJob implements Job {
             }
         }
         return futures;
+    }
+
+    private void clearCachesRelatedToDevelopers() {
+        CacheManager.getInstance().getCache(CacheNames.DEVELOPER_NAMES).removeAll();
+        CacheManager.getInstance().getCache(CacheNames.ALL_DEVELOPERS).removeAll();
+        CacheManager.getInstance().getCache(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED).removeAll();
+        CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_DEVELOPERS).removeAll();
+        CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_LISTINGS).removeAll();
+        CacheManager.getInstance().getCache(CacheNames.GET_DECERTIFIED_DEVELOPERS).removeAll();
     }
 
     private void sendJobCompletionEmails(DeveloperDTO newDeveloper, List<Long> productIds,
