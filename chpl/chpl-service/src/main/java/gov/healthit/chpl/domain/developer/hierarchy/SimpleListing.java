@@ -11,10 +11,11 @@ public class SimpleListing extends CertifiedProduct {
     private static final long serialVersionUID = 6827193932953676099L;
 
     private CertificationBody acb;
-    private Long openSurveillanceCount;
-    private Long closedSurveillanceCount;
-    private Long openSurveillanceNonConformityCount;
-    private Long closedSurveillanceNonConformityCount;
+    private Integer surveillanceCount;
+    private Integer openSurveillanceCount;
+    private Integer closedSurveillanceCount;
+    private Integer openSurveillanceNonConformityCount;
+    private Integer closedSurveillanceNonConformityCount;
 
     public SimpleListing() {
         super();

@@ -42,7 +42,6 @@ import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.CertifiedProductSummaryDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTODeprecated;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
@@ -177,8 +176,7 @@ public class DeveloperManager extends SecuredManager {
         DeveloperDTO developer = getById(id);
         List<ProductDTO> products = productManager.getByDeveloper(developer.getId());
         List<ProductVersionDTO> versions = versionManager.getByDeveloper(developer.getId());
-        List<CertifiedProductSummaryDTO> listings = certifiedProductDao.findListingSummariesByDeveloperId(developer.getId());
-        List<CertificationBodyDTO> acbs = acbManager.getAll();
+        List<CertifiedProductDetailsDTO> listings = certifiedProductDao.findListingsByDeveloperId(developer.getId());
 
         DeveloperTree developerTree = new DeveloperTree(developer);
         products.stream().forEach(product -> {
@@ -197,28 +195,38 @@ public class DeveloperManager extends SecuredManager {
 
         developerTree.getProducts().stream().forEach(product -> {
             product.getVersions().stream().forEach(version -> {
-                List<CertifiedProductSummaryDTO> versionListings = listings.stream()
+                List<SimpleListing> listingsForVersion = listings.stream()
                         .filter(listing -> listing.getVersion().getId().equals(version.getVersionId()))
+                        .map(listing -> convert(listing))
                         .collect(Collectors.toList());
-                versionListings.stream().forEach(listing -> {
-                    SimpleListing listingLeaf = new SimpleListing();
-                    Optional<CertificationBodyDTO> listingAcb = acbs.stream()
-                            .filter(acb -> acb.getId().equals(listing.getAcb().getId())).findFirst();
-                    if (listingAcb != null && listingAcb.isPresent()) {
-                        listingLeaf.setAcb(new CertificationBody(listingAcb.get()));
-                    }
-                    listingLeaf.setCertificationDate(listing.getCertificationDate().getTime());
-                    listingLeaf.setCertificationStatus(listing.getCertificationStatus());
-                    listingLeaf.setChplProductNumber(listing.getChplProductNumber());
-                    listingLeaf.setCuresUpdate(listing.getCuresUpdate());
-                    listingLeaf.setEdition(listing.getYear());
-                    listingLeaf.setId(listing.getId());
-                    listingLeaf.setLastModifiedDate(listing.getLastModifiedDate().getTime());
-                    version.getListings().add(listingLeaf);
+                    version.getListings().addAll(listingsForVersion);
                 });
             });
-        });
         return developerTree;
+    }
+
+    private SimpleListing convert(CertifiedProductDetailsDTO listingDto) {
+        List<CertificationBodyDTO> acbs = acbManager.getAll();
+
+        SimpleListing listingLeaf = new SimpleListing();
+        Optional<CertificationBodyDTO> listingAcb = acbs.stream()
+                .filter(acb -> acb.getId().equals(listingDto.getCertificationBodyId())).findFirst();
+        if (listingAcb != null && listingAcb.isPresent()) {
+            listingLeaf.setAcb(new CertificationBody(listingAcb.get()));
+        }
+        listingLeaf.setSurveillanceCount(listingDto.getCountSurveillance());
+        listingLeaf.setOpenSurveillanceCount(listingDto.getCountOpenSurveillance());
+        listingLeaf.setClosedSurveillanceCount(listingDto.getCountClosedSurveillance());
+        listingLeaf.setOpenSurveillanceNonConformityCount(listingDto.getCountOpenNonconformities());
+        listingLeaf.setClosedSurveillanceNonConformityCount(listingDto.getCountClosedNonconformities());
+        listingLeaf.setCertificationDate(listingDto.getCertificationDate().getTime());
+        listingLeaf.setCertificationStatus(listingDto.getCertificationStatusName());
+        listingLeaf.setChplProductNumber(listingDto.getChplProductNumber());
+        listingLeaf.setCuresUpdate(listingDto.getCuresUpdate());
+        listingLeaf.setEdition(listingDto.getYear());
+        listingLeaf.setId(listingDto.getId());
+        listingLeaf.setLastModifiedDate(listingDto.getLastModifiedDate().getTime());
+        return listingLeaf;
     }
 
     @Transactional(readOnly = true)

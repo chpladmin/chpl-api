@@ -11,7 +11,6 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.CertifiedProductSummaryDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
@@ -64,10 +63,10 @@ public abstract class ActionPermissions {
     @Transactional(readOnly = true)
     public boolean doesCurrentUserHaveAccessToAllOfDevelopersListings(Long developerId,
             List<CertificationStatusType> listingStatuses) {
-        List<CertifiedProductSummaryDTO> cpDtos = certifiedProductDAO.findListingSummariesByDeveloperId(developerId);
+        List<CertifiedProductDetailsDTO> cpDtos = certifiedProductDAO.findListingSummariesByDeveloperId(developerId);
         return !cpDtos.stream().filter(cpDto ->
-                !isAcbValidForCurrentUser(cpDto.getAcb().getId())
-                && isInStatuses(cpDto.getCertificationStatus(), listingStatuses))
+                !isAcbValidForCurrentUser(cpDto.getCertificationBodyId())
+                && isInStatuses(cpDto.getCertificationStatusName(), listingStatuses))
                 .findAny().isPresent();
     }
 
