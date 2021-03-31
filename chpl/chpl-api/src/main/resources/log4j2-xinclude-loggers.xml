@@ -147,10 +147,6 @@
         additivity="false">
         <AppenderRef ref="annualReportGenerationJob" />
     </Logger>
-    <Logger name="measureFixJobLogger" level="INFO"
-        additivity="false">
-        <AppenderRef ref="measureFixJob" />
-    </Logger>
     <Logger name="listingUploadValidationJobLogger" level="INFO"
         additivity="false">
         <AppenderRef ref="listingUploadValidationJob" />
