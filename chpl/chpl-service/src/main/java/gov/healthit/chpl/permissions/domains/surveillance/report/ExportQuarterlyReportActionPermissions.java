@@ -20,10 +20,12 @@ public class ExportQuarterlyReportActionPermissions extends ActionPermissions {
     }
 
     @Override
-    public boolean hasAccess(final Object obj) {
+    public boolean hasAccess(Object obj) {
         if (!(obj instanceof Long)) {
             return false;
-        } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
+        } else if (getResourcePermissions().isUserRoleAdmin()
+                || getResourcePermissions().isUserRoleOnc()
+                || getResourcePermissions().isUserRoleOncStaff()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             Long idToExport = (Long) obj;

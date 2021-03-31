@@ -2395,7 +2395,7 @@ public class CertifiedProductManager extends SecuredManager {
 
     private Scheduler getScheduler() throws SchedulerException {
         StdSchedulerFactory sf = new StdSchedulerFactory();
-        sf.initialize("quartz.properties");
+        sf.initialize();
         Scheduler scheduler = sf.getScheduler();
         return scheduler;
     }

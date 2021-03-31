@@ -75,11 +75,6 @@ public class DirectReviewNonConformity implements Serializable {
     @XmlElement(required = false, nillable = true)
     private String nonConformityStatus;
 
-    @JsonProperty(value = "developerExplanation")
-    @JsonAlias("customfield_11028")
-    @XmlElement(required = false, nillable = true)
-    private String developerExplanation;
-
     @JsonProperty(value = "resolution")
     @JsonAlias("customfield_11029")
     @XmlElement(required = false, nillable = true)

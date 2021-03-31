@@ -356,7 +356,7 @@
             <artifactId>ff4j-store-ehcache</artifactId>
             <version>1.8</version>
         </dependency>
-        
+
         <!-- @Build annotation for generation of builder pattern -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -364,21 +364,28 @@
             <version>1.18.10</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <!-- Needed to get a PGConnection from the connection pool (AuditDataRetentionService) -->
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-dbcp</artifactId>
             <version>8.5.59</version>
         </dependency>
-                
+
         <!-- Enhanced stream functions -->
         <dependency>
             <groupId>one.util</groupId> 
             <artifactId>streamex</artifactId> 
             <version>0.7.3</version> 
         </dependency>
-        
+
+        <!-- Converting cron expressions into readable text -->
+        <dependency>
+            <groupId>net.redhogs.cronparser</groupId>
+            <artifactId>cron-parser-spring</artifactId>
+            <version>3.5</version>
+        </dependency>
+
         <!-- iText for PDF Creation -->
         <dependency>
             <groupId>com.itextpdf</groupId>
@@ -393,7 +400,6 @@
             <artifactId>jfreechart</artifactId>
             <version>1.5.2</version>
         </dependency>
-
     </dependencies>
 
     <build>

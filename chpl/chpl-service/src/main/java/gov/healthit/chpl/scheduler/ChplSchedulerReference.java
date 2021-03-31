@@ -25,7 +25,7 @@ public class ChplSchedulerReference {
     @PostConstruct
     public void init() throws SchedulerException {
         StdSchedulerFactory sf = new StdSchedulerFactory();
-        sf.initialize("quartz.properties");
+        sf.initialize();
         this.scheduler = sf.getScheduler();
     }
 

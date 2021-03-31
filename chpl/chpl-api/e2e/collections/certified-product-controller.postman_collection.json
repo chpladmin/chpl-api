@@ -1,54 +1,426 @@
 {
-    "info": {
-        "name": "certified-product-controller",
-        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-    },
-    "item": [
-        {
-            "name": "GET /rest/certified_products/{listingId} - schema tests",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "exec": [
-                            "const resp = pm.response.json()\r",
-                            "pm.test(\"expect Listing Basic response to have svapResultUrl\", () => {\r",
-                            "  pm.expect(resp).to.have.property('svapNoticeUrl');\r",
-                            "});"
-                        ],
-                        "type": "text/javascript"
-                    }
-                }
-            ],
-            "request": {
-                "method": "GET",
-                "header": [
-                    {
-                        "key": "API-Key",
-                        "value": "{{apiKey}}",
-                        "type": "text"
-                    },
-                    {
-                        "key": "Content-Type",
-                        "value": "application/json",
-                        "type": "text"
-                    }
-                ],
-                "url": {
-                    "raw": "{{url}}/rest/certified_products/10457",
-                    "host": [
-                        "{{url}}"
-                    ],
-                    "path": [
-                        "rest",
-                        "certified_products",
-                        "10457"
-                    ]
-                },
-                "description": "Expect Listing Basic response to have svapResultsUrl"
-            },
-            "response": []
-        }
-    ],
-    "protocolProfileBehavior": {}
+	"info": {
+		"name": "certified-product-controller",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET : certified_product: data driven tests",
+			"item": [
+				{
+					"name": "GET /{certifiedProductId}/measures - return status 200",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var certifiedProductId= pm.iterationData.get(\"certifiedProductId\");\r",
+									"pm.environment.set(\"certifiedProductId\",\"certifiedProductId\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"{certifiedProductId}/measures return 200 status for valid API key\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"type": "text",
+								"value": "{{apiKey}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/certified_products/{{certifiedProductId}}/measures",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"certified_products",
+								"{{certifiedProductId}}",
+								"measures"
+							]
+						},
+						"description": "{certifiedProductId}/measures return 200 status for valid API key"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /{certifiedProductId} - return all RWT fields",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var certifiedProductId= pm.iterationData.get(\"certifiedProductId\");\r",
+									"pm.environment.set(\"certifiedProductId\",\"certifiedProductId\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"/{certifiedProductId} return 200 status for valid API key\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"var expresult = pm.response.json()\r",
+									"pm.test(\"/{certifiedProductId} end point response should have all RWT fields\", function () {\r",
+									"    pm.expect(expresult).to.have.property('rwtPlansUrl');\r",
+									"    pm.expect(expresult).to.have.property('rwtPlansCheckDate');\r",
+									"    pm.expect(expresult).to.have.property('rwtResultsUrl');\r",
+									"    pm.expect(expresult).to.have.property('rwtResultsCheckDate');\r",
+									"    pm.expect(expresult).to.have.property('rwtEligibilityYear');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"type": "text",
+								"value": "{{apiKey}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/certified_products/{{certifiedProductId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"certified_products",
+								"{{certifiedProductId}}"
+							]
+						},
+						"description": "GET /{certifiedProductId} end point returns all RWT fields"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} - return all RWT fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"/certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} return 200 status for valid API key\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"const expresp = pm.response.json()\r",
+									"pm.test(\"/certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} end point response should have all RWT fields\", function () {\r",
+									"    pm.expect(expresp).to.have.property('rwtPlansUrl');\r",
+									"    pm.expect(expresp).to.have.property('rwtPlansCheckDate');\r",
+									"    pm.expect(expresp).to.have.property('rwtResultsUrl');\r",
+									"    pm.expect(expresp).to.have.property('rwtResultsCheckDate');\r",
+									"    pm.expect(expresp).to.have.property('rwtEligibilityYear');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var chplIdtest=  pm.iterationData.get(\"newChplProductNumber\");\r",
+									"pm.environment.set(\"year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode\",chplIdtest);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/certified_products/{{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"certified_products",
+								"{{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode}}"
+							]
+						},
+						"description": "GET /{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} - return all RWT fields"
+					},
+					"response": []
+				},
+				{
+					"name": "GET-/{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode}/measures - return status 200",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var chplIdtest= pm.iterationData.get(\"newChplProductNumber\");\r",
+									"pm.environment.set(\"year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode\",chplIdtest);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"/certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/measures end point return status 200 for valid API Key\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/certified_products/{{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode}}/measures",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"certified_products",
+								"{{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode}}",
+								"measures"
+							]
+						},
+						"description": "GET /certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/measures return status 200"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /{chplPrefix}-{identifier} - return all RWT fields",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var chplidtest= pm.iterationData.get(\"oldChplProductNumber\");\r",
+									"pm.environment.set(\"chplPrefix-identifier\",chplidtest);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"/{chplPrefix-identifier} return 200 status for valid API key\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"var expresult = pm.response.json()\r",
+									"pm.test(\"/{chplPrefix-identifier} end point response should have all RWT fields\", function () {\r",
+									"    pm.expect(expresult).to.have.property('rwtPlansUrl');\r",
+									"    pm.expect(expresult).to.have.property('rwtPlansCheckDate');\r",
+									"    pm.expect(expresult).to.have.property('rwtResultsUrl');\r",
+									"    pm.expect(expresult).to.have.property('rwtResultsCheckDate');\r",
+									"    pm.expect(expresult).to.have.property('rwtEligibilityYear');\r",
+									"});\r",
+									"pm.test(\"All RWT fields should be null for 2014/2011 listings\", function() {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.rwtPlansUrl).eq(null);\r",
+									"    pm.expect(jsonData.rwtPlansCheckDate).eq(null);\r",
+									"    pm.expect(jsonData.rwtResultsUrl).eq(null);\r",
+									"    pm.expect(jsonData.rwtResultsCheckDate).eq(null);\r",
+									"    pm.expect(jsonData.rwtEligibilityYear).eq(null);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/certified_products/{{chplPrefix-identifier}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"certified_products",
+								"{{chplPrefix-identifier}}"
+							]
+						},
+						"description": "GET /{chplPrefix}-{identifier} - should return all RWT fields"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /{chplPrefix}-{identifier}/measures -return status 200",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var chplidtest= pm.iterationData.get(\"oldChplProductNumber\");\r",
+									"pm.environment.set(\"chplPrefix-identifier\",chplidtest);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"/{chplPrefix-identifier}/measures end point should return status 200 for valid API Key\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"/{chplPrefix-identifier}/measures end point should return empty array for 2014/2011 listings\", function() {\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.expect(jsonData.results.length).eql(0);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"type": "text",
+								"value": "{{apiKey}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/certified_products/{{chplPrefix-identifier}}/measures",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"certified_products",
+								"{{chplPrefix-identifier}}",
+								"measures"
+							]
+						},
+						"description": "GET /{chplPrefix-identifier}/measures return status 200"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "GET : certified_products: non-data driven tests",
+			"item": [
+				{
+					"name": "GET /rest/certified_products/{listingId} - schema tests",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const resp = pm.response.json()\r",
+									"pm.test(\"expect Listing Basic response to have svapResultUrl\", () => {\r",
+									"  pm.expect(resp).to.have.property('svapNoticeUrl');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/certified_products/10457",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"certified_products",
+								"10457"
+							]
+						},
+						"description": "Expect Listing Basic response to have svapResultsUrl"
+					},
+					"response": []
+				}
+			]
+		}
+	]
 }
