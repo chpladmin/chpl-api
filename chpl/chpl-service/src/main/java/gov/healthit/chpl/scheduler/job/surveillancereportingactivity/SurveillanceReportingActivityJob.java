@@ -1,8 +1,7 @@
-package gov.healthit.chpl.scheduler.job;
+package gov.healthit.chpl.scheduler.job.surveillancereportingactivity;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
@@ -34,7 +33,6 @@ public class SurveillanceReportingActivityJob implements Job {
     @Value("${executorThreadCountForQuartzJobs}")
     private Integer threadCount;
 
-    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
@@ -54,6 +52,8 @@ public class SurveillanceReportingActivityJob implements Job {
         LOGGER.info("********* Completed the Surveillance Reporting Activity job. *********");
 
     }
+
+
 
     private List<CertifiedProductDetailsDTO> getListingsWithSurveillance() throws EntityRetrievalException {
         LOGGER.info("Finding all listings with surveillance.");
