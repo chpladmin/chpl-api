@@ -124,10 +124,12 @@ public class DirectReviewCachingService {
     @CachePut(CacheNames.DIRECT_REVIEWS)
     public List<DirectReview> getDirectReviews(Long developerId) throws JiraRequestFailedException {
         Element devDirectReviewElement = getDirectReviewsCache().get(developerId);
-        Object devDirectReviewsObj = devDirectReviewElement.getObjectValue();
-        if (devDirectReviewsObj instanceof List<?>) {
-            List<DirectReview> devDirectReviews = (List<DirectReview>) devDirectReviewsObj;
-            LOGGER.info("# DRs in cache for developer ID " + developerId + ": " + devDirectReviews.size());
+        if (devDirectReviewElement != null) {
+            Object devDirectReviewsObj = devDirectReviewElement.getObjectValue();
+            if (devDirectReviewsObj instanceof List<?>) {
+                List<DirectReview> devDirectReviews = (List<DirectReview>) devDirectReviewsObj;
+                LOGGER.info("# DRs in cache for developer ID " + developerId + ": " + devDirectReviews.size());
+            }
         }
         LOGGER.info("Fetching direct review data for developer " + developerId);
 
