@@ -173,6 +173,7 @@ public class DeveloperManager extends SecuredManager {
     }
 
     public DeveloperTree getHierarchyById(Long id) throws EntityRetrievalException {
+        List<CertificationBodyDTO> acbs = acbManager.getAll();
         DeveloperDTO developer = getById(id);
         List<ProductDTO> products = productManager.getByDeveloper(developer.getId());
         List<ProductVersionDTO> versions = versionManager.getByDeveloper(developer.getId());
@@ -197,7 +198,7 @@ public class DeveloperManager extends SecuredManager {
             product.getVersions().stream().forEach(version -> {
                 List<SimpleListing> listingsForVersion = listings.stream()
                         .filter(listing -> listing.getVersion().getId().equals(version.getVersionId()))
-                        .map(listing -> convert(listing))
+                        .map(listing -> convert(listing, acbs))
                         .collect(Collectors.toList());
                     version.getListings().addAll(listingsForVersion);
                 });
@@ -205,9 +206,7 @@ public class DeveloperManager extends SecuredManager {
         return developerTree;
     }
 
-    private SimpleListing convert(CertifiedProductDetailsDTO listingDto) {
-        List<CertificationBodyDTO> acbs = acbManager.getAll();
-
+    private SimpleListing convert(CertifiedProductDetailsDTO listingDto, List<CertificationBodyDTO> acbs) {
         SimpleListing listingLeaf = new SimpleListing();
         Optional<CertificationBodyDTO> listingAcb = acbs.stream()
                 .filter(acb -> acb.getId().equals(listingDto.getCertificationBodyId())).findFirst();
