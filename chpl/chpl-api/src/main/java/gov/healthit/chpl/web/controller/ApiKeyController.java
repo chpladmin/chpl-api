@@ -89,14 +89,14 @@ public class ApiKeyController {
 
     @ApiOperation(value = "Sends an email validation to user requesting a new API key.",
             notes = "Anyone wishing to access the methods listed in this API must have an API key. This request "
-                      + "will create an email invitation and send it to the supplied email address.  The "
+                      + "will create an email invitation and send it to the supplied email address. The "
                       + "purpose of the invitation is to validate the email address of the potential API user.")
     @RequestMapping(value = "/request", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public BooleanResult request(@RequestBody ApiKeyRegistration registration) throws ValidationException {
         return new BooleanResult(apiKeyManager.createRequest(registration));
     }
 
-    @ApiOperation(value = "Confirms a user's email address and provide the new API key.",
+    @ApiOperation(value = "Confirms a user's email address and provides the new API key.",
             notes = "Anyone wishing to access the methods listed in this API must have an API key. This service "
                     + "will validate that the user has provided a valid email address and provide them with a new "
                     + "API key. It must be included in subsequent API calls via either a header with the name "
