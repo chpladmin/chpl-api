@@ -31,6 +31,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.util.EmailBuilder;
+import gov.healthit.chpl.web.controller.results.BooleanResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.log4j.Log4j2;
@@ -91,8 +92,8 @@ public class ApiKeyController {
                       + "will create an email invitation and send it to the supplied email address.  The "
                       + "purpose of the invitation is to validate the email address of the potential API user.")
     @RequestMapping(value = "/request", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    public String request(@RequestBody ApiKeyRegistration registration) throws ValidationException {
-        return "{\"success\" : \"" + apiKeyManager.createRequest(registration).toString() + "\"}";
+    public BooleanResult request(@RequestBody ApiKeyRegistration registration) throws ValidationException {
+        return new BooleanResult(apiKeyManager.createRequest(registration));
     }
 
     @ApiOperation(value = "Confirms a user's email address and provide the new API key.",

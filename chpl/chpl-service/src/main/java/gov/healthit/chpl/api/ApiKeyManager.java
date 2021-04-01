@@ -48,6 +48,7 @@ public class ApiKeyManager {
     private String chplUrl;
 
     @Autowired
+    @SuppressWarnings("checkstyle:parameternumber")
     public ApiKeyManager(ApiKeyDAO apiKeyDAO, ApiKeyActivityDAO apiKeyActivityDAO, ActivityManager activityManager, ApiKeyRequestDAO apiKeyRequestDAO,
             Environment env, ErrorMessageUtil errorMessages,
             @Value("${apiKey.request.email.subject}") String requestEmailSubject,
