@@ -26,6 +26,14 @@ public final class SummaryStatisticsPdfDefaults {
         }
     }
 
+    public static PdfFont getDefaultBoldFont() {
+        try {
+            return PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static PdfFont getDefaultTableHeaderFont() {
         try {
             return PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
