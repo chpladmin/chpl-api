@@ -118,6 +118,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     private ValidationUtils validationUtils;
 
     @Autowired
+    @SuppressWarnings("checkstyle:parameternumber")
     public RequiredData2015Reviewer(TestFunctionalityDAO testFuncDao,
             TestProcedureDAO testProcDao, TestDataDAO testDataDao,
             CertificationCriterionDAO criteriaDao, CertificationCriterionService criterionService,
