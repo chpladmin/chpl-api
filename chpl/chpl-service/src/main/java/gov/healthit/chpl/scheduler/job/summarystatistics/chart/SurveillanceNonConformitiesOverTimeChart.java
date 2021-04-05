@@ -26,13 +26,13 @@ import org.jfree.data.xy.XYDataset;
 
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.domain.NonConformitiesOverTime;
 
-public class NonConformitiesOverTimeChart extends SummaryStatisticChart {
+public class SurveillanceNonConformitiesOverTimeChart extends SummaryStatisticChart {
 
     @Override
     public JFreeChart generate(File csv) throws IOException {
         List<NonConformitiesOverTime> reportData = getDataFromCsv(csv);
 
-        JFreeChart chart = ChartFactory.createTimeSeriesChart("Non-Conformities Over Time", "Date", "Non-Conformity Count", createDataSet(reportData));
+        JFreeChart chart = ChartFactory.createTimeSeriesChart("Surveillance Non-Conformities Over Time", "Date", "Non-Conformity Count", createDataSet(reportData));
         chart.getTitle().setFont(getTitleFont());
         chart.getTitle().setTextAlignment(HorizontalAlignment.LEFT);
 

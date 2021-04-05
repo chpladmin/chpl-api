@@ -61,7 +61,7 @@ public class CertifiedProductSearchManager {
 
     private boolean isNonConformityRelatedToListing(DirectReviewNonConformity nonConformity, Long listingId) {
         if (nonConformity.getDeveloperAssociatedListings() == null
-                || nonConformity.getDeveloperAssociatedListings().size() > 0) {
+                || nonConformity.getDeveloperAssociatedListings().size() == 0) {
             return true;
         }
         return nonConformity.getDeveloperAssociatedListings().stream()
