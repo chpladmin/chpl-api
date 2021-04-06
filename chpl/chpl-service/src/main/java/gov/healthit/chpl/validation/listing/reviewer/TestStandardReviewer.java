@@ -27,7 +27,6 @@ public class TestStandardReviewer implements Reviewer {
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(cert -> (cert.isSuccess() != null && cert.isSuccess().equals(Boolean.TRUE)))
             .filter(cert -> (cert.getTestStandards() != null && cert.getTestStandards().size() > 0))
             .forEach(certResult -> certResult.getTestStandards().stream()
                     .forEach(testStandard -> reviewTestStandard(listing, certResult, testStandard)));

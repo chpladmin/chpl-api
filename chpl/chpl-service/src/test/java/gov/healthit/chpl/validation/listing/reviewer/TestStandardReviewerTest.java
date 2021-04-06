@@ -139,7 +139,7 @@ public class TestStandardReviewerTest {
     }
 
     @Test
-    public void review_UnttestedCriterionNonexistentTestStandard_NoError() {
+    public void review_UnattestedCriterionNonexistentTestStandard_HasError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationEdition(buildEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId(), "2015"))
                 .certificationResult(CertificationResult.builder()
@@ -150,7 +150,7 @@ public class TestStandardReviewerTest {
                 .build();
 
         reviewer.review(listing);
-        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
     }
 
     @Test
@@ -170,7 +170,7 @@ public class TestStandardReviewerTest {
     }
 
     @Test
-    public void review_UnattestedCriterionNonexistentTestStandardNoId_NoError() {
+    public void review_UnattestedCriterionNonexistentTestStandardNoId_HasError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationEdition(buildEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId(), "2015"))
                 .certificationResult(CertificationResult.builder()
@@ -181,7 +181,7 @@ public class TestStandardReviewerTest {
                 .build();
 
         reviewer.review(listing);
-        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
     }
 
     @Test
@@ -201,7 +201,7 @@ public class TestStandardReviewerTest {
     }
 
     @Test
-    public void review_UnattestedCriterionNoTestStandardName_NoError() {
+    public void review_UnattestedCriterionNoTestStandardName_HasError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationEdition(buildEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId(), "2015"))
                 .certificationResult(CertificationResult.builder()
@@ -213,7 +213,7 @@ public class TestStandardReviewerTest {
         listing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(listing);
-        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
     }
 
     @Test
