@@ -23,6 +23,7 @@ import gov.healthit.chpl.upload.listing.validation.reviewer.TestingLabCodeReview
 import gov.healthit.chpl.upload.listing.validation.reviewer.TestingLabReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.VersionReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.InheritanceReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
 
@@ -47,6 +48,7 @@ public class ListingUploadValidator {
     private VersionReviewer versionReviewer;
     private CertificationDateReviewer certDateReviewer;
     private InheritanceReviewer inheritanceReviewer;
+    private FieldLengthReviewer fieldLengthReviewer;
     private UnsupportedCharacterReviewer unsupportedCharacterReviewer;
 
     @Autowired
@@ -69,6 +71,7 @@ public class ListingUploadValidator {
             CertificationDateReviewer certDateReviewer,
             ChplNumberUniqueReviewer chplNumberUniqueReviewer,
             InheritanceReviewer inheritanceReviewer,
+            FieldLengthReviewer fieldLengthReviewer,
             UnsupportedCharacterReviewer unsupportedCharacterReviewer) {
         this.csvHeaderReviewer = csvHeaderReviewer;
         this.chplNumberFormatReviewer = chplNumberFormatReviewer;
@@ -88,6 +91,7 @@ public class ListingUploadValidator {
         this.certDateReviewer = certDateReviewer;
         this.chplNumberUniqueReviewer = chplNumberUniqueReviewer;
         this.inheritanceReviewer = inheritanceReviewer;
+        this.fieldLengthReviewer = fieldLengthReviewer;
         this.unsupportedCharacterReviewer = unsupportedCharacterReviewer;
     }
 
@@ -110,6 +114,7 @@ public class ListingUploadValidator {
         additionalSoftwareCodeReviewer.review(listing);
         certifiedDateCodeReviewer.review(listing);
         certDateReviewer.review(listing);
+        fieldLengthReviewer.review(listing);
         unsupportedCharacterReviewer.review(listing);
     }
 }
