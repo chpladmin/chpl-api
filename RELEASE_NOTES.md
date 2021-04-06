@@ -1,5 +1,18 @@
 # Release Notes
 
+## Version 29.1.0
+_5 April 2021_
+
+### Features
+* Update the overnight job schedule
+* Remove G1/G2 Data Fix job
+* Add Direct Review information to Summary Statistics report
+* Display "Informed ONC per 170.523" in Complaints report
+* Filter a listing's direct reviews by listing status, edition
+* Add quartz job to get list of user-defined triggers in email
+
+---
+
 ## Version 29.0.0
 _22 March 2021_
 
