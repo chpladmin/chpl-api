@@ -12,6 +12,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class CertificationDateReviewerTest {
@@ -19,13 +20,15 @@ public class CertificationDateReviewerTest {
     private static final String BAD_CERT_DATE = "Certification date %s is not in the format yyyymmdd.";
     private static final String FUTURE_CERT_DATE = "Certification date occurs in the future.";
 
+    private ListingUploadHandlerUtil uploadUtil;
     private ErrorMessageUtil errorMessageUtil;
     private CertificationDateReviewer reviewer;
 
     @Before
     public void setup() {
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
-        reviewer = new CertificationDateReviewer(errorMessageUtil);
+        uploadUtil = new ListingUploadHandlerUtil(errorMessageUtil);
+        reviewer = new CertificationDateReviewer(uploadUtil, errorMessageUtil);
     }
 
     @Test
@@ -60,12 +63,28 @@ public class CertificationDateReviewerTest {
     }
 
     @Test
-    public void review_nullCertDateWithCertDateString_errorMessage() throws ParseException {
+    public void review_nullCertDateWithBadCertDateString_errorMessage() throws ParseException {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badCertificationDate"), ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(BAD_CERT_DATE, i.getArgument(1), ""));
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationDate(null)
+                .certificationDateStr("baddate")
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(BAD_CERT_DATE, "baddate")));
+    }
+
+    @Test
+    public void review_certDateExistsWithBadCertDateString_errorMessage() throws ParseException {
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badCertificationDate"), ArgumentMatchers.anyString()))
+                .thenAnswer(i -> String.format(BAD_CERT_DATE, i.getArgument(1), ""));
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(System.currentTimeMillis())
                 .certificationDateStr("baddate")
                 .build();
 
@@ -85,7 +104,7 @@ public class CertificationDateReviewerTest {
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationDate(tomorrow.getTimeInMillis())
-                .certificationDateStr("150101")
+                .certificationDateStr("20150101")
                 .build();
 
         reviewer.review(listing);
@@ -120,7 +139,7 @@ public class CertificationDateReviewerTest {
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationDate(yesterday.getTimeInMillis())
-                .certificationDateStr("150101")
+                .certificationDateStr("20150101")
                 .build();
 
         reviewer.review(listing);

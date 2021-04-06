@@ -376,21 +376,21 @@ public class ListingUploadHandlerUtil {
         return result;
     }
 
-    private Date parseDate(String value) {
+    public Date parseDate(String value) throws ValidationException {
         if (value == null || StringUtils.isEmpty(value.trim())) {
             return null;
         }
 
         //TODO: look for more date formats
-        Date certificationDate = null;
+        Date parsedDate = null;
         if (value.matches("[0-9]{8}")) {
             try {
-                certificationDate = dateFormat.parse(value);
+                parsedDate = dateFormat.parse(value);
             } catch (ParseException ex) {
                 LOGGER.error("Could not parse " + value + " as a date. " + ex.getMessage());
                 throw new ValidationException(msgUtil.getMessage("listing.upload.invalidDate", value));
             }
         }
-        return certificationDate;
+        return parsedDate;
     }
 }
