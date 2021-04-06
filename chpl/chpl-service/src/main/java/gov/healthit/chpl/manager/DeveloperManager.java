@@ -198,7 +198,7 @@ public class DeveloperManager extends SecuredManager {
             product.getVersions().stream().forEach(version -> {
                 List<SimpleListing> listingsForVersion = listings.stream()
                         .filter(listing -> listing.getVersion().getId().equals(version.getVersionId()))
-                        .map(listing -> convert(listing, acbs))
+                        .map(listing -> convertToSimpleListing(listing, acbs))
                         .collect(Collectors.toList());
                     version.getListings().addAll(listingsForVersion);
                 });
@@ -206,7 +206,7 @@ public class DeveloperManager extends SecuredManager {
         return developerTree;
     }
 
-    private SimpleListing convert(CertifiedProductDetailsDTO listingDto, List<CertificationBodyDTO> acbs) {
+    private SimpleListing convertToSimpleListing(CertifiedProductDetailsDTO listingDto, List<CertificationBodyDTO> acbs) {
         SimpleListing listingLeaf = new SimpleListing();
         Optional<CertificationBodyDTO> listingAcb = acbs.stream()
                 .filter(acb -> acb.getId().equals(listingDto.getCertificationBodyId())).findFirst();
