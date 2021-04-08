@@ -56,13 +56,13 @@ public class ApiKeyController {
                     + " named 'api_key'.")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public String register(@RequestBody ApiKeyRegistration registration) throws EntityCreationException,
+    public KeyRegistered register(@RequestBody ApiKeyRegistration registration) throws EntityCreationException,
     AddressException, MessagingException, JsonProcessingException, EntityRetrievalException {
 
         return create(registration);
     }
 
-    private String create(final ApiKeyRegistration registration) throws JsonProcessingException, EntityCreationException,
+    private KeyRegistered create(final ApiKeyRegistration registration) throws JsonProcessingException, EntityCreationException,
             EntityRetrievalException, AddressException, MessagingException  {
 
         Date now = new Date();
@@ -84,7 +84,7 @@ public class ApiKeyController {
 
         sendRegistrationEmail(registration.getEmail(), registration.getName(), apiKey);
 
-        return "{\"keyRegistered\" : \"" + apiKey + "\"}";
+        return new KeyRegistered(apiKey);
     }
 
     @ApiOperation(value = "Sends an email validation to user requesting a new API key.",
@@ -110,21 +110,20 @@ public class ApiKeyController {
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC")
     @RequestMapping(value = "/{key}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
-    public String revoke(@PathVariable("key") final String key,
+    public KeyRevoked revoke(@PathVariable("key") final String key,
             @RequestHeader(value = "API-Key", required = false) String userApiKey,
             @RequestParam(value = "apiKey", required = false) String userApiKeyParam) throws Exception {
 
         return delete(key, userApiKey, userApiKeyParam);
     }
 
-    private String delete(String key, String userApiKey, String userApiKeyParam) throws Exception {
-
+    private KeyRevoked delete(String key, String userApiKey, String userApiKeyParam) throws Exception {
         String keyToRevoke = key;
         if (keyToRevoke.equals(userApiKey) || keyToRevoke.equals(userApiKeyParam)) {
             throw new Exception("A user can not delete their own API key.");
         }
         apiKeyManager.deleteKey(keyToRevoke);
-        return "{\"keyRevoked\" : \"" + keyToRevoke + "\"}";
+        return new KeyRevoked(keyToRevoke);
 
     }
 
@@ -166,4 +165,29 @@ public class ApiKeyController {
         .htmlMessage(htmlMessage)
         .sendEmail();
     }
+
+    private class KeyRegistered {
+        private String keyRegistered;
+
+        KeyRegistered(String keyRegistered) {
+            this.keyRegistered = keyRegistered;
+        }
+
+       public String getKeyRegistered() {
+            return keyRegistered;
+       }
+    }
+
+    private class KeyRevoked {
+        private String keyRevoked;
+
+        KeyRevoked(String keyRevoked) {
+            this.keyRevoked = keyRevoked;
+        }
+
+       public String getKeyRevoked() {
+            return keyRevoked;
+       }
+    }
+
 }
