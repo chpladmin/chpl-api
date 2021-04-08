@@ -359,12 +359,12 @@ public class ValidationUtils {
         return warnings;
     }
 
-    public List<String> checkSpecificCriteriaForErrors(String criterionNumber,
+    public List<String> checkSpecificCriteriaForErrors(CertificationCriterion criterion,
             List<CertificationCriterion> allCriteriaMet, List<String> complimentaryCertNumbers) {
         List<String> errors = new ArrayList<String>();
         boolean hasCriterion = false;
         for (CertificationCriterion currCriteria : allCriteriaMet) {
-            if (currCriteria.getNumber().equals(criterionNumber)) {
+            if (currCriteria.getId().equals(criterion.getId())) {
                 hasCriterion = true;
             }
         }
@@ -378,7 +378,7 @@ public class ValidationUtils {
                 }
 
                 if (!hasComplimentaryCert) {
-                    errors.add("Certification criterion " + criterionNumber + " was found so "
+                    errors.add("Certification criterion " + Util.formatCriteriaNumber(criterion) + " was found so "
                             + getAllCriteriaWithNumber(currRequiredCriteria) + " is required but was not found.");
                 }
             }
