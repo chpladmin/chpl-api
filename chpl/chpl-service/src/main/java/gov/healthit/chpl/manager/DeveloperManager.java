@@ -28,11 +28,9 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DeveloperTransparency;
-import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.developer.hierarchy.DeveloperTree;
 import gov.healthit.chpl.domain.developer.hierarchy.ProductTree;
@@ -53,6 +51,7 @@ import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.TransparencyAttestationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -535,19 +534,17 @@ public class DeveloperManager extends SecuredManager {
         return duplicatedChplProductNumbers;
     }
 
-    public void validateDeveloperInSystemIfExists(PendingCertifiedProductDetails pendingCp)
+    public void validateDeveloperInSystemIfExists(PendingCertifiedProductDTO pendingCp)
             throws EntityRetrievalException, ValidationException {
-        if (!isNewDeveloperCode(pendingCp.getChplProductNumber())) {
+        if (!isNewDeveloperCode(pendingCp.getUniqueId())) {
             DeveloperDTO systemDeveloperDTO = null;
-            if (pendingCp.getDeveloper() != null && pendingCp.getDeveloper().getDeveloperId() != null) {
-                systemDeveloperDTO = getById(pendingCp.getDeveloper().getDeveloperId());
+            if (pendingCp.getDeveloperId() != null) {
+                systemDeveloperDTO = getById(pendingCp.getDeveloperId());
             }
             if (systemDeveloperDTO != null) {
-                final Object pendingAcbNameObj = pendingCp.getCertifyingBody()
-                        .get(CertifiedProductSearchDetails.ACB_NAME_KEY);
-                if (pendingAcbNameObj != null && !StringUtils.isEmpty(pendingAcbNameObj.toString())) {
-                    Set<String> sysDevErrorMessages = runSystemValidations(systemDeveloperDTO,
-                            pendingAcbNameObj.toString());
+                String acbName = pendingCp.getCertificationBodyName();
+                if (!StringUtils.isEmpty(acbName)) {
+                    Set<String> sysDevErrorMessages = runSystemValidations(systemDeveloperDTO, acbName);
                     if (!sysDevErrorMessages.isEmpty()) {
                         throw new ValidationException(sysDevErrorMessages);
                     }

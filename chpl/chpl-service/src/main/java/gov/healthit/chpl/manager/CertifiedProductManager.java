@@ -212,6 +212,7 @@ public class CertifiedProductManager extends SecuredManager {
     private ResourcePermissions resourcePermissions;
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
+    private PendingCertifiedProductManager pcpManager;
     private ActivityManager activityManager;
     private ListingValidatorFactory validatorFactory;
     private CuresUpdateService curesUpdateService;
@@ -251,6 +252,7 @@ public class CertifiedProductManager extends SecuredManager {
             FuzzyChoicesDAO fuzzyChoicesDao, ResourcePermissions resourcePermissions,
             CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
+            PendingCertifiedProductManager pcpManager,
             ActivityManager activityManager, ListingValidatorFactory validatorFactory,
             CuresUpdateService curesUpdateService,
             CertificationCriterionService criteriaService) {
@@ -294,6 +296,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.resourcePermissions = resourcePermissions;
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
+        this.pcpManager = pcpManager;
         this.activityManager = activityManager;
         this.validatorFactory = validatorFactory;
         this.curesUpdateService = curesUpdateService;
@@ -1028,6 +1031,7 @@ public class CertifiedProductManager extends SecuredManager {
         curesEvent.setCertifiedProductId(newCertifiedProduct.getId());
         curesUpdateDao.create(curesEvent);
 
+        pcpManager.confirm(pendingCp.getCertificationBodyId(), pendingCp.getId());
         return newCertifiedProduct;
     }
 

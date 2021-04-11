@@ -43,7 +43,6 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.upload.listing.ListingUploadManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.EmailBuilder;
-import gov.healthit.chpl.util.ErrorMessageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.log4j.Log4j2;
@@ -61,15 +60,13 @@ public class ListingUploadController {
     private String uploadErrorEmailSubject;
 
     private ListingUploadManager listingUploadManager;
-    private ErrorMessageUtil msgUtil;
     private FF4j ff4j;
     private Environment env;
 
     @Autowired
     public ListingUploadController(ListingUploadManager listingUploadManager,
-            FF4j ff4j, ErrorMessageUtil msgUtil, Environment env) {
+            FF4j ff4j, Environment env) {
         this.listingUploadManager = listingUploadManager;
-        this.msgUtil = msgUtil;
         this.ff4j = ff4j;
         this.env = env;
     }
