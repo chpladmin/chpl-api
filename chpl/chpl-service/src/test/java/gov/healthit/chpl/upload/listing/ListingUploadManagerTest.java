@@ -33,9 +33,11 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.upload.listing.handler.CertificationDateHandler;
 import gov.healthit.chpl.upload.listing.handler.ListingDetailsUploadHandler;
 import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
+import gov.healthit.chpl.upload.listing.validation.ListingUploadValidator;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -77,8 +79,11 @@ public class ListingUploadManagerTest {
         uploadManager = new ListingUploadManager(Mockito.mock(ListingDetailsUploadHandler.class),
                 certDateHandler,
                 listingNormalizer,
+                Mockito.mock(ListingUploadValidator.class),
                 uploadUtil, chplProductNumberUtil, Mockito.mock(ListingUploadDao.class), acbDao,
-                Mockito.mock(UserDAO.class), Mockito.mock(ActivityManager.class), msgUtil);
+                Mockito.mock(UserDAO.class),
+                Mockito.mock(SchedulerManager.class),
+                Mockito.mock(ActivityManager.class), msgUtil);
     }
 
     @Test(expected = ValidationException.class)

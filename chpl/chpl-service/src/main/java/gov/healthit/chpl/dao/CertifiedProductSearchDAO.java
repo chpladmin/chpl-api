@@ -74,6 +74,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         }
         CertifiedProduct result = new CertifiedProduct();
         result.setCertificationDate(results.get(0).getCertificationDate().getTime());
+        result.setCertificationStatus(results.get(0).getCertificationStatus());
         result.setChplProductNumber(results.get(0).getChplProductNumber());
         result.setEdition(results.get(0).getEdition());
         result.setCuresUpdate(results.get(0).getCuresUpdate());

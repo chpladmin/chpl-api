@@ -27,10 +27,9 @@ public class DeveloperDetailsUploadHandler {
         }
 
         Developer developer = Developer.builder()
-                .name(uploadUtil.parseSingleRowField(Headings.DEVELOPER, headingRecord, listingRecords))
-                .website(uploadUtil.parseSingleRowField(Headings.DEVELOPER_WEBSITE, headingRecord, listingRecords))
-                .selfDeveloper(parseSelfDeveloper(headingRecord, listingRecords))
-                .selfDeveloperStr(parseSelfDeveloperStr(headingRecord, listingRecords))
+                .userEnteredName(uploadUtil.parseSingleRowField(Headings.DEVELOPER, headingRecord, listingRecords))
+                .userEnteredWebsite(uploadUtil.parseSingleRowField(Headings.DEVELOPER_WEBSITE, headingRecord, listingRecords))
+                .userEnteredSelfDeveloper(parseSelfDeveloperStr(headingRecord, listingRecords))
                 .build();
         Address address = Address.builder()
                 .line1(uploadUtil.parseSingleRowField(Headings.DEVELOPER_ADDRESS, headingRecord, listingRecords))
@@ -38,23 +37,14 @@ public class DeveloperDetailsUploadHandler {
                 .state(uploadUtil.parseSingleRowField(Headings.DEVELOPER_STATE, headingRecord, listingRecords))
                 .zipcode(uploadUtil.parseSingleRowField(Headings.DEVELOPER_ZIP, headingRecord, listingRecords))
                 .build();
-        developer.setAddress(address);
+        developer.setUserEnteredAddress(address);
         PointOfContact contact = PointOfContact.builder()
                 .fullName(uploadUtil.parseSingleRowField(Headings.DEVELOPER_CONTACT_NAME, headingRecord, listingRecords))
                 .email(uploadUtil.parseSingleRowField(Headings.DEVELOPER_EMAIL, headingRecord, listingRecords))
                 .phoneNumber(uploadUtil.parseSingleRowField(Headings.DEVELOPER_PHONE, headingRecord, listingRecords))
                 .build();
-        developer.setContact(contact);
+        developer.setUserEnteredPointOfContact(contact);
         return developer;
-    }
-
-    private Boolean parseSelfDeveloper(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        Boolean result = null;
-        try {
-            result = uploadUtil.parseSingleRowFieldAsBoolean(Headings.SELF_DEVELOPER, headingRecord, listingRecords);
-        } catch (Exception e) {
-        }
-        return result;
     }
 
     private String parseSelfDeveloperStr(CSVRecord headingRecord, List<CSVRecord> listingRecords) {

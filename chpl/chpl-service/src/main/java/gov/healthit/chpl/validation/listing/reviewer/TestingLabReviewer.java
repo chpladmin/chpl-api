@@ -13,7 +13,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
  * @author kekey
  *
  */
-@Component("testingLabReviewer")
+@Component("edition20142015testingLabReviewer")
 public class TestingLabReviewer implements Reviewer {
     @Autowired protected ErrorMessageUtil msgUtil;
 

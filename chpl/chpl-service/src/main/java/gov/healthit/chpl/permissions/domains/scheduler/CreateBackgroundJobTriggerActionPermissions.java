@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
+import gov.healthit.chpl.scheduler.job.ListingUploadValidationJob;
 import gov.healthit.chpl.scheduler.job.RealWorldTestingUploadJob;
 import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
 import gov.healthit.chpl.scheduler.job.developer.MergeDeveloperJob;
@@ -27,6 +28,7 @@ public class CreateBackgroundJobTriggerActionPermissions extends ActionPermissio
         BACKGROUND_JOBS_ACB_CAN_CREATE.add(RealWorldTestingUploadJob.JOB_NAME);
         BACKGROUND_JOBS_ACB_CAN_CREATE.add(QuarterlyReportGenerationJob.JOB_NAME);
         BACKGROUND_JOBS_ACB_CAN_CREATE.add(AnnualReportGenerationJob.JOB_NAME);
+        BACKGROUND_JOBS_ACB_CAN_CREATE.add(ListingUploadValidationJob.JOB_NAME);
     }
 
     @Override
