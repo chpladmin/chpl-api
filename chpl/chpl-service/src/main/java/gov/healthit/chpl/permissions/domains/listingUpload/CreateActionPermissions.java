@@ -37,7 +37,7 @@ public class CreateActionPermissions extends ActionPermissions {
     private boolean hasAccess(ListingUpload uploadedMetadata) {
         if (getResourcePermissions().isUserRoleAdmin()) {
             return true;
-        } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
+        } else if (getResourcePermissions().isUserRoleAcbAdmin() && uploadedMetadata.getAcb() != null) {
             return isAcbValidForCurrentUser(uploadedMetadata.getAcb().getId());
         }
         return false;
