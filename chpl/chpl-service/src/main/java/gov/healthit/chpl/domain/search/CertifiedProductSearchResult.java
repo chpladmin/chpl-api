@@ -47,6 +47,9 @@ public class CertifiedProductSearchResult implements Serializable {
     })
     private String practiceType;
 
+    @JsonView({
+        SearchViews.Default.class
+    })
     private Long developerId;
 
     @JsonView({
