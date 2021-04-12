@@ -620,7 +620,6 @@ public class CertifiedProductController {
     @RequestMapping(value = "/pending/metadata", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<PendingCertifiedProductMetadata> getPendingCertifiedProductMetadata()
             throws AccessDeniedException {
-
         List<PendingCertifiedProductMetadataDTO> metadataDtos = pcpManager.getAllPendingCertifiedProductMetadata();
 
         List<PendingCertifiedProductMetadata> result = new ArrayList<PendingCertifiedProductMetadata>();
@@ -786,6 +785,8 @@ public class CertifiedProductController {
                 activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, createdListing.getId(),
                         "Created a certified product", null, createdListing);
             } catch (Exception ex) {
+                //TODO - alert on this message in datadog
+                LOGGER.error("Unexpected exception confirming pending listing " + pcpDto.getId() + ".", ex);
                 pcpManager.markAsNotProcessing(acbId, pcpDto.getId());
             } finally {
                 response = getConfirmResponse(createdListing);
