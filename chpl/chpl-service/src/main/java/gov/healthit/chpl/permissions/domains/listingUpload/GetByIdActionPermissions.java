@@ -38,8 +38,7 @@ public class GetByIdActionPermissions extends ActionPermissions {
     }
 
     private boolean hasAccess(ListingUpload uploadedMetadata) {
-        if (getResourcePermissions().isUserRoleAdmin()
-                || getResourcePermissions().isUserRoleOnc()) {
+        if (getResourcePermissions().isUserRoleAdmin()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             return isAcbValidForCurrentUser(uploadedMetadata.getAcb().getId());

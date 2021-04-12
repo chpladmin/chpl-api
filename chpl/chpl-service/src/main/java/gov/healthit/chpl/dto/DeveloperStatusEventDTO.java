@@ -6,12 +6,16 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.entity.developer.DeveloperStatusEventEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class DeveloperStatusEventDTO implements Serializable {
     private static final long serialVersionUID = -2492374479266782228L;
 
@@ -42,7 +46,7 @@ public class DeveloperStatusEventDTO implements Serializable {
 
     /**
      * Return true iff this DTO matches a different on.
-     * 
+     *
      * @param anotherStatusEvent
      *            the different one
      * @return true iff this matches
