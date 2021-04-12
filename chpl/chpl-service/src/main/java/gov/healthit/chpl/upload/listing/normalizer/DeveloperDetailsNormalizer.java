@@ -11,8 +11,10 @@ import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import lombok.extern.log4j.Log4j2;
 
 @Component
+@Log4j2
 public class DeveloperDetailsNormalizer {
     private DeveloperDAO devDao;
     private ChplProductNumberUtil chplProductNumberUtil;
@@ -85,6 +87,7 @@ public class DeveloperDetailsNormalizer {
         try {
             selfDeveloper = uploadHandlerUtil.parseBoolean(userEnteredDev.getUserEnteredSelfDeveloper());
         } catch (Exception ex) {
+            LOGGER.warn("Could not turn " + userEnteredDev.getUserEnteredSelfDeveloper() + " into a boolean.");
         }
         userEnteredDev.setSelfDeveloper(selfDeveloper);
         userEnteredDev.setWebsite(userEnteredDev.getUserEnteredWebsite());

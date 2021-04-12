@@ -977,9 +977,49 @@ public class DeveloperReviewerTest {
     }
 
     @Test
-    public void review_systemSelfDeveloperInvalidAndDoesNotMatchEnteredSelfDeveloper_noWarning() {
+    public void review_systemSelfDeveloperValidAndDoesNotMatchEnteredSelfDeveloper_hasWarning() {
         Developer developer = buildSystemDeveloper();
         developer.setUserEnteredSelfDeveloper("blah");
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+    }
+
+    @Test
+    public void review_systemSelfDeveloperNullAndDoesNotMatchEnteredSelfDeveloper_hasWarning() {
+        Developer developer = buildSystemDeveloper();
+        developer.setSelfDeveloper(null);
+        developer.setUserEnteredSelfDeveloper("blah");
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+    }
+
+    @Test
+    public void review_systemSelfDeveloperTrueAndDoesNotMatchEnteredSelfDeveloper_hasWarning() {
+        Developer developer = buildSystemDeveloper();
+        developer.setUserEnteredSelfDeveloper("0");
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+    }
+
+    @Test
+    public void review_systemSelfDeveloperValidAndDoesMatchEnteredSelfDeveloper_noWarning() {
+        Developer developer = buildSystemDeveloper();
+        developer.setUserEnteredSelfDeveloper("1");
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
                 .build();
