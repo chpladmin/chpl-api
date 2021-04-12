@@ -132,6 +132,7 @@ public class CertifiedProductSearchResult implements Serializable {
         this.acbCertificationId = other.getAcbCertificationId();
         this.practiceType = other.getPracticeType();
         this.developer = other.getDeveloper();
+        this.developerId = other.getDeveloperId();
         this.developerStatus = other.getDeveloperStatus();
         this.product = other.getProduct();
         this.version = other.getVersion();
