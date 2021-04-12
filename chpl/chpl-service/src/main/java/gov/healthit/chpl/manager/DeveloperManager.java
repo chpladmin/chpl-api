@@ -553,8 +553,7 @@ public class DeveloperManager extends SecuredManager {
                 final Object pendingAcbNameObj = pendingCp.getCertifyingBody()
                         .get(CertifiedProductSearchDetails.ACB_NAME_KEY);
                 if (pendingAcbNameObj != null && !StringUtils.isEmpty(pendingAcbNameObj.toString())) {
-                    Set<String> sysDevErrorMessages = runSystemValidations(systemDeveloperDTO,
-                            pendingAcbNameObj.toString());
+                    Set<String> sysDevErrorMessages = runSystemValidations(systemDeveloperDTO);
                     if (!sysDevErrorMessages.isEmpty()) {
                         throw new ValidationException(sysDevErrorMessages);
                     }
@@ -674,10 +673,10 @@ public class DeveloperManager extends SecuredManager {
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.PRIOR_STATUS_ACTIVE));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.EDIT_STATUS_HISTORY));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.STATUS_CHANGED));
-        return runValidations(rules, dto, null, beforeDev);
+        return runValidations(rules, dto, beforeDev);
     }
 
-    private Set<String> runCreateValidations(DeveloperDTO dto) {
+    public Set<String> runCreateValidations(DeveloperDTO dto) {
         List<ValidationRule<DeveloperValidationContext>> rules = new ArrayList<ValidationRule<DeveloperValidationContext>>();
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.NAME));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.WEBSITE_WELL_FORMED));
@@ -687,13 +686,13 @@ public class DeveloperManager extends SecuredManager {
         return runValidations(rules, dto);
     }
 
-    private Set<String> runSystemValidations(DeveloperDTO dto, String pendingAcbName) {
+    public Set<String> runSystemValidations(DeveloperDTO dto) {
         List<ValidationRule<DeveloperValidationContext>> rules = new ArrayList<ValidationRule<DeveloperValidationContext>>();
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.NAME));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.WEBSITE_REQUIRED));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.CONTACT));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.ADDRESS));
-        return runValidations(rules, dto, pendingAcbName);
+        return runValidations(rules, dto);
     }
 
     private Set<String> runValidations(List<ValidationRule<DeveloperValidationContext>> rules,
@@ -702,14 +701,9 @@ public class DeveloperManager extends SecuredManager {
     }
 
     private Set<String> runValidations(List<ValidationRule<DeveloperValidationContext>> rules,
-            DeveloperDTO dto, String pendingAcbName) {
-        return runValidations(rules, dto, pendingAcbName, null);
-    }
-
-    private Set<String> runValidations(List<ValidationRule<DeveloperValidationContext>> rules,
-            DeveloperDTO dto, String pendingAcbName, DeveloperDTO beforeDev) {
+            DeveloperDTO dto, DeveloperDTO beforeDev) {
         Set<String> errorMessages = new HashSet<String>();
-        DeveloperValidationContext context = new DeveloperValidationContext(dto, msgUtil, pendingAcbName, beforeDev);
+        DeveloperValidationContext context = new DeveloperValidationContext(dto, msgUtil, beforeDev);
 
         for (ValidationRule<DeveloperValidationContext> rule : rules) {
             if (!rule.isValid(context)) {

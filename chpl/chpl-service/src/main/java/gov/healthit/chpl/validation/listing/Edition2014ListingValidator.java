@@ -64,7 +64,7 @@ public abstract class Edition2014ListingValidator extends Validator {
     private RequiredData2014Reviewer requiredFieldReviewer;
 
     @Autowired
-    @Qualifier("testingLabReviewer")
+    @Qualifier("edition20142015testingLabReviewer")
     private TestingLabReviewer testingLabReviewer;
 
     @Autowired

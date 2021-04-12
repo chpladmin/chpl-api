@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.Product;
+import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 
@@ -31,17 +33,17 @@ public class ProductAndVersionNormalizer {
             ProductDTO foundProduct = productDao.getByDeveloperAndName(listing.getDeveloper().getDeveloperId(),
                     listing.getProduct().getName());
             if (foundProduct != null) {
-                listing.getProduct().setProductId(foundProduct.getId());
+                listing.setProduct(new Product(foundProduct));
             }
         }
 
-        if (listing.getProduct().getProductId() != null
+        if (listing.getProduct() != null && listing.getProduct().getProductId() != null
                 && listing.getVersion() != null && listing.getVersion().getVersionId() == null
                 && !StringUtils.isEmpty(listing.getVersion().getVersion())) {
             ProductVersionDTO foundVersion = versionDao.getByProductAndVersion(listing.getProduct().getProductId(),
                     listing.getVersion().getVersion());
             if (foundVersion != null) {
-                listing.getVersion().setVersionId(foundVersion.getId());
+                listing.setVersion(new ProductVersion(foundVersion));
             }
         }
     }
