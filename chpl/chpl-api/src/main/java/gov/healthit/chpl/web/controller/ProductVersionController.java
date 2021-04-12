@@ -224,7 +224,7 @@ public class ProductVersionController {
         if (possibleChangedChplIds != null && possibleChangedChplIds.size() > 0) {
             StringBuffer buf = new StringBuffer();
             for (CertifiedProduct possibleChanged : possibleChangedChplIds) {
-                if (!chplProductNumberUtil.isLegacy(possibleChanged.getChplProductNumber())) {
+                if (!chplProductNumberUtil.isLegacyChplProductNumberStyle(possibleChanged.getChplProductNumber())) {
                     if (buf.length() > 0) {
                         buf.append(",");
                     }

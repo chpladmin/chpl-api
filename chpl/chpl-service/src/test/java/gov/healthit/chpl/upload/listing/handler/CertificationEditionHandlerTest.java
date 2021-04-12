@@ -15,7 +15,6 @@ import org.mockito.Mockito;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
-import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class CertificationEditionHandlerTest {
@@ -24,63 +23,24 @@ public class CertificationEditionHandlerTest {
 
     private ErrorMessageUtil msgUtil;
     private ListingUploadHandlerUtil handlerUtil;
-    private ChplProductNumberUtil chplProductNumberUtil;
     private CertificationEditionHandler handler;
 
     @Before
     public void setup() {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         handlerUtil = new ListingUploadHandlerUtil(msgUtil);
-        chplProductNumberUtil = new ChplProductNumberUtil();
-        handler = new CertificationEditionHandler(handlerUtil, chplProductNumberUtil);
+        handler = new CertificationEditionHandler(handlerUtil);
     }
 
     @Test
-    public void parseEdition_NoEditionColumnNoChplProductNumber_ReturnsNull() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
-        assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("NOEDITION");
-        assertNotNull(listingRecords);
-
-        Map<String, Object> edition = handler.handle(headingRecord, listingRecords);
-        assertNull(edition);
-    }
-
-    @Test
-    public void parseEdition_BlankEditionColumnNoChplProductNumber_ReturnsNull() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",CERT_YEAR__C").get(0);
-        assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("NOEDITION,");
-        assertNotNull(listingRecords);
-
-        Map<String, Object> edition = handler.handle(headingRecord, listingRecords);
-        assertNull(edition);
-    }
-
-    @Test
-    public void parseEdition_BlankEditionColumnValidChplProductNumber_ReturnsValueFromChplProductNumber() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",CERT_YEAR__C").get(0);
-        assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",");
-        assertNotNull(listingRecords);
-
-        Map<String, Object> edition = handler.handle(headingRecord, listingRecords);
-        assertNotNull(edition);
-        assertEquals("2015", edition.get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString());
-        assertNull(edition.get(CertifiedProductSearchDetails.EDITION_ID_KEY));
-    }
-
-    @Test
-    public void parseEdition_NoEditionColumnValidChplProductNumber_ReturnsEditionFromChplProductNumber() {
+    public void parseEdition_NoEditionColumn_ReturnsNull() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN);
         assertNotNull(listingRecords);
 
         Map<String, Object> edition = handler.handle(headingRecord, listingRecords);
-        assertNotNull(edition);
-        assertEquals("2015", edition.get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString());
-        assertNull(edition.get(CertifiedProductSearchDetails.EDITION_ID_KEY));
+        assertNull(edition);
     }
 
     @Test

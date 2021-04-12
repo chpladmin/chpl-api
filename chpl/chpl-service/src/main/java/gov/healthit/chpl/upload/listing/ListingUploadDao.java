@@ -53,12 +53,21 @@ public class ListingUploadDao extends BaseDAOImpl {
         return convert(toCreate);
     }
 
+    public void updateErrorAndWarningCounts(ListingUpload listingUpload) {
+        ListingUploadEntity entity = entityManager.find(ListingUploadEntity.class, listingUpload.getId());
+        if (entity != null) {
+            entity.setErrorCount(listingUpload.getErrorCount());
+            entity.setWarningCount(listingUpload.getWarningCount());
+            update(entity);
+        }
+    }
+
     public void delete(Long listingUploadId) {
         ListingUploadEntity entity = entityManager.find(ListingUploadEntity.class, listingUploadId);
         if (entity != null) {
             entity.setDeleted(true);
+            update(entity);
         }
-        update(entity);
     }
 
     public List<ListingUpload> getAll() {

@@ -13,10 +13,15 @@ import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntitySimple;
 import gov.healthit.chpl.entity.developer.DeveloperStatusEventEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.Singular;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
+@Builder
+@AllArgsConstructor
 public class DeveloperDTO implements Serializable {
 
     private static final long serialVersionUID = -2492373079266782228L;
@@ -31,8 +36,10 @@ public class DeveloperDTO implements Serializable {
     private String name;
     private String website;
     private Boolean selfDeveloper;
-    private List<DeveloperStatusEventDTO> statusEvents;
-    private List<DeveloperACBMapDTO> transparencyAttestationMappings;
+    @Singular
+    private List<DeveloperStatusEventDTO> statusEvents = new ArrayList<DeveloperStatusEventDTO>();
+    @Singular
+    private List<DeveloperACBMapDTO> transparencyAttestationMappings = new ArrayList<DeveloperACBMapDTO>();
     private Statuses statuses;
 
     public DeveloperDTO() {
