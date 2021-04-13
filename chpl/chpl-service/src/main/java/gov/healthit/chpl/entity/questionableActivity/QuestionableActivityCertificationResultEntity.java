@@ -70,98 +70,122 @@ public class QuestionableActivityCertificationResultEntity implements Questionab
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
 
+    @Override
     public Long getId() {
         return id;
     }
 
+    @Override
     public void setId(final Long id) {
         this.id = id;
     }
 
+    @Override
     public Long getTriggerId() {
         return triggerId;
     }
 
+    @Override
     public void setTriggerId(Long triggerId) {
         this.triggerId = triggerId;
     }
 
+    @Override
     public QuestionableActivityTriggerEntity getTrigger() {
         return trigger;
     }
 
+    @Override
     public void setTrigger(QuestionableActivityTriggerEntity trigger) {
         this.trigger = trigger;
     }
 
+    @Override
     public String getBefore() {
         return before;
     }
 
+    @Override
     public void setBefore(String before) {
         this.before = before;
     }
 
+    @Override
     public String getAfter() {
         return after;
     }
 
+    @Override
     public void setAfter(String after) {
         this.after = after;
     }
 
+    @Override
     public Date getActivityDate() {
         return Util.getNewDate(activityDate);
     }
 
+    @Override
     public void setActivityDate(Date activityDate) {
         this.activityDate = Util.getNewDate(activityDate);
     }
 
+    @Override
     public Long getUserId() {
         return userId;
     }
 
+    @Override
     public void setUserId(Long userId) {
         this.userId = userId;
     }
 
+    @Override
     public UserEntity getUser() {
         return user;
     }
 
+    @Override
     public void setUser(UserEntity user) {
         this.user = user;
     }
 
+    @Override
     public Boolean getDeleted() {
         return deleted;
     }
 
+    @Override
     public void setDeleted(Boolean deleted) {
         this.deleted = deleted;
     }
 
+    @Override
     public Long getLastModifiedUser() {
         return lastModifiedUser;
     }
 
+    @Override
     public void setLastModifiedUser(Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
+    @Override
     public Date getCreationDate() {
         return Util.getNewDate(creationDate);
     }
 
+    @Override
     public void setCreationDate(final Date creationDate) {
         this.creationDate = Util.getNewDate(creationDate);
     }
 
+    @Override
     public Date getLastModifiedDate() {
         return Util.getNewDate(lastModifiedDate);
     }
 
+    @Override
     public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }

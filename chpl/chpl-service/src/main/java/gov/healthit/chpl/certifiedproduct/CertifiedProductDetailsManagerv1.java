@@ -1,4 +1,4 @@
-package gov.healthit.chpl.manager;
+package gov.healthit.chpl.certifiedproduct;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,7 +9,8 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
@@ -79,6 +80,10 @@ import gov.healthit.chpl.dto.MeaningfulUseUserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.logging.Loggable;
+import gov.healthit.chpl.manager.CertificationResultManager;
+import gov.healthit.chpl.manager.DimensionalDataManager;
+import gov.healthit.chpl.manager.SurveillanceManager;
+import gov.healthit.chpl.manager.TestingFunctionalityManager;
 import gov.healthit.chpl.manager.impl.CertifiedProductDetailsManagerAsync;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.DirectReviewSearchService;
@@ -89,13 +94,11 @@ import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.PropertyUtil;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 @Loggable
-@Service("certifiedProductDetailsManager")
-public class CertifiedProductDetailsManager {
-
+@Component("certifiedProductDetailsManager")
+@Conditional(value = CertifiedProductDetailsManagerv1Condition.class)
+public class CertifiedProductDetailsManagerv1 implements CertifiedProductDetailsManager {
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
     private CQMResultDetailsDAO cqmResultDetailsDAO;
     private CQMResultDAO cqmResultDao;
@@ -123,7 +126,7 @@ public class CertifiedProductDetailsManager {
 
     @SuppressWarnings({"checkstyle:parameternumber"})
     @Autowired
-    public CertifiedProductDetailsManager(
+    public CertifiedProductDetailsManagerv1(
             CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
             CQMResultDetailsDAO cqmResultDetailsDAO,
             CQMResultDAO cqmResultDao,
@@ -176,6 +179,7 @@ public class CertifiedProductDetailsManager {
     }
 
     @Transactional
+    @Override
     public CertifiedProductSearchDetails getCertifiedProductDetailsByChplProductNumber(String chplProductNumber)
             throws EntityRetrievalException {
 
@@ -184,61 +188,34 @@ public class CertifiedProductDetailsManager {
     }
 
     @Transactional
-    public CertifiedProductSearchDetails getCertifiedProductDetailsByChplProductNumber(String chplProductNumber,
-            Boolean retrieveAsynchronously) throws EntityRetrievalException {
-
-        CertifiedProductDetailsDTO dto = getCertifiedProductDetailsDtoByChplProductNumber(chplProductNumber);
-        return createCertifiedSearchDetails(dto, retrieveAsynchronously);
-    }
-
-    @Transactional
+    @Override
     public CertifiedProductSearchDetails getCertifiedProductDetails(Long certifiedProductId)
             throws EntityRetrievalException {
 
-        return getCertifiedProductDetails(certifiedProductId, propUtil.isAsyncListingDetailsEnabled());
-    }
-
-    @Transactional
-    public CertifiedProductSearchDetails getCertifiedProductDetails(Long certifiedProductId, Boolean retrieveAsynchronously)
-            throws EntityRetrievalException {
-
         CertifiedProductDetailsDTO dto = certifiedProductSearchResultDAO.getById(certifiedProductId);
-        return createCertifiedSearchDetails(dto, retrieveAsynchronously);
+        return createCertifiedSearchDetails(dto, false);
     }
 
     @Transactional
+    @Override
     public CertifiedProductSearchDetails getCertifiedProductDetailsBasicByChplProductNumber(String chplProductNumber)
             throws EntityRetrievalException {
 
-        return getCertifiedProductDetailsBasicByChplProductNumber(chplProductNumber,
-                propUtil.isAsyncListingDetailsEnabled());
-    }
-
-    @Transactional
-    public CertifiedProductSearchDetails getCertifiedProductDetailsBasicByChplProductNumber(String chplProductNumber,
-            Boolean retrieveAsynchronously) throws EntityRetrievalException {
-
         CertifiedProductDetailsDTO dto = getCertifiedProductDetailsDtoByChplProductNumber(chplProductNumber);
-        return createCertifiedProductDetailsBasic(dto, retrieveAsynchronously);
+        return createCertifiedProductDetailsBasic(dto, false);
     }
 
     @Transactional
+    @Override
     public CertifiedProductSearchDetails getCertifiedProductDetailsBasic(Long certifiedProductId)
             throws EntityRetrievalException {
 
-        return getCertifiedProductDetailsBasic(certifiedProductId, propUtil.isAsyncListingDetailsEnabled());
-    }
-
-    @Transactional
-    public CertifiedProductSearchDetails getCertifiedProductDetailsBasic(Long certifiedProductId,
-            Boolean retrieveAsynchronously) throws EntityRetrievalException {
-
         CertifiedProductDetailsDTO dto = certifiedProductSearchResultDAO.getById(certifiedProductId);
-        return createCertifiedProductDetailsBasic(dto, retrieveAsynchronously);
-
+        return createCertifiedProductDetailsBasic(dto, false);
     }
 
     @Transactional
+    @Override
     public List<CQMResultDetails> getCertifiedProductCqms(Long certifiedProductId) throws EntityRetrievalException {
 
         CertifiedProductDetailsDTO dto = certifiedProductSearchResultDAO.getById(certifiedProductId);
@@ -248,6 +225,7 @@ public class CertifiedProductDetailsManager {
     }
 
     @Transactional
+    @Override
     public List<CQMResultDetails> getCertifiedProductCqms(String chplProductNumber) throws EntityRetrievalException {
 
         CertifiedProductDetailsDTO dto = getCertifiedProductDetailsDtoByChplProductNumber(chplProductNumber);
@@ -257,6 +235,7 @@ public class CertifiedProductDetailsManager {
     }
 
     @Transactional
+    @Override
     public List<CertificationResult> getCertifiedProductCertificationResults(Long certifiedProductId)
             throws EntityRetrievalException {
 
@@ -272,6 +251,7 @@ public class CertifiedProductDetailsManager {
     }
 
     @Transactional
+    @Override
     public List<CertificationResult> getCertifiedProductCertificationResults(String chplProductNumber)
             throws EntityRetrievalException {
 
@@ -287,11 +267,13 @@ public class CertifiedProductDetailsManager {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<ListingMeasure> getCertifiedProductMeasures(Long listingId) throws EntityRetrievalException {
         return getCertifiedProductMeasures(listingId, false);
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<ListingMeasure> getCertifiedProductMeasures(Long listingId, Boolean checkIfListingExists) throws EntityRetrievalException {
         //This is used when called from the controller to ensure that the listing exists
         if (checkIfListingExists) {
@@ -301,6 +283,7 @@ public class CertifiedProductDetailsManager {
     }
 
     @Transactional
+    @Override
     public List<ListingMeasure> getCertifiedProductMeasures(String chplProductNumber) throws EntityRetrievalException {
         CertifiedProductDetailsDTO dto = getCertifiedProductDetailsDtoByChplProductNumber(chplProductNumber);
         return getCertifiedProductMeasures(dto.getId());
@@ -460,6 +443,7 @@ public class CertifiedProductDetailsManager {
         return certificationResults;
     }
 
+    @Override
     public List<CertificationStatusEvent> getCertificationStatusEvents(Long certifiedProductId)
             throws EntityRetrievalException {
 

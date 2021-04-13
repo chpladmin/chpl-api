@@ -16,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.certifiedproduct.domain.CertificationResultDetailsDTOv2;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.svap.domain.Svap;
@@ -227,7 +228,28 @@ public class CertificationResult implements Serializable {
     public CertificationResult() {
     }
 
-    public CertificationResult(final CertificationResultDetailsDTO certResult) {
+    public CertificationResult(CertificationResultDetailsDTO certResult) {
+        this();
+        this.setId(certResult.getId());
+        this.setNumber(certResult.getNumber());
+        this.setSuccess(certResult.getSuccess());
+        this.setTitle(certResult.getTitle());
+        this.setGap(certResult.getGap() == null ? Boolean.FALSE : certResult.getGap());
+        this.setSed(certResult.getSed() == null ? Boolean.FALSE : certResult.getSed());
+        this.setG1Success(certResult.getG1Success() == null ? Boolean.FALSE : certResult.getG1Success());
+        this.setG2Success(certResult.getG2Success() == null ? Boolean.FALSE : certResult.getG2Success());
+        this.setAttestationAnswer(certResult.getAttestationAnswer() == null ? Boolean.FALSE : certResult.getAttestationAnswer());
+        this.setApiDocumentation(certResult.getApiDocumentation());
+        this.setExportDocumentation(certResult.getExportDocumentation());
+        this.setDocumentationUrl(certResult.getDocumentationUrl());
+        this.setUseCases(certResult.getUseCases());
+        this.setPrivacySecurityFramework(certResult.getPrivacySecurityFramework());
+        if (certResult.getCriterion() != null) {
+            this.criterion = new CertificationCriterion(certResult.getCriterion());
+        }
+    }
+
+    public CertificationResult(CertificationResultDetailsDTOv2 certResult) {
         this();
         this.setId(certResult.getId());
         this.setNumber(certResult.getNumber());
@@ -252,7 +274,7 @@ public class CertificationResult implements Serializable {
         return id;
     }
 
-    public void setId(final Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -260,7 +282,7 @@ public class CertificationResult implements Serializable {
         return testProcedures;
     }
 
-    public void setTestProcedures(final List<CertificationResultTestProcedure> testProcedures) {
+    public void setTestProcedures(List<CertificationResultTestProcedure> testProcedures) {
         this.testProcedures = testProcedures;
     }
 
@@ -268,7 +290,7 @@ public class CertificationResult implements Serializable {
         return number;
     }
 
-    public void setNumber(final String number) {
+    public void setNumber(String number) {
         this.number = number;
     }
 
@@ -276,7 +298,7 @@ public class CertificationResult implements Serializable {
         return title;
     }
 
-    public void setTitle(final String title) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
@@ -284,7 +306,7 @@ public class CertificationResult implements Serializable {
         return success;
     }
 
-    public void setSuccess(final Boolean successful) {
+    public void setSuccess(Boolean successful) {
         this.success = successful;
     }
 
@@ -292,7 +314,7 @@ public class CertificationResult implements Serializable {
         return additionalSoftware;
     }
 
-    public void setAdditionalSoftware(final List<CertificationResultAdditionalSoftware> additionalSoftware) {
+    public void setAdditionalSoftware(List<CertificationResultAdditionalSoftware> additionalSoftware) {
         this.additionalSoftware = additionalSoftware;
     }
 
@@ -300,7 +322,7 @@ public class CertificationResult implements Serializable {
         return gap;
     }
 
-    public void setGap(final Boolean gap) {
+    public void setGap(Boolean gap) {
         this.gap = gap;
     }
 
@@ -308,7 +330,7 @@ public class CertificationResult implements Serializable {
         return sed;
     }
 
-    public void setSed(final Boolean sed) {
+    public void setSed(Boolean sed) {
         this.sed = sed;
     }
 
@@ -316,7 +338,7 @@ public class CertificationResult implements Serializable {
         return g1Success;
     }
 
-    public void setG1Success(final Boolean g1Success) {
+    public void setG1Success(Boolean g1Success) {
         this.g1Success = g1Success;
     }
 
@@ -324,7 +346,7 @@ public class CertificationResult implements Serializable {
         return g2Success;
     }
 
-    public void setG2Success(final Boolean g2Success) {
+    public void setG2Success(Boolean g2Success) {
         this.g2Success = g2Success;
     }
 
@@ -332,7 +354,7 @@ public class CertificationResult implements Serializable {
         return testToolsUsed;
     }
 
-    public void setTestToolsUsed(final List<CertificationResultTestTool> testToolsUsed) {
+    public void setTestToolsUsed(List<CertificationResultTestTool> testToolsUsed) {
         this.testToolsUsed = testToolsUsed;
     }
 
@@ -340,7 +362,7 @@ public class CertificationResult implements Serializable {
         return testStandards;
     }
 
-    public void setTestStandards(final List<CertificationResultTestStandard> testStandards) {
+    public void setTestStandards(List<CertificationResultTestStandard> testStandards) {
         this.testStandards = testStandards;
     }
 
@@ -348,7 +370,7 @@ public class CertificationResult implements Serializable {
         return testDataUsed;
     }
 
-    public void setTestDataUsed(final List<CertificationResultTestData> testDataUsed) {
+    public void setTestDataUsed(List<CertificationResultTestData> testDataUsed) {
         this.testDataUsed = testDataUsed;
     }
 
@@ -356,7 +378,7 @@ public class CertificationResult implements Serializable {
         return testFunctionality;
     }
 
-    public void setTestFunctionality(final List<CertificationResultTestFunctionality> testFunctionality) {
+    public void setTestFunctionality(List<CertificationResultTestFunctionality> testFunctionality) {
         this.testFunctionality = testFunctionality;
     }
 
@@ -364,7 +386,7 @@ public class CertificationResult implements Serializable {
         return apiDocumentation;
     }
 
-    public void setApiDocumentation(final String apiDocumentation) {
+    public void setApiDocumentation(String apiDocumentation) {
         this.apiDocumentation = apiDocumentation;
     }
 
@@ -404,7 +426,7 @@ public class CertificationResult implements Serializable {
         return privacySecurityFramework;
     }
 
-    public void setPrivacySecurityFramework(final String privacySecurityFramework) {
+    public void setPrivacySecurityFramework(String privacySecurityFramework) {
         this.privacySecurityFramework = privacySecurityFramework;
     }
 
@@ -412,7 +434,7 @@ public class CertificationResult implements Serializable {
         return allowedTestFunctionalities;
     }
 
-    public void setAllowedTestFunctionalities(final List<TestFunctionality> testFunctionalities) {
+    public void setAllowedTestFunctionalities(List<TestFunctionality> testFunctionalities) {
         this.allowedTestFunctionalities = testFunctionalities;
     }
 
@@ -420,11 +442,11 @@ public class CertificationResult implements Serializable {
         return criterion;
     }
 
-    public void setCriterion(final CertificationCriterion criterion) {
+    public void setCriterion(CertificationCriterion criterion) {
         this.criterion = criterion;
     }
 
-    public static String formatPrivacyAndSecurityFramework(final String privacyAndSecurityFramework) {
+    public static String formatPrivacyAndSecurityFramework(String privacyAndSecurityFramework) {
         if (StringUtils.isEmpty(privacyAndSecurityFramework)) {
             return privacyAndSecurityFramework;
         }

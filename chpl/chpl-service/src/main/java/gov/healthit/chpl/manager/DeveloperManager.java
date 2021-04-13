@@ -95,7 +95,6 @@ public class DeveloperManager extends SecuredManager {
     private ResourcePermissions resourcePermissions;
     private DeveloperValidationFactory developerValidationFactory;
     private ValidationUtils validationUtils;
-    private CertifiedProductDetailsManager cpdManager;
     private TransparencyAttestationManager transparencyAttestationManager;
     private SchedulerManager schedulerManager;
     private DirectReviewUpdateEmailService directReviewEmailService;
@@ -107,8 +106,8 @@ public class DeveloperManager extends SecuredManager {
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
             ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
             DeveloperValidationFactory developerValidationFactory, ValidationUtils validationUtils,
-            CertifiedProductDetailsManager cpdManager, DirectReviewUpdateEmailService directReviewEmailService,
-            TransparencyAttestationManager transparencyAttestationManager, SchedulerManager schedulerManager) {
+            DirectReviewUpdateEmailService directReviewEmailService, TransparencyAttestationManager transparencyAttestationManager,
+            SchedulerManager schedulerManager) {
         this.developerDao = developerDao;
         this.productManager = productManager;
         this.versionManager = versionManager;
@@ -122,7 +121,6 @@ public class DeveloperManager extends SecuredManager {
         this.resourcePermissions = resourcePermissions;
         this.developerValidationFactory = developerValidationFactory;
         this.validationUtils = validationUtils;
-        this.cpdManager = cpdManager;
         this.directReviewEmailService = directReviewEmailService;
         this.transparencyAttestationManager = transparencyAttestationManager;
         this.schedulerManager = schedulerManager;
