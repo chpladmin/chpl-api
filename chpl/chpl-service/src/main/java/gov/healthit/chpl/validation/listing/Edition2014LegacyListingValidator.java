@@ -26,6 +26,7 @@ import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ValidDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.RequiredData2014Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.TestFunctionality2014Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2014.TestStandardComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2014.TestTool2014Reviewer;
 
 /**
@@ -67,6 +68,9 @@ public class Edition2014LegacyListingValidator extends Validator {
     @Autowired
     @Qualifier("unattestedCriteriaWithDataReviewer")
     private UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
+
+    @Autowired
+    private TestStandardComparisonReviewer tsReviewer;
 
     @Autowired
     @Qualifier("testToolReviewer")
@@ -141,6 +145,7 @@ public class Edition2014LegacyListingValidator extends Validator {
             comparisonReviewers.add(listingStatusAndUserRoleReviewer);
             comparisonReviewers.add(realWorldTestingReviewer);
             comparisonReviewers.add(svapReviewer);
+            comparisonReviewers.add(tsReviewer);
         }
         return comparisonReviewers;
     }
