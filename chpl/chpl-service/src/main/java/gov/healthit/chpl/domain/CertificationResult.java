@@ -191,6 +191,7 @@ public class CertificationResult implements Serializable {
      */
     @XmlElementWrapper(name = "testStandards", nillable = true, required = false)
     @XmlElement(name = "testStandard")
+    @Singular
     private List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();
 
     /**

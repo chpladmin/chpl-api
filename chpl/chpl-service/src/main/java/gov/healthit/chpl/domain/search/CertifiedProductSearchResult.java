@@ -47,6 +47,9 @@ public class CertifiedProductSearchResult implements Serializable {
     })
     private String practiceType;
 
+    @JsonView({
+        SearchViews.Default.class
+    })
     private Long developerId;
 
     @JsonView({
@@ -132,6 +135,7 @@ public class CertifiedProductSearchResult implements Serializable {
         this.acbCertificationId = other.getAcbCertificationId();
         this.practiceType = other.getPracticeType();
         this.developer = other.getDeveloper();
+        this.developerId = other.getDeveloperId();
         this.developerStatus = other.getDeveloperStatus();
         this.product = other.getProduct();
         this.version = other.getVersion();
