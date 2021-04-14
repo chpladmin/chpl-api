@@ -33,9 +33,9 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.DevelopersOverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.Listing2014OverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.Listing2015OverTimeChart;
-import gov.healthit.chpl.scheduler.job.summarystatistics.chart.NonConformitiesOverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.SummaryStatisticChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.SurveillanceActivitiesOverTimeChart;
+import gov.healthit.chpl.scheduler.job.summarystatistics.chart.SurveillanceNonConformitiesOverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.TotalListingsOverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.TotalUniqueProductsOverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.UniqueProductsWithActiveListingsOverTimeChart;
@@ -49,7 +49,7 @@ public class SummaryStatisticsPdf {
     private ProductSummaryStatisticsSectionPdf productSummaryStatisticsSectionPdf;
     private ListingSummaryStatisticsSectionPdf listingSummaryStatisticsSectionPdf;
     private SurveillanceSummaryStatisticsSectionPdf surveillanceSummaryStatisticsSectionPdf;
-    private NonConformitySummaryStatisticsSectionPdf nonConformitySummaryStatisticsSectionPdf;
+    private DirectReviewSummaryStatisticsSectionPdf directReviewSummaryStatisticsSectionPdf;
 
     @Autowired
     public SummaryStatisticsPdf(SummaryStatisticsDAO summaryStatisticsDAO,
@@ -57,14 +57,14 @@ public class SummaryStatisticsPdf {
             ProductSummaryStatisticsSectionPdf productSummaryStatisticsSectionPdf,
             ListingSummaryStatisticsSectionPdf listingSummaryStatisticsSectionPdf,
             SurveillanceSummaryStatisticsSectionPdf surveillanceSummaryStatisticsSectionPdf,
-            NonConformitySummaryStatisticsSectionPdf nonConformitySummaryStatisticsSectionPdf) {
+            DirectReviewSummaryStatisticsSectionPdf directReviewSummaryStatisticsSectionPdf) {
 
         this.summaryStatisticsDAO = summaryStatisticsDAO;
         this.developerSummaryStatisticsSectionPdf = developerSummaryStatisticsSectionPdf;
         this.productSummaryStatisticsSectionPdf = productSummaryStatisticsSectionPdf;
         this.listingSummaryStatisticsSectionPdf = listingSummaryStatisticsSectionPdf;
         this.surveillanceSummaryStatisticsSectionPdf = surveillanceSummaryStatisticsSectionPdf;
-        this.nonConformitySummaryStatisticsSectionPdf = nonConformitySummaryStatisticsSectionPdf;
+        this.directReviewSummaryStatisticsSectionPdf = directReviewSummaryStatisticsSectionPdf;
     }
 
     @SuppressWarnings("resource")
@@ -118,7 +118,7 @@ public class SummaryStatisticsPdf {
                 productSummaryStatisticsSectionPdf,
                 listingSummaryStatisticsSectionPdf,
                 surveillanceSummaryStatisticsSectionPdf,
-                nonConformitySummaryStatisticsSectionPdf);
+                directReviewSummaryStatisticsSectionPdf);
 
         tableGenerators.forEach(generator -> {
             addTable(document,
@@ -126,6 +126,7 @@ public class SummaryStatisticsPdf {
                     convertDateToLocalDate(recentStats.getEndDate()),
                     convertDateToLocalDate(previousStats.getEndDate()),
                     recentEmailStats, previousEmailStats);
+            generator.addTableEndNote(document, recentEmailStats, previousEmailStats);
             document.add(new Paragraph(""));
         });
     }
@@ -148,7 +149,7 @@ public class SummaryStatisticsPdf {
                 new Listing2014OverTimeChart(),
                 new Listing2015OverTimeChart(),
                 new SurveillanceActivitiesOverTimeChart(),
-                new NonConformitiesOverTimeChart());
+                new SurveillanceNonConformitiesOverTimeChart());
 
         chartGenerators.forEach(chartGenerator -> {
             document.add(new Paragraph(""));

@@ -780,16 +780,16 @@ public class CertifiedProductDetailsManager {
 
     private Map<String, Object> getCertifificationEdition(CertifiedProductDetailsDTO dto) {
         Map<String, Object> certificationEdition = new HashMap<String, Object>();
-        certificationEdition.put("id", dto.getCertificationEditionId());
-        certificationEdition.put("name", dto.getYear());
+        certificationEdition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, dto.getCertificationEditionId());
+        certificationEdition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, dto.getYear());
         return certificationEdition;
     }
 
     private Map<String, Object> getCertifyingBody(CertifiedProductDetailsDTO dto) {
         Map<String, Object> certifyingBody = new HashMap<String, Object>();
-        certifyingBody.put("id", dto.getCertificationBodyId());
-        certifyingBody.put("name", dto.getCertificationBodyName());
-        certifyingBody.put("code", dto.getCertificationBodyCode());
+        certifyingBody.put(CertifiedProductSearchDetails.ACB_ID_KEY, dto.getCertificationBodyId());
+        certifyingBody.put(CertifiedProductSearchDetails.ACB_NAME_KEY, dto.getCertificationBodyName());
+        certifyingBody.put(CertifiedProductSearchDetails.ACB_CODE_KEY, dto.getCertificationBodyCode());
         return certifyingBody;
     }
 

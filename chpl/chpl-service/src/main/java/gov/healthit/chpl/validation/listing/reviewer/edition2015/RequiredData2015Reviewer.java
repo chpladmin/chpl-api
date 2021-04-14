@@ -30,6 +30,7 @@ import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
@@ -91,29 +92,32 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     private static final String G3_CRITERIA_NUMBER = "170.315 (g)(3)";
     private static final String G6_CRITERIA_NUMBER = "170.315 (g)(6)";
     private static final String H1_CRITERIA_NUMBER = "170.315 (h)(1)";
+    private static final int MINIMUM_TEST_PARTICIPANT_COUNT = 10;
 
     private List<String> e2e3Criterion = new ArrayList<String>();
     private List<String> g7g8g9Criterion = new ArrayList<String>();
     private List<String> d2d10Criterion = new ArrayList<String>();
-
-    private static final int MINIMUM_TEST_PARTICIPANT_COUNT = 10;
+    private List<CertificationCriterion> e1Criteria;
 
     private TestFunctionalityDAO testFuncDao;
     private TestProcedureDAO testProcDao;
     private TestDataDAO testDataDao;
     private CertificationCriterionDAO criteriaDao;
+    private CertificationCriterionService criterionService;
     private ValidationUtils validationUtils;
 
     @Autowired
+    @SuppressWarnings("checkstyle:parameternumber")
     public RequiredData2015Reviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil,
             TestFunctionalityDAO testFuncDao, TestProcedureDAO testProcDao,
-            TestDataDAO testDataDao, CertificationCriterionDAO criteriaDao, ValidationUtils validationUtils,
-            ResourcePermissions resourcePermissions) {
+            TestDataDAO testDataDao, CertificationCriterionDAO criteriaDao, CertificationCriterionService criterionService,
+            ValidationUtils validationUtils, ResourcePermissions resourcePermissions) {
         super(certRules, msgUtil, resourcePermissions);
         this.testFuncDao = testFuncDao;
         this.testProcDao = testProcDao;
         this.testDataDao = testDataDao;
         this.criteriaDao = criteriaDao;
+        this.criterionService = criterionService;
         this.validationUtils = validationUtils;
 
         e2e3Criterion.add("170.315 (e)(2)");
@@ -125,6 +129,8 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
         d2d10Criterion.add("170.315 (d)(2)");
         d2d10Criterion.add("170.315 (d)(10)");
+
+        e1Criteria = this.criterionService.getByNumber("170.315 (e)(1)");
     }
 
     @Override
@@ -174,9 +180,11 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 Arrays.asList(H_RELATED_CERTS));
         addListingWarningsByPermission(listing, warnings);
 
-        errors = validationUtils.checkSpecificCriteriaForErrors("170.315 (e)(1)", attestedCriteria,
-                Arrays.asList(E1_RELATED_CERTS));
-        listing.getErrorMessages().addAll(errors);
+        e1Criteria.stream().forEach(e1Criterion -> {
+            List<String> e1Errors = validationUtils.checkSpecificCriteriaForErrors(e1Criterion, attestedCriteria,
+                    Arrays.asList(E1_RELATED_CERTS));
+            listing.getErrorMessages().addAll(e1Errors);
+        });
 
         // check for (e)(2) or (e)(3) certs
         List<String> e2e3ComplimentaryErrors = validationUtils.checkComplimentaryCriteriaAllRequired(e2e3Criterion,

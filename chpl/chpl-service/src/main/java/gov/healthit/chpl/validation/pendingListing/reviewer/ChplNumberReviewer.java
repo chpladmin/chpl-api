@@ -12,6 +12,7 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
+import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
@@ -103,13 +104,13 @@ public class ChplNumberReviewer implements Reviewer {
             } else {
                 testingLabs = listing.getTestingLabs();
                 if (testingLabs.size() > 1) {
-                    if (!"99".equals(atlCode)) {
+                    if (!TestingLab.MULTIPLE_TESTING_LABS_CODE.equals(atlCode)) {
                         listing.getWarningMessages()
                                 .add(msgUtil.getMessage("atl.shouldBe99"));
                     }
                 } else {
                     TestingLabDTO testingLab = atlDao.getByName(testingLabs.get(0).getTestingLabName());
-                    if ("99".equals(atlCode)) {
+                    if (TestingLab.MULTIPLE_TESTING_LABS_CODE.equals(atlCode)) {
                         listing.getErrorMessages()
                                 .add(msgUtil.getMessage("atl.shouldNotBe99"));
                     } else if (!testingLab.getTestingLabCode().equals(atlCode)) {

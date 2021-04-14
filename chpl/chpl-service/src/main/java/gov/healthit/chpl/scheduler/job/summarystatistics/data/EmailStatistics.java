@@ -87,5 +87,15 @@ public class EmailStatistics implements Serializable {
     private List<EmailCertificationBodyStatistic> nonconfCAPStatusOpen;
     private List<EmailCertificationBodyStatistic> nonconfCAPStatusClosed;
 
+    ////////////////////////////////////////////////////////////////////
 
+    private Long totalDirectReviews;
+    private Long openDirectReviews;
+    private Long closedDirectReviews;
+    private Long averageDaysOpenDirectReviews;
+    private Long totalNonConformities;
+    private Long openNonConformities;
+    private Long closedNonConformities;
+    private Long openCaps;
+    private Long closedCaps;
 }

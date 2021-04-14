@@ -23,7 +23,7 @@ public class ListingSummaryStatisticsSectionPdf extends SummaryStatisticsSection
         Table table = new Table(getRelativeColumnWidths());
         table.useAllAvailableWidth();
         table = addHeaders(table, "Listing Statistics", recent, previous);
-        table = addTableRow(table, createDataForRow("3. Total # of Listings (Regardless of Status or Edition)",
+        table = addTableRow(table, createDataForRow("1. Total # of Listings (Regardless of Status or Edition)",
                                     recentEmailStatistics.getListingsForEditionAnyTotal(),
                                     previousEmailStatistics.getListingsForEditionAnyTotal()), true);
 

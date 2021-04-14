@@ -15,9 +15,13 @@ import gov.healthit.chpl.entity.ProductEntity;
 import gov.healthit.chpl.entity.ProductEntitySimple;
 import gov.healthit.chpl.entity.ProductVersionEntity;
 import gov.healthit.chpl.util.Util;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
+@Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ProductDTO implements Serializable {
     private static final long serialVersionUID = -5440560685496661764L;
@@ -28,6 +32,7 @@ public class ProductDTO implements Serializable {
     private Long lastModifiedUser;
     private String name;
     private ContactDTO contact;
+    @Builder.Default
     private Set<ProductVersionDTO> productVersions = new HashSet<ProductVersionDTO>();
     private String reportFileLocation;
     @Deprecated
@@ -43,9 +48,10 @@ public class ProductDTO implements Serializable {
     public ProductDTO() {
         this.owner = new DeveloperDTO();
         this.ownerHistory = new ArrayList<ProductOwnerDTO>();
+        this.productVersions = new HashSet<ProductVersionDTO>();
     }
 
-    public ProductDTO(final ProductEntitySimple entity) {
+    public ProductDTO(ProductEntitySimple entity) {
         this();
 
         this.id = entity.getId();
@@ -60,7 +66,7 @@ public class ProductDTO implements Serializable {
         this.contact.setId(entity.getContactId());
     }
 
-    public ProductDTO(final ProductEntity entity) {
+    public ProductDTO(ProductEntity entity) {
         this();
 
         this.id = entity.getId();

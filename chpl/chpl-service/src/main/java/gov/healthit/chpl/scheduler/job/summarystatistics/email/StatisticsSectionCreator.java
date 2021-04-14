@@ -18,6 +18,16 @@ public abstract class StatisticsSectionCreator {
                 .toString();
     }
 
+    public String buildHeader(String text, String count) {
+        StringBuilder header = new StringBuilder();
+        return header.append("<h4>")
+                .append(text)
+                .append(" - ")
+                .append(count)
+                .append("</h4>")
+                .toString();
+    }
+
     public String buildSection(String header, Long headerCount, List<EmailCertificationBodyStatistic> stats) {
         StringBuilder section = new StringBuilder();
 
@@ -32,6 +42,16 @@ public abstract class StatisticsSectionCreator {
     }
 
     public String buildItem(String text, Long count) {
+        StringBuilder item = new StringBuilder();
+        return item.append("<li>")
+                .append(text)
+                .append(" - ")
+                .append(count)
+                .append("</li>")
+                .toString();
+    }
+
+    public String buildItem(String text, String count) {
         StringBuilder item = new StringBuilder();
         return item.append("<li>")
                 .append(text)
