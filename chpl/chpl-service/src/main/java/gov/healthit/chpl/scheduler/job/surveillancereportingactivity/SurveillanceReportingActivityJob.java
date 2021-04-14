@@ -32,6 +32,8 @@ public class SurveillanceReportingActivityJob implements Job {
             records.stream()
                     .forEach(rec -> LOGGER.info(rec.toString()));
 
+            SurveillanceActivityReportWorkbook workbook = new SurveillanceActivityReportWorkbook();
+            workbook.generateWorkbook(records);
         } catch (Exception e) {
             LOGGER.catching(e);
         }
