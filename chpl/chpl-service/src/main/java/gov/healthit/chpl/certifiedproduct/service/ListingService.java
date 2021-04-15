@@ -111,8 +111,8 @@ public class ListingService {
         searchDetails = populateDirectReviews(searchDetails);
 
         // get first-level parents and children
-        searchDetails.getIcs().setParents(populateRelatedCertifiedProducts(getCertifiedProductChildren(dto.getId())));
-        searchDetails.getIcs().setChildren(populateRelatedCertifiedProducts(getCertifiedProductParents(dto.getId())));
+        searchDetails.getIcs().setParents(populateRelatedCertifiedProducts(getCertifiedProductParents(dto.getId())));
+        searchDetails.getIcs().setChildren(populateRelatedCertifiedProducts(getCertifiedProductChildren(dto.getId())));
         return searchDetails;
     }
 
@@ -122,7 +122,7 @@ public class ListingService {
     }
 
     public CertifiedProductSearchDetails createCertifiedProductSearchDetailsBasic(CertifiedProductDetailsDTO dto) throws EntityRetrievalException {
-        return CertifiedProductSearchDetails.builder()
+        CertifiedProductSearchDetails searchDetails = CertifiedProductSearchDetails.builder()
                 .id(dto.getId())
                 .acbCertificationId(dto.getAcbCertificationId())
                 .certificationDate(dto.getCertificationDate() != null ? dto.getCertificationDate().getTime() : null)
@@ -164,10 +164,15 @@ public class ListingService {
                 .rwtResultsCheckDate(dto.getRwtResultsCheckDate())
                 .rwtEligibilityYear(dto.getRwtEligibilityYear())
                 .svapNoticeUrl(dto.getSvapNoticeUrl())
-                .ics(getInheritedCertificationStatus(dto.getIcs()))
+                //.ics(getInheritedCertificationStatus(dto.getIcs()))
                 .sed(new CertifiedProductSed())
                 .testingLabs(getTestingLabs(dto.getId()))
                 .build();
+
+        InheritedCertificationStatus ics = new InheritedCertificationStatus();
+        ics.setInherits(dto.getIcs());
+        searchDetails.setIcs(ics);
+        return searchDetails;
     }
 
     private List<CertifiedProductTestingLab> getTestingLabs(Long listingId) throws EntityRetrievalException {
@@ -229,11 +234,11 @@ public class ListingService {
         return certEdition.orElse(null);
     }
 
-    private InheritedCertificationStatus getInheritedCertificationStatus(boolean ics) {
-        return InheritedCertificationStatus.builder()
-                .inherits(ics)
-                .build();
-    }
+    //private InheritedCertificationStatus getInheritedCertificationStatus(boolean ics) {
+    //    return InheritedCertificationStatus.builder()
+    //            .inherits(ics)
+    //            .build();
+    //}
 
  // This should probably be refactored to use ChplProductNumberUtil
     private String getChplProductNumber(CertifiedProductDetailsDTO dto) {
