@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.certifiedproduct.dao.CertificationResultDetailsDAOv2;
+import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
@@ -41,16 +41,17 @@ public class CertificationResultService {
     private CertificationResultRules certRules;
     private CertificationResultManager certResultManager;
     private TestingFunctionalityManager testFunctionalityManager;
-    private CertificationResultDetailsDAOv2 certificationResultDetailsDAOv2;
+    private CertificationResultDetailsDAO certificationResultDetailsDAO;
     private SvapDAO svapDao;
 
     @Autowired
-    public CertificationResultService(CertificationResultRules certRules, CertificationResultManager certResultManager, TestingFunctionalityManager testFunctionalityManager,
-            CertificationResultDetailsDAOv2 certificationResultDetailsDAOv2, SvapDAO svapDao) {
+    public CertificationResultService(CertificationResultRules certRules, CertificationResultManager certResultManager,
+            TestingFunctionalityManager testFunctionalityManager, CertificationResultDetailsDAO certificationResultDetailsDAO,
+            SvapDAO svapDao) {
         this.certRules = certRules;
         this.certResultManager = certResultManager;
         this.testFunctionalityManager = testFunctionalityManager;
-        this.certificationResultDetailsDAOv2 = certificationResultDetailsDAOv2;
+        this.certificationResultDetailsDAO = certificationResultDetailsDAO;
         this.svapDao = svapDao;
     }
 
@@ -64,7 +65,7 @@ public class CertificationResultService {
 
     public List<CertificationResultDetailsDTO> getCertificationResultDetailsDTOs(Long id) {
         List<CertificationResultDetailsDTO> certificationResultDetailsDTOs = null;
-        certificationResultDetailsDTOs = certificationResultDetailsDAOv2.getAllCertResultsForListing(id);
+        certificationResultDetailsDTOs = certificationResultDetailsDAO.getAllCertResultsForListing(id);
         return certificationResultDetailsDTOs;
     }
 

@@ -2,6 +2,7 @@ package gov.healthit.chpl.dao;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
@@ -20,6 +21,28 @@ import gov.healthit.chpl.scheduler.job.urlStatus.data.UrlType;
 @Repository(value = "certificationResultDetailsDAO")
 public class CertificationResultDetailsDAO extends BaseDAOImpl {
     private static final Logger LOGGER = LogManager.getLogger(CertificationResultDetailsDAO.class);
+
+    private static final String BASE_SQL = "SELECT DISTINCT cr "
+            + "FROM CertificationResultDetailsEntity cr "
+            + "LEFT OUTER JOIN FETCH cr.certificationCriterion cc "
+            + "LEFT OUTER JOIN FETCH cc.certificationEdition ed "
+            + "LEFT OUTER JOIN FETCH cr.certificationResultTestData crtd "
+            + "LEFT OUTER JOIN FETCH crtd.testData td "
+            + "LEFT OUTER JOIN FETCH cr.certificationResultTestFunctionalities crtf "
+            + "LEFT OUTER JOIN FETCH crtf.testFunctionality tf "
+            + "LEFT OUTER JOIN FETCH cr.certificationResultTestProcedures crtp "
+            + "LEFT OUTER JOIN FETCH crtp.testProcedure tp "
+            + "LEFT OUTER JOIN FETCH cr.certificationResultTestTools crtt "
+            + "LEFT OUTER JOIN FETCH crtt.testTool tt "
+            + "LEFT OUTER JOIN FETCH cr.certificationResultTestStandards crts "
+            + "LEFT OUTER JOIN FETCH cr.certificationResultAdditionalSoftware cras "
+            + "WHERE cr.deleted = false "
+            + "AND (crtd.deleted = false OR crtd.deleted IS NULL) "
+            + "AND (crtf.deleted = false OR crtf.deleted IS NULL) "
+            + "AND (crtp.deleted = false OR crtp.deleted IS NULL) "
+            + "AND (crtt.deleted = false OR crtt.deleted IS NULL) "
+            + "AND (crts.deleted = false OR crts.deleted IS NULL) "
+            + "AND (cras.deleted = false OR cras.deleted IS NULL) ";
 
     @Transactional
     public List<CertificationResultDetailsDTO> getCertificationResultDetailsByCertifiedProductId(
@@ -46,11 +69,7 @@ public class CertificationResultDetailsDAO extends BaseDAOImpl {
 
     @Transactional(readOnly = true)
     public List<CertificationResultDetailsDTO> getByUrl(String url, UrlType urlType) {
-        String queryStr = "SELECT crd "
-                + "FROM CertificationResultDetailsEntity crd "
-                + "JOIN FETCH crd.certificationCriterion cc "
-                + "JOIN FETCH cc.certificationEdition "
-                + "WHERE crd.deleted = false ";
+        String queryStr = BASE_SQL;
         switch (urlType) {
         case API_DOCUMENTATION:
             queryStr += "AND crd.apiDocumentation = :url";
@@ -92,11 +111,7 @@ public class CertificationResultDetailsDAO extends BaseDAOImpl {
 
     private List<CertificationResultDetailsEntity> getEntitiesByCertifiedProductId(final Long productId) throws EntityRetrievalException {
 
-        Query query = entityManager.createQuery(
-                "SELECT crd FROM CertificationResultDetailsEntity crd "
-                        + "JOIN FETCH crd.certificationCriterion cc "
-                        + "JOIN FETCH cc.certificationEdition "
-                        + "WHERE crd.deleted = false "
+        Query query = entityManager.createQuery(BASE_SQL
                         + "AND crd.certifiedProductId = :entityid ",
                 CertificationResultDetailsEntity.class);
         query.setParameter("entityid", productId);
@@ -106,12 +121,7 @@ public class CertificationResultDetailsDAO extends BaseDAOImpl {
     }
 
     private List<CertificationResultDetailsEntity> getEntitiesByCertifiedProductIdSED(final Long productId) throws EntityRetrievalException {
-        Query query = entityManager.createQuery(
-                "SELECT crd FROM CertificationResultDetailsEntity crd "
-                        + "JOIN FETCH crd.certificationCriterion cc "
-                        + "JOIN FETCH cc.certificationEdition "
-                        + "WHERE crd.deleted = false "
-                        + "AND crd.certifiedProductId = :entityid "
+        Query query = entityManager.createQuery(BASE_SQL
                         + "AND crd.success = true "
                         + "AND crd.sed = true ",
                 CertificationResultDetailsEntity.class);
@@ -119,5 +129,22 @@ public class CertificationResultDetailsDAO extends BaseDAOImpl {
         List<CertificationResultDetailsEntity> result = query.getResultList();
 
         return result;
+    }
+
+    public List<CertificationResultDetailsDTO> getAllCertResultsForListing(Long listingId) {
+        Query query = entityManager.createQuery(BASE_SQL
+                + "AND cr.certifiedProductId = :listingId",
+                CertificationResultDetailsEntity.class);
+
+        query.setParameter("listingId", listingId);
+
+        List<CertificationResultDetailsEntity> result = query.getResultList();
+        if (result == null) {
+            return null;
+        } else {
+            return result.stream()
+                    .map(entity -> new CertificationResultDetailsDTO(entity))
+                    .collect(Collectors.toList());
+        }
     }
 }

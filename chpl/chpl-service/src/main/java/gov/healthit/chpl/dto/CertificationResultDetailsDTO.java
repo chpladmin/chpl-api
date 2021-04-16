@@ -2,6 +2,7 @@ package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
 import lombok.Data;
@@ -55,6 +56,42 @@ public class CertificationResultDetailsDTO implements Serializable {
         this.privacySecurityFramework = entity.getPrivacySecurityFramework();
         if (entity.getCertificationCriterion() != null) {
             this.criterion = new CertificationCriterionDTO(entity.getCertificationCriterion());
+        }
+
+        if (entity.getCertificationResultTestData() != null) {
+            this.testData = entity.getCertificationResultTestData().stream()
+                    .map(e -> new CertificationResultTestDataDTO(e))
+                    .collect(Collectors.toList());
+        }
+
+        if (entity.getCertificationResultTestFunctionalities() != null) {
+            this.testFunctionality = entity.getCertificationResultTestFunctionalities().stream()
+                    .map(e -> new CertificationResultTestFunctionalityDTO(e))
+                    .collect(Collectors.toList());
+        }
+
+        if (entity.getCertificationResultTestProcedures() != null) {
+            this.testProcedures = entity.getCertificationResultTestProcedures().stream()
+                    .map(e -> new CertificationResultTestProcedureDTO(e))
+                    .collect(Collectors.toList());
+        }
+
+        if (entity.getCertificationResultTestTools() != null) {
+            this.testTools = entity.getCertificationResultTestTools().stream()
+                    .map(e -> new CertificationResultTestToolDTO(e))
+                    .collect(Collectors.toList());
+        }
+
+        if (entity.getCertificationResultTestStandards() != null) {
+            this.testStandards = entity.getCertificationResultTestStandards().stream()
+                    .map(e -> new CertificationResultTestStandardDTO(e))
+                    .collect(Collectors.toList());
+        }
+
+        if (entity.getCertificationResultAdditionalSoftware() != null) {
+            this.additionalSoftware = entity.getCertificationResultAdditionalSoftware().stream()
+                    .map(e -> new CertificationResultAdditionalSoftwareDTO(e))
+                    .collect(Collectors.toList());
         }
     }
 }
