@@ -8,9 +8,9 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.certifiedproduct.domain.CertificationResultDetailsDTOv2;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
+import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
@@ -20,7 +20,7 @@ import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
 
 @Repository(value = "certificationResultDetailsDAOv2")
 public class CertificationResultDetailsDAOv2 extends BaseDAOImpl {
-    public List<CertificationResultDetailsDTOv2> getAllCertResultsForListing(Long listingId) {
+    public List<CertificationResultDetailsDTO> getAllCertResultsForListing(Long listingId) {
         Query query = entityManager.createQuery("SELECT DISTINCT cr "
                 + "FROM CertificationResultDetailsEntity cr "
                 + "LEFT OUTER JOIN FETCH cr.certificationCriterion cc "
@@ -50,9 +50,9 @@ public class CertificationResultDetailsDAOv2 extends BaseDAOImpl {
         if (result == null) {
             return null;
         } else {
-            List<CertificationResultDetailsDTOv2> dtos = new ArrayList<CertificationResultDetailsDTOv2>();
+            List<CertificationResultDetailsDTO> dtos = new ArrayList<CertificationResultDetailsDTO>();
             for (CertificationResultDetailsEntity entity : result) {
-                CertificationResultDetailsDTOv2 dto = new CertificationResultDetailsDTOv2(entity);
+                CertificationResultDetailsDTO dto = new CertificationResultDetailsDTO(entity);
                 dto.setTestData(entity.getCertificationResultTestData().stream()
                         .map(e -> new CertificationResultTestDataDTO(e))
                         .collect(Collectors.toList()));

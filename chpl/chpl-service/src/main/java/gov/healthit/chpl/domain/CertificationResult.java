@@ -16,7 +16,6 @@ import org.apache.commons.lang.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.certifiedproduct.domain.CertificationResultDetailsDTOv2;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.svap.domain.Svap;
@@ -230,27 +229,6 @@ public class CertificationResult implements Serializable {
     }
 
     public CertificationResult(CertificationResultDetailsDTO certResult) {
-        this();
-        this.setId(certResult.getId());
-        this.setNumber(certResult.getNumber());
-        this.setSuccess(certResult.getSuccess());
-        this.setTitle(certResult.getTitle());
-        this.setGap(certResult.getGap() == null ? Boolean.FALSE : certResult.getGap());
-        this.setSed(certResult.getSed() == null ? Boolean.FALSE : certResult.getSed());
-        this.setG1Success(certResult.getG1Success() == null ? Boolean.FALSE : certResult.getG1Success());
-        this.setG2Success(certResult.getG2Success() == null ? Boolean.FALSE : certResult.getG2Success());
-        this.setAttestationAnswer(certResult.getAttestationAnswer() == null ? Boolean.FALSE : certResult.getAttestationAnswer());
-        this.setApiDocumentation(certResult.getApiDocumentation());
-        this.setExportDocumentation(certResult.getExportDocumentation());
-        this.setDocumentationUrl(certResult.getDocumentationUrl());
-        this.setUseCases(certResult.getUseCases());
-        this.setPrivacySecurityFramework(certResult.getPrivacySecurityFramework());
-        if (certResult.getCriterion() != null) {
-            this.criterion = new CertificationCriterion(certResult.getCriterion());
-        }
-    }
-
-    public CertificationResult(CertificationResultDetailsDTOv2 certResult) {
         this();
         this.setId(certResult.getId());
         this.setNumber(certResult.getNumber());

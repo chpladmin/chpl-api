@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certifiedproduct.dao.CertificationResultDetailsDAOv2;
-import gov.healthit.chpl.certifiedproduct.domain.CertificationResultDetailsDTOv2;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
@@ -21,6 +20,7 @@ import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
+import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
@@ -62,15 +62,15 @@ public class CertificationResultService {
                 .collect(Collectors.toList());
     }
 
-    public List<CertificationResultDetailsDTOv2> getCertificationResultDetailsDTOs(Long id) {
-        List<CertificationResultDetailsDTOv2> certificationResultDetailsDTOs = null;
+    public List<CertificationResultDetailsDTO> getCertificationResultDetailsDTOs(Long id) {
+        List<CertificationResultDetailsDTO> certificationResultDetailsDTOs = null;
         certificationResultDetailsDTOs = certificationResultDetailsDAOv2.getAllCertResultsForListing(id);
         return certificationResultDetailsDTOs;
     }
 
 
     @SuppressWarnings({"checkstyle:methodlength"})
-    private CertificationResult getCertificationResult(CertificationResultDetailsDTOv2 certResult,
+    private CertificationResult getCertificationResult(CertificationResultDetailsDTO certResult,
             CertifiedProductSearchDetails searchDetails, List<SvapCriteriaMap> svapCriteriaMap) {
 
         CertificationResult result = new CertificationResult(certResult);
