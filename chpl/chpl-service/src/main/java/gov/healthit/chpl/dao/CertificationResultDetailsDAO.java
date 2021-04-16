@@ -22,21 +22,21 @@ import gov.healthit.chpl.scheduler.job.urlStatus.data.UrlType;
 public class CertificationResultDetailsDAO extends BaseDAOImpl {
     private static final Logger LOGGER = LogManager.getLogger(CertificationResultDetailsDAO.class);
 
-    private static final String BASE_SQL = "SELECT DISTINCT cr "
-            + "FROM CertificationResultDetailsEntity cr "
-            + "LEFT OUTER JOIN FETCH cr.certificationCriterion cc "
+    private static final String BASE_SQL = "SELECT DISTINCT crd "
+            + "FROM CertificationResultDetailsEntity crd "
+            + "LEFT OUTER JOIN FETCH crd.certificationCriterion cc "
             + "LEFT OUTER JOIN FETCH cc.certificationEdition ed "
-            + "LEFT OUTER JOIN FETCH cr.certificationResultTestData crtd "
+            + "LEFT OUTER JOIN FETCH crd.certificationResultTestData crtd "
             + "LEFT OUTER JOIN FETCH crtd.testData td "
-            + "LEFT OUTER JOIN FETCH cr.certificationResultTestFunctionalities crtf "
+            + "LEFT OUTER JOIN FETCH crd.certificationResultTestFunctionalities crtf "
             + "LEFT OUTER JOIN FETCH crtf.testFunctionality tf "
-            + "LEFT OUTER JOIN FETCH cr.certificationResultTestProcedures crtp "
+            + "LEFT OUTER JOIN FETCH crd.certificationResultTestProcedures crtp "
             + "LEFT OUTER JOIN FETCH crtp.testProcedure tp "
-            + "LEFT OUTER JOIN FETCH cr.certificationResultTestTools crtt "
+            + "LEFT OUTER JOIN FETCH crd.certificationResultTestTools crtt "
             + "LEFT OUTER JOIN FETCH crtt.testTool tt "
-            + "LEFT OUTER JOIN FETCH cr.certificationResultTestStandards crts "
-            + "LEFT OUTER JOIN FETCH cr.certificationResultAdditionalSoftware cras "
-            + "WHERE cr.deleted = false "
+            + "LEFT OUTER JOIN FETCH crd.certificationResultTestStandards crts "
+            + "LEFT OUTER JOIN FETCH crd.certificationResultAdditionalSoftware cras "
+            + "WHERE crd.deleted = false "
             + "AND (crtd.deleted = false OR crtd.deleted IS NULL) "
             + "AND (crtf.deleted = false OR crtf.deleted IS NULL) "
             + "AND (crtp.deleted = false OR crtp.deleted IS NULL) "
@@ -133,7 +133,7 @@ public class CertificationResultDetailsDAO extends BaseDAOImpl {
 
     public List<CertificationResultDetailsDTO> getAllCertResultsForListing(Long listingId) {
         Query query = entityManager.createQuery(BASE_SQL
-                + "AND cr.certifiedProductId = :listingId",
+                + "AND crd.certifiedProductId = :listingId",
                 CertificationResultDetailsEntity.class);
 
         query.setParameter("listingId", listingId);
