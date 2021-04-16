@@ -138,6 +138,14 @@ public class CertificationResult implements Serializable {
     private String useCases;
 
     /**
+     * The publicly accessible hyperlink to the list of service base URLs for a Health IT Module
+     * certified to § 170.315(g)(10) that can be used by patients to access their electronic health
+     * information. It is a fully qualified URL which is reachable via web browser validation and verification.
+     */
+    @XmlElement(required = false, nillable = true)
+    private String serviceBaseUrlList;
+
+    /**
      * This variable explains the way in which each privacy and security criterion was addressed for the purposes of
      * certification. It is applicable for 2015 Edition and takes either of Approach 1 and Approach 2.
      */
@@ -399,6 +407,14 @@ public class CertificationResult implements Serializable {
 
     public void setUseCases(String useCases) {
         this.useCases = useCases;
+    }
+
+    public String getServiceBaseUrlList() {
+        return serviceBaseUrlList;
+    }
+
+    public void setServiceBaseUrlList(String serviceBaseUrlList) {
+        this.serviceBaseUrlList = serviceBaseUrlList;
     }
 
     public String getPrivacySecurityFramework() {

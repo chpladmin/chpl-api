@@ -27,4 +27,20 @@ public class CertificationCriterionAttributeDAO extends BaseDAOImpl {
                         + "AND cca.deleted = false", CertificationCriterionAttributeEntity.class)
                 .getResultList();
     }
+
+    public List<CertificationCriterion> getCriteriaForServiceBaseUrlList() {
+        return getCertificationCriteriaAttributeEntityForServiceBaseUrlList().stream()
+                .map(cca -> new CertificationCriterion(new CertificationCriterionDTO(cca.getCriterion())))
+                .collect(Collectors.toList());
+    }
+
+    private List<CertificationCriterionAttributeEntity> getCertificationCriteriaAttributeEntityForServiceBaseUrlList() {
+        return entityManager
+                .createQuery("SELECT cca "
+                        + "FROM CertificationCriterionAttributeEntity cca "
+                        + "JOIN FETCH cca.criterion "
+                        + "WHERE cca.serviceBaseUrlList = true "
+                        + "AND cca.deleted = false", CertificationCriterionAttributeEntity.class)
+                .getResultList();
+    }
 }

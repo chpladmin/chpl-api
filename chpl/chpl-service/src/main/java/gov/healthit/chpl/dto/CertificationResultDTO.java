@@ -8,7 +8,9 @@ import java.util.List;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import gov.healthit.chpl.util.Util;
+import lombok.Data;
 
+@Data
 public class CertificationResultDTO implements Serializable {
     private static final long serialVersionUID = 4640517836460510236L;
     private Long id;
@@ -26,6 +28,7 @@ public class CertificationResultDTO implements Serializable {
     private String exportDocumentation;
     private String documentationUrl;
     private String useCases;
+    private String serviceBaseUrlList;
     private String privacySecurityFramework;
     private Date lastModifiedDate;
     private Long lastModifiedUser;
@@ -65,6 +68,7 @@ public class CertificationResultDTO implements Serializable {
         this.exportDocumentation = entity.getExportDocumentation();
         this.documentationUrl = entity.getDocumentationUrl();
         this.useCases = entity.getUseCases();
+        this.serviceBaseUrlList = entity.getServiceBaseUrlList();
         this.privacySecurityFramework = entity.getPrivacySecurityFramework();
         this.successful = entity.isSuccess();
         this.deleted = entity.getDeleted();
@@ -83,220 +87,8 @@ public class CertificationResultDTO implements Serializable {
         this.exportDocumentation = domain.getExportDocumentation();
         this.documentationUrl = domain.getDocumentationUrl();
         this.useCases = domain.getUseCases();
+        this.serviceBaseUrlList = domain.getServiceBaseUrlList();
         this.privacySecurityFramework = domain.getPrivacySecurityFramework();
         this.successful = domain.isSuccess();
     }
-
-    public Long getCertificationCriterionId() {
-        return certificationCriterionId;
-    }
-
-    public void setCertificationCriterionId(final Long certificationCriterionId) {
-        this.certificationCriterionId = certificationCriterionId;
-    }
-
-    public Long getCertifiedProductId() {
-        return certifiedProductId;
-    }
-
-    public void setCertifiedProduct(final Long certifiedProductId) {
-        this.certifiedProductId = certifiedProductId;
-    }
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Boolean getGap() {
-        return gap;
-    }
-
-    public void setGap(final Boolean gap) {
-        this.gap = gap;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Boolean getSuccessful() {
-        return successful;
-    }
-
-    public void setSuccessful(final Boolean successful) {
-        this.successful = successful;
-    }
-
-    public List<CertificationResultAdditionalSoftwareDTO> getAdditionalSoftware() {
-        return additionalSoftware;
-    }
-
-    public void setAdditionalSoftware(final List<CertificationResultAdditionalSoftwareDTO> list) {
-        this.additionalSoftware = list;
-    }
-
-    public Boolean getSed() {
-        return sed;
-    }
-
-    public void setSed(final Boolean sed) {
-        this.sed = sed;
-    }
-
-    public Boolean getG1Success() {
-        return g1Success;
-    }
-
-    public void setG1Success(final Boolean g1Success) {
-        this.g1Success = g1Success;
-    }
-
-    public Boolean getG2Success() {
-        return g2Success;
-    }
-
-    public void setG2Success(final Boolean g2Success) {
-        this.g2Success = g2Success;
-    }
-
-    public void setCertifiedProductId(final Long certifiedProductId) {
-        this.certifiedProductId = certifiedProductId;
-    }
-
-    public List<CertificationResultTestStandardDTO> getTestStandards() {
-        return testStandards;
-    }
-
-    public void setTestStandards(final List<CertificationResultTestStandardDTO> testStandards) {
-        this.testStandards = testStandards;
-    }
-
-    public List<CertificationResultTestToolDTO> getTestTools() {
-        return testTools;
-    }
-
-    public void setTestTools(final List<CertificationResultTestToolDTO> testTools) {
-        this.testTools = testTools;
-    }
-
-    public List<CertificationResultTestDataDTO> getTestData() {
-        return testData;
-    }
-
-    public void setTestData(final List<CertificationResultTestDataDTO> testData) {
-        this.testData = testData;
-    }
-
-    public List<CertificationResultTestFunctionalityDTO> getTestFunctionality() {
-        return testFunctionality;
-    }
-
-    public void setTestFunctionality(final List<CertificationResultTestFunctionalityDTO> testFunctionality) {
-        this.testFunctionality = testFunctionality;
-    }
-
-    public List<CertificationResultUcdProcessDTO> getUcdProcesses() {
-        return ucdProcesses;
-    }
-
-    public void setUcdProcesses(final List<CertificationResultUcdProcessDTO> ucdProcesses) {
-        this.ucdProcesses = ucdProcesses;
-    }
-
-    public List<CertificationResultTestTaskDTO> getTestTasks() {
-        return testTasks;
-    }
-
-    public void setTestTasks(final List<CertificationResultTestTaskDTO> testTasks) {
-        this.testTasks = testTasks;
-    }
-
-    public String getApiDocumentation() {
-        return apiDocumentation;
-    }
-
-    public void setApiDocumentation(final String apiDocumentation) {
-        this.apiDocumentation = apiDocumentation;
-    }
-
-    public Boolean getAttestationAnswer() {
-        return attestationAnswer;
-    }
-
-    public void setAttestationAnswer(Boolean attestationAnswer) {
-        this.attestationAnswer = attestationAnswer;
-    }
-
-    public String getExportDocumentation() {
-        return exportDocumentation;
-    }
-
-    public void setExportDocumentation(String exportDocumentation) {
-        this.exportDocumentation = exportDocumentation;
-    }
-
-    public String getDocumentationUrl() {
-        return documentationUrl;
-    }
-
-    public void setDocumentationUrl(String documentationUrl) {
-        this.documentationUrl = documentationUrl;
-    }
-
-    public String getUseCases() {
-        return useCases;
-    }
-
-    public void setUseCases(String useCases) {
-        this.useCases = useCases;
-    }
-
-    public String getPrivacySecurityFramework() {
-        return privacySecurityFramework;
-    }
-
-    public void setPrivacySecurityFramework(final String privacySecurityFramework) {
-        this.privacySecurityFramework = privacySecurityFramework;
-    }
-
-    public List<CertificationResultTestProcedureDTO> getTestProcedures() {
-        return testProcedures;
-    }
-
-    public void setTestProcedures(final List<CertificationResultTestProcedureDTO> testProcedures) {
-        this.testProcedures = testProcedures;
-    }
-
 }

@@ -656,7 +656,7 @@ public class CertifiedProductManager extends SecuredManager {
                 }
                 CertificationResultDTO certResultToCreate = new CertificationResultDTO();
                 certResultToCreate.setCertificationCriterionId(criterion.getId());
-                certResultToCreate.setCertifiedProduct(newCertifiedProduct.getId());
+                certResultToCreate.setCertifiedProductId(newCertifiedProduct.getId());
                 certResultToCreate.setSuccessful(certResult.getMeetsCriteria());
                 boolean isCertified = (certResultToCreate.getSuccessful() != null
                         && certResultToCreate.getSuccessful().booleanValue());

@@ -64,6 +64,9 @@ public class CertificationResultDetailsDAO extends BaseDAOImpl {
         case USE_CASES:
             queryStr += "AND crd.useCases = :url";
             break;
+        case SERVICE_BASE_URL_LIST:
+            queryStr += "AND crd.serviceBaseUrlList = :url";
+            break;
         default:
                 break;
         }

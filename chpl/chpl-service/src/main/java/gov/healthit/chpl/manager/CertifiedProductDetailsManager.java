@@ -550,6 +550,11 @@ public class CertifiedProductDetailsManager {
         } else if (result.getUseCases() == null) {
             result.setUseCases("");
         }
+        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.SERVICE_BASE_URL_LIST)) {
+            result.setServiceBaseUrlList(null);
+        } else if (result.getServiceBaseUrlList() == null) {
+            result.setServiceBaseUrlList("");
+        }
         if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.PRIVACY_SECURITY)) {
             result.setPrivacySecurityFramework(null);
         } else if (result.getPrivacySecurityFramework() == null) {

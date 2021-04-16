@@ -76,6 +76,9 @@ public class CertificationResultDetailsEntity {
     @Column(name = "use_cases")
     private String useCases;
 
+    @Column(name = "service_base_url_list")
+    private String serviceBaseUrlList;
+
     @Column(name = "privacy_security_framework")
     private String privacySecurityFramework;
 
@@ -192,6 +195,14 @@ public class CertificationResultDetailsEntity {
 
     public void setUseCases(String useCases) {
         this.useCases = useCases;
+    }
+
+    public String getServiceBaseUrlList() {
+        return serviceBaseUrlList;
+    }
+
+    public void setServiceBaseUrlList(String serviceBaseUrlList) {
+        this.serviceBaseUrlList = serviceBaseUrlList;
     }
 
     public String getApiDocumentation() {

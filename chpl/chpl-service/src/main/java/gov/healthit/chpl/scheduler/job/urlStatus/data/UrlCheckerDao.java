@@ -95,6 +95,9 @@ public class UrlCheckerDao extends BaseDAOImpl {
                 case USE_CASES:
                     results.addAll(getUseCaseUrls());
                     break;
+                case SERVICE_BASE_URL_LIST:
+                    results.addAll(getServiceBaseUrlLists());
+                    break;
                 case REAL_WORLD_TESTING_PLANS:
                    results.addAll(getRealWorldTestingPlanUrls());
                     break;
@@ -300,6 +303,24 @@ public class UrlCheckerDao extends BaseDAOImpl {
                 .map(website -> UrlResult.builder()
                         .url(website)
                         .urlType(UrlType.USE_CASES)
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    private List<UrlResult> getServiceBaseUrlLists() {
+        @SuppressWarnings("unchecked")
+        List<String> useCasesWebsites = entityManager.createQuery(
+                        "SELECT DISTINCT useCases "
+                        + "FROM CertificationResultEntity "
+                        + "WHERE serviceBaseUrlList IS NOT NULL "
+                        + "AND serviceBaseUrlList != '' "
+                        + "AND deleted = false")
+                .getResultList();
+        return useCasesWebsites.stream()
+                .filter(website -> !StringUtils.isEmpty(website))
+                .map(website -> UrlResult.builder()
+                        .url(website)
+                        .urlType(UrlType.SERVICE_BASE_URL_LIST)
                         .build())
                 .collect(Collectors.toList());
     }
