@@ -816,15 +816,10 @@ public class CertifiedProductManager extends SecuredManager {
                                 // try to look up by name and edition
                                 TestStandardDTO foundTestStandard = testStandardDao.getByNumberAndEdition(std.getName(),
                                         pendingCp.getCertificationEditionId());
-                                if (foundTestStandard == null) {
-                                    // if not found create a new test standard
-                                    TestStandardDTO ts = new TestStandardDTO();
-                                    ts.setName(std.getName());
-                                    ts.setCertificationEditionId(pendingCp.getCertificationEditionId());
-                                    ts = testStandardDao.create(ts);
-                                    stdDto.setTestStandardId(ts.getId());
-                                } else {
+                                if (foundTestStandard != null) {
                                     stdDto.setTestStandardId(foundTestStandard.getId());
+                                } else {
+                                    LOGGER.error("Will not insert test standard with null id. Name was " + std.getName());
                                 }
                             } else {
                                 stdDto.setTestStandardId(std.getTestStandardId());
