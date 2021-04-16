@@ -22,7 +22,7 @@ public class SurveillanceActivityReportWorkbook {
 
     private void writeFileToDisk(XSSFWorkbook workbook) {
         try {
-            FileOutputStream outputStream = new FileOutputStream("c://CHPL//files//todd.xls");
+            FileOutputStream outputStream = new FileOutputStream("c://CHPL//files//todd.xlsx");
             workbook.write(outputStream);
             workbook.close();
         } catch (FileNotFoundException e) {

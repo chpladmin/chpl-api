@@ -1,13 +1,16 @@
 package gov.healthit.chpl.scheduler.job.surveillancereportingactivity;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.csv.CSVRecord;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -16,8 +19,12 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class SurveillanceDataWorksheet {
 
+    private XSSFFormulaEvaluator formulaEvaluator;
+
     public XSSFWorkbook generateWorksheet(XSSFWorkbook workbook, List<CSVRecord> surveillances) {
+        formulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();
         XSSFSheet sheet = workbook.createSheet("surveillance-all");
+
         sheet = populateSheet(sheet, surveillances);
 
         return workbook;
@@ -26,19 +33,27 @@ public class SurveillanceDataWorksheet {
     private XSSFSheet populateSheet(XSSFSheet sheet, List<CSVRecord> surveillances) {
         sheet = populateHeaderRow(sheet, surveillances);
         sheet = populateSurveillanceRows(sheet, surveillances);
-        sheet = addDurationOfClosedSurveillanceFormula(sheet, surveillances.size());
+        sheet = addFormulaToColumn(sheet, 30, "Duration of Closed Surveillance (days)", "IF(K:K<>\"\",DAYS360(J:J,K:K,FALSE),\"\")", surveillances.size());
+        sheet = addFormulaToColumn(sheet, 31, "Time to Assess Conformity (days)", "IF(P:P=\"No Non-Conformity\",AD:AD,DAYS360(J:J,S:S,FALSE))", surveillances.size());
+        sheet = addFormulaToColumn(sheet, 32, "Time to Approve CAP (days)", "IF(T:T<>\"\",DAYS360(S:S,T:T),\"\")", surveillances.size());
+        sheet = addFormulaToColumn(sheet, 33, "MUST_COMPLETE_MET?", "IF(W:W<>\"\",IF(V:V>=W:W,\"Y\",\"N\"),\"\")", surveillances.size());
+        sheet = addFormulaToColumn(sheet, 34, "Duration of CAP (days)", "IF(T:T<>\"\",IF(W:W<>\"\",DAYS360(T:T,W:W),DAYS360(T:T,TODAY())),\"\")", surveillances.size());
+        sheet = addFormulaToColumn(sheet, 35, "Time from CAP Approval to Surveillance Close (days)", "IF(T:T<>\"\",IF(K:K<>\"\",DAYS360(T:T,K:K,FALSE),\"\"),\"\")", surveillances.size());
+        sheet = addFormulaToColumn(sheet, 36, "Time from CAP Close to Surveillance Close (days)", "IF(W:W<>\"\",IF(K:K<>\"\",DAYS360(W:W,K:K,FALSE),\"\"),\"\")", surveillances.size());
         return sheet;
     }
 
     private XSSFSheet populateSurveillanceRows(XSSFSheet sheet, List<CSVRecord> surveillances) {
         int colNum = 0;
         int rowNum = 1;
-        Map<Integer, String> mapOfHeaders = getHeaderMap();
+        List<String> headers = getHeaders();
 
         for (CSVRecord surveillance : surveillances) {
             Row row = sheet.createRow(rowNum);
-            for (String header : mapOfHeaders.values()) {
-                row.createCell(colNum).setCellValue(surveillance.get(header));
+            for (String header : headers) {
+                if (doesItemExistInSurveillanceCsvRecord(surveillance, header)) {
+                    row.createCell(colNum).setCellValue(surveillance.get(header));
+                }
                 colNum++;
             }
             colNum = 0;
@@ -47,12 +62,16 @@ public class SurveillanceDataWorksheet {
         return sheet;
     }
 
+    private Boolean doesItemExistInSurveillanceCsvRecord(CSVRecord record, String header) {
+     return record.toMap().containsKey(header);
+    }
+
     private XSSFSheet populateHeaderRow(XSSFSheet sheet, List<CSVRecord> surveillances) {
         int colNum = 0;
         Row row = sheet.createRow(0);
-        Map<Integer, String> mapOfHeaders = getHeaderMap();
+        List<String> headers = getHeaders();
 
-        for (String header : mapOfHeaders.values()) {
+        for (String header : headers) {
             Cell cell = row.createCell(colNum, CellType.STRING);
             cell.setCellValue(header);
             colNum++;
@@ -60,56 +79,52 @@ public class SurveillanceDataWorksheet {
         return sheet;
     }
 
-    private XSSFSheet addDurationOfClosedSurveillanceFormula(XSSFSheet sheet, Integer totalRows) {
-        sheet.getRow(0).createCell(30).setCellValue("Duration of Closed Surveillance (days)");
-
-        String unformattedFormula = "IF(K%s<>\"\",DAYS360(J%s,K%s,FALSE),\"\")";
-        for (int row = 1; row >= totalRows; row++) {
-            sheet.getRow(row).createCell(30).setCellFormula(String.format(unformattedFormula, row, row, row));
+    private XSSFSheet addFormulaToColumn(XSSFSheet sheet, Integer columnForFormula, String headerText, String formula, Integer totalRows) {
+        CellStyle formulaHeaderStyle = sheet.getWorkbook().createCellStyle();
+        formulaHeaderStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+        formulaHeaderStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        sheet.getRow(0).createCell(columnForFormula).setCellValue(headerText);
+        sheet.getRow(0).getCell(columnForFormula).setCellStyle(formulaHeaderStyle);
+        for (int row = 1; row <= totalRows; row++) {
+            Cell formulaCell = sheet.getRow(row).createCell(columnForFormula);
+            formulaCell.setCellFormula(formula);
         }
         return sheet;
 
     }
 
-    //private CellType getCellType(String headerName) {
-    //    switch (headerName) {
-    //    case "":
-    //        return CellType.
-    //    }
-    //}
+    private static List<String> getHeaders() {
+        List<String> headers = new ArrayList<String>();
+        headers.add("?RECORD_STATUS__C");
+        headers.add("UNIQUE_CHPL_ID__C");
+        headers.add("URL");
+        headers.add("ACB_NAME");
+        headers.add("CERTIFICATION_STATUS");
+        headers.add("DEVELOPER_NAME");
+        headers.add("PRODUCT_NAME");
+        headers.add("PRODUCT_VERSION");
+        headers.add("SURVEILLANCE_ID");
+        headers.add("SURVEILLANCE_BEGAN");
+        headers.add("SURVEILLANCE_ENDED");
+        headers.add("SURVEILLANCE_TYPE");
+        headers.add("RANDOMIZED_SITES_USED");
+        headers.add("SURVEILLED_REQUIREMENT_TYPE");
+        headers.add("SURVEILLED_REQUIREMENT");
+        headers.add("SURVEILLANCE_RESULT");
+        headers.add("NON_CONFORMITY_TYPE");
+        headers.add("NON_CONFORMITY_STATUS");
+        headers.add("DATE_OF_DETERMINATION");
+        headers.add("CAP_APPROVAL_DATE");
+        headers.add("ACTION_BEGAN_DATE");
+        headers.add("MUST_COMPLETE_DATE");
+        headers.add("WAS_COMPLETE_DATE");
+        headers.add("NON_CONFORMITY_SUMMARY");
+        headers.add("NON_CONFORMITY_FINDINGS");
+        headers.add("SITES_PASSED");
+        headers.add("TOTAL_SITES");
+        headers.add("DEVELOPER_EXPLANATION");
+        headers.add("RESOLUTION_DESCRIPTION");
 
-    private static Map<Integer, String> getHeaderMap() {
-        Map<Integer, String> map = new HashMap<Integer, String>();
-        map.put(0, "RECORD_STATUS__C");
-        map.put(1, "UNIQUE_CHPL_ID__C");
-        map.put(2, "URL");
-        map.put(3, "ACB_NAME");
-        map.put(4, "CERTIFICATION_STATUS");
-        map.put(5, "DEVELOPER_NAME");
-        map.put(6, "PRODUCT_NAME");
-        map.put(7, "PRODUCT_VERSION");
-        map.put(8, "SURVEILLANCE_ID");
-        map.put(9, "SURVEILLANCE_BEGAN");
-        map.put(10, "SURVEILLANCE_ENDED");
-        map.put(11, "SURVEILLANCE_TYPE");
-        map.put(12, "RANDOMIZED_SITES_USED");
-        map.put(13, "SURVEILLED_REQUIREMENT_TYPE");
-        map.put(14, "SURVEILLED_REQUIREMENT");
-        map.put(15, "SURVEILLANCE_RESULT");
-        map.put(16, "NON_CONFORMITY_TYPE");
-        map.put(17, "NON_CONFORMITY_STATUS");
-        map.put(18, "DATE_OF_DETERMINATION");
-        map.put(19, "CAP_APPROVAL_DATE");
-        map.put(20, "ACTION_BEGAN_DATE");
-        map.put(21, "MUST_COMPLETE_DATE");
-        map.put(22, "WAS_COMPLETE_DATE");
-        map.put(23, "NON_CONFORMITY_SUMMARY");
-        map.put(24, "NON_CONFORMITY_FINDINGS");
-        map.put(25, "SITES_PASSED");
-        map.put(26, "TOTAL_SITES");
-        map.put(27, "DEVELOPER_EXPLANATION");
-        map.put(28, "RESOLUTION_DESCRIPTION");
-
-        return map;
+        return headers;
     }
 }
