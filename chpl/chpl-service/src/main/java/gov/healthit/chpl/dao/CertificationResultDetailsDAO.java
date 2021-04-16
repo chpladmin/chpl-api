@@ -65,7 +65,7 @@ public class CertificationResultDetailsDAO extends BaseDAOImpl {
             queryStr += "AND crd.useCases = :url";
             break;
         default:
-                break;
+            break;
         }
         Query query = entityManager.createQuery(queryStr, CertificationResultDetailsEntity.class);
         query.setParameter("url", url);
@@ -90,17 +90,14 @@ public class CertificationResultDetailsDAO extends BaseDAOImpl {
         return certResults;
     }
 
-    private List<CertificationResultDetailsEntity> getEntitiesByCertifiedProductId(final Long productId)
-            throws EntityRetrievalException {
-
-        CertificationResultDetailsEntity entity = null;
+    private List<CertificationResultDetailsEntity> getEntitiesByCertifiedProductId(final Long productId) throws EntityRetrievalException {
 
         Query query = entityManager.createQuery(
                 "SELECT crd FROM CertificationResultDetailsEntity crd "
-                + "JOIN FETCH crd.certificationCriterion cc "
-                + "JOIN FETCH cc.certificationEdition "
-                + "WHERE crd.deleted = false "
-                + "AND crd.certifiedProductId = :entityid ",
+                        + "JOIN FETCH crd.certificationCriterion cc "
+                        + "JOIN FETCH cc.certificationEdition "
+                        + "WHERE crd.deleted = false "
+                        + "AND crd.certifiedProductId = :entityid ",
                 CertificationResultDetailsEntity.class);
         query.setParameter("entityid", productId);
         List<CertificationResultDetailsEntity> result = query.getResultList();
@@ -108,11 +105,7 @@ public class CertificationResultDetailsDAO extends BaseDAOImpl {
         return result;
     }
 
-    private List<CertificationResultDetailsEntity> getEntitiesByCertifiedProductIdSED(final Long productId)
-            throws EntityRetrievalException {
-
-        CertificationResultDetailsEntity entity = null;
-
+    private List<CertificationResultDetailsEntity> getEntitiesByCertifiedProductIdSED(final Long productId) throws EntityRetrievalException {
         Query query = entityManager.createQuery(
                 "SELECT crd FROM CertificationResultDetailsEntity crd "
                         + "JOIN FETCH crd.certificationCriterion cc "

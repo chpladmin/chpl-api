@@ -17,6 +17,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Where;
 
+import gov.healthit.chpl.certifiedproduct.entity.CertificationResultDetailsEntityv2;
 import gov.healthit.chpl.util.Util;
 import lombok.Data;
 
@@ -165,7 +166,7 @@ public class CertifiedProductSummaryEntity implements Serializable {
     @Basic(optional = false)
     @Column(name = "certified_product_id", nullable = false)
     @Where(clause = "deleted <> 'true'")
-    private Set<CertificationResultDetailsEntity> certificationResults = new HashSet<CertificationResultDetailsEntity>();
+    private Set<CertificationResultDetailsEntityv2> certificationResults = new HashSet<CertificationResultDetailsEntityv2>();
 
     @Column(name = "rwt_eligibility_year")
     private Integer rwtEligibilityYear;

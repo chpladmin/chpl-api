@@ -14,6 +14,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManagerv1;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
@@ -21,7 +23,6 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -50,7 +51,7 @@ public abstract class DownloadableResourceCreatorJob extends QuartzJob {
     private CertificationResultDetailsDAO certificationResultDetailsDao;
 
     @Autowired
-    private CertifiedProductDetailsManager certifiedProductDetailsManager;
+    private CertifiedProductDetailsManagerv1 certifiedProductDetailsManager;
 
     private Logger logger;
 
