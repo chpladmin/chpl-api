@@ -1,11 +1,14 @@
 package gov.healthit.chpl.entity.listing;
 
+import java.util.Set;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -17,8 +20,6 @@ import gov.healthit.chpl.entity.CertificationCriterionEntity;
 @Entity
 @Table(name = "certification_result_details")
 public class CertificationResultDetailsEntity {
-
-    /** Serial Version UID. */
     private static final long serialVersionUID = -2928065796550377879L;
 
     @Id
@@ -81,6 +82,36 @@ public class CertificationResultDetailsEntity {
 
     @Column(name = "deleted")
     private Boolean deleted;
+
+    @Basic(optional = true)
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_result_id")
+    private Set<CertificationResultTestDataEntity> certificationResultTestData;
+
+    @Basic(optional = true)
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_result_id")
+    private Set<CertificationResultTestFunctionalityEntity> certificationResultTestFunctionalities;
+
+    @Basic(optional = true)
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_result_id")
+    private Set<CertificationResultTestProcedureEntity> certificationResultTestProcedures;
+
+    @Basic(optional = true)
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_result_id")
+    private Set<CertificationResultTestStandardEntity> certificationResultTestStandards;
+
+    @Basic(optional = true)
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_result_id")
+    private Set<CertificationResultAdditionalSoftwareEntity> certificationResultAdditionalSoftware;
+
+    @Basic(optional = true)
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_result_id")
+    private Set<CertificationResultTestToolEntity> certificationResultTestTools;
 
     public Long getId() {
         return id;
@@ -232,5 +263,53 @@ public class CertificationResultDetailsEntity {
 
     public void setCertificationCriterion(final CertificationCriterionEntity certificationCriterion) {
         this.certificationCriterion = certificationCriterion;
+    }
+
+    public Set<CertificationResultTestDataEntity> getCertificationResultTestData() {
+        return certificationResultTestData;
+    }
+
+    public void setCertificationResultTestData(Set<CertificationResultTestDataEntity> certificationResultTestData) {
+        this.certificationResultTestData = certificationResultTestData;
+    }
+
+    public Set<CertificationResultTestFunctionalityEntity> getCertificationResultTestFunctionalities() {
+        return certificationResultTestFunctionalities;
+    }
+
+    public void setCertificationResultTestFunctionalities(Set<CertificationResultTestFunctionalityEntity> certificationResultTestFunctionalities) {
+        this.certificationResultTestFunctionalities = certificationResultTestFunctionalities;
+    }
+
+    public Set<CertificationResultTestProcedureEntity> getCertificationResultTestProcedures() {
+        return certificationResultTestProcedures;
+    }
+
+    public void setCertificationResultTestProcedures(Set<CertificationResultTestProcedureEntity> certificationResultTestProcedures) {
+        this.certificationResultTestProcedures = certificationResultTestProcedures;
+    }
+
+    public Set<CertificationResultTestStandardEntity> getCertificationResultTestStandards() {
+        return certificationResultTestStandards;
+    }
+
+    public void setCertificationResultTestStandards(Set<CertificationResultTestStandardEntity> certificationResultTestStandards) {
+        this.certificationResultTestStandards = certificationResultTestStandards;
+    }
+
+    public Set<CertificationResultAdditionalSoftwareEntity> getCertificationResultAdditionalSoftware() {
+        return certificationResultAdditionalSoftware;
+    }
+
+    public void setCertificationResultAdditionalSoftware(Set<CertificationResultAdditionalSoftwareEntity> certificationResultAdditionalSoftware) {
+        this.certificationResultAdditionalSoftware = certificationResultAdditionalSoftware;
+    }
+
+    public Set<CertificationResultTestToolEntity> getCertificationResultTestTools() {
+        return certificationResultTestTools;
+    }
+
+    public void setCertificationResultTestTools(Set<CertificationResultTestToolEntity> certificationResultTestTools) {
+        this.certificationResultTestTools = certificationResultTestTools;
     }
 }

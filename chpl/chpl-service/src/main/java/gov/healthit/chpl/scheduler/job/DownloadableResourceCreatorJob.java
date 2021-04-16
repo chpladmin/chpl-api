@@ -15,7 +15,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
-import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManagerv1;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
@@ -51,7 +50,7 @@ public abstract class DownloadableResourceCreatorJob extends QuartzJob {
     private CertificationResultDetailsDAO certificationResultDetailsDao;
 
     @Autowired
-    private CertifiedProductDetailsManagerv1 certifiedProductDetailsManager;
+    private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
     private Logger logger;
 

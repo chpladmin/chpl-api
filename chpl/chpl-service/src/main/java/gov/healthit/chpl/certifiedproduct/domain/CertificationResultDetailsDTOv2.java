@@ -3,7 +3,6 @@ package gov.healthit.chpl.certifiedproduct.domain;
 import java.io.Serializable;
 import java.util.List;
 
-import gov.healthit.chpl.certifiedproduct.entity.CertificationResultDetailsEntityv2;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
@@ -11,6 +10,7 @@ import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
+import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -43,7 +43,7 @@ public class CertificationResultDetailsDTOv2 implements Serializable {
     private List<CertificationResultTestStandardDTO> testStandards;
     private List<CertificationResultAdditionalSoftwareDTO> additionalSoftware;
 
-    public CertificationResultDetailsDTOv2(final CertificationResultDetailsEntityv2 entity) {
+    public CertificationResultDetailsDTOv2(final CertificationResultDetailsEntity entity) {
         this.id = entity.getId();
         this.certificationCriterionId = entity.getCertificationCriterionId();
         this.certifiedProductId = entity.getCertifiedProductId();
