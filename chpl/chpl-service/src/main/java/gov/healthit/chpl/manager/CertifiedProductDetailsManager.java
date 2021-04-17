@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -382,7 +383,10 @@ public class CertifiedProductDetailsManager {
     private CertifiedProductSearchDetails populateDirectReviews(CertifiedProductSearchDetails listing) {
         List<DirectReview> drs = new ArrayList<DirectReview>();
         if (listing.getDeveloper() != null && listing.getDeveloper().getDeveloperId() != null) {
-            drs = drService.getDirectReviewsRelatedToListing(listing);
+            drs = drService.getDirectReviewsRelatedToListing(listing.getId(),
+                    listing.getDeveloper().getDeveloperId(),
+                    MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY),
+                    listing.getCertificationEvents());
         }
         listing.setDirectReviews(drs);
         listing.setDirectReviewsAvailable(drService.getDirectReviewsAvailable());

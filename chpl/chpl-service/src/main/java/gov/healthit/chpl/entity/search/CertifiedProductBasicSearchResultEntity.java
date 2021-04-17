@@ -98,6 +98,9 @@ public class CertifiedProductBasicSearchResultEntity {
     @Column(name = "surv_dates")
     private String surveillanceDates;
 
+    @Column(name = "status_events")
+    private String statusEvents;
+
     @Column(name = "meaningful_use_users")
     private Long meaningfulUseUserCount;
 
@@ -132,7 +135,7 @@ public class CertifiedProductBasicSearchResultEntity {
         return Util.getNewDate(certificationDate);
     }
 
-    public void setCertificationDate(final Date certificationDate) {
+    public void setCertificationDate(Date certificationDate) {
         this.certificationDate = Util.getNewDate(certificationDate);
     }
 
@@ -140,7 +143,7 @@ public class CertifiedProductBasicSearchResultEntity {
         return Util.getNewDate(decertificationDate);
     }
 
-    public void setDecertificationDate(final Date decertificationDate) {
+    public void setDecertificationDate(Date decertificationDate) {
         this.decertificationDate = Util.getNewDate(decertificationDate);
     }
 }
