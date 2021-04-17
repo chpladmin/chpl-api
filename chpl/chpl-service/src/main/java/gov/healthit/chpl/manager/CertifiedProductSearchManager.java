@@ -1,6 +1,6 @@
 package gov.healthit.chpl.manager;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
@@ -31,16 +31,16 @@ import lombok.extern.log4j.Log4j2;
 @Service
 @Log4j2
 public class CertifiedProductSearchManager {
-    private static final String CERT_STATUS_EVENT_DATE_FORMAT = "yyyy-MM-dd hh:mm:ss";
+    private static final String CERT_STATUS_EVENT_DATE_FORMAT = "yyyy-MM-dd";
     private CertifiedProductSearchDAO searchDao;
     private DirectReviewSearchService drService;
-    private DateTimeFormatter dateTimeFormatter;
+    private DateTimeFormatter dateFormatter;
 
     @Autowired
     public CertifiedProductSearchManager(CertifiedProductSearchDAO searchDao, DirectReviewSearchService drService) {
         this.searchDao = searchDao;
         this.drService = drService;
-        this.dateTimeFormatter = DateTimeFormatter.ofPattern(CERT_STATUS_EVENT_DATE_FORMAT);
+        this.dateFormatter = DateTimeFormatter.ofPattern(CERT_STATUS_EVENT_DATE_FORMAT);
     }
 
     @Transactional(readOnly = true)
@@ -75,16 +75,17 @@ public class CertifiedProductSearchManager {
         if (StringUtils.isEmpty(dateAndStatusStr)) {
             return null;
         }
-        //2010-12-28 00:00:00?Active&2016-04-01 00:20:14.385436?Retired
-        String[] splitDateAndStatus = dateAndStatusStr.split("?");
+        //2010-12-28:Active&2016-04-01:Retired
+        String[] splitDateAndStatus = dateAndStatusStr.split(":");
         if (splitDateAndStatus == null || splitDateAndStatus.length != 2) {
+            LOGGER.warn("Unexpected format of status events data: " + dateAndStatusStr);
             return null;
         }
         String statusName = splitDateAndStatus[1];
         Long statusDate = -1L;
         try {
-            LocalDateTime statusDateTime = LocalDateTime.parse(splitDateAndStatus[0], dateTimeFormatter);
-            statusDate = statusDateTime != null ? statusDateTime.toInstant(ZoneOffset.UTC).toEpochMilli() : -1L;
+            LocalDate statusDateTime = LocalDate.parse(splitDateAndStatus[0], dateFormatter);
+            statusDate = statusDateTime != null ? statusDateTime.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli() : -1L;
         } catch (Exception ex) {
             LOGGER.warn("Unable to convert " + splitDateAndStatus[0] + " to milli value", ex);
         }
