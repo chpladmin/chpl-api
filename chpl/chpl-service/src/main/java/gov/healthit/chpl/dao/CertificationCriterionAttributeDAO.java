@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -28,6 +29,7 @@ public class CertificationCriterionAttributeDAO extends BaseDAOImpl {
                 .getResultList();
     }
 
+    @Transactional
     public List<CertificationCriterion> getCriteriaForServiceBaseUrlList() {
         return getCertificationCriteriaAttributeEntityForServiceBaseUrlList().stream()
                 .map(cca -> new CertificationCriterion(new CertificationCriterionDTO(cca.getCriterion())))

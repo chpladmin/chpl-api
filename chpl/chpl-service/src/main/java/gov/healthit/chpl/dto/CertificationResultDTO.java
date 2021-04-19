@@ -7,7 +7,6 @@ import java.util.List;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
-import gov.healthit.chpl.util.Util;
 import lombok.Data;
 
 @Data

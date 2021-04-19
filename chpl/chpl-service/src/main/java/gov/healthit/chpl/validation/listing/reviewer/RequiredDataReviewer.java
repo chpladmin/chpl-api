@@ -54,13 +54,6 @@ public class RequiredDataReviewer extends PermissionBasedReviewer {
                 addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingGap",
                         Util.formatCriteriaNumber(cert.getCriterion()));
             }
-
-            if (cert.isSuccess() != null && cert.isSuccess().equals(Boolean.TRUE)
-                    && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.SERVICE_BASE_URL_LIST)
-                    && cert.getServiceBaseUrlList() == null) {
-                addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingServiceBaseUrlList",
-                        Util.formatCriteriaNumber(cert.getCriterion()));
-            }
         }
     }
 }

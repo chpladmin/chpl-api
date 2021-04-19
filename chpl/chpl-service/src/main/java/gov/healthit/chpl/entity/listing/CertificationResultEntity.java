@@ -341,7 +341,7 @@ public class CertificationResultEntity implements Serializable {
     }
 
     public void setServiceBaseUrlList(String serviceBaseUrlList) {
-        this.useCases = serviceBaseUrlList;
+        this.serviceBaseUrlList = serviceBaseUrlList;
     }
 
     public String getPrivacySecurityFramework() {

@@ -251,6 +251,7 @@ public class CertificationResult implements Serializable {
         this.setExportDocumentation(certResult.getExportDocumentation());
         this.setDocumentationUrl(certResult.getDocumentationUrl());
         this.setUseCases(certResult.getUseCases());
+        this.setServiceBaseUrlList(certResult.getServiceBaseUrlList());
         this.setPrivacySecurityFramework(certResult.getPrivacySecurityFramework());
         if (certResult.getCriterion() != null) {
             this.criterion = new CertificationCriterion(certResult.getCriterion());

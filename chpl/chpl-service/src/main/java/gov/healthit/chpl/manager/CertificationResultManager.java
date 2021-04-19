@@ -135,7 +135,8 @@ private SvapDAO svapDao;
                 || !ObjectUtils.equals(orig.getAttestationAnswer(), updated.getAttestationAnswer())
                 || !ObjectUtils.equals(orig.getDocumentationUrl(), updated.getDocumentationUrl())
                 || !ObjectUtils.equals(orig.getExportDocumentation(), updated.getExportDocumentation())
-                || !ObjectUtils.equals(orig.getUseCases(), updated.getUseCases())) {
+                || !ObjectUtils.equals(orig.getUseCases(), updated.getUseCases())
+                || !ObjectUtils.equals(orig.getServiceBaseUrlList(), updated.getServiceBaseUrlList())) {
             hasChanged = true;
         }
         if (hasChanged) {
@@ -162,6 +163,7 @@ private SvapDAO svapDao;
                 toUpdate.setDocumentationUrl(updated.getDocumentationUrl());
                 toUpdate.setExportDocumentation(updated.getExportDocumentation());
                 toUpdate.setUseCases(updated.getUseCases());
+                toUpdate.setServiceBaseUrlList(updated.getServiceBaseUrlList());
             } else {
                 toUpdate.setApiDocumentation(null);
                 toUpdate.setPrivacySecurityFramework(null);
@@ -171,6 +173,7 @@ private SvapDAO svapDao;
                 toUpdate.setDocumentationUrl(null);
                 toUpdate.setExportDocumentation(null);
                 toUpdate.setUseCases(null);
+                toUpdate.setServiceBaseUrlList(null);
             }
 
             certResultDAO.update(toUpdate);
