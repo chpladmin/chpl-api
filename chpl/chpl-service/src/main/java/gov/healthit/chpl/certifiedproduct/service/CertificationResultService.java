@@ -19,14 +19,8 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
-import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
-import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
-import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
-import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
-import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
-import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertificationResultManager;
@@ -123,63 +117,55 @@ public class CertificationResultService {
         }
         // add all the other data
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
-            List<CertificationResultAdditionalSoftwareDTO> certResultSoftware = certResult.getAdditionalSoftware();
-            for (CertificationResultAdditionalSoftwareDTO currResult : certResultSoftware) {
-                CertificationResultAdditionalSoftware softwareResult = new CertificationResultAdditionalSoftware(
-                        currResult);
-                result.getAdditionalSoftware().add(softwareResult);
-            }
+            result.setAdditionalSoftware(certResult.getAdditionalSoftware().stream()
+                    .filter(res -> !res.getDeleted())
+                    .map(res -> new CertificationResultAdditionalSoftware(res))
+                    .collect(Collectors.toList()));
         } else {
             result.setAdditionalSoftware(null);
         }
 
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.STANDARDS_TESTED)) {
-            List<CertificationResultTestStandardDTO> testStandards = certResult.getTestStandards();
-            for (CertificationResultTestStandardDTO currResult : testStandards) {
-                CertificationResultTestStandard testStandardResult = new CertificationResultTestStandard(currResult);
-                result.getTestStandards().add(testStandardResult);
-            }
+            result.setTestStandards(certResult.getTestStandards().stream()
+                    .filter(res -> !res.getDeleted())
+                    .map(res -> new CertificationResultTestStandard(res))
+                    .collect(Collectors.toList()));
         } else {
             result.setTestStandards(null);
         }
 
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TOOLS_USED)) {
-            List<CertificationResultTestToolDTO> testTools = certResult.getTestTools();
-            for (CertificationResultTestToolDTO currResult : testTools) {
-                CertificationResultTestTool testToolResult = new CertificationResultTestTool(currResult);
-                result.getTestToolsUsed().add(testToolResult);
-            }
+            result.setTestToolsUsed(certResult.getTestTools().stream()
+                    .filter(res -> !res.getDeleted())
+                    .map(res -> new CertificationResultTestTool(res))
+                    .collect(Collectors.toList()));
         } else {
             result.setTestToolsUsed(null);
         }
 
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_DATA)) {
-            List<CertificationResultTestDataDTO> testData = certResult.getTestData();
-            for (CertificationResultTestDataDTO currResult : testData) {
-                CertificationResultTestData testDataResult = new CertificationResultTestData(currResult);
-                result.getTestDataUsed().add(testDataResult);
-            }
+            result.setTestDataUsed(certResult.getTestData().stream()
+                    .filter(res -> !res.getDeleted())
+                    .map(res -> new CertificationResultTestData(res))
+                    .collect(Collectors.toList()));
         } else {
             result.setTestDataUsed(null);
         }
 
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_PROCEDURE)) {
-            List<CertificationResultTestProcedureDTO> testProcedure = certResult.getTestProcedures();
-            for (CertificationResultTestProcedureDTO currResult : testProcedure) {
-                CertificationResultTestProcedure testProcedureResult = new CertificationResultTestProcedure(currResult);
-                result.getTestProcedures().add(testProcedureResult);
-            }
+            result.setTestProcedures(certResult.getTestProcedures().stream()
+                    .filter(res -> !res.getDeleted())
+                    .map(res -> new CertificationResultTestProcedure(res))
+                    .collect(Collectors.toList()));
         } else {
             result.setTestProcedures(null);
         }
 
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
-            List<CertificationResultTestFunctionalityDTO> testFunctionality = certResult.getTestFunctionality();
-            for (CertificationResultTestFunctionalityDTO currResult : testFunctionality) {
-                CertificationResultTestFunctionality testFunctionalityResult = new CertificationResultTestFunctionality(
-                        currResult);
-                result.getTestFunctionality().add(testFunctionalityResult);
-            }
+            result.setTestFunctionality(certResult.getTestFunctionality().stream()
+                    .filter(res -> !res.getDeleted())
+                    .map(res -> new CertificationResultTestFunctionality(res))
+                    .collect(Collectors.toList()));
         } else {
             result.setTestFunctionality(null);
         }
