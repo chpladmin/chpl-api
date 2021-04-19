@@ -13,7 +13,6 @@ public class GetAllActionPermissions extends ActionPermissions {
     @Override
     public boolean hasAccess() {
         return getResourcePermissions().isUserRoleAdmin()
-                || getResourcePermissions().isUserRoleOnc()
                 || getResourcePermissions().isUserRoleAcbAdmin();
     }
 
@@ -36,8 +35,7 @@ public class GetAllActionPermissions extends ActionPermissions {
     }
 
     private boolean hasAccess(ListingUpload uploadedMetadata) {
-        if (getResourcePermissions().isUserRoleAdmin()
-                || getResourcePermissions().isUserRoleOnc()) {
+        if (getResourcePermissions().isUserRoleAdmin()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             return isAcbValidForCurrentUser(uploadedMetadata.getAcb().getId());

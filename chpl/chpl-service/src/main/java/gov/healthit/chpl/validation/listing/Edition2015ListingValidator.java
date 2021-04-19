@@ -16,11 +16,12 @@ import gov.healthit.chpl.validation.listing.reviewer.DeveloperBanComparisonRevie
 import gov.healthit.chpl.validation.listing.reviewer.DeveloperStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DuplicateDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.FieldLengthReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.InheritedCertificationStatusReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.InheritanceReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ListingStatusAndUserRoleReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.RealWorldTestingReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.SvapReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.TestStandardReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestToolReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestingLabReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnattestedCriteriaWithDataReviewer;
@@ -72,7 +73,7 @@ public class Edition2015ListingValidator extends Validator {
     private RequiredAndRelatedCriteriaReviewer requiredAndRelatedCriteriaReviewer;
 
     @Autowired
-    @Qualifier("testingLabReviewer")
+    @Qualifier("edition20142015testingLabReviewer")
     private TestingLabReviewer testingLabReviewer;
 
     @Autowired
@@ -96,6 +97,10 @@ public class Edition2015ListingValidator extends Validator {
     private UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
 
     @Autowired
+    @Qualifier("testStandardReviewer")
+    private TestStandardReviewer tsReviewer;
+
+    @Autowired
     @Qualifier("testToolReviewer")
     private TestToolReviewer ttReviewer;
 
@@ -104,8 +109,8 @@ public class Edition2015ListingValidator extends Validator {
     private TestTool2015Reviewer tt2015Reviewer;
 
     @Autowired
-    @Qualifier("icsReviewer")
-    private InheritedCertificationStatusReviewer icsReviewer;
+    @Qualifier("inheritanceReviewer")
+    private InheritanceReviewer inheritanceReviewer;
 
     @Autowired
     @Qualifier("urlReviewer")
@@ -207,7 +212,8 @@ public class Edition2015ListingValidator extends Validator {
             reviewers.add(certStatusReviewer);
             reviewers.add(certDateReviewer);
             reviewers.add(unattestedCriteriaWithDataReviewer);
-            reviewers.add(icsReviewer);
+            reviewers.add(tsReviewer);
+            reviewers.add(inheritanceReviewer);
             reviewers.add(ttReviewer);
             reviewers.add(tt2015Reviewer);
             reviewers.add(urlReviewer);

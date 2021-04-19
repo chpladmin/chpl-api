@@ -95,7 +95,7 @@ public class ListingValidatorFactoryImpl implements ListingValidatorFactory {
             return null;
         }
 
-        if (chplProductNumberUtil.isLegacy(listing.getChplProductNumber())) {
+        if (chplProductNumberUtil.isLegacyChplProductNumberStyle(listing.getChplProductNumber())) {
             //legacy must be a 2011 or 2014 listing
             if (edition.equals("2011")) {
                 return allowedValidator;

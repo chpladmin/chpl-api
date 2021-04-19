@@ -285,7 +285,7 @@ public class ProductManager extends SecuredManager {
             // make sure the updated CHPL product number is unique and that the
             // new product code is valid
             String chplNumber = beforeListing.getChplProductNumber();
-            if (!chplProductNumberUtil.isLegacy(chplNumber)) {
+            if (!chplProductNumberUtil.isLegacyChplProductNumberStyle(chplNumber)) {
                 ChplProductNumberParts parts = chplProductNumberUtil.parseChplProductNumber(chplNumber);
                 String potentialChplNumber = chplProductNumberUtil.getChplProductNumber(parts.getEditionCode(),
                         parts.getAtlCode(), parts.getAcbCode(), parts.getDeveloperCode(), newProductCode,

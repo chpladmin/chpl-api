@@ -55,7 +55,7 @@ public class DeveloperDetailsUploadHandlerTest {
         Developer developer = handler.handle(headingRecord, listingRecords);
         assertNotNull(developer);
         assertNull(developer.getDeveloperId());
-        assertEquals(developerName, developer.getName());
+        assertEquals(developerName, developer.getUserEnteredName());
     }
 
     @Test
@@ -70,8 +70,8 @@ public class DeveloperDetailsUploadHandlerTest {
         Developer developer = handler.handle(headingRecord, listingRecords);
         assertNotNull(developer);
         assertNull(developer.getName());
-        assertNotNull(developer.getWebsite());
-        assertEquals("http://www.test.com", developer.getWebsite());
+        assertNotNull(developer.getUserEnteredWebsite());
+        assertEquals("http://www.test.com", developer.getUserEnteredWebsite());
     }
 
     @Test
@@ -85,8 +85,8 @@ public class DeveloperDetailsUploadHandlerTest {
 
         Developer developer = handler.handle(headingRecord, listingRecords);
         assertNotNull(developer);
-        assertNotNull(developer.getWebsite());
-        assertEquals("", developer.getWebsite());
+        assertNotNull(developer.getUserEnteredWebsite());
+        assertEquals("", developer.getUserEnteredWebsite());
     }
 
     @Test
@@ -100,8 +100,8 @@ public class DeveloperDetailsUploadHandlerTest {
 
         Developer developer = handler.handle(headingRecord, listingRecords);
         assertNotNull(developer);
-        assertNotNull(developer.getSelfDeveloper());
-        assertEquals(Boolean.TRUE, developer.getSelfDeveloper());
+        assertNotNull(developer.getUserEnteredSelfDeveloper());
+        assertEquals("1", developer.getUserEnteredSelfDeveloper());
     }
 
     @Test
@@ -115,8 +115,8 @@ public class DeveloperDetailsUploadHandlerTest {
 
         Developer developer = handler.handle(headingRecord, listingRecords);
         assertNotNull(developer);
-        assertNotNull(developer.getSelfDeveloper());
-        assertEquals(Boolean.FALSE, developer.getSelfDeveloper());
+        assertNotNull(developer.getUserEnteredSelfDeveloper());
+        assertEquals("0", developer.getUserEnteredSelfDeveloper());
     }
 
     @Test
@@ -129,8 +129,8 @@ public class DeveloperDetailsUploadHandlerTest {
         assertNotNull(listingRecords);
         Developer developer = handler.handle(headingRecord, listingRecords);
         assertNull(developer.getSelfDeveloper());
-        assertNotNull(developer.getSelfDeveloperStr());
-        assertEquals("BAD", developer.getSelfDeveloperStr());
+        assertNotNull(developer.getUserEnteredSelfDeveloper());
+        assertEquals("BAD", developer.getUserEnteredSelfDeveloper());
     }
 
     @Test
@@ -144,7 +144,7 @@ public class DeveloperDetailsUploadHandlerTest {
 
         Developer developer = handler.handle(headingRecord, listingRecords);
         assertNotNull(developer);
-        Address address = developer.getAddress();
+        Address address = developer.getUserEnteredAddress();
         assertNotNull(address);
         assertEquals("111 Rocky Rd.", address.getLine1());
         assertEquals("Baltimore", address.getCity());
@@ -164,7 +164,7 @@ public class DeveloperDetailsUploadHandlerTest {
 
         Developer developer = handler.handle(headingRecord, listingRecords);
         assertNotNull(developer);
-        PointOfContact contact = developer.getContact();
+        PointOfContact contact = developer.getUserEnteredPointOfContact();
         assertNotNull(contact);
         assertEquals("test@ainq.com", contact.getEmail());
         assertEquals("333-444-5555", contact.getPhoneNumber());

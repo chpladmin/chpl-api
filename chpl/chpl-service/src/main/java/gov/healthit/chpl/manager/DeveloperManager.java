@@ -42,7 +42,6 @@ import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.CertifiedProductSummaryDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTODeprecated;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
@@ -174,11 +173,11 @@ public class DeveloperManager extends SecuredManager {
     }
 
     public DeveloperTree getHierarchyById(Long id) throws EntityRetrievalException {
+        List<CertificationBodyDTO> acbs = acbManager.getAll();
         DeveloperDTO developer = getById(id);
         List<ProductDTO> products = productManager.getByDeveloper(developer.getId());
         List<ProductVersionDTO> versions = versionManager.getByDeveloper(developer.getId());
-        List<CertifiedProductSummaryDTO> listings = certifiedProductDao.findListingSummariesByDeveloperId(developer.getId());
-        List<CertificationBodyDTO> acbs = acbManager.getAll();
+        List<CertifiedProductDetailsDTO> listings = certifiedProductDao.findListingsByDeveloperId(developer.getId());
 
         DeveloperTree developerTree = new DeveloperTree(developer);
         products.stream().forEach(product -> {
@@ -197,28 +196,36 @@ public class DeveloperManager extends SecuredManager {
 
         developerTree.getProducts().stream().forEach(product -> {
             product.getVersions().stream().forEach(version -> {
-                List<CertifiedProductSummaryDTO> versionListings = listings.stream()
+                List<SimpleListing> listingsForVersion = listings.stream()
                         .filter(listing -> listing.getVersion().getId().equals(version.getVersionId()))
+                        .map(listing -> convertToSimpleListing(listing, acbs))
                         .collect(Collectors.toList());
-                versionListings.stream().forEach(listing -> {
-                    SimpleListing listingLeaf = new SimpleListing();
-                    Optional<CertificationBodyDTO> listingAcb = acbs.stream()
-                            .filter(acb -> acb.getId().equals(listing.getAcb().getId())).findFirst();
-                    if (listingAcb != null && listingAcb.isPresent()) {
-                        listingLeaf.setAcb(new CertificationBody(listingAcb.get()));
-                    }
-                    listingLeaf.setCertificationDate(listing.getCertificationDate().getTime());
-                    listingLeaf.setCertificationStatus(listing.getCertificationStatus());
-                    listingLeaf.setChplProductNumber(listing.getChplProductNumber());
-                    listingLeaf.setCuresUpdate(listing.getCuresUpdate());
-                    listingLeaf.setEdition(listing.getYear());
-                    listingLeaf.setId(listing.getId());
-                    listingLeaf.setLastModifiedDate(listing.getLastModifiedDate().getTime());
-                    version.getListings().add(listingLeaf);
+                    version.getListings().addAll(listingsForVersion);
                 });
             });
-        });
         return developerTree;
+    }
+
+    private SimpleListing convertToSimpleListing(CertifiedProductDetailsDTO listingDto, List<CertificationBodyDTO> acbs) {
+        SimpleListing listingLeaf = new SimpleListing();
+        Optional<CertificationBodyDTO> listingAcb = acbs.stream()
+                .filter(acb -> acb.getId().equals(listingDto.getCertificationBodyId())).findFirst();
+        if (listingAcb != null && listingAcb.isPresent()) {
+            listingLeaf.setAcb(new CertificationBody(listingAcb.get()));
+        }
+        listingLeaf.setSurveillanceCount(listingDto.getCountSurveillance());
+        listingLeaf.setOpenSurveillanceCount(listingDto.getCountOpenSurveillance());
+        listingLeaf.setClosedSurveillanceCount(listingDto.getCountClosedSurveillance());
+        listingLeaf.setOpenSurveillanceNonConformityCount(listingDto.getCountOpenNonconformities());
+        listingLeaf.setClosedSurveillanceNonConformityCount(listingDto.getCountClosedNonconformities());
+        listingLeaf.setCertificationDate(listingDto.getCertificationDate().getTime());
+        listingLeaf.setCertificationStatus(listingDto.getCertificationStatusName());
+        listingLeaf.setChplProductNumber(listingDto.getChplProductNumber());
+        listingLeaf.setCuresUpdate(listingDto.getCuresUpdate());
+        listingLeaf.setEdition(listingDto.getYear());
+        listingLeaf.setId(listingDto.getId());
+        listingLeaf.setLastModifiedDate(listingDto.getLastModifiedDate().getTime());
+        return listingLeaf;
     }
 
     @Transactional(readOnly = true)
@@ -546,8 +553,7 @@ public class DeveloperManager extends SecuredManager {
                 final Object pendingAcbNameObj = pendingCp.getCertifyingBody()
                         .get(CertifiedProductSearchDetails.ACB_NAME_KEY);
                 if (pendingAcbNameObj != null && !StringUtils.isEmpty(pendingAcbNameObj.toString())) {
-                    Set<String> sysDevErrorMessages = runSystemValidations(systemDeveloperDTO,
-                            pendingAcbNameObj.toString());
+                    Set<String> sysDevErrorMessages = runSystemValidations(systemDeveloperDTO);
                     if (!sysDevErrorMessages.isEmpty()) {
                         throw new ValidationException(sysDevErrorMessages);
                     }
@@ -667,10 +673,10 @@ public class DeveloperManager extends SecuredManager {
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.PRIOR_STATUS_ACTIVE));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.EDIT_STATUS_HISTORY));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.STATUS_CHANGED));
-        return runValidations(rules, dto, null, beforeDev);
+        return runValidations(rules, dto, beforeDev);
     }
 
-    private Set<String> runCreateValidations(DeveloperDTO dto) {
+    public Set<String> runCreateValidations(DeveloperDTO dto) {
         List<ValidationRule<DeveloperValidationContext>> rules = new ArrayList<ValidationRule<DeveloperValidationContext>>();
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.NAME));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.WEBSITE_WELL_FORMED));
@@ -680,13 +686,13 @@ public class DeveloperManager extends SecuredManager {
         return runValidations(rules, dto);
     }
 
-    private Set<String> runSystemValidations(DeveloperDTO dto, String pendingAcbName) {
+    public Set<String> runSystemValidations(DeveloperDTO dto) {
         List<ValidationRule<DeveloperValidationContext>> rules = new ArrayList<ValidationRule<DeveloperValidationContext>>();
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.NAME));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.WEBSITE_REQUIRED));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.CONTACT));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.ADDRESS));
-        return runValidations(rules, dto, pendingAcbName);
+        return runValidations(rules, dto);
     }
 
     private Set<String> runValidations(List<ValidationRule<DeveloperValidationContext>> rules,
@@ -695,14 +701,9 @@ public class DeveloperManager extends SecuredManager {
     }
 
     private Set<String> runValidations(List<ValidationRule<DeveloperValidationContext>> rules,
-            DeveloperDTO dto, String pendingAcbName) {
-        return runValidations(rules, dto, pendingAcbName, null);
-    }
-
-    private Set<String> runValidations(List<ValidationRule<DeveloperValidationContext>> rules,
-            DeveloperDTO dto, String pendingAcbName, DeveloperDTO beforeDev) {
+            DeveloperDTO dto, DeveloperDTO beforeDev) {
         Set<String> errorMessages = new HashSet<String>();
-        DeveloperValidationContext context = new DeveloperValidationContext(dto, msgUtil, pendingAcbName, beforeDev);
+        DeveloperValidationContext context = new DeveloperValidationContext(dto, msgUtil, beforeDev);
 
         for (ValidationRule<DeveloperValidationContext> rule : rules) {
             if (!rule.isValid(context)) {

@@ -1074,7 +1074,7 @@ public class SearchViewController {
     public @ResponseBody SearchOption getTestStandards() {
         Set<TestStandard> data = dimensionalDataManager.getTestStandards();
         SearchOption result = new SearchOption();
-        result.setExpandable(true);
+        result.setExpandable(false);
         result.setData(data);
         return result;
     }
