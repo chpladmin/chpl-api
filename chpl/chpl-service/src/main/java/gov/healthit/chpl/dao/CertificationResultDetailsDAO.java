@@ -36,13 +36,13 @@ public class CertificationResultDetailsDAO extends BaseDAOImpl {
             + "LEFT OUTER JOIN FETCH crtt.testTool tt "
             + "LEFT OUTER JOIN FETCH crd.certificationResultTestStandards crts "
             + "LEFT OUTER JOIN FETCH crd.certificationResultAdditionalSoftware cras "
-            + "WHERE crd.deleted = false "
-            + "AND (crtd.deleted = false OR crtd.deleted IS NULL) "
-            + "AND (crtf.deleted = false OR crtf.deleted IS NULL) "
-            + "AND (crtp.deleted = false OR crtp.deleted IS NULL) "
-            + "AND (crtt.deleted = false OR crtt.deleted IS NULL) "
-            + "AND (crts.deleted = false OR crts.deleted IS NULL) "
-            + "AND (cras.deleted = false OR cras.deleted IS NULL) ";
+            + "WHERE crd.deleted = false ";
+//            + "AND (crtd.deleted = false OR crtd.deleted IS NULL) "
+//            + "AND (crtf.deleted = false OR crtf.deleted IS NULL) "
+//            + "AND (crtp.deleted = false OR crtp.deleted IS NULL) "
+//            + "AND (crtt.deleted = false OR crtt.deleted IS NULL) "
+//            + "AND (crts.deleted = false OR crts.deleted IS NULL) "
+//            + "AND (cras.deleted = false OR cras.deleted IS NULL) ";
 
     @Transactional
     public List<CertificationResultDetailsDTO> getCertificationResultDetailsByCertifiedProductId(
