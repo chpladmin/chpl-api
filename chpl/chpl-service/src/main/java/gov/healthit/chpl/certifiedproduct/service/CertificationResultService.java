@@ -196,10 +196,8 @@ public class CertificationResultService {
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
             List<CertificationResultTestFunctionalityDTO> testFunctionality = certResult.getTestFunctionality();
             for (CertificationResultTestFunctionalityDTO currResult : testFunctionality) {
-                if (!currResult.getDeleted()) {
-                    CertificationResultTestFunctionality testFunctionalityResult = new CertificationResultTestFunctionality(currResult);
-                    result.getTestFunctionality().add(testFunctionalityResult);
-                }
+                CertificationResultTestFunctionality testFunctionalityResult = new CertificationResultTestFunctionality(currResult);
+                result.getTestFunctionality().add(testFunctionalityResult);
             }
         } else {
             result.setTestFunctionality(null);
@@ -210,10 +208,8 @@ public class CertificationResultService {
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_PROCEDURE)) {
             List<CertificationResultTestProcedureDTO> testProcedure = certResult.getTestProcedures();
             for (CertificationResultTestProcedureDTO currResult : testProcedure) {
-                if (!currResult.getDeleted()) {
-                    CertificationResultTestProcedure testProcedureResult = new CertificationResultTestProcedure(currResult);
-                    result.getTestProcedures().add(testProcedureResult);
-                }
+                CertificationResultTestProcedure testProcedureResult = new CertificationResultTestProcedure(currResult);
+                result.getTestProcedures().add(testProcedureResult);
             }
         } else {
             result.setTestProcedures(null);
@@ -224,10 +220,8 @@ public class CertificationResultService {
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_DATA)) {
             List<CertificationResultTestDataDTO> testData = certResult.getTestData();
             for (CertificationResultTestDataDTO currResult : testData) {
-                if (!currResult.getDeleted()) {
-                    CertificationResultTestData testDataResult = new CertificationResultTestData(currResult);
-                    result.getTestDataUsed().add(testDataResult);
-                }
+                CertificationResultTestData testDataResult = new CertificationResultTestData(currResult);
+                result.getTestDataUsed().add(testDataResult);
             }
         } else {
             result.setTestDataUsed(null);
@@ -238,10 +232,8 @@ public class CertificationResultService {
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TOOLS_USED)) {
             List<CertificationResultTestToolDTO> testTools = certResult.getTestTools();
             for (CertificationResultTestToolDTO currResult : testTools) {
-                if (!currResult.getDeleted()) {
-                    CertificationResultTestTool testToolResult = new CertificationResultTestTool(currResult);
-                    result.getTestToolsUsed().add(testToolResult);
-                }
+                CertificationResultTestTool testToolResult = new CertificationResultTestTool(currResult);
+                result.getTestToolsUsed().add(testToolResult);
             }
         } else {
             result.setTestToolsUsed(null);
@@ -252,10 +244,8 @@ public class CertificationResultService {
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.STANDARDS_TESTED)) {
             List<CertificationResultTestStandardDTO> testStandards = certResult.getTestStandards();
             for (CertificationResultTestStandardDTO currResult : testStandards) {
-                if (!currResult.getDeleted()) {
-                    CertificationResultTestStandard testStandardResult = new CertificationResultTestStandard(currResult);
-                    result.getTestStandards().add(testStandardResult);
-                }
+                CertificationResultTestStandard testStandardResult = new CertificationResultTestStandard(currResult);
+                result.getTestStandards().add(testStandardResult);
             }
         } else {
             result.setTestStandards(null);
@@ -266,10 +256,8 @@ public class CertificationResultService {
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
             List<CertificationResultAdditionalSoftwareDTO> certResultSoftware = certResult.getAdditionalSoftware();
             for (CertificationResultAdditionalSoftwareDTO currResult : certResultSoftware) {
-                if (!currResult.getDeleted()) {
-                    CertificationResultAdditionalSoftware softwareResult = new CertificationResultAdditionalSoftware(currResult);
-                    result.getAdditionalSoftware().add(softwareResult);
-                }
+                CertificationResultAdditionalSoftware softwareResult = new CertificationResultAdditionalSoftware(currResult);
+                result.getAdditionalSoftware().add(softwareResult);
             }
         } else {
             result.setAdditionalSoftware(null);
