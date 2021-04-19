@@ -179,7 +179,7 @@ public class DirectReviewCachingService {
             LOGGER.debug("Response: " + response.getBody());
         } catch (Exception ex) {
             HttpStatus statusCode =  (response != null ? response.getStatusCode() : null);
-            LOGGER.error("Unable to connect to Jira with the URL " + url + ". Got response status code " + statusCode);
+            LOGGER.error("Unable to connect to Jira with the URL " + url + ". Message: " + ex.getMessage() + "; response status code " + statusCode);
             throw new JiraRequestFailedException(ex.getMessage(), ex, statusCode);
         }
         String responseBody = response == null ? "" : response.getBody();
