@@ -19,8 +19,14 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
+import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
+import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
+import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
+import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
+import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
+import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertificationResultManager;
@@ -116,64 +122,55 @@ public class CertificationResultService {
             result.setAttestationAnswer(false);
         }
         // add all the other data
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
-            result.setAdditionalSoftware(certResult.getAdditionalSoftware().stream()
-                    .filter(res -> !res.getDeleted())
-                    .map(res -> new CertificationResultAdditionalSoftware(res))
-                    .collect(Collectors.toList()));
-        } else {
-            result.setAdditionalSoftware(null);
-        }
+        populateAdditionalSoftware(certResult, result);
+        popluateTestStandards(certResult, result);
+        populateTestTools(certResult, result);
+        populateTestData(certResult, result);
+        populateTestProcedures(certResult, result);
+        populateTestFunctionalities(certResult, result);
 
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.STANDARDS_TESTED)) {
-            result.setTestStandards(certResult.getTestStandards().stream()
-                    .filter(res -> !res.getDeleted())
-                    .map(res -> new CertificationResultTestStandard(res))
-                    .collect(Collectors.toList()));
-        } else {
-            result.setTestStandards(null);
-        }
-
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TOOLS_USED)) {
-            result.setTestToolsUsed(certResult.getTestTools().stream()
-                    .filter(res -> !res.getDeleted())
-                    .map(res -> new CertificationResultTestTool(res))
-                    .collect(Collectors.toList()));
-        } else {
-            result.setTestToolsUsed(null);
-        }
-
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_DATA)) {
-            result.setTestDataUsed(certResult.getTestData().stream()
-                    .filter(res -> !res.getDeleted())
-                    .map(res -> new CertificationResultTestData(res))
-                    .collect(Collectors.toList()));
-        } else {
-            result.setTestDataUsed(null);
-        }
-
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_PROCEDURE)) {
-            result.setTestProcedures(certResult.getTestProcedures().stream()
-                    .filter(res -> !res.getDeleted())
-                    .map(res -> new CertificationResultTestProcedure(res))
-                    .collect(Collectors.toList()));
-        } else {
-            result.setTestProcedures(null);
-        }
-
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
-            result.setTestFunctionality(certResult.getTestFunctionality().stream()
-                    .filter(res -> !res.getDeleted())
-                    .map(res -> new CertificationResultTestFunctionality(res))
-                    .collect(Collectors.toList()));
-        } else {
-            result.setTestFunctionality(null);
-        }
-
-        // get all SED data for the listing
-        // ucd processes and test tasks with participants
         CertificationCriterion criteria = result.getCriterion();
+        populateSed(certResult, searchDetails, result, criteria);
+        populateTestTasks(certResult, searchDetails, criteria);
 
+        // set allowed svap for criteria
+        result.setAllowedSvaps(getAvailableSvapForCriteria(result, svapCriteriaMap));
+        populateSvaps(result);
+
+        result.setAllowedTestFunctionalities(getAvailableTestFunctionalities(result, searchDetails));
+
+        return result;
+    }
+
+    private void populateSvaps(CertificationResult result) {
+        if (result.getAllowedSvaps().size() > 0) {
+            result.setSvaps(certResultManager.getSvapsForCertificationResult(result.getId()));
+        } else {
+            result.setSvaps(null);
+        }
+    }
+
+    private void populateTestTasks(CertificationResultDetailsDTO certResult, CertifiedProductSearchDetails searchDetails, CertificationCriterion criteria) {
+        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TASK)) {
+            List<CertificationResultTestTaskDTO> testTask = certResultManager.getTestTasksForCertificationResult(certResult.getId());
+            for (CertificationResultTestTaskDTO currResult : testTask) {
+                boolean alreadyExists = false;
+                TestTask newTestTask = new TestTask(currResult);
+                for (TestTask currTestTask : searchDetails.getSed().getTestTasks()) {
+                    if (newTestTask.matches(currTestTask)) {
+                        alreadyExists = true;
+                        currTestTask.getCriteria().add(criteria);
+                    }
+                }
+                if (!alreadyExists) {
+                    newTestTask.getCriteria().add(criteria);
+                    searchDetails.getSed().getTestTasks().add(newTestTask);
+                }
+            }
+        }
+    }
+
+    private void populateSed(CertificationResultDetailsDTO certResult, CertifiedProductSearchDetails searchDetails, CertificationResult result, CertificationCriterion criteria) {
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.UCD_FIELDS)) {
             List<CertificationResultUcdProcessDTO> ucdProcesses = certResultManager.getUcdProcessesForCertificationResult(result.getId());
             for (CertificationResultUcdProcessDTO currResult : ucdProcesses) {
@@ -193,38 +190,80 @@ public class CertificationResultService {
         } else {
             result.setSed(null);
         }
+    }
 
-
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TASK)) {
-            List<CertificationResultTestTaskDTO> testTask = certResultManager.getTestTasksForCertificationResult(certResult.getId());
-            for (CertificationResultTestTaskDTO currResult : testTask) {
-                boolean alreadyExists = false;
-                TestTask newTestTask = new TestTask(currResult);
-                for (TestTask currTestTask : searchDetails.getSed().getTestTasks()) {
-                    if (newTestTask.matches(currTestTask)) {
-                        alreadyExists = true;
-                        currTestTask.getCriteria().add(criteria);
-                    }
-                }
-                if (!alreadyExists) {
-                    newTestTask.getCriteria().add(criteria);
-                    searchDetails.getSed().getTestTasks().add(newTestTask);
-                }
+    private void populateTestFunctionalities(CertificationResultDetailsDTO certResult, CertificationResult result) {
+        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
+            List<CertificationResultTestFunctionalityDTO> testFunctionality = certResult.getTestFunctionality();
+            for (CertificationResultTestFunctionalityDTO currResult : testFunctionality) {
+                CertificationResultTestFunctionality testFunctionalityResult = new CertificationResultTestFunctionality(
+                        currResult);
+                result.getTestFunctionality().add(testFunctionalityResult);
             }
-        }
-
-        result.setAllowedTestFunctionalities(getAvailableTestFunctionalities(result, searchDetails));
-
-        // set allowed svap for criteria
-        result.setAllowedSvaps(getAvailableSvapForCriteria(result, svapCriteriaMap));
-
-        if (result.getAllowedSvaps().size() > 0) {
-            result.setSvaps(certResultManager.getSvapsForCertificationResult(result.getId()));
         } else {
-            result.setSvaps(null);
+            result.setTestFunctionality(null);
         }
+    }
 
-        return result;
+    private void populateTestProcedures(CertificationResultDetailsDTO certResult, CertificationResult result) {
+        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_PROCEDURE)) {
+            List<CertificationResultTestProcedureDTO> testProcedure = certResult.getTestProcedures();
+            for (CertificationResultTestProcedureDTO currResult : testProcedure) {
+                CertificationResultTestProcedure testProcedureResult = new CertificationResultTestProcedure(currResult);
+                result.getTestProcedures().add(testProcedureResult);
+            }
+        } else {
+            result.setTestProcedures(null);
+        }
+    }
+
+    private void populateTestData(CertificationResultDetailsDTO certResult, CertificationResult result) {
+        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_DATA)) {
+            List<CertificationResultTestDataDTO> testData = certResult.getTestData();
+            for (CertificationResultTestDataDTO currResult : testData) {
+                CertificationResultTestData testDataResult = new CertificationResultTestData(currResult);
+                result.getTestDataUsed().add(testDataResult);
+            }
+        } else {
+            result.setTestDataUsed(null);
+        }
+    }
+
+    private void populateTestTools(CertificationResultDetailsDTO certResult, CertificationResult result) {
+        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TOOLS_USED)) {
+            List<CertificationResultTestToolDTO> testTools = certResult.getTestTools();
+            for (CertificationResultTestToolDTO currResult : testTools) {
+                CertificationResultTestTool testToolResult = new CertificationResultTestTool(currResult);
+                result.getTestToolsUsed().add(testToolResult);
+            }
+        } else {
+            result.setTestToolsUsed(null);
+        }
+    }
+
+    private void popluateTestStandards(CertificationResultDetailsDTO certResult, CertificationResult result) {
+        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.STANDARDS_TESTED)) {
+            List<CertificationResultTestStandardDTO> testStandards = certResult.getTestStandards();
+            for (CertificationResultTestStandardDTO currResult : testStandards) {
+                CertificationResultTestStandard testStandardResult = new CertificationResultTestStandard(currResult);
+                result.getTestStandards().add(testStandardResult);
+            }
+        } else {
+            result.setTestStandards(null);
+        }
+    }
+
+    private void populateAdditionalSoftware(CertificationResultDetailsDTO certResult, CertificationResult result) {
+        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
+            List<CertificationResultAdditionalSoftwareDTO> certResultSoftware = certResult.getAdditionalSoftware();
+            for (CertificationResultAdditionalSoftwareDTO currResult : certResultSoftware) {
+                CertificationResultAdditionalSoftware softwareResult = new CertificationResultAdditionalSoftware(
+                        currResult);
+                result.getAdditionalSoftware().add(softwareResult);
+            }
+        } else {
+            result.setAdditionalSoftware(null);
+        }
     }
 
     private List<Svap> getAvailableSvapForCriteria(CertificationResult result, List<SvapCriteriaMap> svapCriteriaMap) {

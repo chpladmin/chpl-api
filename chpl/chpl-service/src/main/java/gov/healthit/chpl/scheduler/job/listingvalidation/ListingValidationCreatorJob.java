@@ -112,6 +112,7 @@ public class ListingValidationCreatorJob implements Job {
             LOGGER.info("Completed details for listing(" + ((new Date()).getTime() - start) + "ms): " + certifiedProductId);
             return listing;
         } catch (EntityRetrievalException e) {
+            LOGGER.error("Could not retrieve details for listing id: " + certifiedProductId);
             LOGGER.catching(e);
             return null;
         }
