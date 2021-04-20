@@ -9,24 +9,12 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
-import gov.healthit.chpl.domain.CertificationResultTestData;
-import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
-import gov.healthit.chpl.domain.CertificationResultTestProcedure;
-import gov.healthit.chpl.domain.CertificationResultTestStandard;
-import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
-import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
-import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
-import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
-import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
-import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
-import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertificationResultManager;
@@ -74,66 +62,15 @@ public class CertificationResultService {
     private CertificationResult getCertificationResult(CertificationResultDetailsDTO certResult,
             CertifiedProductSearchDetails searchDetails, List<SvapCriteriaMap> svapCriteriaMap) {
 
-        CertificationResult result = new CertificationResult(certResult);
-        // override optional boolean values
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.GAP)) {
-            result.setGap(null);
-        } else if (result.isGap() == null) {
-            result.setGap(Boolean.FALSE);
-        }
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_SUCCESS)) {
-            result.setG1Success(null);
-        } else if (result.isG1Success() == null) {
-            result.setG1Success(Boolean.FALSE);
-        }
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_SUCCESS)) {
-            result.setG2Success(null);
-        } else if (result.isG2Success() == null) {
-            result.setG2Success(Boolean.FALSE);
-        }
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
-            result.setApiDocumentation(null);
-        } else if (result.getApiDocumentation() == null) {
-            result.setApiDocumentation("");
-        }
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.EXPORT_DOCUMENTATION)) {
-            result.setExportDocumentation(null);
-        } else if (result.getExportDocumentation() == null) {
-            result.setExportDocumentation("");
-        }
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.DOCUMENTATION_URL)) {
-            result.setDocumentationUrl(null);
-        } else if (result.getDocumentationUrl() == null) {
-            result.setDocumentationUrl("");
-        }
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.USE_CASES)) {
-            result.setUseCases(null);
-        } else if (result.getUseCases() == null) {
-            result.setUseCases("");
-        }
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.PRIVACY_SECURITY)) {
-            result.setPrivacySecurityFramework(null);
-        } else if (result.getPrivacySecurityFramework() == null) {
-            result.setPrivacySecurityFramework("");
-        }
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.ATTESTATION_ANSWER)) {
-            result.setAttestationAnswer(null);
-        } else if (result.getAttestationAnswer() == null) {
-            result.setAttestationAnswer(false);
-        }
-        // add all the other data
-        populateAdditionalSoftware(certResult, result);
-        popluateTestStandards(certResult, result);
-        populateTestTools(certResult, result);
-        populateTestData(certResult, result);
-        populateTestProcedures(certResult, result);
-        populateTestFunctionalities(certResult, result);
+        CertificationResult result = new CertificationResult(certResult, certRules);
 
         CertificationCriterion criteria = result.getCriterion();
         populateSed(certResult, searchDetails, result, criteria);
         populateTestTasks(certResult, searchDetails, criteria);
 
-        // set allowed svap for criteria
+        //This should be refactored out when CertificationResultRules supports SVAPs
+        //This should be populated in the CertificationResult object constructor like the other
+        //collection being used here.
         result.setAllowedSvaps(getAvailableSvapForCriteria(result, svapCriteriaMap));
         populateSvaps(result);
 
@@ -192,78 +129,6 @@ public class CertificationResultService {
         }
     }
 
-    private void populateTestFunctionalities(CertificationResultDetailsDTO certResult, CertificationResult result) {
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
-            List<CertificationResultTestFunctionalityDTO> testFunctionality = certResult.getTestFunctionality();
-            for (CertificationResultTestFunctionalityDTO currResult : testFunctionality) {
-                CertificationResultTestFunctionality testFunctionalityResult = new CertificationResultTestFunctionality(currResult);
-                result.getTestFunctionality().add(testFunctionalityResult);
-            }
-        } else {
-            result.setTestFunctionality(null);
-        }
-    }
-
-    private void populateTestProcedures(CertificationResultDetailsDTO certResult, CertificationResult result) {
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_PROCEDURE)) {
-            List<CertificationResultTestProcedureDTO> testProcedure = certResult.getTestProcedures();
-            for (CertificationResultTestProcedureDTO currResult : testProcedure) {
-                CertificationResultTestProcedure testProcedureResult = new CertificationResultTestProcedure(currResult);
-                result.getTestProcedures().add(testProcedureResult);
-            }
-        } else {
-            result.setTestProcedures(null);
-        }
-    }
-
-    private void populateTestData(CertificationResultDetailsDTO certResult, CertificationResult result) {
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_DATA)) {
-            List<CertificationResultTestDataDTO> testData = certResult.getTestData();
-            for (CertificationResultTestDataDTO currResult : testData) {
-                CertificationResultTestData testDataResult = new CertificationResultTestData(currResult);
-                result.getTestDataUsed().add(testDataResult);
-            }
-        } else {
-            result.setTestDataUsed(null);
-        }
-    }
-
-    private void populateTestTools(CertificationResultDetailsDTO certResult, CertificationResult result) {
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TOOLS_USED)) {
-            List<CertificationResultTestToolDTO> testTools = certResult.getTestTools();
-            for (CertificationResultTestToolDTO currResult : testTools) {
-                CertificationResultTestTool testToolResult = new CertificationResultTestTool(currResult);
-                result.getTestToolsUsed().add(testToolResult);
-            }
-        } else {
-            result.setTestToolsUsed(null);
-        }
-    }
-
-    private void popluateTestStandards(CertificationResultDetailsDTO certResult, CertificationResult result) {
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.STANDARDS_TESTED)) {
-            List<CertificationResultTestStandardDTO> testStandards = certResult.getTestStandards();
-            for (CertificationResultTestStandardDTO currResult : testStandards) {
-                CertificationResultTestStandard testStandardResult = new CertificationResultTestStandard(currResult);
-                result.getTestStandards().add(testStandardResult);
-            }
-        } else {
-            result.setTestStandards(null);
-        }
-    }
-
-    private void populateAdditionalSoftware(CertificationResultDetailsDTO certResult, CertificationResult result) {
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
-            List<CertificationResultAdditionalSoftwareDTO> certResultSoftware = certResult.getAdditionalSoftware();
-            for (CertificationResultAdditionalSoftwareDTO currResult : certResultSoftware) {
-                CertificationResultAdditionalSoftware softwareResult = new CertificationResultAdditionalSoftware(currResult);
-                result.getAdditionalSoftware().add(softwareResult);
-            }
-        } else {
-            result.setAdditionalSoftware(null);
-        }
-    }
-
     private List<Svap> getAvailableSvapForCriteria(CertificationResult result, List<SvapCriteriaMap> svapCriteriaMap) {
         return svapCriteriaMap.stream()
                 .filter(scm -> scm.getCriterion().getId().equals(result.getCriterion().getId()))
@@ -281,6 +146,4 @@ public class CertificationResultService {
         }
         return testFunctionalityManager.getTestFunctionalities(cr.getCriterion().getId(), edition, practiceTypeId);
     }
-
-
 }

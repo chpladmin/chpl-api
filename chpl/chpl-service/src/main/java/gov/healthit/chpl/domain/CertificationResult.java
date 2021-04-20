@@ -3,6 +3,7 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -19,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.svap.domain.Svap;
+import gov.healthit.chpl.util.CertificationResultRules;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Singular;
@@ -248,6 +250,155 @@ public class CertificationResult implements Serializable {
             this.criterion = new CertificationCriterion(certResult.getCriterion());
         }
     }
+
+    //Correctly handles setting the values based on Certification rules
+    public CertificationResult(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
+        this();
+        this.setId(certResult.getId());
+        this.setNumber(certResult.getNumber());
+        this.setSuccess(certResult.getSuccess());
+        this.setTitle(certResult.getTitle());
+        this.setSed(certResult.getSed() == null ? Boolean.FALSE : certResult.getSed());
+        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.GAP)) {
+            this.setGap(null);
+        } else if (certResult.getGap() == null) {
+            this.setGap(Boolean.FALSE);
+        } else {
+            this.setGap(certResult.getGap());
+        }
+        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_SUCCESS)) {
+            this.setG1Success(null);
+        } else if (certResult.getG1Success() == null) {
+            this.setG1Success(Boolean.FALSE);
+        } else {
+            this.setG1Success(certResult.getG1Success());
+        }
+        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_SUCCESS)) {
+            this.setG2Success(null);
+        } else if (certResult.getG2Success() == null) {
+            this.setG2Success(Boolean.FALSE);
+        } else {
+            this.setG2Success(certResult.getG2Success());
+        }
+        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.ATTESTATION_ANSWER)) {
+            this.setAttestationAnswer(null);
+        } else if (certResult.getAttestationAnswer() == null) {
+            this.setAttestationAnswer(false);
+        } else {
+            this.setAttestationAnswer(certResult.getAttestationAnswer());
+        }
+        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
+            this.setApiDocumentation(null);
+        } else if (certResult.getApiDocumentation() == null) {
+            this.setApiDocumentation("");
+        } else {
+            this.setApiDocumentation(certResult.getApiDocumentation());
+        }
+        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.EXPORT_DOCUMENTATION)) {
+            this.setExportDocumentation(null);
+        } else if (certResult.getExportDocumentation() == null) {
+            this.setExportDocumentation("");
+        } else {
+            this.setExportDocumentation(certResult.getExportDocumentation());
+        }
+        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.DOCUMENTATION_URL)) {
+            this.setDocumentationUrl(null);
+        } else if (certResult.getDocumentationUrl() == null) {
+            this.setDocumentationUrl("");
+        } else {
+            this.setDocumentationUrl(certResult.getDocumentationUrl());
+        }
+        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.USE_CASES)) {
+            this.setUseCases(null);
+        } else if (certResult.getUseCases() == null) {
+            this.setUseCases("");
+        } else {
+            this.setUseCases(certResult.getUseCases());
+        }
+        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.PRIVACY_SECURITY)) {
+            this.setPrivacySecurityFramework(null);
+        } else if (certResult.getPrivacySecurityFramework() == null) {
+            this.setPrivacySecurityFramework("");
+        } else {
+            this.setPrivacySecurityFramework(certResult.getPrivacySecurityFramework());
+        }
+
+        if (certResult.getCriterion() != null) {
+            this.criterion = new CertificationCriterion(certResult.getCriterion());
+        }
+
+        this.setTestFunctionality(getTestFunctionalities(certResult, certRules));
+        this.setTestProcedures(getTestProcedures(certResult, certRules));
+        this.setTestDataUsed(getTestData(certResult, certRules));
+        this.setTestToolsUsed(getTestTools(certResult, certRules));
+        this.setTestStandards(getTestStandards(certResult, certRules));
+        this.setAdditionalSoftware(getAdditionalSoftware(certResult, certRules));
+
+        //When SVAP is moved into the CertificationResultRules add SVAPs here...
+    }
+
+    private List<CertificationResultTestFunctionality> getTestFunctionalities(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
+        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
+            return certResult.getTestFunctionality().stream()
+                    .map(item -> new CertificationResultTestFunctionality(item))
+                    .collect(Collectors.toList());
+        } else {
+            return null;
+        }
+    }
+
+    private List<CertificationResultTestProcedure> getTestProcedures(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
+        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_PROCEDURE)) {
+            return certResult.getTestProcedures().stream()
+                    .map(item -> new CertificationResultTestProcedure(item))
+                    .collect(Collectors.toList());
+        } else {
+            return null;
+        }
+    }
+
+    private List<CertificationResultTestData> getTestData(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
+        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_DATA)) {
+            return certResult.getTestData().stream()
+                    .map(item -> new CertificationResultTestData(item))
+                    .collect(Collectors.toList());
+        } else {
+            return null;
+        }
+    }
+
+    private List<CertificationResultTestTool> getTestTools(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
+        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TOOLS_USED)) {
+            return certResult.getTestTools().stream()
+                    .map(item -> new CertificationResultTestTool(item))
+                    .collect(Collectors.toList());
+        } else {
+            return null;
+        }
+    }
+
+    private List<CertificationResultTestStandard> getTestStandards(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
+        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.STANDARDS_TESTED)) {
+            return certResult.getTestStandards().stream()
+                    .map(item -> new CertificationResultTestStandard(item))
+                    .collect(Collectors.toList());
+        } else {
+            return null;
+        }
+    }
+
+    private List<CertificationResultAdditionalSoftware> getAdditionalSoftware(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
+        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
+            return certResult.getAdditionalSoftware().stream()
+                    .map(item -> new CertificationResultAdditionalSoftware(item))
+                    .collect(Collectors.toList());
+        } else {
+            return null;
+        }
+    }
+
+    //When SVAP is moved into the CertificationResultRules
+    //Need a method to copy SVAPs from DTO to this
 
     public Long getId() {
         return id;

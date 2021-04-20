@@ -114,4 +114,10 @@ public class CertificationResultDetailsEntity {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "certification_result_id")
     private Set<CertificationResultTestToolEntity> certificationResultTestTools;
+
+    //This will be used when SVAP is moved into the CertificationResultRules
+    //@Basic(optional = true)
+    //@OneToMany(fetch = FetchType.LAZY)
+    //@JoinColumn(name = "certification_result_id")
+    //private Set<CertificationResultSvapEntity> certificationResultSvaps;
 }

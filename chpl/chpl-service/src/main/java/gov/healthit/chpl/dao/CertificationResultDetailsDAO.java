@@ -36,6 +36,8 @@ public class CertificationResultDetailsDAO extends BaseDAOImpl {
             + "LEFT OUTER JOIN FETCH crtt.testTool tt "
             + "LEFT OUTER JOIN FETCH crd.certificationResultTestStandards crts "
             + "LEFT OUTER JOIN FETCH crd.certificationResultAdditionalSoftware cras "
+            //When CertifictionResultRules supports SVAP
+            //+ "LEFT OUTER JOIN FETCH crd.certificationResultSvaps crsv "
             + "WHERE crd.deleted = false ";
 //            + "AND (crtd.deleted = false OR crtd.deleted IS NULL) "
 //            + "AND (crtf.deleted = false OR crtf.deleted IS NULL) "
