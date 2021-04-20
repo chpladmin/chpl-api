@@ -310,7 +310,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
     private List<UrlResult> getServiceBaseUrlLists() {
         @SuppressWarnings("unchecked")
         List<String> useCasesWebsites = entityManager.createQuery(
-                        "SELECT DISTINCT useCases "
+                        "SELECT DISTINCT serviceBaseUrlList "
                         + "FROM CertificationResultEntity "
                         + "WHERE serviceBaseUrlList IS NOT NULL "
                         + "AND serviceBaseUrlList != '' "
