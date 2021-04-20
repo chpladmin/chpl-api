@@ -233,14 +233,11 @@ public class ListingService {
         return certEdition.orElse(null);
     }
 
-    // This should probably be refactored to use ChplProductNumberUtil
     private String getChplProductNumber(CertifiedProductDetailsDTO dto) {
         if (!StringUtils.isEmpty(dto.getChplProductNumber())) {
             return dto.getChplProductNumber();
         } else {
-            return dto.getYearCode() + "." + dto.getTestingLabCode() + "." + dto.getCertificationBodyCode() + "."
-                    + dto.getDeveloper().getDeveloperCode() + "." + dto.getProductCode() + "." + dto.getVersionCode()
-                    + "." + dto.getIcsCode() + "." + dto.getAdditionalSoftwareCode() + "." + dto.getCertifiedDateCode();
+            return chplProductNumberUtil.generate(dto.getId());
         }
     }
 
