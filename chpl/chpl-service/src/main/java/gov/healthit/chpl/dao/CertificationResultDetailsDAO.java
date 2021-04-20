@@ -38,13 +38,13 @@ public class CertificationResultDetailsDAO extends BaseDAOImpl {
             + "LEFT OUTER JOIN FETCH crd.certificationResultAdditionalSoftware cras "
             //When CertifictionResultRules supports SVAP
             //+ "LEFT OUTER JOIN FETCH crd.certificationResultSvaps crsv "
-            + "WHERE crd.deleted = false ";
-//            + "AND (crtd.deleted = false OR crtd.deleted IS NULL) "
-//            + "AND (crtf.deleted = false OR crtf.deleted IS NULL) "
-//            + "AND (crtp.deleted = false OR crtp.deleted IS NULL) "
-//            + "AND (crtt.deleted = false OR crtt.deleted IS NULL) "
-//            + "AND (crts.deleted = false OR crts.deleted IS NULL) "
-//            + "AND (cras.deleted = false OR cras.deleted IS NULL) ";
+            + "WHERE crd.deleted = false "
+            + "AND (crtd.deleted IS NULL OR crtd.deleted = false) "
+            + "AND (crtf.deleted IS NULL OR crtf.deleted = false) "
+            + "AND (crtp.deleted IS NULL OR crtp.deleted = false) "
+            + "AND (crtt.deleted IS NULL OR crtt.deleted = false) "
+            + "AND (crts.deleted IS NULL OR crts.deleted = false) "
+            + "AND (cras.deleted IS NULL OR cras.deleted = false) ";
 
     @Transactional
     public List<CertificationResultDetailsDTO> getCertificationResultDetailsByCertifiedProductId(
