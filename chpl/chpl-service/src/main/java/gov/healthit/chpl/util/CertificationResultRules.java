@@ -21,7 +21,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import gov.healthit.chpl.dao.CertificationCriterionAttributeDAO;
-import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.entity.CertificationCriterionAttributeEntity;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -44,6 +44,7 @@ public class CertificationResultRules {
     public static final String TEST_DATA = "testData";
     public static final String SED = "sed";
     public static final String SERVICE_BASE_URL_LIST = "serviceBaseUrlList";
+    public static final String SVAP = "svap";
     public static final String UCD_FIELDS = "ucd";
     public static final String TEST_PARTICIPANT = "participant";
     public static final String TEST_TASK = "task";
@@ -102,26 +103,33 @@ public class CertificationResultRules {
                     }
                 }
             }
-        } catch (final ParserConfigurationException pce) {
+        } catch (ParserConfigurationException pce) {
             LOGGER.error(pce.getMessage(), pce);
-        } catch (final SAXException se) {
+        } catch (SAXException se) {
             LOGGER.error(se.getMessage(), se);
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             LOGGER.error(ioe.getMessage(), ioe);
         }
 
-        // get all available attributes from attribute dao, append to this map here
         // update svap to use this thing too
-        List<CertificationCriterion> serviceBaseUrlListCriteria = certificationCriterionAttributeDAO.getCriteriaForServiceBaseUrlList();
-        for (CertificationCriterion cert : serviceBaseUrlListCriteria) {
-            if (rules.get(cert.getNumber()) == null) {
+        List<CertificationCriterionAttributeEntity> serviceBaseUrlListCriteria = certificationCriterionAttributeDAO.getAllCriteriaAttributes();
+        for (CertificationCriterionAttributeEntity attribute : serviceBaseUrlListCriteria) {
+            if (rules.get(attribute.getCriterion().getNumber()) == null) {
                 List<CertificationResultOption> options = new ArrayList<CertificationResultOption>();
-                rules.put(cert.getNumber(), options);
+                rules.put(attribute.getCriterion().getNumber(), options);
             }
-            CertificationResultOption option = new CertificationResultOption();
-            option.setOptionName(SERVICE_BASE_URL_LIST);
-            option.setCanHaveOption(true);
-            rules.get(cert.getNumber()).add(option);
+            if (attribute.getServiceBaseUrlList()) {
+                CertificationResultOption option = new CertificationResultOption();
+                option.setOptionName(SERVICE_BASE_URL_LIST);
+                option.setCanHaveOption(true);
+                rules.get(attribute.getCriterion().getNumber()).add(option);
+            }
+            if (attribute.getSvap()) {
+                CertificationResultOption option = new CertificationResultOption();
+                option.setOptionName(SVAP);
+                option.setCanHaveOption(true);
+                rules.get(attribute.getCriterion().getNumber()).add(option);
+            }
         }
     }
 
