@@ -128,7 +128,7 @@ public class ListingService {
                 .certificationDate(dto.getCertificationDate() != null ? dto.getCertificationDate().getTime() : null)
                 .decertificationDate(dto.getDecertificationDate() != null ? dto.getDecertificationDate().getTime() : null)
                 .curesUpdate(dto.getCuresUpdate())
-                .certificationEdition(getCertifificationEdition(dto))
+                .certificationEdition(getCertificationEdition(dto))
                 .chplProductNumber(getChplProductNumber(dto))
                 .certifyingBody(getCertifyingBody(dto))
                 .classificationType(getClassificationType(dto))
@@ -233,13 +233,7 @@ public class ListingService {
         return certEdition.orElse(null);
     }
 
-    //private InheritedCertificationStatus getInheritedCertificationStatus(boolean ics) {
-    //    return InheritedCertificationStatus.builder()
-    //            .inherits(ics)
-    //            .build();
-    //}
-
- // This should probably be refactored to use ChplProductNumberUtil
+    // This should probably be refactored to use ChplProductNumberUtil
     private String getChplProductNumber(CertifiedProductDetailsDTO dto) {
         if (!StringUtils.isEmpty(dto.getChplProductNumber())) {
             return dto.getChplProductNumber();
@@ -250,7 +244,7 @@ public class ListingService {
         }
     }
 
-    private Map<String, Object> getCertifificationEdition(CertifiedProductDetailsDTO dto) {
+    private Map<String, Object> getCertificationEdition(CertifiedProductDetailsDTO dto) {
         Map<String, Object> certificationEdition = new HashMap<String, Object>();
         certificationEdition.put("id", dto.getCertificationEditionId());
         certificationEdition.put("name", dto.getYear());
