@@ -679,6 +679,7 @@ public class CertifiedProductManager extends SecuredManager {
                 certResultToCreate.setDocumentationUrl(isCertified ? certResult.getDocumentationUrl() : null);
                 certResultToCreate.setExportDocumentation(isCertified ? certResult.getExportDocumentation() : null);
                 certResultToCreate.setUseCases(isCertified ? certResult.getUseCases() : null);
+                certResultToCreate.setServiceBaseUrlList(isCertified ? certResult.getServiceBaseUrlList() : null);
                 CertificationResultDTO createdCert = certDao.create(certResultToCreate);
 
                 if (isCertified) {

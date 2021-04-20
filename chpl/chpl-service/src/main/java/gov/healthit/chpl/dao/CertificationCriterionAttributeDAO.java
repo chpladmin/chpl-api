@@ -29,7 +29,7 @@ public class CertificationCriterionAttributeDAO extends BaseDAOImpl {
                 .getResultList();
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<CertificationCriterion> getCriteriaForServiceBaseUrlList() {
         return getCertificationCriteriaAttributeEntityForServiceBaseUrlList().stream()
                 .map(cca -> new CertificationCriterion(new CertificationCriterionDTO(cca.getCriterion())))
