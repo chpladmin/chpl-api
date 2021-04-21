@@ -13,6 +13,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import lombok.Data;
@@ -86,38 +87,45 @@ public class CertificationResultDetailsEntity {
     private Boolean deleted;
 
     @Basic(optional = true)
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "certification_result_id")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
+    @Column(name = "certification_result_id")
+    @Where(clause = "deleted <> 'true'")
     private Set<CertificationResultTestDataEntity> certificationResultTestData;
 
     @Basic(optional = true)
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "certification_result_id")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
+    @Column(name = "certification_result_id")
+    @Where(clause = "deleted <> 'true'")
     private Set<CertificationResultTestFunctionalityEntity> certificationResultTestFunctionalities;
 
     @Basic(optional = true)
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "certification_result_id")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
+    @Column(name = "certification_result_id")
+    @Where(clause = "deleted <> 'true'")
     private Set<CertificationResultTestProcedureEntity> certificationResultTestProcedures;
 
     @Basic(optional = true)
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "certification_result_id")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
+    @Column(name = "certification_result_id")
+    @Where(clause = "deleted <> 'true'")
     private Set<CertificationResultTestStandardEntity> certificationResultTestStandards;
 
     @Basic(optional = true)
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "certification_result_id")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
+    @Column(name = "certification_result_id")
+    @Where(clause = "deleted <> 'true'")
     private Set<CertificationResultAdditionalSoftwareEntity> certificationResultAdditionalSoftware;
 
     @Basic(optional = true)
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "certification_result_id")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
+    @Column(name = "certification_result_id")
+    @Where(clause = "deleted <> 'true'")
     private Set<CertificationResultTestToolEntity> certificationResultTestTools;
 
     //This will be used when SVAP is moved into the CertificationResultRules
     //@Basic(optional = true)
-    //@OneToMany(fetch = FetchType.LAZY)
-    //@JoinColumn(name = "certification_result_id")
+    //@OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
+    //@Column(name = "certification_result_id")
+    //@Where(clause = "deleted <> 'true'")
     //private Set<CertificationResultSvapEntity> certificationResultSvaps;
 }

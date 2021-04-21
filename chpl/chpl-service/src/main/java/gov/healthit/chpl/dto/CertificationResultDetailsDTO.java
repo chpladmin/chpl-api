@@ -60,42 +60,42 @@ public class CertificationResultDetailsDTO implements Serializable {
 
         if (entity.getCertificationResultTestData() != null) {
             this.testData = entity.getCertificationResultTestData().stream()
-                    .filter(e -> e != null && e.getDeleted() != null && !e.getDeleted())
+                    //.filter(e -> e != null && e.getDeleted() != null && !e.getDeleted())
                     .map(e -> new CertificationResultTestDataDTO(e))
                     .collect(Collectors.toList());
         }
 
         if (entity.getCertificationResultTestFunctionalities() != null) {
             this.testFunctionality = entity.getCertificationResultTestFunctionalities().stream()
-                    .filter(e -> e != null && e.getDeleted() != null && !e.getDeleted())
+                    //.filter(e -> e != null && e.getDeleted() != null && !e.getDeleted())
                     .map(e -> new CertificationResultTestFunctionalityDTO(e))
                     .collect(Collectors.toList());
         }
 
         if (entity.getCertificationResultTestProcedures() != null) {
             this.testProcedures = entity.getCertificationResultTestProcedures().stream()
-                    .filter(e -> e != null && e.getDeleted() != null && !e.getDeleted())
+                    //.filter(e -> e != null && e.getDeleted() != null && !e.getDeleted())
                     .map(e -> new CertificationResultTestProcedureDTO(e))
                     .collect(Collectors.toList());
         }
 
         if (entity.getCertificationResultTestTools() != null) {
             this.testTools = entity.getCertificationResultTestTools().stream()
-                    .filter(e -> e != null && e.getDeleted() != null && !e.getDeleted())
+                    //.filter(e -> e != null && e.getDeleted() != null && !e.getDeleted())
                     .map(e -> new CertificationResultTestToolDTO(e))
                     .collect(Collectors.toList());
         }
 
         if (entity.getCertificationResultTestStandards() != null) {
             this.testStandards = entity.getCertificationResultTestStandards().stream()
-                    .filter(e -> e != null && e.getDeleted() != null && !e.getDeleted())
+                    //.filter(e -> e != null && e.getDeleted() != null && !e.getDeleted())
                     .map(e -> new CertificationResultTestStandardDTO(e))
                     .collect(Collectors.toList());
         }
 
         if (entity.getCertificationResultAdditionalSoftware() != null) {
             this.additionalSoftware = entity.getCertificationResultAdditionalSoftware().stream()
-                    .filter(e -> e != null && e.getDeleted() != null && !e.getDeleted())
+                    //.filter(e -> e != null && e.getDeleted() != null && !e.getDeleted())
                     .map(e -> new CertificationResultAdditionalSoftwareDTO(e))
                     .collect(Collectors.toList());
         }
