@@ -51,6 +51,7 @@ public class CertifiedProductSearchDetails implements Serializable {
     private static final long serialVersionUID = 2903219171127034775L;
     public static final String ACB_ID_KEY = "id";
     public static final String ACB_NAME_KEY = "name";
+    public static final String ACB_CODE_KEY = "code";
     public static final String EDITION_ID_KEY = "id";
     public static final String EDITION_NAME_KEY = "name";
 
@@ -278,10 +279,12 @@ public class CertifiedProductSearchDetails implements Serializable {
     /**
      * Direct reviews that were conducted against this listing or its developer.
      */
-    @JsonIgnore
     @XmlElementWrapper(name = "directReviews", nillable = true, required = false)
     @XmlElement(name = "directReview")
     private List<DirectReview> directReviews = new ArrayList<DirectReview>();
+
+    @XmlTransient
+    private boolean directReviewsAvailable;
 
     /**
      * This variable indicates that if there is the standard(s) or lack thereof used to meet the accessibility-centered
@@ -752,6 +755,14 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.directReviews = directReviews;
     }
 
+    public boolean isDirectReviewsAvailable() {
+        return directReviewsAvailable;
+    }
+
+    public void setDirectReviewsAvailable(boolean directReviewsAvailable) {
+        this.directReviewsAvailable = directReviewsAvailable;
+    }
+
     public List<MeaningfulUseUser> getMeaningfulUseUserHistory() {
         return meaningfulUseUserHistory;
     }
@@ -865,22 +876,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         }
 
         // first we need to make sure the status events are in ascending order
-        this.getCertificationEvents().sort(new Comparator<CertificationStatusEvent>() {
-            @Override
-            public int compare(CertificationStatusEvent o1, CertificationStatusEvent o2) {
-                if (o1.getEventDate() == null || o2.getEventDate() == null
-                        || o1.getEventDate().equals(o2.getEventDate())) {
-                    return 0;
-                }
-                if (o1.getEventDate() < o2.getEventDate()) {
-                    return -1;
-                }
-                if (o1.getEventDate() > o2.getEventDate()) {
-                    return 1;
-                }
-                return 0;
-            }
-        });
+        this.getCertificationEvents().sort(new CertificationStatusEventComparator());
 
         CertificationStatusEvent result = null;
         for (int i = 0; i < this.getCertificationEvents().size() && result == null; i++) {

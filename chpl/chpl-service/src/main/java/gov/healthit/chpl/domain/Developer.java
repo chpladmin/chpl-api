@@ -64,10 +64,6 @@ public class Developer implements Serializable {
     @XmlElement(required = true)
     private Boolean selfDeveloper;
 
-    @XmlTransient
-    @JsonIgnore
-    private String selfDeveloperStr;
-
     /**
      * Developer's physical address
      */
@@ -106,6 +102,26 @@ public class Developer implements Serializable {
      */
     @XmlElement(required = false, nillable = true)
     private DeveloperStatus status;
+
+    @XmlTransient
+    @JsonIgnore
+    private String userEnteredName;
+
+    @XmlTransient
+    @JsonIgnore
+    private String userEnteredWebsite;
+
+    @XmlTransient
+    @JsonIgnore
+    private String userEnteredSelfDeveloper;
+
+    @XmlTransient
+    @JsonIgnore
+    private Address userEnteredAddress;
+
+    @XmlTransient
+    @JsonIgnore
+    private PointOfContact userEnteredPointOfContact;
 
     public Developer() {
         this.transparencyAttestations = new ArrayList<TransparencyAttestationMap>();
@@ -249,11 +265,43 @@ public class Developer implements Serializable {
         this.statusEvents = statusEvents;
     }
 
-    public String getSelfDeveloperStr() {
-        return selfDeveloperStr;
+    public String getUserEnteredName() {
+        return userEnteredName;
     }
 
-    public void setSelfDeveloperStr(String selfDeveloperStr) {
-        this.selfDeveloperStr = selfDeveloperStr;
+    public void setUserEnteredName(String userEnteredName) {
+        this.userEnteredName = userEnteredName;
+    }
+
+    public String getUserEnteredWebsite() {
+        return userEnteredWebsite;
+    }
+
+    public void setUserEnteredWebsite(String userEnteredWebsite) {
+        this.userEnteredWebsite = userEnteredWebsite;
+    }
+
+    public Address getUserEnteredAddress() {
+        return userEnteredAddress;
+    }
+
+    public void setUserEnteredAddress(Address userEnteredAddress) {
+        this.userEnteredAddress = userEnteredAddress;
+    }
+
+    public PointOfContact getUserEnteredPointOfContact() {
+        return userEnteredPointOfContact;
+    }
+
+    public void setUserEnteredPointOfContact(PointOfContact userEnteredPointOfContact) {
+        this.userEnteredPointOfContact = userEnteredPointOfContact;
+    }
+
+    public String getUserEnteredSelfDeveloper() {
+        return userEnteredSelfDeveloper;
+    }
+
+    public void setUserEnteredSelfDeveloper(String userEnteredSelfDeveloper) {
+        this.userEnteredSelfDeveloper = userEnteredSelfDeveloper;
     }
 }

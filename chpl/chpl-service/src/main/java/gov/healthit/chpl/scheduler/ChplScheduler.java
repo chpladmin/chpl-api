@@ -19,7 +19,7 @@ public final class ChplScheduler {
     public static void main(final String[] args) {
         try {
             StdSchedulerFactory sf = new StdSchedulerFactory();
-            sf.initialize("quartz.properties");
+            sf.initialize();
             Scheduler scheduler = sf.getScheduler();
             scheduler.start();
         } catch (SchedulerException se) {

@@ -16,15 +16,15 @@ public class NonConformityStatisticsSectionCreator extends StatisticsSectionCrea
     private String buildNonConformitySection(EmailStatistics stats, StatisticsMassager massager) {
         StringBuilder section = new StringBuilder();
 
-        section.append(buildHeader("Total # of NCs", stats.getNonconfStatusAllTotal()));
+        section.append(buildHeader("Total # of Surveillance NCs", stats.getNonconfStatusAllTotal()));
         section.append("<ul>");
 
         section.append(buildSection(
-                "Open NCs",
+                "Open Surveillance NCs",
                 stats.getNonconfStatusOpen().getCount(),
                 massager.getStatistics(stats.getNonconfStatusOpen().getAcbStatistics())));
 
-        section.append(buildItem("Closed NCs", stats.getNonconfStatusClosedTotal()));
+        section.append(buildItem("Closed Surveillance NCs", stats.getNonconfStatusClosedTotal()));
         section.append(buildItem("Average Time to Assess Conformity (in days)", stats.getNonconfAvgTimeToAssessConformity()));
         section.append(buildItem("Average Time to Approve CAP (in days)", stats.getNonconfAvgTimeToApproveCAP()));
         section.append(buildItem("Average Duration of CAP (in days) (includes closed and ongoing CAPs)",
