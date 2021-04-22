@@ -3,6 +3,7 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -19,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.svap.domain.Svap;
+import gov.healthit.chpl.util.CertificationResultRules;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Singular;
@@ -236,7 +238,7 @@ public class CertificationResult implements Serializable {
     public CertificationResult() {
     }
 
-    public CertificationResult(final CertificationResultDetailsDTO certResult) {
+    public CertificationResult(CertificationResultDetailsDTO certResult) {
         this();
         this.setId(certResult.getId());
         this.setNumber(certResult.getNumber());
@@ -258,11 +260,167 @@ public class CertificationResult implements Serializable {
         }
     }
 
+    //Correctly handles setting the values based on Certification rules
+    public CertificationResult(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
+        this();
+        this.setId(certResult.getId());
+        this.setNumber(certResult.getNumber());
+        this.setSuccess(certResult.getSuccess());
+        this.setTitle(certResult.getTitle());
+        this.setSed(certResult.getSed() == null ? Boolean.FALSE : certResult.getSed());
+        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.GAP)) {
+            this.setGap(null);
+        } else if (certResult.getGap() == null) {
+            this.setGap(Boolean.FALSE);
+        } else {
+            this.setGap(certResult.getGap());
+        }
+        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_SUCCESS)) {
+            this.setG1Success(null);
+        } else if (certResult.getG1Success() == null) {
+            this.setG1Success(Boolean.FALSE);
+        } else {
+            this.setG1Success(certResult.getG1Success());
+        }
+        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_SUCCESS)) {
+            this.setG2Success(null);
+        } else if (certResult.getG2Success() == null) {
+            this.setG2Success(Boolean.FALSE);
+        } else {
+            this.setG2Success(certResult.getG2Success());
+        }
+        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.ATTESTATION_ANSWER)) {
+            this.setAttestationAnswer(null);
+        } else if (certResult.getAttestationAnswer() == null) {
+            this.setAttestationAnswer(false);
+        } else {
+            this.setAttestationAnswer(certResult.getAttestationAnswer());
+        }
+        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
+            this.setApiDocumentation(null);
+        } else if (certResult.getApiDocumentation() == null) {
+            this.setApiDocumentation("");
+        } else {
+            this.setApiDocumentation(certResult.getApiDocumentation());
+        }
+        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.EXPORT_DOCUMENTATION)) {
+            this.setExportDocumentation(null);
+        } else if (certResult.getExportDocumentation() == null) {
+            this.setExportDocumentation("");
+        } else {
+            this.setExportDocumentation(certResult.getExportDocumentation());
+        }
+        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.DOCUMENTATION_URL)) {
+            this.setDocumentationUrl(null);
+        } else if (certResult.getDocumentationUrl() == null) {
+            this.setDocumentationUrl("");
+        } else {
+            this.setDocumentationUrl(certResult.getDocumentationUrl());
+        }
+        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.USE_CASES)) {
+            this.setUseCases(null);
+        } else if (certResult.getUseCases() == null) {
+            this.setUseCases("");
+        } else {
+            this.setUseCases(certResult.getUseCases());
+        }
+        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.SERVICE_BASE_URL_LIST)) {
+            this.setServiceBaseUrlList(null);
+        } else if (certResult.getServiceBaseUrlList() == null) {
+            this.setServiceBaseUrlList("");
+        } else {
+            this.setServiceBaseUrlList(certResult.getServiceBaseUrlList());
+        }
+        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.PRIVACY_SECURITY)) {
+            this.setPrivacySecurityFramework(null);
+        } else if (certResult.getPrivacySecurityFramework() == null) {
+            this.setPrivacySecurityFramework("");
+        } else {
+            this.setPrivacySecurityFramework(certResult.getPrivacySecurityFramework());
+        }
+
+        if (certResult.getCriterion() != null) {
+            this.criterion = new CertificationCriterion(certResult.getCriterion());
+        }
+
+        this.setTestFunctionality(getTestFunctionalities(certResult, certRules));
+        this.setTestProcedures(getTestProcedures(certResult, certRules));
+        this.setTestDataUsed(getTestData(certResult, certRules));
+        this.setTestToolsUsed(getTestTools(certResult, certRules));
+        this.setTestStandards(getTestStandards(certResult, certRules));
+        this.setAdditionalSoftware(getAdditionalSoftware(certResult, certRules));
+
+        //When SVAP is moved into the CertificationResultRules add SVAPs here...
+    }
+
+    private List<CertificationResultTestFunctionality> getTestFunctionalities(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
+        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
+            return certResult.getTestFunctionality().stream()
+                    .map(item -> new CertificationResultTestFunctionality(item))
+                    .collect(Collectors.toList());
+        } else {
+            return null;
+        }
+    }
+
+    private List<CertificationResultTestProcedure> getTestProcedures(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
+        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_PROCEDURE)) {
+            return certResult.getTestProcedures().stream()
+                    .map(item -> new CertificationResultTestProcedure(item))
+                    .collect(Collectors.toList());
+        } else {
+            return null;
+        }
+    }
+
+    private List<CertificationResultTestData> getTestData(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
+        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_DATA)) {
+            return certResult.getTestData().stream()
+                    .map(item -> new CertificationResultTestData(item))
+                    .collect(Collectors.toList());
+        } else {
+            return null;
+        }
+    }
+
+    private List<CertificationResultTestTool> getTestTools(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
+        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TOOLS_USED)) {
+            return certResult.getTestTools().stream()
+                    .map(item -> new CertificationResultTestTool(item))
+                    .collect(Collectors.toList());
+        } else {
+            return null;
+        }
+    }
+
+    private List<CertificationResultTestStandard> getTestStandards(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
+        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.STANDARDS_TESTED)) {
+            return certResult.getTestStandards().stream()
+                    .map(item -> new CertificationResultTestStandard(item))
+                    .collect(Collectors.toList());
+        } else {
+            return null;
+        }
+    }
+
+    private List<CertificationResultAdditionalSoftware> getAdditionalSoftware(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
+        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
+            return certResult.getAdditionalSoftware().stream()
+                    .map(item -> new CertificationResultAdditionalSoftware(item))
+                    .collect(Collectors.toList());
+        } else {
+            return null;
+        }
+    }
+
+    //When SVAP is moved into the CertificationResultRules
+    //Need a method to copy SVAPs from DTO to this
+
     public Long getId() {
         return id;
     }
 
-    public void setId(final Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -270,7 +428,7 @@ public class CertificationResult implements Serializable {
         return testProcedures;
     }
 
-    public void setTestProcedures(final List<CertificationResultTestProcedure> testProcedures) {
+    public void setTestProcedures(List<CertificationResultTestProcedure> testProcedures) {
         this.testProcedures = testProcedures;
     }
 
@@ -278,7 +436,7 @@ public class CertificationResult implements Serializable {
         return number;
     }
 
-    public void setNumber(final String number) {
+    public void setNumber(String number) {
         this.number = number;
     }
 
@@ -286,7 +444,7 @@ public class CertificationResult implements Serializable {
         return title;
     }
 
-    public void setTitle(final String title) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
@@ -294,7 +452,7 @@ public class CertificationResult implements Serializable {
         return success;
     }
 
-    public void setSuccess(final Boolean successful) {
+    public void setSuccess(Boolean successful) {
         this.success = successful;
     }
 
@@ -302,7 +460,7 @@ public class CertificationResult implements Serializable {
         return additionalSoftware;
     }
 
-    public void setAdditionalSoftware(final List<CertificationResultAdditionalSoftware> additionalSoftware) {
+    public void setAdditionalSoftware(List<CertificationResultAdditionalSoftware> additionalSoftware) {
         this.additionalSoftware = additionalSoftware;
     }
 
@@ -310,7 +468,7 @@ public class CertificationResult implements Serializable {
         return gap;
     }
 
-    public void setGap(final Boolean gap) {
+    public void setGap(Boolean gap) {
         this.gap = gap;
     }
 
@@ -318,7 +476,7 @@ public class CertificationResult implements Serializable {
         return sed;
     }
 
-    public void setSed(final Boolean sed) {
+    public void setSed(Boolean sed) {
         this.sed = sed;
     }
 
@@ -326,7 +484,7 @@ public class CertificationResult implements Serializable {
         return g1Success;
     }
 
-    public void setG1Success(final Boolean g1Success) {
+    public void setG1Success(Boolean g1Success) {
         this.g1Success = g1Success;
     }
 
@@ -334,7 +492,7 @@ public class CertificationResult implements Serializable {
         return g2Success;
     }
 
-    public void setG2Success(final Boolean g2Success) {
+    public void setG2Success(Boolean g2Success) {
         this.g2Success = g2Success;
     }
 
@@ -342,7 +500,7 @@ public class CertificationResult implements Serializable {
         return testToolsUsed;
     }
 
-    public void setTestToolsUsed(final List<CertificationResultTestTool> testToolsUsed) {
+    public void setTestToolsUsed(List<CertificationResultTestTool> testToolsUsed) {
         this.testToolsUsed = testToolsUsed;
     }
 
@@ -350,7 +508,7 @@ public class CertificationResult implements Serializable {
         return testStandards;
     }
 
-    public void setTestStandards(final List<CertificationResultTestStandard> testStandards) {
+    public void setTestStandards(List<CertificationResultTestStandard> testStandards) {
         this.testStandards = testStandards;
     }
 
@@ -358,7 +516,7 @@ public class CertificationResult implements Serializable {
         return testDataUsed;
     }
 
-    public void setTestDataUsed(final List<CertificationResultTestData> testDataUsed) {
+    public void setTestDataUsed(List<CertificationResultTestData> testDataUsed) {
         this.testDataUsed = testDataUsed;
     }
 
@@ -366,7 +524,7 @@ public class CertificationResult implements Serializable {
         return testFunctionality;
     }
 
-    public void setTestFunctionality(final List<CertificationResultTestFunctionality> testFunctionality) {
+    public void setTestFunctionality(List<CertificationResultTestFunctionality> testFunctionality) {
         this.testFunctionality = testFunctionality;
     }
 
@@ -374,7 +532,7 @@ public class CertificationResult implements Serializable {
         return apiDocumentation;
     }
 
-    public void setApiDocumentation(final String apiDocumentation) {
+    public void setApiDocumentation(String apiDocumentation) {
         this.apiDocumentation = apiDocumentation;
     }
 
@@ -422,7 +580,7 @@ public class CertificationResult implements Serializable {
         return privacySecurityFramework;
     }
 
-    public void setPrivacySecurityFramework(final String privacySecurityFramework) {
+    public void setPrivacySecurityFramework(String privacySecurityFramework) {
         this.privacySecurityFramework = privacySecurityFramework;
     }
 
@@ -430,7 +588,7 @@ public class CertificationResult implements Serializable {
         return allowedTestFunctionalities;
     }
 
-    public void setAllowedTestFunctionalities(final List<TestFunctionality> testFunctionalities) {
+    public void setAllowedTestFunctionalities(List<TestFunctionality> testFunctionalities) {
         this.allowedTestFunctionalities = testFunctionalities;
     }
 
@@ -438,11 +596,11 @@ public class CertificationResult implements Serializable {
         return criterion;
     }
 
-    public void setCriterion(final CertificationCriterion criterion) {
+    public void setCriterion(CertificationCriterion criterion) {
         this.criterion = criterion;
     }
 
-    public static String formatPrivacyAndSecurityFramework(final String privacyAndSecurityFramework) {
+    public static String formatPrivacyAndSecurityFramework(String privacyAndSecurityFramework) {
         if (StringUtils.isEmpty(privacyAndSecurityFramework)) {
             return privacyAndSecurityFramework;
         }

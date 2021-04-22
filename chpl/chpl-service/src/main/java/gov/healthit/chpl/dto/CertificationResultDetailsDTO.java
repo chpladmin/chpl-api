@@ -1,11 +1,15 @@
 package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class CertificationResultDetailsDTO implements Serializable {
     private static final long serialVersionUID = 4560202421131481086L;
     private Long id;
@@ -27,11 +31,14 @@ public class CertificationResultDetailsDTO implements Serializable {
     private String privacySecurityFramework;
     private CertificationCriterionDTO criterion;
 
-    public CertificationResultDetailsDTO() {
-    }
+    private List<CertificationResultTestFunctionalityDTO> testFunctionality;
+    private List<CertificationResultTestProcedureDTO> testProcedures;
+    private List<CertificationResultTestDataDTO> testData;
+    private List<CertificationResultTestToolDTO> testTools;
+    private List<CertificationResultTestStandardDTO> testStandards;
+    private List<CertificationResultAdditionalSoftwareDTO> additionalSoftware;
 
     public CertificationResultDetailsDTO(final CertificationResultDetailsEntity entity) {
-
         this.id = entity.getId();
         this.certificationCriterionId = entity.getCertificationCriterionId();
         this.certifiedProductId = entity.getCertifiedProductId();
@@ -51,6 +58,48 @@ public class CertificationResultDetailsDTO implements Serializable {
         this.privacySecurityFramework = entity.getPrivacySecurityFramework();
         if (entity.getCertificationCriterion() != null) {
             this.criterion = new CertificationCriterionDTO(entity.getCertificationCriterion());
+        }
+
+        if (entity.getCertificationResultTestData() != null) {
+            this.testData = entity.getCertificationResultTestData().stream()
+                    //.filter(e -> e != null && e.getDeleted() != null && !e.getDeleted())
+                    .map(e -> new CertificationResultTestDataDTO(e))
+                    .collect(Collectors.toList());
+        }
+
+        if (entity.getCertificationResultTestFunctionalities() != null) {
+            this.testFunctionality = entity.getCertificationResultTestFunctionalities().stream()
+                    //.filter(e -> e != null && e.getDeleted() != null && !e.getDeleted())
+                    .map(e -> new CertificationResultTestFunctionalityDTO(e))
+                    .collect(Collectors.toList());
+        }
+
+        if (entity.getCertificationResultTestProcedures() != null) {
+            this.testProcedures = entity.getCertificationResultTestProcedures().stream()
+                    //.filter(e -> e != null && e.getDeleted() != null && !e.getDeleted())
+                    .map(e -> new CertificationResultTestProcedureDTO(e))
+                    .collect(Collectors.toList());
+        }
+
+        if (entity.getCertificationResultTestTools() != null) {
+            this.testTools = entity.getCertificationResultTestTools().stream()
+                    //.filter(e -> e != null && e.getDeleted() != null && !e.getDeleted())
+                    .map(e -> new CertificationResultTestToolDTO(e))
+                    .collect(Collectors.toList());
+        }
+
+        if (entity.getCertificationResultTestStandards() != null) {
+            this.testStandards = entity.getCertificationResultTestStandards().stream()
+                    //.filter(e -> e != null && e.getDeleted() != null && !e.getDeleted())
+                    .map(e -> new CertificationResultTestStandardDTO(e))
+                    .collect(Collectors.toList());
+        }
+
+        if (entity.getCertificationResultAdditionalSoftware() != null) {
+            this.additionalSoftware = entity.getCertificationResultAdditionalSoftware().stream()
+                    //.filter(e -> e != null && e.getDeleted() != null && !e.getDeleted())
+                    .map(e -> new CertificationResultAdditionalSoftwareDTO(e))
+                    .collect(Collectors.toList());
         }
     }
 }
