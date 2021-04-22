@@ -57,8 +57,6 @@ public class CertificationResultService {
         return certificationResultDetailsDTOs;
     }
 
-
-    @SuppressWarnings({"checkstyle:methodlength"})
     private CertificationResult getCertificationResult(CertificationResultDetailsDTO certResult,
             CertifiedProductSearchDetails searchDetails, List<SvapCriteriaMap> svapCriteriaMap) {
 

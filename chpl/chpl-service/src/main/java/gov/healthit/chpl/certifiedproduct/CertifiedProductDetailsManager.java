@@ -31,7 +31,6 @@ public class CertifiedProductDetailsManager {
     private ListingMeasuresService listingMeasuresService;
     private CertificationStatusEventsService certificationStatusEventsService;
 
-    @SuppressWarnings({"checkstyle:parameternumber"})
     @Autowired
     public CertifiedProductDetailsManager(
             CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
