@@ -82,7 +82,7 @@ public class ApiKeyManager {
         try {
             emailBuilder.recipient(apiKeyRequest.getEmail())
                 .subject(requestEmailSubject)
-                .htmlMessage(String.format(requestEmailBody, chplUrl, apiKeyRequest.getApiRequestToken()))
+                .htmlMessage(String.format(requestEmailBody, apiKeyRequest.getNameOrganization(), chplUrl, apiKeyRequest.getApiRequestToken()))
                 .sendEmail();
         } catch (MessagingException e) {
             return false;
@@ -120,7 +120,7 @@ public class ApiKeyManager {
         (new EmailBuilder(env))
             .recipient(apiKey.getEmail())
             .subject(confirmEmailSubject)
-            .htmlMessage(String.format(confirmEmailBody, apiKey.getApiKey(), chplUrl))
+            .htmlMessage(String.format(confirmEmailBody, apiKey.getNameOrganization(), apiKey.getApiKey(), chplUrl))
             .sendEmail();
 
         return apiKey;
