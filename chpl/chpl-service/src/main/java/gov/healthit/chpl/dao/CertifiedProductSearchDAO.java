@@ -619,6 +619,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
                 .certificationStatus(entity.getCertificationStatus())
                 .transparencyAttestationUrl(entity.getTransparencyAttestationUrl())
                 .apiDocumentation(entity.getApiDocumentation())
+                .serviceBaseUrlList(entity.getServiceBaseUrlList() != null ? entity.getServiceBaseUrlList() : "")
                 .surveillanceCount(entity.getSurveillanceCount())
                 .openSurveillanceCount(entity.getOpenSurveillanceCount())
                 .closedSurveillanceCount(entity.getClosedSurveillanceCount())
