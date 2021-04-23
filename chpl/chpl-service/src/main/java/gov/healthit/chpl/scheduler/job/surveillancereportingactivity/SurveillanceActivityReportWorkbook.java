@@ -12,10 +12,12 @@ public class SurveillanceActivityReportWorkbook {
 
     public void generateWorkbook(List<CSVRecord> surveillances) {
         SurveillanceDataWorksheet dataSheet = new SurveillanceDataWorksheet();
+        StatisticsWorksheet statsSheet = new StatisticsWorksheet();
 
         XSSFWorkbook workbook = new XSSFWorkbook();
 
         dataSheet.generateWorksheet(workbook, surveillances);
+        statsSheet.generateWorksheet(workbook);
 
         writeFileToDisk(workbook);
     }

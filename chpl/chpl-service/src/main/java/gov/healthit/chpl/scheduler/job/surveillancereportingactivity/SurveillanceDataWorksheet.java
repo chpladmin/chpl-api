@@ -33,13 +33,13 @@ public class SurveillanceDataWorksheet {
     private XSSFSheet populateSheet(XSSFSheet sheet, List<CSVRecord> surveillances) {
         sheet = populateHeaderRow(sheet, surveillances);
         sheet = populateSurveillanceRows(sheet, surveillances);
-        sheet = addFormulaToColumn(sheet, 30, "Duration of Closed Surveillance (days)", "IF(K:K<>\"\",DAYS360(J:J,K:K,FALSE),\"\")", surveillances.size());
-        sheet = addFormulaToColumn(sheet, 31, "Time to Assess Conformity (days)", "IF(P:P=\"No Non-Conformity\",AD:AD,DAYS360(J:J,S:S,FALSE))", surveillances.size());
-        sheet = addFormulaToColumn(sheet, 32, "Time to Approve CAP (days)", "IF(T:T<>\"\",DAYS360(S:S,T:T),\"\")", surveillances.size());
-        sheet = addFormulaToColumn(sheet, 33, "MUST_COMPLETE_MET?", "IF(W:W<>\"\",IF(V:V>=W:W,\"Y\",\"N\"),\"\")", surveillances.size());
-        sheet = addFormulaToColumn(sheet, 34, "Duration of CAP (days)", "IF(T:T<>\"\",IF(W:W<>\"\",DAYS360(T:T,W:W),DAYS360(T:T,TODAY())),\"\")", surveillances.size());
-        sheet = addFormulaToColumn(sheet, 35, "Time from CAP Approval to Surveillance Close (days)", "IF(T:T<>\"\",IF(K:K<>\"\",DAYS360(T:T,K:K,FALSE),\"\"),\"\")", surveillances.size());
-        sheet = addFormulaToColumn(sheet, 36, "Time from CAP Close to Surveillance Close (days)", "IF(W:W<>\"\",IF(K:K<>\"\",DAYS360(W:W,K:K,FALSE),\"\"),\"\")", surveillances.size());
+        sheet = addFormulaToColumn(sheet, 29, "Duration of Closed Surveillance (days)", "IF(K:K<>\"\",DAYS360(J:J,K:K,FALSE),\"\")", surveillances.size());
+        sheet = addFormulaToColumn(sheet, 30, "Time to Assess Conformity (days)", "IF(P:P=\"No Non-Conformity\",AD:AD,DAYS360(J:J,S:S,FALSE))", surveillances.size());
+        sheet = addFormulaToColumn(sheet, 31, "Time to Approve CAP (days)", "IF(T:T<>\"\",DAYS360(S:S,T:T),\"\")", surveillances.size());
+        sheet = addFormulaToColumn(sheet, 32, "MUST_COMPLETE_MET?", "IF(W:W<>\"\",IF(V:V>=W:W,\"Y\",\"N\"),\"\")", surveillances.size());
+        sheet = addFormulaToColumn(sheet, 33, "Duration of CAP (days)", "IF(T:T<>\"\",IF(W:W<>\"\",DAYS360(T:T,W:W),DAYS360(T:T,TODAY())),\"\")", surveillances.size());
+        sheet = addFormulaToColumn(sheet, 34, "Time from CAP Approval to Surveillance Close (days)", "IF(T:T<>\"\",IF(K:K<>\"\",DAYS360(T:T,K:K,FALSE),\"\"),\"\")", surveillances.size());
+        sheet = addFormulaToColumn(sheet, 35, "Time from CAP Close to Surveillance Close (days)", "IF(W:W<>\"\",IF(K:K<>\"\",DAYS360(W:W,K:K,FALSE),\"\"),\"\")", surveillances.size());
         return sheet;
     }
 
