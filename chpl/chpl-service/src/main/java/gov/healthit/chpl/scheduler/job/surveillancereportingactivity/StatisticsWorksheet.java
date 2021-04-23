@@ -55,34 +55,42 @@ public class StatisticsWorksheet {
     }
 
     private XSSFSheet generateMeasuresOfCentralTendency(XSSFSheet sheet, Integer startingRow, String acbName) {
-        Row minRow = sheet.createRow(startingRow);
-        minRow.createCell(1).setCellValue("Minimum");
-        minRow.createCell(ASSESS_CONFORMITY_COLUMN).setCellFormula(getStatFormula("MINIFS", acbName, "AE", 48));
-        minRow.createCell(APPROVE_CAP_COLUMN).setCellFormula(getStatFormula("MINIFS", acbName, "AF", 48));
-        minRow.createCell(DURATION_CAP_COLUMN).setCellFormula(getStatFormula("MINIFS", acbName, "AH", 48));
-        minRow.createCell(CAP_APPROVAL_TO_SURV_CLOSE_COLUMN).setCellFormula(getStatFormula("MINIFS", acbName, "AI", 48));
-        minRow.createCell(CAP_CLOSE_TO_SURV_CLOSE_COLUMN).setCellFormula(getStatFormula("MINIFS", acbName, "AJ", 48));
-        minRow.createCell(DURATION_SURV_CLOSE_COLUMN).setCellFormula(getStatFormula("MINIFS", acbName, "AD", 48));
-
-        Row maxRow = sheet.createRow(startingRow + 1);
-        maxRow.createCell(1).setCellValue("Maximum");
-        maxRow.createCell(ASSESS_CONFORMITY_COLUMN).setCellFormula(getStatFormula("MAXIFS", acbName, "AE", 48));
-        maxRow.createCell(APPROVE_CAP_COLUMN).setCellFormula(getStatFormula("MAXIFS", acbName, "AF", 48));
-        maxRow.createCell(DURATION_CAP_COLUMN).setCellFormula(getStatFormula("MAXIFS", acbName, "AH", 48));
-        maxRow.createCell(CAP_APPROVAL_TO_SURV_CLOSE_COLUMN).setCellFormula(getStatFormula("MAXIFS", acbName, "AI", 48));
-        maxRow.createCell(CAP_CLOSE_TO_SURV_CLOSE_COLUMN).setCellFormula(getStatFormula("MAXIFS", acbName, "AJ", 48));
-        maxRow.createCell(DURATION_SURV_CLOSE_COLUMN).setCellFormula(getStatFormula("MAXIFS", acbName, "AD", 48));
-
-        Row avgRow = sheet.createRow(startingRow + 2);
-        avgRow.createCell(1).setCellValue("Mean");
-        avgRow.createCell(ASSESS_CONFORMITY_COLUMN).setCellFormula(getStatFormula("AVERAGEIFS", acbName, "AE", 48));
-        avgRow.createCell(APPROVE_CAP_COLUMN).setCellFormula(getStatFormula("AVERAGEIFS", acbName, "AF", 48));
-        avgRow.createCell(DURATION_CAP_COLUMN).setCellFormula(getStatFormula("AVERAGEIFS", acbName, "AH", 48));
-        avgRow.createCell(CAP_APPROVAL_TO_SURV_CLOSE_COLUMN).setCellFormula(getStatFormula("AVERAGEIFS", acbName, "AI", 48));
-        avgRow.createCell(CAP_CLOSE_TO_SURV_CLOSE_COLUMN).setCellFormula(getStatFormula("AVERAGEIFS", acbName, "AJ", 48));
-        avgRow.createCell(DURATION_SURV_CLOSE_COLUMN).setCellFormula(getStatFormula("AVERAGEIFS", acbName, "AD", 48));
+        generateStatisticsRow(sheet.createRow(startingRow), "Minimum", "MINIFS", acbName);
+        generateStatisticsRow(sheet.createRow(startingRow + 1), "Maximum", "MAXIFS", acbName);
+        generateStatisticsRow(sheet.createRow(startingRow + 2), "Mean", "AVERAGEIFS", acbName);
 
         return sheet;
+    }
+
+    private Row generateStatisticsRow(Row row, String rowDescription, String functionName, String acbName) {
+        Cell cell = null;
+        row.createCell(1).setCellValue(rowDescription);
+
+        cell = row.createCell(ASSESS_CONFORMITY_COLUMN);
+        cell.setCellFormula(getStatFormula(functionName, acbName, "AE", 48));
+        cell.setCellStyle(getDefaultStatStyle(((XSSFSheet)row.getSheet()).getWorkbook()));
+
+        cell = row.createCell(APPROVE_CAP_COLUMN);
+        cell.setCellFormula(getStatFormula(functionName, acbName, "AF", 48));
+        cell.setCellStyle(getDefaultStatStyle(((XSSFSheet)row.getSheet()).getWorkbook()));
+
+        cell = row.createCell(DURATION_CAP_COLUMN);
+        cell.setCellFormula(getStatFormula(functionName, acbName, "AH", 48));
+        cell.setCellStyle(getDefaultStatStyle(((XSSFSheet)row.getSheet()).getWorkbook()));
+
+        cell = row.createCell(CAP_APPROVAL_TO_SURV_CLOSE_COLUMN);
+        cell.setCellFormula(getStatFormula(functionName, acbName, "AI", 48));
+        cell.setCellStyle(getDefaultStatStyle(((XSSFSheet)row.getSheet()).getWorkbook()));
+
+        cell = row.createCell(CAP_CLOSE_TO_SURV_CLOSE_COLUMN);
+        cell.setCellFormula(getStatFormula(functionName, acbName, "AJ", 48));
+        cell.setCellStyle(getDefaultStatStyle(((XSSFSheet)row.getSheet()).getWorkbook()));
+
+        cell = row.createCell(DURATION_SURV_CLOSE_COLUMN);
+        cell.setCellFormula(getStatFormula(functionName, acbName, "AD", 48));
+        cell.setCellStyle(getDefaultStatStyle(((XSSFSheet)row.getSheet()).getWorkbook()));
+
+        return row;
     }
 
     private XSSFSheet generateMainHeaders(XSSFSheet sheet) {
@@ -135,13 +143,14 @@ public class StatisticsWorksheet {
         return style;
     }
 
-    private CellStyle getDefaultStyle(XSSFWorkbook workbook) {
+    private CellStyle getDefaultStatStyle(XSSFWorkbook workbook) {
         Font font = workbook.createFont();
         font.setFontName("Calibri");
         font.setFontHeightInPoints((short)11);
 
         CellStyle style = workbook.createCellStyle();
         style.setFont(font);
+        style.setDataFormat(workbook.createDataFormat().getFormat("0"));
         return style;
     }
 
