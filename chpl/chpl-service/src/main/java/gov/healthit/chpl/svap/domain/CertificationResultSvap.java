@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gov.healthit.chpl.svap.entity.CertificationResultSvapEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -25,6 +26,7 @@ import lombok.ToString;
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @ToString
 public class CertificationResultSvap implements Serializable {
@@ -59,10 +61,6 @@ public class CertificationResultSvap implements Serializable {
      */
     @XmlElement(required = true)
     private boolean replaced;
-
-    public CertificationResultSvap() {
-
-    }
 
     public CertificationResultSvap(CertificationResultSvapEntity entity) {
         this.id = entity.getId();
