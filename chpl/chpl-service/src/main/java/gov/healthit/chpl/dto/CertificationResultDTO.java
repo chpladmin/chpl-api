@@ -58,7 +58,7 @@ public class CertificationResultDTO implements Serializable {
         this.certificationCriterionId = entity.getCertificationCriterionId();
         this.certifiedProductId = entity.getCertifiedProductId();
         this.creationDate = entity.getCreationDate();
-        this.gap = entity.isGap();
+        this.gap = entity.getGap();
         this.sed = entity.getSed();
         this.g1Success = entity.getG1Success();
         this.g2Success = entity.getG2Success();
@@ -69,7 +69,7 @@ public class CertificationResultDTO implements Serializable {
         this.useCases = entity.getUseCases();
         this.serviceBaseUrlList = entity.getServiceBaseUrlList();
         this.privacySecurityFramework = entity.getPrivacySecurityFramework();
-        this.successful = entity.isSuccess();
+        this.successful = entity.getSuccess();
         this.deleted = entity.getDeleted();
         this.lastModifiedDate = entity.getLastModifiedDate();
         this.lastModifiedUser = entity.getLastModifiedUser();
