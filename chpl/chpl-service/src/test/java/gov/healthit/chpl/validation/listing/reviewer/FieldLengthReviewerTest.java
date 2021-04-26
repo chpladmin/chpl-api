@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -11,6 +12,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.context.MessageSource;
 
+import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
@@ -44,6 +46,11 @@ public class FieldLengthReviewerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.productVersion.maxlength"),
                 ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(String.format(FIELD_TOO_LONG, "20", "product version", "placeholder"));
+        Mockito.when(messageSource.getMessage(ArgumentMatchers.eq("maxLength.qmsStandard"), ArgumentMatchers.isNull(), ArgumentMatchers.any()))
+            .thenReturn("255");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.qmsStandard.maxlength"),
+                ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(String.format(FIELD_TOO_LONG, "20", "qms standard name", "placeholder"));
         reviewer = new FieldLengthReviewer(errorMessageUtil, messageSource);
     }
 
@@ -192,5 +199,76 @@ public class FieldLengthReviewerTest {
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "product version", "placeholder")));
+    }
+
+    @Test
+    public void review_nullQmsStandards_noError() throws ParseException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .build();
+        listing.setQmsStandards(null);
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_emptyQmsStandards_noError() throws ParseException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .qmsStandards(new ArrayList<CertifiedProductQmsStandard>())
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_shortQmsStandardName_noError() throws ParseException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .qmsStandard(CertifiedProductQmsStandard.builder()
+                        .qmsStandardName("short name")
+                        .build())
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_longQmsStandardName_hasError() throws ParseException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .qmsStandard(CertifiedProductQmsStandard.builder()
+                        .qmsStandardName(createStringLongerThan(255, "a"))
+                        .build())
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "qms standard name", "placeholder")));
+    }
+
+    @Test
+    public void review_oneShortAndOneLongQmsStandardName_hasError() throws ParseException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .qmsStandard(CertifiedProductQmsStandard.builder()
+                        .qmsStandardName(createStringLongerThan(255, "a"))
+                        .build())
+                .qmsStandard(CertifiedProductQmsStandard.builder()
+                        .qmsStandardName("short name")
+                        .build())
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "qms standard name", "placeholder")));
+    }
+
+    private String createStringLongerThan(int minLength, String charToUse) {
+        StringBuffer buf = new StringBuffer();
+        int charCount = 0;
+        while (charCount <= minLength) {
+            buf.append(charToUse);
+            charCount = buf.length();
+        }
+        return buf.toString();
     }
 }

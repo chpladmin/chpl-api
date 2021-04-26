@@ -19,6 +19,7 @@ import gov.healthit.chpl.upload.listing.validation.reviewer.EditionCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.EditionReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.IcsCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.ProductReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.QmsStandardReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.TestingLabCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.TestingLabReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.VersionReviewer;
@@ -26,6 +27,7 @@ import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.InheritanceReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.duplicate.QmsStandardDuplicateReviewer;
 
 @Component
 public class ListingUploadValidator {
@@ -48,6 +50,8 @@ public class ListingUploadValidator {
     private VersionReviewer versionReviewer;
     private CertificationDateReviewer certDateReviewer;
     private InheritanceReviewer inheritanceReviewer;
+    private QmsStandardReviewer qmsReviewer;
+    private QmsStandardDuplicateReviewer qmsDuplicateReviewer;
     private FieldLengthReviewer fieldLengthReviewer;
     private UnsupportedCharacterReviewer unsupportedCharacterReviewer;
 
@@ -71,6 +75,8 @@ public class ListingUploadValidator {
             CertificationDateReviewer certDateReviewer,
             ChplNumberUniqueReviewer chplNumberUniqueReviewer,
             InheritanceReviewer inheritanceReviewer,
+            QmsStandardReviewer qmsReviewer,
+            QmsStandardDuplicateReviewer qmsDuplicateReviewer,
             FieldLengthReviewer fieldLengthReviewer,
             UnsupportedCharacterReviewer unsupportedCharacterReviewer) {
         this.csvHeaderReviewer = csvHeaderReviewer;
@@ -91,6 +97,8 @@ public class ListingUploadValidator {
         this.certDateReviewer = certDateReviewer;
         this.chplNumberUniqueReviewer = chplNumberUniqueReviewer;
         this.inheritanceReviewer = inheritanceReviewer;
+        this.qmsReviewer = qmsReviewer;
+        this.qmsDuplicateReviewer = qmsDuplicateReviewer;
         this.fieldLengthReviewer = fieldLengthReviewer;
         this.unsupportedCharacterReviewer = unsupportedCharacterReviewer;
     }
@@ -114,6 +122,8 @@ public class ListingUploadValidator {
         additionalSoftwareCodeReviewer.review(listing);
         certifiedDateCodeReviewer.review(listing);
         certDateReviewer.review(listing);
+        qmsReviewer.review(listing);
+        qmsDuplicateReviewer.review(listing);
         fieldLengthReviewer.review(listing);
         unsupportedCharacterReviewer.review(listing);
     }

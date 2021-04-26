@@ -68,6 +68,14 @@ public class FieldLengthReviewer implements Reviewer {
         if (listing.getVersion() != null && !StringUtils.isEmpty(listing.getVersion().getVersion())) {
             checkFieldLength(listing, listing.getVersion().getVersion(), "productVersion");
         }
+        checkQmsStandardsFieldLength(listing);
+    }
+
+    private void checkQmsStandardsFieldLength(CertifiedProductSearchDetails listing) {
+        if (listing.getQmsStandards() != null && listing.getQmsStandards().size() > 0) {
+            listing.getQmsStandards().stream()
+                .forEach(qmsStandard -> checkFieldLength(listing, qmsStandard.getQmsStandardName(), "qmsStandard"));
+        }
     }
 
     private void checkFieldLength(CertifiedProductSearchDetails product, String field, String errorField) {
