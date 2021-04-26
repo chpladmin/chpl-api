@@ -53,6 +53,11 @@ public class CertificationResultRules {
 
     @Autowired
     public CertificationResultRules(CertificationCriterionAttributeDAO certificationCriterionAttributeDAO) {
+        setRulesUsingLegacyXmlFile();
+        setRulesUsingDatabase(certificationCriterionAttributeDAO);
+    }
+
+    private void setRulesUsingLegacyXmlFile() {
         Document dom;
         // Make an instance of the DocumentBuilderFactory
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -110,8 +115,9 @@ public class CertificationResultRules {
         } catch (IOException ioe) {
             LOGGER.error(ioe.getMessage(), ioe);
         }
+    }
 
-        // update svap to use this thing too
+    private void setRulesUsingDatabase(CertificationCriterionAttributeDAO certificationCriterionAttributeDAO) {
         List<CertificationCriterionAttributeEntity> serviceBaseUrlListCriteria = certificationCriterionAttributeDAO.getAllCriteriaAttributes();
         for (CertificationCriterionAttributeEntity attribute : serviceBaseUrlListCriteria) {
             if (rules.get(attribute.getCriterion().getNumber()) == null) {
