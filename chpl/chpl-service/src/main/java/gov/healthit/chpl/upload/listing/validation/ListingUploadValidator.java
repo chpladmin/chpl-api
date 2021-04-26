@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpload;
+import gov.healthit.chpl.upload.listing.validation.reviewer.AccessibilityStandardReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.AdditionalSoftwareCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.CSVHeaderReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.CertificationBodyCodeReviewer;
@@ -24,10 +25,10 @@ import gov.healthit.chpl.upload.listing.validation.reviewer.TestingLabCodeReview
 import gov.healthit.chpl.upload.listing.validation.reviewer.TestingLabReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.VersionReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.DuplicateDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.InheritanceReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.duplicate.QmsStandardDuplicateReviewer;
 
 @Component
 public class ListingUploadValidator {
@@ -51,7 +52,8 @@ public class ListingUploadValidator {
     private CertificationDateReviewer certDateReviewer;
     private InheritanceReviewer inheritanceReviewer;
     private QmsStandardReviewer qmsReviewer;
-    private QmsStandardDuplicateReviewer qmsDuplicateReviewer;
+    private AccessibilityStandardReviewer accStdReviewer;
+    private DuplicateDataReviewer duplicateDataReviewer;
     private FieldLengthReviewer fieldLengthReviewer;
     private UnsupportedCharacterReviewer unsupportedCharacterReviewer;
 
@@ -76,7 +78,8 @@ public class ListingUploadValidator {
             ChplNumberUniqueReviewer chplNumberUniqueReviewer,
             InheritanceReviewer inheritanceReviewer,
             QmsStandardReviewer qmsReviewer,
-            QmsStandardDuplicateReviewer qmsDuplicateReviewer,
+            AccessibilityStandardReviewer accStdReviewer,
+            DuplicateDataReviewer duplicateDataReviewer,
             FieldLengthReviewer fieldLengthReviewer,
             UnsupportedCharacterReviewer unsupportedCharacterReviewer) {
         this.csvHeaderReviewer = csvHeaderReviewer;
@@ -98,7 +101,8 @@ public class ListingUploadValidator {
         this.chplNumberUniqueReviewer = chplNumberUniqueReviewer;
         this.inheritanceReviewer = inheritanceReviewer;
         this.qmsReviewer = qmsReviewer;
-        this.qmsDuplicateReviewer = qmsDuplicateReviewer;
+        this.accStdReviewer = accStdReviewer;
+        this.duplicateDataReviewer = duplicateDataReviewer;
         this.fieldLengthReviewer = fieldLengthReviewer;
         this.unsupportedCharacterReviewer = unsupportedCharacterReviewer;
     }
@@ -123,7 +127,8 @@ public class ListingUploadValidator {
         certifiedDateCodeReviewer.review(listing);
         certDateReviewer.review(listing);
         qmsReviewer.review(listing);
-        qmsDuplicateReviewer.review(listing);
+        accStdReviewer.review(listing);
+        duplicateDataReviewer.review(listing);
         fieldLengthReviewer.review(listing);
         unsupportedCharacterReviewer.review(listing);
     }

@@ -12,6 +12,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.context.MessageSource;
 
+import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
@@ -51,6 +52,11 @@ public class FieldLengthReviewerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.qmsStandard.maxlength"),
                 ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(String.format(FIELD_TOO_LONG, "20", "qms standard name", "placeholder"));
+        Mockito.when(messageSource.getMessage(ArgumentMatchers.eq("maxLength.accessibilityStandard"), ArgumentMatchers.isNull(), ArgumentMatchers.any()))
+            .thenReturn("500");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.accessibilityStandard.maxlength"),
+            ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(String.format(FIELD_TOO_LONG, "20", "accessibility standard name", "placeholder"));
         reviewer = new FieldLengthReviewer(errorMessageUtil, messageSource);
     }
 
@@ -260,6 +266,67 @@ public class FieldLengthReviewerTest {
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "qms standard name", "placeholder")));
+    }
+
+    @Test
+    public void review_nullAccessibilityStandards_noError() throws ParseException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .build();
+        listing.setAccessibilityStandards(null);
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_emptyAccessibilityStandards_noError() throws ParseException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .accessibilityStandards(new ArrayList<CertifiedProductAccessibilityStandard>())
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_shortAccessibilityStandardName_noError() throws ParseException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .accessibilityStandard(CertifiedProductAccessibilityStandard.builder()
+                        .accessibilityStandardName("short name")
+                        .build())
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_longAccessibilityStandardName_hasError() throws ParseException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .accessibilityStandard(CertifiedProductAccessibilityStandard.builder()
+                        .accessibilityStandardName(createStringLongerThan(500, "a"))
+                        .build())
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "accessibility standard name", "placeholder")));
+    }
+
+    @Test
+    public void review_oneShortAndOneLongAccessibilityStandardName_hasError() throws ParseException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .accessibilityStandard(CertifiedProductAccessibilityStandard.builder()
+                        .accessibilityStandardName(createStringLongerThan(500, "a"))
+                        .build())
+                .accessibilityStandard(CertifiedProductAccessibilityStandard.builder()
+                        .accessibilityStandardName("short name")
+                        .build())
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "accessibility standard name", "placeholder")));
     }
 
     private String createStringLongerThan(int minLength, String charToUse) {
