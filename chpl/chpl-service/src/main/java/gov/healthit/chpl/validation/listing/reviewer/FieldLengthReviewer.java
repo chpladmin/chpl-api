@@ -70,6 +70,7 @@ public class FieldLengthReviewer implements Reviewer {
         }
         checkQmsStandardsFieldLength(listing);
         checkAccessibilityStandardsFieldLength(listing);
+        checkTargetedUsersFieldLength(listing);
     }
 
     private void checkQmsStandardsFieldLength(CertifiedProductSearchDetails listing) {
@@ -83,6 +84,13 @@ public class FieldLengthReviewer implements Reviewer {
         if (listing.getAccessibilityStandards() != null && listing.getAccessibilityStandards().size() > 0) {
             listing.getAccessibilityStandards().stream()
                 .forEach(accStandard -> checkFieldLength(listing, accStandard.getAccessibilityStandardName(), "accessibilityStandard"));
+        }
+    }
+
+    private void checkTargetedUsersFieldLength(CertifiedProductSearchDetails listing) {
+        if (listing.getTargetedUsers() != null && listing.getTargetedUsers().size() > 0) {
+            listing.getTargetedUsers().stream()
+                .forEach(targetedUser -> checkFieldLength(listing, targetedUser.getTargetedUserName(), "targetedUser"));
         }
     }
 
