@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dao;
+package gov.healthit.chpl.api.dao;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -10,10 +10,10 @@ import javax.persistence.Query;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
+import gov.healthit.chpl.api.domain.ApiKeyDTO;
+import gov.healthit.chpl.api.entity.ApiKeyEntity;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.ApiKeyDTO;
-import gov.healthit.chpl.entity.ApiKeyEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
