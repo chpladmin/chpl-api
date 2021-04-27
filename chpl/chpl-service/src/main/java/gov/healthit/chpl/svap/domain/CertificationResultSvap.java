@@ -60,9 +60,7 @@ public class CertificationResultSvap implements Serializable {
     @XmlElement(required = true)
     private boolean replaced;
 
-    public CertificationResultSvap() {
-
-    }
+    public CertificationResultSvap() { }
 
     public CertificationResultSvap(CertificationResultSvapEntity entity) {
         this.id = entity.getId();

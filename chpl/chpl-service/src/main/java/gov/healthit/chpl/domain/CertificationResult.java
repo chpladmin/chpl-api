@@ -349,8 +349,15 @@ public class CertificationResult implements Serializable {
         this.setTestToolsUsed(getTestTools(certResult, certRules));
         this.setTestStandards(getTestStandards(certResult, certRules));
         this.setAdditionalSoftware(getAdditionalSoftware(certResult, certRules));
+        this.setSvaps(getSvaps(certResult, certRules));
+    }
 
-        //When SVAP is moved into the CertificationResultRules add SVAPs here...
+    private List<CertificationResultSvap> getSvaps(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
+        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.SVAP)) {
+            return certResult.getSvaps();
+        } else {
+            return null;
+        }
     }
 
     private List<CertificationResultTestFunctionality> getTestFunctionalities(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
@@ -412,9 +419,6 @@ public class CertificationResult implements Serializable {
             return null;
         }
     }
-
-    //When SVAP is moved into the CertificationResultRules
-    //Need a method to copy SVAPs from DTO to this
 
     public Long getId() {
         return id;
