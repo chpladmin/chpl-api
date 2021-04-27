@@ -5,10 +5,12 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
@@ -50,6 +52,10 @@ public class CertifiedProductAccessibilityStandard implements Serializable {
     @XmlElement(required = true)
     private String accessibilityStandardName;
 
+    @XmlTransient
+    @JsonIgnore
+    private String userEnteredAccessibilityStandardName;
+
     public CertifiedProductAccessibilityStandard() {
         super();
     }
@@ -77,7 +83,7 @@ public class CertifiedProductAccessibilityStandard implements Serializable {
         return id;
     }
 
-    public void setId(final Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -85,7 +91,7 @@ public class CertifiedProductAccessibilityStandard implements Serializable {
         return accessibilityStandardId;
     }
 
-    public void setAccessibilityStandardId(final Long accessibilityStandardId) {
+    public void setAccessibilityStandardId(Long accessibilityStandardId) {
         this.accessibilityStandardId = accessibilityStandardId;
     }
 
@@ -93,8 +99,15 @@ public class CertifiedProductAccessibilityStandard implements Serializable {
         return accessibilityStandardName;
     }
 
-    public void setAccessibilityStandardName(final String accessibilityStandardName) {
+    public void setAccessibilityStandardName(String accessibilityStandardName) {
         this.accessibilityStandardName = accessibilityStandardName;
     }
 
+    public String getUserEnteredAccessibilityStandardName() {
+        return userEnteredAccessibilityStandardName;
+    }
+
+    public void setUserEnteredAccessibilityStandardName(String userEnteredAccessibilityStandardName) {
+        this.userEnteredAccessibilityStandardName = userEnteredAccessibilityStandardName;
+    }
 }

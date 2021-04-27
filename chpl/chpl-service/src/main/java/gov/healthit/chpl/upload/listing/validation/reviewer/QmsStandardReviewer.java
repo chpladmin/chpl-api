@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class QmsStandardReviewer {
@@ -16,14 +17,24 @@ public class QmsStandardReviewer {
     }
 
     public void review(CertifiedProductSearchDetails listing) {
+        doQmsStandardsExist(listing);
+        areQmsStandardsValid(listing);
+        addFuzzyMatchWarnings(listing);
+    }
+
+    private void doQmsStandardsExist(CertifiedProductSearchDetails listing) {
         if (listing.getQmsStandards() == null || listing.getQmsStandards().size() == 0) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.qmsStandardsNotFound"));
-        } else {
+        }
+    }
+
+    private void areQmsStandardsValid(CertifiedProductSearchDetails listing) {
+        if (listing.getQmsStandards() != null) {
             listing.getQmsStandards().stream()
-                .forEach(qmsStandard -> {
-                    checkQmsStandardNameRequired(listing, qmsStandard);
-                    checkApplicableCriteriaRequired(listing, qmsStandard);
-                });
+            .forEach(qmsStandard -> {
+                checkQmsStandardNameRequired(listing, qmsStandard);
+                checkApplicableCriteriaRequired(listing, qmsStandard);
+            });
         }
     }
 
@@ -37,5 +48,25 @@ public class QmsStandardReviewer {
         if (StringUtils.isEmpty(qmsStandard.getApplicableCriteria())) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.qmsStandardMissingApplicableCriteria"));
         }
+    }
+
+    private void addFuzzyMatchWarnings(CertifiedProductSearchDetails listing) {
+        if (listing.getQmsStandards() != null) {
+            listing.getQmsStandards().stream()
+                .filter(qmsStandard -> hasFuzzyMatch(qmsStandard))
+                .forEach(qmsStandard -> addFuzzyMatchWarning(listing, qmsStandard));
+        }
+    }
+
+    private boolean hasFuzzyMatch(CertifiedProductQmsStandard qmsStandard) {
+        return qmsStandard.getId() == null
+                && !StringUtils.isEmpty(qmsStandard.getUserEnteredQmsStandardName())
+                && !StringUtils.equals(qmsStandard.getQmsStandardName(), qmsStandard.getUserEnteredQmsStandardName());
+    }
+
+    private void addFuzzyMatchWarning(CertifiedProductSearchDetails listing, CertifiedProductQmsStandard qmsStandard) {
+        String warningMsg = msgUtil.getMessage("listing.fuzzyMatch", FuzzyType.QMS_STANDARD.fuzzyType(),
+                qmsStandard.getUserEnteredQmsStandardName(), qmsStandard.getQmsStandardName());
+        listing.getWarningMessages().add(warningMsg);
     }
 }
