@@ -5,12 +5,11 @@ import java.io.Serializable;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMetadataDTO;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-/**
- * Pending Certified Product Metadata domain object.
- * @author kekey
- *
- */
+@Data
+@NoArgsConstructor
 public class PendingCertifiedProductMetadata implements Serializable {
     private static final long serialVersionUID = -6034612936287258033L;
     private Long id;
@@ -21,18 +20,9 @@ public class PendingCertifiedProductMetadata implements Serializable {
     private Long certificationDate;
     private Integer errorCount;
     private Integer warningCount;
+    private boolean processing;
 
-    /**
-     * Default constructor.
-     */
-    public PendingCertifiedProductMetadata() {
-    }
-
-    /**
-     * Constructor from DTO.
-     * @param dto the DTO
-     */
-    public PendingCertifiedProductMetadata(final PendingCertifiedProductMetadataDTO dto) {
+    public PendingCertifiedProductMetadata(PendingCertifiedProductMetadataDTO dto) {
         this.id = dto.getId();
         this.chplProductNumber = dto.getUniqueId();
         if (dto.getDeveloperId() != null || !StringUtils.isEmpty(dto.getDeveloperName())) {
@@ -58,69 +48,6 @@ public class PendingCertifiedProductMetadata implements Serializable {
         }
         this.errorCount = dto.getErrorCount();
         this.warningCount = dto.getWarningCount();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getChplProductNumber() {
-        return chplProductNumber;
-    }
-
-    public void setChplProductNumber(final String chplProductNumber) {
-        this.chplProductNumber = chplProductNumber;
-    }
-
-    public Developer getDeveloper() {
-        return developer;
-    }
-
-    public void setDeveloper(final Developer developer) {
-        this.developer = developer;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(final Product product) {
-        this.product = product;
-    }
-
-    public ProductVersion getVersion() {
-        return version;
-    }
-
-    public void setVersion(final ProductVersion version) {
-        this.version = version;
-    }
-
-    public Long getCertificationDate() {
-        return certificationDate;
-    }
-
-    public void setCertificationDate(final Long certificationDate) {
-        this.certificationDate = certificationDate;
-    }
-
-    public Integer getErrorCount() {
-        return errorCount;
-    }
-
-    public void setErrorCount(final Integer errorCount) {
-        this.errorCount = errorCount;
-    }
-
-    public Integer getWarningCount() {
-        return warningCount;
-    }
-
-    public void setWarningCount(final Integer warningCount) {
-        this.warningCount = warningCount;
+        this.processing = dto.isProcessing();
     }
 }
