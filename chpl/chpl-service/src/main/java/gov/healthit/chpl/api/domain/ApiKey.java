@@ -1,4 +1,4 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.api.domain;
 
 import java.io.Serializable;
 import java.util.Date;

@@ -9,16 +9,11 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Immutable;
 
-/**
- * Object mapping for just a few fields
- * from pending_certified_product that we want to pull
- * back as metadata.
- * Read-only.
- * @author kekey
- *
- */
+import lombok.Data;
+
 @Entity
 @Immutable
+@Data
 @Table(name = "pending_certified_product")
 public class PendingCertifiedProductMetadataEntity {
 
@@ -31,6 +26,9 @@ public class PendingCertifiedProductMetadataEntity {
 
     @Column(name = "warning_count")
     private Integer warningCount;
+
+    @Column(name = "processing")
+    private boolean processing;
 
     @Column(name = "certification_body_id")
     private Long certificationBodyId;
@@ -61,109 +59,4 @@ public class PendingCertifiedProductMetadataEntity {
 
     @Column(name = "deleted")
     private Boolean deleted;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Integer getErrorCount() {
-        return errorCount;
-    }
-
-    public void setErrorCount(final Integer errorCount) {
-        this.errorCount = errorCount;
-    }
-
-    public Integer getWarningCount() {
-        return warningCount;
-    }
-
-    public void setWarningCount(final Integer warningCount) {
-        this.warningCount = warningCount;
-    }
-
-    public Long getDeveloperId() {
-        return developerId;
-    }
-
-    public void setDeveloperId(final Long developerId) {
-        this.developerId = developerId;
-    }
-
-    public Long getProductId() {
-        return productId;
-    }
-
-    public void setProductId(final Long productId) {
-        this.productId = productId;
-    }
-
-    public Long getProductVersionId() {
-        return productVersionId;
-    }
-
-    public void setProductVersionId(final Long productVersionId) {
-        this.productVersionId = productVersionId;
-    }
-
-    public String getUniqueId() {
-        return uniqueId;
-    }
-
-    public void setUniqueId(final String uniqueId) {
-        this.uniqueId = uniqueId;
-    }
-
-    public String getDeveloperName() {
-        return developerName;
-    }
-
-    public void setDeveloperName(final String developerName) {
-        this.developerName = developerName;
-    }
-
-    public String getProductName() {
-        return productName;
-    }
-
-    public void setProductName(final String productName) {
-        this.productName = productName;
-    }
-
-    public String getProductVersion() {
-        return productVersion;
-    }
-
-    public void setProductVersion(final String productVersion) {
-        this.productVersion = productVersion;
-    }
-
-    public Date getCertificationDate() {
-        return certificationDate;
-    }
-
-    public void setCertificationDate(final Date certificationDate) {
-        this.certificationDate = certificationDate;
-    }
-
-    public Long getCertificationBodyId() {
-        return certificationBodyId;
-    }
-
-    public void setCertificationBodyId(final Long certificationBodyId) {
-        this.certificationBodyId = certificationBodyId;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
 }
