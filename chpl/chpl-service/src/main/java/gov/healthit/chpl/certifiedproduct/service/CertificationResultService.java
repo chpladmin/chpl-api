@@ -66,23 +66,10 @@ public class CertificationResultService {
         populateSed(certResult, searchDetails, result, criteria);
         populateTestTasks(certResult, searchDetails, criteria);
 
-        //This should be refactored out when CertificationResultRules supports SVAPs
-        //This should be populated in the CertificationResult object constructor like the other
-        //collection being used here.
         result.setAllowedSvaps(getAvailableSvapForCriteria(result, svapCriteriaMap));
-        populateSvaps(result);
-
         result.setAllowedTestFunctionalities(getAvailableTestFunctionalities(result, searchDetails));
 
         return result;
-    }
-
-    private void populateSvaps(CertificationResult result) {
-        if (result.getAllowedSvaps().size() > 0) {
-            result.setSvaps(certResultManager.getSvapsForCertificationResult(result.getId()));
-        } else {
-            result.setSvaps(null);
-        }
     }
 
     private void populateTestTasks(CertificationResultDetailsDTO certResult, CertifiedProductSearchDetails searchDetails, CertificationCriterion criteria) {
