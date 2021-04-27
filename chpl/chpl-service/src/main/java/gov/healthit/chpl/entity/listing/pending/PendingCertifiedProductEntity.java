@@ -43,6 +43,9 @@ public class PendingCertifiedProductEntity {
     @Column(name = "pending_certified_product_id", nullable = false)
     private Long id;
 
+    @Column(name = "processing")
+    private boolean processing;
+
     @Column(name = "error_count")
     private Integer errorCount;
 

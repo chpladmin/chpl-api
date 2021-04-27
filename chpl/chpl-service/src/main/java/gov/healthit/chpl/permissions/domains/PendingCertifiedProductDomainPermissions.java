@@ -26,15 +26,15 @@ public class PendingCertifiedProductDomainPermissions extends DomainPermissions 
     public static final String GET_DETAILS_BY_ID_FOR_ACTIVITY = "GET_DETAILS_BY_ID_FOR_ACTIVITY";
 
     @Autowired
-    public PendingCertifiedProductDomainPermissions(final UpdateableActionPermissions updateableActionPermissions,
-            final ConfirmActionPermissions confirmActionPermissions,
-            final DeleteActionPermissions deleteActionPermissions,
-            final CreateOrReplaceActionPermissions createOrReplaceActionPermissions,
-            final GetByAcbActionPermissions getByAcbActionPermissions,
-            final GetAllActionPermissions getAllActionPermissions,
-            final GetAllMetadataActionPermissions getAllMetadataActionPermissions,
-            final GetDetailsByIdActionPermissions getDetailsByIdActionPermissions,
-            final GetDetailsByIdForActivityActionPermissions getDetailsByIdForActivityActionPermissions) {
+    public PendingCertifiedProductDomainPermissions(UpdateableActionPermissions updateableActionPermissions,
+            ConfirmActionPermissions confirmActionPermissions,
+            DeleteActionPermissions deleteActionPermissions,
+            CreateOrReplaceActionPermissions createOrReplaceActionPermissions,
+            GetByAcbActionPermissions getByAcbActionPermissions,
+            GetAllActionPermissions getAllActionPermissions,
+            GetAllMetadataActionPermissions getAllMetadataActionPermissions,
+            GetDetailsByIdActionPermissions getDetailsByIdActionPermissions,
+            GetDetailsByIdForActivityActionPermissions getDetailsByIdForActivityActionPermissions) {
 
         getActionPermissions().put(UPDATEABLE, updateableActionPermissions);
         getActionPermissions().put(CONFIRM, confirmActionPermissions);

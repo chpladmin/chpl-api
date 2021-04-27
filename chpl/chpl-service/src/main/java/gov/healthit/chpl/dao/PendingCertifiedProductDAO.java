@@ -6,11 +6,8 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -44,11 +41,12 @@ import gov.healthit.chpl.listing.measure.PendingListingMeasureEntity;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.NoArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @NoArgsConstructor
+@Log4j2
 @Repository(value = "pendingCertifiedProductDAO")
 public class PendingCertifiedProductDAO extends BaseDAOImpl {
-    private static final Logger LOGGER = LogManager.getLogger(PendingCertifiedProductDAO.class);
     private ErrorMessageUtil msgUtil;
 
     @Autowired
@@ -56,10 +54,7 @@ public class PendingCertifiedProductDAO extends BaseDAOImpl {
         this.msgUtil = msgUtil;
     }
 
-    @Transactional
-    public PendingCertifiedProductDTO create(final PendingCertifiedProductEntity toCreate)
-throws EntityCreationException {
-
+    public PendingCertifiedProductDTO create(PendingCertifiedProductEntity toCreate) throws EntityCreationException {
         toCreate.setLastModifiedDate(new Date());
         toCreate.setLastModifiedUser(AuthUtil.getAuditId());
         toCreate.setCreationDate(new Date());
@@ -184,6 +179,7 @@ throws EntityCreationException {
         return new PendingCertifiedProductDTO(toCreate);
     }
 
+    @SuppressWarnings("checkstyle:methodlength")
     public void createCertificationResult(Long pcpId, PendingCertificationResultEntity pendingCertResult)
             throws EntityCreationException {
         pendingCertResult.setPendingCertifiedProductId(pcpId);
@@ -417,8 +413,17 @@ throws EntityCreationException {
         }
     }
 
+    public void updateProcessingFlag(Long pendingListingId, boolean isProcessing) throws EntityRetrievalException {
+        PendingCertifiedProductEntity entity = getEntityById(pendingListingId, true);
+        if (entity != null) {
+            entity.setProcessing(isProcessing);
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
+            entity.setLastModifiedDate(new Date());
+            update(entity);
+        }
+    }
 
-    public void updateErrorAndWarningCounts(final Long pcpId, final Integer errorCount, final Integer warningCount)
+    public void updateErrorAndWarningCounts(Long pcpId, Integer errorCount, Integer warningCount)
             throws EntityRetrievalException {
         PendingCertifiedProductEntity entity = getEntityById(pcpId, true);
         if (entity != null) {
@@ -432,12 +437,11 @@ throws EntityCreationException {
         }
     }
 
-
-    @Transactional
-    public void delete(final Long pendingProductId) throws EntityRetrievalException {
+    public void delete(Long pendingProductId) throws EntityRetrievalException {
         PendingCertifiedProductEntity entity;
         entity = getEntityById(pendingProductId, true);
         entity.setDeleted(true);
+        entity.setProcessing(false);
         entity.setLastModifiedDate(new Date());
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.persist(entity);
@@ -460,6 +464,10 @@ throws EntityCreationException {
         return dtos;
     }
 
+    public boolean isProcessingOrDeleted(Long pcpId) throws EntityRetrievalException {
+        PendingCertifiedProductEntity entity = getEntityById(pcpId, true);
+        return entity.isProcessing() || entity.getDeleted();
+    }
 
     public List<PendingCertifiedProductDTO> findAll() {
         List<PendingCertifiedProductEntity> entities = getAllEntities();
@@ -472,8 +480,7 @@ throws EntityCreationException {
         return dtos;
     }
 
-
-    public PendingCertifiedProductDTO findById(final Long pcpId, final boolean includeDeleted)
+    public PendingCertifiedProductDTO findById(Long pcpId, final boolean includeDeleted)
             throws EntityRetrievalException {
         PendingCertifiedProductEntity entity = getEntityById(pcpId, includeDeleted);
         if (entity == null) {
@@ -482,8 +489,7 @@ throws EntityCreationException {
         return new PendingCertifiedProductDTO(entity);
     }
 
-
-    public Long findAcbIdById(final Long pcpId)
+    public Long findAcbIdById(Long pcpId)
             throws EntityRetrievalException {
         PendingCertifiedProductEntity entity = getEntityById(pcpId, true);
         if (entity == null) {
@@ -492,8 +498,7 @@ throws EntityCreationException {
         return entity.getCertificationBodyId();
     }
 
-
-    public List<PendingCertifiedProductDTO> findByAcbId(final Long acbId) {
+    public List<PendingCertifiedProductDTO> findByAcbId(Long acbId) {
         List<PendingCertifiedProductEntity> entities = getEntityByAcbId(acbId);
         List<PendingCertifiedProductDTO> dtos = new ArrayList<>();
 
@@ -504,8 +509,7 @@ throws EntityCreationException {
         return dtos;
     }
 
-
-    public Long findIdByOncId(final String id) throws EntityRetrievalException {
+    public Long findIdByOncId(String id) throws EntityRetrievalException {
         PendingCertifiedProductEntity entity = getEntityByOncId(id);
         if (entity == null) {
             return null;
@@ -514,7 +518,6 @@ throws EntityCreationException {
     }
 
     private List<PendingCertifiedProductEntity> getAllEntities() {
-
         List<PendingCertifiedProductEntity> result = entityManager
                 .createQuery("SELECT pcp from PendingCertifiedProductEntity pcp "
                         + "WHERE (not pcp.deleted = true)",
@@ -524,7 +527,7 @@ throws EntityCreationException {
 
     }
 
-    private PendingCertifiedProductEntity getEntityById(final Long entityId, final boolean includeDeleted)
+    private PendingCertifiedProductEntity getEntityById(Long entityId, boolean includeDeleted)
             throws EntityRetrievalException {
         PendingCertifiedProductEntity entity = null;
         String hql = "SELECT DISTINCT pcp from PendingCertifiedProductEntity pcp "
@@ -547,10 +550,8 @@ throws EntityCreationException {
         return entity;
     }
 
-    private PendingCertifiedProductEntity getEntityByOncId(final String id) throws EntityRetrievalException {
-
+    private PendingCertifiedProductEntity getEntityByOncId(String id) throws EntityRetrievalException {
         PendingCertifiedProductEntity entity = null;
-
         Query query = entityManager.createQuery("SELECT pcp from PendingCertifiedProductEntity pcp "
                 + " where (unique_id = :id) "
                 + " and (not pcp.deleted = true)", PendingCertifiedProductEntity.class);
@@ -560,16 +561,13 @@ throws EntityCreationException {
         if (result.size() > 1) {
             throw new EntityRetrievalException("Data error. Duplicate ONC id in database.");
         }
-
         if (result.size() > 0) {
             entity = result.get(0);
         }
-
         return entity;
     }
 
-    private List<PendingCertifiedProductEntity> getEntityByAcbId(final Long acbId) {
-
+    private List<PendingCertifiedProductEntity> getEntityByAcbId(Long acbId) {
         Query query = entityManager
                 .createQuery(
                         "SELECT pcp from PendingCertifiedProductEntity pcp "
