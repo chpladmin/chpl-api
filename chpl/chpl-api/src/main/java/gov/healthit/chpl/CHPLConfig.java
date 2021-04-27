@@ -35,8 +35,8 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
+import gov.healthit.chpl.api.ApiKeyManager;
 import gov.healthit.chpl.filter.APIKeyAuthenticationFilter;
-import gov.healthit.chpl.manager.ApiKeyManager;
 import gov.healthit.chpl.registration.RateLimitingInterceptor;
 import gov.healthit.chpl.web.controller.annotation.CacheControlHandlerInterceptor;
 
