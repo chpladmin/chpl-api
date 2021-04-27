@@ -19,8 +19,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import gov.healthit.chpl.dao.ApiKeyDAO;
-import gov.healthit.chpl.dto.ApiKeyDTO;
+import gov.healthit.chpl.api.dao.ApiKeyDAO;
+import gov.healthit.chpl.api.domain.ApiKeyDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 /**
