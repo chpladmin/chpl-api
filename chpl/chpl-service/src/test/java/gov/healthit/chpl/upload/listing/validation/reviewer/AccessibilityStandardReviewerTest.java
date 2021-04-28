@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class AccessibilityStandardReviewerTest {
@@ -123,5 +124,19 @@ public class AccessibilityStandardReviewerTest {
         assertEquals(0, listing.getWarningMessages().size());
     }
 
-    //TODO: add tests to check for fuzzy match warnings
+    @Test
+    public void review_hasAccessibilityStandardNameNullIdFindsFuzzyMatch_hasWarning() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .accessibilityStandard(CertifiedProductAccessibilityStandard.builder()
+                        .accessibilityStandardName("test")
+                        .accessibilityStandardId(null)
+                        .userEnteredAccessibilityStandardName("tst")
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(FUZZY_MATCH_REPLACEMENT, FuzzyType.ACCESSIBILITY_STANDARD.fuzzyType(), "tst", "test")));
+    }
 }

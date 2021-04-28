@@ -68,7 +68,7 @@ public class AccessibilityStandardReviewer {
     }
 
     private boolean hasFuzzyMatch(CertifiedProductAccessibilityStandard accStd) {
-        return accStd.getId() == null
+        return accStd.getAccessibilityStandardId() == null
                 && !StringUtils.isEmpty(accStd.getUserEnteredAccessibilityStandardName())
                 && !StringUtils.equals(accStd.getAccessibilityStandardName(), accStd.getUserEnteredAccessibilityStandardName());
     }

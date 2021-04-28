@@ -12,12 +12,14 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class QmsStandardReviewerTest {
     private static final String MISSING_QMS = "QMS Standards are required.";
     private static final String MISSING_NAME = "A name is required for each QMS Standard listed.";
     private static final String MISSING_APPLICABLE_CRITERIA = "Applicable criteria is required for each QMS Standard listed.";
+    private static final String FUZZY_MATCH_REPLACEMENT = "The %s value was changed from %s to %s.";
 
     private ErrorMessageUtil errorMessageUtil;
     private QmsStandardReviewer reviewer;
@@ -32,6 +34,9 @@ public class QmsStandardReviewerTest {
             .thenReturn(MISSING_NAME);
         Mockito.when(errorMessageUtil.getMessage("listing.qmsStandardMissingApplicableCriteria"))
             .thenReturn(MISSING_APPLICABLE_CRITERIA);
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.fuzzyMatch"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(FUZZY_MATCH_REPLACEMENT, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
         reviewer = new QmsStandardReviewer(errorMessageUtil);
     }
 
@@ -42,6 +47,7 @@ public class QmsStandardReviewerTest {
         listing.setQmsStandards(null);
         reviewer.review(listing);
 
+        assertEquals(0, listing.getWarningMessages().size());
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(MISSING_QMS));
     }
@@ -53,6 +59,7 @@ public class QmsStandardReviewerTest {
                 .build();
         reviewer.review(listing);
 
+        assertEquals(0, listing.getWarningMessages().size());
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(MISSING_QMS));
     }
@@ -70,6 +77,7 @@ public class QmsStandardReviewerTest {
                 .build();
         reviewer.review(listing);
 
+        assertEquals(0, listing.getWarningMessages().size());
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(MISSING_NAME));
     }
@@ -87,6 +95,7 @@ public class QmsStandardReviewerTest {
                 .build();
         reviewer.review(listing);
 
+        assertEquals(0, listing.getWarningMessages().size());
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(MISSING_NAME));
     }
@@ -104,6 +113,7 @@ public class QmsStandardReviewerTest {
                 .build();
         reviewer.review(listing);
 
+        assertEquals(0, listing.getWarningMessages().size());
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(MISSING_APPLICABLE_CRITERIA));
     }
@@ -121,6 +131,7 @@ public class QmsStandardReviewerTest {
                 .build();
         reviewer.review(listing);
 
+        assertEquals(0, listing.getWarningMessages().size());
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(MISSING_APPLICABLE_CRITERIA));
     }
@@ -138,6 +149,7 @@ public class QmsStandardReviewerTest {
                 .build();
         reviewer.review(listing);
 
+        assertEquals(0, listing.getWarningMessages().size());
         assertEquals(0, listing.getErrorMessages().size());
     }
 
@@ -154,6 +166,7 @@ public class QmsStandardReviewerTest {
                 .build();
         reviewer.review(listing);
 
+        assertEquals(0, listing.getWarningMessages().size());
         assertEquals(0, listing.getErrorMessages().size());
     }
 
@@ -170,9 +183,26 @@ public class QmsStandardReviewerTest {
                 .build();
         reviewer.review(listing);
 
+        assertEquals(0, listing.getWarningMessages().size());
         assertEquals(0, listing.getErrorMessages().size());
     }
 
-    //TODO: add tests to check for fuzzy match warnings
+    @Test
+    public void review_hasQmsStandardNameNullIdFindsFuzzyMatch_hasWarning() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .qmsStandard(CertifiedProductQmsStandard.builder()
+                        .id(1L)
+                        .qmsStandardName("test")
+                        .userEnteredQmsStandardName("tst")
+                        .qmsStandardId(null)
+                        .qmsModification("mod")
+                        .applicableCriteria("ac")
+                        .build())
+                .build();
+        reviewer.review(listing);
 
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(FUZZY_MATCH_REPLACEMENT, FuzzyType.QMS_STANDARD.fuzzyType(), "tst", "test")));
+    }
 }

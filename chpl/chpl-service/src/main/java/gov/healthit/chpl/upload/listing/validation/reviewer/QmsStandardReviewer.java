@@ -59,7 +59,7 @@ public class QmsStandardReviewer {
     }
 
     private boolean hasFuzzyMatch(CertifiedProductQmsStandard qmsStandard) {
-        return qmsStandard.getId() == null
+        return qmsStandard.getQmsStandardId() == null
                 && !StringUtils.isEmpty(qmsStandard.getUserEnteredQmsStandardName())
                 && !StringUtils.equals(qmsStandard.getQmsStandardName(), qmsStandard.getUserEnteredQmsStandardName());
     }
