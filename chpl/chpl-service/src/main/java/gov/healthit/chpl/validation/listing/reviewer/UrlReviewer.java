@@ -11,16 +11,11 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
 
-/**
- * Validate URLs have no new lines and otherwise look like URLs.
- * @author alarned
- *
- */
 @Component("urlReviewer")
 public class UrlReviewer extends PermissionBasedReviewer {
-
     private ValidationUtils validationUtils;
 
+    //TODO: add test for this class
     @Autowired
     public UrlReviewer(ValidationUtils validationUtils, ErrorMessageUtil msgUtil,
             ResourcePermissions resourcePermissions) {
@@ -29,7 +24,7 @@ public class UrlReviewer extends PermissionBasedReviewer {
     }
 
     @Override
-    public void review(final CertifiedProductSearchDetails listing) {
+    public void review(CertifiedProductSearchDetails listing) {
         //check all string fields at the listing level
         addListingErrorIfNotValid(listing, listing.getReportFileLocation(),
                 "Report File Location '" + listing.getReportFileLocation() + "'");
@@ -37,6 +32,8 @@ public class UrlReviewer extends PermissionBasedReviewer {
                 "SED Report File Location '" + listing.getSedReportFileLocation() + "'");
         addListingErrorIfNotValid(listing, listing.getTransparencyAttestationUrl(),
                 "Transparency Attestation URL '" + listing.getTransparencyAttestationUrl() + "'");
+        addListingErrorIfNotValid(listing, listing.getSvapNoticeUrl(),
+                "Svap Notice URL '" + listing.getSvapNoticeUrl() + "'");
 
         //check all criteria fields
         for (CertificationResult cert : listing.getCertificationResults()) {
@@ -49,8 +46,7 @@ public class UrlReviewer extends PermissionBasedReviewer {
         }
     }
 
-    private void addListingErrorIfNotValid(final CertifiedProductSearchDetails listing,
-            final String input, final String fieldName) {
+    private void addListingErrorIfNotValid(CertifiedProductSearchDetails listing, String input, String fieldName) {
         if (!StringUtils.isEmpty(input)) {
             if (validationUtils.hasNewline(input)) {
                 listing.getErrorMessages().add(
@@ -62,8 +58,7 @@ public class UrlReviewer extends PermissionBasedReviewer {
         }
     }
 
-    private void addCriteriaErrorIfNotValid(final CertifiedProductSearchDetails listing,
-            final CertificationResult cert, final String input, final String fieldName) {
+    private void addCriteriaErrorIfNotValid(CertifiedProductSearchDetails listing, CertificationResult cert, String input, String fieldName) {
         if (!StringUtils.isEmpty(input)) {
             if (validationUtils.hasNewline(input) || !validationUtils.isWellFormedUrl(input)) {
                 addCriterionErrorOrWarningByPermission(listing, cert,
