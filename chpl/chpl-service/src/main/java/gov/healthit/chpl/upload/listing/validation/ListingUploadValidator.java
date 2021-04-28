@@ -29,6 +29,7 @@ import gov.healthit.chpl.validation.listing.reviewer.DuplicateDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.InheritanceReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
 
 @Component
 public class ListingUploadValidator {
@@ -54,6 +55,7 @@ public class ListingUploadValidator {
     private QmsStandardReviewer qmsReviewer;
     private AccessibilityStandardReviewer accStdReviewer;
     private DuplicateDataReviewer duplicateDataReviewer;
+    private UrlReviewer urlReviewer;
     private FieldLengthReviewer fieldLengthReviewer;
     private UnsupportedCharacterReviewer unsupportedCharacterReviewer;
 
@@ -80,6 +82,7 @@ public class ListingUploadValidator {
             QmsStandardReviewer qmsReviewer,
             AccessibilityStandardReviewer accStdReviewer,
             DuplicateDataReviewer duplicateDataReviewer,
+            UrlReviewer urlReviewer,
             FieldLengthReviewer fieldLengthReviewer,
             UnsupportedCharacterReviewer unsupportedCharacterReviewer) {
         this.csvHeaderReviewer = csvHeaderReviewer;
@@ -103,6 +106,7 @@ public class ListingUploadValidator {
         this.qmsReviewer = qmsReviewer;
         this.accStdReviewer = accStdReviewer;
         this.duplicateDataReviewer = duplicateDataReviewer;
+        this.urlReviewer = urlReviewer;
         this.fieldLengthReviewer = fieldLengthReviewer;
         this.unsupportedCharacterReviewer = unsupportedCharacterReviewer;
     }
@@ -129,6 +133,7 @@ public class ListingUploadValidator {
         qmsReviewer.review(listing);
         accStdReviewer.review(listing);
         duplicateDataReviewer.review(listing);
+        urlReviewer.review(listing);
         fieldLengthReviewer.review(listing);
         unsupportedCharacterReviewer.review(listing);
     }
