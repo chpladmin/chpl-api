@@ -364,7 +364,7 @@ public class CertificationResultUploadHandlerTest {
     }
 
     @Test
-    public void buildCertResult_PrivacySecurityExtraWhitepalce_ReturnsTrimmedValue() {
+    public void buildCertResult_PrivacySecurityExtraWhitespace_ReturnsTrimmedValue() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
                 + ",Privacy and Security Framework").get(0);
         assertNotNull(headingRecord);
@@ -418,7 +418,7 @@ public class CertificationResultUploadHandlerTest {
     }
 
     @Test
-    public void buildCertResult_ExportDocumentationExtraWhitepalce_ReturnsTrimmedValue() {
+    public void buildCertResult_ExportDocumentationExtraWhitespace_ReturnsTrimmedValue() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
                 + ",Export Documentation").get(0);
         assertNotNull(headingRecord);
@@ -472,7 +472,7 @@ public class CertificationResultUploadHandlerTest {
     }
 
     @Test
-    public void buildCertResult_DocumentationUrlExtraWhitepalce_ReturnsTrimmedValue() {
+    public void buildCertResult_DocumentationUrlExtraWhitespace_ReturnsTrimmedValue() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
                 + ",Documentation URL").get(0);
         assertNotNull(headingRecord);
@@ -524,7 +524,7 @@ public class CertificationResultUploadHandlerTest {
     }
 
     @Test
-    public void buildCertResult_UseCasesExtraWhitepalce_ReturnsTrimmedValue() {
+    public void buildCertResult_UseCasesExtraWhitespace_ReturnsTrimmedValue() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",Use Cases").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,  Something ");
@@ -575,7 +575,7 @@ public class CertificationResultUploadHandlerTest {
     }
 
     @Test
-    public void buildCertResult_ApiDocumentationExtraWhitepalce_ReturnsTrimmedValue() {
+    public void buildCertResult_ApiDocumentationExtraWhitespace_ReturnsTrimmedValue() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",API Documentation Link").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,  Something ");
@@ -628,7 +628,7 @@ public class CertificationResultUploadHandlerTest {
     }
 
     @Test
-    public void buildCertResult_ServiceBaseUrlListExtraWhitepalce_ReturnsTrimmedValue() {
+    public void buildCertResult_ServiceBaseUrlListExtraWhitespace_ReturnsTrimmedValue() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
                 + ",Service Base URL List").get(0);
         assertNotNull(headingRecord);
