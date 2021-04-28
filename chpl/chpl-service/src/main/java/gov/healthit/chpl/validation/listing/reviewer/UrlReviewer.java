@@ -15,7 +15,6 @@ import gov.healthit.chpl.util.ValidationUtils;
 public class UrlReviewer extends PermissionBasedReviewer {
     private ValidationUtils validationUtils;
 
-    //TODO: add test for this class
     @Autowired
     public UrlReviewer(ValidationUtils validationUtils, ErrorMessageUtil msgUtil,
             ResourcePermissions resourcePermissions) {
@@ -33,7 +32,7 @@ public class UrlReviewer extends PermissionBasedReviewer {
         addListingErrorIfNotValid(listing, listing.getTransparencyAttestationUrl(),
                 "Transparency Attestation URL '" + listing.getTransparencyAttestationUrl() + "'");
         addListingErrorIfNotValid(listing, listing.getSvapNoticeUrl(),
-                "Svap Notice URL '" + listing.getSvapNoticeUrl() + "'");
+                "SVAP Notice URL '" + listing.getSvapNoticeUrl() + "'");
 
         //check all criteria fields
         for (CertificationResult cert : listing.getCertificationResults()) {
