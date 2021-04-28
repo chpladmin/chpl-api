@@ -56,12 +56,22 @@ public class FieldLengthReviewerTest {
             .thenReturn("500");
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.accessibilityStandard.maxlength"),
             ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(String.format(FIELD_TOO_LONG, "20", "accessibility standard name", "placeholder"));
+            .thenReturn(String.format(FIELD_TOO_LONG, "20", "accessibility standard name", "placeholder"));
         Mockito.when(messageSource.getMessage(ArgumentMatchers.eq("maxLength.targetedUser"), ArgumentMatchers.isNull(), ArgumentMatchers.any()))
             .thenReturn("300");
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.targetedUser.maxlength"),
             ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(String.format(FIELD_TOO_LONG, "20", "targeted user", "placeholder"));
+            .thenReturn(String.format(FIELD_TOO_LONG, "20", "targeted user", "placeholder"));
+        Mockito.when(messageSource.getMessage(ArgumentMatchers.eq("maxLength.acbCertificationId"), ArgumentMatchers.isNull(), ArgumentMatchers.any()))
+            .thenReturn("250");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.acbCertificationId.maxlength"),
+            ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(String.format(FIELD_TOO_LONG, "20", "ACB certification id", "placeholder"));
+        Mockito.when(messageSource.getMessage(ArgumentMatchers.eq("maxLength.170523k1Url"), ArgumentMatchers.isNull(), ArgumentMatchers.any()))
+            .thenReturn("1024");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.170523k1Url.maxlength"),
+            ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(String.format(FIELD_TOO_LONG, "20", "transparency attestation url", "placeholder"));
         reviewer = new FieldLengthReviewer(errorMessageUtil, messageSource);
     }
 
@@ -393,6 +403,88 @@ public class FieldLengthReviewerTest {
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "targeted user", "placeholder")));
+    }
+
+    @Test
+    public void review_nullAcbCertificationId_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .acbCertificationId(null)
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_emptyAcbCertificationId_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .acbCertificationId("")
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_shortAcbCertificationId_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .acbCertificationId("short name")
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_longAcbCertificationId_hasError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .acbCertificationId(createStringLongerThan(250, "h"))
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "ACB certification id", "placeholder")));
+    }
+
+    @Test
+    public void review_nullTransparencyAttestationUrl_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .transparencyAttestationUrl(null)
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_emptyTransparencyAttestationUrl_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .transparencyAttestationUrl("")
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_shortTransparencyAttestationUrl_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .transparencyAttestationUrl("short name")
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_longTransparencyAttestationUrl_hasError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .transparencyAttestationUrl(createStringLongerThan(1024, "h"))
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "transparency attestation url", "placeholder")));
     }
 
     private String createStringLongerThan(int minLength, String charToUse) {
