@@ -2,12 +2,14 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
+@Component
 public class QmsStandardReviewer {
     private ErrorMessageUtil msgUtil;
 
