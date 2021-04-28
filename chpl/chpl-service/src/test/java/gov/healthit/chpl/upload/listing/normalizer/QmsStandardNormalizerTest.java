@@ -77,7 +77,7 @@ public class QmsStandardNormalizerTest {
                 .build();
         Mockito.when(qmsStandardDao.getByName(ArgumentMatchers.eq("tst")))
             .thenReturn(null);
-        Mockito.when(fuzzyChoicesManager.getTopFuzzyChoice(ArgumentMatchers.eq("tst"), ArgumentMatchers.eq(FuzzyType.ACCESSIBILITY_STANDARD)))
+        Mockito.when(fuzzyChoicesManager.getTopFuzzyChoice(ArgumentMatchers.eq("tst"), ArgumentMatchers.eq(FuzzyType.QMS_STANDARD)))
             .thenReturn("test");
 
         normalizer.normalize(listing);
@@ -96,7 +96,7 @@ public class QmsStandardNormalizerTest {
                 .build();
         Mockito.when(qmsStandardDao.getByName(ArgumentMatchers.eq("tst")))
             .thenReturn(null);
-        Mockito.when(fuzzyChoicesManager.getTopFuzzyChoice(ArgumentMatchers.eq("tst"), ArgumentMatchers.eq(FuzzyType.ACCESSIBILITY_STANDARD)))
+        Mockito.when(fuzzyChoicesManager.getTopFuzzyChoice(ArgumentMatchers.eq("tst"), ArgumentMatchers.eq(FuzzyType.QMS_STANDARD)))
             .thenReturn(null);
 
         normalizer.normalize(listing);

@@ -17,6 +17,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class AccessibilityStandardReviewerTest {
     private static final String MISSING_ACCSTDS = "Accessibility Standards are required.";
     private static final String MISSING_NAME = "A name is required for each Accessibility Standard listed.";
+    private static final String FUZZY_MATCH_REPLACEMENT = "The %s value was changed from %s to %s.";
 
     private ErrorMessageUtil errorMessageUtil;
     private AccessibilityStandardReviewer reviewer;
@@ -29,6 +30,10 @@ public class AccessibilityStandardReviewerTest {
             .thenReturn(MISSING_ACCSTDS);
         Mockito.when(errorMessageUtil.getMessage("listing.accessibilityStandardMissingName"))
             .thenReturn(MISSING_NAME);
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.fuzzyMatch"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(FUZZY_MATCH_REPLACEMENT, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
+
         reviewer = new AccessibilityStandardReviewer(errorMessageUtil);
     }
 
@@ -39,6 +44,7 @@ public class AccessibilityStandardReviewerTest {
         listing.setAccessibilityStandards(null);
         reviewer.review(listing);
 
+        assertEquals(0, listing.getWarningMessages().size());
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(MISSING_ACCSTDS));
     }
@@ -50,6 +56,7 @@ public class AccessibilityStandardReviewerTest {
                 .build();
         reviewer.review(listing);
 
+        assertEquals(0, listing.getWarningMessages().size());
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(MISSING_ACCSTDS));
     }
@@ -65,6 +72,7 @@ public class AccessibilityStandardReviewerTest {
                 .build();
         reviewer.review(listing);
 
+        assertEquals(0, listing.getWarningMessages().size());
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(MISSING_NAME));
     }
@@ -80,6 +88,7 @@ public class AccessibilityStandardReviewerTest {
                 .build();
         reviewer.review(listing);
 
+        assertEquals(0, listing.getWarningMessages().size());
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(MISSING_NAME));
     }
@@ -96,6 +105,7 @@ public class AccessibilityStandardReviewerTest {
         reviewer.review(listing);
 
         assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(0, listing.getWarningMessages().size());
     }
 
     @Test
@@ -110,5 +120,8 @@ public class AccessibilityStandardReviewerTest {
         reviewer.review(listing);
 
         assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(0, listing.getWarningMessages().size());
     }
+
+    //TODO: add tests to check for fuzzy match warnings
 }
