@@ -7,7 +7,10 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
@@ -41,6 +44,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.ObjectsMissingValidationException;
+import gov.healthit.chpl.exception.PartialValidationException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.upload.listing.ListingUploadManager;
 import gov.healthit.chpl.util.AuthUtil;
@@ -102,7 +106,7 @@ public class ListingUploadController {
                     + "and administrative authority on the ONC-ACB(s) specified in the file.")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public List<ListingUpload> upload(@RequestParam("file") MultipartFile file)
-            throws ValidationException, MaxUploadSizeExceededException {
+            throws ValidationException, PartialValidationException, MaxUploadSizeExceededException {
         if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
             throw new NotImplementedException();
         }
@@ -118,9 +122,10 @@ public class ListingUploadController {
             throw new ValidationException(ex.getMessage());
         }
 
-        List<String> processingMessages = new ArrayList<String>();
+        Map<String, String> processedListingErrorMap = new LinkedHashMap<String, String>();
         if (listingsToAdd != null && listingsToAdd.size() > 0) {
             for (ListingUpload listingToAdd : listingsToAdd) {
+                processedListingErrorMap.put(listingToAdd.getChplProductNumber(), null);
                 try {
                     ListingUpload created = listingUploadManager.createOrReplaceListingUpload(listingToAdd);
                     createdListingUploads.add(created);
@@ -129,7 +134,7 @@ public class ListingUploadController {
                     LOGGER.error("Error uploading listing(s) from file " + file.getOriginalFilename() + ". " + ex.getMessage());
                     //send an email that something weird happened
                     sendUploadError(file, ex);
-                    processingMessages.add(ex.getMessage());
+                    processedListingErrorMap.put(listingToAdd.getChplProductNumber(), ex.getMessage());
                 }
             }
         }
@@ -144,10 +149,31 @@ public class ListingUploadController {
             LOGGER.error("Unable to start job to calculate error and warning counts for uploaded listings.", ex);
         }
 
-        if (processingMessages != null && processingMessages.size() > 0) {
-            throw new ValidationException(processingMessages.stream().collect(Collectors.toSet()));
-        }
+        sendErrorInformationIfApplicable(processedListingErrorMap);
         return createdListingUploads;
+    }
+
+    private void sendErrorInformationIfApplicable(Map<String, String> processedListingErrorMap)
+        throws ValidationException, PartialValidationException {
+        long listingUploadsAttempted = processedListingErrorMap.keySet().size();
+        long listingUploadsFailed = processedListingErrorMap.values().stream().filter(value -> !StringUtils.isEmpty(value)).count();
+
+        if (listingUploadsAttempted > 0 && listingUploadsFailed > 0
+                && listingUploadsAttempted == listingUploadsFailed) {
+            //all uploads failed - exception that returns error status
+            throw new ValidationException(createErrorMessages(processedListingErrorMap));
+        } else if (listingUploadsFailed > 0 && listingUploadsAttempted > 0
+                && listingUploadsAttempted > listingUploadsFailed) {
+            //some uploads were attempted and some failed but not all - exception that returns "partial success" status
+            throw new PartialValidationException(createErrorMessages(processedListingErrorMap));
+        }
+    }
+
+    private Set<String> createErrorMessages(Map<String, String> processedListingErrorMap) {
+        return processedListingErrorMap.keySet().stream()
+            .filter(key -> !StringUtils.isEmpty(processedListingErrorMap.get(key)))
+            .map(key -> key + ": " + processedListingErrorMap.get(key))
+            .collect(Collectors.toSet());
     }
 
     @ApiOperation(value = "Reject an uploaded listing.",

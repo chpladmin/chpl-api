@@ -32,6 +32,7 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.ObjectsMissingValidationException;
+import gov.healthit.chpl.exception.PartialValidationException;
 import gov.healthit.chpl.exception.UserAccountExistsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -156,6 +157,14 @@ public class ApiExceptionControllerAdvice {
         error.setErrorMessages(e.getErrorMessages());
         error.setWarningMessages(e.getWarningMessages());
         return new ResponseEntity<ValidationErrorResponse>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(PartialValidationException.class)
+    public ResponseEntity<ValidationErrorResponse> exception(PartialValidationException e) {
+        ValidationErrorResponse error = new ValidationErrorResponse();
+        error.setErrorMessages(e.getErrorMessages());
+        error.setWarningMessages(e.getWarningMessages());
+        return new ResponseEntity<ValidationErrorResponse>(error, HttpStatus.PARTIAL_CONTENT);
     }
 
     /**
