@@ -5,24 +5,25 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.csv.CSVRecord;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbookFactory;
 
 public class SurveillanceActivityReportWorkbook {
 
-    public void generateWorkbook(List<CSVRecord> surveillances) {
-        SurveillanceDataWorksheet dataSheet = new SurveillanceDataWorksheet();
-        StatisticsWorksheet statsSheet = new StatisticsWorksheet();
+    @SuppressWarnings("resource")
+    public void generateWorkbook(List<SurveillanceData> surveillances) throws IOException {
+        Workbook workbook = XSSFWorkbookFactory.create(true);
 
-        XSSFWorkbook workbook = new XSSFWorkbook();
+        SurveillanceDataWorksheet surveillanceDataWorksheet = new SurveillanceDataWorksheet(workbook);
+        StatisticsWorksheet statsSheet = new StatisticsWorksheet(workbook);
 
-        dataSheet.generateWorksheet(workbook, surveillances);
-        statsSheet.generateWorksheet(workbook);
+        surveillanceDataWorksheet.generateWorksheet(surveillances);
+        statsSheet.generateWorksheet(surveillances);
 
         writeFileToDisk(workbook);
     }
 
-    private void writeFileToDisk(XSSFWorkbook workbook) {
+    private void writeFileToDisk(Workbook workbook) {
         try {
             FileOutputStream outputStream = new FileOutputStream("c://CHPL//files//todd.xlsx");
             workbook.write(outputStream);

@@ -2,6 +2,7 @@ package gov.healthit.chpl.scheduler.job.surveillancereportingactivity;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVRecord;
 import org.quartz.Job;
@@ -32,12 +33,19 @@ public class SurveillanceReportingActivityJob implements Job {
             records.stream()
                     .forEach(rec -> LOGGER.info(rec.toString()));
 
+            List<SurveillanceData> surveillances = records.stream()
+                    .map(rec -> new SurveillanceData(rec))
+                    .collect(Collectors.toList());
+
             SurveillanceActivityReportWorkbook workbook = new SurveillanceActivityReportWorkbook();
-            workbook.generateWorkbook(records);
+            workbook.generateWorkbook(surveillances);
         } catch (Exception e) {
             LOGGER.catching(e);
         }
         LOGGER.info("********* Completed the Surveillance Reporting Activity job. *********");
+    }
 
+    private SurveillanceData convertCsvRecordToSurveillanceData(CSVRecord record) {
+        return new SurveillanceData(record);
     }
 }
