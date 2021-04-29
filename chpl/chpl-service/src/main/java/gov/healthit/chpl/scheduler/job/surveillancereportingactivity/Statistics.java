@@ -78,26 +78,13 @@ public final class Statistics {
         return mode;
     }
 
-//    public static int mode(int[] a) {
-//        int maxValue;
-//        int maxCount;
-//
-//        for (int i = 0; i < a.length; ++i) {
-//            int count = 0;
-//            for (int j = 0; j < a.length; ++j) {
-//                if (a[j] == a[i]) {
-//                    ++count;
-//                }
-//            }
-//            if (count > maxCount) {
-//                maxCount = count;
-//                maxValue = a[i];
-//            }
-//        }
-//
-//        return maxValue;
-//    }
-
+    public static Integer getCountInRange(List<Integer> values, Integer minRange, Integer maxRange) {
+        final Integer min = minRange == null ? Integer.MIN_VALUE : minRange;
+        final Integer max = maxRange == null ? Integer.MAX_VALUE : maxRange;
+        return Math.toIntExact(values.stream()
+                .filter(val -> val != null && val >= min && val <= max)
+                .count());
+    }
 
     public static Integer getDateDiff(LocalDate startDate, LocalDate endDate) {
         if (startDate == null || endDate == null) {
@@ -106,5 +93,4 @@ public final class Statistics {
             return Long.valueOf(ChronoUnit.DAYS.between(startDate, endDate)).intValue();
         }
     }
-
 }
