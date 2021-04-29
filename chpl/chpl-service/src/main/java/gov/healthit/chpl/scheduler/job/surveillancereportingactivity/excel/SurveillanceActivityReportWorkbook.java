@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.surveillancereportingactivity;
+package gov.healthit.chpl.scheduler.job.surveillancereportingactivity.excel;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -8,6 +8,8 @@ import java.util.List;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbookFactory;
 
+import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceData;
+
 public class SurveillanceActivityReportWorkbook {
 
     @SuppressWarnings("resource")
@@ -16,9 +18,11 @@ public class SurveillanceActivityReportWorkbook {
 
         SurveillanceDataWorksheet surveillanceDataWorksheet = new SurveillanceDataWorksheet(workbook);
         StatisticsWorksheet statsSheet = new StatisticsWorksheet(workbook);
+        ChartsWorksheet chartsSheet = new ChartsWorksheet(workbook);
 
         surveillanceDataWorksheet.generateWorksheet(surveillances);
         statsSheet.generateWorksheet(surveillances);
+        chartsSheet.generateWorksheet(surveillances);
 
         writeFileToDisk(workbook);
     }

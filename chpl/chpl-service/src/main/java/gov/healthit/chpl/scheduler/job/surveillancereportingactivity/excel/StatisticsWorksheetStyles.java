@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.surveillancereportingactivity;
+package gov.healthit.chpl.scheduler.job.surveillancereportingactivity.excel;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;

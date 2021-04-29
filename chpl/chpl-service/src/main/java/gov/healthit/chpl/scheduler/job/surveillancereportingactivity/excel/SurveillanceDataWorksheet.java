@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.surveillancereportingactivity;
+package gov.healthit.chpl.scheduler.job.surveillancereportingactivity.excel;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -14,6 +14,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceData;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2

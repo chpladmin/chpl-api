@@ -1,6 +1,5 @@
-package gov.healthit.chpl.scheduler.job.surveillancereportingactivity;
+package gov.healthit.chpl.scheduler.job.surveillancereportingactivity.excel;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -11,9 +10,11 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.Statistics;
+import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceData;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceData.RecordType;
+import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceDataService;
 import lombok.extern.log4j.Log4j2;
-import one.util.streamex.StreamEx;
 
 @Log4j2
 public class StatisticsWorksheet {
@@ -62,7 +63,7 @@ public class StatisticsWorksheet {
         sheet = generateMainHeaders(sheet);
 
         Integer startingRowForAcb = 1;
-        List<String> acbs = getUniqueAcbNames(surveillances);
+        List<String> acbs = SurveillanceDataService.getUniqueAcbName(surveillances);
         for (String acbName : acbs) {
             sheet = generateStatisticsForAcb(sheet, acbName, startingRowForAcb, surveillances);
             startingRowForAcb += 24;
@@ -73,7 +74,7 @@ public class StatisticsWorksheet {
 
     @SuppressWarnings("resource")
     private Sheet generateStatisticsForAcb(Sheet sheet, String acbName, Integer startingRow, List<SurveillanceData> surveillances) {
-        List<SurveillanceData> surveillancesFilteredByAcb = getDataForAcb(surveillances, acbName);
+        List<SurveillanceData> surveillancesFilteredByAcb = SurveillanceDataService.getDataForAcb(surveillances, acbName);
 
         Row row = sheet.createRow(startingRow);
         Cell acbNameCell = row.createCell(0);
@@ -460,17 +461,6 @@ public class StatisticsWorksheet {
     }
 
 
-    private List<SurveillanceData> getDataForAcb(List<SurveillanceData> surveillances, String acbName) {
-        List<SurveillanceData> filteredSurveillances = surveillances.stream()
-                .filter(surv -> surv.getAcbName().equalsIgnoreCase(acbName))
-                .collect(Collectors.toList());
-        if (filteredSurveillances != null) {
-            return filteredSurveillances;
-        } else {
-            return new ArrayList<SurveillanceData>();
-        }
-    }
-
     private String getRangeText(Integer min, Integer max) {
         if (min == null) {
             Integer endRange = max + 1;
@@ -480,14 +470,5 @@ public class StatisticsWorksheet {
         } else {
             return min.toString() + "-" + max.toString();
         }
-    }
-
-    @SuppressWarnings("resource")
-    private List<String> getUniqueAcbNames(List<SurveillanceData> data) {
-        return StreamEx.of(data)
-                .distinct(SurveillanceData::getAcbName)
-                .map(SurveillanceData::getAcbName)
-                .sorted()
-                .toList();
     }
 }
