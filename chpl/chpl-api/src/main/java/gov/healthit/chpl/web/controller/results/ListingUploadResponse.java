@@ -12,12 +12,12 @@ import lombok.Data;
 @Data
 public class ListingUploadResponse implements Serializable {
     private static final long serialVersionUID = 1429960617156224833L;
-    private List<ListingUpload> createdListingUploads;
+    private List<ListingUpload> successfulListingUploads;
     private Set<String> errorMessages;
     private Set<String> warningMessages;
 
     public ListingUploadResponse() {
-        createdListingUploads = new ArrayList<ListingUpload>();
+        successfulListingUploads = new ArrayList<ListingUpload>();
         errorMessages = new HashSet<String>();
         warningMessages = new HashSet<String>();
     }

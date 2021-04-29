@@ -112,7 +112,7 @@ public class ListingUploadController {
             throw new NotImplementedException();
         }
 
-        List<ListingUpload> createdListingUploads = new ArrayList<ListingUpload>();
+        List<ListingUpload> successfulListingUploads = new ArrayList<ListingUpload>();
         List<ListingUpload> listingsToAdd = new ArrayList<ListingUpload>();
         try {
            listingsToAdd = listingUploadManager.parseUploadFile(file);
@@ -129,7 +129,7 @@ public class ListingUploadController {
                 processedListingErrorMap.put(listingToAdd.getChplProductNumber(), null);
                 try {
                     ListingUpload created = listingUploadManager.createOrReplaceListingUpload(listingToAdd);
-                    createdListingUploads.add(created);
+                    successfulListingUploads.add(created);
                 } catch (ValidationException ex) {
                     LOGGER.error("Error uploading listing(s) from file " + file.getOriginalFilename() + ". " + ex.getMessage());
                     //don't send an email for this exception because it's one that we create and
@@ -147,8 +147,8 @@ public class ListingUploadController {
         }
 
         try {
-            if (createdListingUploads != null && createdListingUploads.size() > 0) {
-                listingUploadManager.calculateErrorAndWarningCounts(createdListingUploads.stream()
+            if (successfulListingUploads != null && successfulListingUploads.size() > 0) {
+                listingUploadManager.calculateErrorAndWarningCounts(successfulListingUploads.stream()
                     .map(lu -> lu.getId())
                     .collect(Collectors.toList()));
             }
@@ -156,14 +156,14 @@ public class ListingUploadController {
             LOGGER.error("Unable to start job to calculate error and warning counts for uploaded listings.", ex);
         }
 
-        ListingUploadResponse response = createResponse(createdListingUploads, processedListingErrorMap);
+        ListingUploadResponse response = createResponse(successfulListingUploads, processedListingErrorMap);
         return new ResponseEntity<ListingUploadResponse>(response,
                 response.getErrorMessages().size() == 0 ? HttpStatus.OK : HttpStatus.PARTIAL_CONTENT);
     }
 
-    private ListingUploadResponse createResponse(List<ListingUpload> createdListingUploads, Map<String, String> processedListingErrorMap) throws ValidationException {
+    private ListingUploadResponse createResponse(List<ListingUpload> successfulListingUploads, Map<String, String> processedListingErrorMap) throws ValidationException {
         ListingUploadResponse response = new ListingUploadResponse();
-        response.setCreatedListingUploads(createdListingUploads);
+        response.setSuccessfulListingUploads(successfulListingUploads);
         long listingUploadsAttempted = processedListingErrorMap.keySet().size();
         long listingUploadsFailed = processedListingErrorMap.values().stream().filter(value -> !StringUtils.isEmpty(value)).count();
 
