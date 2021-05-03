@@ -1,5 +1,21 @@
 # Release Notes
 
+## Version 29.2.0
+_19 April 2021_
+
+### Features
+* Add surveillance and non-conformity counts to developer hierarchy
+* Do not allow new test standards during upload/edit
+
+### Flagged Features
+* Basic listing validation for flexible uploads
+
+### Bug Fixes
+* Copy developerId value so it is available in /collections/certified_products response
+* Show correct criterion number when (e)(1) Cures Update is missing other required criteria
+
+---
+
 ## Version 29.1.0
 _5 April 2021_
 

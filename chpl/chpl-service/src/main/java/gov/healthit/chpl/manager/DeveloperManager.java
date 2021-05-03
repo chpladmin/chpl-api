@@ -28,11 +28,9 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DeveloperTransparency;
-import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.developer.hierarchy.DeveloperTree;
 import gov.healthit.chpl.domain.developer.hierarchy.ProductTree;
@@ -42,7 +40,6 @@ import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.CertifiedProductSummaryDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTODeprecated;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
@@ -53,6 +50,7 @@ import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.TransparencyAttestationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -174,11 +172,11 @@ public class DeveloperManager extends SecuredManager {
     }
 
     public DeveloperTree getHierarchyById(Long id) throws EntityRetrievalException {
+        List<CertificationBodyDTO> acbs = acbManager.getAll();
         DeveloperDTO developer = getById(id);
         List<ProductDTO> products = productManager.getByDeveloper(developer.getId());
         List<ProductVersionDTO> versions = versionManager.getByDeveloper(developer.getId());
-        List<CertifiedProductSummaryDTO> listings = certifiedProductDao.findListingSummariesByDeveloperId(developer.getId());
-        List<CertificationBodyDTO> acbs = acbManager.getAll();
+        List<CertifiedProductDetailsDTO> listings = certifiedProductDao.findListingsByDeveloperId(developer.getId());
 
         DeveloperTree developerTree = new DeveloperTree(developer);
         products.stream().forEach(product -> {
@@ -197,28 +195,36 @@ public class DeveloperManager extends SecuredManager {
 
         developerTree.getProducts().stream().forEach(product -> {
             product.getVersions().stream().forEach(version -> {
-                List<CertifiedProductSummaryDTO> versionListings = listings.stream()
+                List<SimpleListing> listingsForVersion = listings.stream()
                         .filter(listing -> listing.getVersion().getId().equals(version.getVersionId()))
+                        .map(listing -> convertToSimpleListing(listing, acbs))
                         .collect(Collectors.toList());
-                versionListings.stream().forEach(listing -> {
-                    SimpleListing listingLeaf = new SimpleListing();
-                    Optional<CertificationBodyDTO> listingAcb = acbs.stream()
-                            .filter(acb -> acb.getId().equals(listing.getAcb().getId())).findFirst();
-                    if (listingAcb != null && listingAcb.isPresent()) {
-                        listingLeaf.setAcb(new CertificationBody(listingAcb.get()));
-                    }
-                    listingLeaf.setCertificationDate(listing.getCertificationDate().getTime());
-                    listingLeaf.setCertificationStatus(listing.getCertificationStatus());
-                    listingLeaf.setChplProductNumber(listing.getChplProductNumber());
-                    listingLeaf.setCuresUpdate(listing.getCuresUpdate());
-                    listingLeaf.setEdition(listing.getYear());
-                    listingLeaf.setId(listing.getId());
-                    listingLeaf.setLastModifiedDate(listing.getLastModifiedDate().getTime());
-                    version.getListings().add(listingLeaf);
+                    version.getListings().addAll(listingsForVersion);
                 });
             });
-        });
         return developerTree;
+    }
+
+    private SimpleListing convertToSimpleListing(CertifiedProductDetailsDTO listingDto, List<CertificationBodyDTO> acbs) {
+        SimpleListing listingLeaf = new SimpleListing();
+        Optional<CertificationBodyDTO> listingAcb = acbs.stream()
+                .filter(acb -> acb.getId().equals(listingDto.getCertificationBodyId())).findFirst();
+        if (listingAcb != null && listingAcb.isPresent()) {
+            listingLeaf.setAcb(new CertificationBody(listingAcb.get()));
+        }
+        listingLeaf.setSurveillanceCount(listingDto.getCountSurveillance());
+        listingLeaf.setOpenSurveillanceCount(listingDto.getCountOpenSurveillance());
+        listingLeaf.setClosedSurveillanceCount(listingDto.getCountClosedSurveillance());
+        listingLeaf.setOpenSurveillanceNonConformityCount(listingDto.getCountOpenNonconformities());
+        listingLeaf.setClosedSurveillanceNonConformityCount(listingDto.getCountClosedNonconformities());
+        listingLeaf.setCertificationDate(listingDto.getCertificationDate().getTime());
+        listingLeaf.setCertificationStatus(listingDto.getCertificationStatusName());
+        listingLeaf.setChplProductNumber(listingDto.getChplProductNumber());
+        listingLeaf.setCuresUpdate(listingDto.getCuresUpdate());
+        listingLeaf.setEdition(listingDto.getYear());
+        listingLeaf.setId(listingDto.getId());
+        listingLeaf.setLastModifiedDate(listingDto.getLastModifiedDate().getTime());
+        return listingLeaf;
     }
 
     @Transactional(readOnly = true)
@@ -535,17 +541,16 @@ public class DeveloperManager extends SecuredManager {
         return duplicatedChplProductNumbers;
     }
 
-    public void validateDeveloperInSystemIfExists(PendingCertifiedProductDetails pendingCp)
+    public void validateDeveloperInSystemIfExists(PendingCertifiedProductDTO pendingCp)
             throws EntityRetrievalException, ValidationException {
-        if (!isNewDeveloperCode(pendingCp.getChplProductNumber())) {
+        if (!isNewDeveloperCode(pendingCp.getUniqueId())) {
             DeveloperDTO systemDeveloperDTO = null;
-            if (pendingCp.getDeveloper() != null && pendingCp.getDeveloper().getDeveloperId() != null) {
-                systemDeveloperDTO = getById(pendingCp.getDeveloper().getDeveloperId());
+            if (pendingCp.getDeveloperId() != null) {
+                systemDeveloperDTO = getById(pendingCp.getDeveloperId());
             }
             if (systemDeveloperDTO != null) {
-                final Object pendingAcbNameObj = pendingCp.getCertifyingBody()
-                        .get(CertifiedProductSearchDetails.ACB_NAME_KEY);
-                if (pendingAcbNameObj != null && !StringUtils.isEmpty(pendingAcbNameObj.toString())) {
+                String acbName = pendingCp.getCertificationBodyName();
+                if (!StringUtils.isEmpty(acbName)) {
                     Set<String> sysDevErrorMessages = runSystemValidations(systemDeveloperDTO);
                     if (!sysDevErrorMessages.isEmpty()) {
                         throw new ValidationException(sysDevErrorMessages);

@@ -7,6 +7,7 @@ import java.util.Date;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
+import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntitySimple;
 import gov.healthit.chpl.util.Util;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -201,7 +202,112 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.rwtEligibilityYear = entity.getRwtEligibilityYear();
         this.svapNoticeUrl = entity.getSvapNoticeUrl();
         this.lastModifiedDate = entity.getLastModifiedDate();
+    }
 
+    public CertifiedProductDetailsDTO(CertifiedProductDetailsEntitySimple entity) {
+        this();
+        this.id = entity.getId();
+        this.productCode = entity.getProductCode();
+        this.versionCode = entity.getVersionCode();
+        this.icsCode = entity.getIcsCode();
+        this.additionalSoftwareCode = entity.getAdditionalSoftwareCode();
+        this.creationDate = entity.getCreationDate();
+        this.certifiedDateCode = entity.getCertifiedDateCode();
+        this.acbCertificationId = entity.getAcbCertificationId();
+        this.certificationBodyId = entity.getCertificationBodyId();
+        this.certificationBodyName = entity.getCertificationBodyName();
+        this.certificationBodyCode = entity.getCertificationBodyCode();
+        this.certificationEditionId = entity.getCertificationEditionId();
+        this.certificationStatusId = entity.getCertificationStatusId();
+        this.certificationStatusName = entity.getCertificationStatusName();
+        this.certificationStatusDate = entity.getCertificationStatusDate();
+        this.curesUpdate = entity.getCuresUpdate();
+        this.chplProductNumber = entity.getChplProductNumber();
+        this.otherAcb = entity.getOtherAcb();
+        this.practiceTypeId = entity.getPracticeTypeId();
+        this.practiceTypeName = entity.getPracticeTypeName();
+        this.productClassificationName = entity.getProductClassificationName();
+        this.productClassificationTypeId = entity.getProductClassificationTypeId();
+        this.reportFileLocation = entity.getReportFileLocation();
+        this.sedReportFileLocation = entity.getSedReportFileLocation();
+        this.sedIntendedUserDescription = entity.getSedIntendedUserDescription();
+        this.sedTestingEnd = entity.getSedTestingEnd();
+        this.numMeaningfulUse = entity.getMeaningfulUseUsers();
+
+        this.developer = new DeveloperDTO();
+        this.developer.setId(entity.getDeveloperId());
+        this.developer.setName(entity.getDeveloperName());
+        this.developer.setDeveloperCode(entity.getDeveloperCode());
+        this.developer.setWebsite(entity.getDeveloperWebsite());
+        this.developer.setSelfDeveloper(entity.getSelfDeveloper());
+
+        if (entity.getDeveloperStatusId() != null) {
+            developerCurrentStatus = new DeveloperStatusEventDTO();
+            developerCurrentStatus.setDeveloperId(entity.getDeveloperId());
+            DeveloperStatusDTO statusObj = new DeveloperStatusDTO();
+            statusObj.setId(entity.getDeveloperStatusId());
+            statusObj.setStatusName(entity.getDeveloperStatusName());
+            developerCurrentStatus.setStatus(statusObj);
+            developerCurrentStatus.setStatusDate(entity.getDeveloperStatusDate());
+            this.developer.getStatusEvents().add(developerCurrentStatus);
+        }
+
+        if (entity.getAddressId() != null) {
+            AddressDTO developerAddress = new AddressDTO();
+            developerAddress.setId(entity.getAddressId());
+            developerAddress.setStreetLineOne(entity.getStreetLine1());
+            developerAddress.setStreetLineTwo(entity.getStreetLine2());
+            developerAddress.setCity(entity.getCity());
+            developerAddress.setState(entity.getState());
+            developerAddress.setZipcode(entity.getZipcode());
+            developerAddress.setCountry(entity.getCountry());
+            this.developer.setAddress(developerAddress);
+        }
+        if (entity.getContactId() != null) {
+            ContactDTO developerContact = new ContactDTO();
+            developerContact.setId(entity.getContactId());
+            developerContact.setFullName(entity.getFullName());
+            developerContact.setEmail(entity.getEmail());
+            developerContact.setPhoneNumber(entity.getPhoneNumber());
+            developerContact.setTitle(entity.getTitle());
+            this.developer.setContact(developerContact);
+        }
+
+        if (entity.getProductId() != null) {
+            this.product = new ProductDTO();
+            this.product.setId(entity.getProductId());
+            this.product.setName(entity.getProductName());
+        }
+
+        if (entity.getProductVersionId() != null) {
+            this.version = new ProductVersionDTO();
+            this.version.setId(entity.getProductVersionId());
+            this.version.setVersion(entity.getProductVersion());
+        }
+
+        this.ics = entity.getIcs();
+        this.sedTesting = entity.getSedTesting();
+        this.qmsTesting = entity.getQmsTesting();
+        this.accessibilityCertified = entity.getAccessibilityCertified();
+        this.productAdditionalSoftware = entity.getProductAdditionalSoftware();
+        this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
+        this.year = entity.getYear();
+        this.certificationDate = entity.getCertificationDate();
+        this.decertificationDate = entity.getDecertificationDate();
+        this.countCqms = entity.getCountCqms();
+        this.countCertifications = entity.getCountCertifications();
+        this.countSurveillance = entity.getCountSurveillance();
+        this.countOpenSurveillance = entity.getCountOpenSurveillance();
+        this.countClosedSurveillance = entity.getCountClosedSurveillance();
+        this.countOpenNonconformities = entity.getCountOpenNonconformities();
+        this.countClosedNonconformities = entity.getCountClosedNonconformities();
+        this.rwtPlansUrl = entity.getRwtPlansUrl();
+        this.rwtPlansCheckDate = entity.getRwtPlansCheckDate();
+        this.rwtResultsUrl = entity.getRwtResultsUrl();
+        this.rwtResultsCheckDate = entity.getRwtResultsCheckDate();
+        this.rwtEligibilityYear = entity.getRwtEligibilityYear();
+        this.svapNoticeUrl = entity.getSvapNoticeUrl();
+        this.lastModifiedDate = entity.getLastModifiedDate();
     }
 
     public Date getCreationDate() {

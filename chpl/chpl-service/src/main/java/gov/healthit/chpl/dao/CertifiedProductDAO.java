@@ -19,6 +19,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductSummaryDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
+import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntitySimple;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductSummaryEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -235,20 +236,17 @@ public class CertifiedProductDAO extends BaseDAOImpl {
     }
 
     @Transactional(readOnly = true)
-    public List<CertifiedProductSummaryDTO> findListingSummariesByDeveloperId(final Long developerId) {
+    public List<CertifiedProductDetailsDTO> findListingsByDeveloperId(Long developerId) {
         Query query = entityManager.createQuery("SELECT cpd "
-                + "FROM CertifiedProductDetailsEntity cpd "
+                + "FROM CertifiedProductDetailsEntitySimple cpd "
                 + "WHERE cpd.deleted = false "
                 + "AND cpd.developerId = :developerId ",
-                CertifiedProductDetailsEntity.class);
+                CertifiedProductDetailsEntitySimple.class);
         query.setParameter("developerId", developerId);
-        List<CertifiedProductDetailsEntity> entities = query.getResultList();
-        List<CertifiedProductSummaryDTO> products = new ArrayList<CertifiedProductSummaryDTO>(entities.size());
-        for (CertifiedProductDetailsEntity entity : entities) {
-            CertifiedProductSummaryDTO product = new CertifiedProductSummaryDTO(entity);
-            products.add(product);
-        }
-        return products;
+        List<CertifiedProductDetailsEntitySimple> entities = query.getResultList();
+        return entities.stream()
+            .map(entity -> new CertifiedProductDetailsDTO(entity))
+            .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

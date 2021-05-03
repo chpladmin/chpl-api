@@ -156,6 +156,24 @@ public class PendingCertifiedProductManager extends SecuredManager {
         return products;
     }
 
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).UPDATEABLE, #acbId)")
+    public boolean markAsProcessingIfAvailable(Long acbId, Long pendingListingId) throws EntityRetrievalException{
+        if (!pcpDao.isProcessingOrDeleted(pendingListingId)) {
+            pcpDao.updateProcessingFlag(pendingListingId, true);
+            return true;
+        }
+        return false;
+    }
+
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).UPDATEABLE, #acbId)")
+    public void markAsNotProcessing(Long acbId, Long pendingListingId) throws EntityRetrievalException{
+        pcpDao.updateProcessingFlag(pendingListingId, false);
+    }
+
     @Transactional(rollbackFor = {
             EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class
     })
@@ -227,7 +245,7 @@ public class PendingCertifiedProductManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).UPDATEABLE, #acbId)")
-    public boolean isPendingListingAvailableForUpdate(final Long acbId, final Long pendingProductId)
+    public boolean isPendingListingAvailableForUpdate(Long acbId, Long pendingProductId)
             throws EntityRetrievalException, ObjectMissingValidationException {
         PendingCertifiedProductDTO pendingCp = pcpDao.findById(pendingProductId, true);
         return isPendingListingAvailableForUpdate(pendingCp);
