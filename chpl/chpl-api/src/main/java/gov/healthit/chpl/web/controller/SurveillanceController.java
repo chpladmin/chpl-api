@@ -65,6 +65,7 @@ import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.reviewer.AuthorityReviewer;
+import gov.healthit.chpl.web.controller.results.BooleanResult;
 import gov.healthit.chpl.web.controller.results.SurveillanceResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -500,14 +501,14 @@ public class SurveillanceController implements MessageSourceAware {
     @ApiOperation(value = "",
             notes = "")
     @RequestMapping(value = "/reports/activity", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public Boolean getActivityReport(@RequestParam("start") String start, @RequestParam("end") String end) throws ValidationException {
+    public @ResponseBody BooleanResult getActivityReport(@RequestParam("start") String start, @RequestParam("end") String end) throws ValidationException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate startDate;
         LocalDate endDate;
         try {
             startDate = LocalDate.parse(start, formatter);
             endDate = LocalDate.parse(end, formatter);
-            return survManager.submitActivityReportRequest(startDate, endDate);
+            return new BooleanResult(survManager.submitActivityReportRequest(startDate, endDate));
        } catch (DateTimeException e) {
             throw new ValidationException("Could not parse the start and/or end date.  The correct format is 'yyyy-mm-dd'.");
        }
