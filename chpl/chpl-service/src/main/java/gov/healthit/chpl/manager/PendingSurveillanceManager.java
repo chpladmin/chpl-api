@@ -329,7 +329,8 @@ public class PendingSurveillanceManager extends SecuredManager {
         return result;
     }
 
-    private Long createPendingSurveillance(Surveillance surv) {
+    @Transactional
+    public Long createPendingSurveillance(Surveillance surv) {
         Long insertedId = null;
         try {
             insertedId = survDao.insertPendingSurveillance(surv);

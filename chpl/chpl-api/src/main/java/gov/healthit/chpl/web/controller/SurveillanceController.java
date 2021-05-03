@@ -471,13 +471,12 @@ public class SurveillanceController implements MessageSourceAware {
             EntityCreationException, IOException, SchedulerException {
         SurveillanceUploadResult uploadResult = pendingSurveillanceManager.uploadPendingSurveillance(file);
 
-        //Interpret the results...
-        if (uploadResult.getSurveillances() != null) {
+        if (uploadResult.getTrigger() != null) {
+            return new ResponseEntity<ChplOneTimeTrigger>(uploadResult.getTrigger(), HttpStatus.OK);
+        } else {
             SurveillanceResults results = new SurveillanceResults();
             results.getPendingSurveillance().addAll(uploadResult.getSurveillances());
             return new ResponseEntity<SurveillanceResults>(results, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<ChplOneTimeTrigger>(uploadResult.getTrigger(), HttpStatus.OK);
         }
     }
 

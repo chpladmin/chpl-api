@@ -27,15 +27,13 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
-import gov.healthit.chpl.domain.MeaningfulUseUserRecord;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
-import gov.healthit.chpl.manager.SurveillanceManager;
+import gov.healthit.chpl.manager.PendingSurveillanceManager;
 import gov.healthit.chpl.manager.SurveillanceUploadManager;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandler;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandlerFactory;
@@ -59,15 +57,13 @@ public class SurveillanceUploadJob implements Job {
     @Autowired
     private CertifiedProductManager cpManager;
     @Autowired
-    private SurveillanceManager survManager;
+    private PendingSurveillanceManager pendingSurvManager;
     @Autowired
     private SurveillanceUploadManager survUploadManager;
     @Autowired
     private SurveillanceCreationValidator survValidator;
     @Autowired
     private SurveillanceUploadHandlerFactory uploadHandlerFactory;
-    @Autowired
-    private SurveillanceDAO surveillanceDAO;
     @Autowired
     private CertificationBodyDAO acbDAO;
 
@@ -173,7 +169,7 @@ public class SurveillanceUploadJob implements Job {
                 try {
                     owningCp = cpManager.getById(surv.getCertifiedProduct().getId());
                     survValidator.validate(surv);
-                    surveillanceDAO.insertPendingSurveillance(surv);
+                    pendingSurvManager.createPendingSurveillance(surv);
                 } catch (AccessDeniedException denied) {
                     String permissionErrorMessage = "";
                     if (owningCp != null && owningCp.getCertificationBodyId() != null) {
@@ -191,11 +187,11 @@ public class SurveillanceUploadJob implements Job {
                                 AuthUtil.getCurrentUser().getSubjectName());
                     }
 
-                    LOGGER.error(permissionErrorMessage);
+                    LOGGER.error(permissionErrorMessage, denied);
                     processingErrors.add(permissionErrorMessage);
                 } catch (Exception ex) {
                     String msg = errorMessageUtil.getMessage("surveillance.errorAdding");
-                    LOGGER.error(msg);
+                    LOGGER.error(msg, ex);
                     processingErrors.add(msg);
                 }
             }
@@ -211,12 +207,6 @@ public class SurveillanceUploadJob implements Job {
             LOGGER.error("Unable to send email to " + user.getEmail());
             LOGGER.catching(ex);
         }
-    }
-
-    private long countMuuRecordsWithoutError(Set<MeaningfulUseUserRecord> muuRecords) {
-        return muuRecords.stream()
-                .filter(muuRecord -> StringUtils.isEmpty(muuRecord.getError()))
-                .count();
     }
 
     private void sendEmail(String recipientEmail, String subject, String htmlMessage)
@@ -240,7 +230,7 @@ public class SurveillanceUploadJob implements Job {
             for (String msg : processingMessages) {
                 htmlMessageList += "<li>" + msg + "</li>";
             }
-            htmlMessage += String.format("surveillance.upload.body.errors", htmlMessageList);
+            htmlMessage += String.format(env.getProperty("surveillance.upload.body.errors"), htmlMessageList);
         }
         return htmlMessage;
     }
