@@ -241,6 +241,9 @@ public class SurveillanceManager extends SecuredManager {
         survDao.deleteNonconformityDocument(documentId);
     }
 
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).ACTIVITY_REPORT)")
     public Boolean submitActivityReportRequest(LocalDate start, LocalDate end) throws ValidationException {
         ChplOneTimeTrigger surveillanceActivityReportTrigger = new ChplOneTimeTrigger();
         ChplJob surveillanceActivityReportJob = new ChplJob();
