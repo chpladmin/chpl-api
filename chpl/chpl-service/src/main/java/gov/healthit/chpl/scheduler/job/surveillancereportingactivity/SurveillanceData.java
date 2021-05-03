@@ -52,7 +52,7 @@ public class SurveillanceData {
     private String dateFormat = "yyyy/MM/dd";
 
     public SurveillanceData(CSVRecord record) {
-        this.recordType = getValueFromRecord(record, "?RECORD_STATUS__C").equalsIgnoreCase("Update") ? RecordType.UPDATE : RecordType.SUBELEMENT;
+        this.recordType = record.get(0).equalsIgnoreCase("Update") ? RecordType.UPDATE : RecordType.SUBELEMENT;
         this.chplProductNumber = getValueFromRecord(record, "UNIQUE_CHPL_ID__C");
         this.url = getValueFromRecord(record, "URL");
         this.acbName = getValueFromRecord(record, "ACB_NAME");

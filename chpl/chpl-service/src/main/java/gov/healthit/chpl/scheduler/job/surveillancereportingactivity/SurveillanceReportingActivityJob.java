@@ -25,8 +25,8 @@ public class SurveillanceReportingActivityJob implements Job {
 
         LOGGER.info("********* Starting the Surveillance Reporting Activity job. *********");
         try {
-            LocalDate startDate = LocalDate.of(2020, 1, 1);
-            LocalDate endDate = LocalDate.of(2020, 3, 31);
+            LocalDate startDate = LocalDate.of(2021, 1, 1);
+            LocalDate endDate = LocalDate.of(2021, 3, 31);
             List<CSVRecord> records = dataGatherer.getData(startDate, endDate);
 
             LOGGER.info("Count of found Surveillance Rows: " + records.size());

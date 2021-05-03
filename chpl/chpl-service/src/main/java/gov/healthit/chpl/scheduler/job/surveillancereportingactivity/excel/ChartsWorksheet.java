@@ -13,6 +13,9 @@ import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceData;
+import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.charts.CapApprovalToSurveillanceCloseByIntervalChart;
+import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.charts.ClosedSurveillanceByIntervalChart;
+import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.charts.ClosedSurveillanceDurationByQuartileChart;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.charts.ClosedSurveillanceDurationChart;
 
 public class ChartsWorksheet {
@@ -24,27 +27,45 @@ public class ChartsWorksheet {
 
     public Sheet generateWorksheet(List<SurveillanceData> surveillances) throws IOException {
         Sheet sheet = workbook.createSheet("Charts");
-        insertChart(sheet, getClosedSurveillanceDurationChart(surveillances));
+        insertChart(sheet, getClosedSurveillanceDurationByQuartileChart(surveillances), 0, 1);
+        insertChart(sheet, getClosedSurveillanceDurationChart(surveillances), 0, 25);
+        insertChart(sheet, getClosedSurveillanceByIntervalChart(surveillances), 9, 1);
+        insertChart(sheet, getCapApprovalToSurveillanceCloseByIntervalChart(surveillances), 9, 25);
         return sheet;
     }
 
     @SuppressWarnings("resource")
-    private Sheet insertChart(Sheet sheet, JFreeChart chart) throws IOException {
+    private Sheet insertChart(Sheet sheet, JFreeChart chart, Integer columnAnchorCell, Integer rowAnchorCell) throws IOException {
         Drawing drawing = sheet.createDrawingPatriarch();
 
-        BufferedImage image = chart.createBufferedImage(600, 300, 600, 300, null);
+        BufferedImage image = chart.createBufferedImage(450, 450, 450, 450, null);
         int imageIndex = sheet.getWorkbook().addPicture(ChartUtils.encodeAsPNG(image), Workbook.PICTURE_TYPE_PNG);
 
         ClientAnchor anchor = sheet.getWorkbook().getCreationHelper().createClientAnchor();
-        anchor.setCol1(3);
-        anchor.setRow1(2);
+        anchor.setCol1(columnAnchorCell);
+        anchor.setRow1(rowAnchorCell);
         Picture picture = drawing.createPicture(anchor, imageIndex);
         picture.resize();
         return sheet;
     }
 
+    private JFreeChart getClosedSurveillanceDurationByQuartileChart(List<SurveillanceData> surveillances) {
+        ClosedSurveillanceDurationByQuartileChart chart = new ClosedSurveillanceDurationByQuartileChart();
+        return chart.generateChart(surveillances);
+    }
+
     private JFreeChart getClosedSurveillanceDurationChart(List<SurveillanceData> surveillances) {
         ClosedSurveillanceDurationChart chart = new ClosedSurveillanceDurationChart();
+        return chart.generateChart(surveillances);
+    }
+
+    private JFreeChart getClosedSurveillanceByIntervalChart(List<SurveillanceData> surveillances) {
+        ClosedSurveillanceByIntervalChart chart = new ClosedSurveillanceByIntervalChart();
+        return chart.generateChart(surveillances);
+    }
+
+    private JFreeChart getCapApprovalToSurveillanceCloseByIntervalChart(List<SurveillanceData> surveillances) {
+        CapApprovalToSurveillanceCloseByIntervalChart chart = new CapApprovalToSurveillanceCloseByIntervalChart();
         return chart.generateChart(surveillances);
     }
 }

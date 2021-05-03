@@ -1,8 +1,6 @@
 package gov.healthit.chpl.scheduler.job.surveillancereportingactivity.excel;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -167,32 +165,15 @@ public class SurveillanceDataWorksheet {
     }
 
     private Cell setCellValueAsString(Cell cell, String value) {
-        if (value != null) {
-            cell.setCellValue(value);
-        } else {
-            cell.setCellValue("");
-        }
-        return cell;
+        return CellHelper.setCellValueAsString(cell, value);
     }
 
     private Cell setCellValueAsLocalDate(Cell cell, LocalDate value) {
-        if (value != null) {
-            cell.setCellValue(convertLocalDateToDate(value));
-            cell.setCellStyle(dateCellStyle);
-        } else {
-            cell.setCellValue("");
-        }
-        return cell;
+        return CellHelper.setCellValueAsLocalDate(cell, value, dateCellStyle);
     }
 
     private Cell setCellValueAsInteger(Cell cell, Integer value) {
-        if (value != null) {
-            cell.setCellValue(value);
-            cell.setCellStyle(integerCellStyle);
-        } else {
-            cell.setCellValue("");
-        }
-        return cell;
+        return CellHelper.setCellValueAsInteger(cell, value, integerCellStyle);
     }
 
     private Row populateHeaderRow(Row row) {
@@ -207,9 +188,5 @@ public class SurveillanceDataWorksheet {
             cellNum++;
         }
         return row;
-    }
-
-    private Date convertLocalDateToDate(LocalDate localDate) {
-        return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 }

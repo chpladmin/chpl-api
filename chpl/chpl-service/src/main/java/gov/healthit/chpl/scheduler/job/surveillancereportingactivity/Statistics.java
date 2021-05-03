@@ -21,7 +21,7 @@ public final class Statistics {
         return values.stream()
                 .filter(val -> val != null)
                 .max(Comparator.comparing(Integer::intValue))
-                .get();
+                .orElseGet(() -> null);
     }
 
     public static Integer getMean(List<Integer> values) {
@@ -40,7 +40,7 @@ public final class Statistics {
         int middle = Math.round(filtered.size() / 2);
         filtered.sort((v1, v2) -> v1 - v2);
 
-        if (filtered.size() >= middle) {
+        if (filtered.size() > middle) {
             return values.get(middle);
         } else {
             return null;

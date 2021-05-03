@@ -11,6 +11,7 @@ import org.jfree.data.category.DefaultCategoryDataset;
 
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.Statistics;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceData;
+import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceData.RecordType;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceDataService;
 
 public class ClosedSurveillanceDurationChart {
@@ -36,6 +37,7 @@ public class ClosedSurveillanceDurationChart {
         acbNames.stream()
                 .forEach(acbName -> {
                     List<Integer> durationOfClosedSurveillanceValues = SurveillanceDataService.getDataForAcb(surveillances, acbName).stream()
+                            .filter(item -> item != null && item.getRecordType().equals(RecordType.UPDATE))
                             .map(item -> item.getDurationOfClosedSurveillance())
                             .collect(Collectors.toList());
 
