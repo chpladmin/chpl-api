@@ -5,10 +5,11 @@ import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.quartz.JobDataMap;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.AccessDeniedException;
@@ -29,10 +30,10 @@ import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.Job;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.auth.User;
-import gov.healthit.chpl.domain.concept.JobTypeConcept;
+import gov.healthit.chpl.domain.schedule.ChplJob;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityDocument;
@@ -45,8 +46,6 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceUploadResult;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.dto.job.JobDTO;
-import gov.healthit.chpl.dto.job.JobTypeDTO;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.ValidationMessageType;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
@@ -67,21 +66,20 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
+import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
+import gov.healthit.chpl.scheduler.job.SurveillanceUploadJob;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceCreationValidator;
 import gov.healthit.chpl.validation.surveillance.SurveillanceUpdateValidator;
+import lombok.extern.log4j.Log4j2;
 
 @Component
+@Log4j2
 public class PendingSurveillanceManager extends SecuredManager {
-    private static Logger LOGGER = LogManager.getLogger(PendingSurveillanceManager.class);
-    private static int SURV_THRESHOLD_DEFAULT = 50;
-    private JobTypeConcept allowedJobType = JobTypeConcept.SURV_UPLOAD;
-
-    private Environment env;
     private FileUtils fileUtils;
     private SurveillanceUploadManager survUploadHelper;
-    private JobManager jobManager;
+    private SchedulerManager schedulerManager;
     private UserManager userManager;
     private CertifiedProductManager cpManager;
     private SurveillanceDAO survDao;
@@ -92,19 +90,21 @@ public class PendingSurveillanceManager extends SecuredManager {
     private SurveillanceUpdateValidator survUpdateValidator;
     private UserPermissionDAO userPermissionDAO;
     private CertifiedProductDAO cpDAO;
+    private Integer surveillanceThresholdToProcessAsJob;
 
     @Autowired
+    @SuppressWarnings("checkstyle:parameternumber")
     public PendingSurveillanceManager(Environment env, FileUtils fileUtils,
-            SurveillanceUploadManager survUploadManager, JobManager jobManager,
+            SurveillanceUploadManager survUploadManager, SchedulerManager schedulerManager,
             UserManager userManager, CertifiedProductManager cpManager, SurveillanceDAO survDao, UserDAO userDao,
             ActivityManager activityManager, CertifiedProductDetailsManager cpDetailsManager,
             SurveillanceCreationValidator survCreationValidator,
             @Qualifier("surveillanceUpdateValidator") SurveillanceUpdateValidator survUpdateValidator,
-            UserPermissionDAO userPermissionDAO, CertifiedProductDAO cpDAO) {
-        this.env = env;
+            UserPermissionDAO userPermissionDAO, CertifiedProductDAO cpDAO,
+            @Value("${surveillanceThresholdToProcessAsJob}") Integer surveillanceThresholdToProcessAsJob) {
         this.fileUtils = fileUtils;
         this.survUploadHelper = survUploadManager;
-        this.jobManager = jobManager;
+        this.schedulerManager = schedulerManager;
         this.userManager = userManager;
         this.cpManager = cpManager;
         this.survDao = survDao;
@@ -115,13 +115,14 @@ public class PendingSurveillanceManager extends SecuredManager {
         this.survUpdateValidator = survUpdateValidator;
         this.userPermissionDAO = userPermissionDAO;
         this.cpDAO = cpDAO;
+        this.surveillanceThresholdToProcessAsJob = surveillanceThresholdToProcessAsJob;
     }
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).UPLOAD)")
     public SurveillanceUploadResult uploadPendingSurveillance(MultipartFile file)
-            throws ValidationException, EntityCreationException, EntityRetrievalException {
+            throws ValidationException, EntityCreationException, EntityRetrievalException, SchedulerException {
         if (file.isEmpty()) {
             throw new ValidationException("You cannot upload an empty file!");
         }
@@ -131,20 +132,18 @@ public class PendingSurveillanceManager extends SecuredManager {
             throw new ValidationException("File must be a CSV document.");
         }
 
-        Integer surveillanceThresholdToProcessAsJob = getSurveillanceRecordThreshold();
-
         // first we need to count how many surveillance records are in the file
         // to know if we handle it normally or as a background job
         String data = fileUtils.readFileAsString(file);
 
         // This is a container used for 2 different result types...
         SurveillanceUploadResult uploadResult = new SurveillanceUploadResult();
-
         int numSurveillance = survUploadHelper.countSurveillanceRecords(data);
         if (numSurveillance < surveillanceThresholdToProcessAsJob) {
             uploadResult = processAsFile(file);
         } else {
-            uploadResult = processUploadAsJob(data);
+            ChplOneTimeTrigger scheduledTrigger = processUploadAsJob(data);
+            uploadResult.setTrigger(scheduledTrigger);
         }
         return uploadResult;
     }
@@ -257,60 +256,27 @@ public class PendingSurveillanceManager extends SecuredManager {
         return result;
     }
 
-    private SurveillanceUploadResult processUploadAsJob(String data)
-            throws EntityCreationException, EntityRetrievalException {
-        SurveillanceUploadResult result = new SurveillanceUploadResult();
-
-        UserDTO currentUser = null;
+    private ChplOneTimeTrigger processUploadAsJob(String data) throws EntityCreationException,
+        EntityRetrievalException, ValidationException, SchedulerException {
+        UserDTO jobUser = null;
         try {
-            currentUser = userManager.getById(AuthUtil.getCurrentUser().getId());
+            jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
         } catch (UserRetrievalException ex) {
-            LOGGER.error("Error finding user with ID " + AuthUtil.getCurrentUser().getId() + ": " + ex.getMessage());
-            result.setJobStatus(SurveillanceUploadResult.UNAUTHORIZED);
-            return result;
-        }
-        if (currentUser == null) {
-            LOGGER.error("No user with ID " + AuthUtil.getCurrentUser().getId() + " could be found in the system.");
-            result.setJobStatus(SurveillanceUploadResult.UNAUTHORIZED);
-            return result;
+            LOGGER.error("Could not find user to execute job.");
         }
 
-        JobTypeDTO jobType = null;
-        List<JobTypeDTO> jobTypes = jobManager.getAllJobTypes();
-        for (JobTypeDTO jt : jobTypes) {
-            if (jt.getName().equalsIgnoreCase(allowedJobType.getName())) {
-                jobType = jt;
-            }
-        }
-
-        JobDTO toCreate = new JobDTO();
-        toCreate.setData(data);
-        toCreate.setUser(currentUser);
-        toCreate.setJobType(jobType);
-        JobDTO insertedJob = jobManager.createJob(toCreate);
-        JobDTO createdJob = jobManager.getJobById(insertedJob.getId());
-
-        try {
-            boolean isStarted = jobManager.start(createdJob);
-            if (!isStarted) {
-                result.setJob(new Job(createdJob));
-                result.setJobStatus(SurveillanceUploadResult.NOT_STARTED);
-                return result;
-            } else {
-                createdJob = jobManager.getJobById(insertedJob.getId());
-            }
-        } catch (EntityRetrievalException ex) {
-            LOGGER.error("Could not mark job " + createdJob.getId() + " as started.");
-            result.setJob(new Job(createdJob));
-            result.setJobStatus(SurveillanceUploadResult.ERROR);
-            return result;
-
-        }
-
-        // query the now running job
-        result.setJob(new Job(createdJob));
-        result.setJobStatus(SurveillanceUploadResult.STARTED);
-        return result;
+        ChplOneTimeTrigger uploadSurveillanceTrigger = new ChplOneTimeTrigger();
+        ChplJob uploadSurveillanceJob = new ChplJob();
+        uploadSurveillanceJob.setName(SurveillanceUploadJob.JOB_NAME);
+        uploadSurveillanceJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put(SurveillanceUploadJob.FILE_CONTENTS_KEY, data);
+        jobDataMap.put(SplitDeveloperJob.USER_KEY, jobUser);
+        uploadSurveillanceJob.setJobDataMap(jobDataMap);
+        uploadSurveillanceTrigger.setJob(uploadSurveillanceJob);
+        uploadSurveillanceTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
+        uploadSurveillanceTrigger = schedulerManager.createBackgroundJobTrigger(uploadSurveillanceTrigger);
+        return uploadSurveillanceTrigger;
     }
 
     private SurveillanceUploadResult processAsFile(MultipartFile file) throws ValidationException {
@@ -487,18 +453,6 @@ public class PendingSurveillanceManager extends SecuredManager {
         // If pendingSurv were null, we would have gotten an NPE by this point
         // return pendingSurv != null;
         return true;
-    }
-
-    private Integer getSurveillanceRecordThreshold() {
-        String surveillanceThresholdToProcessAsJobStr = env.getProperty("surveillanceThresholdToProcessAsJob").trim();
-        Integer surveillanceThresholdToProcessAsJob = SURV_THRESHOLD_DEFAULT;
-        try {
-            surveillanceThresholdToProcessAsJob = Integer.parseInt(surveillanceThresholdToProcessAsJobStr);
-        } catch (NumberFormatException ex) {
-            LOGGER.error("Could not format " + surveillanceThresholdToProcessAsJobStr + " as an integer. Defaulting to"
-                    + " 50 instead.");
-        }
-        return surveillanceThresholdToProcessAsJob;
     }
 
     private void validateSurveillanceCreation(Surveillance createdSurv) {

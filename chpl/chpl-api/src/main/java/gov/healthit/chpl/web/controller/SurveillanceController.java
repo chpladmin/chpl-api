@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
@@ -37,9 +38,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.IdListContainer;
-import gov.healthit.chpl.domain.Job;
 import gov.healthit.chpl.domain.SimpleExplainableAction;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.domain.surveillance.SurveillanceUploadResult;
@@ -467,7 +468,7 @@ public class SurveillanceController implements MessageSourceAware {
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody ResponseEntity<?> upload(@RequestParam("file") final MultipartFile file)
             throws ValidationException, MaxUploadSizeExceededException, EntityRetrievalException,
-            EntityCreationException {
+            EntityCreationException, SchedulerException {
         SurveillanceUploadResult uploadResult = pendingSurveillanceManager.uploadPendingSurveillance(file);
 
         //Interpret the results...
@@ -476,21 +477,7 @@ public class SurveillanceController implements MessageSourceAware {
             results.getPendingSurveillance().addAll(uploadResult.getSurveillances());
             return new ResponseEntity<SurveillanceResults>(results, HttpStatus.OK);
         } else {
-            HttpStatus status;
-            switch (uploadResult.getJobStatus()) {
-            case SurveillanceUploadResult.ERROR :
-                status = HttpStatus.INTERNAL_SERVER_ERROR;
-                break;
-            case SurveillanceUploadResult.NOT_STARTED :
-                status = HttpStatus.BAD_REQUEST;
-                break;
-            case SurveillanceUploadResult.UNAUTHORIZED :
-                status = HttpStatus.UNAUTHORIZED;
-                break;
-            default :
-                status = HttpStatus.OK;
-            }
-            return new ResponseEntity<Job>(uploadResult.getJob(), status);
+            return new ResponseEntity<ChplOneTimeTrigger>(uploadResult.getTrigger(), HttpStatus.OK);
         }
     }
 
