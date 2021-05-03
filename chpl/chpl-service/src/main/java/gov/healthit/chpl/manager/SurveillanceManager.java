@@ -56,7 +56,6 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
-import gov.healthit.chpl.scheduler.job.developer.MergeDeveloperJob;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceReportingActivityJob;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.FileUtils;
@@ -247,12 +246,12 @@ public class SurveillanceManager extends SecuredManager {
     public Boolean submitActivityReportRequest(LocalDate start, LocalDate end) throws ValidationException {
         ChplOneTimeTrigger surveillanceActivityReportTrigger = new ChplOneTimeTrigger();
         ChplJob surveillanceActivityReportJob = new ChplJob();
-        surveillanceActivityReportJob.setName(MergeDeveloperJob.JOB_NAME);
+        surveillanceActivityReportJob.setName(SurveillanceReportingActivityJob.JOB_NAME);
         surveillanceActivityReportJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(SurveillanceReportingActivityJob.START_DATE_KEY, start);
         jobDataMap.put(SurveillanceReportingActivityJob.END_DATE_KEY, end);
-        jobDataMap.put(MergeDeveloperJob.USER_KEY, AuthUtil.getCurrentUser().getId());
+        jobDataMap.put(SurveillanceReportingActivityJob.USER_KEY, AuthUtil.getCurrentUser().getId());
         surveillanceActivityReportJob.setJobDataMap(jobDataMap);
         surveillanceActivityReportTrigger.setJob(surveillanceActivityReportJob);
         surveillanceActivityReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
