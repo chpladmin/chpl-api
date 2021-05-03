@@ -4,6 +4,9 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -492,6 +495,22 @@ public class SurveillanceController implements MessageSourceAware {
             }
             return new ResponseEntity<Job>(uploadResult.getJob(), status);
         }
+    }
+
+    @ApiOperation(value = "",
+            notes = "")
+    @RequestMapping(value = "/reports/activity", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public Boolean getActivityReport(@RequestParam("start") String start, @RequestParam("end") String end) throws ValidationException {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate startDate;
+        LocalDate endDate;
+        try {
+            startDate = LocalDate.parse(start, formatter);
+            endDate = LocalDate.parse(end, formatter);
+            return survManager.submitActivityReportRequest(startDate, endDate);
+       } catch (DateTimeException e) {
+            throw new ValidationException("Could not parse the start and/or end date.  The correct format is 'yyyy-mm-dd'.");
+       }
     }
 
     @Override
