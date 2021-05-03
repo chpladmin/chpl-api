@@ -1,10 +1,16 @@
 package gov.healthit.chpl.manager;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,7 +128,8 @@ public class PendingSurveillanceManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).UPLOAD)")
     public SurveillanceUploadResult uploadPendingSurveillance(MultipartFile file)
-            throws ValidationException, EntityCreationException, EntityRetrievalException, SchedulerException {
+            throws ValidationException, EntityCreationException, EntityRetrievalException,
+            IOException, SchedulerException {
         if (file.isEmpty()) {
             throw new ValidationException("You cannot upload an empty file!");
         }
@@ -135,6 +142,7 @@ public class PendingSurveillanceManager extends SecuredManager {
         // first we need to count how many surveillance records are in the file
         // to know if we handle it normally or as a background job
         String data = fileUtils.readFileAsString(file);
+        checkFileCanBeReadAndMultipleRowsExist(data);
 
         // This is a container used for 2 different result types...
         SurveillanceUploadResult uploadResult = new SurveillanceUploadResult();
@@ -146,6 +154,22 @@ public class PendingSurveillanceManager extends SecuredManager {
             uploadResult.setTrigger(scheduledTrigger);
         }
         return uploadResult;
+    }
+
+    private void checkFileCanBeReadAndMultipleRowsExist(String fileContents) throws IOException, ValidationException  {
+        try (BufferedReader reader = new BufferedReader(new StringReader(fileContents));
+                CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL)) {
+
+            List<CSVRecord> records = parser.getRecords();
+            if (records.size() <= 1) {
+                String msg = "The file appears to have a header line with no other information. "
+                        + "Please make sure there are at least two rows in the CSV file.";
+                throw new ValidationException(msg);
+            }
+        } catch (IOException ex) {
+            LOGGER.error("Cannot read file as CSV: " + ex.getMessage());
+            throw ex;
+        }
     }
 
     @Transactional

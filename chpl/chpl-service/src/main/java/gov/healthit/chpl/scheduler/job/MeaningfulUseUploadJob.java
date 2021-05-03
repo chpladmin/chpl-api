@@ -7,6 +7,9 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.mail.MessagingException;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -33,6 +36,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.EmailBuilder;
 import lombok.extern.log4j.Log4j2;
 
 @DisallowConcurrentExecution
@@ -64,9 +68,11 @@ public class MeaningfulUseUploadJob implements Job {
             LOGGER.fatal("No user could be found in the job data.");
         } else {
             setSecurityContext(user);
-            String muuData = (String) jobDataMap.getString(FILE_CONTENTS_KEY);
+            String muuData = jobDataMap.getString(FILE_CONTENTS_KEY);
+            Long accurateAsOfDate = jobDataMap.getLong(ACCURATE_AS_OF_DATE_KEY);
             Set<MeaningfulUseUserRecord> muuRecords = parseMeaningfulUseRecords(muuData);
-            processMeaningfulUseUpdates(muuRecords);
+            processMeaningfulUseUpdates(muuRecords, accurateAsOfDate);
+            emailResultsToUser(muuRecords, user);
         }
         LOGGER.info("********* Completed the Meaningful Use Upload job. *********");
     }
@@ -74,12 +80,7 @@ public class MeaningfulUseUploadJob implements Job {
     private Set<MeaningfulUseUserRecord> parseMeaningfulUseRecords(String fileContents) {
         Set<MeaningfulUseUserRecord> muusToUpdate = new LinkedHashSet<MeaningfulUseUserRecord>();
         Set<String> uniqueMuusFromFile = new LinkedHashSet<String>();
-        String[] muuDateCsvSplit = fileContents.split(";");
-        String muuDateMillis = muuDateCsvSplit[0];
-        Date muuDate = new Date(Long.parseLong(muuDateMillis));
-        String muuCsv = muuDateCsvSplit[1];
-
-        try (BufferedReader reader = new BufferedReader(new StringReader(muuCsv));
+        try (BufferedReader reader = new BufferedReader(new StringReader(fileContents));
                 CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL)) {
 
             List<CSVRecord> records = parser.getRecords();
@@ -88,15 +89,14 @@ public class MeaningfulUseUploadJob implements Job {
                 CSVRecord currRecord = records.get(i - 1);
                 MeaningfulUseUserRecord muu = new MeaningfulUseUserRecord();
 
-                // add header if something similar to "chpl_product_number"
+                // get header if something similar to "chpl_product_number"
                 // and "num_meaningful_use" exists
                 if (heading == null && i == 1 && !StringUtils.isEmpty(currRecord.get(0).trim())
                         && currRecord.get(0).trim().contains("product")
                         && !StringUtils.isEmpty(currRecord.get(1).trim())
                         && currRecord.get(1).trim().contains("meaning")) {
                     heading = currRecord;
-                } else {
-                    // populate MeaningfulUseUserResults
+                } else if (heading != null) {
                     String chplProductNumber = currRecord.get(0).trim();
                     Long numMeaningfulUseUsers = null;
                     try {
@@ -145,16 +145,16 @@ public class MeaningfulUseUploadJob implements Job {
         return muusToUpdate;
     }
 
-    private void processMeaningfulUseUpdates(Set<MeaningfulUseUserRecord> muuRecords) {
+    private void processMeaningfulUseUpdates(Set<MeaningfulUseUserRecord> muuRecords, Long accurateAsOfDate) {
         for (MeaningfulUseUserRecord muu : muuRecords) {
             if (StringUtils.isEmpty(muu.getError())) {
                 try {
                     // If bad input, add error for this MeaningfulUseUser and continue
-                    if (org.apache.commons.lang.StringUtils.isEmpty(muu.getProductNumber())) {
-                        addJobMessage("Line " + muu.getCsvLineNumber()
+                    if (StringUtils.isEmpty(muu.getProductNumber())) {
+                        muu.setError("Line " + muu.getCsvLineNumber()
                                 + ": Field \"chpl_product_number\" is missing.");
                     } else if (muu.getNumberOfUsers() == null) {
-                        addJobMessage("Line " + muu.getCsvLineNumber()
+                        muu.setError("Line " + muu.getCsvLineNumber()
                             + ": Field \"num_meaningful_users\" is missing.");
                     } else {
                         //make sure the listing is valid and get the details
@@ -166,7 +166,7 @@ public class MeaningfulUseUploadJob implements Job {
                         } catch (EntityRetrievalException ex) {
                             LOGGER.warn("Searching for CHPL ID " + muu.getProductNumber()
                                 + " encountered exception: " + ex.getMessage());
-                            addJobMessage("Line " + muu.getCsvLineNumber()
+                            muu.setError("Line " + muu.getCsvLineNumber()
                                 + ": Field \"chpl_product_number\" with value \"" + muu.getProductNumber()
                                 + "\" is invalid. " + "The provided \"chpl_product_number\" does not exist.");
                         }
@@ -176,7 +176,8 @@ public class MeaningfulUseUploadJob implements Job {
                             MeaningfulUseUserDTO muuDto = new MeaningfulUseUserDTO();
                             muuDto.setCertifiedProductId(existingListing.getId());
                             muuDto.setMuuCount(muu.getNumberOfUsers());
-                            muuDto.setMuuDate(muuDate);
+                            muuDto.setMuuDate(new Date(accurateAsOfDate));
+                            LOGGER.info("Updating " + existingListing.getChplProductNumber() + " with MUU count of " + muu.getNumberOfUsers());
                             muuDao.create(muuDto);
 
                             //write activity for the listing update
@@ -192,12 +193,88 @@ public class MeaningfulUseUploadJob implements Job {
                     String msg = "Line " + muu.getCsvLineNumber() + ": An unexpected error occurred. "
                             + ex.getMessage();
                     LOGGER.error(msg, ex);
-                    addJobMessage(msg);
-
+                    muu.setError(msg);
                 }
-            } else {
-                addJobMessage(muu.getError());
             }
+        }
+    }
+
+    private void emailResultsToUser(Set<MeaningfulUseUserRecord> muuRecords, UserDTO user) {
+        if (muuRecords == null || muuRecords.size() == 0
+                || countMuuRecordsWithoutError(muuRecords) == 0) {
+            String errorSubject = env.getProperty("muu.email.subject.failure");
+            String errorHtmlBody = createHtmlEmailBodyFailure(muuRecords);
+            try {
+                sendEmail(user.getEmail(), errorSubject, errorHtmlBody);
+            } catch (MessagingException ex) {
+                LOGGER.error("Unable to send email to " + user.getEmail());
+                LOGGER.catching(ex);
+            }
+        } else {
+            String errorSubject = env.getProperty("muu.email.subject.success");
+            String errorHtmlBody = createHtmlEmailBodySuccess(muuRecords);
+            try {
+                sendEmail(user.getEmail(), errorSubject, errorHtmlBody);
+            } catch (MessagingException ex) {
+                LOGGER.error("Unable to send email to " + user.getEmail());
+                LOGGER.catching(ex);
+            }
+        }
+    }
+
+    private long countMuuRecordsWithoutError(Set<MeaningfulUseUserRecord> muuRecords) {
+        return muuRecords.stream()
+                .filter(muuRecord -> StringUtils.isEmpty(muuRecord.getError()))
+                .count();
+    }
+
+    private void sendEmail(String recipientEmail, String subject, String htmlMessage)
+            throws MessagingException {
+        LOGGER.info("Sending email to: " + recipientEmail);
+        LOGGER.info("Message to be sent: " + htmlMessage);
+
+        EmailBuilder emailBuilder = new EmailBuilder(env);
+        emailBuilder.recipient(recipientEmail)
+                .subject(subject)
+                .htmlMessage(htmlMessage)
+                .sendEmail();
+    }
+
+    private String createHtmlEmailBodySuccess(Set<MeaningfulUseUserRecord> muuRecords) {
+        long muuRecordsSuccessful = countMuuRecordsWithoutError(muuRecords);
+        String htmlMessage = String.format(env.getProperty("muu.email.body.success"),
+                muuRecordsSuccessful);
+        if (muuRecordsSuccessful != muuRecords.size()) {
+            htmlMessage += "<p>The following records from the uploaded file resulted in errors and may not have been saved in the CHPL:"
+                    + "<ul>";
+            List<MeaningfulUseUserRecord> muuRecordsWithErrors = muuRecords.stream()
+                .filter(muuRecord -> !StringUtils.isEmpty(muuRecord.getError()))
+                .collect(Collectors.toList());
+            for (MeaningfulUseUserRecord muuRecordWithError : muuRecordsWithErrors) {
+                htmlMessage += getErrorMessageForHtmlList(muuRecordWithError);
+            }
+            htmlMessage += "</ul></p>";
+        }
+        return htmlMessage;
+    }
+
+    private String createHtmlEmailBodyFailure(Set<MeaningfulUseUserRecord> muuRecords) {
+        String errorMessage = "Unknown error.";
+        if (muuRecords == null || muuRecords.size() == 0) {
+            errorMessage = "There were no meaningful use records found in the file.";
+        } else if (countMuuRecordsWithoutError(muuRecords) == 0) {
+            errorMessage = "All records in the upload file failed.<ul>";
+            for (MeaningfulUseUserRecord muuRecord : muuRecords) {
+                errorMessage += getErrorMessageForHtmlList(muuRecord);
+            }
+            errorMessage += "</ul>";
+        }
+        String htmlMessage = String.format(env.getProperty("muu.email.body.failure"), errorMessage);
+        return htmlMessage;
+    }
+
+    private String getErrorMessageForHtmlList(MeaningfulUseUserRecord muuRecord) {
+        return "<li>" + muuRecord.getError() + "</li>";
     }
 
     private void setSecurityContext(UserDTO user) {

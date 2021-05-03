@@ -61,7 +61,8 @@ public class MeaningfulUseManager {
         }
 
         String data = fileUtils.readFileAsString(file);
-        checkForFailureConditions(data);
+        checkFileCanBeReadAndMultipleRowsExist(data);
+
         UserDTO jobUser = null;
         try {
             jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
@@ -82,21 +83,6 @@ public class MeaningfulUseManager {
         uploadMuuTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
         uploadMuuTrigger = schedulerManager.createBackgroundJobTrigger(uploadMuuTrigger);
         return uploadMuuTrigger;
-    }
-
-    private void checkForFailureConditions(String fileContents) throws IOException, ValidationException {
-        checkDataFormat(fileContents);
-        checkFileCanBeReadAndMultipleRowsExist(fileContents);
-    }
-
-    private void checkDataFormat(String fileContents) throws ValidationException {
-        //MUU job data is formatted like "date;all,csv,data"
-        String[] muuDateCsvSplit = fileContents.split(";");
-        if (muuDateCsvSplit == null || muuDateCsvSplit.length != 2) {
-            String msg = "Could not split ;" + fileContents + "; with ';' "
-                    + "into an array of length 2. Cannot process MUU job.";
-            throw new ValidationException(msg);
-        }
     }
 
     private void checkFileCanBeReadAndMultipleRowsExist(String fileContents) throws IOException, ValidationException  {

@@ -8,6 +8,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.mail.MessagingException;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -26,6 +28,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
+import gov.healthit.chpl.domain.MeaningfulUseUserRecord;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -37,6 +40,7 @@ import gov.healthit.chpl.manager.SurveillanceUploadManager;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandler;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandlerFactory;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.surveillance.SurveillanceCreationValidator;
 import lombok.extern.log4j.Log4j2;
@@ -80,174 +84,165 @@ public class SurveillanceUploadJob implements Job {
         } else {
             setSecurityContext(user);
             String fileContents = (String) jobDataMap.getString(FILE_CONTENTS_KEY);
-            Set<Surveillance> pendingSurvs = parseSurveillance(fileContents);
-            processPendingSurveillance(pendingSurvs);
+            Set<String> processingErrors = new LinkedHashSet<String>();
+            Set<Surveillance> pendingSurvs = parseSurveillance(fileContents, processingErrors);
+            processPendingSurveillance(pendingSurvs, processingErrors);
+            emailResultsToUser(pendingSurvs, processingErrors, user);
         }
         LOGGER.info("********* Completed the Surveillance Upload job. *********");
     }
 
-    private Set<Surveillance> parseSurveillance(String fileContents) {
+    private Set<Surveillance> parseSurveillance(String fileContents, Set<String> processingErrors) {
         Set<Surveillance> pendingSurvs = new LinkedHashSet<Surveillance>();
-
         try (BufferedReader reader = new BufferedReader(new StringReader(fileContents));
                 CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL)) {
-
             List<CSVRecord> records = parser.getRecords();
-            if (records.size() <= 1) {
-                String msg = "The file appears to have a header line with no other information. "
-                        + "Please make sure there are at least two rows in the CSV file.";
-                LOGGER.error(msg);
-                addJobMessage(msg);
-                updateStatus(100, JobStatusType.Error);
-                try {
-                    parser.close();
-                } catch (Exception ignore) {
-                }
-                try {
-                    reader.close();
-                } catch (Exception ignore) {
-                }
-            } else {
-                // figure out how many surveillances are in the file,
-                // this is like 2% of the work
-                int survCount = 0;
-                try {
-                    survCount = survUploadManager.countSurveillanceRecords(job.getData());
-                } catch (Exception ex) {
-                    addJobMessage(ex.getMessage());
-                    updateStatus(100, JobStatusType.Error);
-                }
-                if (survCount > 0) {
-                    jobPercentComplete = 2.0;
-                    updateStatus(jobPercentComplete, JobStatusType.In_Progress);
+            CSVRecord heading = null;
+            List<CSVRecord> rows = new ArrayList<CSVRecord>();
+            for (int i = 1; i <= records.size(); i++) {
+                CSVRecord currRecord = records.get(i - 1);
+                if (heading == null && !StringUtils.isEmpty(currRecord.get(1))
+                        && currRecord.get(0).equals(SurveillanceUploadManager.HEADING_CELL_INDICATOR)) {
+                    // have to find the heading first
+                    heading = currRecord;
+                } else if (heading != null) {
+                    if (!StringUtils.isEmpty(currRecord.get(0).trim())) {
+                        String currRecordStatus = currRecord.get(0).trim();
+                        if (currRecordStatus
+                                .equalsIgnoreCase(SurveillanceUploadManager.NEW_SURVEILLANCE_BEGIN_INDICATOR)
+                                || currRecordStatus.equalsIgnoreCase(
+                                        SurveillanceUploadManager.UPDATE_SURVEILLANCE_BEGIN_INDICATOR)) {
+                            // parse the previous recordset because we hit a new surveillance item
+                            // if this is the last recordset, we'll handle that later
+                            if (rows.size() > 0) {
+                                try {
+                                    SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading,
+                                            rows);
+                                    Surveillance pendingSurv = handler.handle();
+                                    List<String> errors = survUploadManager
+                                            .checkUploadedSurveillanceOwnership(pendingSurv);
+                                    // Add any errors that were found when getting the Surveillance
+                                    errors.addAll(pendingSurv.getErrorMessages());
 
-                    // now do the actual parsing
-                    List<String> parserErrors = new ArrayList<String>();
-                    CSVRecord heading = null;
-                    List<CSVRecord> rows = new ArrayList<CSVRecord>();
-                    for (int i = 1; i <= records.size(); i++) {
-                        CSVRecord currRecord = records.get(i - 1);
-                        if (heading == null && !StringUtils.isEmpty(currRecord.get(1))
-                                && currRecord.get(0).equals(SurveillanceUploadManager.HEADING_CELL_INDICATOR)) {
-                            // have to find the heading first
-                            heading = currRecord;
-                        } else if (heading != null) {
-                            if (!StringUtils.isEmpty(currRecord.get(0).trim())) {
-                                String currRecordStatus = currRecord.get(0).trim();
-
-                                if (currRecordStatus
-                                        .equalsIgnoreCase(SurveillanceUploadManager.NEW_SURVEILLANCE_BEGIN_INDICATOR)
-                                        || currRecordStatus.equalsIgnoreCase(
-                                                SurveillanceUploadManager.UPDATE_SURVEILLANCE_BEGIN_INDICATOR)) {
-                                    // parse the previous recordset because we hit a new surveillance item
-                                    // if this is the last recordset, we'll handle that later
-                                    if (rows.size() > 0) {
-                                        try {
-                                            SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading,
-                                                    rows);
-                                            Surveillance pendingSurv = handler.handle();
-                                            List<String> errors = survUploadManager
-                                                    .checkUploadedSurveillanceOwnership(pendingSurv);
-                                            // Add any errors that were found when getting the Surveillance
-                                            errors.addAll(pendingSurv.getErrorMessages());
-
-                                            for (String error : errors) {
-                                                parserErrors.add(error);
-                                            }
-                                            pendingSurvs.add(pendingSurv);
-
-                                            // Add some percent complete between 2 and 50
-                                            jobPercentComplete += 48.0 / survCount;
-                                            updateStatus(jobPercentComplete, JobStatusType.In_Progress);
-                                        } catch (final InvalidArgumentsException ex) {
-                                            LOGGER.error(ex.getMessage());
-                                            parserErrors.add("Line " + i + " Error: " + ex.getMessage());
-                                        }
+                                    for (String error : errors) {
+                                        processingErrors.add(error);
                                     }
-                                    rows.clear();
-                                    rows.add(currRecord);
-                                } else if (currRecordStatus
-                                        .equalsIgnoreCase(SurveillanceUploadManager.SUBELEMENT_INDICATOR)) {
-                                    rows.add(currRecord);
-                                } // ignore blank rows
-                            }
-                        }
-
-                        // add the last object
-                        if (i == records.size() && !rows.isEmpty()) {
-                            try {
-                                SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
-                                Surveillance pendingSurv = handler.handle();
-                                List<String> errors = survUploadManager.checkUploadedSurveillanceOwnership(pendingSurv);
-                                for (String error : errors) {
-                                    parserErrors.add(error);
+                                    pendingSurvs.add(pendingSurv);
+                                } catch (InvalidArgumentsException ex) {
+                                    LOGGER.error(ex.getMessage());
+                                    processingErrors.add("Line " + i + " Error: " + ex.getMessage());
                                 }
-                                pendingSurvs.add(pendingSurv);
-                            } catch (final InvalidArgumentsException ex) {
-                                LOGGER.error(ex.getMessage());
-                                parserErrors.add("Line " + i + " Error: " + ex.getMessage());
                             }
-                        }
+                            rows.clear();
+                            rows.add(currRecord);
+                        } else if (currRecordStatus
+                                .equalsIgnoreCase(SurveillanceUploadManager.SUBELEMENT_INDICATOR)) {
+                            rows.add(currRecord);
+                        } // ignore blank rows
                     }
 
-                    if (parserErrors != null && parserErrors.size() > 0) {
-                        for (String error : parserErrors) {
-                            addJobMessage(error);
+                    // add the last object
+                    if (i == records.size() && !rows.isEmpty()) {
+                        try {
+                            SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
+                            Surveillance pendingSurv = handler.handle();
+                            List<String> errors = survUploadManager.checkUploadedSurveillanceOwnership(pendingSurv);
+                            for (String error : errors) {
+                                processingErrors.add(error);
+                            }
+                            pendingSurvs.add(pendingSurv);
+                        } catch (InvalidArgumentsException ex) {
+                            LOGGER.error(ex.getMessage());
+                            processingErrors.add("Line " + i + " Error: " + ex.getMessage());
                         }
-                        updateStatus(100, JobStatusType.Error);
                     }
-                    jobPercentComplete = 50.0;
-                    updateStatus(jobPercentComplete, JobStatusType.In_Progress);
                 }
             }
-        } catch (final IOException ioEx) {
+        } catch (IOException ioEx) {
             String msg = errorMessageUtil.getMessage("surveillance.inputStream");
             LOGGER.error(msg);
-            addJobMessage(msg);
-            updateStatus(100, JobStatusType.Error);
+            processingErrors.add(msg);
         }
         return pendingSurvs;
     }
 
-    private void processPendingSurveillance(Set<Surveillance> pendingSurvs) {
+    private void processPendingSurveillance(Set<Surveillance> pendingSurvs, Set<String> processingErrors) {
         for (Surveillance surv : pendingSurvs) {
             CertifiedProductDTO owningCp = null;
             if (surv != null && surv.getCertifiedProduct() != null && surv.getCertifiedProduct().getId() != null) {
                 try {
                     owningCp = cpManager.getById(surv.getCertifiedProduct().getId());
-
                     survValidator.validate(surv);
                     surveillanceDAO.insertPendingSurveillance(surv);
-
-                    jobPercentComplete += 50.0 / pendingSurvs.size();
-                    updateStatus(jobPercentComplete, JobStatusType.In_Progress);
-                } catch (final AccessDeniedException denied) {
-                    String msg = "";
+                } catch (AccessDeniedException denied) {
+                    String permissionErrorMessage = "";
                     if (owningCp != null && owningCp.getCertificationBodyId() != null) {
                         try {
                             CertificationBodyDTO acbDTO = acbDAO.getById(owningCp.getCertificationBodyId());
-                            msg = errorMessageUtil.getMessage("surveillance.permissionErrorWithAcb",
+                            permissionErrorMessage = errorMessageUtil.getMessage("surveillance.permissionErrorWithAcb",
                                     AuthUtil.getCurrentUser().getSubjectName(), owningCp.getChplProductNumber(),
                                     acbDTO.getName());
                         } catch (Exception e) {
-                            msg = errorMessageUtil.getMessage("surveillance.permissionError",
+                            permissionErrorMessage = errorMessageUtil.getMessage("surveillance.permissionError",
                                     AuthUtil.getCurrentUser().getSubjectName());
                         }
                     } else {
-                        msg = errorMessageUtil.getMessage("surveillance.permissionError",
+                        permissionErrorMessage = errorMessageUtil.getMessage("surveillance.permissionError",
                                 AuthUtil.getCurrentUser().getSubjectName());
                     }
 
-                    LOGGER.error(msg);
-                    addJobMessage(msg);
+                    LOGGER.error(permissionErrorMessage);
+                    processingErrors.add(permissionErrorMessage);
                 } catch (Exception ex) {
                     String msg = errorMessageUtil.getMessage("surveillance.errorAdding");
                     LOGGER.error(msg);
-                    addJobMessage(msg);
+                    processingErrors.add(msg);
                 }
             }
         }
-        this.complete();
+    }
+
+    private void emailResultsToUser(Set<Surveillance> pendingSurveillance, Set<String> processingMessages, UserDTO user) {
+        String subject = env.getProperty("surveillance.upload.subject");
+        String htmlBody = createHtmlEmailBody(pendingSurveillance, processingMessages);
+        try {
+            sendEmail(user.getEmail(), subject, htmlBody);
+        } catch (MessagingException ex) {
+            LOGGER.error("Unable to send email to " + user.getEmail());
+            LOGGER.catching(ex);
+        }
+    }
+
+    private long countMuuRecordsWithoutError(Set<MeaningfulUseUserRecord> muuRecords) {
+        return muuRecords.stream()
+                .filter(muuRecord -> StringUtils.isEmpty(muuRecord.getError()))
+                .count();
+    }
+
+    private void sendEmail(String recipientEmail, String subject, String htmlMessage)
+            throws MessagingException {
+        LOGGER.info("Sending email to: " + recipientEmail);
+        LOGGER.info("Message to be sent: " + htmlMessage);
+
+        EmailBuilder emailBuilder = new EmailBuilder(env);
+        emailBuilder.recipient(recipientEmail)
+                .subject(subject)
+                .htmlMessage(htmlMessage)
+                .sendEmail();
+    }
+
+    private String createHtmlEmailBody(Set<Surveillance> pendingSurveillance, Set<String> processingMessages) {
+        String htmlMessage = String.format(env.getProperty("surveillance.upload.body.begin"),
+                pendingSurveillance.size(),
+                env.getProperty("chplUrlBegin") + "/#/surveillance/confirm");
+        if (processingMessages.size() > 0) {
+            String htmlMessageList = "";
+            for (String msg : processingMessages) {
+                htmlMessageList += "<li>" + msg + "</li>";
+            }
+            htmlMessage += String.format("surveillance.upload.body.errors", htmlMessageList);
+        }
+        return htmlMessage;
     }
 
     private void setSecurityContext(UserDTO user) {

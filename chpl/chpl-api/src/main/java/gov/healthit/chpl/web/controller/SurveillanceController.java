@@ -468,7 +468,7 @@ public class SurveillanceController implements MessageSourceAware {
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody ResponseEntity<?> upload(@RequestParam("file") final MultipartFile file)
             throws ValidationException, MaxUploadSizeExceededException, EntityRetrievalException,
-            EntityCreationException, SchedulerException {
+            EntityCreationException, IOException, SchedulerException {
         SurveillanceUploadResult uploadResult = pendingSurveillanceManager.uploadPendingSurveillance(file);
 
         //Interpret the results...
