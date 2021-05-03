@@ -16,6 +16,10 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2()
 public class SurveillanceReportingActivityJob implements Job {
+    public static final String JOB_NAME = "surveillanceReportingActivityJob";
+    public static final String START_DATE_KEY = "start-date";
+    public static final String END_DATE_KEY = "end-date";
+
     @Autowired
     private SurveillanceActivityReportDataGatherer dataGatherer;
 

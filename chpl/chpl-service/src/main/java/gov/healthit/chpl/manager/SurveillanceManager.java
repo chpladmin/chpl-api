@@ -2,13 +2,15 @@ package gov.healthit.chpl.manager;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import gov.healthit.chpl.caching.CacheNames;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.quartz.JobDataMap;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Lazy;
@@ -20,6 +22,7 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.auth.UserPermissionDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
@@ -28,6 +31,8 @@ import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.auth.Authority;
+import gov.healthit.chpl.domain.schedule.ChplJob;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityDocument;
@@ -51,6 +56,9 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.scheduler.job.developer.MergeDeveloperJob;
+import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceReportingActivityJob;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceCreationValidator;
 import gov.healthit.chpl.validation.surveillance.SurveillanceReadValidator;
@@ -64,6 +72,7 @@ public class SurveillanceManager extends SecuredManager {
     private CertifiedProductDAO cpDao;
     private CertifiedProductDetailsManager cpDetailsManager;
     private ActivityManager activityManager;
+    private SchedulerManager schedulerManager;
     private SurveillanceReadValidator survReadValidator;
     private SurveillanceUpdateWithAuthorityValidator survWithAuthorityValidator;
     private SurveillanceCreationValidator survCreationValidator;
@@ -72,10 +81,11 @@ public class SurveillanceManager extends SecuredManager {
     private Environment env;
     private ResourcePermissions resourcePermissions;
 
+    @SuppressWarnings("checkstyle:parameterNumber")
     @Autowired
     public SurveillanceManager(SurveillanceDAO survDao, CertifiedProductDAO cpDao,
             @Lazy CertifiedProductDetailsManager cpDetailsManager, ActivityManager activityManager,
-            SurveillanceReadValidator survReadValidator,
+            SchedulerManager schedulerManager, SurveillanceReadValidator survReadValidator,
             SurveillanceCreationValidator survCreationValidator,
             SurveillanceUpdateWithAuthorityValidator survWithAuthorityValidator,
             UserPermissionDAO userPermissionDao,
@@ -84,6 +94,7 @@ public class SurveillanceManager extends SecuredManager {
         this.cpDao = cpDao;
         this.cpDetailsManager = cpDetailsManager;
         this.activityManager = activityManager;
+        this.schedulerManager = schedulerManager;
         this.survWithAuthorityValidator = survWithAuthorityValidator;
         this.survCreationValidator = survCreationValidator;
         this.survReadValidator = survReadValidator;
@@ -228,6 +239,28 @@ public class SurveillanceManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).DELETE_DOCUMENT, #documentId)")
     public void deleteNonconformityDocument(Long documentId) throws EntityRetrievalException {
         survDao.deleteNonconformityDocument(documentId);
+    }
+
+    public Boolean submitActivityReportRequest(LocalDate start, LocalDate end) throws ValidationException {
+        ChplOneTimeTrigger surveillanceActivityReportTrigger = new ChplOneTimeTrigger();
+        ChplJob surveillanceActivityReportJob = new ChplJob();
+        surveillanceActivityReportJob.setName(MergeDeveloperJob.JOB_NAME);
+        surveillanceActivityReportJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put(SurveillanceReportingActivityJob.START_DATE_KEY, start);
+        jobDataMap.put(SurveillanceReportingActivityJob.END_DATE_KEY, end);
+        jobDataMap.put(MergeDeveloperJob.USER_KEY, AuthUtil.getCurrentUser().getId());
+        surveillanceActivityReportJob.setJobDataMap(jobDataMap);
+        surveillanceActivityReportTrigger.setJob(surveillanceActivityReportJob);
+        surveillanceActivityReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
+        try {
+            surveillanceActivityReportTrigger = schedulerManager.createBackgroundJobTrigger(surveillanceActivityReportTrigger);
+            return true;
+        } catch (SchedulerException e) {
+            LOGGER.error("Could not schedule 'surveillanceActivityReportTrigger'.");
+            LOGGER.catching(e);
+            return false;
+        }
     }
 
     private void validateSurveillanceUpdate(Surveillance existingSurv, Surveillance updatedSurv) {

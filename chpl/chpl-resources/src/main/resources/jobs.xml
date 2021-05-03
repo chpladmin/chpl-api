@@ -716,7 +716,7 @@
         <!-- Job fired when a new surveillance activity (by date) is requested -->
         <job>
             <name>surveillanceReportingActivityJob</name>
-            <group>systemJobs</group>
+            <group>chplBackgroundJobs</group>
             <description>Build Excel spreadsheet based on surveillances open during a time range</description>
             <job-class>gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceReportingActivityJob</job-class>
             <durability>true</durability>
