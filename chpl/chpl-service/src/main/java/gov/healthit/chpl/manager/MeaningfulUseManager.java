@@ -1,5 +1,13 @@
 package gov.healthit.chpl.manager;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.List;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +49,8 @@ public class MeaningfulUseManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).UPLOAD_MUU)")
     public ChplOneTimeTrigger processUploadAsJob(MultipartFile file, Long accurateAsOfDate)
-            throws EntityCreationException, EntityRetrievalException, ValidationException, SchedulerException {
+            throws EntityCreationException, EntityRetrievalException, ValidationException,
+            IOException, SchedulerException {
         if (file.isEmpty()) {
             throw new ValidationException("You cannot upload an empty file!");
         }
@@ -52,6 +61,7 @@ public class MeaningfulUseManager {
         }
 
         String data = fileUtils.readFileAsString(file);
+        checkForFailureConditions(data);
         UserDTO jobUser = null;
         try {
             jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
@@ -72,5 +82,36 @@ public class MeaningfulUseManager {
         uploadMuuTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
         uploadMuuTrigger = schedulerManager.createBackgroundJobTrigger(uploadMuuTrigger);
         return uploadMuuTrigger;
+    }
+
+    private void checkForFailureConditions(String fileContents) throws IOException, ValidationException {
+        checkDataFormat(fileContents);
+        checkFileCanBeReadAndMultipleRowsExist(fileContents);
+    }
+
+    private void checkDataFormat(String fileContents) throws ValidationException {
+        //MUU job data is formatted like "date;all,csv,data"
+        String[] muuDateCsvSplit = fileContents.split(";");
+        if (muuDateCsvSplit == null || muuDateCsvSplit.length != 2) {
+            String msg = "Could not split ;" + fileContents + "; with ';' "
+                    + "into an array of length 2. Cannot process MUU job.";
+            throw new ValidationException(msg);
+        }
+    }
+
+    private void checkFileCanBeReadAndMultipleRowsExist(String fileContents) throws IOException, ValidationException  {
+        try (BufferedReader reader = new BufferedReader(new StringReader(fileContents));
+                CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL)) {
+
+            List<CSVRecord> records = parser.getRecords();
+            if (records.size() <= 1) {
+                String msg = "The file appears to have a header line with no other information. "
+                        + "Please make sure there are at least two rows in the CSV file.";
+                throw new ValidationException(msg);
+            }
+        } catch (IOException ex) {
+            LOGGER.error("Cannot read file as CSV: " + ex.getMessage());
+            throw ex;
+        }
     }
 }

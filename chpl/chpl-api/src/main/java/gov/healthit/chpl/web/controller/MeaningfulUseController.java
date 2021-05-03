@@ -1,5 +1,7 @@
 package gov.healthit.chpl.web.controller;
 
+import java.io.IOException;
+
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,7 +42,7 @@ public class MeaningfulUseController {
             @RequestParam("file") MultipartFile file,
             @RequestParam("accurate_as_of") Long accurateAsOfDate)
             throws EntityRetrievalException, EntityCreationException, ValidationException,
-            SchedulerException, MaxUploadSizeExceededException {
+            SchedulerException, IOException, MaxUploadSizeExceededException {
         return muuManager.processUploadAsJob(file, accurateAsOfDate);
     }
 }
