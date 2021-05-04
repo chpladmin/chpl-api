@@ -10,9 +10,14 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
 import gov.healthit.chpl.entity.surveillance.SurveillanceBasicEntity;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Data
+@NoArgsConstructor
 @Table(name = "complaint_surveillance_map")
 public class ComplaintSurveillanceMapEntity {
     @Id
@@ -41,79 +46,12 @@ public class ComplaintSurveillanceMapEntity {
     @Transient
     private SurveillanceBasicEntity surveillance;
 
-    public ComplaintSurveillanceMapEntity() {
-
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Long getComplaintId() {
-        return complaintId;
-    }
-
-    public void setComplaintId(final Long complaintId) {
-        this.complaintId = complaintId;
-    }
-
-    public Long getSurveillanceId() {
-        return surveillanceId;
-    }
-
-    public void setSurveillanceId(final Long surveillanceId) {
-        this.surveillanceId = surveillanceId;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public Date getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public SurveillanceBasicEntity getSurveillance() {
-        return surveillance;
-    }
-
-    public void setSurveillance(SurveillanceBasicEntity surveillance) {
-        this.surveillance = surveillance;
-    }
-
-    @Override
-    public String toString() {
-        return "ComplaintSurveillanceMapEntity [id=" + id + ", complaintId=" + complaintId + ", surveillanceId="
-                + surveillanceId + ", creationDate=" + creationDate + ", lastModifiedDate=" + lastModifiedDate
-                + ", lastModifiedUser=" + lastModifiedUser + ", deleted=" + deleted + ", surveillance=" + surveillance
-                + "]";
+    public ComplaintSurveillanceMap buildComplaintSurveillanceMap() {
+        return ComplaintSurveillanceMap.builder()
+            .complaintId(this.getComplaintId())
+            .id(this.getId())
+            .surveillanceId(this.getSurveillanceId())
+            .surveillance(this.getSurveillance() != null ? this.getSurveillance().buildSurveillanceBasic() : null)
+            .build();
     }
 }

@@ -13,9 +13,11 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.domain.Address;
+import lombok.Data;
 
 @Entity
+@Data
 @Table(name = "address")
 public class AddressEntity implements Serializable {
     private static final long serialVersionUID = 762431901700320834L;
@@ -72,92 +74,15 @@ public class AddressEntity implements Serializable {
     @Column(nullable = false)
     private Boolean deleted;
 
-    public Long getId() {
-        return id;
+    public Address buildAddress() {
+        return Address.builder()
+        .addressId(this.getId())
+        .city(this.getCity())
+        .country(this.getCountry())
+        .line1(this.getStreetLineOne())
+        .line2(this.getStreetLineTwo())
+        .state(this.getState())
+        .zipcode(this.getZipcode())
+        .build();
     }
-
-    public void setId(final Long long1) {
-        this.id = long1;
-    }
-
-    public String getStreetLineOne() {
-        return streetLineOne;
-    }
-
-    public void setStreetLineOne(final String streetLineOne) {
-        this.streetLineOne = streetLineOne;
-    }
-
-    public String getStreetLineTwo() {
-        return streetLineTwo;
-    }
-
-    public void setStreetLineTwo(final String streetLineTwo) {
-        this.streetLineTwo = streetLineTwo;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(final String city) {
-        this.city = city;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(final String state) {
-        this.state = state;
-    }
-
-    public String getZipcode() {
-        return zipcode;
-    }
-
-    public void setZipcode(final String zipcode) {
-        this.zipcode = zipcode;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(final String country) {
-        this.country = country;
-    }
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
 }

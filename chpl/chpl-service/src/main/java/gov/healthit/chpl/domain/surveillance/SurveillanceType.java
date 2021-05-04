@@ -11,9 +11,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 
 import gov.healthit.chpl.dto.SurveillanceTypeDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SurveillanceType implements Serializable {
     private static final long serialVersionUID = 5788880200952752783L;
 
@@ -32,8 +38,6 @@ public class SurveillanceType implements Serializable {
     @XmlElement(required = true)
     private String name;
 
-    public SurveillanceType() {
-    }
 
     public SurveillanceType(SurveillanceTypeDTO dto) {
         BeanUtils.copyProperties(dto, this);

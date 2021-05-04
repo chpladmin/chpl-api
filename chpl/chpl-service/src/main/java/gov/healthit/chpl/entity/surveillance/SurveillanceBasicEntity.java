@@ -13,9 +13,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;
+import lombok.Data;
 
 @Entity
+@Data
 @Table(name = "surveillance_basic")
 public class SurveillanceBasicEntity {
 
@@ -70,141 +72,20 @@ public class SurveillanceBasicEntity {
     @Transient
     private String chplProductNumber;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Date getStartDate() {
-        return Util.getNewDate(startDate);
-    }
-
-    public void setStartDate(final Date startDate) {
-        this.startDate = Util.getNewDate(startDate);
-    }
-
-    public Date getEndDate() {
-        return Util.getNewDate(endDate);
-    }
-
-    public void setEndDate(final Date endDate) {
-        this.endDate = Util.getNewDate(endDate);
-    }
-
-    public Integer getNumRandomizedSites() {
-        return numRandomizedSites;
-    }
-
-    public void setNumRandomizedSites(final Integer numRandomizedSites) {
-        this.numRandomizedSites = numRandomizedSites;
-    }
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Long getCertifiedProductId() {
-        return certifiedProductId;
-    }
-
-    public void setCertifiedProductId(final Long certifiedProductId) {
-        this.certifiedProductId = certifiedProductId;
-    }
-
-    public Long getSurveillanceTypeId() {
-        return surveillanceTypeId;
-    }
-
-    public void setSurveillanceTypeId(final Long surveillanceTypeId) {
-        this.surveillanceTypeId = surveillanceTypeId;
-    }
-
-    public SurveillanceTypeEntity getSurveillanceType() {
-        return surveillanceType;
-    }
-
-    public void setSurveillanceType(final SurveillanceTypeEntity surveillanceType) {
-        this.surveillanceType = surveillanceType;
-    }
-
-    public String getFriendlyId() {
-        return friendlyId;
-    }
-
-    public void setFriendlyId(final String friendlyId) {
-        this.friendlyId = friendlyId;
-    }
-
-    public Long getUserPermissionId() {
-        return userPermissionId;
-    }
-
-    public void setUserPermissionId(final Long userPermissionId) {
-        this.userPermissionId = userPermissionId;
-    }
-
-    public String getChplProductNumber() {
-        return chplProductNumber;
-    }
-
-    public void setChplProductNumber(String chplProductNumber) {
-        this.chplProductNumber = chplProductNumber;
-    }
-
-    @Override
-    public String toString() {
-        return "SurveillanceBasicEntity [id=" + id + ", friendlyId=" + friendlyId + ", certifiedProductId="
-                + certifiedProductId + ", startDate=" + startDate + ", endDate=" + endDate + ", surveillanceTypeId="
-                + surveillanceTypeId + ", surveillanceType=" + surveillanceType + ", numRandomizedSites="
-                + numRandomizedSites + ", deleted=" + deleted + ", lastModifiedUser=" + lastModifiedUser
-                + ", creationDate=" + creationDate + ", lastModifiedDate=" + lastModifiedDate + ", userPermissionId="
-                + userPermissionId + ", chplProductNumber=" + chplProductNumber + "]";
-    }
-
-    public Integer getNumOpenNonconformities() {
-        return numOpenNonconformities;
-    }
-
-    public void setNumOpenNonconformities(final Integer numOpenNonconformities) {
-        this.numOpenNonconformities = numOpenNonconformities;
-    }
-
-    public Integer getNumClosedNonconformities() {
-        return numClosedNonconformities;
-    }
-
-    public void setNumClosedNonconformities(final Integer numClosedNonconformities) {
-        this.numClosedNonconformities = numClosedNonconformities;
+    public SurveillanceBasic buildSurveillanceBasic() {
+        return SurveillanceBasic.builder()
+                .certifiedProductId(this.getCertifiedProductId())
+                .chplProductNumber(this.getChplProductNumber())
+                .endDate(this.getEndDate())
+                .friendlyId(this.getFriendlyId())
+                .id(this.getId())
+                .numClosedNonconformities(this.getNumClosedNonconformities())
+                .numOpenNonconformities(this.getNumOpenNonconformities())
+                .numRandomizedSites(this.getNumRandomizedSites())
+                .startDate(this.getStartDate())
+                .surveillanceType(this.getSurveillanceType() != null ? this.getSurveillanceType().buildSurveillanceType() : null)
+                .surveillanceTypeId(this.getSurveillanceTypeId())
+                .userPermissionId(this.getUserPermissionId())
+            .build();
     }
 }

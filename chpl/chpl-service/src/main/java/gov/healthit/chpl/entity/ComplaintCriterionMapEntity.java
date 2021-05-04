@@ -10,7 +10,11 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import gov.healthit.chpl.domain.complaint.ComplaintCriterionMap;
+import lombok.Data;
+
 @Entity
+@Data
 @Table(name = "complaint_criterion_map")
 public class ComplaintCriterionMapEntity {
     @Id
@@ -39,72 +43,12 @@ public class ComplaintCriterionMapEntity {
     @Transient
     private CertificationCriterionEntity certificationCriterion;
 
-    public ComplaintCriterionMapEntity() {
-
+    public ComplaintCriterionMap buildComplaintCriterionMap() {
+        return ComplaintCriterionMap.builder()
+        .certificationCriterionId(this.getCertificationCriterionId())
+        .certificationCriterion(this.getCertificationCriterion() != null ? this.getCertificationCriterion().buildCertificationCriterion() : null)
+        .complaintId(this.getComplaintId())
+        .id(this.getId())
+        .build();
     }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Long getComplaintId() {
-        return complaintId;
-    }
-
-    public void setComplaintId(final Long complaintId) {
-        this.complaintId = complaintId;
-    }
-
-    public Long getCertificationCriterionId() {
-        return certificationCriterionId;
-    }
-
-    public void setCertificationCriterionId(final Long certificationCriterionId) {
-        this.certificationCriterionId = certificationCriterionId;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public Date getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public CertificationCriterionEntity getCertificationCriterion() {
-        return certificationCriterion;
-    }
-
-    public void setCertificationCriterion(CertificationCriterionEntity certificationCriterion) {
-        this.certificationCriterion = certificationCriterion;
-    }
-
 }

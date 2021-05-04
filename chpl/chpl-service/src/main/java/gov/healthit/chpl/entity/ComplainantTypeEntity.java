@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.domain.complaint.ComplainantType;
 import lombok.Data;
 
 @Entity
@@ -37,4 +38,11 @@ public class ComplainantTypeEntity {
 
     @Column(name = "deleted", nullable = false)
     private Boolean deleted;
+
+    public ComplainantType buildComplainantType() {
+        return ComplainantType.builder()
+            .id(this.getId())
+            .name(this.getName())
+            .build();
+    }
 }
