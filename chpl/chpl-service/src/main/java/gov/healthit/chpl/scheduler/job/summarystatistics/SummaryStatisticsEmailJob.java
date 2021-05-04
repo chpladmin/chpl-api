@@ -32,6 +32,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatistics;
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.DeveloperStatisticsSectionCreator;
+import gov.healthit.chpl.scheduler.job.summarystatistics.email.DirectReviewStatisticsSectionCreator;
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.ListingStatisticsSectionCreator;
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.NonConformityStatisticsSectionCreator;
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.ProductStatisticsSectionCreator;
@@ -117,6 +118,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         ListingStatisticsSectionCreator listingStatisticsSectionCreator = new ListingStatisticsSectionCreator();
         SurveillanceStatisticsSectionCreator surveillanceStatisticsSectionCreator = new SurveillanceStatisticsSectionCreator();
         NonConformityStatisticsSectionCreator nonConformityStatisticsSectionCreator = new NonConformityStatisticsSectionCreator();
+        DirectReviewStatisticsSectionCreator directReviewStatisticsSectionCreator = new DirectReviewStatisticsSectionCreator();
 
         emailMessage.append(createMessageHeader(endDate));
         emailMessage.append(developerStatisticsSectionCreator.build(stats, activeAcbs));
@@ -124,6 +126,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         emailMessage.append(listingStatisticsSectionCreator.build(stats, activeAcbs));
         emailMessage.append(surveillanceStatisticsSectionCreator.build(stats, activeAcbs));
         emailMessage.append(nonConformityStatisticsSectionCreator.build(stats, activeAcbs));
+        emailMessage.append(directReviewStatisticsSectionCreator.build(stats));
 
         return emailMessage.toString();
     }

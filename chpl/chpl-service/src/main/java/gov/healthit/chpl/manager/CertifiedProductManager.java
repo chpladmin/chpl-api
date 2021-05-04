@@ -212,6 +212,7 @@ public class CertifiedProductManager extends SecuredManager {
     private ResourcePermissions resourcePermissions;
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
+    private PendingCertifiedProductManager pcpManager;
     private ActivityManager activityManager;
     private ListingValidatorFactory validatorFactory;
     private CuresUpdateService curesUpdateService;
@@ -251,6 +252,7 @@ public class CertifiedProductManager extends SecuredManager {
             FuzzyChoicesDAO fuzzyChoicesDao, ResourcePermissions resourcePermissions,
             CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
+            PendingCertifiedProductManager pcpManager,
             ActivityManager activityManager, ListingValidatorFactory validatorFactory,
             CuresUpdateService curesUpdateService,
             CertificationCriterionService criteriaService) {
@@ -294,6 +296,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.resourcePermissions = resourcePermissions;
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
+        this.pcpManager = pcpManager;
         this.activityManager = activityManager;
         this.validatorFactory = validatorFactory;
         this.curesUpdateService = curesUpdateService;
@@ -813,15 +816,10 @@ public class CertifiedProductManager extends SecuredManager {
                                 // try to look up by name and edition
                                 TestStandardDTO foundTestStandard = testStandardDao.getByNumberAndEdition(std.getName(),
                                         pendingCp.getCertificationEditionId());
-                                if (foundTestStandard == null) {
-                                    // if not found create a new test standard
-                                    TestStandardDTO ts = new TestStandardDTO();
-                                    ts.setName(std.getName());
-                                    ts.setCertificationEditionId(pendingCp.getCertificationEditionId());
-                                    ts = testStandardDao.create(ts);
-                                    stdDto.setTestStandardId(ts.getId());
-                                } else {
+                                if (foundTestStandard != null) {
                                     stdDto.setTestStandardId(foundTestStandard.getId());
+                                } else {
+                                    LOGGER.error("Will not insert test standard with null id. Name was " + std.getName());
                                 }
                             } else {
                                 stdDto.setTestStandardId(std.getTestStandardId());
@@ -1028,6 +1026,7 @@ public class CertifiedProductManager extends SecuredManager {
         curesEvent.setCertifiedProductId(newCertifiedProduct.getId());
         curesUpdateDao.create(curesEvent);
 
+        pcpManager.confirm(pendingCp.getCertificationBodyId(), pendingCp.getId());
         return newCertifiedProduct;
     }
 
@@ -1113,23 +1112,6 @@ public class CertifiedProductManager extends SecuredManager {
             throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, EntityCreationException,
             InvalidArgumentsException, IOException, ValidationException, MissingReasonException {
 
-        return update(updateRequest, true);
-    }
-
-
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).UPDATE, #updateRequest)")
-    @Transactional(rollbackFor = {
-            EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
-            AccessDeniedException.class, InvalidArgumentsException.class
-    })
-    @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.COLLECTIONS_LISTINGS
-    }, allEntries = true)
-    public CertifiedProductDTO update(ListingUpdateRequest updateRequest, Boolean logActivity)
-            throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, EntityCreationException,
-            InvalidArgumentsException, IOException, ValidationException, MissingReasonException {
-
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
         CertifiedProductSearchDetails existingListing = certifiedProductDetailsManager
                 .getCertifiedProductDetails(updatedListing.getId());
@@ -1149,9 +1131,7 @@ public class CertifiedProductManager extends SecuredManager {
         updateListingsChildData(existingListing, updatedListing);
 
         // Log the activity
-        if (logActivity) {
-            logCertifiedProductUpdateActivity(existingListing, updateRequest.getReason());
-        }
+        logCertifiedProductUpdateActivity(existingListing, updateRequest.getReason());
 
         return result;
     }
@@ -2414,7 +2394,7 @@ public class CertifiedProductManager extends SecuredManager {
 
     private Scheduler getScheduler() throws SchedulerException {
         StdSchedulerFactory sf = new StdSchedulerFactory();
-        sf.initialize("quartz.properties");
+        sf.initialize();
         Scheduler scheduler = sf.getScheduler();
         return scheduler;
     }

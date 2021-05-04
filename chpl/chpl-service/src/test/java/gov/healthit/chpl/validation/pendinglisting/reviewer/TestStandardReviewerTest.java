@@ -46,14 +46,14 @@ public class TestStandardReviewerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria."),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format("Criteria %s contains a test standard '%s' which does not "
-                        + "currently exist for edition %s. Please ensure this is correct before confirming.",
+                        + "currently exist for edition %s.",
                         i.getArgument(1), i.getArgument(2), i.getArgument(3)));
 
         reviewer = new TestStandardReviewer(testStandardDao, errorMessageUtil);
     }
 
     @Test
-    public void review_UnattestedCriterionWithoutTestStandards_NoWarning() {
+    public void review_UnattestedCriterionWithoutTestStandards_NoError() {
         PendingCertifiedProductDTO listing = PendingCertifiedProductDTO.builder()
                 .certificationDate(new Date())
                 .certificationEditionId(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId())
@@ -63,13 +63,12 @@ public class TestStandardReviewerTest {
                         .clearTestStandards()
                         .build())
                 .build();
-        listing.setWarningMessages(new HashSet<String>());
         reviewer.review(listing);
-        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
-    public void review_AttestedCriterionWithoutTestStandards_NoWarning() {
+    public void review_AttestedCriterionWithoutTestStandards_NoError() {
         PendingCertifiedProductDTO listing = PendingCertifiedProductDTO.builder()
                 .certificationDate(new Date())
                 .certificationEditionId(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId())
@@ -79,14 +78,13 @@ public class TestStandardReviewerTest {
                         .clearTestStandards()
                         .build())
                 .build();
-        listing.setWarningMessages(new HashSet<String>());
 
         reviewer.review(listing);
-        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
-    public void review_UnattestedCriterionWithExistingTestStandard_NoWarning() {
+    public void review_UnattestedCriterionWithExistingTestStandard_NoError() {
         PendingCertifiedProductDTO listing = PendingCertifiedProductDTO.builder()
                 .certificationDate(new Date())
                 .certificationEditionId(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId())
@@ -96,14 +94,13 @@ public class TestStandardReviewerTest {
                         .testStandard(getCertResultTestStandardDTO(1L, "mock"))
                         .build())
                 .build();
-        listing.setWarningMessages(new HashSet<String>());
 
         reviewer.review(listing);
-        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
-    public void review_AttestedCriterionWithExistingTestStandard_NoWarning() {
+    public void review_AttestedCriterionWithExistingTestStandard_NoError() {
         PendingCertifiedProductDTO listing = PendingCertifiedProductDTO.builder()
                 .certificationDate(new Date())
                 .certificationEditionId(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId())
@@ -113,14 +110,13 @@ public class TestStandardReviewerTest {
                         .testStandard(getCertResultTestStandardDTO(1L, "mock"))
                         .build())
                 .build();
-        listing.setWarningMessages(new HashSet<String>());
 
         reviewer.review(listing);
-        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
-    public void review_UnattestedCriterionExistingTestStandardWithoutId_NoWarning() {
+    public void review_UnattestedCriterionExistingTestStandardWithoutId_NoError() {
         PendingCertifiedProductDTO listing = PendingCertifiedProductDTO.builder()
                 .certificationDate(new Date())
                 .certificationEditionId(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId())
@@ -130,14 +126,13 @@ public class TestStandardReviewerTest {
                         .testStandard(getCertResultTestStandardDTO(null, "mock"))
                         .build())
                 .build();
-        listing.setWarningMessages(new HashSet<String>());
 
         reviewer.review(listing);
-        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
-    public void review_AttestedCriterionExistingTestStandardWithoutId_NoWarning() {
+    public void review_AttestedCriterionExistingTestStandardWithoutId_NoError() {
         PendingCertifiedProductDTO listing = PendingCertifiedProductDTO.builder()
                 .certificationDate(new Date())
                 .certificationEditionId(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId())
@@ -147,14 +142,13 @@ public class TestStandardReviewerTest {
                         .testStandard(getCertResultTestStandardDTO(null, "mock"))
                         .build())
                 .build();
-        listing.setWarningMessages(new HashSet<String>());
 
         reviewer.review(listing);
-        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
-    public void review_UnttestedCriterionNonexistentTestStandard_NoWarning() {
+    public void review_UnttestedCriterionNonexistentTestStandard_NoError() {
         PendingCertifiedProductDTO listing = PendingCertifiedProductDTO.builder()
                 .certificationDate(new Date())
                 .certificationEditionId(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId())
@@ -164,14 +158,13 @@ public class TestStandardReviewerTest {
                         .testStandard(getCertResultTestStandardDTO(2L, "does not exist"))
                         .build())
                 .build();
-        listing.setWarningMessages(new HashSet<String>());
 
         reviewer.review(listing);
-        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
-    public void review_AttestedCriterionNonexistentTestStandard_HasWarning() {
+    public void review_AttestedCriterionNonexistentTestStandard_HasError() {
         PendingCertifiedProductDTO listing = PendingCertifiedProductDTO.builder()
                 .certificationDate(new Date())
                 .certificationEditionId(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId())
@@ -181,14 +174,14 @@ public class TestStandardReviewerTest {
                         .testStandard(getCertResultTestStandardDTO(2L, "does not exist"))
                         .build())
                 .build();
-        listing.setWarningMessages(new HashSet<String>());
+        listing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(listing);
-        assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
     }
 
     @Test
-    public void review_UnattestedCriterionNonexistentTestStandardNoId_NoWarning() {
+    public void review_UnattestedCriterionNonexistentTestStandardNoId_NoError() {
         PendingCertifiedProductDTO listing = PendingCertifiedProductDTO.builder()
                 .certificationDate(new Date())
                 .certificationEditionId(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId())
@@ -198,14 +191,13 @@ public class TestStandardReviewerTest {
                         .testStandard(getCertResultTestStandardDTO(null, "does not exist"))
                         .build())
                 .build();
-        listing.setWarningMessages(new HashSet<String>());
 
         reviewer.review(listing);
-        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
-    public void review_AttestedCriterionNonexistentTestStandardNoId_HasWarning() {
+    public void review_AttestedCriterionNonexistentTestStandardNoId_HasError() {
         PendingCertifiedProductDTO listing = PendingCertifiedProductDTO.builder()
                 .certificationDate(new Date())
                 .certificationEditionId(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId())
@@ -215,10 +207,10 @@ public class TestStandardReviewerTest {
                         .testStandard(getCertResultTestStandardDTO(null, "does not exist"))
                         .build())
                 .build();
-        listing.setWarningMessages(new HashSet<String>());
+        listing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(listing);
-        assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
     }
 
     @Test
@@ -232,7 +224,6 @@ public class TestStandardReviewerTest {
                         .testStandard(getCertResultTestStandardDTO(1L, null))
                         .build())
                 .build();
-        listing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(listing);
         assertEquals(0, listing.getErrorMessages().size());

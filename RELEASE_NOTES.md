@@ -1,5 +1,47 @@
 # Release Notes
 
+## Version 29.3.0
+_4 May 2021_
+
+### Features
+* API Key registration requires confirmation of email
+* Add 'processing' flag to /certified_products/pending/metadata response
+
+### Bug Fixes
+* Remove applicable UCD Processes and Test Tasks if a criterion is edited to have SED = false
+* Mark pending listing as processing during confirm
+
+---
+
+## Version 29.2.0
+_19 April 2021_
+
+### Features
+* Add surveillance and non-conformity counts to developer hierarchy
+* Do not allow new test standards during upload/edit
+
+### Flagged Features
+* Basic listing validation for flexible uploads
+
+### Bug Fixes
+* Copy developerId value so it is available in /collections/certified_products response
+* Show correct criterion number when (e)(1) Cures Update is missing other required criteria
+
+---
+
+## Version 29.1.0
+_5 April 2021_
+
+### Features
+* Update the overnight job schedule
+* Remove G1/G2 Data Fix job
+* Add Direct Review information to Summary Statistics report
+* Display "Informed ONC per 170.523" in Complaints report
+* Filter a listing's direct reviews by listing status, edition
+* Add quartz job to get list of user-defined triggers in email
+
+---
+
 ## Version 29.0.0
 _22 March 2021_
 

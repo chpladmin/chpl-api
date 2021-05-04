@@ -32,7 +32,7 @@ public class TestingLabDAO extends BaseDAOImpl {
 
 
     @Transactional
-    public TestingLabDTO create(final TestingLabDTO dto) throws EntityCreationException, EntityRetrievalException {
+    public TestingLabDTO create(TestingLabDTO dto) throws EntityCreationException, EntityRetrievalException {
 
         TestingLabEntity entity = null;
         try {
@@ -65,7 +65,7 @@ public class TestingLabDAO extends BaseDAOImpl {
     }
 
     @Transactional
-    public TestingLabDTO update(final TestingLabDTO dto) throws EntityRetrievalException {
+    public TestingLabDTO update(TestingLabDTO dto) throws EntityRetrievalException {
         TestingLabEntity entity = this.getEntityById(dto.getId());
 
         if (entity == null) {
@@ -128,7 +128,7 @@ public class TestingLabDAO extends BaseDAOImpl {
         return dtos;
     }
 
-    public TestingLabDTO getById(final Long id) throws EntityRetrievalException {
+    public TestingLabDTO getById(Long id) throws EntityRetrievalException {
 
         TestingLabEntity entity = getEntityById(id);
         TestingLabDTO dto = null;
@@ -138,7 +138,7 @@ public class TestingLabDAO extends BaseDAOImpl {
         return dto;
     }
 
-    public TestingLabDTO getByName(final String name) {
+    public TestingLabDTO getByName(String name) {
         TestingLabEntity entity = getEntityByName(name);
         TestingLabDTO dto = null;
         if (entity != null) {
@@ -147,7 +147,27 @@ public class TestingLabDAO extends BaseDAOImpl {
         return dto;
     }
 
-    public List<TestingLabDTO> getByWebsite(final String website) {
+    public TestingLabDTO getByCode(String code) {
+        TestingLabEntity entity = null;
+        Query query = entityManager
+                .createQuery(
+                        "SELECT atl from TestingLabEntity atl "
+                                + "LEFT OUTER JOIN FETCH atl.address "
+                                + "WHERE (atl.deleted = false) "
+                                + "AND (UPPER(atl.testingLabCode) = :code) ",
+                        TestingLabEntity.class);
+        query.setParameter("code", code.toUpperCase());
+        List<TestingLabEntity> result = query.getResultList();
+
+        if (result.size() > 0) {
+            entity = result.get(0);
+        } else {
+            return null;
+        }
+        return new TestingLabDTO(entity);
+    }
+
+    public List<TestingLabDTO> getByWebsite(String website) {
         Query query = entityManager.createQuery("SELECT atl "
                 + "FROM TestingLabEntity atl "
                 + "LEFT OUTER JOIN FETCH atl.address "
@@ -199,13 +219,13 @@ public class TestingLabDAO extends BaseDAOImpl {
         return dtos;
     }
 
-    private void create(final TestingLabEntity entity) {
+    private void create(TestingLabEntity entity) {
 
         entityManager.persist(entity);
         entityManager.flush();
     }
 
-    private void update(final TestingLabEntity entity) {
+    private void update(TestingLabEntity entity) {
 
         entityManager.merge(entity);
         entityManager.flush();
@@ -218,7 +238,7 @@ public class TestingLabDAO extends BaseDAOImpl {
                     .getResultList();
     }
 
-    private TestingLabEntity getEntityById(final Long id) throws EntityRetrievalException {
+    private TestingLabEntity getEntityById(Long id) throws EntityRetrievalException {
 
         TestingLabEntity entity = null;
 
@@ -241,7 +261,7 @@ public class TestingLabDAO extends BaseDAOImpl {
         return entity;
     }
 
-    private TestingLabEntity getEntityByName(final String name) {
+    private TestingLabEntity getEntityByName(String name) {
         TestingLabEntity entity = null;
         Query query = entityManager
                 .createQuery(

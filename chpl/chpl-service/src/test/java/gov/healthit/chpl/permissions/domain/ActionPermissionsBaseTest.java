@@ -22,11 +22,7 @@ public abstract class ActionPermissionsBaseTest extends TestingUsers {
 
     public abstract void hasAccess_Onc() throws Exception;
 
-    public void hasAccess_OncStaff() throws Exception {
-        //TODO: Make this method abstract once this code is on staging
-        //and then add overridden versions of this method in any new permissions class
-        //(listingUpload permissions will need it, not sure if there will be others by then)
-    }
+    public abstract void hasAccess_OncStaff() throws Exception;
 
     public abstract void hasAccess_Acb() throws Exception;
 

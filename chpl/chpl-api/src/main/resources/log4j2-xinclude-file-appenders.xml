@@ -2,7 +2,8 @@
 <Appenders>
     <RollingFile name="loggable"
         fileName="${logDir}/loggable/loggable.log"
-        filePattern="${logDir}/loggable/history/loggable-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/loggable/history/loggable-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -13,7 +14,8 @@
     </RollingFile>
     <RollingFile name="chartDataCreatorJob"
         fileName="${logDir}/scheduler/chartDataCreatorJob.log"
-        filePattern="${logDir}/scheduler/history/chartDataCreatorJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/chartDataCreatorJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -24,7 +26,8 @@
     </RollingFile>
     <RollingFile name="summaryStatisticsEmailJob"
         fileName="${logDir}/scheduler/summaryStatisticsEmailJob.log"
-        filePattern="${logDir}/scheduler/history/summaryStatisticsEmailJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/summaryStatisticsEmailJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -35,7 +38,8 @@
     </RollingFile>
     <RollingFile name="summaryStatisticsCreatorJob"
         fileName="${logDir}/scheduler/summaryStatisticsCreatorJob.log"
-        filePattern="${logDir}/scheduler/history/summaryStatisticsCreatorJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/summaryStatisticsCreatorJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -46,7 +50,8 @@
     </RollingFile>
     <RollingFile name="urlStatusDataCollectorJob"
         fileName="${logDir}/scheduler/urlStatusDataCollectorJob.log"
-        filePattern="${logDir}/scheduler/history/urlStatusDataCollectorJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/urlStatusDataCollectorJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -57,7 +62,8 @@
     </RollingFile>
     <RollingFile name="questionableUrlReportGeneratorJob"
         fileName="${logDir}/scheduler/questionableUrlReportGeneratorJob.log"
-        filePattern="${logDir}/scheduler/history/questionableUrlReportGeneratorJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/questionableUrlReportGeneratorJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -68,7 +74,8 @@
     </RollingFile>
     <RollingFile name="certifiedProductDownloadableResourceCreatorJob"
         fileName="${logDir}/scheduler/certifiedProductDownloadableResourceCreatorJob.log"
-        filePattern="${logDir}/scheduler/history/certifiedProductDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/certifiedProductDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -79,7 +86,8 @@
     </RollingFile>
     <RollingFile name="g3Sed2015DownloadableResourceCreatorJob"
         fileName="${logDir}/scheduler/g3Sed2015DownloadableResourceCreatorJob.log"
-        filePattern="${logDir}/scheduler/history/g3Sed2015DownloadableResourceCreatorJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/g3Sed2015DownloadableResourceCreatorJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -90,7 +98,8 @@
     </RollingFile>
     <RollingFile name="surveillanceDownloadableResourceCreatorJob"
         fileName="${logDir}/scheduler/surveillanceDownloadableResourceCreatorJob.log"
-        filePattern="${logDir}/scheduler/history/surveillanceDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/surveillanceDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -101,7 +110,8 @@
     </RollingFile>
     <RollingFile name="brokenSurveillanceRulesCreatorJob"
         fileName="${logDir}/scheduler/brokenSurveillanceRulesCreatorJob.log"
-        filePattern="${logDir}/scheduler/history/brokenSurveillanceRulesCreatorJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/brokenSurveillanceRulesCreatorJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -112,7 +122,8 @@
     </RollingFile>
     <RollingFile name="brokenSurveillanceRulesEmailJob"
         fileName="${logDir}/scheduler/brokenSurveillanceRulesEmailJob.log"
-        filePattern="${logDir}/scheduler/history/brokenSurveillanceRulesEmailJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/brokenSurveillanceRulesEmailJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -123,7 +134,8 @@
     </RollingFile>
     <RollingFile name="inheritanceErrorsReportCreatorJob"
         fileName="${logDir}/scheduler/inheritanceErrorsReportCreatorJob.log"
-        filePattern="${logDir}/scheduler/history/inheritanceErrorsReportCreatorJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/inheritanceErrorsReportCreatorJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -134,7 +146,8 @@
     </RollingFile>
     <RollingFile name="inheritanceErrorsReportEmailJob"
         fileName="${logDir}/scheduler/inheritanceErrorsReportEmailJob.log"
-        filePattern="${logDir}/scheduler/history/inheritanceErrorsReportEmailJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/inheritanceErrorsReportEmailJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -145,7 +158,8 @@
     </RollingFile>
     <RollingFile name="cacheStatusAgeJob"
         fileName="${logDir}/scheduler/cacheStatusAgeJob.log"
-        filePattern="${logDir}/scheduler/history/cacheStatusAgeJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/cacheStatusAgeJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -156,7 +170,8 @@
     </RollingFile>
     <RollingFile name="triggerDeveloperBanJob"
         fileName="${logDir}/scheduler/triggerDeveloperBanJob.log"
-        filePattern="${logDir}/scheduler/history/triggerDeveloperBanJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/triggerDeveloperBanJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -167,7 +182,8 @@
     </RollingFile>
     <RollingFile name="splitDeveloperJob"
         fileName="${logDir}/scheduler/splitDeveloperJob.log"
-        filePattern="${logDir}/scheduler/history/splitDeveloperJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/splitDeveloperJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -178,7 +194,8 @@
     </RollingFile>
     <RollingFile name="mergeDeveloperJob"
         fileName="${logDir}/scheduler/mergeDeveloperJob.log"
-        filePattern="${logDir}/scheduler/history/mergeDeveloperJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/mergeDeveloperJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
         </PatternLayout>
@@ -189,7 +206,8 @@
     </RollingFile>
     <RollingFile name="apiKeyWarningEmailJob"
         fileName="${logDir}/scheduler/apiKeyWarningEmailJob.log"
-        filePattern="${logDir}/scheduler/history/apiKeyWarningEmailJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/apiKeyWarningEmailJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -200,7 +218,8 @@
     </RollingFile>
     <RollingFile name="apiKeyDeleteJob"
         fileName="${logDir}/scheduler/apiKeyDeleteJob.log"
-        filePattern="${logDir}/scheduler/history/apiKeyDeleteJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/apiKeyDeleteJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -211,7 +230,8 @@
     </RollingFile>
     <RollingFile name="questionableActivityEmailJob"
         fileName="${logDir}/scheduler/questionableActivityEmailJob.log"
-        filePattern="${logDir}/scheduler/history/questionableActivityEmailJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/questionableActivityEmailJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -222,7 +242,8 @@
     </RollingFile>
     <RollingFile name="pendingChangeRequestEmailJob"
         fileName="${logDir}/scheduler/pendingChangeRequestEmailJob.log"
-        filePattern="${logDir}/scheduler/history/pendingChangeRequestEmailJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/pendingChangeRequestEmailJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -233,7 +254,8 @@
     </RollingFile>
     <RollingFile name="interruptJob"
         fileName="${logDir}/scheduler/interruptJob.log"
-        filePattern="${logDir}/scheduler/history/interruptJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/interruptJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -244,7 +266,8 @@
     </RollingFile>
     <RollingFile name="massRequirePasswordChangeJob"
         fileName="${logDir}/scheduler/massRequirePasswordChangeJob.log"
-        filePattern="${logDir}/scheduler/history/massRequirePasswordChangeJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/massRequirePasswordChangeJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -255,7 +278,8 @@
     </RollingFile>
     <RollingFile name="updateListingStatusJob"
         fileName="${logDir}/scheduler/updateListingStatusJob.log"
-        filePattern="${logDir}/scheduler/history/updateListingStatusJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/updateListingStatusJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -266,7 +290,8 @@
     </RollingFile>
     <RollingFile name="realWorldTestingEligibilityJob"
         fileName="${logDir}/scheduler/realWorldTestingEligibilityJob.log"
-        filePattern="${logDir}/scheduler/history/realWorldTestingEligibilityJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/realWorldTestingEligibilityJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -277,7 +302,8 @@
     </RollingFile>
     <RollingFile name="directReviewDownloadableResourceCreatorJob"
         fileName="${logDir}/scheduler/directReviewDownloadableResourceCreatorJob.log"
-        filePattern="${logDir}/scheduler/history/directReviewDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/directReviewDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -288,7 +314,8 @@
     </RollingFile>
     <RollingFile name="directReviewCacheRefreshJob"
         fileName="${logDir}/scheduler/directReviewCacheRefreshJob.log"
-        filePattern="${logDir}/scheduler/history/directReviewCacheRefreshJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/directReviewCacheRefreshJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
         </PatternLayout>
@@ -299,7 +326,8 @@
     </RollingFile>
     <RollingFile name="developerAccessEmailJob"
         fileName="${logDir}/scheduler/developerAccessEmailJob.log"
-        filePattern="${logDir}/scheduler/history/developerAccessEmailJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/developerAccessEmailJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -310,7 +338,8 @@
     </RollingFile>
     <RollingFile name="cacheListenerActivity"
                  fileName="${logDir}/cache/cacheListenerActivity.log"
-                 filePattern="${logDir}/cache/history/cacheListenerActivity-%d{yyyy-MM-dd}.log">
+                 filePattern="${logDir}/cache/history/cacheListenerActivity-%d{yyyy-MM-dd}.log"
+                 filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -321,7 +350,8 @@
     </RollingFile>
     <RollingFile name="realWorldTestingUploadJob"
         fileName="${logDir}/scheduler/realWorldTestingUploadJob.log"
-        filePattern="${logDir}/scheduler/history/realWorldTestingUploadJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/realWorldTestingUploadJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -332,7 +362,8 @@
     </RollingFile>
     <RollingFile name="auditDataRetentionJob"
         fileName="${logDir}/scheduler/auditDataRetentionJob.log"
-        filePattern="${logDir}/scheduler/history/auditDataRetentionJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/auditDataRetentionJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -343,7 +374,8 @@
     </RollingFile>
     <RollingFile name="listingValidationReportCreatorJob"
         fileName="${logDir}/scheduler/listingValidationReportCreatorJob.log"
-        filePattern="${logDir}/scheduler/history/listingValidationReportCreatorJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/listingValidationReportCreatorJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -354,7 +386,8 @@
     </RollingFile>
     <RollingFile name="listingValidationReportEmailJob"
         fileName="${logDir}/scheduler/listingValidationReportEmailJob.log"
-        filePattern="${logDir}/scheduler/history/listingValidationReportEmailJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/listingValidationReportEmailJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
         </PatternLayout>
@@ -365,7 +398,8 @@
     </RollingFile>
     <RollingFile name="realWorldTestingReportEmailJob"
         fileName="${logDir}/scheduler/realWorldTestingReportEmailJob.log"
-        filePattern="${logDir}/scheduler/history/realWorldTestingReportEmailJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/realWorldTestingReportEmailJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
         </PatternLayout>
@@ -376,7 +410,8 @@
     </RollingFile>
     <RollingFile name="quarterlyReportGenerationJob"
         fileName="${logDir}/scheduler/quarterlyReportGenerationJob.log"
-        filePattern="${logDir}/scheduler/history/quarterlyReportGenerationJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/quarterlyReportGenerationJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
         </PatternLayout>
@@ -387,7 +422,8 @@
     </RollingFile>
     <RollingFile name="annualReportGenerationJob"
         fileName="${logDir}/scheduler/annualReportGenerationJob.log"
-        filePattern="${logDir}/scheduler/history/annualReportGenerationJob-%d{yyyy-MM-dd}.log">
+        filePattern="${logDir}/scheduler/history/annualReportGenerationJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
         </PatternLayout>
@@ -396,9 +432,20 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
-    <RollingFile name="measureFixJob"
-        fileName="${logDir}/scheduler/measureFixJob.log"
-        filePattern="${logDir}/scheduler/history/measureFixJob-%d{yyyy-MM-dd}.log">
+    <RollingFile name="userDefinedTriggersEmailJob"
+            fileName="${logDir}/scheduler/userDefinedTriggersEmailJob.log"
+            filePattern="${logDir}/scheduler/history/userDefinedTriggersEmailJob-%d{yyyy-MM-dd}.log">
+        <PatternLayout>
+            <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+        </PatternLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+    </RollingFile>
+    <RollingFile name="listingUploadValidationJob"
+        fileName="${logDir}/scheduler/listingUploadValidationJob.log"
+        filePattern="${logDir}/scheduler/history/listingUploadValidationJob-%d{yyyy-MM-dd}.log">
         <PatternLayout>
             <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
         </PatternLayout>

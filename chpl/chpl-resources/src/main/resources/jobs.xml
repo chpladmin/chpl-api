@@ -677,18 +677,38 @@
             </job-data-map>
         </job>
 
-        <!-- G1/G2 Measure Data Fix -->
+        <!-- Generate email report for User-Defined Quartz Triggers-->
         <job>
-            <name>G1/G2 Measure Data Fix</name>
-            <group>systemJobs</group>
-            <description>Fixes the G1/G2 Measure data </description>
-            <job-class>gov.healthit.chpl.scheduler.job.measurefix.MeasureFixJob</job-class>
+            <name>User-Defined Triggers Job</name>
+            <group>chplJobs</group>
+            <description>Sends a report containing a list of user-defined scheduled jobs.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.UserDefinedTriggersEmailJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>
                 <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN</value>
+                </entry>
+                <entry>
                     <key>frequency</key>
                     <value>DAILY</value>
+                </entry>
+            </job-data-map>
+        </job>
+
+        <!-- Job fired when a new listing is uploaded -->
+        <job>
+            <name>listingUploadValidationJob</name>
+            <group>chplBackgroundJobs</group>
+            <description>Complete the work of building, validating, and saving error/warning counts of an uploaded listing.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.ListingUploadValidationJob</job-class>
+            <durability>true</durability>
+            <recover>true</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ACB</value>
                 </entry>
             </job-data-map>
         </job>

@@ -15,7 +15,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.scheduler.job.summarystatistics.EditionCriteria;
@@ -29,18 +28,20 @@ public class EmailStatisticsCreator {
     private ListingDataCreator listingDataCreator;
     private SurveillanceDataCreator surveillanceDataCreator;
     private NonConformityDataCreator nonConformityDataCreator;
+    private DirectReviewDataCreator directReviewDataCreator;
     private Environment env;
 
     @Autowired
     public EmailStatisticsCreator(DeveloperDataCreator developerDataCreator, ProductDataCreator productDataCreator,
             ListingDataCreator listingDataCreator,  SurveillanceDataCreator surveillanceDataCreator,
-            NonConformityDataCreator nonConformityDataCreator, Environment env) {
+            NonConformityDataCreator nonConformityDataCreator, DirectReviewDataCreator directReviewDataCreator, Environment env) {
 
         this.developerDataCreator = developerDataCreator;
         this.productDataCreator = productDataCreator;
         this.listingDataCreator = listingDataCreator;
         this.surveillanceDataCreator = surveillanceDataCreator;
         this.nonConformityDataCreator = nonConformityDataCreator;
+        this.directReviewDataCreator = directReviewDataCreator;
         this.env = env;
     }
 
@@ -230,6 +231,37 @@ public class EmailStatisticsCreator {
             // Number of Closed CAPs
             futures.add(CompletableFuture.supplyAsync(() -> nonConformityDataCreator.getClosedCAPCountByAcb(), executorService)
                     .thenAccept(result -> stats.setNonconfCAPStatusClosed(result)));
+
+            /////////////////////////////////////////////////////////////////////////////////////
+            // Direct Review Statistics
+            /////////////////////////////////////////////////////////////////////////////////////
+            //Total # of Direct Review Activities
+            futures.add(CompletableFuture.supplyAsync(() -> directReviewDataCreator.getTotalDirectReviews(), executorService)
+                    .thenAccept(result -> stats.setTotalDirectReviews(result)));
+            //Open Direct Review Activities
+            futures.add(CompletableFuture.supplyAsync(() -> directReviewDataCreator.getOpenDirectReviews(), executorService)
+                    .thenAccept(result -> stats.setOpenDirectReviews(result)));
+            //Closed Direct Review Activities
+            futures.add(CompletableFuture.supplyAsync(() -> directReviewDataCreator.getClosedDirectReviews(), executorService)
+                    .thenAccept(result -> stats.setClosedDirectReviews(result)));
+            //Average Duration of Closed Direct Review Activities (in days)
+            futures.add(CompletableFuture.supplyAsync(() -> directReviewDataCreator.getAverageTimeToCloseDirectReview(), executorService)
+                    .thenAccept(result -> stats.setAverageDaysOpenDirectReviews(result)));
+            //Total # of Direct Review NCs
+            futures.add(CompletableFuture.supplyAsync(() -> directReviewDataCreator.getTotalNonConformities(), executorService)
+                    .thenAccept(result -> stats.setTotalNonConformities(result)));
+            //Open NCs
+            futures.add(CompletableFuture.supplyAsync(() -> directReviewDataCreator.getOpenNonConformities(), executorService)
+                    .thenAccept(result -> stats.setOpenNonConformities(result)));
+            //Closed NCs
+            futures.add(CompletableFuture.supplyAsync(() -> directReviewDataCreator.getClosedNonConformities(), executorService)
+                    .thenAccept(result -> stats.setClosedNonConformities(result)));
+            //Number of Open CAPs
+            futures.add(CompletableFuture.supplyAsync(() -> directReviewDataCreator.getOpenCaps(), executorService)
+                    .thenAccept(result -> stats.setOpenCaps(result)));
+            //Number of Closed CAPs
+            futures.add(CompletableFuture.supplyAsync(() -> directReviewDataCreator.getClosedCaps(), executorService)
+                    .thenAccept(result -> stats.setClosedCaps(result)));
 
             CompletableFuture<Void> combinedFutures = CompletableFuture
                     .allOf(futures.toArray(new CompletableFuture[futures.size()]));

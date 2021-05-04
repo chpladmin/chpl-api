@@ -14,6 +14,7 @@ import gov.healthit.chpl.dao.ChplProductNumberDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -29,9 +30,17 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ChplProductNumberUtil {
     public static final int EDITION_CODE_INDEX = 0;
+    public static final String EDITION_CODE_REGEX = "^[0-9]{" + ChplProductNumberUtil.EDITION_CODE_LENGTH + "}$";
+    public static final int EDITION_CODE_LENGTH = 2;
     public static final int ATL_CODE_INDEX = 1;
+    public static final String ATL_CODE_REGEX = "^[0-9]{" + ChplProductNumberUtil.ATL_CODE_LENGTH + "}$";
+    public static final int ATL_CODE_LENGTH = 2;
     public static final int ACB_CODE_INDEX = 2;
+    public static final String ACB_CODE_REGEX = "^[0-9]{" + ChplProductNumberUtil.ACB_CODE_LENGTH + "}$";
+    public static final int ACB_CODE_LENGTH = 2;
     public static final int DEVELOPER_CODE_INDEX = 3;
+    public static final String DEVELOPER_CODE_REGEX = "^[0-9]{" + ChplProductNumberUtil.DEVELOPER_CODE_LENGTH + "}|XXXX$";
+    public static final int DEVELOPER_CODE_LENGTH = 4;
     public static final int PRODUCT_CODE_INDEX = 4;
     public static final String PRODUCT_CODE_REGEX = "^[a-zA-Z0-9_]{" + ChplProductNumberUtil.PRODUCT_CODE_LENGTH + "}$";
     public static final int PRODUCT_CODE_LENGTH = 4;
@@ -251,7 +260,7 @@ public class ChplProductNumberUtil {
         return parts;
     }
 
-    public boolean isLegacy(String chplProductNumber) {
+    public boolean isLegacyChplProductNumberStyle(String chplProductNumber) {
         if (!StringUtils.isEmpty(chplProductNumber) && chplProductNumber.length() == LEGACY_ID_LENGTH
                 && chplProductNumber.startsWith(LEGACY_ID_BEGIN)) {
             return true;
@@ -259,11 +268,24 @@ public class ChplProductNumberUtil {
         return false;
     }
 
-    public Integer getIcsCode(String chplProductNumber) {
-        Integer icsCode = null;
-        if (!isLegacy(chplProductNumber)) {
+    public boolean isCurrentChplProductNumberStyle(String chplProductNumber) {
+        if (!StringUtils.isEmpty(chplProductNumber)) {
             String[] uniqueIdParts = chplProductNumber.split("\\.");
-            icsCode = Integer.valueOf(uniqueIdParts[ChplProductNumberUtil.ICS_CODE_INDEX]);
+            if (uniqueIdParts.length == ChplProductNumberUtil.CHPL_PRODUCT_ID_PARTS) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Integer getIcsCode(String chplProductNumber) {
+        ChplProductNumberParts parts = parseChplProductNumber(chplProductNumber);
+        String icsCodeStr = parts.getIcsCode();
+        Integer icsCode = null;
+        try {
+            icsCode = Integer.valueOf(icsCodeStr);
+        } catch (NumberFormatException ex) {
+            LOGGER.error("Cannot convert " + icsCodeStr + " to an integer.");
         }
         return icsCode;
     }
@@ -296,9 +318,19 @@ public class ChplProductNumberUtil {
         return parts.getAcbCode();
     }
 
+    public String getAtlCode(String chplProductNumber) {
+        ChplProductNumberParts parts = parseChplProductNumber(chplProductNumber);
+        return parts.getAtlCode();
+    }
+
     public String getCertificationDateCode(String chplProductNumber) {
         ChplProductNumberParts parts = parseChplProductNumber(chplProductNumber);
         return parts.getCertifiedDateCode();
+    }
+
+    public String getAdditionalSoftwareCode(String chplProductNumber) {
+        ChplProductNumberParts parts = parseChplProductNumber(chplProductNumber);
+        return parts.getAdditionalSoftwareCode();
     }
 
     public String getCertificationEditionCode(String chplProductNumber) {
@@ -338,7 +370,7 @@ public class ChplProductNumberUtil {
 
     private String getTestingLabCode(final List<PendingCertifiedProductTestingLabDTO> testingLabs) {
         if (testingLabs.size() > 1) {
-            return "99";
+            return TestingLab.MULTIPLE_TESTING_LABS_CODE;
         } else {
             TestingLabDTO dto = testingLabDAO.getByName(testingLabs.get(0).getTestingLabName());
             if (dto != null) {

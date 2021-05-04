@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.apache.commons.validator.routines.EmailValidator;
+
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import lombok.extern.log4j.Log4j2;
@@ -96,4 +98,7 @@ public final class Util {
                   .collect(Collectors.toList());
     }
 
+    public static boolean isEmailAddressValidFormat(String email) {
+        return EmailValidator.getInstance().isValid(email);
+    }
 }

@@ -66,10 +66,10 @@ public class ComplaintsWorksheetBuilder {
     private static final int COL_COMPLAINANT_CONTACTED = 15;
     private static final int COL_DEVELOPER_CONTACTED = 16;
     private static final int COL_ATL_CONTACTED = 17;
-    private static final int COL_COMPLAINT_STATUS = 18;
-    private static final int COL_FLAGGED_FOR_ONC = 19;
+    private static final int COL_FLAGGED_FOR_ONC = 18;
+    private static final int COL_COMPLAINT_STATUS = 19;
     private static final int[] HIDDEN_COLS = {
-            COL_DEVELOPER, COL_PRODUCT, COL_VERSION, COL_FLAGGED_FOR_ONC
+            COL_DEVELOPER, COL_PRODUCT, COL_VERSION
     };
 
     private ComplaintManager complaintManager;
@@ -134,8 +134,8 @@ public class ComplaintsWorksheetBuilder {
         sheet.setColumnWidth(COL_COMPLAINANT_CONTACTED, sharedColWidth);
         sheet.setColumnWidth(COL_DEVELOPER_CONTACTED, sharedColWidth);
         sheet.setColumnWidth(COL_ATL_CONTACTED, sharedColWidth);
-        sheet.setColumnWidth(COL_COMPLAINT_STATUS, sharedColWidth);
         sheet.setColumnWidth(COL_FLAGGED_FOR_ONC, sharedColWidth);
+        sheet.setColumnWidth(COL_COMPLAINT_STATUS, sharedColWidth);
 
         lastDataRow += addHeadingRow(workbook, sheet);
         lastDataRow += addTableData(workbook, sheet, quarterlyReports);
@@ -238,8 +238,8 @@ public class ComplaintsWorksheetBuilder {
         addHeadingCell(workbook, row, COL_COMPLAINANT_CONTACTED, "Complainant Contacted");
         addHeadingCell(workbook, row, COL_DEVELOPER_CONTACTED, "Developer Contacted");
         addHeadingCell(workbook, row, COL_ATL_CONTACTED, "ONC-ATL Contacted");
+        addHeadingCell(workbook, row, COL_FLAGGED_FOR_ONC, "Informed ONC per §170.523(s)");
         addHeadingCell(workbook, row, COL_COMPLAINT_STATUS, "Complaint Status");
-        addHeadingCell(workbook, row, COL_FLAGGED_FOR_ONC, "Flag for ONC Review");
         return 1;
     }
 
@@ -449,15 +449,13 @@ public class ComplaintsWorksheetBuilder {
         addDataCell(workbook, row, COL_ONC_COMPLAINT_ID, complaint.getOncComplaintId());
         addDataCell(workbook, row, COL_SUMMARY, complaint.getSummary());
         addDataCell(workbook, row, COL_ACTIONS_RESPONSE, complaint.getActions());
-        addDataCell(workbook, row, COL_COMPLAINANT_TYPE,
-                complaint.getComplainantType() != null ? complaint.getComplainantType().getName() : "");
+        addDataCell(workbook, row, COL_COMPLAINANT_TYPE, complaint.getComplainantType() != null ? complaint.getComplainantType().getName() : "");
         addDataCell(workbook, row, COL_COMPLAINANT_TYPE_OTHER, complaint.getComplainantTypeOther());
         addDataCell(workbook, row, COL_COMPLAINANT_CONTACTED, complaint.isComplainantContacted() ? BOOLEAN_YES : BOOLEAN_NO);
         addDataCell(workbook, row, COL_DEVELOPER_CONTACTED, complaint.isDeveloperContacted() ? BOOLEAN_YES : BOOLEAN_NO);
         addDataCell(workbook, row, COL_ATL_CONTACTED, complaint.isOncAtlContacted() ? BOOLEAN_YES : BOOLEAN_NO);
-        addDataCell(workbook, row, COL_COMPLAINT_STATUS,
-                complaint.getClosedDate() == null ? Complaint.COMPLAINT_OPEN : Complaint.COMPLAINT_CLOSED);
         addDataCell(workbook, row, COL_FLAGGED_FOR_ONC, complaint.isFlagForOncReview() ? BOOLEAN_YES : BOOLEAN_NO);
+        addDataCell(workbook, row, COL_COMPLAINT_STATUS, complaint.getClosedDate() == null ? Complaint.COMPLAINT_OPEN : Complaint.COMPLAINT_CLOSED);
     }
 
     private Cell addHeadingCell(SurveillanceReportWorkbookWrapper workbook, Row row, int cellNum, String cellText) {
