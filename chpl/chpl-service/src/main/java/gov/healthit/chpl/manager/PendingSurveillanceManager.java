@@ -312,7 +312,6 @@ public class PendingSurveillanceManager extends SecuredManager {
             CertifiedProductDTO owningCp = null;
             try {
                 owningCp = cpManager.getById(surv.getCertifiedProduct().getId());
-                validateSurveillanceCreation(surv);
                 Long pendingId = createPendingSurveillance(surv);
                 Surveillance uploaded = getPendingById(pendingId);
                 uploadedSurveillance.add(uploaded);
@@ -331,6 +330,9 @@ public class PendingSurveillanceManager extends SecuredManager {
 
     @Transactional
     public Long createPendingSurveillance(Surveillance surv) {
+        surv.getErrorMessages().clear();
+        survCreationValidator.validate(surv);
+
         Long insertedId = null;
         try {
             insertedId = survDao.insertPendingSurveillance(surv);
@@ -478,11 +480,6 @@ public class PendingSurveillanceManager extends SecuredManager {
         // If pendingSurv were null, we would have gotten an NPE by this point
         // return pendingSurv != null;
         return true;
-    }
-
-    private void validateSurveillanceCreation(Surveillance createdSurv) {
-        createdSurv.getErrorMessages().clear();
-        survCreationValidator.validate(createdSurv);
     }
 
     private Long createSurveillance(Surveillance surv)

@@ -40,7 +40,6 @@ import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandlerFactory;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.validation.surveillance.SurveillanceCreationValidator;
 import lombok.extern.log4j.Log4j2;
 
 @DisallowConcurrentExecution
@@ -60,8 +59,6 @@ public class SurveillanceUploadJob implements Job {
     private PendingSurveillanceManager pendingSurvManager;
     @Autowired
     private SurveillanceUploadManager survUploadManager;
-    @Autowired
-    private SurveillanceCreationValidator survValidator;
     @Autowired
     private SurveillanceUploadHandlerFactory uploadHandlerFactory;
     @Autowired
@@ -168,7 +165,6 @@ public class SurveillanceUploadJob implements Job {
             if (surv != null && surv.getCertifiedProduct() != null && surv.getCertifiedProduct().getId() != null) {
                 try {
                     owningCp = cpManager.getById(surv.getCertifiedProduct().getId());
-                    survValidator.validate(surv);
                     pendingSurvManager.createPendingSurveillance(surv);
                 } catch (AccessDeniedException denied) {
                     String permissionErrorMessage = "";
