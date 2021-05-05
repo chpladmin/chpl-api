@@ -391,12 +391,12 @@ public class ComplaintDAO extends BaseDAOImpl {
                     new Predicate<ComplaintCriterionMapEntity>() {
                         @Override
                         public boolean evaluate(ComplaintCriterionMapEntity object) {
-                            return object.getCertificationCriterionId().equals(passedIn.getCertificationCriterionId());
+                            return object.getCertificationCriterionId().equals(passedIn.getCertificationCriterion().getId());
                         }
                     });
             // Wasn't found in the list from DB, add it to the DB
             if (found == null) {
-                addCriterionToComplaint(complaint.getId(), passedIn.getCertificationCriterionId());
+                addCriterionToComplaint(complaint.getId(), passedIn.getCertificationCriterion().getId());
             }
         }
     }
