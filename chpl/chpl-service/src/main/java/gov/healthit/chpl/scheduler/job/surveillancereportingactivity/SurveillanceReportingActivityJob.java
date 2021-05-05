@@ -2,6 +2,7 @@ package gov.healthit.chpl.scheduler.job.surveillancereportingactivity;
 
 import java.io.File;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,15 +40,16 @@ public class SurveillanceReportingActivityJob implements Job {
     @Autowired
     private Environment env;
 
+    private DateTimeFormatter emailDateFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
         LOGGER.info("********* Starting the Surveillance Reporting Activity job. *********");
         try {
-            LocalDate startDate = (LocalDate) context.getMergedJobDataMap().get(START_DATE_KEY);
-            LocalDate endDate = (LocalDate) context.getMergedJobDataMap().get(END_DATE_KEY);
-            List<CSVRecord> records = dataGatherer.getData(startDate, endDate);
+
+            List<CSVRecord> records = dataGatherer.getData(getStartDate(context), getEndDate(context));
 
             LOGGER.info("Count of found Surveillance Rows: " + records.size());
 
@@ -58,25 +60,52 @@ public class SurveillanceReportingActivityJob implements Job {
             SurveillanceActivityReportWorkbook workbook = new SurveillanceActivityReportWorkbook();
 
             File excelFile = workbook.generateWorkbook(surveillances);
-            UserDTO user = getUser(context.getMergedJobDataMap().getLong(USER_KEY));
 
-            sendEmail(user, excelFile);
+            sendSuccessEmail(excelFile, context);
         } catch (Exception e) {
             LOGGER.catching(e);
+            sendErrorEmail(context);
         }
         LOGGER.info("********* Completed the Surveillance Reporting Activity job. *********");
     }
 
-    private void sendEmail(UserDTO recipient, File excelFile) throws MessagingException {
+    private void sendSuccessEmail(File excelFile, JobExecutionContext context) throws MessagingException, UserRetrievalException {
+        UserDTO recipient = getUser(context);
         EmailBuilder emailBuilder = new EmailBuilder(env);
         emailBuilder.recipient(recipient.getEmail())
                 .fileAttachments(Arrays.asList(excelFile))
-                .subject("Surveillance Activity Report")
-                .htmlMessage("This text needs to be provided")
+                .subject(env.getProperty("surveillanceActivityReport.subject"))
+                .htmlMessage(String.format(env.getProperty("surveillanceActivityReport.htmlBody"),
+                        emailDateFormatter.format(getStartDate(context)),
+                        emailDateFormatter.format(getEndDate(context))))
                 .sendEmail();
     }
 
-    private UserDTO getUser(Long userId) throws UserRetrievalException {
-        return userDAO.getById(userId);
+    private void sendErrorEmail(JobExecutionContext context) {
+        try {
+            UserDTO recipient = getUser(context);
+            EmailBuilder emailBuilder = new EmailBuilder(env);
+            emailBuilder.recipient(recipient.getEmail())
+                    .subject(env.getProperty("surveillanceActivityReport.subject"))
+                    .htmlMessage(String.format(env.getProperty("surveillanceActivityReport.htmlBody.error"),
+                            emailDateFormatter.format(getStartDate(context)),
+                            emailDateFormatter.format(getEndDate(context))))
+                    .sendEmail();
+        } catch (Exception e) {
+            LOGGER.error("CHPL was unable to send the error email!");
+            LOGGER.catching(e);
+        }
+    }
+
+    private UserDTO getUser(JobExecutionContext context) throws UserRetrievalException {
+        return userDAO.getById(context.getMergedJobDataMap().getLong(USER_KEY));
+    }
+
+    private LocalDate getStartDate(JobExecutionContext context) {
+        return (LocalDate) context.getMergedJobDataMap().get(START_DATE_KEY);
+    }
+
+    private LocalDate getEndDate(JobExecutionContext context) {
+        return (LocalDate) context.getMergedJobDataMap().get(END_DATE_KEY);
     }
 }
