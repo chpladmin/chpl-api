@@ -45,6 +45,7 @@ public class UrlReviewer extends PermissionBasedReviewer {
                 addCriteriaErrorIfNotValid(listing, cert, cert.getExportDocumentation(), "Export Documentation");
                 addCriteriaErrorIfNotValid(listing, cert, cert.getDocumentationUrl(), "Documentation Url");
                 addCriteriaErrorIfNotValid(listing, cert, cert.getUseCases(), "Use Cases");
+                addCriteriaErrorIfNotValid(listing, cert, cert.getServiceBaseUrlList(), "Service Base URL List");
             }
         }
     }
