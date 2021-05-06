@@ -1,5 +1,18 @@
 # Release Notes
 
+## Version 29.3.0
+_4 May 2021_
+
+### Features
+* API Key registration requires confirmation of email
+* Add 'processing' flag to /certified_products/pending/metadata response
+
+### Bug Fixes
+* Remove applicable UCD Processes and Test Tasks if a criterion is edited to have SED = false
+* Mark pending listing as processing during confirm
+
+---
+
 ## Version 29.2.0
 _19 April 2021_
 

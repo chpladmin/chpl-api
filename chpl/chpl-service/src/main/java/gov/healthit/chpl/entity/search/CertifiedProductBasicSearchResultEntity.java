@@ -80,6 +80,9 @@ public class CertifiedProductBasicSearchResultEntity {
     @Column(name = "api_documentation")
     private String apiDocumentation;
 
+    @Column(name = "service_base_url_list")
+    private String serviceBaseUrlList;
+
     @Column(name = "surveillance_count")
     private Long surveillanceCount;
 

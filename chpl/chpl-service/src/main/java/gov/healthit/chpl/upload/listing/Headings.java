@@ -91,6 +91,7 @@ public enum Headings {
     ATTESTATION_ANSWER("Attestation Answer"),
     DOCUMENTATION_URL("Documentation URL"),
     USE_CASES("Use Cases"),
+    SERVICE_BASE_URL_LIST("Service Base URL List"),
     API_DOCUMENTATION_LINK("API Documentation Link"),
     UCD_PROCESS("UCD Process Selected"),
     UCD_PROCESS_DETAILS("UCD Process Details"),
