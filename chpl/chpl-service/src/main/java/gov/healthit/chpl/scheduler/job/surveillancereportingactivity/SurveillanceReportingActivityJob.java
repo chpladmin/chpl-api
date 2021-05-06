@@ -17,8 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.dao.auth.UserDAO;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.excel.SurveillanceActivityReportWorkbook;
 import gov.healthit.chpl.util.EmailBuilder;
@@ -27,15 +25,12 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2(topic = "surveillanceActivityReportJobLogger")
 public class SurveillanceReportingActivityJob implements Job {
     public static final String JOB_NAME = "surveillanceReportingActivityJob";
-    public static final String START_DATE_KEY = "start-date";
-    public static final String END_DATE_KEY = "end-date";
-    public static final String USER_KEY = "user-id";
+    public static final String START_DATE_KEY = "startDate";
+    public static final String END_DATE_KEY = "endDate";
+    public static final String USER_EMAIL = "email";
 
     @Autowired
     private SurveillanceActivityReportDataGatherer dataGatherer;
-
-    @Autowired
-    private UserDAO userDAO;
 
     @Autowired
     private Environment env;
@@ -66,9 +61,8 @@ public class SurveillanceReportingActivityJob implements Job {
     }
 
     private void sendSuccessEmail(File excelFile, JobExecutionContext context) throws MessagingException, UserRetrievalException {
-        UserDTO recipient = getUser(context);
         EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipient(recipient.getEmail())
+        emailBuilder.recipient(getUserEmail(context))
                 .fileAttachments(Arrays.asList(excelFile))
                 .subject(env.getProperty("surveillanceActivityReport.subject"))
                 .htmlMessage(String.format(env.getProperty("surveillanceActivityReport.htmlBody"),
@@ -79,9 +73,8 @@ public class SurveillanceReportingActivityJob implements Job {
 
     private void sendErrorEmail(JobExecutionContext context) {
         try {
-            UserDTO recipient = getUser(context);
             EmailBuilder emailBuilder = new EmailBuilder(env);
-            emailBuilder.recipient(recipient.getEmail())
+            emailBuilder.recipient(getUserEmail(context))
                     .subject(env.getProperty("surveillanceActivityReport.subject"))
                     .htmlMessage(String.format(env.getProperty("surveillanceActivityReport.htmlBody.error"),
                             emailDateFormatter.format(getStartDate(context)),
@@ -93,8 +86,8 @@ public class SurveillanceReportingActivityJob implements Job {
         }
     }
 
-    private UserDTO getUser(JobExecutionContext context) throws UserRetrievalException {
-        return userDAO.getById(context.getMergedJobDataMap().getLong(USER_KEY));
+    private String getUserEmail(JobExecutionContext context) throws UserRetrievalException {
+        return context.getMergedJobDataMap().getString(USER_EMAIL);
     }
 
     private LocalDate getStartDate(JobExecutionContext context) {

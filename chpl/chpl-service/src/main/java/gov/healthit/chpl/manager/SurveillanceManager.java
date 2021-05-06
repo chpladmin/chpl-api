@@ -24,6 +24,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.dao.auth.UserPermissionDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -42,6 +43,7 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserPermissionDTO;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
@@ -52,6 +54,7 @@ import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
@@ -79,6 +82,7 @@ public class SurveillanceManager extends SecuredManager {
     private FileUtils fileUtils;
     private Environment env;
     private ResourcePermissions resourcePermissions;
+    private UserDAO userDAO;
 
     @SuppressWarnings("checkstyle:parameterNumber")
     @Autowired
@@ -88,7 +92,8 @@ public class SurveillanceManager extends SecuredManager {
             SurveillanceCreationValidator survCreationValidator,
             SurveillanceUpdateWithAuthorityValidator survWithAuthorityValidator,
             UserPermissionDAO userPermissionDao,
-            FileUtils fileUtils, Environment env, ResourcePermissions resourcePermissions) {
+            FileUtils fileUtils, Environment env, ResourcePermissions resourcePermissions,
+            UserDAO userDAO) {
         this.survDao = survDao;
         this.cpDao = cpDao;
         this.cpDetailsManager = cpDetailsManager;
@@ -101,6 +106,7 @@ public class SurveillanceManager extends SecuredManager {
         this.fileUtils = fileUtils;
         this.env = env;
         this.resourcePermissions = resourcePermissions;
+        this.userDAO = userDAO;
     }
 
     @Transactional(readOnly = true)
@@ -243,7 +249,9 @@ public class SurveillanceManager extends SecuredManager {
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).ACTIVITY_REPORT)")
-    public Boolean submitActivityReportRequest(LocalDate start, LocalDate end) throws ValidationException {
+    public ChplOneTimeTrigger submitActivityReportRequest(LocalDate start, LocalDate end) throws ValidationException, UserRetrievalException {
+        UserDTO user = userDAO.getById(AuthUtil.getCurrentUser().getId());
+
         ChplOneTimeTrigger surveillanceActivityReportTrigger = new ChplOneTimeTrigger();
         ChplJob surveillanceActivityReportJob = new ChplJob();
         surveillanceActivityReportJob.setName(SurveillanceReportingActivityJob.JOB_NAME);
@@ -251,17 +259,16 @@ public class SurveillanceManager extends SecuredManager {
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(SurveillanceReportingActivityJob.START_DATE_KEY, start);
         jobDataMap.put(SurveillanceReportingActivityJob.END_DATE_KEY, end);
-        jobDataMap.put(SurveillanceReportingActivityJob.USER_KEY, AuthUtil.getCurrentUser().getId());
+        jobDataMap.put(SurveillanceReportingActivityJob.USER_EMAIL, user.getEmail());
         surveillanceActivityReportJob.setJobDataMap(jobDataMap);
         surveillanceActivityReportTrigger.setJob(surveillanceActivityReportJob);
         surveillanceActivityReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
         try {
-            surveillanceActivityReportTrigger = schedulerManager.createBackgroundJobTrigger(surveillanceActivityReportTrigger);
-            return true;
+            return schedulerManager.createBackgroundJobTrigger(surveillanceActivityReportTrigger);
         } catch (SchedulerException e) {
             LOGGER.error("Could not schedule 'surveillanceActivityReportTrigger'.");
             LOGGER.catching(e);
-            return false;
+            return null;
         }
     }
 

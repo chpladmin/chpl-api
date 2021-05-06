@@ -43,6 +43,7 @@ import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.Job;
 import gov.healthit.chpl.domain.SimpleExplainableAction;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.domain.surveillance.SurveillanceUploadResult;
@@ -55,6 +56,7 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -501,14 +503,14 @@ public class SurveillanceController implements MessageSourceAware {
     @ApiOperation(value = "",
             notes = "")
     @RequestMapping(value = "/reports/activity", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody BooleanResult getActivityReport(@RequestParam("start") String start, @RequestParam("end") String end) throws ValidationException {
+    public @ResponseBody ChplOneTimeTrigger getActivityReport(@RequestParam("start") String start, @RequestParam("end") String end) throws ValidationException, UserRetrievalException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate startDate;
         LocalDate endDate;
         try {
             startDate = LocalDate.parse(start, formatter);
             endDate = LocalDate.parse(end, formatter);
-            return new BooleanResult(survManager.submitActivityReportRequest(startDate, endDate));
+            return survManager.submitActivityReportRequest(startDate, endDate);
        } catch (DateTimeException e) {
             throw new ValidationException("Could not parse the start and/or end date.  The correct format is 'yyyy-mm-dd'.");
        }
