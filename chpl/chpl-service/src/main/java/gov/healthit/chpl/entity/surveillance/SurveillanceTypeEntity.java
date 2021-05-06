@@ -38,9 +38,9 @@ public class SurveillanceTypeEntity {
     private Date lastModifiedDate;
 
     public SurveillanceType buildSurveillanceType() {
-        return SurveillanceType.builder()
-            .id(this.getId())
-            .name(this.getName())
-            .build();
+        SurveillanceType st = new SurveillanceType();
+        st.setId(this.getId());
+        st.setName(this.getName());
+        return st;
     }
 }
