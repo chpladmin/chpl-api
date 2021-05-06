@@ -1,24 +1,29 @@
 package gov.healthit.chpl.entity.listing;
 
+import java.util.Set;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
+import gov.healthit.chpl.svap.entity.CertificationResultSvapEntity;
+import lombok.Data;
 
+@Data
 @Immutable
 @Entity
 @Table(name = "certification_result_details")
 public class CertificationResultDetailsEntity {
-
-    /** Serial Version UID. */
     private static final long serialVersionUID = -2928065796550377879L;
 
     @Id
@@ -76,161 +81,55 @@ public class CertificationResultDetailsEntity {
     @Column(name = "use_cases")
     private String useCases;
 
+    @Column(name = "service_base_url_list")
+    private String serviceBaseUrlList;
+
     @Column(name = "privacy_security_framework")
     private String privacySecurityFramework;
 
     @Column(name = "deleted")
     private Boolean deleted;
 
-    public Long getId() {
-        return id;
-    }
+    @Basic(optional = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
+    @Column(name = "certification_result_id")
+    @Where(clause = "deleted <> 'true'")
+    private Set<CertificationResultTestDataEntity> certificationResultTestData;
 
-    public void setId(final Long id) {
-        this.id = id;
-    }
+    @Basic(optional = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
+    @Column(name = "certification_result_id")
+    @Where(clause = "deleted <> 'true'")
+    private Set<CertificationResultTestFunctionalityEntity> certificationResultTestFunctionalities;
 
-    public Long getCertificationCriterionId() {
-        return certificationCriterionId;
-    }
+    @Basic(optional = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
+    @Column(name = "certification_result_id")
+    @Where(clause = "deleted <> 'true'")
+    private Set<CertificationResultTestProcedureEntity> certificationResultTestProcedures;
 
-    public void setCertificationCriterionId(final Long certificationCriterionId) {
-        this.certificationCriterionId = certificationCriterionId;
-    }
+    @Basic(optional = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
+    @Column(name = "certification_result_id")
+    @Where(clause = "deleted <> 'true'")
+    private Set<CertificationResultTestStandardEntity> certificationResultTestStandards;
 
-    public Boolean getSuccess() {
-        return success;
-    }
+    @Basic(optional = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
+    @Column(name = "certification_result_id")
+    @Where(clause = "deleted <> 'true'")
+    private Set<CertificationResultAdditionalSoftwareEntity> certificationResultAdditionalSoftware;
 
-    public void setSuccess(final Boolean success) {
-        this.success = success;
-    }
+    @Basic(optional = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
+    @Column(name = "certification_result_id")
+    @Where(clause = "deleted <> 'true'")
+    private Set<CertificationResultTestToolEntity> certificationResultTestTools;
 
-    public String getNumber() {
-        return number;
-    }
+    @Basic(optional = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
+    @Column(name = "certification_result_id")
+    @Where(clause = "deleted <> 'true'")
+    private Set<CertificationResultSvapEntity> certificationResultSvaps;
 
-    public void setNumber(final String number) {
-        this.number = number;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(final String title) {
-        this.title = title;
-    }
-
-    public Long getCertifiedProductId() {
-        return certifiedProductId;
-    }
-
-    public void setCertifiedProductId(final Long certifiedProductId) {
-        this.certifiedProductId = certifiedProductId;
-    }
-
-    public Boolean getGap() {
-        return gap;
-    }
-
-    public void setGap(final Boolean gap) {
-        this.gap = gap;
-    }
-
-    public Boolean getSed() {
-        return sed;
-    }
-
-    public void setSed(final Boolean sed) {
-        this.sed = sed;
-    }
-
-    public Boolean getG1Success() {
-        return g1Success;
-    }
-
-    public void setG1Success(final Boolean g1Success) {
-        this.g1Success = g1Success;
-    }
-
-    public Boolean getG2Success() {
-        return g2Success;
-    }
-
-    public void setG2Success(final Boolean g2Success) {
-        this.g2Success = g2Success;
-    }
-
-    public Boolean getAttestationAnswer() {
-        return attestationAnswer;
-    }
-
-    public void setAttestationAnswer(Boolean attestationAnswer) {
-        this.attestationAnswer = attestationAnswer;
-    }
-
-    public String getExportDocumentation() {
-        return exportDocumentation;
-    }
-
-    public void setExportDocumentation(String exportDocumentation) {
-        this.exportDocumentation = exportDocumentation;
-    }
-
-    public String getDocumentationUrl() {
-        return documentationUrl;
-    }
-
-    public void setDocumentationUrl(String documentationUrl) {
-        this.documentationUrl = documentationUrl;
-    }
-
-    public String getUseCases() {
-        return useCases;
-    }
-
-    public void setUseCases(String useCases) {
-        this.useCases = useCases;
-    }
-
-    public String getApiDocumentation() {
-        return apiDocumentation;
-    }
-
-    public void setApiDocumentation(final String apiDocumentation) {
-        this.apiDocumentation = apiDocumentation;
-    }
-
-    public String getPrivacySecurityFramework() {
-        return privacySecurityFramework;
-    }
-
-    public void setPrivacySecurityFramework(final String privacySecurityFramework) {
-        this.privacySecurityFramework = privacySecurityFramework;
-    }
-
-    public CertifiedProductDetailsEntity getListing() {
-        return listing;
-    }
-
-    public void setListing(final CertifiedProductDetailsEntity listing) {
-        this.listing = listing;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public CertificationCriterionEntity getCertificationCriterion() {
-        return certificationCriterion;
-    }
-
-    public void setCertificationCriterion(final CertificationCriterionEntity certificationCriterion) {
-        this.certificationCriterion = certificationCriterion;
-    }
 }

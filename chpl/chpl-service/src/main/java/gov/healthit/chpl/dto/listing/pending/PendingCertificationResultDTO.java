@@ -16,9 +16,11 @@ import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestTo
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultUcdProcessEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Singular;
 
 @Builder
+@Data
 @AllArgsConstructor
 public class PendingCertificationResultDTO implements Serializable {
     private static final long serialVersionUID = -1026669045107851464L;
@@ -34,6 +36,7 @@ public class PendingCertificationResultDTO implements Serializable {
     private String exportDocumentation;
     private String documentationUrl;
     private String useCases;
+    private String serviceBaseUrlList;
 
     private String privacySecurityFramework;
     private CertificationCriterionDTO criterion;
@@ -93,6 +96,7 @@ public class PendingCertificationResultDTO implements Serializable {
         this.exportDocumentation = entity.getExportDocumentation();
         this.documentationUrl = entity.getDocumentationUrl();
         this.useCases = entity.getUseCases();
+        this.serviceBaseUrlList = entity.getServiceBaseUrlList();
         this.privacySecurityFramework = entity.getPrivacySecurityFramework();
 
         if (entity.getUcdProcesses() != null && entity.getUcdProcesses().size() > 0) {
@@ -138,181 +142,5 @@ public class PendingCertificationResultDTO implements Serializable {
                 this.getTestTasks().add(taskDto);
             }
         }
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Long getPendingCertifiedProductId() {
-        return pendingCertifiedProductId;
-    }
-
-    public void setPendingCertifiedProductId(final Long pendingCertifiedProductId) {
-        this.pendingCertifiedProductId = pendingCertifiedProductId;
-    }
-
-    public Boolean getMeetsCriteria() {
-        return meetsCriteria;
-    }
-
-    public void setMeetsCriteria(final Boolean meetsCriteria) {
-        this.meetsCriteria = meetsCriteria;
-    }
-
-    public Boolean getGap() {
-        return gap;
-    }
-
-    public void setGap(final Boolean gap) {
-        this.gap = gap;
-    }
-
-    public Boolean getSed() {
-        return sed;
-    }
-
-    public void setSed(final Boolean sed) {
-        this.sed = sed;
-    }
-
-    public Boolean getG1Success() {
-        return g1Success;
-    }
-
-    public void setG1Success(final Boolean g1Success) {
-        this.g1Success = g1Success;
-    }
-
-    public Boolean getG2Success() {
-        return g2Success;
-    }
-
-    public void setG2Success(final Boolean g2Success) {
-        this.g2Success = g2Success;
-    }
-
-    public List<PendingCertificationResultAdditionalSoftwareDTO> getAdditionalSoftware() {
-        return additionalSoftware;
-    }
-
-    public void setAdditionalSoftware(final List<PendingCertificationResultAdditionalSoftwareDTO> additionalSoftware) {
-        this.additionalSoftware = additionalSoftware;
-    }
-
-    public List<PendingCertificationResultTestDataDTO> getTestData() {
-        return testData;
-    }
-
-    public void setTestData(final List<PendingCertificationResultTestDataDTO> testData) {
-        this.testData = testData;
-    }
-
-    public List<PendingCertificationResultTestFunctionalityDTO> getTestFunctionality() {
-        return testFunctionality;
-    }
-
-    public void setTestFunctionality(final List<PendingCertificationResultTestFunctionalityDTO> testFunctionality) {
-        this.testFunctionality = testFunctionality;
-    }
-
-    public List<PendingCertificationResultTestProcedureDTO> getTestProcedures() {
-        return testProcedures;
-    }
-
-    public void setTestProcedures(final List<PendingCertificationResultTestProcedureDTO> testProcedures) {
-        this.testProcedures = testProcedures;
-    }
-
-    public List<PendingCertificationResultTestStandardDTO> getTestStandards() {
-        return testStandards;
-    }
-
-    public void setTestStandards(final List<PendingCertificationResultTestStandardDTO> testStandards) {
-        this.testStandards = testStandards;
-    }
-
-    public List<PendingCertificationResultTestToolDTO> getTestTools() {
-        return testTools;
-    }
-
-    public void setTestTools(final List<PendingCertificationResultTestToolDTO> testTools) {
-        this.testTools = testTools;
-    }
-
-    public List<PendingCertificationResultUcdProcessDTO> getUcdProcesses() {
-        return ucdProcesses;
-    }
-
-    public void setUcdProcesses(final List<PendingCertificationResultUcdProcessDTO> ucdProcesses) {
-        this.ucdProcesses = ucdProcesses;
-    }
-
-    public List<PendingCertificationResultTestTaskDTO> getTestTasks() {
-        return testTasks;
-    }
-
-    public void setTestTasks(final List<PendingCertificationResultTestTaskDTO> testTasks) {
-        this.testTasks = testTasks;
-    }
-
-    public String getApiDocumentation() {
-        return apiDocumentation;
-    }
-
-    public void setApiDocumentation(final String apiDocumentation) {
-        this.apiDocumentation = apiDocumentation;
-    }
-
-    public Boolean getAttestationAnswer() {
-        return attestationAnswer;
-    }
-
-    public void setAttestationAnswer(Boolean attestationAnswer) {
-        this.attestationAnswer = attestationAnswer;
-    }
-
-    public String getExportDocumentation() {
-        return exportDocumentation;
-    }
-
-    public void setExportDocumentation(String exportDocumentation) {
-        this.exportDocumentation = exportDocumentation;
-    }
-
-    public String getDocumentationUrl() {
-        return documentationUrl;
-    }
-
-    public void setDocumentationUrl(String documentationUrl) {
-        this.documentationUrl = documentationUrl;
-    }
-
-    public String getUseCases() {
-        return useCases;
-    }
-
-    public void setUseCases(String useCases) {
-        this.useCases = useCases;
-    }
-
-    public String getPrivacySecurityFramework() {
-        return privacySecurityFramework;
-    }
-
-    public void setPrivacySecurityFramework(final String privacySecurityFramework) {
-        this.privacySecurityFramework = privacySecurityFramework;
-    }
-
-    public CertificationCriterionDTO getCriterion() {
-        return criterion;
-    }
-
-    public void setCriterion(final CertificationCriterionDTO criterion) {
-        this.criterion = criterion;
     }
 }
