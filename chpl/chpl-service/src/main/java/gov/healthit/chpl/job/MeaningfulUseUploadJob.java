@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.MeaningfulUseUserDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.MeaningfulUseUserRecord;
@@ -27,7 +28,6 @@ import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.entity.job.JobStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 
 /**
  * Upload a potentially large amount of MUU data in the background.
@@ -72,6 +72,7 @@ public class MeaningfulUseUploadJob extends RunnableJob {
      * saved to the job object in the database.
      * Get the details of each listing and add the MUU count provided.
      */
+    @Override
     public void run() {
         super.run();
 

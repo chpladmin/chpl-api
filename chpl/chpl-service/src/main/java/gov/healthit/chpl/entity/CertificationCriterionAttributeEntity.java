@@ -40,6 +40,9 @@ public class CertificationCriterionAttributeEntity {
     @Column(name = "svap")
     private Boolean svap;
 
+    @Column(name = "service_base_url_list")
+    private Boolean serviceBaseUrlList;
+
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
     private Date creationDate;

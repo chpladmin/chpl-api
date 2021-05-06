@@ -330,6 +330,12 @@ public class PendingCertifiedProductManager extends SecuredManager {
                     certResult.setUseCases("");
                 }
 
+                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.SERVICE_BASE_URL_LIST)) {
+                    certResult.setServiceBaseUrlList(null);
+                } else if (certResult.getServiceBaseUrlList() == null) {
+                    certResult.setServiceBaseUrlList("");
+                }
+
                 if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.PRIVACY_SECURITY)) {
                     certResult.setPrivacySecurityFramework(null);
                 } else if (certResult.getPrivacySecurityFramework() == null) {

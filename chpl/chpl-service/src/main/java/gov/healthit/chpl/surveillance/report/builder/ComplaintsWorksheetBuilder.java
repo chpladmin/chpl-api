@@ -25,6 +25,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
@@ -33,7 +34,6 @@ import gov.healthit.chpl.domain.complaint.ComplaintCriterionMap;
 import gov.healthit.chpl.domain.complaint.ComplaintListingMap;
 import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.ComplaintManager;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.surveillance.report.PrivilegedSurveillanceDAO;
@@ -297,8 +297,7 @@ public class ComplaintsWorksheetBuilder {
             List<CertifiedProductSearchDetails> orderedListings = new ArrayList<CertifiedProductSearchDetails>();
             for (ComplaintListingMap listingMap : complaint.getListings()) {
                 try {
-                    CertifiedProductSearchDetails cpd = cpdManager.getCertifiedProductDetailsBasicByChplProductNumber(
-                            listingMap.getChplProductNumber(), false);
+                    CertifiedProductSearchDetails cpd = cpdManager.getCertifiedProductDetailsBasicByChplProductNumber(listingMap.getChplProductNumber());
                     listingDetailsCache.put(cpd.getId(), cpd);
                     orderedListings.add(cpd);
                 } catch (EntityRetrievalException ex) {
