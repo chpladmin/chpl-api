@@ -11,7 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;
 import lombok.Data;
@@ -31,6 +30,9 @@ public class SurveillanceBasicEntity {
 
     @Column(name = "certified_product_id")
     private Long certifiedProductId;
+
+    @Column(name = "chpl_product_number")
+    private String chplProductNumber;
 
     @Column(name = "start_date")
     private Date startDate;
@@ -68,9 +70,6 @@ public class SurveillanceBasicEntity {
 
     @Column(name = "user_permission_id")
     private Long userPermissionId;
-
-    @Transient
-    private String chplProductNumber;
 
     public SurveillanceBasic buildSurveillanceBasic() {
         return SurveillanceBasic.builder()

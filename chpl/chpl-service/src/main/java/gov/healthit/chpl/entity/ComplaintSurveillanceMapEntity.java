@@ -4,11 +4,15 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
+
+import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
 import gov.healthit.chpl.entity.surveillance.SurveillanceBasicEntity;
@@ -31,6 +35,11 @@ public class ComplaintSurveillanceMapEntity {
     @Column(name = "surveillance_id", nullable = false)
     private Long surveillanceId;
 
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "surveillance_id", insertable = false, updatable = false)
+    @Where(clause = "deleted <> 'true'")
+    private SurveillanceBasicEntity surveillance;
+
     @Column(name = "creation_date", nullable = false)
     private Date creationDate;
 
@@ -42,9 +51,6 @@ public class ComplaintSurveillanceMapEntity {
 
     @Column(name = "deleted", nullable = false)
     private Boolean deleted;
-
-    @Transient
-    private SurveillanceBasicEntity surveillance;
 
     public ComplaintSurveillanceMap buildComplaintSurveillanceMap() {
         return ComplaintSurveillanceMap.builder()

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.permissions.domains.complaint.CreateActionPermissions;
 import gov.healthit.chpl.permissions.domains.complaint.DeleteActionPermissions;
+import gov.healthit.chpl.permissions.domains.complaint.GenerateReportActionPermissions;
 import gov.healthit.chpl.permissions.domains.complaint.GetAllActionPermissions;
 import gov.healthit.chpl.permissions.domains.complaint.UpdateActionPermissions;
 
@@ -15,17 +16,20 @@ public class ComplaintDomainPermissions extends DomainPermissions {
     public static final String CREATE = "CREATE";
     public static final String UPDATE = "UPDATE";
     public static final String DELETE = "DELETE";
+    public static final String GENERATE_REPORT = "GENERATE_REPORT";
 
     @Autowired
     public ComplaintDomainPermissions(
             @Qualifier("complaintGetAllActionPermissions") GetAllActionPermissions getAllActionPermissions,
             @Qualifier("complaintCreateActionPermissions") CreateActionPermissions createActionPermissions,
             @Qualifier("complaintUpdateActionPermissions") UpdateActionPermissions updateActionPermissions,
-            @Qualifier("complaintDeleteActionPermissions") DeleteActionPermissions deleteActionPermissions) {
+            @Qualifier("complaintDeleteActionPermissions") DeleteActionPermissions deleteActionPermissions,
+            @Qualifier("complaintGenerateReportActionPermissions") GenerateReportActionPermissions generateReportActionPermissions) {
 
         getActionPermissions().put(GET_ALL, getAllActionPermissions);
         getActionPermissions().put(CREATE, createActionPermissions);
         getActionPermissions().put(UPDATE, updateActionPermissions);
         getActionPermissions().put(DELETE, deleteActionPermissions);
+        getActionPermissions().put(GENERATE_REPORT, generateReportActionPermissions);
     }
 }

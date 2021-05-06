@@ -1,6 +1,5 @@
 package gov.healthit.chpl.dao;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,7 +8,6 @@ import javax.persistence.Query;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Predicate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -23,10 +21,8 @@ import gov.healthit.chpl.entity.ComplaintCriterionMapEntity;
 import gov.healthit.chpl.entity.ComplaintEntity;
 import gov.healthit.chpl.entity.ComplaintListingMapEntity;
 import gov.healthit.chpl.entity.ComplaintSurveillanceMapEntity;
-import gov.healthit.chpl.entity.surveillance.SurveillanceBasicEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
-import gov.healthit.chpl.util.ChplProductNumberUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -34,23 +30,18 @@ import lombok.extern.log4j.Log4j2;
 public class ComplaintDAO extends BaseDAOImpl {
     private static final String GET_COMPLAINTS_HQL = "SELECT DISTINCT c "
             + "FROM ComplaintEntity c "
-            + "LEFT JOIN FETCH c.listings "
-            + "LEFT JOIN FETCH c.surveillances "
-            + "LEFT JOIN FETCH c.criteria "
+            + "LEFT JOIN FETCH c.listings listings "
+            + "LEFT JOIN FETCH listings.listing "
+            + "LEFT JOIN FETCH c.surveillances surveillances "
+            + "LEFT JOIN FETCH surveillances.surveillance surv "
+            + "LEFT JOIN FETCH surv.surveillanceType "
+            + "LEFT JOIN FETCH c.criteria criteria "
+            + "LEFT JOIN FETCH criteria.certificationCriterion criterion "
+            + "LEFT JOIN FETCH criterion.certificationEdition "
             + "JOIN FETCH c.certificationBody acb "
             + "LEFT JOIN FETCH acb.address "
             + "JOIN FETCH c.complainantType "
             + "WHERE c.deleted = false ";
-
-    private ChplProductNumberUtil chplProductNumberUtil;
-    private CertificationCriterionDAO certificationCriterionDAO;
-
-    @Autowired
-    public ComplaintDAO(ChplProductNumberUtil chplProductNumberUtil,
-            CertificationCriterionDAO certificationCriterionDAO) {
-        this.chplProductNumberUtil = chplProductNumberUtil;
-        this.certificationCriterionDAO = certificationCriterionDAO;
-    }
 
     public List<ComplainantType> getComplainantTypes() {
         List<ComplainantTypeEntity> entities = getComplainantTypeEntities();
@@ -62,19 +53,21 @@ public class ComplaintDAO extends BaseDAOImpl {
     public List<Complaint> getAllComplaints() {
         Query query = entityManager.createQuery(GET_COMPLAINTS_HQL, ComplaintEntity.class);
         List<ComplaintEntity> results = query.getResultList();
-        return populateComplaints(results);
+        return convertToComplaints(results);
     }
 
     public List<Complaint> getAllComplaintsBetweenDates(Long acbId, Date startDate, Date endDate) {
-        Query query = entityManager.createQuery(GET_COMPLAINTS_HQL + " AND c.certificationBodyId = :acbId "
-                + "AND c.receivedDate <= :endDate " + "AND (c.closedDate IS NULL OR c.closedDate >= :startDate)",
+        Query query = entityManager.createQuery(GET_COMPLAINTS_HQL
+                + " AND c.certificationBodyId = :acbId "
+                + "AND c.receivedDate <= :endDate "
+                + "AND (c.closedDate IS NULL OR c.closedDate >= :startDate)",
                 ComplaintEntity.class);
         query.setParameter("acbId", acbId);
         query.setParameter("startDate", startDate);
         query.setParameter("endDate", endDate);
 
         List<ComplaintEntity> results = query.getResultList();
-        return populateComplaints(results);
+        return convertToComplaints(results);
     }
 
     public Complaint getComplaint(Long complaintId) throws EntityRetrievalException {
@@ -154,7 +147,9 @@ public class ComplaintDAO extends BaseDAOImpl {
 
     private ComplaintEntity getEntityById(Long id) throws EntityRetrievalException {
         ComplaintEntity entity = null;
-        Query query = entityManager.createQuery(GET_COMPLAINTS_HQL + " AND c.id = :complaintId", ComplaintEntity.class);
+        Query query = entityManager.createQuery(GET_COMPLAINTS_HQL
+                + " AND c.id = :complaintId",
+                ComplaintEntity.class);
         query.setParameter("complaintId", id);
         List<ComplaintEntity> result = query.getResultList();
 
@@ -162,23 +157,6 @@ public class ComplaintDAO extends BaseDAOImpl {
             throw new EntityRetrievalException("Data error. Duplicate complaint id in database.");
         } else if (result.size() == 1) {
             entity = result.get(0);
-            for (ComplaintListingMapEntity complaintListing : entity.getListings()) {
-                populateChplProductNumber(complaintListing);
-            }
-            for (ComplaintCriterionMapEntity complaintCriteria : entity.getCriteria()) {
-                try {
-                    populateCertificationCriterion(complaintCriteria);
-                } catch (Exception e) {
-                    LOGGER.error("Error retreiving CertificationCriterion. - " + e.getMessage(), e);
-                }
-            }
-            for (ComplaintSurveillanceMapEntity complaintSurveillance : entity.getSurveillances()) {
-                try {
-                    populateSurveillance(complaintSurveillance);
-                } catch (Exception e) {
-                    LOGGER.error("Error retreiving Surveillance. - " + e.getMessage(), e);
-                }
-            }
         }
         return entity;
     }
@@ -260,7 +238,11 @@ public class ComplaintDAO extends BaseDAOImpl {
             throws EntityRetrievalException {
         ComplaintSurveillanceMapEntity entity = null;
 
-        Query query = entityManager.createQuery("FROM ComplaintSurveillanceMapEntity c " + "WHERE c.deleted = false "
+        Query query = entityManager.createQuery("SELECT c "
+                + "FROM ComplaintSurveillanceMapEntity c "
+                + "LEFT JOIN FETCH c.surveillance surveillance "
+                + "LEFT JOIN FETCH surveillance.surveillanceType "
+                + "WHERE c.deleted = false "
                 + "AND c.id = :complaintSurveillanceMapId", ComplaintSurveillanceMapEntity.class);
         query.setParameter("complaintSurveillanceMapId", id);
         List<ComplaintSurveillanceMapEntity> result = query.getResultList();
@@ -274,7 +256,11 @@ public class ComplaintDAO extends BaseDAOImpl {
     }
 
     private List<ComplaintSurveillanceMapEntity> getComplaintSurveillanceMapEntities(long complaintId) {
-        Query query = entityManager.createQuery("FROM ComplaintSurveillanceMapEntity c " + "WHERE c.deleted = false "
+        Query query = entityManager.createQuery("SELECT c "
+                + "FROM ComplaintSurveillanceMapEntity c "
+                + "LEFT JOIN FETCH c.surveillance surveillance "
+                + "LEFT JOIN FETCH surveillance.surveillanceType "
+                + "WHERE c.deleted = false "
                 + "AND c.complaintId = :complaintId", ComplaintSurveillanceMapEntity.class);
         query.setParameter("complaintId", complaintId);
         List<ComplaintSurveillanceMapEntity> result = query.getResultList();
@@ -350,7 +336,9 @@ public class ComplaintDAO extends BaseDAOImpl {
     private ComplaintListingMapEntity getComplaintListingMapEntity(long id) throws EntityRetrievalException {
         ComplaintListingMapEntity entity = null;
 
-        Query query = entityManager.createQuery("FROM ComplaintListingMapEntity c "
+        Query query = entityManager.createQuery("SELECT c "
+                + "FROM ComplaintListingMapEntity c "
+                + "LEFT JOIN FETCH c.listing "
                 + "WHERE c.deleted = false "
                 + "AND c.id = :complaintListingMapId",
                 ComplaintListingMapEntity.class);
@@ -366,8 +354,11 @@ public class ComplaintDAO extends BaseDAOImpl {
     }
 
     private List<ComplaintListingMapEntity> getComplaintListingMapEntities(long complaintId) {
-        Query query = entityManager.createQuery(
-                "FROM ComplaintListingMapEntity c " + "WHERE c.deleted = false " + "AND c.complaintId = :complaintId",
+        Query query = entityManager.createQuery("SELECT c "
+                + "FROM ComplaintListingMapEntity c "
+                + "LEFT JOIN FETCH c.listing "
+                + "WHERE c.deleted = false "
+                + "AND c.complaintId = :complaintId",
                 ComplaintListingMapEntity.class);
         query.setParameter("complaintId", complaintId);
         List<ComplaintListingMapEntity> result = query.getResultList();
@@ -377,45 +368,58 @@ public class ComplaintDAO extends BaseDAOImpl {
 
     private void saveCritiera(Complaint complaint) throws EntityRetrievalException {
         // Get the existing listing for this complaint
-        List<ComplaintCriterionMapEntity> existingListings = getComplaintCriterionMapEntities(complaint.getId());
+        List<ComplaintCriterionMapEntity> existingCriteria = getComplaintCriterionMapEntities(complaint.getId());
 
-        deleteMissingCriteria(complaint, existingListings);
-        addNewCriteria(complaint, existingListings);
+        deleteMissingCriteria(complaint, existingCriteria);
+        addNewCriteria(complaint, existingCriteria);
     }
 
-    private void addNewCriteria(Complaint complaint, List<ComplaintCriterionMapEntity> existingCriteria)
+    private void addNewCriteria(Complaint updatedComplaint, List<ComplaintCriterionMapEntity> existingCriteria)
             throws EntityRetrievalException {
         // If there is a listing passed in and it does not exist in the DB, add it
-        for (ComplaintCriterionMap passedIn : complaint.getCriteria()) {
+        for (ComplaintCriterionMap updatedComplaintCriterion : updatedComplaint.getCriteria()) {
             ComplaintCriterionMapEntity found = IterableUtils.find(existingCriteria,
                     new Predicate<ComplaintCriterionMapEntity>() {
                         @Override
-                        public boolean evaluate(ComplaintCriterionMapEntity object) {
-                            return object.getCertificationCriterionId().equals(passedIn.getCertificationCriterion().getId());
+                        public boolean evaluate(ComplaintCriterionMapEntity existingComplaintCriterionEntity) {
+                            if (updatedComplaintCriterion.getCertificationCriterionId() != null) {
+                                return updatedComplaintCriterion.getCertificationCriterionId()
+                                        .equals(existingComplaintCriterionEntity.getCertificationCriterionId());
+                            } else if (updatedComplaintCriterion.getCertificationCriterion() != null) {
+                                return updatedComplaintCriterion.getCertificationCriterion().getId()
+                                        .equals(existingComplaintCriterionEntity.getCertificationCriterionId());
+                            }
+                            return false;
                         }
                     });
             // Wasn't found in the list from DB, add it to the DB
             if (found == null) {
-                addCriterionToComplaint(complaint.getId(), passedIn.getCertificationCriterion().getId());
+                addCriterionToComplaint(updatedComplaint.getId(), updatedComplaintCriterion.getCertificationCriterion().getId());
             }
         }
     }
 
-    private void deleteMissingCriteria(Complaint complaint,
+    private void deleteMissingCriteria(Complaint updatedComplaint,
             List<ComplaintCriterionMapEntity> existingCriteria) throws EntityRetrievalException {
         // If the existing listing does not exist in the new list, delete it
-        for (ComplaintCriterionMapEntity existing : existingCriteria) {
-            ComplaintCriterionMap found = IterableUtils.find(complaint.getCriteria(),
+        for (ComplaintCriterionMapEntity existingComplaintCriterionEntity : existingCriteria) {
+            ComplaintCriterionMap found = IterableUtils.find(updatedComplaint.getCriteria(),
                     new Predicate<ComplaintCriterionMap>() {
                         @Override
-                        public boolean evaluate(ComplaintCriterionMap existingComplaintCriterion) {
-                            return existingComplaintCriterion.getCertificationCriterionId()
-                                    .equals(existing.getCertificationCriterionId());
+                        public boolean evaluate(ComplaintCriterionMap updatedComplaintCriterion) {
+                            if (updatedComplaintCriterion.getCertificationCriterionId() != null) {
+                                return updatedComplaintCriterion.getCertificationCriterionId()
+                                        .equals(existingComplaintCriterionEntity.getCertificationCriterionId());
+                            } else if (updatedComplaintCriterion.getCertificationCriterion() != null) {
+                                return updatedComplaintCriterion.getCertificationCriterion().getId()
+                                        .equals(existingComplaintCriterionEntity.getCertificationCriterionId());
+                            }
+                            return false;
                         }
                     });
             // Wasn't found in the list passed in, delete it from the DB
             if (found == null) {
-                deleteCriterionToComplaint(existing.getId());
+                deleteCriterionToComplaint(existingComplaintCriterionEntity.getId());
             }
         }
 
@@ -444,7 +448,10 @@ public class ComplaintDAO extends BaseDAOImpl {
     private ComplaintCriterionMapEntity getComplaintCriterionMapEntity(long id) throws EntityRetrievalException {
         ComplaintCriterionMapEntity entity = null;
 
-        Query query = entityManager.createQuery("FROM ComplaintCriterionMapEntity c "
+        Query query = entityManager.createQuery("SELECT c "
+                + "FROM ComplaintCriterionMapEntity c "
+                + "LEFT JOIN FETCH c.certificationCriterion criterion "
+                + "LEFT JOIN FETCH criterion.certificationEdition "
                 + "WHERE c.deleted = false "
                 + "AND c.id = :complaintCriterionMapId",
                 ComplaintCriterionMapEntity.class);
@@ -460,76 +467,21 @@ public class ComplaintDAO extends BaseDAOImpl {
     }
 
     private List<ComplaintCriterionMapEntity> getComplaintCriterionMapEntities(long complaintId) {
-        Query query = entityManager.createQuery("FROM ComplaintCriterionMapEntity c "
+        Query query = entityManager.createQuery("SELECT c "
+                + "FROM ComplaintCriterionMapEntity c "
+                + "LEFT JOIN FETCH c.certificationCriterion criterion "
+                + "LEFT JOIN FETCH criterion.certificationEdition "
                 + "WHERE c.deleted = false "
                 + "AND c.complaintId = :complaintId",
                 ComplaintCriterionMapEntity.class);
         query.setParameter("complaintId", complaintId);
         List<ComplaintCriterionMapEntity> result = query.getResultList();
-
         return result;
     }
 
-    private List<Complaint> populateComplaints(List<ComplaintEntity> complaintEntities) {
-        List<Complaint> complaints = new ArrayList<Complaint>();
-        for (ComplaintEntity entity : complaintEntities) {
-            for (ComplaintListingMapEntity complaintListing : entity.getListings()) {
-                populateChplProductNumber(complaintListing);
-            }
-            for (ComplaintCriterionMapEntity complaintCriteria : entity.getCriteria()) {
-                try {
-                    populateCertificationCriterion(complaintCriteria);
-                } catch (Exception e) {
-                    LOGGER.error("Error retreiving CertificationCriterion. - " + e.getMessage(), e);
-                }
-            }
-            for (ComplaintSurveillanceMapEntity complaintSurveillance : entity.getSurveillances()) {
-                try {
-                    populateSurveillance(complaintSurveillance);
-                } catch (Exception e) {
-                    LOGGER.error("Error retreiving Surveillance. - " + e.getMessage(), e);
-                }
-            }
-            complaints.add(entity.buildComplaint());
-        }
-
-        return complaints;
-    }
-
-    void populateChplProductNumber(ComplaintListingMapEntity complaintListing) {
-        String chplProductNumber = chplProductNumberUtil.generate(complaintListing.getListingId());
-        complaintListing.setChplProductNumber(chplProductNumber);
-    }
-
-    private void populateCertificationCriterion(ComplaintCriterionMapEntity complaintCriterion)
-            throws EntityRetrievalException {
-        complaintCriterion.setCertificationCriterion(
-                certificationCriterionDAO.getEntityById(complaintCriterion.getCertificationCriterionId()));
-    }
-
-    private void populateSurveillance(ComplaintSurveillanceMapEntity complaintSurveillance)
-            throws EntityRetrievalException {
-        complaintSurveillance.setSurveillance(getSurveillanceBasicEntity(complaintSurveillance.getSurveillanceId()));
-        String chplProductNumber = chplProductNumberUtil
-                .generate(complaintSurveillance.getSurveillance().getCertifiedProductId());
-        complaintSurveillance.getSurveillance().setChplProductNumber(chplProductNumber);
-    }
-
-    private SurveillanceBasicEntity getSurveillanceBasicEntity(long id) throws EntityRetrievalException {
-        SurveillanceBasicEntity entity = null;
-
-        Query query = entityManager.createQuery("FROM SurveillanceBasicEntity s "
-                + "WHERE s.deleted = false "
-                + "AND s.id = :surveillanceId",
-                SurveillanceBasicEntity.class);
-        query.setParameter("surveillanceId", id);
-        List<SurveillanceBasicEntity> result = query.getResultList();
-
-        if (result.size() > 1) {
-            throw new EntityRetrievalException("Data error. Duplicate surveillance id in database.");
-        } else if (result.size() == 1) {
-            entity = result.get(0);
-        }
-        return entity;
+    private List<Complaint> convertToComplaints(List<ComplaintEntity> complaintEntities) {
+        return complaintEntities.stream()
+                .map(entity -> entity.buildComplaint())
+                .collect(Collectors.toList());
     }
 }

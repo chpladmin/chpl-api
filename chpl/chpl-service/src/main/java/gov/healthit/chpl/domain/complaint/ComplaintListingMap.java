@@ -14,4 +14,7 @@ public class ComplaintListingMap {
     private Long complaintId;
     private Long listingId;
     private String chplProductNumber;
+    private String developerName;
+    private String productName;
+    private String versionName;
 }

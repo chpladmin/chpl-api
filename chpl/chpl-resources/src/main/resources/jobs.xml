@@ -677,6 +677,22 @@
             </job-data-map>
         </job>
 
+        <!-- Job fired when a new listing is uploaded -->
+        <job>
+            <name>complaintsReportJob</name>
+            <group>chplBackgroundJobs</group>
+            <description>Generate a report of all complaint data in the system.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.complaint.ComplaintsReportJob</job-class>
+            <durability>true</durability>
+            <recover>true</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF</value>
+                </entry>
+            </job-data-map>
+        </job>
+
         <!-- Generate email report for User-Defined Quartz Triggers-->
         <job>
             <name>User-Defined Triggers Job</name>
