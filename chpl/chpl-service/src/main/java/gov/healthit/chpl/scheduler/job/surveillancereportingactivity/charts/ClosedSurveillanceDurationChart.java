@@ -13,20 +13,27 @@ import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.Statistics;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceData;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceData.RecordType;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceDataService;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2(topic = "surveillanceActivityReportJobLogger")
 public class ClosedSurveillanceDurationChart {
 
     public JFreeChart generateChart(List<SurveillanceData> surveillances) {
-        JFreeChart chart = ChartFactory.createBarChart(
-            "ONC-ACB Closed Surveillance Duration by Measures of Central Tendency",
-            "ONC-ACB",
-            "Days",
-            getData(surveillances),
-            PlotOrientation.VERTICAL,
-            true, false, false
-           );
+       try {
+           LOGGER.info("Starting to build the Closed Surveillance Duration chart.");
+            JFreeChart chart = ChartFactory.createBarChart(
+                "ONC-ACB Closed Surveillance Duration by Measures of Central Tendency",
+                "ONC-ACB",
+                "Days",
+                getData(surveillances),
+                PlotOrientation.VERTICAL,
+                true, false, false
+               );
 
-        return chart;
+            return chart;
+       } finally {
+           LOGGER.info("Completed to building the Closed Surveillance Duration chart.");
+       }
     }
 
     private CategoryDataset getData(List<SurveillanceData> surveillances) {

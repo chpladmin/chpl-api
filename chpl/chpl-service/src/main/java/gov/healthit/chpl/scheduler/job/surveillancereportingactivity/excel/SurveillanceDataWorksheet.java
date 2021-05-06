@@ -15,7 +15,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceData;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "surveillanceActivityReportJobLogger")
 public class SurveillanceDataWorksheet {
     private static final Integer RECORD_STATUS_C_INDEX = 0;
     private static final Integer UNIQUE_CHPL_ID_C_INDEX = 1;
@@ -105,11 +105,14 @@ public class SurveillanceDataWorksheet {
     }
 
     public Sheet generateWorksheet(List<SurveillanceData> surveillances) {
-        Sheet sheet = workbook.createSheet("surveillance-all");
-
-        sheet = populateSheet(sheet, surveillances);
-
-        return sheet;
+        try {
+            LOGGER.info("Starting to build the Surveillance Data worksheet.");
+            Sheet sheet = workbook.createSheet("surveillance-all");
+            sheet = populateSheet(sheet, surveillances);
+            return sheet;
+        } finally {
+            LOGGER.info("Completed the Surveillance Data worksheet.");
+        }
     }
 
     private Sheet populateSheet(Sheet sheet, List<SurveillanceData> surveillances) {

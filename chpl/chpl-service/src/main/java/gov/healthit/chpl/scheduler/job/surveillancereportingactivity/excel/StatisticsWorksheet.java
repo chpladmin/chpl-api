@@ -16,7 +16,7 @@ import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.Surveillanc
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceDataService;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "surveillanceActivityReportJobLogger")
 public class StatisticsWorksheet {
     private static final Integer STATISTICS_COLUMN_WIDTH = 17 * 256;
     private static final Integer ASSESS_CONFORMITY_COLUMN = 2;
@@ -58,17 +58,23 @@ public class StatisticsWorksheet {
     }
 
     public Workbook generateWorksheet(List<SurveillanceData> surveillances) {
-        Sheet sheet = workbook.createSheet("Stats");
-        sheet.setDisplayGridlines(false);
-        sheet = generateMainHeaders(sheet);
+        try {
+            LOGGER.info("Starting to build the Statistics worksheet.");
 
-        Integer startingRowForAcb = 1;
-        List<String> acbs = SurveillanceDataService.getUniqueAcbName(surveillances);
-        for (String acbName : acbs) {
-            sheet = generateStatisticsForAcb(sheet, acbName, startingRowForAcb, surveillances);
-            startingRowForAcb += 24;
+            Sheet sheet = workbook.createSheet("Stats");
+            sheet.setDisplayGridlines(false);
+            sheet = generateMainHeaders(sheet);
+
+            Integer startingRowForAcb = 1;
+            List<String> acbs = SurveillanceDataService.getUniqueAcbName(surveillances);
+            for (String acbName : acbs) {
+                sheet = generateStatisticsForAcb(sheet, acbName, startingRowForAcb, surveillances);
+                startingRowForAcb += 24;
+            }
+            return workbook;
+        } finally {
+            LOGGER.info("Completed building the Statistics worksheet.");
         }
-        return workbook;
     }
 
 

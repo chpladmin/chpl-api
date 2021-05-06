@@ -14,20 +14,27 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.Statistics;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceData;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceDataService;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2(topic = "surveillanceActivityReportJobLogger")
 public class CapApprovalToSurveillanceCloseByIntervalChart {
     public JFreeChart generateChart(List<SurveillanceData> surveillances) {
-        JFreeChart chart = ChartFactory.createBarChart(
-            "ONC-ACB Time from CAP Approval to Surveillance Close by Frequency Intervals",
-            "Surveillance Duration",
-            "Frequency of Activities",
-            getData(surveillances),
-            PlotOrientation.VERTICAL,
-            true, false, false
-           );
-        CategoryAxis axis = chart.getCategoryPlot().getDomainAxis();
-        axis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);
-        return chart;
+        try {
+            LOGGER.info("Starting to build the CAP Approval to Surveillance Closed by Interval chart.");
+            JFreeChart chart = ChartFactory.createBarChart(
+                "ONC-ACB Time from CAP Approval to Surveillance Close by Frequency Intervals",
+                "Surveillance Duration",
+                "Frequency of Activities",
+                getData(surveillances),
+                PlotOrientation.VERTICAL,
+                true, false, false
+               );
+            CategoryAxis axis = chart.getCategoryPlot().getDomainAxis();
+            axis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);
+            return chart;
+        } finally {
+            LOGGER.info("Completed to building the CAP Approval to Surveillance Closed by Interval chart.");
+        }
     }
 
     private CategoryDataset getData(List<SurveillanceData> surveillances) {

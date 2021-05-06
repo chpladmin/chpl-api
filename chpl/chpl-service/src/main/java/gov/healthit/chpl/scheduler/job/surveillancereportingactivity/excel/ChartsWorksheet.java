@@ -17,7 +17,9 @@ import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.charts.CapA
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.charts.ClosedSurveillanceByIntervalChart;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.charts.ClosedSurveillanceDurationByQuartileChart;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.charts.ClosedSurveillanceDurationChart;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2(topic = "surveillanceActivityReportJobLogger")
 public class ChartsWorksheet {
     private Workbook workbook;
 
@@ -26,12 +28,17 @@ public class ChartsWorksheet {
     }
 
     public Sheet generateWorksheet(List<SurveillanceData> surveillances) throws IOException {
-        Sheet sheet = workbook.createSheet("Charts");
-        insertChart(sheet, getClosedSurveillanceDurationByQuartileChart(surveillances), 0, 1);
-        insertChart(sheet, getClosedSurveillanceDurationChart(surveillances), 0, 25);
-        insertChart(sheet, getClosedSurveillanceByIntervalChart(surveillances), 9, 1);
-        insertChart(sheet, getCapApprovalToSurveillanceCloseByIntervalChart(surveillances), 9, 25);
-        return sheet;
+        try {
+            LOGGER.info("Starting to build the Charts worksheet.");
+            Sheet sheet = workbook.createSheet("Charts");
+            insertChart(sheet, getClosedSurveillanceDurationByQuartileChart(surveillances), 0, 1);
+            insertChart(sheet, getClosedSurveillanceDurationChart(surveillances), 0, 25);
+            insertChart(sheet, getClosedSurveillanceByIntervalChart(surveillances), 9, 1);
+            insertChart(sheet, getCapApprovalToSurveillanceCloseByIntervalChart(surveillances), 9, 25);
+            return sheet;
+        } finally {
+            LOGGER.info("Completed to building the Charts worksheet.");
+        }
     }
 
     @SuppressWarnings("resource")

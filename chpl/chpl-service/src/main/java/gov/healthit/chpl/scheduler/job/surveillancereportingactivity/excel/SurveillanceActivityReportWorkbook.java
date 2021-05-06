@@ -9,22 +9,28 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbookFactory;
 
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceData;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2(topic = "surveillanceActivityReportJobLogger")
 public class SurveillanceActivityReportWorkbook {
 
     @SuppressWarnings("resource")
     public File generateWorkbook(List<SurveillanceData> surveillances) throws IOException {
-        Workbook workbook = XSSFWorkbookFactory.create(true);
+        try {
+            LOGGER.info("Starting to build the Excel spreadhseet.");
+            Workbook workbook = XSSFWorkbookFactory.create(true);
 
-        SurveillanceDataWorksheet surveillanceDataWorksheet = new SurveillanceDataWorksheet(workbook);
-        StatisticsWorksheet statsSheet = new StatisticsWorksheet(workbook);
-        ChartsWorksheet chartsSheet = new ChartsWorksheet(workbook);
+            SurveillanceDataWorksheet surveillanceDataWorksheet = new SurveillanceDataWorksheet(workbook);
+            StatisticsWorksheet statsSheet = new StatisticsWorksheet(workbook);
+            ChartsWorksheet chartsSheet = new ChartsWorksheet(workbook);
 
-        surveillanceDataWorksheet.generateWorksheet(surveillances);
-        statsSheet.generateWorksheet(surveillances);
-        chartsSheet.generateWorksheet(surveillances);
-
-        return writeFileToDisk(workbook);
+            surveillanceDataWorksheet.generateWorksheet(surveillances);
+            statsSheet.generateWorksheet(surveillances);
+            chartsSheet.generateWorksheet(surveillances);
+            return writeFileToDisk(workbook);
+        } finally {
+            LOGGER.info("Completed to build the Excel spreadhseet.");
+        }
     }
 
     private File writeFileToDisk(Workbook workbook) throws IOException {

@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "surveillanceActivityReportJobLogger")
 @Component
 public class SurveillanceActivityReportDataGatherer {
 
@@ -28,12 +28,16 @@ public class SurveillanceActivityReportDataGatherer {
     private SurveillanceManager surveillanceManager;
 
     public List<CSVRecord> getData(LocalDate startDate, LocalDate endDate) throws Exception {
-        return StreamSupport.stream(getIterableCsvRecords(getSurveillanceCsv()).spliterator(), false)
+        List<CSVRecord> records =StreamSupport.stream(getIterableCsvRecords(getSurveillanceCsv()).spliterator(), false)
                 .filter(record -> isSurveillanceOpenBetweenDates(
                         getLocalDate(record.get("SURVEILLANCE_BEGAN"), LocalDate.MIN),
                         getLocalDate(record.get("SURVEILLANCE_ENDED"), LocalDate.MAX),
                         startDate, endDate))
                 .collect(Collectors.toList());
+
+        LOGGER.info(String.format("Found %s sruveillances within date range.", records.size()));
+
+        return records;
     }
 
     private Boolean isSurveillanceOpenBetweenDates(LocalDate surveillanceStartDate, LocalDate surveillanceEndDate,
@@ -60,6 +64,7 @@ public class SurveillanceActivityReportDataGatherer {
         }
     }
 
+    @SuppressWarnings("resource")
     private Iterable<CSVRecord> getIterableCsvRecords(String fileName) throws FileNotFoundException, IOException  {
         return CSVFormat
                 .DEFAULT

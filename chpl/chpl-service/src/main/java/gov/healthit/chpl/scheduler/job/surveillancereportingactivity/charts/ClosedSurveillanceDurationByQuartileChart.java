@@ -14,24 +14,31 @@ import org.jfree.data.statistics.DefaultBoxAndWhiskerCategoryDataset;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceData;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceData.RecordType;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceDataService;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2(topic = "surveillanceActivityReportJobLogger")
 public class ClosedSurveillanceDurationByQuartileChart {
 
     public JFreeChart generateChart(List<SurveillanceData> surveillances) {
-        CategoryAxis xAxis = new CategoryAxis("ONC-ACBs");
-        NumberAxis yAxis = new NumberAxis("Surveillance Duration (days)");
+        try {
+            LOGGER.info("Starting to build the Closed Surveillance Duration by Quartile chart.");
+            CategoryAxis xAxis = new CategoryAxis("ONC-ACBs");
+            NumberAxis yAxis = new NumberAxis("Surveillance Duration (days)");
 
-        BoxAndWhiskerRenderer renderer = new BoxAndWhiskerRenderer();
-        renderer.setFillBox(false);
-        renderer.setMaximumBarWidth(25);
-        renderer.setMaxOutlierVisible(false);
-        renderer.setMinOutlierVisible(false);
-        renderer.setMeanVisible(false);
+            BoxAndWhiskerRenderer renderer = new BoxAndWhiskerRenderer();
+            renderer.setFillBox(false);
+            renderer.setMaximumBarWidth(25);
+            renderer.setMaxOutlierVisible(false);
+            renderer.setMinOutlierVisible(false);
+            renderer.setMeanVisible(false);
 
-        CategoryPlot plot = new CategoryPlot(getData(surveillances), xAxis, yAxis, renderer);
-        //plot.setOrientation(PlotOrientation.HORIZONTAL);
+            CategoryPlot plot = new CategoryPlot(getData(surveillances), xAxis, yAxis, renderer);
+            //plot.setOrientation(PlotOrientation.HORIZONTAL);
 
-        return new JFreeChart("ONC-ACB Closed Surveillance Duration by Quartiles Around the Median", plot);
+            return new JFreeChart("ONC-ACB Closed Surveillance Duration by Quartiles Around the Median", plot);
+        } finally {
+            LOGGER.info("Completed building the Closed Surveillance Duration by Quartile chart.");
+        }
     }
 
     private BoxAndWhiskerCategoryDataset getData(List<SurveillanceData> surveillances) {

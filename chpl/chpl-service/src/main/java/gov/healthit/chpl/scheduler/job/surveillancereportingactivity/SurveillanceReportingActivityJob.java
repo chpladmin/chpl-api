@@ -24,7 +24,7 @@ import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.excel.Surve
 import gov.healthit.chpl.util.EmailBuilder;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2()
+@Log4j2(topic = "surveillanceActivityReportJobLogger")
 public class SurveillanceReportingActivityJob implements Job {
     public static final String JOB_NAME = "surveillanceReportingActivityJob";
     public static final String START_DATE_KEY = "start-date";
@@ -48,11 +48,7 @@ public class SurveillanceReportingActivityJob implements Job {
 
         LOGGER.info("********* Starting the Surveillance Reporting Activity job. *********");
         try {
-
             List<CSVRecord> records = dataGatherer.getData(getStartDate(context), getEndDate(context));
-
-            LOGGER.info("Count of found Surveillance Rows: " + records.size());
-
             List<SurveillanceData> surveillances = records.stream()
                     .map(rec -> new SurveillanceData(rec))
                     .collect(Collectors.toList());
