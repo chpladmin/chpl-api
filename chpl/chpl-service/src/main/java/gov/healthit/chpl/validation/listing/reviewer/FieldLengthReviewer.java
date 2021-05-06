@@ -77,6 +77,7 @@ public class FieldLengthReviewer implements Reviewer {
         checkQmsStandardsFieldLength(listing);
         checkAccessibilityStandardsFieldLength(listing);
         checkTargetedUsersFieldLength(listing);
+        checkCriteria(listing);
     }
 
     private void checkQmsStandardsFieldLength(CertifiedProductSearchDetails listing) {
@@ -101,6 +102,17 @@ public class FieldLengthReviewer implements Reviewer {
                 .filter(targetedUser -> !StringUtils.isEmpty(targetedUser.getTargetedUserName()))
                 .forEach(targetedUser -> checkFieldLength(listing, targetedUser.getTargetedUserName(), "targetedUser"));
         }
+    }
+
+    private void checkCriteria(CertifiedProductSearchDetails listing) {
+        listing.getCertificationResults().stream()
+        .forEach(criteria -> {
+            checkFieldLength(listing, criteria.getApiDocumentation(), "apiDocumentationLink");
+            checkFieldLength(listing, criteria.getExportDocumentation(), "exportDocumentationLink");
+            checkFieldLength(listing, criteria.getDocumentationUrl(), "documentationUrlLink");
+            checkFieldLength(listing, criteria.getUseCases(), "useCasesLink");
+            checkFieldLength(listing, criteria.getServiceBaseUrlList(), "serviceBaseUrlListLink");
+        });
     }
 
     private void checkFieldLength(CertifiedProductSearchDetails product, String field, String errorField) {

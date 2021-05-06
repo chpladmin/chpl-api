@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
@@ -18,7 +19,6 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.MissingReasonException;
-import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.questionableactivity.ListingQuestionableActivityProvider;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -33,7 +33,7 @@ public class CertifiedProductMissingReasonListener {
 
     /**
      * Autowired constructor for dependency injection.
-     * 
+     *
      * @param errorMessageUtil
      *            - Error message utility class
      * @param cpdManager
@@ -55,7 +55,7 @@ public class CertifiedProductMissingReasonListener {
 
     /**
      * Looks for reason for listing update if required.
-     * 
+     *
      * @param updateRequest
      *            the listing update object
      * @throws EntityRetrievalException
