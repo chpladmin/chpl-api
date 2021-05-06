@@ -68,11 +68,23 @@ public class FieldLengthReviewer implements Reviewer {
         if (listing.getVersion() != null && !StringUtils.isEmpty(listing.getVersion().getVersion())) {
             checkFieldLength(listing, listing.getVersion().getVersion(), "productVersion");
         }
+        checkCriteria(listing);
+    }
+
+    private void checkCriteria(CertifiedProductSearchDetails listing) {
+        listing.getCertificationResults().stream()
+        .forEach(criteria -> {
+            checkFieldLength(listing, criteria.getApiDocumentation(), "apiDocumentationLink");
+            checkFieldLength(listing, criteria.getExportDocumentation(), "exportDocumentationLink");
+            checkFieldLength(listing, criteria.getDocumentationUrl(), "documentationUrlLink");
+            checkFieldLength(listing, criteria.getUseCases(), "useCasesLink");
+            checkFieldLength(listing, criteria.getServiceBaseUrlList(), "serviceBaseUrlListLink");
+        });
     }
 
     private void checkFieldLength(CertifiedProductSearchDetails product, String field, String errorField) {
         int maxAllowedFieldLength = getMaxLength(MAX_LENGTH_PROPERTY_PREFIX + errorField);
-        if (field.length() > maxAllowedFieldLength) {
+        if (field != null && field.length() > maxAllowedFieldLength) {
             product.getErrorMessages().add(
                     msgUtil.getMessage("listing." + errorField + MAX_LENGTH_PROPERTY_SUFFIX, maxAllowedFieldLength, field));
         }
