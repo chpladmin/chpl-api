@@ -139,10 +139,6 @@
         additivity="false">
         <AppenderRef ref="listingValidationReportEmailJob" />
     </Logger>
-    <Logger name="complaintsReportJob" level="INFO"
-        additivity="false">
-        <AppenderRef ref="complaintsReportJob" />
-    </Logger>
     <Logger name="quarterlyReportGenerationJobLogger" level="INFO"
         additivity="false">
         <AppenderRef ref="quarterlyReportGenerationJob" />
