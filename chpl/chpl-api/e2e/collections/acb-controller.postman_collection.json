@@ -1,6 +1,5 @@
 {
     "info": {
-        "_postman_id": "057df124-926f-44cb-acbe-705ba23149eb",
         "name": "acb-controller",
         "description": "This is CHPL test collection",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -12,15 +11,9 @@
                 {
                     "listen": "test",
                     "script": {
-                        "id": "6675a46a-e0c6-45fa-b349-03c95ab41f1d",
                         "exec": [
                             "pm.test(\"Status code is 200\", function () {",
                             "    pm.response.to.have.status(200);",
-                            "});",
-                            "",
-                            "pm.test(\"All 6 Acbs are extracted\", function () {",
-                            "    var jsonData = pm.response.json();",
-                            "    pm.expect(jsonData.acbs.length).to.equal(6);",
                             "});",
                             "",
                             "pm.test(\"Check if all of acbs exist\", function () {",
@@ -71,7 +64,6 @@
                 {
                     "listen": "test",
                     "script": {
-                        "id": "0127e346-3602-4ef0-9987-362dd5003565",
                         "exec": [
                             "pm.test(\"Status code is 200\", function () {",
                             "    pm.response.to.have.status(200);",
@@ -113,28 +105,6 @@
             },
             "response": [
             ]
-        }
-    ],
-    "event": [
-        {
-            "listen": "prerequest",
-            "script": {
-                "id": "bec8c3cd-2eb0-4256-ba06-bf10a398760f",
-                "type": "text/javascript",
-                "exec": [
-                    ""
-                ]
-            }
-        },
-        {
-            "listen": "test",
-            "script": {
-                "id": "3f81ef52-8d54-4ace-aa75-2849ffafd852",
-                "type": "text/javascript",
-                "exec": [
-                    ""
-                ]
-            }
         }
     ],
     "protocolProfileBehavior": {
