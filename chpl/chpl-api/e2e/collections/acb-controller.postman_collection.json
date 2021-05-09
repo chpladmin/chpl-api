@@ -1,7 +1,7 @@
 {
 	"info": {
-		"name": "acb-controller",
-		"description": "This is CHPL test collection",
+		"name": "certification-body-controller",
+		"description": "This is CHPL test collection for ACB controller",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
