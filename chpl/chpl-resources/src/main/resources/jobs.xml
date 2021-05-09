@@ -712,5 +712,21 @@
                 </entry>
             </job-data-map>
         </job>
+
+        <!-- temporary job run once by admin to update version activity -->
+        <job>
+            <name>versionActivityUpdaterJob</name>
+            <group>chplBackgroundJobs</group>
+            <description>Attempt to fill in missing product and developer data in version activity.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.VersionActivityUpdaterJob</job-class>
+            <durability>true</durability>
+            <recover>true</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN</value>
+                </entry>
+            </job-data-map>
+        </job>
     </schedule>
 </job-scheduling-data>

@@ -155,4 +155,8 @@
         additivity="false">
         <AppenderRef ref="userDefinedTriggersEmailJob" />
     </Logger>
+    <Logger name="versionActivityUpdaterJobLogger" level="INFO"
+        additivity="false">
+        <AppenderRef ref="versionActivityUpdaterJob" />
+    </Logger>
 </Loggers>
