@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.entity.ProductActiveOwnerEntity;
+import gov.healthit.chpl.entity.ProductCertificationStatusesEntity;
 import gov.healthit.chpl.entity.ProductEntity;
 import gov.healthit.chpl.entity.ProductEntitySimple;
 import gov.healthit.chpl.entity.ProductVersionEntity;
@@ -102,34 +103,30 @@ public class ProductDTO implements Serializable {
             }
         }
 
-        if (entity.getProductCertificationStatusesEntity() != null) {
-            this.statuses = new Statuses(entity.getProductCertificationStatusesEntity().getActive(),
-                    entity.getProductCertificationStatusesEntity().getRetired(),
-                    entity.getProductCertificationStatusesEntity().getWithdrawnByDeveloper(),
-                    entity.getProductCertificationStatusesEntity().getWithdrawnByAcb(),
-                    entity.getProductCertificationStatusesEntity().getSuspendedByAcb(),
-                    entity.getProductCertificationStatusesEntity().getSuspendedByOnc(),
-                    entity.getProductCertificationStatusesEntity().getTerminatedByOnc());
+        ProductCertificationStatusesEntity statusesEntity = entity.getProductCertificationStatusesEntity();
+        if (statusesEntity != null) {
+            this.statuses = new Statuses(statusesEntity.getActive(),
+                    statusesEntity.getRetired(),
+                    statusesEntity.getWithdrawnByDeveloper(),
+                    statusesEntity.getWithdrawnByAcb(),
+                    statusesEntity.getSuspendedByAcb(),
+                    statusesEntity.getSuspendedByOnc(),
+                    statusesEntity.getTerminatedByOnc());
         }
     }
 
     public ProductOwnerDTO getOwnerOnDate(Date date) {
-        if (this.getOwnerHistory() == null || this.getOwnerHistory().size() == 0) {
-            return null;
+        List<ProductOwnerDTO> localOwnerHistory = new ArrayList<ProductOwnerDTO>();
+        if (this.getOwnerHistory() != null && this.getOwnerHistory().size() > 0) {
+            localOwnerHistory.addAll(this.getOwnerHistory().stream().collect(Collectors.toList()));
         }
-
-        List<ProductOwnerDTO> localOwnerHistory = this.getOwnerHistory().stream()
-                .collect(Collectors.toList());
         localOwnerHistory.add(ProductOwnerDTO.builder()
                 .developer(this.getOwner())
                 .productId(this.getId())
-                //TODO: what does transfer date mean? the date this developer became
-                //the owner of the product? the date the product got different ownership?
-                .transferDate(null)
+                .transferDate(System.currentTimeMillis())
                 .build());
         // first we need to make sure the status events are in ascending order
-        this.getOwnerHistory().sort(new Comparator<ProductOwnerDTO>() {
-
+        localOwnerHistory.sort(new Comparator<ProductOwnerDTO>() {
             @Override
             public int compare(ProductOwnerDTO o1, ProductOwnerDTO o2) {
                 if (o1.getTransferDate() != null && o2.getTransferDate() != null) {
@@ -140,15 +137,9 @@ public class ProductDTO implements Serializable {
         });
 
         ProductOwnerDTO result = null;
-        for (int i = 0; i < this.getOwnerHistory().size() && result == null; i++) {
-            ProductOwnerDTO currOwner = this.getOwnerHistory().get(i);
-            if (i < this.getOwnerHistory().size() - 1) {
-                ProductOwnerDTO nextOwner = this.getOwnerHistory().get(i + 1);
-                if (currOwner.getTransferDate() != null && currOwner.getTransferDate().longValue() <= date.getTime()
-                        && nextOwner.getTransferDate() != null && nextOwner.getTransferDate().longValue() > date.getTime()) {
-                    result = currOwner;
-                }
-            } else {
+        for (int i = 0; i < localOwnerHistory.size() && result == null; i++) {
+            ProductOwnerDTO currOwner = localOwnerHistory.get(i);
+            if (currOwner.getTransferDate() != null && currOwner.getTransferDate().longValue() >= date.getTime()) {
                 result = currOwner;
             }
         }

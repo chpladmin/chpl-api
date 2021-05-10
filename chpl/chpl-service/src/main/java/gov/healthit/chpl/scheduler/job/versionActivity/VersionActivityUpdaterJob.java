@@ -157,7 +157,7 @@ public class VersionActivityUpdaterJob implements Job {
         //2. IF products were split then this version may have previously been under a different product ID
         ProductDTO product = null;
         try {
-            product = productManager.getById(version.getProductId());
+            product = productManager.getById(version.getProductId(), true);
         } catch (EntityRetrievalException ex) {
             LOGGER.error("Cannot find product with ID " + version.getProductId());
         }
@@ -167,9 +167,9 @@ public class VersionActivityUpdaterJob implements Job {
     private DeveloperDTO findDeveloperAssociatedWithProductOnDate(Long productId, Date date) {
         ProductDTO product = null;
         try {
-            product = productManager.getById(productId);
+            product = productManager.getById(productId, true);
         } catch (EntityRetrievalException ex) {
-            LOGGER.error("Cannot find product with ID " + product.getId());
+            LOGGER.error("Cannot find product with ID " + productId);
         }
         if (product == null) {
             return null;
