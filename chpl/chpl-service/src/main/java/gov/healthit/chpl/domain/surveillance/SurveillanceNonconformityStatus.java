@@ -15,6 +15,8 @@ public class SurveillanceNonconformityStatus implements Serializable {
     private static final long serialVersionUID = -411041849666278903L;
     public static final String OPEN = "Open";
     public static final String CLOSED = "Closed";
+    public static final Long OPEN_ID = 1L;
+    public static final Long CLOSED_ID = 2L;
 
     /**
      * Nonconformity status internal ID
