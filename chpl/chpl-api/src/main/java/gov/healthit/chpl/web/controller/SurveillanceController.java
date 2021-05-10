@@ -38,6 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.Job;
@@ -60,7 +61,6 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.PendingSurveillanceManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;

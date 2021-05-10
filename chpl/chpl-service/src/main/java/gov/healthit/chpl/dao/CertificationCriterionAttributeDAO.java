@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -13,18 +14,24 @@ import gov.healthit.chpl.entity.CertificationCriterionAttributeEntity;
 @Repository
 public class CertificationCriterionAttributeDAO extends BaseDAOImpl {
     public List<CertificationCriterion> getCriteriaForSvap() {
-        return getCertificationCriteriaAttributeEntityForSvap().stream()
+        return getAllCriteriaAttributeEntities().stream()
+                .filter(att -> att.getSvap())
                 .map(cca -> new CertificationCriterion(new CertificationCriterionDTO(cca.getCriterion())))
                 .collect(Collectors.toList());
     }
 
-    private List<CertificationCriterionAttributeEntity> getCertificationCriteriaAttributeEntityForSvap() {
+    @Transactional(readOnly = true)
+    public List<CertificationCriterionAttributeEntity> getAllCriteriaAttributes() {
+        return getAllCriteriaAttributeEntities().stream()
+                .collect(Collectors.toList());
+    }
+
+    private List<CertificationCriterionAttributeEntity> getAllCriteriaAttributeEntities() {
         return entityManager
                 .createQuery("SELECT cca "
                         + "FROM CertificationCriterionAttributeEntity cca "
                         + "JOIN FETCH cca.criterion "
-                        + "WHERE cca.svap = true "
-                        + "AND cca.deleted = false", CertificationCriterionAttributeEntity.class)
+                        + "WHERE cca.deleted = false", CertificationCriterionAttributeEntity.class)
                 .getResultList();
     }
 }

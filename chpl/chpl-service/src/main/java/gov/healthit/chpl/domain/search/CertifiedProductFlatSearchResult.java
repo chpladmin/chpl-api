@@ -38,6 +38,7 @@ public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResu
     private String surveillanceDates;
 
     private String apiDocumentation;
+    private String serviceBaseUrlList;
 
     public CertifiedProductFlatSearchResult(CertifiedProductFlatSearchResult other) {
         super(other);
@@ -46,5 +47,6 @@ public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResu
         this.cqmsMet = other.getCqmsMet();
         this.surveillanceDates = other.getSurveillanceDates();
         this.apiDocumentation = other.getApiDocumentation();
+        this.serviceBaseUrlList = other.getServiceBaseUrlList();
     }
 }

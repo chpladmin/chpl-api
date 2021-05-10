@@ -105,6 +105,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                 case EXPORT_DOCUMENTATION:
                 case DOCUMENTATION:
                 case USE_CASES:
+                case SERVICE_BASE_URL_LIST:
                     LOGGER.info("[" + i + "] Getting criteria with bad " + questionableUrlResult.getUrlType().getName()
                             + " website " + questionableUrlResult.getUrl());
                     questionableUrls.addAll(urlLookupDao.getCertificationResultsWithUrl(questionableUrlResult));
@@ -299,6 +300,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             int brokenExportDocumentationUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.EXPORT_DOCUMENTATION);
             int brokenDocumentationUrlUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.DOCUMENTATION);
             int brokenUseCasesUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.USE_CASES);
+            int brokenServiceBaseUrlLists = getCountOfBrokenUrlsOfType(urlResults, UrlType.SERVICE_BASE_URL_LIST);
             int brokenRwtPlansUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.REAL_WORLD_TESTING_PLANS);
             int brokenRwtResultsUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.REAL_WORLD_TESTING_RESULTS);
             int brokenSvapNoticeUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.STANDARDS_VERSION_ADVANCEMENT_PROCESS_NOTICE);
@@ -314,6 +316,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             htmlMessage += "<li>" + UrlType.EXPORT_DOCUMENTATION.getName() + ": " + brokenExportDocumentationUrls + "</li>";
             htmlMessage += "<li>" + UrlType.DOCUMENTATION.getName() + ": " + brokenDocumentationUrlUrls + "</li>";
             htmlMessage += "<li>" + UrlType.USE_CASES.getName() + ": " + brokenUseCasesUrls + "</li>";
+            htmlMessage += "<li>" + UrlType.SERVICE_BASE_URL_LIST.getName() + ": " + brokenServiceBaseUrlLists + "</li>";
             htmlMessage += "<li>" + UrlType.REAL_WORLD_TESTING_PLANS.getName() + ": " + brokenRwtPlansUrls + "</li>";
             htmlMessage += "<li>" + UrlType.REAL_WORLD_TESTING_RESULTS.getName() + ": " + brokenRwtResultsUrls + "</li>";
             htmlMessage += "<li>" + UrlType.STANDARDS_VERSION_ADVANCEMENT_PROCESS_NOTICE.getName() + ": " + brokenSvapNoticeUrls + "</li>";
