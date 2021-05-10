@@ -86,6 +86,12 @@ public class SurveillanceNonconformity implements Serializable {
     private Date capMustCompleteDate;
 
     /**
+     * Date non-conformity was closed
+     */
+    @XmlElement(required = false, nillable = true)
+    private Date nonConformityCloseDate;
+
+    /**
      * Nonconformity summary
      */
     @XmlElement(required = false, nillable = true)
@@ -379,6 +385,14 @@ public class SurveillanceNonconformity implements Serializable {
 
     public void setCapMustCompleteDate(Date capMustCompleteDate) {
         this.capMustCompleteDate = Util.getNewDate(capMustCompleteDate);
+    }
+
+    public Date getNonConformityCloseDate() {
+        return nonConformityCloseDate;
+    }
+
+    public void setNonConformityCloseDate(Date nonConformityCloseDate) {
+        this.nonConformityCloseDate = nonConformityCloseDate;
     }
 
     public String getSummary() {
