@@ -716,9 +716,9 @@
         <!-- temporary job run once by admin to update version activity -->
         <job>
             <name>versionActivityUpdaterJob</name>
-            <group>chplBackgroundJobs</group>
+            <group>systemJobs</group>
             <description>Attempt to fill in missing product and developer data in version activity.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.VersionActivityUpdaterJob</job-class>
+            <job-class>gov.healthit.chpl.scheduler.job.versionActivity.VersionActivityUpdaterJob</job-class>
             <durability>true</durability>
             <recover>true</recover>
             <job-data-map>

@@ -5,17 +5,20 @@ import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.entity.ProductOwnerEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class ProductOwnerDTO implements Serializable {
     private static final long serialVersionUID = 6840423832565720086L;
     private Long id;
     private Long productId;
     private DeveloperDTO developer;
     private Long transferDate;
-
-    public ProductOwnerDTO() {
-    }
 
     public ProductOwnerDTO(ProductOwnerEntity entity) {
 

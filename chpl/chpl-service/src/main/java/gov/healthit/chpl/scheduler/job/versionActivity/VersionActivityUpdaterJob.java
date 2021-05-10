@@ -1,9 +1,7 @@
-package gov.healthit.chpl.scheduler.job;
+package gov.healthit.chpl.scheduler.job.versionActivity;
 
+import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.persistence.Query;
 
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.DisallowConcurrentExecution;
@@ -11,8 +9,6 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -20,16 +16,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.activity.ActivityMetadataBuilder;
 import gov.healthit.chpl.activity.ActivityMetadataBuilderFactory;
-import gov.healthit.chpl.dao.ActivityDAO;
-import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.VersionActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.ProductDTO;
+import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
-import gov.healthit.chpl.entity.ActivityEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.util.JSONUtils;
-import gov.healthit.chpl.util.UserMapper;
 import lombok.extern.log4j.Log4j2;
 
 @DisallowConcurrentExecution
@@ -38,6 +34,9 @@ public class VersionActivityUpdaterJob implements Job {
 
     @Autowired
     private ProductVersionManager versionManager;
+
+    @Autowired
+    private ProductManager productManager;
 
     @Autowired
     private ActivityMetadataBuilderFactory metadataBuilderFactory;
@@ -96,7 +95,7 @@ public class VersionActivityUpdaterJob implements Job {
             if (!StringUtils.isEmpty(activityDto.getOriginalData())) {
                 ProductVersionDTO originalActivityData = parseJsonAsProductVersionDto(activityDto.getId(), activityDto.getOriginalData());
                 LOGGER.info("Updating activity original data for " + activity.getId());
-                updateActivityData(originalActivityData, versionDto);
+                updateActivityData(activityDto, originalActivityData, versionDto);
                 try {
                     activityDto.setOriginalData(JSONUtils.toJSON(originalActivityData));
                 } catch (JsonProcessingException ex) {
@@ -106,7 +105,7 @@ public class VersionActivityUpdaterJob implements Job {
             if (!StringUtils.isEmpty(activityDto.getNewData())) {
                 ProductVersionDTO newActivityData = parseJsonAsProductVersionDto(activityDto.getId(), activityDto.getNewData());
                 LOGGER.info("Updating activity new data for " + activity.getId());
-                updateActivityData(newActivityData, versionDto);
+                updateActivityData(activityDto, newActivityData, versionDto);
                 try {
                     activityDto.setNewData(JSONUtils.toJSON(newActivityData));
                 } catch (JsonProcessingException ex) {
@@ -117,27 +116,70 @@ public class VersionActivityUpdaterJob implements Job {
         return activityDto;
     }
 
-    private void updateActivityData(ProductVersionDTO savedActivityData, ProductVersionDTO completeVersionDto) {
+    private void updateActivityData(ActivityDTO activityDto, ProductVersionDTO savedActivityData, ProductVersionDTO completeVersionDto) {
         if (savedActivityData != null) {
-            if (savedActivityData.getProductId() == null) {
-                LOGGER.info("\tSetting missing product id to " + completeVersionDto.getProductId());
-                savedActivityData.setProductId(completeVersionDto.getProductId());
+            if (savedActivityData.getProductId() == null || StringUtils.isEmpty(savedActivityData.getProductName())) {
+                ProductDTO product = findProductAssociatedWithVersionOnDate(completeVersionDto, activityDto.getActivityDate());
+                if (savedActivityData.getProductId() == null) {
+                    LOGGER.info("\tSetting missing product id to " + product.getId());
+                    savedActivityData.setProductId(product.getId());
+                }
+                if (StringUtils.isEmpty(savedActivityData.getProductName())) {
+                    LOGGER.info("\tSetting missing product name to " + product.getName());
+                    savedActivityData.setProductName(product.getName());
+                }
             }
-            if (StringUtils.isEmpty(savedActivityData.getProductName())) {
-                LOGGER.info("\tSetting missing product name to " + completeVersionDto.getProductName());
-                savedActivityData.setProductName(completeVersionDto.getProductName());
-            }
-            //TODO: for developer data - we could try to find the product's owner at the
-            //time of this activity and save that developer
-            if (savedActivityData.getDeveloperId() == null) {
-                LOGGER.info("\tSetting missing developer id to " + completeVersionDto.getDeveloperId());
-                savedActivityData.setDeveloperId(completeVersionDto.getDeveloperId());
-            }
-            if (StringUtils.isEmpty(savedActivityData.getDeveloperName())) {
-                LOGGER.info("\tSetting missing developer name to " + completeVersionDto.getDeveloperName());
-                savedActivityData.setDeveloperName(completeVersionDto.getDeveloperName());
+
+            if (savedActivityData.getDeveloperId() == null || StringUtils.isEmpty(savedActivityData.getDeveloperName())) {
+                ProductDTO product = ProductDTO.builder()
+                        .id(savedActivityData.getProductId() != null ? savedActivityData.getProductId() : completeVersionDto.getProductId())
+                        .name(savedActivityData.getProductName() != null ? savedActivityData.getProductName() : completeVersionDto.getProductName())
+                        .build();
+                //try to find the product's owner at the time of this activity and save that developer
+                DeveloperDTO developer = findDeveloperAssociatedWithProductOnDate(product.getId(), activityDto.getActivityDate());
+                if (savedActivityData.getDeveloperId() == null) {
+                    Long developerIdToSave = developer.getId() != null ? developer.getId() : completeVersionDto.getDeveloperId();
+                    LOGGER.info("\tSetting missing developer id to " + developerIdToSave);
+                    savedActivityData.setDeveloperId(developerIdToSave);
+                }
+                if (StringUtils.isEmpty(savedActivityData.getDeveloperName())) {
+                    String developerNameToSave = !StringUtils.isEmpty(developer.getName()) ? developer.getName() : completeVersionDto.getDeveloperName();
+                    LOGGER.info("\tSetting missing developer name to " + developerNameToSave);
+                    savedActivityData.setDeveloperName(developerNameToSave);
+                }
             }
         }
+    }
+
+    private ProductDTO findProductAssociatedWithVersionOnDate(ProductVersionDTO version, Date date) {
+        //TODO: need some better logic here to narrow down by date...
+        //1. If products were merged then this version may have previously been under a different product ID
+        //2. IF products were split then this version may have previously been under a different product ID
+        ProductDTO product = null;
+        try {
+            product = productManager.getById(version.getProductId());
+        } catch (EntityRetrievalException ex) {
+            LOGGER.error("Cannot find product with ID " + version.getProductId());
+        }
+        return product;
+    }
+
+    private DeveloperDTO findDeveloperAssociatedWithProductOnDate(Long productId, Date date) {
+        ProductDTO product = null;
+        try {
+            product = productManager.getById(productId);
+        } catch (EntityRetrievalException ex) {
+            LOGGER.error("Cannot find product with ID " + product.getId());
+        }
+        if (product == null) {
+            return null;
+        }
+
+        ProductOwnerDTO productOwnerOnActivityDate = product.getOwnerOnDate(date);
+        return DeveloperDTO.builder()
+                .id(productOwnerOnActivityDate.getDeveloper().getId())
+                .name(productOwnerOnActivityDate.getDeveloper().getName())
+                .build();
     }
 
     private ProductVersionDTO parseJsonAsProductVersionDto(Long activityId, String activityJson) {
@@ -155,51 +197,5 @@ public class VersionActivityUpdaterJob implements Job {
 
     private void saveActivityUpdates(ActivityDTO activity) {
         activityUpdateDao.update(activity);
-    }
-
-    @Component
-    private final class UpdateableActivityDao extends ActivityDAO {
-        private UserMapper userMapper;
-
-        @Autowired
-        private UpdateableActivityDao(UserMapper userMapper) {
-            super(userMapper);
-            this.userMapper = userMapper;
-        }
-
-        @Transactional
-        public void update(ActivityDTO dto) {
-            ActivityEntity entity = getEntityManager().find(ActivityEntity.class, dto.getId());
-            if (entity != null) {
-                entity.setNewData(dto.getNewData());
-                entity.setOriginalData(dto.getOriginalData());
-            }
-            update(entity);
-        }
-
-        @Transactional
-        public List<ActivityDTO> getAllVersionActivityMetadata() {
-            String hql = "SELECT a "
-                    + "FROM ActivityEntity a "
-                    + "JOIN FETCH a.concept concept "
-                    + "LEFT JOIN FETCH a.user u "
-                    + "LEFT JOIN FETCH u.permission "
-                    + "LEFT JOIN FETCH u.contact "
-                    + "WHERE concept.concept = :conceptName "
-                    + "AND a.deleted = false";
-            Query query = entityManager.createQuery(hql, ActivityEntity.class);
-            query.setParameter("conceptName", ActivityConcept.VERSION);
-            return ((List<ActivityEntity>) query.getResultList()).stream()
-                    .map(entity -> mapEntityToDto(entity))
-                    .collect(Collectors.toList());
-        }
-
-        private ActivityDTO mapEntityToDto(ActivityEntity entity) {
-            ActivityDTO activity = new ActivityDTO(entity);
-            if (entity.getUser() != null) {
-                activity.setUser(userMapper.from(entity.getUser()));
-            }
-            return activity;
-        }
     }
 }
