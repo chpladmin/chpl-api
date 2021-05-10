@@ -18,9 +18,15 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-@Data
+@ToString
+@Getter
+@Setter
+@RequiredArgsConstructor
 @Entity
 @Table(name = "certification_result")
 public class CertificationResultEntity implements Serializable {
@@ -116,28 +122,11 @@ public class CertificationResultEntity implements Serializable {
     @Column(name = "last_modified_user", nullable = false)
     protected Long lastModifiedUser;
 
-    /**
-     * Default constructor, mainly for hibernate use.
-     */
-    public CertificationResultEntity() {
-        // Default constructor
-    }
 
-    /**
-     * Constructor taking a given ID.
-     *
-     * @param id
-     *            to set
-     */
     public CertificationResultEntity(Long id) {
         this.id = id;
     }
 
-    /**
-     * Return the type of this class. Useful for when dealing with proxies.
-     *
-     * @return Defining class.
-     */
     @Transient
     public Class<?> getClassType() {
         return CertificationResultEntity.class;
