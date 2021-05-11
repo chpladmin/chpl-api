@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bouncycastle.dvcs.SignedDVCSMessageGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
@@ -65,6 +66,7 @@ import gov.healthit.chpl.manager.PendingSurveillanceManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.reviewer.AuthorityReviewer;
 import gov.healthit.chpl.web.controller.results.BooleanResult;
@@ -80,24 +82,40 @@ public class SurveillanceController implements MessageSourceAware {
 
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceController.class);
 
-    @Autowired
     private Environment env;
-    @Autowired
     private FileUtils fileUtils;
-    @Autowired
     private MessageSource messageSource;
-    @Autowired
     private SurveillanceManager survManager;
-    @Autowired
     private ActivityManager activityManager;
-    @Autowired
     private CertifiedProductDetailsManager cpdetailsManager;
-    @Autowired
     private AuthorityReviewer survAuthorityReviewer;
-    @Autowired
     private PendingSurveillanceManager pendingSurveillanceManager;
-    @Autowired
     private ResourcePermissions resourcePermissions;
+    private ErrorMessageUtil errorMessageUtil;
+
+    @SuppressWarnings("checkstyle:parameterNumber")
+    @Autowired
+    public SurveillanceController(Environment env,
+            FileUtils fileUtils,
+            MessageSource messageSource,
+            SurveillanceManager survManager,
+            ActivityManager activityManager,
+            CertifiedProductDetailsManager cpdetailsManager,
+            AuthorityReviewer survAuthorityReviewer,
+            PendingSurveillanceManager pendingSurveillanceManager,
+            ResourcePermissions resourcePermissions,
+            ErrorMessageUtil errorMessageUtil) {
+        this.env = env;
+        this.fileUtils = fileUtils;
+        this.messageSource = messageSource;
+        this.survManager = survManager;
+        this.activityManager = activityManager;
+        this.cpdetailsManager = cpdetailsManager;
+        this.survAuthorityReviewer = survAuthorityReviewer;
+        this.pendingSurveillanceManager = pendingSurveillanceManager;
+        this.resourcePermissions = resourcePermissions;
+        this.errorMessageUtil = errorMessageUtil;
+    }
 
     @ApiOperation(value = "Get the listing of all pending surveillance items that this user has access to.",
             notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority on the ACB associated "
@@ -512,7 +530,7 @@ public class SurveillanceController implements MessageSourceAware {
             endDate = LocalDate.parse(end, formatter);
             return survManager.submitActivityReportRequest(startDate, endDate);
        } catch (DateTimeException e) {
-            throw new ValidationException("Could not parse the start and/or end date.  The correct format is 'yyyy-mm-dd'.");
+            throw new ValidationException(errorMessageUtil.getMessage("surveillance.activity.report.invalidDate"));
        }
     }
 
