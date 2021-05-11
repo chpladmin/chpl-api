@@ -24,11 +24,15 @@ import lombok.extern.log4j.Log4j2;
 @Component
 public class SurveillanceActivityReportDataGatherer {
 
-    @Autowired
     private SurveillanceManager surveillanceManager;
 
+    @Autowired
+    public SurveillanceActivityReportDataGatherer(SurveillanceManager surveillanceManager) {
+        this.surveillanceManager = surveillanceManager;
+    }
+
     public List<CSVRecord> getData(LocalDate startDate, LocalDate endDate) throws Exception {
-        List<CSVRecord> records =StreamSupport.stream(getIterableCsvRecords(getSurveillanceCsv()).spliterator(), false)
+        List<CSVRecord> records = StreamSupport.stream(getIterableCsvRecords(getSurveillanceCsv()).spliterator(), false)
                 .filter(record -> isSurveillanceOpenBetweenDates(
                         getLocalDate(record.get("SURVEILLANCE_BEGAN"), LocalDate.MIN),
                         getLocalDate(record.get("SURVEILLANCE_ENDED"), LocalDate.MAX),
