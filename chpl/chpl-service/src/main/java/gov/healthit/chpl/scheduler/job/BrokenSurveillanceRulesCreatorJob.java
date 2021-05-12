@@ -163,19 +163,18 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
                 boolean foundBrokenNc = false;
                 for (SurveillanceRequirement req : surv.getRequirements()) {
                     for (SurveillanceNonconformity nc : req.getNonconformities()) {
-                        if (nc.getNonConformityCloseDate() == null) {
+                        if (isNonConformityOpen(nc)) {
                             boolean ncHasError = false;
                             BrokenSurveillanceRulesDTO rule = getDefaultBrokenRule(listing);
                             rule = addSurveillanceData(rule, surv);
                             rule = addNcData(rule, nc);
-                            List<OversightRuleResult> oversightResult = ruleComplianceCalculator
-                                    .calculateCompliance(listing, surv, nc);
+
+                            List<OversightRuleResult> oversightResult = ruleComplianceCalculator.calculateCompliance(listing, surv, nc);
+
                             for (OversightRuleResult currResult : oversightResult) {
                                 String dateBrokenStr = "";
                                 if (currResult.getDateBroken() != null) {
-                                    LocalDateTime dateBroken = LocalDateTime
-                                            .ofInstant(Instant.ofEpochMilli(
-                                                    currResult.getDateBroken().getTime()), ZoneId.systemDefault());
+                                    LocalDateTime dateBroken = LocalDateTime.ofInstant(Instant.ofEpochMilli(currResult.getDateBroken().getTime()), ZoneId.systemDefault());
                                     dateBrokenStr = dateFormatter.format(dateBroken);
 
                                     switch (currResult.getRule()) {
@@ -207,7 +206,6 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
                                 }
                             }
                             if (ncHasError) {
-                                rule.setNonconformityStatus(nc.getStatus().getName());
                                 foundBrokenNc = true;
                                 errors.add(rule);
                             }
@@ -224,6 +222,10 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
             }
         }
         return errors;
+    }
+
+    private Boolean isNonConformityOpen(SurveillanceNonconformity nonConformity) {
+        return nonConformity.getNonConformityCloseDate() == null;
     }
 
     private BrokenSurveillanceRulesDTO getDefaultBrokenRule(CertifiedProductSearchDetails listing)
@@ -286,34 +288,34 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         } else {
             rule.setNonconformityCriteria(nc.getNonconformityType());
         }
+        LocalDateTime ncCloseDate = null;
+        if (nc.getNonConformityCloseDate() != null) {
+            ncCloseDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getNonConformityCloseDate().getTime()), ZoneId.systemDefault());
+            rule.setDateOfDeterminationOfNonconformity(dateFormatter.format(ncCloseDate));
+        }
         LocalDateTime ncDeterminationDate = null;
         if (nc.getDateOfDetermination() != null) {
-            ncDeterminationDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getDateOfDetermination().getTime()),
-                    ZoneId.systemDefault());
+            ncDeterminationDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getDateOfDetermination().getTime()), ZoneId.systemDefault());
             rule.setDateOfDeterminationOfNonconformity(dateFormatter.format(ncDeterminationDate));
         }
         LocalDateTime capApprovalDate = null;
         if (nc.getCapApprovalDate() != null) {
-            capApprovalDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getCapApprovalDate().getTime()),
-                    ZoneId.systemDefault());
+            capApprovalDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getCapApprovalDate().getTime()), ZoneId.systemDefault());
             rule.setCorrectiveActionPlanApprovedDate(dateFormatter.format(capApprovalDate));
         }
         LocalDateTime capStartDate = null;
         if (nc.getCapStartDate() != null) {
-            capStartDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getCapStartDate().getTime()),
-                    ZoneId.systemDefault());
+            capStartDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getCapStartDate().getTime()), ZoneId.systemDefault());
             rule.setDateCorrectiveActionBegan(dateFormatter.format(capStartDate));
         }
         LocalDateTime capMustCompleteDate = null;
         if (nc.getCapMustCompleteDate() != null) {
-            capMustCompleteDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getCapMustCompleteDate().getTime()),
-                    ZoneId.systemDefault());
+            capMustCompleteDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getCapMustCompleteDate().getTime()), ZoneId.systemDefault());
             rule.setDateCorrectiveActionMustBeCompleted(dateFormatter.format(capMustCompleteDate));
         }
         LocalDateTime capEndDate = null;
         if (nc.getCapEndDate() != null) {
-            capEndDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getCapEndDate().getTime()),
-                    ZoneId.systemDefault());
+            capEndDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getCapEndDate().getTime()), ZoneId.systemDefault());
             rule.setDateCorrectiveActionWasCompleted(dateFormatter.format(capEndDate));
         }
 

@@ -57,7 +57,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
             + "LEFT OUTER JOIN FETCH reqs.nonconformities ncs "
             + "LEFT OUTER JOIN FETCH ncs.certificationCriterionEntity cce2 "
             + "LEFT JOIN FETCH cce2.certificationEdition "
-            + "LEFT OUTER JOIN FETCH ncs.nonconformityStatus "
             + "LEFT OUTER JOIN FETCH ncs.documents docs "
             + "WHERE surv.deleted <> true ";
     private static String PENDING_SURVEILLANCE_FULL_HQL = "SELECT DISTINCT surv "
@@ -765,27 +764,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
         SurveillanceNonconformityStatus result = convert(resultEntity);
         return result;
     }
-
-
-    public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(Long id) {
-        LOGGER.debug("Searching for nonconformity status type by id '" + id + "'.");
-        if (id == null) {
-            return null;
-        }
-        Query query = entityManager.createQuery("from NonconformityStatusEntity where id = :id and deleted <> true",
-                NonconformityStatusEntity.class);
-        query.setParameter("id", id);
-        List<NonconformityStatusEntity> matches = query.getResultList();
-
-        NonconformityStatusEntity resultEntity = null;
-        if (matches != null && matches.size() > 0) {
-            resultEntity = matches.get(0);
-        }
-
-        SurveillanceNonconformityStatus result = convert(resultEntity);
-        return result;
-    }
-
 
     @Transactional(readOnly = true)
     public List<PendingSurveillanceEntity> getAllPendingSurveillance() {

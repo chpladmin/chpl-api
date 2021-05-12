@@ -33,13 +33,13 @@ public class BrokenSurveillanceRulesDTO implements Serializable {
     private String capNotClosedRule;
     private String closedCapWithOpenNonconformityRule;
     private Boolean nonconformity;
-    private String nonconformityStatus;
     private String nonconformityCriteria;
     private String dateOfDeterminationOfNonconformity;
     private String correctiveActionPlanApprovedDate;
     private String dateCorrectiveActionBegan;
     private String dateCorrectiveActionMustBeCompleted;
     private String dateCorrectiveActionWasCompleted;
+    private String nonConformityCloseDate;
     private long numberOfDaysFromDeterminationToCapApproval;
     private long numberOfDaysFromDeterminationToPresent;
     private long numberOfDaysFromCapApprovalToCapBegan;
@@ -81,9 +81,9 @@ public class BrokenSurveillanceRulesDTO implements Serializable {
         this.capNotClosedRule = entity.getCapNotClosedRule();
         this.closedCapWithOpenNonconformityRule = entity.getClosedCapWithOpenNonconformityRule();
         this.nonconformity = entity.getNonconformity();
-        this.nonconformityStatus = entity.getNonconformityStatus();
         this.nonconformityCriteria = entity.getNonconformityCriteria();
         this.dateOfDeterminationOfNonconformity = entity.getDateOfDeterminationOfNonconformity();
+        this.nonConformityCloseDate = entity.getNonConformityCloseDate();
         this.correctiveActionPlanApprovedDate = entity.getCorrectiveActionPlanApprovedDate();
         this.dateCorrectiveActionBegan = entity.getDateCorrectiveActionBegan();
         this.dateCorrectiveActionMustBeCompleted = entity.getDateCorrectiveActionMustBeCompleted();

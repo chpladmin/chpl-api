@@ -103,8 +103,8 @@ public class BrokenSurveillanceRulesEntity {
     private Boolean nonconformity;
 
     @Basic(optional = true)
-    @Column(name = "nonconformity_status")
-    private String nonconformityStatus;
+    @Column(name = "non_conformity_close_date")
+    private String nonConformityCloseDate;
 
     @Basic(optional = true)
     @Column(name = "nonconformity_criteria")
