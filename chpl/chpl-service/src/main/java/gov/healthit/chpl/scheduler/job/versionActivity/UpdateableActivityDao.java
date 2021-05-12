@@ -1,5 +1,7 @@
 package gov.healthit.chpl.scheduler.job.versionActivity;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,6 +74,39 @@ public class UpdateableActivityDao extends BaseDAOImpl {
         return ((List<ActivityEntity>) query.getResultList()).stream()
                 .map(entity -> mapEntityToDto(entity))
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<ActivityDTO> findByObjectId(Long objectId, ActivityConcept concept, Date startDate, Date endDate) {
+        String queryStr = "SELECT ae "
+                + "FROM ActivityEntity ae "
+                + "JOIN FETCH ae.concept ac "
+                + "LEFT OUTER JOIN FETCH ae.user "
+                + "WHERE (ac.concept = :conceptName) "
+                + "AND (ae.activityObjectId = :objectid) ";
+        if (startDate != null) {
+            queryStr += "AND (ae.activityDate >= :startDate) ";
+        }
+        if (endDate != null) {
+            queryStr += "AND (ae.activityDate <= :endDate) ";
+        }
+        Query query = entityManager.createQuery(queryStr, ActivityEntity.class);
+        query.setParameter("objectid", objectId);
+        query.setParameter("conceptName", concept.name());
+        if (startDate != null) {
+            query.setParameter("startDate", startDate);
+        }
+        if (endDate != null) {
+            query.setParameter("endDate", endDate);
+        }
+        List<ActivityEntity> entities = query.getResultList();
+
+        List<ActivityDTO> activities = new ArrayList<>();
+        for (ActivityEntity entity : entities) {
+            ActivityDTO result = mapEntityToDto(entity);
+            activities.add(result);
+        }
+        return activities;
     }
 
     private ActivityDTO mapEntityToDto(ActivityEntity entity) {
