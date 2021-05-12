@@ -23,7 +23,7 @@ import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.util.JSONUtils;
@@ -40,7 +40,7 @@ public class VersionActivityUpdaterJob implements Job {
     private ProductManager productManager;
 
     @Autowired
-    private ActivityManager activityManager;
+    private DeveloperManager developerManager;
 
     @Autowired
     private UpdateableActivityDao activityUpdateDao;
@@ -141,12 +141,20 @@ public class VersionActivityUpdaterJob implements Job {
                     .name(existingActivityData.getProductName())
                     .build();
             if (existingActivityData.getProductId() == null || StringUtils.isEmpty(existingActivityData.getProductName())) {
-                productAssociatedWithVersionActivityRecord = findProductAssociatedWithVersionOnDate(systemVersionDto, activityDto.getActivityDate());
-                if (productAssociatedWithVersionActivityRecord != null && existingActivityData.getProductId() == null) {
+                if (existingActivityData.getProductId() != null && StringUtils.isEmpty(existingActivityData.getProductName())) {
+                    //sometimes we've only filled in a product id, so lookup product with that ID to get the name
+                    productAssociatedWithVersionActivityRecord = findProductWithIdOnDate(systemVersionDto.getId(), existingActivityData.getProductId(), activityDto.getActivityDate());
+                } else {
+                    productAssociatedWithVersionActivityRecord = findProductWithIdOnDate(systemVersionDto.getId(), systemVersionDto.getProductId(), activityDto.getActivityDate());
+                }
+                //fill in missing data if we can
+                if (productAssociatedWithVersionActivityRecord != null && productAssociatedWithVersionActivityRecord.getId() != null
+                        && existingActivityData.getProductId() == null) {
                     LOGGER.info("\tSetting missing product id to " + productAssociatedWithVersionActivityRecord.getId());
                     existingActivityData.setProductId(productAssociatedWithVersionActivityRecord.getId());
                 }
-                if (productAssociatedWithVersionActivityRecord != null && StringUtils.isEmpty(existingActivityData.getProductName())) {
+                if (productAssociatedWithVersionActivityRecord != null && !StringUtils.isEmpty(productAssociatedWithVersionActivityRecord.getName())
+                        && StringUtils.isEmpty(existingActivityData.getProductName())) {
                     LOGGER.info("\tSetting missing product name to " + productAssociatedWithVersionActivityRecord.getName());
                     existingActivityData.setProductName(productAssociatedWithVersionActivityRecord.getName());
                 }
@@ -154,49 +162,50 @@ public class VersionActivityUpdaterJob implements Job {
 
             if (productAssociatedWithVersionActivityRecord != null && productAssociatedWithVersionActivityRecord.getId() != null
                     && (existingActivityData.getDeveloperId() == null || StringUtils.isEmpty(existingActivityData.getDeveloperName()))) {
-                //try to find the product's owner at the time of this activity and save that developer
-                DeveloperDTO developer = findDeveloperAssociatedWithProductOnDate(productAssociatedWithVersionActivityRecord.getId(), activityDto.getActivityDate());
-                if (developer != null && existingActivityData.getDeveloperId() == null) {
-                    LOGGER.info("\tSetting missing developer id to " + developer.getId());
-                    existingActivityData.setDeveloperId(developer.getId());
+                DeveloperDTO developerAssociatedWithVersionActivityRecord = null;
+                if (existingActivityData.getDeveloperId() != null && StringUtils.isEmpty(existingActivityData.getDeveloperName())) {
+                    //sometimes we've only filled in a developer id, so look up developer with that ID to get the name
+                    developerAssociatedWithVersionActivityRecord = findDeveloperWithIdOnDate(existingActivityData.getDeveloperId(), activityDto.getActivityDate());
+                } else {
+                    //try to find the product's owner at the time of this activity and save that developer
+                    developerAssociatedWithVersionActivityRecord = findDeveloperAssociatedWithProductOnDate(productAssociatedWithVersionActivityRecord.getId(), activityDto.getActivityDate());
                 }
-                if (developer != null && StringUtils.isEmpty(existingActivityData.getDeveloperName())) {
-                    LOGGER.info("\tSetting missing developer name to " + developer.getName());
-                    existingActivityData.setDeveloperName(developer.getName());
+                //fill in missing data if we can
+                if (developerAssociatedWithVersionActivityRecord != null && developerAssociatedWithVersionActivityRecord.getId() != null && existingActivityData.getDeveloperId() == null) {
+                    LOGGER.info("\tSetting missing developer id to " + developerAssociatedWithVersionActivityRecord.getId());
+                    existingActivityData.setDeveloperId(developerAssociatedWithVersionActivityRecord.getId());
+                }
+                if (developerAssociatedWithVersionActivityRecord != null && !StringUtils.isEmpty(developerAssociatedWithVersionActivityRecord.getName()) && StringUtils.isEmpty(existingActivityData.getDeveloperName())) {
+                    LOGGER.info("\tSetting missing developer name to " + developerAssociatedWithVersionActivityRecord.getName());
+                    existingActivityData.setDeveloperName(developerAssociatedWithVersionActivityRecord.getName());
                 }
             }
         }
     }
 
-    private ProductDTO findProductAssociatedWithVersionOnDate(ProductVersionDTO version, Date date) {
+    private ProductDTO findProductWithIdOnDate(Long versionId, Long productId, Date date) {
+        //First look to see if there is any activity for a product with this ID that has occurred
+        //since the given date. If there is, that means that whatever result we get when we
+        //query for this product today is potentially different from what the product data was
+        //on the date of the version activity.
+        //If there is such product activity, we will try to figure out the name of the product
+        //as it was in the system at that time.
+        //If there is no such product activity, we can just query for the product by ID
+        //and use it the way it looks today.
         ProductDTO product = null;
-        try {
-            product = productManager.getById(version.getProductId(), true);
-        } catch (EntityRetrievalException ex) {
-            LOGGER.error("Cannot find product with ID " + version.getProductId());
-        }
-        //The above code gets the product currently associated with the version.
-        //If the product has been updated, merged, or split since the date of the version activity
-        //then it is possible the retrieved product information does not match what it looked like
-        //at the time of the version activity.
-        //So - query for any update (potentially a different name), split, or merge activity for
-        //this product that has occurred since the activity.
-        //If it exists, I do not think we can continue with this product with confidence.
-        // Up to the team/PO if we need to try to:
-        //   1) Trace through the activity to see what product the version was under at the time of activity
-        //      a) Can we even do that? Can QA or anyone even validate that it's right?
-        //   2) Proceed with this product, or
-        //   3) Leave the product and developer blank
-        //After reviewing the logs, this affects 770 version activity records.
-        if (product != null) {
-            List<ActivityDTO> productActivitySinceDate = getProductActivitySinceDate(product.getId(), date);
-            if (productActivitySinceDate != null && productActivitySinceDate.size() > 0) {
-                LOGGER.info("Product " + product.getId() + ": " + product.getName() + " has had activity since " + date.toString());
-                ProductDTO productOnActivityDate = getProductOnActivityDate(productActivitySinceDate, date);
-                if (productOnActivityDate == null) {
-                    LOGGER.warn("Could not determine product data on " + date.toString() + " and will not proceed with this activity.");
-                }
-                product = productOnActivityDate;
+        List<ActivityDTO> productActivitySinceDate = getProductActivitySinceDate(productId, date);
+        if (productActivitySinceDate != null && productActivitySinceDate.size() > 0) {
+            LOGGER.info("Product " + productId + " has had activity since " + date.toString());
+            ProductDTO productOnActivityDate = getProductOnActivityDate(versionId, productActivitySinceDate, date);
+            if (productOnActivityDate == null) {
+                LOGGER.warn("Could not determine product data on " + date.toString() + " and will not proceed with this activity.");
+            }
+            product = productOnActivityDate;
+        } else {
+            try {
+                product = productManager.getById(productId, true);
+            } catch (EntityRetrievalException ex) {
+                LOGGER.error("Cannot find product with ID " + productId);
             }
         }
         return product;
@@ -217,7 +226,7 @@ public class VersionActivityUpdaterJob implements Job {
         return null;
     }
 
-    private ProductDTO getProductOnActivityDate(List<ActivityDTO> productActivities, Date date) {
+    private ProductDTO getProductOnActivityDate(Long versionId, List<ActivityDTO> productActivities, Date date) {
         ActivityDTO productActivity = null;
         productActivities.sort(new Comparator<ActivityDTO>() {
             @Override
@@ -235,7 +244,40 @@ public class VersionActivityUpdaterJob implements Job {
         if (productActivity == null) {
             return null;
         }
-        return parseJsonAsProductDto(productActivity.getOriginalData());
+        ProductDTO productFromOriginalData = parseJsonAsProductDto(productActivity.getOriginalData());
+        if (productFromOriginalData == null) {
+            List<ProductDTO> productsFromOriginalData = parseJsonAsProductDtoList(productActivity.getOriginalData());
+            //this action was a merge - sometimes all the original things had the same name
+            //so if they did we can return a product object with the name filled in
+            if (productsFromOriginalData != null) {
+                ProductDTO productForVersion = getProductForVersion(productsFromOriginalData, versionId);
+                if (productForVersion != null) {
+                    productFromOriginalData = productForVersion;
+                } else if (productsFromOriginalData.stream().map(prod -> prod.getName()).distinct().count() == 1) {
+                    productFromOriginalData = ProductDTO.builder()
+                            .name(productsFromOriginalData.get(0).getName())
+                            .build();
+                }
+            } else {
+                LOGGER.warn("Could not handle product activity JSON: " + productActivity.getOriginalData());
+            }
+        }
+        return productFromOriginalData;
+    }
+
+    private ProductDTO getProductForVersion(List<ProductDTO> products, Long versionId) {
+        return products.stream()
+            .filter(product -> doesProductHaveVersionId(product, versionId))
+            .findAny().get();
+    }
+
+    private boolean doesProductHaveVersionId(ProductDTO product, Long versionId) {
+        if (product.getProductVersions() == null || product.getProductVersions().size() == 0) {
+            return false;
+        }
+        return product.getProductVersions().stream()
+            .filter(pv -> pv.getId().equals(versionId))
+            .count() == 1;
     }
 
     private DeveloperDTO findDeveloperAssociatedWithProductOnDate(Long productId, Date date) {
@@ -262,19 +304,30 @@ public class VersionActivityUpdaterJob implements Job {
         //      a) Can we even do that? Can QA or anyone even validate that it's right?
         //   2) Proceed with this developer, or
         //   3) Leave the developer blank
-        //After reviewing the logs, this affects 770 version activity records.
-        DeveloperDTO developer = DeveloperDTO.builder()
-                .id(productOwnerOnActivityDate.getDeveloper().getId())
-                .name(productOwnerOnActivityDate.getDeveloper().getName())
-                .build();
-        List<ActivityDTO> developerActivitySinceDate = getDeveloperActivitySinceDate(developer.getId(), date);
+        DeveloperDTO developer = null;
+        if (productOwnerOnActivityDate != null) {
+            Long developerId = productOwnerOnActivityDate.getDeveloper().getId();
+            developer = findDeveloperWithIdOnDate(developerId, date);
+        }
+        return developer;
+    }
+
+    private DeveloperDTO findDeveloperWithIdOnDate(Long developerId, Date date) {
+        DeveloperDTO developer = null;
+        List<ActivityDTO> developerActivitySinceDate = getDeveloperActivitySinceDate(developerId, date);
         if (developerActivitySinceDate != null && developerActivitySinceDate.size() > 0) {
-            LOGGER.info("Developer " + developer.getId() + ": " + developer.getName() + " has had activity since " + date.toString());
+            LOGGER.info("Developer " + developerId + " has had activity since " + date.toString());
             DeveloperDTO developerOnActivityDate = getDeveloperOnActivityDate(developerActivitySinceDate, date);
             if (developerOnActivityDate == null) {
                 LOGGER.warn("Could not determine developer data on " + date.toString() + " and will not proceed with this activity.");
             }
             developer = developerOnActivityDate;
+        } else {
+            try {
+                developer = developerManager.getById(developerId, true);
+            } catch (EntityRetrievalException ex) {
+                LOGGER.error("Could not look up developer by id " + developerId);
+            }
         }
         return developer;
     }
@@ -311,7 +364,20 @@ public class VersionActivityUpdaterJob implements Job {
         if (developerActivity == null) {
             return null;
         }
-        return parseJsonAsDeveloperDto(developerActivity.getOriginalData());
+        DeveloperDTO developerFromOriginalData = parseJsonAsDeveloperDto(developerActivity.getOriginalData());
+        if (developerFromOriginalData == null) {
+            List<DeveloperDTO> developersFromOriginalData = parseJsonAsDeveloperDtoList(developerActivity.getOriginalData());
+            //this action was a merge - sometimes all the original things had the same name
+            //so if they did we can return a developer object with the name filled in
+            if (developersFromOriginalData != null && developersFromOriginalData.stream().map(dev -> dev.getName()).distinct().count() == 1) {
+                developerFromOriginalData = DeveloperDTO.builder()
+                        .name(developersFromOriginalData.get(0).getName())
+                        .build();
+            } else {
+                LOGGER.warn("Could not handle developer activity JSON: " + developerActivity.getOriginalData());
+            }
+        }
+        return developerFromOriginalData;
     }
 
     private ProductVersionDTO parseJsonAsProductVersionDto(String activityJson) {
@@ -334,11 +400,24 @@ public class VersionActivityUpdaterJob implements Job {
             product =
                 jsonMapper.readValue(activityJson, ProductDTO.class);
         } catch (Exception ex) {
-            LOGGER.info("Unable to parse '" + activityJson + "' as a ProductDTO object.");
+            LOGGER.debug("Unable to parse '" + activityJson + "' as a ProductDTO object.");
             //This could also be a List of products if a merge or split was done and that isn't being
             //handled by this job.
         }
         return product;
+    }
+
+    private List<ProductDTO> parseJsonAsProductDtoList(String activityJson) {
+        List<ProductDTO> products = null;
+        try {
+            products = jsonMapper.readValue(activityJson,
+                    jsonMapper.getTypeFactory().constructCollectionType(List.class, ProductDTO.class));
+        } catch (Exception ex) {
+            LOGGER.debug("Unable to parse '" + activityJson + "' as a List of DeveloperDTO objects.");
+            //This could also be a List of developers if a merge or split was done and that isn't being
+            //handled by this job.
+        }
+        return products;
     }
 
     private DeveloperDTO parseJsonAsDeveloperDto(String activityJson) {
@@ -347,11 +426,24 @@ public class VersionActivityUpdaterJob implements Job {
             developer =
                 jsonMapper.readValue(activityJson, DeveloperDTO.class);
         } catch (Exception ex) {
-            LOGGER.info("Unable to parse '" + activityJson + "' as a DeveloperDTO object.");
+            LOGGER.debug("Unable to parse '" + activityJson + "' as a DeveloperDTO object.");
             //This could also be a List of developers if a merge or split was done and that isn't being
             //handled by this job.
         }
         return developer;
+    }
+
+    private List<DeveloperDTO> parseJsonAsDeveloperDtoList(String activityJson) {
+        List<DeveloperDTO> developers = null;
+        try {
+            developers = jsonMapper.readValue(activityJson,
+                    jsonMapper.getTypeFactory().constructCollectionType(List.class, DeveloperDTO.class));
+        } catch (Exception ex) {
+            LOGGER.debug("Unable to parse '" + activityJson + "' as a List of DeveloperDTO objects.");
+            //This could also be a List of developers if a merge or split was done and that isn't being
+            //handled by this job.
+        }
+        return developers;
     }
 
     private void saveActivityUpdates(ActivityDTO activity) {
