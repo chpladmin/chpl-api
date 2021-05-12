@@ -15,15 +15,17 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceOversightRule;
 
 @Component(value = "nonconformityOpenCapCompleteComplianceChecker")
 public class NonconformityOpenCapCompleteComplianceChecker implements RuleComplianceChecker {
-    int numDaysAllowed = 0;
+    private int numDaysAllowed = 0;
 
+    @Override
     public SurveillanceOversightRule getRuleChecked() {
         return SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE;
     }
 
+    @Override
     public Date check(CertifiedProductSearchDetails cp, Surveillance surv, SurveillanceNonconformity nc) {
         Date result = null;
-        if (nc.getStatus().getName().equals("Open")// SurveillanceNonconformityStatus.OPEN.getName())
+        if (nc.getNonConformityCloseDate() == null  // SurveillanceNonconformityStatus.OPEN.getName())
                 && nc.getCapEndDate() != null) {
             LocalDateTime capCompleteDate = null;
             capCompleteDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getCapEndDate().getTime()),

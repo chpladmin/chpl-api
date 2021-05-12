@@ -37,7 +37,6 @@ import gov.healthit.chpl.domain.OversightRuleResult;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
-import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.scheduler.BrokenSurveillanceRulesDTO;
@@ -164,7 +163,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
                 boolean foundBrokenNc = false;
                 for (SurveillanceRequirement req : surv.getRequirements()) {
                     for (SurveillanceNonconformity nc : req.getNonconformities()) {
-                        if (nc.getStatus().getName().equalsIgnoreCase(SurveillanceNonconformityStatus.OPEN)) {
+                        if (nc.getNonConformityCloseDate() == null) {
                             boolean ncHasError = false;
                             BrokenSurveillanceRulesDTO rule = getDefaultBrokenRule(listing);
                             rule = addSurveillanceData(rule, surv);

@@ -215,11 +215,6 @@ public class SurveillanceCsvPresenter {
         } else {
             ncRow.add("");
         }
-        if (nc.getStatus() != null) {
-            ncRow.add(nc.getStatus().getName());
-        } else {
-            ncRow.add("");
-        }
         if (nc.getDateOfDetermination() != null) {
             LocalDateTime ncDeterminationDate = LocalDateTime
                     .ofInstant(Instant.ofEpochMilli(nc.getDateOfDetermination().getTime()), ZoneId.systemDefault());

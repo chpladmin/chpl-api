@@ -124,7 +124,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
                 + "SurveillanceEntity s, "
                 + "SurveillanceRequirementEntity sr, "
                 + "SurveillanceNonconformityEntity sn "
-                + "WHERE sn.nonconformityStatusId = 1 "
+                + "WHERE sn.nonConformityCloseDate IS NULL "
                 + "AND cp.certificationBodyId = cb.id "
                 + "AND cp.id = s.certifiedProductId "
                 + "AND s.id = sr.surveillanceId "
@@ -163,7 +163,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
     public Long getTotalClosedNonconformities(Date endDate) {
         String hql = "SELECT count(*) "
                 + "FROM SurveillanceNonconformityEntity "
-                + "WHERE nonconformityStatusId = 2 ";
+                + "WHERE nonConformityCloseDate IS NOT NULL ";
         if (endDate == null) {
             hql += " AND deleted = false";
         } else {

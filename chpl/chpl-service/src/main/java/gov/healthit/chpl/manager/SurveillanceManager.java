@@ -361,16 +361,17 @@ public class SurveillanceManager extends SecuredManager {
                         nc.setSummary(ncEntity.getSummary());
                         nc.setTotalSites(ncEntity.getTotalSites());
                         nc.setLastModifiedDate(ncEntity.getLastModifiedDate());
-                        if (ncEntity.getNonconformityStatus() != null) {
-                            SurveillanceNonconformityStatus status = new SurveillanceNonconformityStatus();
-                            status.setId(ncEntity.getNonconformityStatus().getId());
-                            status.setName(ncEntity.getNonconformityStatus().getName());
-                            nc.setStatus(status);
+
+                        SurveillanceNonconformityStatus status = new SurveillanceNonconformityStatus();
+                        if (ncEntity.getNonConformityCloseDate() != null) {
+                           status.setId(SurveillanceNonconformityStatus.OPEN_ID);
+                           status.setName(SurveillanceNonconformityStatus.OPEN);
                         } else {
-                            SurveillanceNonconformityStatus status = new SurveillanceNonconformityStatus();
-                            status.setId(ncEntity.getNonconformityStatusId());
-                            nc.setStatus(status);
+                            status.setId(SurveillanceNonconformityStatus.CLOSED_ID);
+                            status.setName(SurveillanceNonconformityStatus.CLOSED);
                         }
+                        nc.setStatus(status);
+
                         req.getNonconformities().add(nc);
 
                         if (ncEntity.getDocuments() != null && ncEntity.getDocuments().size() > 0) {

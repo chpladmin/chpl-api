@@ -26,7 +26,7 @@ import gov.healthit.chpl.util.Util;
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SurveillanceNonconformity implements Serializable {
-    private static long serialVersionUID = -1116153210791576784L;
+    private static final long serialVersionUID = -1116153210791576784L;
 
     /**
      * Nonconformity internal ID
@@ -52,7 +52,8 @@ public class SurveillanceNonconformity implements Serializable {
      * The status of a non-conformity found as a result of a surveillance
      * activity. Allowable values are "Open" or "Closed".
      */
-    @XmlElement(required = true)
+    @XmlTransient
+    @Deprecated
     private SurveillanceNonconformityStatus status;
 
     /**
@@ -221,13 +222,6 @@ public class SurveillanceNonconformity implements Serializable {
                 && !this.criterion.getId().equals(anotherNonconformity.criterion.getId())) {
             return false;
         }
-        if (this.status == null && anotherNonconformity.status != null
-                || this.status != null && anotherNonconformity.status == null) {
-            return false;
-        } else if (this.status != null && anotherNonconformity.status != null
-                && !this.status.matches(anotherNonconformity.status)) {
-            return false;
-        }
         if (this.dateOfDetermination == null && anotherNonconformity.dateOfDetermination != null
                 || this.dateOfDetermination != null && anotherNonconformity.dateOfDetermination == null) {
             return false;
@@ -261,6 +255,13 @@ public class SurveillanceNonconformity implements Serializable {
             return false;
         } else if (this.capMustCompleteDate != null && anotherNonconformity.capMustCompleteDate != null
                 && this.capMustCompleteDate.getTime() != anotherNonconformity.capMustCompleteDate.getTime()) {
+            return false;
+        }
+        if (this.nonConformityCloseDate == null && anotherNonconformity.nonConformityCloseDate != null
+                || this.nonConformityCloseDate != null && anotherNonconformity.nonConformityCloseDate == null) {
+            return false;
+        } else if (this.nonConformityCloseDate != null && anotherNonconformity.nonConformityCloseDate != null
+                && this.nonConformityCloseDate.getTime() != anotherNonconformity.nonConformityCloseDate.getTime()) {
             return false;
         }
         if (StringUtils.isEmpty(this.summary) && !StringUtils.isEmpty(anotherNonconformity.summary)
@@ -339,10 +340,12 @@ public class SurveillanceNonconformity implements Serializable {
         this.criterion = criterion;
     }
 
+    @Deprecated
     public SurveillanceNonconformityStatus getStatus() {
         return status;
     }
 
+    @Deprecated
     public void setStatus(SurveillanceNonconformityStatus status) {
         this.status = status;
     }

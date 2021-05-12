@@ -19,7 +19,6 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
-import gov.healthit.chpl.entity.NonconformityStatusEntity;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -49,10 +48,6 @@ public class SurveillanceNonconformityEntity {
 
     @Column(name = "nonconformity_status_id")
     private Long nonconformityStatusId;
-
-    @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "nonconformity_status_id", insertable = false, updatable = false)
-    private NonconformityStatusEntity nonconformityStatus;
 
     @Column(name = "date_of_determination")
     private Date dateOfDetermination;
