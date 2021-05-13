@@ -20,6 +20,9 @@ public class SurveillanceType implements Serializable {
     public static final String REACTIVE = "Reactive";
     public static final String RANDOMIZED = "Randomized";
 
+    public SurveillanceType() {
+    }
+
     /**
      * Surveillance type internal ID
      */
@@ -32,8 +35,6 @@ public class SurveillanceType implements Serializable {
     @XmlElement(required = true)
     private String name;
 
-    public SurveillanceType() {
-    }
 
     public SurveillanceType(SurveillanceTypeDTO dto) {
         BeanUtils.copyProperties(dto, this);

@@ -669,4 +669,61 @@ public class ListingDetailsUploadHandlerTest {
         assertNotNull(listing);
         assertNull(listing.getSedIntendedUserDescription());
     }
+
+    @Test
+    public void buildListing_SvapUrlExists_ReturnsCorrectly() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
+                HEADER_ROW_BEGIN + ",SVAP Notice URL").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
+                LISTING_ROW_BEGIN + ",http://examplesvap.com");
+        assertNotNull(listingRecords);
+
+        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
+        assertNotNull(listing);
+        assertNotNull(listing.getSvapNoticeUrl());
+        assertEquals("http://examplesvap.com", listing.getSvapNoticeUrl());
+    }
+
+    @Test
+    public void buildListing_SvapNoticeUrlHasWhitespace_ReturnsTrimmed() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
+                HEADER_ROW_BEGIN + ",SVAP Notice URL").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
+                LISTING_ROW_BEGIN + ", http://examplesvap.com  ");
+        assertNotNull(listingRecords);
+
+        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
+        assertNotNull(listing);
+        assertNotNull(listing.getSvapNoticeUrl());
+        assertEquals("http://examplesvap.com", listing.getSvapNoticeUrl());
+    }
+
+    @Test
+    public void buildListing_SvapNoticeUrlMissing_ReturnsEmptyString() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
+                HEADER_ROW_BEGIN + ",SVAP Notice URL").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
+                LISTING_ROW_BEGIN + ",");
+        assertNotNull(listingRecords);
+
+        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
+        assertNotNull(listing);
+        assertNotNull(listing.getSvapNoticeUrl());
+        assertEquals("", listing.getSvapNoticeUrl());
+    }
+
+    @Test
+    public void buildListing_SvapNoticeUrlNoColumn_ReturnsNull() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN);
+        assertNotNull(listingRecords);
+
+        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
+        assertNotNull(listing);
+        assertNull(listing.getSvapNoticeUrl());
+    }
 }

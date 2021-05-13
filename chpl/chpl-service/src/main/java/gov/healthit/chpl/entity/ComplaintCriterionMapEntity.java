@@ -4,13 +4,21 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
+
+import org.hibernate.annotations.Where;
+
+import gov.healthit.chpl.domain.complaint.ComplaintCriterionMap;
+import lombok.Data;
 
 @Entity
+@Data
 @Table(name = "complaint_criterion_map")
 public class ComplaintCriterionMapEntity {
     @Id
@@ -24,6 +32,11 @@ public class ComplaintCriterionMapEntity {
     @Column(name = "certification_criterion_id", nullable = false)
     private Long certificationCriterionId;
 
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_criterion_id", insertable = false, updatable = false)
+    @Where(clause = "deleted <> 'true'")
+    private CertificationCriterionEntity certificationCriterion;
+
     @Column(name = "creation_date", nullable = false)
     private Date creationDate;
 
@@ -36,75 +49,12 @@ public class ComplaintCriterionMapEntity {
     @Column(name = "deleted", nullable = false)
     private Boolean deleted;
 
-    @Transient
-    private CertificationCriterionEntity certificationCriterion;
-
-    public ComplaintCriterionMapEntity() {
-
+    public ComplaintCriterionMap buildComplaintCriterionMap() {
+        return ComplaintCriterionMap.builder()
+        .certificationCriterionId(this.getCertificationCriterionId())
+        .certificationCriterion(this.getCertificationCriterion() != null ? this.getCertificationCriterion().buildCertificationCriterion() : null)
+        .complaintId(this.getComplaintId())
+        .id(this.getId())
+        .build();
     }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Long getComplaintId() {
-        return complaintId;
-    }
-
-    public void setComplaintId(final Long complaintId) {
-        this.complaintId = complaintId;
-    }
-
-    public Long getCertificationCriterionId() {
-        return certificationCriterionId;
-    }
-
-    public void setCertificationCriterionId(final Long certificationCriterionId) {
-        this.certificationCriterionId = certificationCriterionId;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public Date getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public CertificationCriterionEntity getCertificationCriterion() {
-        return certificationCriterion;
-    }
-
-    public void setCertificationCriterion(CertificationCriterionEntity certificationCriterion) {
-        this.certificationCriterion = certificationCriterion;
-    }
-
 }

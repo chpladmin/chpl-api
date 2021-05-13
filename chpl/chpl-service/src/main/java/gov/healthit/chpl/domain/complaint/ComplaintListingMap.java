@@ -1,53 +1,20 @@
 package gov.healthit.chpl.domain.complaint;
 
-import org.springframework.beans.BeanUtils;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import gov.healthit.chpl.dto.ComplaintListingMapDTO;
-
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ComplaintListingMap {
     private Long id;
     private Long complaintId;
     private Long listingId;
     private String chplProductNumber;
-
-    public ComplaintListingMap() {
-
-    }
-
-    public ComplaintListingMap(ComplaintListingMapDTO dto) {
-        BeanUtils.copyProperties(dto, this);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Long getComplaintId() {
-        return complaintId;
-    }
-
-    public void setComplaintId(final Long complaintId) {
-        this.complaintId = complaintId;
-    }
-
-    public Long getListingId() {
-        return listingId;
-    }
-
-    public void setListingId(final Long listingId) {
-        this.listingId = listingId;
-    }
-
-    public String getChplProductNumber() {
-        return chplProductNumber;
-    }
-
-    public void setChplProductNumber(final String chplProductNumber) {
-        this.chplProductNumber = chplProductNumber;
-    }
-
+    private String developerName;
+    private String productName;
+    private String versionName;
 }

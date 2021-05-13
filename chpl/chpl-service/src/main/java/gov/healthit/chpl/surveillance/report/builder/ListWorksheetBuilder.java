@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.ComplaintDAO;
+import gov.healthit.chpl.domain.complaint.ComplainantType;
 import gov.healthit.chpl.domain.complaint.Complaint;
-import gov.healthit.chpl.dto.ComplainantTypeDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.surveillance.report.PrivilegedSurveillanceDAO;
 import gov.healthit.chpl.surveillance.report.dto.SurveillanceOutcomeDTO;
@@ -107,8 +107,8 @@ public class ListWorksheetBuilder {
 
         int complainantTypeCol = 4;
         int complainantTypeRow = 0;
-        List<ComplainantTypeDTO> complainantTypes = complaintDao.getComplainantTypes();
-        for (ComplainantTypeDTO complainantType : complainantTypes) {
+        List<ComplainantType> complainantTypes = complaintDao.getComplainantTypes();
+        for (ComplainantType complainantType : complainantTypes) {
             choicesRow = workbook.getRow(sheet, complainantTypeRow++);
             choicesCell = choicesRow.createCell(complainantTypeCol);
             choicesCell.setCellValue(complainantType.getName());

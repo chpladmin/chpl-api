@@ -15,11 +15,17 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "certification_result_svap")
-@Data
+@ToString
+@Getter
+@Setter
+@RequiredArgsConstructor
 public class CertificationResultSvapEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,5 +65,4 @@ public class CertificationResultSvapEntity {
     @Basic(optional = false)
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
-
 }

@@ -18,10 +18,9 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.ComplaintDAO;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.complaint.ComplainantType;
 import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.ComplainantTypeDTO;
-import gov.healthit.chpl.dto.ComplaintDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -43,10 +42,10 @@ public class ComplaintManager extends SecuredManager {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public ComplaintManager(final ComplaintDAO complaintDAO,
-            final ComplaintValidationFactory complaintValidationFactory, final CertifiedProductDAO certifiedProductDAO,
-            final ChplProductNumberUtil chplProductNumberUtil, final ErrorMessageUtil errorMessageUtil,
-            final ActivityManager activityManager) {
+    public ComplaintManager(ComplaintDAO complaintDAO,
+            ComplaintValidationFactory complaintValidationFactory, CertifiedProductDAO certifiedProductDAO,
+            ChplProductNumberUtil chplProductNumberUtil, ErrorMessageUtil errorMessageUtil,
+            ActivityManager activityManager) {
         this.complaintDAO = complaintDAO;
         this.complaintValidationFactory = complaintValidationFactory;
         this.certifiedProductDAO = certifiedProductDAO;
@@ -57,9 +56,9 @@ public class ComplaintManager extends SecuredManager {
 
     @Transactional
     public Set<KeyValueModel> getComplainantTypes() {
-        List<ComplainantTypeDTO> complaintTypes = complaintDAO.getComplainantTypes();
+        List<ComplainantType> complaintTypes = complaintDAO.getComplainantTypes();
         Set<KeyValueModel> results = new HashSet<KeyValueModel>();
-        for (ComplainantTypeDTO complaintType : complaintTypes) {
+        for (ComplainantType complaintType : complaintTypes) {
             results.add(new KeyValueModel(complaintType.getId(), complaintType.getName()));
         }
         return results;
@@ -71,12 +70,7 @@ public class ComplaintManager extends SecuredManager {
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).GET_ALL, filterObject)")
     public List<Complaint> getAllComplaints() {
-        List<Complaint> complaints = new ArrayList<Complaint>();
-        List<ComplaintDTO> dtos = complaintDAO.getAllComplaints();
-        for (ComplaintDTO dto : dtos) {
-            complaints.add(new Complaint(dto));
-        }
-        return complaints;
+        return complaintDAO.getAllComplaints();
     }
 
     @Transactional
@@ -84,70 +78,63 @@ public class ComplaintManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).GET_ALL)")
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).GET_ALL, filterObject)")
-    public List<Complaint> getAllComplaintsBetweenDates(final CertificationBodyDTO acb, final Date startDate,
-            final Date endDate) {
-        List<Complaint> complaints = new ArrayList<Complaint>();
-        List<ComplaintDTO> dtos = complaintDAO.getAllComplaintsBetweenDates(acb.getId(), startDate, endDate);
-        for (ComplaintDTO dto : dtos) {
-            complaints.add(new Complaint(dto));
-        }
-        return complaints;
+    public List<Complaint> getAllComplaintsBetweenDates(CertificationBodyDTO acb, Date startDate,
+            Date endDate) {
+        return complaintDAO.getAllComplaintsBetweenDates(acb.getId(), startDate, endDate);
     }
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).CREATE, #complaint)")
-    public Complaint create(final Complaint complaint)
+    public Complaint create(Complaint complaint)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
-        ComplaintDTO complaintDTO = new ComplaintDTO(complaint);
         ValidationException validationException = new ValidationException();
-        validationException.getErrorMessages().addAll(runCreateValidations(complaintDTO));
+        validationException.getErrorMessages().addAll(runCreateValidations(complaint));
         if (validationException.getErrorMessages().size() > 0) {
             throw validationException;
         }
 
-        ComplaintDTO newComplaint = complaintDAO.create(complaintDTO);
+        Complaint newComplaint = complaintDAO.create(complaint);
 
         activityManager.addActivity(ActivityConcept.COMPLAINT, newComplaint.getId(), "Complaint has been created", null,
                 newComplaint);
-        return new Complaint(newComplaint);
+        return newComplaint;
     }
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).UPDATE, #complaint)")
-    public Complaint update(final Complaint complaint)
+    public Complaint update(Complaint complaint)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
-        ComplaintDTO complaintDTO = new ComplaintDTO(complaint);
-        ComplaintDTO originalFromDB = complaintDAO.getComplaint(complaint.getId());
+        Complaint originalFromDB = complaintDAO.getComplaint(complaint.getId());
         ValidationException validationException = new ValidationException();
-        validationException.getErrorMessages().addAll(runUpdateValidations(complaintDTO));
+        validationException.getErrorMessages().addAll(runUpdateValidations(complaint));
         if (validationException.getErrorMessages().size() > 0) {
             throw validationException;
         }
 
-        ComplaintDTO updatedComplaint = complaintDAO.update(complaintDTO);
+        Complaint updatedComplaint = complaintDAO.update(complaint);
         activityManager.addActivity(ActivityConcept.COMPLAINT, updatedComplaint.getId(), "Complaint has been updated",
                 originalFromDB, updatedComplaint);
 
-        return new Complaint(updatedComplaint);
+        return updatedComplaint;
     }
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).DELETE, #complaintId)")
-    public void delete(final Long complaintId)
+    public void delete(Long complaintId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-        ComplaintDTO dto = complaintDAO.getComplaint(complaintId);
-        if (dto != null) {
-            complaintDAO.delete(dto);
+        Complaint complaint = complaintDAO.getComplaint(complaintId);
+        if (complaint != null) {
+            complaintDAO.delete(complaint);
 
-            activityManager.addActivity(ActivityConcept.COMPLAINT, dto.getId(), "Complaint has been deleted", dto,
+            activityManager.addActivity(ActivityConcept.COMPLAINT, complaint.getId(), "Complaint has been deleted", complaint,
                     null);
         }
     }
 
-    private List<String> runUpdateValidations(ComplaintDTO dto) {
+    private List<String> runUpdateValidations(Complaint complaint) {
         List<ValidationRule<ComplaintValidationContext>> rules = new ArrayList<ValidationRule<ComplaintValidationContext>>();
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.ACB_CHANGE));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.COMPLAINT_TYPE));
@@ -155,10 +142,10 @@ public class ComplaintManager extends SecuredManager {
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.ACB_COMPLAINT_ID));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.SUMMARY));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.LISTINGS));
-        return runValidations(rules, dto);
+        return runValidations(rules, complaint);
     }
 
-    private List<String> runCreateValidations(ComplaintDTO dto) {
+    private List<String> runCreateValidations(Complaint complaint) {
         List<ValidationRule<ComplaintValidationContext>> rules = new ArrayList<ValidationRule<ComplaintValidationContext>>();
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.OPEN_STATUS));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.COMPLAINT_TYPE));
@@ -166,12 +153,12 @@ public class ComplaintManager extends SecuredManager {
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.ACB_COMPLAINT_ID));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.SUMMARY));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.LISTINGS));
-        return runValidations(rules, dto);
+        return runValidations(rules, complaint);
     }
 
-    private List<String> runValidations(List<ValidationRule<ComplaintValidationContext>> rules, ComplaintDTO dto) {
+    private List<String> runValidations(List<ValidationRule<ComplaintValidationContext>> rules, Complaint complaint) {
         List<String> errorMessages = new ArrayList<String>();
-        ComplaintValidationContext context = new ComplaintValidationContext(dto, complaintDAO, certifiedProductDAO,
+        ComplaintValidationContext context = new ComplaintValidationContext(complaint, complaintDAO, certifiedProductDAO,
                 errorMessageUtil, chplProductNumberUtil);
 
         for (ValidationRule<ComplaintValidationContext> rule : rules) {
