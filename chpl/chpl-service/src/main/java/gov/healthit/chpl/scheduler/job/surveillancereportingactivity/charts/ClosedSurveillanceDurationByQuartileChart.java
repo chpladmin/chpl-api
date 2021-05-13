@@ -33,7 +33,6 @@ public class ClosedSurveillanceDurationByQuartileChart {
             renderer.setMeanVisible(false);
 
             CategoryPlot plot = new CategoryPlot(getData(surveillances), xAxis, yAxis, renderer);
-            //plot.setOrientation(PlotOrientation.HORIZONTAL);
 
             return new JFreeChart("ONC-ACB Closed Surveillance Duration by Quartiles Around the Median", plot);
         } finally {
