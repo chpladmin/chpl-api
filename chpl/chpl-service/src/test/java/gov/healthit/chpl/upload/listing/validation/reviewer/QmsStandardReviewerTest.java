@@ -25,6 +25,7 @@ public class QmsStandardReviewerTest {
     private QmsStandardReviewer reviewer;
 
     @Before
+    @SuppressWarnings("checkstyle:magicnumber")
     public void setup() {
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
 

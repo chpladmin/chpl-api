@@ -135,8 +135,8 @@ public class ListingUploadController {
                     //don't send an email for this exception because it's one that we create and
                     //we expect it to provide a decent error message for the user
                     processedListingErrorMap.put(listingToAdd.getChplProductNumber(), ex.getMessage());
-                } catch (AccessDeniedException | NullPointerException | IndexOutOfBoundsException |
-                        JsonProcessingException | EntityRetrievalException | EntityCreationException ex) {
+                } catch (AccessDeniedException | NullPointerException | IndexOutOfBoundsException
+                        | JsonProcessingException | EntityRetrievalException | EntityCreationException ex) {
                     LOGGER.error("Error uploading listing(s) from file " + file.getOriginalFilename() + ". " + ex.getMessage());
                     //send an email that something weird happened since the error message coming back
                     //from the caught exception might not be that helpful to the user
