@@ -19,7 +19,6 @@ import gov.healthit.chpl.permissions.domains.DomainPermissions;
 import gov.healthit.chpl.permissions.domains.FilterDomainPermissions;
 import gov.healthit.chpl.permissions.domains.FuzzyMatchPermissions;
 import gov.healthit.chpl.permissions.domains.InvitationDomainPermissions;
-import gov.healthit.chpl.permissions.domains.JobDomainPermissions;
 import gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions;
 import gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions;
 import gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions;
@@ -80,7 +79,6 @@ public class Permissions {
             CertificationBodyDomainPermissions certificationBodyDomainPermissions,
             UserPermissionsDomainPermissions userPermissionsDomainPermissions,
             ActivityDomainPermissions activityDomainPermissions,
-            JobDomainPermissions jobDomainPermissions,
             ProductDomainPermissions productDomainPermissions,
             DeveloperDomainPermissions developerDomainPermissions,
             ProductVersionDomainPermissions productVersionDomainPermissions,
@@ -107,7 +105,6 @@ public class Permissions {
         domainPermissions.put(CERTIFICATION_BODY, certificationBodyDomainPermissions);
         domainPermissions.put(USER_PERMISSIONS, userPermissionsDomainPermissions);
         domainPermissions.put(ACTIVITY, activityDomainPermissions);
-        domainPermissions.put(JOB, jobDomainPermissions);
         domainPermissions.put(PRODUCT, productDomainPermissions);
         domainPermissions.put(DEVELOPER, developerDomainPermissions);
         domainPermissions.put(PRODUCT_VERSION, productVersionDomainPermissions);

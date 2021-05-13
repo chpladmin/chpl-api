@@ -5,10 +5,12 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
@@ -45,6 +47,10 @@ public class CertifiedProductQmsStandard implements Serializable {
      */
     @XmlElement(required = false, nillable = true)
     private String qmsStandardName;
+
+    @XmlTransient
+    @JsonIgnore
+    private String userEnteredQmsStandardName;
 
     /**
      * This variable indicates if a QMS standard or mapping was modified,
@@ -91,7 +97,7 @@ public class CertifiedProductQmsStandard implements Serializable {
         return id;
     }
 
-    public void setId(final Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -99,7 +105,7 @@ public class CertifiedProductQmsStandard implements Serializable {
         return qmsStandardId;
     }
 
-    public void setQmsStandardId(final Long qmsStandardId) {
+    public void setQmsStandardId(Long qmsStandardId) {
         this.qmsStandardId = qmsStandardId;
     }
 
@@ -107,15 +113,23 @@ public class CertifiedProductQmsStandard implements Serializable {
         return qmsStandardName;
     }
 
-    public void setQmsStandardName(final String qmsStandardName) {
+    public void setQmsStandardName(String qmsStandardName) {
         this.qmsStandardName = qmsStandardName;
+    }
+
+    public String getUserEnteredQmsStandardName() {
+        return userEnteredQmsStandardName;
+    }
+
+    public void setUserEnteredQmsStandardName(String userEnteredQmsStandardName) {
+        this.userEnteredQmsStandardName = userEnteredQmsStandardName;
     }
 
     public String getQmsModification() {
         return qmsModification;
     }
 
-    public void setQmsModification(final String qmsModification) {
+    public void setQmsModification(String qmsModification) {
         this.qmsModification = qmsModification;
     }
 
@@ -123,7 +137,7 @@ public class CertifiedProductQmsStandard implements Serializable {
         return applicableCriteria;
     }
 
-    public void setApplicableCriteria(final String applicableCriteria) {
+    public void setApplicableCriteria(String applicableCriteria) {
         this.applicableCriteria = applicableCriteria;
     }
 }

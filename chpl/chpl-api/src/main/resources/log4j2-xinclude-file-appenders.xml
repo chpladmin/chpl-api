@@ -454,7 +454,33 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
-    <RollingFile name="versionActivityUpdaterJob"
+
+    <RollingFile name="surveillanceUploadJob"
+        fileName="${logDir}/scheduler/surveillanceUploadJob.log"
+        filePattern="${logDir}/scheduler/history/surveillanceUploadJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
+        <PatternLayout>
+            <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+        </PatternLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+    </RollingFile>
+    <RollingFile name="meaningfulUseUploadJob"
+        fileName="${logDir}/scheduler/meaningfulUseUploadJob.log"
+        filePattern="${logDir}/scheduler/history/meaningfulUseUploadJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
+        <PatternLayout>
+            <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+        </PatternLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+    </RollingFile>
+
+     <RollingFile name="versionActivityUpdaterJob"
         fileName="${logDir}/scheduler/versionActivityUpdaterJob.log"
         filePattern="${logDir}/scheduler/history/versionActivityUpdaterJob-%d{yyyy-MM-dd}.log"
         filePermissions="rw-rw-r--">
