@@ -159,4 +159,12 @@
         additivity="false">
         <AppenderRef ref="surveillanceActivityReportJob" />
     </Logger>
+    <Logger name="surveillanceUploadJobLogger" level="INFO"
+        additivity="false">
+        <AppenderRef ref="surveillanceUploadJob" />
+    </Logger>
+    <Logger name="meaningfulUseUploadJobLogger" level="INFO"
+        additivity="false">
+        <AppenderRef ref="meaningfulUseUploadJob" />
+    </Logger>
 </Loggers>

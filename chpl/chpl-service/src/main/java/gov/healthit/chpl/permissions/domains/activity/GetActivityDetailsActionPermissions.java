@@ -16,9 +16,9 @@ import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.domain.auth.Authority;
+import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.dto.AnnouncementDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.ComplaintDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
@@ -151,9 +151,9 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
         if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
-            ComplaintDTO complaint = null;
+            Complaint complaint = null;
             try {
-                complaint = jsonMapper.convertValue(complaintJson, ComplaintDTO.class);
+                complaint = jsonMapper.convertValue(complaintJson, Complaint.class);
                 return isAcbValidForCurrentUser(complaint.getCertificationBody().getId());
             } catch (Exception e) {
                 LOGGER.error("Could not parse complaint activity as ComplaintDTO. JSON was: " + complaintJson, e);

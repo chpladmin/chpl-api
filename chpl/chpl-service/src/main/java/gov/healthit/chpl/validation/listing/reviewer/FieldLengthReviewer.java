@@ -68,7 +68,40 @@ public class FieldLengthReviewer implements Reviewer {
         if (listing.getVersion() != null && !StringUtils.isEmpty(listing.getVersion().getVersion())) {
             checkFieldLength(listing, listing.getVersion().getVersion(), "productVersion");
         }
+        if (!StringUtils.isEmpty(listing.getAcbCertificationId())) {
+            checkFieldLength(listing, listing.getAcbCertificationId(), "acbCertificationId");
+        }
+        if (!StringUtils.isEmpty(listing.getTransparencyAttestationUrl())) {
+            checkFieldLength(listing, listing.getTransparencyAttestationUrl(), "170523k1Url");
+        }
+        checkQmsStandardsFieldLength(listing);
+        checkAccessibilityStandardsFieldLength(listing);
+        checkTargetedUsersFieldLength(listing);
         checkCriteria(listing);
+    }
+
+    private void checkQmsStandardsFieldLength(CertifiedProductSearchDetails listing) {
+        if (listing.getQmsStandards() != null && listing.getQmsStandards().size() > 0) {
+            listing.getQmsStandards().stream()
+                .filter(qmsStandard -> !StringUtils.isEmpty(qmsStandard.getQmsStandardName()))
+                .forEach(qmsStandard -> checkFieldLength(listing, qmsStandard.getQmsStandardName(), "qmsStandard"));
+        }
+    }
+
+    private void checkAccessibilityStandardsFieldLength(CertifiedProductSearchDetails listing) {
+        if (listing.getAccessibilityStandards() != null && listing.getAccessibilityStandards().size() > 0) {
+            listing.getAccessibilityStandards().stream()
+                .filter(accStandard -> !StringUtils.isEmpty(accStandard.getAccessibilityStandardName()))
+                .forEach(accStandard -> checkFieldLength(listing, accStandard.getAccessibilityStandardName(), "accessibilityStandard"));
+        }
+    }
+
+    private void checkTargetedUsersFieldLength(CertifiedProductSearchDetails listing) {
+        if (listing.getTargetedUsers() != null && listing.getTargetedUsers().size() > 0) {
+            listing.getTargetedUsers().stream()
+                .filter(targetedUser -> !StringUtils.isEmpty(targetedUser.getTargetedUserName()))
+                .forEach(targetedUser -> checkFieldLength(listing, targetedUser.getTargetedUserName(), "targetedUser"));
+        }
     }
 
     private void checkCriteria(CertifiedProductSearchDetails listing) {
@@ -84,7 +117,7 @@ public class FieldLengthReviewer implements Reviewer {
 
     private void checkFieldLength(CertifiedProductSearchDetails product, String field, String errorField) {
         int maxAllowedFieldLength = getMaxLength(MAX_LENGTH_PROPERTY_PREFIX + errorField);
-        if (field != null && field.length() > maxAllowedFieldLength) {
+        if (!StringUtils.isEmpty(field) && field.length() > maxAllowedFieldLength) {
             product.getErrorMessages().add(
                     msgUtil.getMessage("listing." + errorField + MAX_LENGTH_PROPERTY_SUFFIX, maxAllowedFieldLength, field));
         }
