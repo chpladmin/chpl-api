@@ -7,7 +7,10 @@ import java.util.Date;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 
-public class CellHelper {
+public final class CellHelper {
+
+    private CellHelper() { }
+
     public static Cell setCellValueAsString(Cell cell, String value) {
         if (value != null) {
             cell.setCellValue(value);
