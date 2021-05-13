@@ -1,7 +1,9 @@
 package gov.healthit.chpl.entity;
 
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -17,9 +19,15 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
-import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
+import gov.healthit.chpl.domain.complaint.Complaint;
+import gov.healthit.chpl.domain.complaint.ComplaintCriterionMap;
+import gov.healthit.chpl.domain.complaint.ComplaintListingMap;
+import lombok.Data;
 
 @Entity
+@Data
 @Table(name = "complaint")
 public class ComplaintEntity {
 
@@ -105,201 +113,57 @@ public class ComplaintEntity {
     @Where(clause = "deleted <> 'true'")
     private Set<ComplaintSurveillanceMapEntity> surveillances;
 
-    public Long getId() {
-        return id;
+    public Complaint buildComplaint() {
+        return Complaint.builder()
+                .acbComplaintId(this.getAcbComplaintId())
+                .actions(this.getActions())
+                .certificationBody(this.getCertificationBody() == null
+                    ? CertificationBody.builder()
+                            .id(this.getCertificationBodyId())
+                            .build() : this.getCertificationBody().buildCertificationBody())
+                .closedDate(this.getClosedDate())
+                .complainantContacted(this.isComplainantContacted())
+                .complainantType(this.getComplainantType() == null ? null
+                        : this.getComplainantType().buildComplainantType())
+                .complainantTypeOther(this.getComplainantTypeOther())
+                .criteria(createCriteriaCollection())
+                .developerContacted(this.isDeveloperContacted())
+                .flagForOncReview(this.isFlagForOncReview())
+                .id(this.getId())
+                .listings(createListingCollection())
+                .oncAtlContacted(this.isOncAtlContacted())
+                .oncComplaintId(this.getOncComplaintId())
+                .receivedDate(this.getReceivedDate())
+                .summary(this.getSummary())
+                .surveillances(createSurveillanceCollection())
+                .build();
     }
 
-    public void setId(final Long id) {
-        this.id = id;
+
+    private Set<ComplaintCriterionMap> createCriteriaCollection() {
+        if (this.getCriteria() == null || this.getCriteria().size() == 0) {
+            return new LinkedHashSet<ComplaintCriterionMap>();
+        }
+        return this.getCriteria().stream()
+            .map(entity -> entity.buildComplaintCriterionMap())
+            .collect(Collectors.toSet());
     }
 
-    public CertificationBodyEntity getCertificationBody() {
-        return certificationBody;
+    private Set<ComplaintListingMap> createListingCollection() {
+        if (this.getListings() == null || this.getListings().size() == 0) {
+            return new LinkedHashSet<ComplaintListingMap>();
+        }
+        return this.getListings().stream()
+            .map(entity -> entity.buildComplaintListingMap())
+            .collect(Collectors.toSet());
     }
 
-    public void setCertificationBody(final CertificationBodyEntity certificationBody) {
-        this.certificationBody = certificationBody;
-    }
-
-    public ComplainantTypeEntity getComplainantType() {
-        return complainantType;
-    }
-
-    public void setComplainantType(final ComplainantTypeEntity complainantType) {
-        this.complainantType = complainantType;
-    }
-
-    public String getComplainantTypeOther() {
-        return complainantTypeOther;
-    }
-
-    public void setComplainantTypeOther(final String complainantTypeOther) {
-        this.complainantTypeOther = complainantTypeOther;
-    }
-
-    public String getOncComplaintId() {
-        return oncComplaintId;
-    }
-
-    public void setOncComplaintId(final String oncComplaintId) {
-        this.oncComplaintId = oncComplaintId;
-    }
-
-    public String getAcbComplaintId() {
-        return acbComplaintId;
-    }
-
-    public void setAcbComplaintId(final String acbComplaintId) {
-        this.acbComplaintId = acbComplaintId;
-    }
-
-    public Date getReceivedDate() {
-        return Util.getNewDate(receivedDate);
-    }
-
-    public void setReceivedDate(final Date receivedDate) {
-        this.receivedDate = Util.getNewDate(receivedDate);
-    }
-
-    public String getSummary() {
-        return summary;
-    }
-
-    public void setSummary(final String summary) {
-        this.summary = summary;
-    }
-
-    public String getActions() {
-        return actions;
-    }
-
-    public void setActions(final String actions) {
-        this.actions = actions;
-    }
-
-    public boolean isComplainantContacted() {
-        return complainantContacted;
-    }
-
-    public void setComplainantContacted(final boolean complainantContacted) {
-        this.complainantContacted = complainantContacted;
-    }
-
-    public boolean isDeveloperContacted() {
-        return developerContacted;
-    }
-
-    public void setDeveloperContacted(final boolean developerContacted) {
-        this.developerContacted = developerContacted;
-    }
-
-    public boolean isOncAtlContacted() {
-        return oncAtlContacted;
-    }
-
-    public void setOncAtlContacted(final boolean oncAtlContacted) {
-        this.oncAtlContacted = oncAtlContacted;
-    }
-
-    public boolean isFlagForOncReview() {
-        return flagForOncReview;
-    }
-
-    public void setFlagForOncReview(final boolean flagForOncReview) {
-        this.flagForOncReview = flagForOncReview;
-    }
-
-    public Date getClosedDate() {
-        return closedDate;
-    }
-
-    public void setClosedDate(final Date closedDate) {
-        this.closedDate = closedDate;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public Date getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Long getCertificationBodyId() {
-        return certificationBodyId;
-    }
-
-    public void setCertificationBodyId(Long certificationBodyId) {
-        this.certificationBodyId = certificationBodyId;
-    }
-
-    public Long getComplainantTypeId() {
-        return complainantTypeId;
-    }
-
-    public void setComplainantTypeId(Long complainantTypeId) {
-        this.complainantTypeId = complainantTypeId;
-    }
-
-    public Set<ComplaintListingMapEntity> getListings() {
-        return listings;
-    }
-
-    public void setListings(final Set<ComplaintListingMapEntity> listings) {
-        this.listings = listings;
-    }
-
-    public Set<ComplaintCriterionMapEntity> getCriteria() {
-        return criteria;
-    }
-
-    public void setCriteria(final Set<ComplaintCriterionMapEntity> criteria) {
-        this.criteria = criteria;
-    }
-
-    public Set<ComplaintSurveillanceMapEntity> getSurveillances() {
-        return surveillances;
-    }
-
-    public void setSurveillances(Set<ComplaintSurveillanceMapEntity> surveillances) {
-        this.surveillances = surveillances;
-    }
-
-    @Override
-    public String toString() {
-        return "ComplaintEntity [id=" + id + ", certificationBody=" + certificationBody + ", certificationBodyId="
-                + certificationBodyId + ", complainantType=" + complainantType + ", complainantTypeOther="
-                + complainantTypeOther + ", complainantTypeId=" + complainantTypeId + ", oncComplaintId="
-                + oncComplaintId + ", acbComplaintId=" + acbComplaintId + ", receivedDate=" + receivedDate
-                + ", summary=" + summary + ", actions=" + actions + ", complainantContacted=" + complainantContacted
-                + ", developerContacted=" + developerContacted + ", oncAtlContacted=" + oncAtlContacted
-                + ", flagForOncReview=" + flagForOncReview + ", closedDate=" + closedDate + ", creationDate="
-                + creationDate + ", lastModifiedDate=" + lastModifiedDate + ", lastModifiedUser=" + lastModifiedUser
-                + ", deleted=" + deleted + ", listings=" + listings + ", criteria=" + criteria + ", surveillances="
-                + surveillances + "]";
+    private Set<ComplaintSurveillanceMap> createSurveillanceCollection() {
+        if (this.getSurveillances() == null || this.getSurveillances().size() == 0) {
+            return new LinkedHashSet<ComplaintSurveillanceMap>();
+        }
+        return this.getSurveillances().stream()
+            .map(entity -> entity.buildComplaintSurveillanceMap())
+            .collect(Collectors.toSet());
     }
 }
