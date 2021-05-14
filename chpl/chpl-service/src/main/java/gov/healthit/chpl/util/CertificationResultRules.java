@@ -11,8 +11,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -21,6 +20,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import gov.healthit.chpl.dao.CertificationCriterionAttributeDAO;
+import gov.healthit.chpl.entity.CertificationCriterionAttributeEntity;
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2
 @Component("certificationResultRules")
 public class CertificationResultRules {
     public static final String GAP = "gap";
@@ -39,15 +43,21 @@ public class CertificationResultRules {
     public static final String TEST_PROCEDURE = "testProcedure";
     public static final String TEST_DATA = "testData";
     public static final String SED = "sed";
+    public static final String SERVICE_BASE_URL_LIST = "serviceBaseUrlList";
+    public static final String SVAP = "svap";
     public static final String UCD_FIELDS = "ucd";
     public static final String TEST_PARTICIPANT = "participant";
     public static final String TEST_TASK = "task";
 
-    private static final Logger LOGGER = LogManager.getLogger(CertificationResultRules.class);
-
     private Map<String, List<CertificationResultOption>> rules = new HashMap<String, List<CertificationResultOption>>();
 
-    public CertificationResultRules() {
+    @Autowired
+    public CertificationResultRules(CertificationCriterionAttributeDAO certificationCriterionAttributeDAO) {
+        setRulesUsingLegacyXmlFile();
+        setRulesUsingDatabase(certificationCriterionAttributeDAO);
+    }
+
+    private void setRulesUsingLegacyXmlFile() {
         Document dom;
         // Make an instance of the DocumentBuilderFactory
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -98,12 +108,34 @@ public class CertificationResultRules {
                     }
                 }
             }
-        } catch (final ParserConfigurationException pce) {
+        } catch (ParserConfigurationException pce) {
             LOGGER.error(pce.getMessage(), pce);
-        } catch (final SAXException se) {
+        } catch (SAXException se) {
             LOGGER.error(se.getMessage(), se);
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             LOGGER.error(ioe.getMessage(), ioe);
+        }
+    }
+
+    private void setRulesUsingDatabase(CertificationCriterionAttributeDAO certificationCriterionAttributeDAO) {
+        List<CertificationCriterionAttributeEntity> serviceBaseUrlListCriteria = certificationCriterionAttributeDAO.getAllCriteriaAttributes();
+        for (CertificationCriterionAttributeEntity attribute : serviceBaseUrlListCriteria) {
+            if (rules.get(attribute.getCriterion().getNumber()) == null) {
+                List<CertificationResultOption> options = new ArrayList<CertificationResultOption>();
+                rules.put(attribute.getCriterion().getNumber(), options);
+            }
+            if (attribute.getServiceBaseUrlList()) {
+                CertificationResultOption option = new CertificationResultOption();
+                option.setOptionName(SERVICE_BASE_URL_LIST);
+                option.setCanHaveOption(true);
+                rules.get(attribute.getCriterion().getNumber()).add(option);
+            }
+            if (attribute.getSvap()) {
+                CertificationResultOption option = new CertificationResultOption();
+                option.setOptionName(SVAP);
+                option.setCanHaveOption(true);
+                rules.get(attribute.getCriterion().getNumber()).add(option);
+            }
         }
     }
 

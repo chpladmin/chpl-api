@@ -19,7 +19,6 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,7 +49,6 @@ import gov.healthit.chpl.domain.SearchableDimensionalData;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.UploadTemplateVersion;
-import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
 import gov.healthit.chpl.domain.search.SearchRequest;
 import gov.healthit.chpl.domain.search.SearchResponse;
@@ -84,13 +82,6 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.log4j.Log4j2;
 
-/**
- * Contains endpoints for searching the CHPL data as well as various
- * finite lists of items that may be needed to choose from for filtering
- * and searching options.
- * @author kekey
- *
- */
 @Api
 @RestController
 @Loggable
@@ -853,17 +844,6 @@ public class SearchViewController {
         }
     }
 
-    @Secured({
-        Authority.ROLE_ADMIN, Authority.ROLE_ONC, Authority.ROLE_ACB
-    })
-    @ApiOperation(value = "Get all possible types of jobs that can be created in the system.")
-    @RequestMapping(value = "/data/job_types", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody Set<KeyValueModel> getJobTypes() {
-        return dimensionalDataManager.getJobTypes();
-    }
-
     @ApiOperation(value = "Get all fuzzy matching choices for the items that be fuzzy matched.",
             notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/data/fuzzy_choices", method = RequestMethod.GET,
@@ -1074,7 +1054,7 @@ public class SearchViewController {
     public @ResponseBody SearchOption getTestStandards() {
         Set<TestStandard> data = dimensionalDataManager.getTestStandards();
         SearchOption result = new SearchOption();
-        result.setExpandable(true);
+        result.setExpandable(false);
         result.setData(data);
         return result;
     }

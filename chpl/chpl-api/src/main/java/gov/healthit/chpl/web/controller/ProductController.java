@@ -403,7 +403,7 @@ public class ProductController {
         if (possibleChangedChplIds != null && possibleChangedChplIds.size() > 0) {
             StringBuffer buf = new StringBuffer();
             for (CertifiedProductDetailsDTO possibleChanged : possibleChangedChplIds) {
-                if (!chplProductNumberUtil.isLegacy(possibleChanged.getChplProductNumber())) {
+                if (!chplProductNumberUtil.isLegacyChplProductNumberStyle(possibleChanged.getChplProductNumber())) {
                     if (buf.length() > 0) {
                         buf.append(",");
                     }

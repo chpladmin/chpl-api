@@ -51,6 +51,7 @@ public class CertifiedProductSearchDetails implements Serializable {
     private static final long serialVersionUID = 2903219171127034775L;
     public static final String ACB_ID_KEY = "id";
     public static final String ACB_NAME_KEY = "name";
+    public static final String ACB_CODE_KEY = "code";
     public static final String EDITION_ID_KEY = "id";
     public static final String EDITION_NAME_KEY = "name";
 

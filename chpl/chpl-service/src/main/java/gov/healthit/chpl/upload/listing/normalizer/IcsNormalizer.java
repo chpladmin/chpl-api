@@ -24,16 +24,25 @@ public class IcsNormalizer {
     public void normalize(CertifiedProductSearchDetails listing) {
         if (listing.getIcs() != null && listing.getIcs().getParents() != null && listing.getIcs().getParents().size() > 0) {
             listing.getIcs().getParents().stream()
-                .forEach(icsParent -> populateParentId(icsParent));
+                .forEach(icsParent -> populateParent(icsParent));
         }
     }
 
-    private void populateParentId(CertifiedProduct parent) {
-        if (!StringUtils.isEmpty(parent.getChplProductNumber())) {
+    private void populateParent(CertifiedProduct parent) {
+        if (parent == null) {
+            return;
+        }
+
+        if (parent.getId() == null && !StringUtils.isEmpty(parent.getChplProductNumber())) {
             try {
                 CertifiedProduct foundListing = cpSearchDao.getByChplProductNumber(parent.getChplProductNumber());
                 if (foundListing != null) {
                     parent.setId(foundListing.getId());
+                    parent.setCertificationDate(foundListing.getCertificationDate());
+                    parent.setCertificationStatus(foundListing.getCertificationStatus());
+                    parent.setCuresUpdate(foundListing.getCuresUpdate());
+                    parent.setEdition(foundListing.getEdition());
+                    parent.setLastModifiedDate(foundListing.getLastModifiedDate());
                 }
             } catch (EntityNotFoundException ex) {
                 LOGGER.error("Listing uploaded with invalid ICS source " + parent.getChplProductNumber());

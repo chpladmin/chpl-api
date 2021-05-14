@@ -16,6 +16,7 @@ import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -37,6 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchBasicDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -62,7 +64,6 @@ import gov.healthit.chpl.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.CertifiedProductUploadManager;
 import gov.healthit.chpl.manager.DeveloperManager;
@@ -619,7 +620,6 @@ public class CertifiedProductController {
     @RequestMapping(value = "/pending/metadata", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<PendingCertifiedProductMetadata> getPendingCertifiedProductMetadata()
             throws AccessDeniedException {
-
         List<PendingCertifiedProductMetadataDTO> metadataDtos = pcpManager.getAllPendingCertifiedProductMetadata();
 
         List<PendingCertifiedProductMetadata> result = new ArrayList<PendingCertifiedProductMetadata>();
@@ -735,7 +735,7 @@ public class CertifiedProductController {
                     + "administrative authority on the ACB for each pending certified product is required.")
     @RequestMapping(value = "/pending/{pcpId}/confirm", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
-    public synchronized ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProduct(
+    public ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProduct(
             @RequestBody(required = true) PendingCertifiedProductDetails pendingCp)
                     throws InvalidArgumentsException, ValidationException,
                     EntityCreationException, EntityRetrievalException,
@@ -756,7 +756,7 @@ public class CertifiedProductController {
                     + "administrative authority on the ACB for each pending certified product is required.")
     @RequestMapping(value = "/pending/{pcpId}/beta/confirm", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
-    public synchronized ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProductRequest(
+    public ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProductRequest(
             @RequestBody(required = true) ConfirmCertifiedProductRequest request)
                     throws InvalidArgumentsException, ValidationException,
                     EntityCreationException, EntityRetrievalException,
@@ -766,41 +766,63 @@ public class CertifiedProductController {
     }
 
     @SuppressWarnings({"checkstyle:linelength"})
-    private synchronized ResponseEntity<CertifiedProductSearchDetails> addPendingCertifiedProduct(
-            ConfirmCertifiedProductRequest request)
+    private ResponseEntity<CertifiedProductSearchDetails> addPendingCertifiedProduct(ConfirmCertifiedProductRequest request)
             throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, ObjectMissingValidationException,
             IOException {
-
-        String acbIdStr = request.getPendingListing().getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString();
-        if (StringUtils.isEmpty(acbIdStr)) {
-            throw new InvalidArgumentsException("An ACB ID must be supplied in the request body");
+        Long acbId = getAcbIdFromPendingListing(request.getPendingListing());
+        if (acbId == null) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("pendlingListing.missingAcb"));
         }
-        Long acbId = Long.valueOf(acbIdStr);
-        if (pcpManager.isPendingListingAvailableForUpdate(acbId, request.getPendingListing().getId())) {
-            PendingCertifiedProductDTO pcpDto = new PendingCertifiedProductDTO(request.getPendingListing());
-            PendingValidator validator = validatorFactory.getValidator(pcpDto);
-            if (validator != null) {
-                validator.validate(pcpDto, false);
+        PendingCertifiedProductDTO pcpDto = new PendingCertifiedProductDTO(request.getPendingListing());
+        validate(pcpDto, request.isAcknowledgeWarnings());
+        ResponseEntity<CertifiedProductSearchDetails> response = null;
+        boolean wasAvailable = pcpManager.markAsProcessingIfAvailable(acbId, pcpDto.getId());
+        if (wasAvailable) {
+            CertifiedProductSearchDetails createdListing = null;
+            try {
+                CertifiedProductDTO createdProduct = cpManager.createFromPending(pcpDto, request.isAcknowledgeWarnings());
+                createdListing = cpdManager.getCertifiedProductDetails(createdProduct.getId());
+                activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, createdListing.getId(),
+                        "Created a certified product", null, createdListing);
+            } catch (Exception ex) {
+                //TODO - alert on this message in datadog
+                LOGGER.error("Unexpected exception confirming pending listing " + pcpDto.getId() + ".", ex);
+                pcpManager.markAsNotProcessing(acbId, pcpDto.getId());
+            } finally {
+                response = getConfirmResponse(createdListing);
             }
-            if (pcpDto.getErrorMessages() != null && pcpDto.getErrorMessages().size() > 0
-                    || (pcpDto.getWarningMessages() != null && pcpDto.getWarningMessages().size() > 0
-                    && !request.isAcknowledgeWarnings())) {
-                throw new ValidationException(pcpDto.getErrorMessages(), pcpDto.getWarningMessages());
-            }
+        } else {
+            throw new InvalidArgumentsException(msgUtil.getMessage("pendingListing.alreadyProcessing"));
+        }
+        return response;
+    }
 
-            developerManager.validateDeveloperInSystemIfExists(request.getPendingListing());
+    private Long getAcbIdFromPendingListing(PendingCertifiedProductDetails pendingListing) {
+        return MapUtils.getLong(pendingListing.getCertifyingBody(), CertifiedProductSearchDetails.ACB_ID_KEY);
+    }
 
-            CertifiedProductDTO createdProduct = cpManager.createFromPending(pcpDto, request.isAcknowledgeWarnings());
-            pcpManager.confirm(acbId, request.getPendingListing().getId());
-            CertifiedProductSearchDetails result = cpdManager.getCertifiedProductDetails(createdProduct.getId());
-            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, result.getId(),
-                    "Created a certified product", null, result);
+    private void validate(PendingCertifiedProductDTO pcpDto, boolean isAcknowledgeWarnings)
+            throws EntityRetrievalException, ValidationException {
+        PendingValidator validator = validatorFactory.getValidator(pcpDto);
+        if (validator != null) {
+            validator.validate(pcpDto, false);
+        }
+        if (pcpDto.getErrorMessages() != null && pcpDto.getErrorMessages().size() > 0
+                || (pcpDto.getWarningMessages() != null && pcpDto.getWarningMessages().size() > 0
+                && !isAcknowledgeWarnings)) {
+            throw new ValidationException(pcpDto.getErrorMessages(), pcpDto.getWarningMessages());
+        }
+        developerManager.validateDeveloperInSystemIfExists(pcpDto);
+    }
 
+    private ResponseEntity<CertifiedProductSearchDetails> getConfirmResponse(CertifiedProductSearchDetails createdListing) {
+        if (createdListing != null) {
             HttpHeaders responseHeaders = new HttpHeaders();
             responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-            return new ResponseEntity<CertifiedProductSearchDetails>(result, responseHeaders, HttpStatus.OK);
+            return new ResponseEntity<CertifiedProductSearchDetails>(createdListing, responseHeaders, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<CertifiedProductSearchDetails>(null, null, HttpStatus.BAD_REQUEST);
         }
-        return null;
     }
 
     @ApiOperation(value = "Upload a file with certified products",

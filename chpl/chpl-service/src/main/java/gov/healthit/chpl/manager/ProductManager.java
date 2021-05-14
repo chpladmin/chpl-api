@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
@@ -285,7 +286,7 @@ public class ProductManager extends SecuredManager {
             // make sure the updated CHPL product number is unique and that the
             // new product code is valid
             String chplNumber = beforeListing.getChplProductNumber();
-            if (!chplProductNumberUtil.isLegacy(chplNumber)) {
+            if (!chplProductNumberUtil.isLegacyChplProductNumberStyle(chplNumber)) {
                 ChplProductNumberParts parts = chplProductNumberUtil.parseChplProductNumber(chplNumber);
                 String potentialChplNumber = chplProductNumberUtil.getChplProductNumber(parts.getEditionCode(),
                         parts.getAtlCode(), parts.getAcbCode(), parts.getDeveloperCode(), newProductCode,

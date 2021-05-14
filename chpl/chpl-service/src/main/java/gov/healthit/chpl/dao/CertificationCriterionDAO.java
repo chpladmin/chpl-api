@@ -39,7 +39,7 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
             entity = new CertificationCriterionEntity();
             entity.setAutomatedMeasureCapable(dto.getAutomatedMeasureCapable());
             entity.setAutomatedNumeratorCapable(dto.getAutomatedNumeratorCapable());
-            entity.setCertificationEdition(dto.getCertificationEditionId());
+            entity.setCertificationEditionId(dto.getCertificationEditionId());
             entity.setCreationDate(new Date());
             entity.setDeleted(false);
             entity.setDescription(dto.getDescription());
@@ -63,7 +63,7 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
 
         entity.setAutomatedMeasureCapable(dto.getAutomatedMeasureCapable());
         entity.setAutomatedNumeratorCapable(dto.getAutomatedNumeratorCapable());
-        entity.setCertificationEdition(dto.getCertificationEditionId());
+        entity.setCertificationEditionId(dto.getCertificationEditionId());
         entity.setCreationDate(dto.getCreationDate());
         entity.setDeleted(dto.getDeleted());
         entity.setDescription(dto.getDescription());

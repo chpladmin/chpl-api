@@ -42,7 +42,7 @@ public class TestStandardReviewer implements Reviewer {
             TestStandardDTO foundTestStandard =
                     testStandardDao.getByNumberAndEdition(testStandard.getName(), listing.getCertificationEditionId());
             if (foundTestStandard == null) {
-                listing.getWarningMessages().add(
+                listing.getErrorMessages().add(
                         msgUtil.getMessage("listing.criteria.testStandardNotFound",
                         Util.formatCriteriaNumber(certResult.getCriterion()),
                         testStandard.getName(),

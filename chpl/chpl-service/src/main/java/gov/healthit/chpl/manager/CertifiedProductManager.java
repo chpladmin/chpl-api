@@ -34,6 +34,7 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
@@ -212,6 +213,7 @@ public class CertifiedProductManager extends SecuredManager {
     private ResourcePermissions resourcePermissions;
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
+    private PendingCertifiedProductManager pcpManager;
     private ActivityManager activityManager;
     private ListingValidatorFactory validatorFactory;
     private CuresUpdateService curesUpdateService;
@@ -251,6 +253,7 @@ public class CertifiedProductManager extends SecuredManager {
             FuzzyChoicesDAO fuzzyChoicesDao, ResourcePermissions resourcePermissions,
             CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
+            PendingCertifiedProductManager pcpManager,
             ActivityManager activityManager, ListingValidatorFactory validatorFactory,
             CuresUpdateService curesUpdateService,
             CertificationCriterionService criteriaService) {
@@ -294,6 +297,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.resourcePermissions = resourcePermissions;
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
+        this.pcpManager = pcpManager;
         this.activityManager = activityManager;
         this.validatorFactory = validatorFactory;
         this.curesUpdateService = curesUpdateService;
@@ -656,7 +660,7 @@ public class CertifiedProductManager extends SecuredManager {
                 }
                 CertificationResultDTO certResultToCreate = new CertificationResultDTO();
                 certResultToCreate.setCertificationCriterionId(criterion.getId());
-                certResultToCreate.setCertifiedProduct(newCertifiedProduct.getId());
+                certResultToCreate.setCertifiedProductId(newCertifiedProduct.getId());
                 certResultToCreate.setSuccessful(certResult.getMeetsCriteria());
                 boolean isCertified = (certResultToCreate.getSuccessful() != null
                         && certResultToCreate.getSuccessful().booleanValue());
@@ -679,6 +683,7 @@ public class CertifiedProductManager extends SecuredManager {
                 certResultToCreate.setDocumentationUrl(isCertified ? certResult.getDocumentationUrl() : null);
                 certResultToCreate.setExportDocumentation(isCertified ? certResult.getExportDocumentation() : null);
                 certResultToCreate.setUseCases(isCertified ? certResult.getUseCases() : null);
+                certResultToCreate.setServiceBaseUrlList(isCertified ? certResult.getServiceBaseUrlList() : null);
                 CertificationResultDTO createdCert = certDao.create(certResultToCreate);
 
                 if (isCertified) {
@@ -813,15 +818,10 @@ public class CertifiedProductManager extends SecuredManager {
                                 // try to look up by name and edition
                                 TestStandardDTO foundTestStandard = testStandardDao.getByNumberAndEdition(std.getName(),
                                         pendingCp.getCertificationEditionId());
-                                if (foundTestStandard == null) {
-                                    // if not found create a new test standard
-                                    TestStandardDTO ts = new TestStandardDTO();
-                                    ts.setName(std.getName());
-                                    ts.setCertificationEditionId(pendingCp.getCertificationEditionId());
-                                    ts = testStandardDao.create(ts);
-                                    stdDto.setTestStandardId(ts.getId());
-                                } else {
+                                if (foundTestStandard != null) {
                                     stdDto.setTestStandardId(foundTestStandard.getId());
+                                } else {
+                                    LOGGER.error("Will not insert test standard with null id. Name was " + std.getName());
                                 }
                             } else {
                                 stdDto.setTestStandardId(std.getTestStandardId());
@@ -1028,6 +1028,7 @@ public class CertifiedProductManager extends SecuredManager {
         curesEvent.setCertifiedProductId(newCertifiedProduct.getId());
         curesUpdateDao.create(curesEvent);
 
+        pcpManager.confirm(pendingCp.getCertificationBodyId(), pendingCp.getId());
         return newCertifiedProduct;
     }
 

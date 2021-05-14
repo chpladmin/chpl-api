@@ -7,8 +7,8 @@ public class AcbComplaintIdValidation extends ValidationRule<ComplaintValidation
     @Override
     public boolean isValid(ComplaintValidationContext context) {
         // Received Date type is required
-        if (context.getComplaintDTO().getAcbComplaintId() == null
-                || context.getComplaintDTO().getAcbComplaintId().equals("")) {
+        if (context.getComplaint().getAcbComplaintId() == null
+                || context.getComplaint().getAcbComplaintId().equals("")) {
             getMessages().add(getErrorMessage("complaints.acbComplaintId.required"));
             return false;
         }

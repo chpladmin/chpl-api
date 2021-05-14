@@ -61,8 +61,6 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
-import gov.healthit.chpl.job.MeaningfulUseUploadJob;
-
 @Configuration
 @Import(ChplCacheConfig.class)
 @EnableWebMvc
@@ -213,11 +211,6 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
         registry.addInterceptor(localeInterceptor());
-    }
-
-    @Bean
-    public MeaningfulUseUploadJob meaningfulUseUploadJob() {
-        return new MeaningfulUseUploadJob();
     }
 
     /**

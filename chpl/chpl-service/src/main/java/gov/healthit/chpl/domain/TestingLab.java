@@ -11,6 +11,7 @@ import lombok.Builder;
 @AllArgsConstructor
 public class TestingLab implements Serializable {
     private static final long serialVersionUID = 7787353272569398682L;
+    public static final String MULTIPLE_TESTING_LABS_CODE = "99";
     private Long id;
     private String atlCode;
     private String name;

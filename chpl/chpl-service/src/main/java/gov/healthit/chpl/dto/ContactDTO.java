@@ -6,12 +6,16 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.entity.ContactEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class ContactDTO implements Serializable {
     private static final long serialVersionUID = 5417465972193498436L;
     private Long id;

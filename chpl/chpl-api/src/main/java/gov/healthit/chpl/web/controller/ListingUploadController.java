@@ -7,16 +7,23 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.ff4j.FF4j;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,7 +50,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.upload.listing.ListingUploadManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.EmailBuilder;
-import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.web.controller.results.ListingUploadResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.log4j.Log4j2;
@@ -61,15 +68,13 @@ public class ListingUploadController {
     private String uploadErrorEmailSubject;
 
     private ListingUploadManager listingUploadManager;
-    private ErrorMessageUtil msgUtil;
     private FF4j ff4j;
     private Environment env;
 
     @Autowired
     public ListingUploadController(ListingUploadManager listingUploadManager,
-            FF4j ff4j, ErrorMessageUtil msgUtil, Environment env) {
+            FF4j ff4j, Environment env) {
         this.listingUploadManager = listingUploadManager;
-        this.msgUtil = msgUtil;
         this.ff4j = ff4j;
         this.env = env;
     }
@@ -102,29 +107,83 @@ public class ListingUploadController {
                     + "Security Restrictions: ROLE_ADMIN or user uploading the file must have ROLE_ACB "
                     + "and administrative authority on the ONC-ACB(s) specified in the file.")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public List<ListingUpload> upload(@RequestParam("file") MultipartFile file)
-            throws ValidationException, MaxUploadSizeExceededException {
+    public ResponseEntity<ListingUploadResponse> upload(@RequestParam("file") MultipartFile file) throws ValidationException, MaxUploadSizeExceededException {
         if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
             throw new NotImplementedException();
         }
 
-        List<ListingUpload> createdListingUploads = new ArrayList<ListingUpload>();
-            try {
-                List<ListingUpload> listingsToAdd = listingUploadManager.parseUploadFile(file);
-                for (ListingUpload listingToAdd : listingsToAdd) {
+        List<ListingUpload> successfulListingUploads = new ArrayList<ListingUpload>();
+        List<ListingUpload> listingsToAdd = new ArrayList<ListingUpload>();
+        try {
+           listingsToAdd = listingUploadManager.parseUploadFile(file);
+        } catch (AccessDeniedException | ValidationException | NullPointerException | IndexOutOfBoundsException ex) {
+            LOGGER.error("Error uploading listing(s) from file " + file.getOriginalFilename() + ". " + ex.getMessage());
+            //send an email that something weird happened
+            sendUploadError(file, ex);
+            throw new ValidationException(ex.getMessage());
+        }
+
+        Map<String, String> processedListingErrorMap = new LinkedHashMap<String, String>();
+        if (listingsToAdd != null && listingsToAdd.size() > 0) {
+            for (ListingUpload listingToAdd : listingsToAdd) {
+                processedListingErrorMap.put(listingToAdd.getChplProductNumber(), null);
+                try {
                     ListingUpload created = listingUploadManager.createOrReplaceListingUpload(listingToAdd);
-                    createdListingUploads.add(created);
+                    successfulListingUploads.add(created);
+                } catch (ValidationException ex) {
+                    LOGGER.error("Error uploading listing(s) from file " + file.getOriginalFilename() + ". " + ex.getMessage());
+                    //don't send an email for this exception because it's one that we create and
+                    //we expect it to provide a decent error message for the user
+                    processedListingErrorMap.put(listingToAdd.getChplProductNumber(), ex.getMessage());
+                } catch (AccessDeniedException | NullPointerException | IndexOutOfBoundsException
+                        | JsonProcessingException | EntityRetrievalException | EntityCreationException ex) {
+                    LOGGER.error("Error uploading listing(s) from file " + file.getOriginalFilename() + ". " + ex.getMessage());
+                    //send an email that something weird happened since the error message coming back
+                    //from the caught exception might not be that helpful to the user
+                    sendUploadError(file, ex);
+                    processedListingErrorMap.put(listingToAdd.getChplProductNumber(), ex.getMessage());
                 }
-            } catch (NullPointerException | IndexOutOfBoundsException | JsonProcessingException
-                    | EntityRetrievalException | EntityCreationException ex) {
-                String error = "Error uploading listing(s) from file " + file.getOriginalFilename()
-                + ". Error was: " + ex.getMessage();
-                LOGGER.error(error);
-                //send an email that something weird happened
-                sendUploadError(file, ex);
-                throw new ValidationException(error);
             }
-        return createdListingUploads;
+        }
+
+        try {
+            if (successfulListingUploads != null && successfulListingUploads.size() > 0) {
+                listingUploadManager.calculateErrorAndWarningCounts(successfulListingUploads.stream()
+                    .map(lu -> lu.getId())
+                    .collect(Collectors.toList()));
+            }
+        } catch (SchedulerException | ValidationException ex) {
+            LOGGER.error("Unable to start job to calculate error and warning counts for uploaded listings.", ex);
+        }
+
+        ListingUploadResponse response = createResponse(successfulListingUploads, processedListingErrorMap);
+        return new ResponseEntity<ListingUploadResponse>(response,
+                response.getErrorMessages().size() == 0 ? HttpStatus.OK : HttpStatus.PARTIAL_CONTENT);
+    }
+
+    private ListingUploadResponse createResponse(List<ListingUpload> successfulListingUploads, Map<String, String> processedListingErrorMap) throws ValidationException {
+        ListingUploadResponse response = new ListingUploadResponse();
+        response.setSuccessfulListingUploads(successfulListingUploads);
+        long listingUploadsAttempted = processedListingErrorMap.keySet().size();
+        long listingUploadsFailed = processedListingErrorMap.values().stream().filter(value -> !StringUtils.isEmpty(value)).count();
+
+        if (listingUploadsAttempted > 0 && listingUploadsFailed > 0
+                && listingUploadsAttempted == listingUploadsFailed) {
+            //all uploads failed - exception that returns error status
+            throw new ValidationException(createErrorMessages(processedListingErrorMap));
+        } else if (listingUploadsFailed > 0 && listingUploadsAttempted > 0
+                && listingUploadsAttempted > listingUploadsFailed) {
+            //some uploads were attempted and some failed but not all - exception that returns "partial success" status
+            response.setErrorMessages(createErrorMessages(processedListingErrorMap));
+        }
+        return response;
+    }
+
+    private Set<String> createErrorMessages(Map<String, String> processedListingErrorMap) {
+        return processedListingErrorMap.keySet().stream()
+            .filter(key -> !StringUtils.isEmpty(processedListingErrorMap.get(key)))
+            .map(key -> key + ": " + processedListingErrorMap.get(key))
+            .collect(Collectors.toSet());
     }
 
     @ApiOperation(value = "Reject an uploaded listing.",

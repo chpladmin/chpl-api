@@ -29,8 +29,8 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestTaskP
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingTestTaskDTO;
-import gov.healthit.chpl.listing.measure.MeasureDAO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
@@ -103,31 +103,34 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     private static final String G3_CRITERIA_NUMBER = "170.315 (g)(3)";
     private static final String G6_CRITERIA_NUMBER = "170.315 (g)(6)";
     private static final String H1_CRITERIA_NUMBER = "170.315 (h)(1)";
-
     private static final int MINIMIMUM_PARTICIPANTS = 10;
+
     private List<String> e2e3Criterion = new ArrayList<String>();
     private List<String> g7g8g9Criterion = new ArrayList<String>();
     private List<String> d2d10Criterion = new ArrayList<String>();
+    private List<CertificationCriterion> e1Criteria;
 
-    private MeasureDAO macraDao;
     private TestFunctionalityDAO testFuncDao;
     private TestProcedureDAO testProcDao;
     private TestDataDAO testDataDao;
     private CertificationCriterionDAO criteriaDao;
+    private CertificationCriterionService criterionService;
     private ValidationUtils validationUtils;
 
     @Autowired
-    public RequiredData2015Reviewer(MeasureDAO macraDao, TestFunctionalityDAO testFuncDao,
-            TestProcedureDAO testProcDao, TestDataDAO testDataDao, CertificationCriterionDAO criteriaDao,
+    @SuppressWarnings("checkstyle:parameternumber")
+    public RequiredData2015Reviewer(TestFunctionalityDAO testFuncDao,
+            TestProcedureDAO testProcDao, TestDataDAO testDataDao,
+            CertificationCriterionDAO criteriaDao, CertificationCriterionService criterionService,
             ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
             CertificationResultRules certRules, ValidationUtils validationUtils) {
         super(msgUtil, resourcePermissions, certRules);
 
-        this.macraDao = macraDao;
         this.testFuncDao = testFuncDao;
         this.testProcDao = testProcDao;
         this.testDataDao = testDataDao;
         this.criteriaDao = criteriaDao;
+        this.criterionService = criterionService;
         this.validationUtils = validationUtils;
 
         e2e3Criterion.add("170.315 (e)(2)");
@@ -139,6 +142,8 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
         d2d10Criterion.add("170.315 (d)(2)");
         d2d10Criterion.add("170.315 (d)(10)");
+
+        e1Criteria = this.criterionService.getByNumber("170.315 (e)(1)");
     }
 
     @Override
@@ -184,9 +189,11 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 Arrays.asList(H_RELATED_CERTS));
         addListingWarningsByPermission(listing, warnings);
 
-        errors = validationUtils.checkSpecificCriteriaForErrors("170.315 (e)(1)", attestedCriteria,
-                Arrays.asList(E1_RELATED_CERTS));
-        listing.getErrorMessages().addAll(errors);
+        e1Criteria.stream().forEach(e1Criterion -> {
+            List<String> e1Errors = validationUtils.checkSpecificCriteriaForErrors(e1Criterion, attestedCriteria,
+                    Arrays.asList(E1_RELATED_CERTS));
+            listing.getErrorMessages().addAll(e1Errors);
+        });
 
         // check for (e)(2) or (e)(3) required complimentary certs
         List<String> e2e3ComplimentaryErrors =
@@ -652,6 +659,12 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                     listing.getWarningMessages().add(
                             msgUtil.getMessage("listing.criteria.useCasesWithoutAttestation",
                                     Util.formatCriteriaNumber(cert.getCriterion())));
+                }
+
+                if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.SERVICE_BASE_URL_LIST)
+                        && StringUtils.isEmpty(cert.getServiceBaseUrlList())) {
+                    addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingServiceBaseUrlList",
+                            Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 
                 // jennifer asked to not make functionality tested be a required

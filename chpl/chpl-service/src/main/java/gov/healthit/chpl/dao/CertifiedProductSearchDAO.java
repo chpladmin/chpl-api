@@ -74,6 +74,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         }
         CertifiedProduct result = new CertifiedProduct();
         result.setCertificationDate(results.get(0).getCertificationDate().getTime());
+        result.setCertificationStatus(results.get(0).getCertificationStatus());
         result.setChplProductNumber(results.get(0).getChplProductNumber());
         result.setEdition(results.get(0).getEdition());
         result.setCuresUpdate(results.get(0).getCuresUpdate());
@@ -618,6 +619,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
                 .certificationStatus(entity.getCertificationStatus())
                 .transparencyAttestationUrl(entity.getTransparencyAttestationUrl())
                 .apiDocumentation(entity.getApiDocumentation())
+                .serviceBaseUrlList(entity.getServiceBaseUrlList() != null ? entity.getServiceBaseUrlList() : "")
                 .surveillanceCount(entity.getSurveillanceCount())
                 .openSurveillanceCount(entity.getOpenSurveillanceCount())
                 .closedSurveillanceCount(entity.getClosedSurveillanceCount())

@@ -135,7 +135,8 @@ private SvapDAO svapDao;
                 || !ObjectUtils.equals(orig.getAttestationAnswer(), updated.getAttestationAnswer())
                 || !ObjectUtils.equals(orig.getDocumentationUrl(), updated.getDocumentationUrl())
                 || !ObjectUtils.equals(orig.getExportDocumentation(), updated.getExportDocumentation())
-                || !ObjectUtils.equals(orig.getUseCases(), updated.getUseCases())) {
+                || !ObjectUtils.equals(orig.getUseCases(), updated.getUseCases())
+                || !ObjectUtils.equals(orig.getServiceBaseUrlList(), updated.getServiceBaseUrlList())) {
             hasChanged = true;
         }
         if (hasChanged) {
@@ -162,6 +163,7 @@ private SvapDAO svapDao;
                 toUpdate.setDocumentationUrl(updated.getDocumentationUrl());
                 toUpdate.setExportDocumentation(updated.getExportDocumentation());
                 toUpdate.setUseCases(updated.getUseCases());
+                toUpdate.setServiceBaseUrlList(updated.getServiceBaseUrlList());
             } else {
                 toUpdate.setApiDocumentation(null);
                 toUpdate.setPrivacySecurityFramework(null);
@@ -171,6 +173,7 @@ private SvapDAO svapDao;
                 toUpdate.setDocumentationUrl(null);
                 toUpdate.setExportDocumentation(null);
                 toUpdate.setUseCases(null);
+                toUpdate.setServiceBaseUrlList(null);
             }
 
             certResultDAO.update(toUpdate);
@@ -236,7 +239,8 @@ private SvapDAO svapDao;
                 for (UcdProcess existingUcd : existingListing.getSed().getUcdProcesses()) {
                     boolean ucdMeetsCriteria = false;
                     for (CertificationCriterion ucdCriteria : existingUcd.getCriteria()) {
-                        if (ucdCriteria.getId().equals(updated.getCriterion().getId())) {
+                        if (ucdCriteria.getId().equals(updated.getCriterion().getId())
+                                && orig.isSed() != null && orig.isSed()) {
                             ucdMeetsCriteria = true;
                         }
                     }
@@ -250,7 +254,8 @@ private SvapDAO svapDao;
                 for (UcdProcess updatedUcd : updatedListing.getSed().getUcdProcesses()) {
                     boolean ucdMeetsCriteria = false;
                     for (CertificationCriterion ucdCriteria : updatedUcd.getCriteria()) {
-                        if (ucdCriteria.getId().equals(updated.getCriterion().getId())) {
+                        if (ucdCriteria.getId().equals(updated.getCriterion().getId())
+                                && updated.isSed() != null && updated.isSed()) {
                             ucdMeetsCriteria = true;
                         }
                     }
@@ -268,7 +273,8 @@ private SvapDAO svapDao;
                 for (TestTask existingTask : existingListing.getSed().getTestTasks()) {
                     boolean taskMeetsCriteria = false;
                     for (CertificationCriterion taskCriteria : existingTask.getCriteria()) {
-                        if (taskCriteria.getId().equals(updated.getCriterion().getId())) {
+                        if (taskCriteria.getId().equals(updated.getCriterion().getId())
+                                && orig.isSed() != null && orig.isSed()) {
                             taskMeetsCriteria = true;
                         }
                     }
@@ -316,7 +322,8 @@ private SvapDAO svapDao;
                 for (TestTask updatedTask : updatedListing.getSed().getTestTasks()) {
                     boolean taskMeetsCriteria = false;
                     for (CertificationCriterion taskCriteria : updatedTask.getCriteria()) {
-                        if (taskCriteria.getId().equals(updated.getCriterion().getId())) {
+                        if (taskCriteria.getId().equals(updated.getCriterion().getId())
+                                && updated.isSed() != null && updated.isSed()) {
                             taskMeetsCriteria = true;
                         }
                     }
@@ -545,12 +552,9 @@ private SvapDAO svapDao;
                     TestStandardDTO foundStd = testStandardDAO.getByNumberAndEdition(updatedItem.getTestStandardName(),
                             Long.valueOf(editionIdString));
                     if (foundStd == null) {
-                        TestStandardDTO stdToCreate = new TestStandardDTO();
-                        stdToCreate.setName(updatedItem.getTestStandardName());
-                        stdToCreate.setDescription(updatedItem.getTestStandardDescription());
-                        stdToCreate.setCertificationEditionId(Long.valueOf(editionIdString));
-                        TestStandardDTO created = testStandardDAO.create(stdToCreate);
-                        updatedItem.setTestStandardId(created.getId());
+                        LOGGER.error("Could not find test standard " + updatedItem.getTestStandardName()
+                                + "; will not be adding this as a test standard to certification result id "
+                                + certResult.getId() + ", criteria " + certResult.getNumber());
                     } else {
                         updatedItem.setTestStandardId(foundStd.getId());
                     }

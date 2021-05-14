@@ -8,10 +8,6 @@
         <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
-        <delete-job>
-            <name>G1/G2 Measure Data Fix</name>
-            <group>systemJobs</group>
-        </delete-job>
         <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
@@ -697,6 +693,54 @@
                 <entry>
                     <key>frequency</key>
                     <value>DAILY</value>
+                </entry>
+            </job-data-map>
+        </job>
+
+        <!-- Job fired when a new listing is uploaded -->
+        <job>
+            <name>listingUploadValidationJob</name>
+            <group>chplBackgroundJobs</group>
+            <description>Complete the work of building, validating, and saving error/warning counts of an uploaded listing.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.ListingUploadValidationJob</job-class>
+            <durability>true</durability>
+            <recover>true</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ACB</value>
+                </entry>
+            </job-data-map>
+        </job>
+
+        <!-- Job fired when a large surveillance file is uploaded -->
+        <job>
+            <name>surveillanceUploadJob</name>
+            <group>chplBackgroundJobs</group>
+            <description>Complete the work of uploading large surveillance files.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.SurveillanceUploadJob</job-class>
+            <durability>true</durability>
+            <recover>true</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ACB</value>
+                </entry>
+            </job-data-map>
+        </job>
+
+        <!-- Job fired when a meaningful use file is uploaded -->
+        <job>
+            <name>meaningfulUseUploadJob</name>
+            <group>chplBackgroundJobs</group>
+            <description>Complete the work of uploading meaningful use files.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.MeaningfulUseUploadJob</job-class>
+            <durability>true</durability>
+            <recover>true</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
                 </entry>
             </job-data-map>
         </job>

@@ -263,6 +263,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
             cert.setDocumentationUrl(certCriterion.getDocumentationUrl());
             cert.setExportDocumentation(certCriterion.getExportDocumentation());
             cert.setUseCases(certCriterion.getUseCases());
+            cert.setServiceBaseUrlList(certCriterion.getServiceBaseUrlList());
 
             if (certCriterion.getAdditionalSoftware() != null) {
                 for (PendingCertificationResultAdditionalSoftwareDTO as : certCriterion.getAdditionalSoftware()) {

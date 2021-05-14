@@ -77,7 +77,7 @@ public class ComplaintController {
     @ApiOperation(value = "Delete complaint for use in Surveillance Quarterly Report.",
             notes = "")
     @RequestMapping(value = "/{complaintId}", method = RequestMethod.DELETE, produces = "application/json; charset=utf-8")
-    public @ResponseBody void delete(@PathVariable("complaintId") Long complaintId)
+    public void delete(@PathVariable("complaintId") Long complaintId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         complaintManager.delete(complaintId);
     }
