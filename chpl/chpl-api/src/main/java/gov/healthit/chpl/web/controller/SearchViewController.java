@@ -1226,15 +1226,15 @@ public class SearchViewController {
         return data;
     }
 
-    @ApiOperation(value = "Get all possible nonconformity status type options in the CHPL")
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED - Get all possible nonconformity status type options in the CHPL")
     @RequestMapping(value = "/data/nonconformity_status_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getNonconformityStatusTypes() {
-        Set<KeyValueModel> data = dimensionalDataManager.getNonconformityStatusTypes();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
-        result.setData(data);
+        result.setData(new HashSet<KeyValueModel>());
         return result;
     }
 

@@ -730,19 +730,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
 
-    public List<SurveillanceNonconformityStatus> getAllSurveillanceNonconformityStatusTypes() {
-        Query query = entityManager.createQuery("from NonconformityStatusEntity where deleted <> true",
-                NonconformityStatusEntity.class);
-        List<NonconformityStatusEntity> resultEntities = query.getResultList();
-        List<SurveillanceNonconformityStatus> results = new ArrayList<SurveillanceNonconformityStatus>();
-        for (NonconformityStatusEntity resultEntity : resultEntities) {
-            SurveillanceNonconformityStatus result = convert(resultEntity);
-            results.add(result);
-        }
-        return results;
-    }
-
-
     @Cacheable(CacheNames.FIND_SURVEILLANCE_NONCONFORMITY_STATUS_TYPE)
     public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(String type) {
         LOGGER.debug("Searching for nonconformity status type '" + type + "'.");
