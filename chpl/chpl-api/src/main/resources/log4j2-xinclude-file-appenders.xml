@@ -448,7 +448,7 @@
         fileName="${logDir}/scheduler/listingUploadValidationJob.log"
         filePattern="${logDir}/scheduler/history/listingUploadValidationJob-%d{yyyy-MM-dd}.log">
         <PatternLayout>
-            <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id} %X{dd.span_id} - %m%n</Pattern>
         </PatternLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -460,7 +460,7 @@
         filePattern="${logDir}/scheduler/history/surveillanceUploadJob-%d{yyyy-MM-dd}.log"
         filePermissions="rw-rw-r--">
         <PatternLayout>
-            <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id} %X{dd.span_id} - %m%n</Pattern>
         </PatternLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -472,7 +472,7 @@
         filePattern="${logDir}/scheduler/history/meaningfulUseUploadJob-%d{yyyy-MM-dd}.log"
         filePermissions="rw-rw-r--">
         <PatternLayout>
-            <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id} %X{dd.span_id} - %m%n</Pattern>
         </PatternLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
