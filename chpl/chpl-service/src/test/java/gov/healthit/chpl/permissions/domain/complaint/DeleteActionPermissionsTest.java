@@ -12,9 +12,8 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.dao.ComplaintDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.complaint.Complaint;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.ComplaintDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.complaint.DeleteActionPermissions;
@@ -70,16 +69,16 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForAcbUser(resourcePermissions);
         assertFalse(permissions.hasAccess());
 
-        ComplaintDTO dto = new ComplaintDTO();
-        dto.setId(1L);
-        dto.setCertificationBody(new CertificationBodyDTO());
-        dto.getCertificationBody().setId(2L);
+        Complaint complaint = new Complaint();
+        complaint.setId(1L);
+        complaint.setCertificationBody(new CertificationBody());
+        complaint.getCertificationBody().setId(2L);
 
-        Mockito.when(complaintDAO.getComplaint(ArgumentMatchers.anyLong())).thenReturn(dto);
+        Mockito.when(complaintDAO.getComplaint(ArgumentMatchers.anyLong())).thenReturn(complaint);
         assertTrue(permissions.hasAccess(1L));
 
-        dto.getCertificationBody().setId(1L);
-        Mockito.when(complaintDAO.getComplaint(ArgumentMatchers.anyLong())).thenReturn(dto);
+        complaint.getCertificationBody().setId(1L);
+        Mockito.when(complaintDAO.getComplaint(ArgumentMatchers.anyLong())).thenReturn(complaint);
         assertFalse(permissions.hasAccess(1L));
     }
 

@@ -32,6 +32,11 @@ public class UnattestedCriteriaWithDataReviewer implements Reviewer {
                             msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                                     Util.formatCriteriaNumber(cert.getCriterion()), "API Documentation"));
                 }
+                if (!StringUtils.isEmpty(cert.getServiceBaseUrlList())) {
+                    listing.getWarningMessages().add(
+                            msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
+                                    Util.formatCriteriaNumber(cert.getCriterion()), "Service Base URL List"));
+                }
                 if (!StringUtils.isEmpty(cert.getExportDocumentation())) {
                     listing.getWarningMessages().add(
                             msgUtil.getMessage("listing.criteria.falseCriteriaHasData",

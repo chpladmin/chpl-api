@@ -88,6 +88,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
             entity.setExportDocumentation(result.getExportDocumentation());
             entity.setDocumentationUrl(result.getDocumentationUrl());
             entity.setUseCases(result.getUseCases());
+            entity.setServiceBaseUrlList(result.getServiceBaseUrlList());
             entity.setPrivacySecurityFramework(result.getPrivacySecurityFramework());
             entity.setLastModifiedUser(AuthUtil.getAuditId());
 
@@ -118,6 +119,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
         entity.setExportDocumentation(toUpdate.getExportDocumentation());
         entity.setDocumentationUrl(toUpdate.getDocumentationUrl());
         entity.setUseCases(toUpdate.getUseCases());
+        entity.setServiceBaseUrlList(toUpdate.getServiceBaseUrlList());
         entity.setPrivacySecurityFramework(toUpdate.getPrivacySecurityFramework());
         entity.setLastModifiedUser(AuthUtil.getAuditId());
 
@@ -1174,6 +1176,4 @@ public class CertificationResultDAO extends BaseDAOImpl {
         }
         return result;
     }
-
-
 }

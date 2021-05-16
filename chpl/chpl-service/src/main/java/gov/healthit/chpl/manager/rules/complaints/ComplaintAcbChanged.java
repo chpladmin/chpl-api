@@ -1,14 +1,11 @@
 package gov.healthit.chpl.manager.rules.complaints;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import gov.healthit.chpl.dto.ComplaintDTO;
+import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.manager.rules.ValidationRule;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class ComplaintAcbChanged extends ValidationRule<ComplaintValidationContext> {
-    private static final Logger LOGGER = LogManager.getLogger(ComplaintAcbChanged.class);
-
     public ComplaintAcbChanged() {
         super();
     }
@@ -17,9 +14,9 @@ public class ComplaintAcbChanged extends ValidationRule<ComplaintValidationConte
     public boolean isValid(ComplaintValidationContext context) {
         try {
             // Get the original complaint
-            ComplaintDTO originalDTO = context.getComplaintDAO().getComplaint(context.getComplaintDTO().getId());
-            if (context.getComplaintDTO().getCertificationBody().getId()
-                    .equals(originalDTO.getCertificationBody().getId())) {
+            Complaint original = context.getComplaintDAO().getComplaint(context.getComplaint().getId());
+            if (context.getComplaint().getCertificationBody().getId()
+                    .equals(original.getCertificationBody().getId())) {
                 return true;
             } else {
                 getMessages().add(getErrorMessage("complaints.update.acbChange"));

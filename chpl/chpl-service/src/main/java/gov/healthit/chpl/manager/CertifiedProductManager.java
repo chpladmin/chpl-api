@@ -34,6 +34,7 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
@@ -659,7 +660,7 @@ public class CertifiedProductManager extends SecuredManager {
                 }
                 CertificationResultDTO certResultToCreate = new CertificationResultDTO();
                 certResultToCreate.setCertificationCriterionId(criterion.getId());
-                certResultToCreate.setCertifiedProduct(newCertifiedProduct.getId());
+                certResultToCreate.setCertifiedProductId(newCertifiedProduct.getId());
                 certResultToCreate.setSuccessful(certResult.getMeetsCriteria());
                 boolean isCertified = (certResultToCreate.getSuccessful() != null
                         && certResultToCreate.getSuccessful().booleanValue());
@@ -682,6 +683,7 @@ public class CertifiedProductManager extends SecuredManager {
                 certResultToCreate.setDocumentationUrl(isCertified ? certResult.getDocumentationUrl() : null);
                 certResultToCreate.setExportDocumentation(isCertified ? certResult.getExportDocumentation() : null);
                 certResultToCreate.setUseCases(isCertified ? certResult.getUseCases() : null);
+                certResultToCreate.setServiceBaseUrlList(isCertified ? certResult.getServiceBaseUrlList() : null);
                 CertificationResultDTO createdCert = certDao.create(certResultToCreate);
 
                 if (isCertified) {

@@ -661,6 +661,12 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     Util.formatCriteriaNumber(cert.getCriterion())));
                 }
 
+                if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.SERVICE_BASE_URL_LIST)
+                        && StringUtils.isEmpty(cert.getServiceBaseUrlList())) {
+                    addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingServiceBaseUrlList",
+                            Util.formatCriteriaNumber(cert.getCriterion()));
+                }
+
                 // jennifer asked to not make functionality tested be a required
                 // field
                 // if(certRules.hasCertOption(cert.getCriterion().getNumber(),

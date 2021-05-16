@@ -30,6 +30,9 @@ public class UnattestedCriteriaWithDataReviewer implements Reviewer {
                 if (!StringUtils.isEmpty(cert.getApiDocumentation())) {
                     cert.setApiDocumentation(null);
                 }
+                if (!StringUtils.isEmpty(cert.getServiceBaseUrlList())) {
+                    cert.setServiceBaseUrlList(null);
+                }
                 if (!StringUtils.isEmpty(cert.getExportDocumentation())) {
                     cert.setExportDocumentation(null);
                 }
