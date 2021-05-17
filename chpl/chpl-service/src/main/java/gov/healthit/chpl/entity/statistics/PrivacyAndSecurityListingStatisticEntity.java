@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.dto.statistics.PrivacyAndSecurityListingStatisticDTO;
 import lombok.Data;
 
 @Entity
@@ -25,11 +26,11 @@ public class PrivacyAndSecurityListingStatisticEntity {
 
     @Basic(optional = false)
     @Column(name = "listings_with_privacy_and_security_count", nullable = false)
-    private Integer listingsWithPrivacyAndSecurityCount;
+    private Long listingsWithPrivacyAndSecurityCount;
 
     @Basic(optional = false)
     @Column(name = "listings_requiring_privacy_and_security_count", nullable = false)
-    private Integer listingsRequiringPrivacyAndSecurityCount;
+    private Long listingsRequiringPrivacyAndSecurityCount;
 
     @Basic(optional = false)
     @Column(name = "statistic_date", nullable = false)
@@ -50,4 +51,13 @@ public class PrivacyAndSecurityListingStatisticEntity {
     @Basic(optional = false)
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
+
+    public PrivacyAndSecurityListingStatisticDTO toDto() {
+        return PrivacyAndSecurityListingStatisticDTO.builder()
+                .id(this.getId())
+                .listingsWithPrivacyAndSecurityCount(this.getListingsWithPrivacyAndSecurityCount())
+                .listingsRequiringPrivacyAndSecurityCount(this.getListingsRequiringPrivacyAndSecurityCount())
+                .statisticDate(this.getStatisticDate())
+        .build();
+    }
 }

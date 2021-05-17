@@ -31,7 +31,7 @@ public class CriterionListingCountStatisticEntity {
 
     @Basic(optional = false)
     @Column(name = "listing_count", nullable = false)
-    private Integer listingCount;
+    private Long listingCount;
 
     @Basic(optional = false)
     @Column(name = "certification_criterion_id", nullable = false)

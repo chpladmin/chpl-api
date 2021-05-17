@@ -12,64 +12,69 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.statistics.CriterionListingCountStatisticDTO;
+import gov.healthit.chpl.dto.statistics.ListingCuresStatusStatisticDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.entity.statistics.CriterionListingCountStatisticEntity;
+import gov.healthit.chpl.entity.statistics.ListingCuresStatusStatisticEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 
-@Repository("criterionListingStatisticsDAO")
-public class CriterionListingStatisticsDAO extends BaseDAOImpl {
+@Repository("listingCuresStatusStatisticsDAO")
+public class ListingCuresStatusStatisticsDAO extends BaseDAOImpl {
     private List<String> activeStatusNames;
 
-    public CriterionListingStatisticsDAO() {
+    public ListingCuresStatusStatisticsDAO() {
         activeStatusNames = Stream.of(CertificationStatusType.Active.getName(),
                 CertificationStatusType.SuspendedByAcb.getName(),
                 CertificationStatusType.SuspendedByOnc.getName())
                 .collect(Collectors.toList());
     }
 
-    public Long getListingCountForCriterion(Long certificationCriterionId) {
+    public Long getListingCountWithCuresUpdateStatus() {
         String hql = "SELECT count(*) "
-                + "FROM CertifiedProductDetailsEntitySimple listing, CertificationResultEntity cre "
-                + "WHERE listing.id = cre.certifiedProductId "
-                + "AND listing.certificationStatusName IN (:statusNames) "
-                + "AND cre.certificationCriterionId = :criterionId "
-                + "AND cre.success = true "
-                + "AND cre.deleted = false "
+                + "FROM CertifiedProductDetailsEntitySimple listing "
+                + "WHERE listing.certificationStatusName IN (:statusNames) "
+                + "AND listing.curesUpdate = true "
                 + "AND listing.deleted = false "
                 + "GROUP BY listing.id";
         Query query = entityManager.createQuery(hql);
         query.setParameter("statusNames", activeStatusNames);
-        query.setParameter("criterionId", certificationCriterionId);
         return (Long) query.getSingleResult();
     }
 
-    public List<CriterionListingCountStatisticDTO> findAll() {
-        List<CriterionListingCountStatisticEntity> entities = this.findAllEntities();
+    public Long getTotalListingCount() {
+        String hql = "SELECT count(*) "
+                + "FROM CertifiedProductDetailsEntitySimple listing "
+                + "WHERE listing.certificationStatusName IN (:statusNames) "
+                + "AND listing.deleted = false "
+                + "GROUP BY listing.id";
+        Query query = entityManager.createQuery(hql);
+        query.setParameter("statusNames", activeStatusNames);
+        return (Long) query.getSingleResult();
+    }
+
+    public List<ListingCuresStatusStatisticDTO> findAll() {
+        List<ListingCuresStatusStatisticEntity> entities = this.findAllEntities();
         return entities.stream()
                 .map(entity -> entity.toDto())
                 .collect(Collectors.toList());
     }
 
-    public List<CriterionListingCountStatisticDTO> getStatisticsForDate(LocalDate statisticDate) {
+    public List<ListingCuresStatusStatisticDTO> getStatisticsForDate(LocalDate statisticDate) {
         Query query = entityManager.createQuery("SELECT stats "
-                + "FROM CriterionListingCountStatisticEntity stats "
-                + "LEFT OUTER JOIN FETCH stats.certificationCriterion cce "
-                + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+                + "FROM ListingCuresStatusStatisticEntity stats "
                 + "WHERE (stats.deleted = false) "
                 + "AND stats.statisticDate = :statisticDate ",
-                CriterionListingCountStatisticEntity.class);
+                ListingCuresStatusStatisticEntity.class);
         query.setParameter("statisticDate", statisticDate);
-        List<CriterionListingCountStatisticEntity> entities = query.getResultList();
+        List<ListingCuresStatusStatisticEntity> entities = query.getResultList();
         return entities.stream()
                 .map(entity -> entity.toDto())
                 .collect(Collectors.toList());
     }
 
     public void delete(Long id) throws EntityRetrievalException {
-        CriterionListingCountStatisticEntity toDelete = getEntityById(id);
+        ListingCuresStatusStatisticEntity toDelete = getEntityById(id);
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
@@ -77,11 +82,11 @@ public class CriterionListingStatisticsDAO extends BaseDAOImpl {
         }
     }
 
-    public void create(CriterionListingCountStatisticDTO dto)
+    public void create(ListingCuresStatusStatisticDTO dto)
             throws EntityCreationException, EntityRetrievalException {
-        CriterionListingCountStatisticEntity entity = new CriterionListingCountStatisticEntity();
-        entity.setListingCount(dto.getListingsCertifyingToCriterionCount());
-        entity.setCertificationCriterionId(dto.getCriterion().getId());
+        ListingCuresStatusStatisticEntity entity = new ListingCuresStatusStatisticEntity();
+        entity.setCuresListingCount(dto.getCuresListingCount());
+        entity.setTotalListingsCount(entity.getTotalListingsCount());
         entity.setStatisticDate(dto.getStatisticDate());
         entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
         entity.setLastModifiedDate(new Date());
@@ -91,27 +96,23 @@ public class CriterionListingStatisticsDAO extends BaseDAOImpl {
         create(entity);
     }
 
-    private List<CriterionListingCountStatisticEntity> findAllEntities() {
+    private List<ListingCuresStatusStatisticEntity> findAllEntities() {
         Query query = entityManager.createQuery("SELECT stats "
-                + "FROM CriterionListingCountStatisticEntity stats "
-                + "LEFT OUTER JOIN FETCH stats.certificationCriterion cce "
-                + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+                + "FROM ListingCuresStatusStatisticEntity stats "
                 + "WHERE (stats.deleted = false)",
-                CriterionListingCountStatisticEntity.class);
+                ListingCuresStatusStatisticEntity.class);
         return query.getResultList();
     }
 
-    private CriterionListingCountStatisticEntity getEntityById(Long id) throws EntityRetrievalException {
-        CriterionListingCountStatisticEntity entity = null;
+    private ListingCuresStatusStatisticEntity getEntityById(Long id) throws EntityRetrievalException {
+        ListingCuresStatusStatisticEntity entity = null;
         Query query = entityManager.createQuery("SELECT stats "
-                + "FROM CriterionListingCountStatisticEntity stats "
-                + "LEFT OUTER JOIN FETCH stats.certificationCriterion cce "
-                + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+                + "FROM ListingCuresStatusStatisticEntity stats "
                 + "WHERE (stats.deleted = false) "
                 + "AND (stats.id = :id)",
-                CriterionListingCountStatisticEntity.class);
+                ListingCuresStatusStatisticEntity.class);
         query.setParameter("id", id);
-        List<CriterionListingCountStatisticEntity> result = query.getResultList();
+        List<ListingCuresStatusStatisticEntity> result = query.getResultList();
 
         if (result.size() == 1) {
             entity = result.get(0);

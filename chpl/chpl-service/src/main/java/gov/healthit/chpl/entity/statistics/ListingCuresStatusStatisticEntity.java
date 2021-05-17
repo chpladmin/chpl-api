@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.dto.statistics.ListingCuresStatusStatisticDTO;
 import lombok.Data;
 
 @Entity
@@ -25,11 +26,11 @@ public class ListingCuresStatusStatisticEntity {
 
     @Basic(optional = false)
     @Column(name = "cures_lisitngs_count", nullable = false)
-    private Integer curesListingCount;
+    private Long curesListingCount;
 
     @Basic(optional = false)
     @Column(name = "total_listings_count", nullable = false)
-    private Integer totalListingsCount;
+    private Long totalListingsCount;
 
     @Basic(optional = false)
     @Column(name = "statistic_date", nullable = false)
@@ -50,4 +51,13 @@ public class ListingCuresStatusStatisticEntity {
     @Basic(optional = false)
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
+
+    public ListingCuresStatusStatisticDTO toDto() {
+        return ListingCuresStatusStatisticDTO.builder()
+                .id(this.getId())
+                .curesListingCount(this.getCuresListingCount())
+                .totalListingCount(this.getTotalListingsCount())
+                .statisticDate(this.getStatisticDate())
+        .build();
+    }
 }

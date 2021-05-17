@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.curesReporting;
+package gov.healthit.chpl.scheduler.job.curesStatistics;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,7 +15,7 @@ import gov.healthit.chpl.dto.statistics.CriterionListingCountStatisticDTO;
 import lombok.extern.log4j.Log4j2;
 
 @Component
-@Log4j2(topic = "curesReportingJobLogger")
+@Log4j2(topic = "curesStatisticsCreatorJobLogger")
 public class CriterionListingStatisticsCalculator {
     private CertificationCriterionDAO criteriaDao;
     private CriterionListingStatisticsDAO criterionListingStatisticsDao;
@@ -43,7 +43,7 @@ public class CriterionListingStatisticsCalculator {
     }
 
     private CriterionListingCountStatisticDTO getStatisticForCriterion(CertificationCriterionDTO criterion, LocalDate statisticDate) {
-        Integer listingCount = criterionListingStatisticsDao.getListingCountForCriterion(criterion.getId());
+        Long listingCount = criterionListingStatisticsDao.getListingCountForCriterion(criterion.getId());
         return CriterionListingCountStatisticDTO.builder()
                 .criterion(criterion)
                 .listingsCertifyingToCriterionCount(listingCount)
