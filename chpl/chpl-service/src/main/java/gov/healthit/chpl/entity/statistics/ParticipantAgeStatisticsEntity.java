@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.statistics;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -15,14 +15,14 @@ import javax.persistence.Transient;
 import gov.healthit.chpl.util.Util;
 
 /**
- * Entity object representing the participant_gender_statistics table.
+ * Entity object representing the participant_age_statistics table.
  * @author TYoung
  *
  */
 @Entity
-@Table(name = "participant_gender_statistics")
-public class ParticipantGenderStatisticsEntity implements Serializable {
-    private static final long serialVersionUID = 1313677047965534572L;
+@Table(name = "participant_age_statistics")
+public class ParticipantAgeStatisticsEntity implements Serializable {
+    private static final long serialVersionUID = -3608777880397004236L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,16 +31,12 @@ public class ParticipantGenderStatisticsEntity implements Serializable {
     private Long id;
 
     @Basic(optional = false)
-    @Column(name = "male_count", nullable = false)
-    private Long maleCount;
+    @Column(name = "age_count", nullable = false)
+    private Long ageCount;
 
     @Basic(optional = false)
-    @Column(name = "female_count", nullable = false)
-    private Long femaleCount;
-
-    @Basic(optional = false)
-    @Column(name = "unknown_count", nullable = false)
-    private Long unknownCount;
+    @Column(name = "test_participant_age_id", nullable = false)
+    private Long testParticipantAgeId;
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
@@ -61,7 +57,7 @@ public class ParticipantGenderStatisticsEntity implements Serializable {
     /**
      * Default constructor.
      */
-    public ParticipantGenderStatisticsEntity() {
+    public ParticipantAgeStatisticsEntity() {
         //Default Constructor
     }
 
@@ -69,13 +65,13 @@ public class ParticipantGenderStatisticsEntity implements Serializable {
      * Sets the id field upon creation.
      * @param id The value to set object's id equal to
      */
-    public ParticipantGenderStatisticsEntity(final Long id) {
+    public ParticipantAgeStatisticsEntity(final Long id) {
         this.id = id;
     }
 
     @Transient
     public Class<?> getClassType() {
-        return ParticipantGenderStatisticsEntity.class;
+        return ParticipantAgeStatisticsEntity.class;
     }
 
     public Long getId() {
@@ -86,28 +82,20 @@ public class ParticipantGenderStatisticsEntity implements Serializable {
         this.id = id;
     }
 
-    public Long getMaleCount() {
-        return maleCount;
+    public Long getAgeCount() {
+        return ageCount;
     }
 
-    public void setMaleCount(final Long maleCount) {
-        this.maleCount = maleCount;
+    public void setAgeCount(final Long ageCount) {
+        this.ageCount = ageCount;
     }
 
-    public Long getFemaleCount() {
-        return femaleCount;
+    public Long getTestParticipantAgeId() {
+        return testParticipantAgeId;
     }
 
-    public void setFemaleCount(final Long femaleCount) {
-        this.femaleCount = femaleCount;
-    }
-
-    public Long getUnknownCount() {
-        return unknownCount;
-    }
-
-    public void setUnknownCount(final Long unknownCount) {
-        this.unknownCount = unknownCount;
+    public void setTestParticipantAgeId(final Long testParticipantAgeId) {
+        this.testParticipantAgeId = testParticipantAgeId;
     }
 
     public Date getCreationDate() {

@@ -3,7 +3,7 @@ package gov.healthit.chpl.dao;
 import java.util.List;
 
 import gov.healthit.chpl.dto.ParticipantEducationStatisticsDTO;
-import gov.healthit.chpl.entity.ParticipantEducationStatisticsEntity;
+import gov.healthit.chpl.entity.statistics.ParticipantEducationStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
