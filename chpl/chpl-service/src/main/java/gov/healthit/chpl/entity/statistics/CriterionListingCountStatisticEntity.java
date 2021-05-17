@@ -14,13 +14,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.dto.statistics.CriterionListingCountStatisticDTO;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import lombok.Data;
 
 @Entity
 @Data
 @Table(name = "criterion_listing_statistic")
-public class CriteriaListingCountStatisticEntity {
+public class CriterionListingCountStatisticEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -58,4 +60,17 @@ public class CriteriaListingCountStatisticEntity {
     @Basic(optional = false)
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
+
+    public CriterionListingCountStatisticDTO toDto() {
+        return CriterionListingCountStatisticDTO.builder()
+                .id(this.getId())
+                .criterion(CertificationCriterionDTO.builder()
+                        .id(this.getCertificationCriterionId())
+                        .number(this.getCertificationCriterion() != null ? this.getCertificationCriterion().getNumber() : null)
+                        .title(this.getCertificationCriterion() != null ? this.getCertificationCriterion().getTitle() : null)
+                        .build())
+                .listingsCertifyingToCriterionCount(this.getListingCount())
+                .statisticDate(this.getStatisticDate())
+        .build();
+    }
 }
