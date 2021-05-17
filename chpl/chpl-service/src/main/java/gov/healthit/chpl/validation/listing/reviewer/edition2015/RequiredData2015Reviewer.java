@@ -418,6 +418,12 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     Util.formatCriteriaNumber(cert.getCriterion())));
                 }
 
+                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.SERVICE_BASE_URL_LIST)
+                        && StringUtils.isEmpty(cert.getServiceBaseUrlList())) {
+                    addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingServiceBaseUrlList",
+                            Util.formatCriteriaNumber(cert.getCriterion()));
+                }
+
                 if (!gapEligibleAndTrue
                         && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
                         && (cert.getTestToolsUsed() == null || cert.getTestToolsUsed().size() == 0)) {

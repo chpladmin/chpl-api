@@ -59,6 +59,7 @@ public class CertificationResultUploadHandler {
                 .attestationAnswerStr(parseAttestationAnswerStr(certHeadingRecord, certResultRecords))
                 .documentationUrl(parseDocumentationUrl(certHeadingRecord, certResultRecords))
                 .useCases(parseUseCases(certHeadingRecord, certResultRecords))
+                .serviceBaseUrlList(parseServiceBaseUrlList(certHeadingRecord, certResultRecords))
                 .apiDocumentation(parseApiDocumentation(certHeadingRecord, certResultRecords))
             .build();
 
@@ -125,6 +126,10 @@ public class CertificationResultUploadHandler {
 
     private String parseUseCases(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
         return uploadUtil.parseSingleRowField(Headings.USE_CASES, certHeadingRecord, certResultRecords);
+    }
+
+    private String parseServiceBaseUrlList(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
+        return uploadUtil.parseSingleRowField(Headings.SERVICE_BASE_URL_LIST, certHeadingRecord, certResultRecords);
     }
 
     private String parseApiDocumentation(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {

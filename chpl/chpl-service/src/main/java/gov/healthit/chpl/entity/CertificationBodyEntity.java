@@ -76,6 +76,19 @@ public class CertificationBodyEntity implements Serializable {
     @Column(name = "deleted", nullable = false, insertable = false)
     private Boolean deleted;
 
+    public CertificationBody buildCertificationBody() {
+        return CertificationBody.builder()
+                .acbCode(this.getAcbCode())
+                .address(this.getAddress() == null ? null
+                        : this.getAddress().buildAddress())
+                .id(this.getId())
+                .name(this.getName())
+                .retired(this.getRetired())
+                .retirementDate(this.getRetirementDate())
+                .website(this.getWebsite())
+                .build();
+    }
+
     public static CertificationBodyEntity getNewAcbEntity(CertificationBody acb) {
         CertificationBodyEntity entity = new CertificationBodyEntity();
         entity.setId(acb.getId());
@@ -97,5 +110,4 @@ public class CertificationBodyEntity implements Serializable {
         entity.setRetirementDate(acb.getRetirementDate());
         return entity;
     }
-
 }
