@@ -30,7 +30,7 @@ public class ListingCuresStatusStatisticEntity {
 
     @Basic(optional = false)
     @Column(name = "total_listings_count", nullable = false)
-    private Long totalListingsCount;
+    private Long totalListingCount;
 
     @Basic(optional = false)
     @Column(name = "statistic_date", nullable = false)
@@ -56,7 +56,7 @@ public class ListingCuresStatusStatisticEntity {
         return ListingCuresStatusStatisticDTO.builder()
                 .id(this.getId())
                 .curesListingCount(this.getCuresListingCount())
-                .totalListingCount(this.getTotalListingsCount())
+                .totalListingCount(this.getTotalListingCount())
                 .statisticDate(this.getStatisticDate())
         .build();
     }

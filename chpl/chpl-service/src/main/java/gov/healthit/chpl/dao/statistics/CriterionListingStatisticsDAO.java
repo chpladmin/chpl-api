@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
@@ -17,9 +18,10 @@ import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.statistics.CriterionListingCountStatisticEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-
+import lombok.extern.log4j.Log4j2;
 
 @Repository("criterionListingStatisticsDAO")
+@Log4j2
 public class CriterionListingStatisticsDAO extends BaseDAOImpl {
     private List<String> activeStatusNames;
 
@@ -31,19 +33,24 @@ public class CriterionListingStatisticsDAO extends BaseDAOImpl {
     }
 
     public Long getListingCountForCriterion(Long certificationCriterionId) {
-        String hql = "SELECT count(*) "
+        String hql = "SELECT count(listing.id) "
                 + "FROM CertifiedProductDetailsEntitySimple listing, CertificationResultEntity cre "
                 + "WHERE listing.id = cre.certifiedProductId "
                 + "AND listing.certificationStatusName IN (:statusNames) "
                 + "AND cre.certificationCriterionId = :criterionId "
                 + "AND cre.success = true "
                 + "AND cre.deleted = false "
-                + "AND listing.deleted = false "
-                + "GROUP BY listing.id";
+                + "AND listing.deleted = false ";
         Query query = entityManager.createQuery(hql);
         query.setParameter("statusNames", activeStatusNames);
         query.setParameter("criterionId", certificationCriterionId);
-        return (Long) query.getSingleResult();
+        Long result = 0L;
+        try {
+            result = (Long) query.getSingleResult();
+        } catch (NoResultException ex) {
+            LOGGER.debug("0 active listings attest to criterion ID " + certificationCriterionId);
+        }
+        return result;
     }
 
     public List<CriterionListingCountStatisticDTO> findAll() {

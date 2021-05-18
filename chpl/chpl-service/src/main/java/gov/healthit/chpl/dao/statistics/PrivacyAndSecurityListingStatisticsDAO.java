@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
 import org.apache.commons.lang3.StringUtils;
@@ -56,19 +57,24 @@ public class PrivacyAndSecurityListingStatisticsDAO extends BaseDAOImpl {
     }
 
     public Long getListingCountWithPrivacyAndSecurityCriteria() {
-        String hql = "SELECT count(*) "
+        String hql = "SELECT count(listing.id) "
                 + "FROM CertifiedProductDetailsEntitySimple listing, CertificationResultEntity cre "
                 + "WHERE listing.id = cre.certifiedProductId "
                 + "AND listing.certificationStatusName IN (:statusNames) "
                 + "AND cre.deleted = false "
                 + "AND cre.certificationCriterionId IN (:criterionIds) "
                 + "AND cre.success = true "
-                + "AND listing.deleted = false "
-                + "GROUP BY listing.id";
+                + "AND listing.deleted = false ";
         Query query = entityManager.createQuery(hql);
         query.setParameter("statusNames", activeStatusNames);
         query.setParameter("criterionIds", privacyAndSecurityRequiredCriteriaIds);
-        return (Long) query.getSingleResult();
+        Long result = 0L;
+        try {
+            result = (Long) query.getSingleResult();
+        } catch (NoResultException ex) {
+            LOGGER.debug("0 active listings have privacy and security criteria.");
+        }
+        return result;
     }
 
     public Long getListingCountRequiringPrivacyAndSecurityCriteria() {
@@ -80,8 +86,7 @@ public class PrivacyAndSecurityListingStatisticsDAO extends BaseDAOImpl {
                 + "AND cre.deleted = false "
                 + "AND cre.certificationCriterionId IN (:privacyAndSecurityCriteriaIds) "
                 + "AND cre.success = true "
-                + "AND listing.deleted = false "
-                + "GROUP BY listing.id) "
+                + "AND listing.deleted = false ) "
                 + "INTERSECT "
                 + "(SELECT DISTINCT listing.id "
                 + "FROM CertifiedProductDetailsEntitySimple listing, CertificationResultEntity cre "
@@ -90,13 +95,18 @@ public class PrivacyAndSecurityListingStatisticsDAO extends BaseDAOImpl {
                 + "AND cre.deleted = false "
                 + "AND cre.certificationCriterionId IN (:privacyAndSecurityRequiredCriteriaIds) "
                 + "AND cre.success = false "
-                + "AND listing.deleted = false "
-                + "GROUP BY listing.id) ";
+                + "AND listing.deleted = false ) ";
         Query query = entityManager.createQuery(hql);
         query.setParameter("statusNames", activeStatusNames);
         query.setParameter("privacyAndSecurityCriteriaIds", privacyAndSecurityCriteriaIds);
         query.setParameter("privacyAndSecurityRequiredCriteriaIds", privacyAndSecurityRequiredCriteriaIds);
-        return (Long) query.getSingleResult();
+        Long result = 0L;
+        try {
+            result = (Long) query.getSingleResult();
+        } catch (NoResultException ex) {
+            LOGGER.debug("0 active listings require privacy and security criteria.");
+        }
+        return result;
     }
 
     public List<PrivacyAndSecurityListingStatisticDTO> findAll() {

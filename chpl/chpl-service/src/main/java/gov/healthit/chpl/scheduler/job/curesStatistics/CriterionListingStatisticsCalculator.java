@@ -43,6 +43,7 @@ public class CriterionListingStatisticsCalculator {
     }
 
     private CriterionListingCountStatisticDTO getStatisticForCriterion(CertificationCriterionDTO criterion, LocalDate statisticDate) {
+        LOGGER.info("Getting listing count for criterion id: " + criterion.getId() + ", number: " + criterion.getNumber());
         Long listingCount = criterionListingStatisticsDao.getListingCountForCriterion(criterion.getId());
         return CriterionListingCountStatisticDTO.builder()
                 .criterion(criterion)

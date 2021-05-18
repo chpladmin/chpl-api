@@ -31,23 +31,21 @@ public class ListingCuresStatusStatisticsDAO extends BaseDAOImpl {
     }
 
     public Long getListingCountWithCuresUpdateStatus() {
-        String hql = "SELECT count(*) "
+        String hql = "SELECT count(listing.id) "
                 + "FROM CertifiedProductDetailsEntitySimple listing "
                 + "WHERE listing.certificationStatusName IN (:statusNames) "
                 + "AND listing.curesUpdate = true "
-                + "AND listing.deleted = false "
-                + "GROUP BY listing.id";
+                + "AND listing.deleted = false ";
         Query query = entityManager.createQuery(hql);
         query.setParameter("statusNames", activeStatusNames);
         return (Long) query.getSingleResult();
     }
 
     public Long getTotalListingCount() {
-        String hql = "SELECT count(*) "
+        String hql = "SELECT count(listing.id) "
                 + "FROM CertifiedProductDetailsEntitySimple listing "
                 + "WHERE listing.certificationStatusName IN (:statusNames) "
-                + "AND listing.deleted = false "
-                + "GROUP BY listing.id";
+                + "AND listing.deleted = false ";
         Query query = entityManager.createQuery(hql);
         query.setParameter("statusNames", activeStatusNames);
         return (Long) query.getSingleResult();
@@ -86,7 +84,7 @@ public class ListingCuresStatusStatisticsDAO extends BaseDAOImpl {
             throws EntityCreationException, EntityRetrievalException {
         ListingCuresStatusStatisticEntity entity = new ListingCuresStatusStatisticEntity();
         entity.setCuresListingCount(dto.getCuresListingCount());
-        entity.setTotalListingsCount(entity.getTotalListingsCount());
+        entity.setTotalListingCount(dto.getTotalListingCount());
         entity.setStatisticDate(dto.getStatisticDate());
         entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
         entity.setLastModifiedDate(new Date());
