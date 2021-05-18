@@ -423,9 +423,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
                 toInsertNc.setPendingSurveillanceRequirementId(toInsertReq.getId());
                 toInsertNc.setResolution(nc.getResolution());
                 toInsertNc.setSitesPassed(nc.getSitesPassed());
-                if (nc.getStatus() != null) {
-                    toInsertNc.setStatus(nc.getStatus().getName());
-                }
+                toInsertNc.setNonConformityCloseDate(nc.getNonConformityCloseDate());
                 toInsertNc.setSummary(nc.getSummary());
                 toInsertNc.setTotalSites(nc.getTotalSites());
                 toInsertNc.setType(nc.getNonconformityType());

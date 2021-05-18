@@ -5,8 +5,6 @@ import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
@@ -37,7 +35,6 @@ import gov.healthit.chpl.domain.concept.JobTypeConcept;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityDocument;
-import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
@@ -72,11 +69,12 @@ import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceCreationValidator;
 import gov.healthit.chpl.validation.surveillance.SurveillanceUpdateValidator;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component
 public class PendingSurveillanceManager extends SecuredManager {
-    private static Logger LOGGER = LogManager.getLogger(PendingSurveillanceManager.class);
-    private static int SURV_THRESHOLD_DEFAULT = 50;
+    private static final int SURV_THRESHOLD_DEFAULT = 50;
     private JobTypeConcept allowedJobType = JobTypeConcept.SURV_UPLOAD;
 
     private Environment env;
@@ -94,6 +92,7 @@ public class PendingSurveillanceManager extends SecuredManager {
     private UserPermissionDAO userPermissionDAO;
     private CertifiedProductDAO cpDAO;
 
+    @SuppressWarnings("checkstyle:parameternumber")
     @Autowired
     public PendingSurveillanceManager(Environment env, FileUtils fileUtils,
             SurveillanceUploadManager survUploadManager, JobManager jobManager,
@@ -409,9 +408,7 @@ public class PendingSurveillanceManager extends SecuredManager {
                         nc.setSitesPassed(pnc.getSitesPassed());
                         nc.setSummary(pnc.getSummary());
                         nc.setTotalSites(pnc.getTotalSites());
-                        SurveillanceNonconformityStatus status = new SurveillanceNonconformityStatus();
-                        status.setName(pnc.getStatus());
-                        nc.setStatus(status);
+                        nc.setNonConformityCloseDate(pnc.getNonConformityCloseDate());
                         req.getNonconformities().add(nc);
                     }
                 }
@@ -616,16 +613,7 @@ public class PendingSurveillanceManager extends SecuredManager {
                         nc.setSummary(ncEntity.getSummary());
                         nc.setTotalSites(ncEntity.getTotalSites());
                         nc.setLastModifiedDate(ncEntity.getLastModifiedDate());
-                        if (ncEntity.getNonconformityStatus() != null) {
-                            SurveillanceNonconformityStatus status = new SurveillanceNonconformityStatus();
-                            status.setId(ncEntity.getNonconformityStatus().getId());
-                            status.setName(ncEntity.getNonconformityStatus().getName());
-                            nc.setStatus(status);
-                        } else {
-                            SurveillanceNonconformityStatus status = new SurveillanceNonconformityStatus();
-                            status.setId(ncEntity.getNonconformityStatusId());
-                            nc.setStatus(status);
-                        }
+                        nc.setNonConformityCloseDate(ncEntity.getNonConformityCloseDate());
                         req.getNonconformities().add(nc);
 
                         if (ncEntity.getDocuments() != null && ncEntity.getDocuments().size() > 0) {
