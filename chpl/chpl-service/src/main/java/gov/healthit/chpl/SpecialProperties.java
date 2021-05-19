@@ -33,15 +33,7 @@ public class SpecialProperties {
     }
 
     public Date getEffectiveRuleTimestamp() {
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-        Date curesEffectiveRuleDate = null;
-        try {
-            curesEffectiveRuleDate = sdf.parse(env.getProperty("cures.ruleEffectiveDate"));
-        } catch (ParseException e) {
-            LOGGER.error("Could not determine value of 'cures.ruleEffectiveDate'.", e);
-            return null;
-        }
-
+        Date curesEffectiveRuleDate = getEffectiveRuleDate();
         Calendar cal = Calendar.getInstance();
         cal.setTime(curesEffectiveRuleDate);
         cal.set(Calendar.HOUR_OF_DAY, 0);
