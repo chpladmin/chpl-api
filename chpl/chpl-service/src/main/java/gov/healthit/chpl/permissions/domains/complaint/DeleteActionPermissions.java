@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.ComplaintDAO;
-import gov.healthit.chpl.dto.ComplaintDTO;
+import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
@@ -34,7 +34,7 @@ public class DeleteActionPermissions extends ActionPermissions {
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             Long complaintId = (Long) obj;
             try {
-                ComplaintDTO complaint = complaintDAO.getComplaint(complaintId);
+                Complaint complaint = complaintDAO.getComplaint(complaintId);
                 return isAcbValidForCurrentUser(complaint.getCertificationBody().getId());
             } catch (EntityRetrievalException e) {
                 return false;

@@ -91,6 +91,7 @@ public class ListingDetailsUploadHandler {
                 .accessibilityStandards(accessibilityStandardsHandler.handle(headingRecord, listingRecords))
                 .qmsStandards(qmsHandler.handle(headingRecord, listingRecords))
                 .ics(icsHandler.handle(headingRecord, listingRecords))
+                .svapNoticeUrl(parseSvapNoticeUrl(headingRecord, listingRecords))
                 .cqmResults(cqmHandler.handle(headingRecord, listingRecords))
                 .measures(measureHandler.parseAsMeasures(headingRecord, listingRecords))
                 .sedReportFileLocation(parseSedReportLocationUrl(headingRecord, listingRecords))
@@ -218,6 +219,10 @@ public class ListingDetailsUploadHandler {
 
     private String parseTransparencyAttestationUrl(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         return uploadUtil.parseSingleRowField(Headings.K_1_URL, headingRecord, listingRecords);
+    }
+
+    private String parseSvapNoticeUrl(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+        return uploadUtil.parseSingleRowField(Headings.SVAP_NOTICE_URL, headingRecord, listingRecords);
     }
 
     private String parseSedReportLocationUrl(CSVRecord headingRecord, List<CSVRecord> listingRecords) {

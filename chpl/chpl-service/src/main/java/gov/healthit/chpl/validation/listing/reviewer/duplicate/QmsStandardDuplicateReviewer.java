@@ -42,7 +42,7 @@ public class QmsStandardDuplicateReviewer {
         List<String> warnings = new ArrayList<String>();
         for (CertifiedProductQmsStandard duplicate : duplicates) {
             String warning = errorMessageUtil.getMessage("listing.duplicateQmsStandard",
-                    duplicate.getQmsStandardName(),
+                    duplicate.getQmsStandardName() == null ? "" : duplicate.getQmsStandardName(),
                     duplicate.getApplicableCriteria() == null ? "" : duplicate.getApplicableCriteria(),
                     duplicate.getQmsModification() == null ? "" : duplicate.getQmsModification());
             warnings.add(warning);

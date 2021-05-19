@@ -20,7 +20,6 @@ import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
-import gov.healthit.chpl.dao.JobDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
@@ -74,7 +73,6 @@ import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
-import gov.healthit.chpl.dto.job.JobTypeDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
@@ -105,7 +103,6 @@ public class DimensionalDataManager {
     private QuarterDAO quarterDao;
     private ProductDAO productDao;
     private DeveloperDAO devDao;
-    private JobDAO jobDao;
     private MeasureDAO measureDao;
     private ListingMeasureDAO listingMeasureDao;
     private CQMCriterionDAO cqmCriterionDao;
@@ -120,7 +117,7 @@ public class DimensionalDataManager {
                                   TestDataDAO testDataDao, AccessibilityStandardDAO asDao, UcdProcessDAO ucdDao,
                                   QmsStandardDAO qmsDao, TargetedUserDAO tuDao, DeveloperStatusDAO devStatusDao,
                                   SurveillanceDAO survDao, UploadTemplateVersionDAO uploadTemplateDao, QuarterDAO quarterDao,
-                                  ProductDAO productDao, DeveloperDAO devDao, JobDAO jobDao, MeasureDAO measureDao,
+                                  ProductDAO productDao, DeveloperDAO devDao, MeasureDAO measureDao,
                                   ListingMeasureDAO listingMeasureDao, CQMCriterionDAO cqmCriterionDao,
                                   CertificationEditionDAO certEditionDao) {
         this.cacheableDimensionalDataManager = cacheableDimensionalDataManager;
@@ -143,23 +140,10 @@ public class DimensionalDataManager {
         this.quarterDao = quarterDao;
         this.productDao = productDao;
         this.devDao = devDao;
-        this.jobDao = jobDao;
         this.measureDao = measureDao;
         this.listingMeasureDao = listingMeasureDao;
         this.cqmCriterionDao = cqmCriterionDao;
         this.certEditionDao = certEditionDao;
-    }
-
-    @Transactional
-    @Cacheable(value = CacheNames.JOB_TYPES)
-    public Set<KeyValueModel> getJobTypes() {
-        LOGGER.debug("Getting all job types from the database (not cached).");
-        List<JobTypeDTO> jobTypes = jobDao.findAllTypes();
-        Set<KeyValueModel> results = new HashSet<KeyValueModel>();
-        for (JobTypeDTO dto : jobTypes) {
-            results.add(new KeyValueModel(dto.getId(), dto.getName(), dto.getDescription()));
-        }
-        return results;
     }
 
     @Transactional
