@@ -728,27 +728,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
 
-    @Cacheable(CacheNames.FIND_SURVEILLANCE_NONCONFORMITY_STATUS_TYPE)
-    public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(String type) {
-        LOGGER.debug("Searching for nonconformity status type '" + type + "'.");
-        if (StringUtils.isEmpty(type)) {
-            return null;
-        }
-        Query query = entityManager.createQuery(
-                "from NonconformityStatusEntity where UPPER(name) LIKE :name and deleted <> true",
-                NonconformityStatusEntity.class);
-        query.setParameter("name", type.toUpperCase());
-        List<NonconformityStatusEntity> matches = query.getResultList();
-
-        NonconformityStatusEntity resultEntity = null;
-        if (matches != null && matches.size() > 0) {
-            resultEntity = matches.get(0);
-            LOGGER.debug("Found nonconformity status type '" + type + "' having id '" + resultEntity.getId() + "'.");
-        }
-
-        SurveillanceNonconformityStatus result = convert(resultEntity);
-        return result;
-    }
 
     @Transactional(readOnly = true)
     public List<PendingSurveillanceEntity> getAllPendingSurveillance() {
