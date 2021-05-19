@@ -37,6 +37,10 @@ public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResu
     //format is start&end<char>start&
     private String surveillanceDates;
 
+    //delimited string of status change events
+    //format is statusDate1?statusName1&statusDate2?statusName2
+    private String statusEvents;
+
     private String apiDocumentation;
     private String serviceBaseUrlList;
 
@@ -48,5 +52,6 @@ public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResu
         this.surveillanceDates = other.getSurveillanceDates();
         this.apiDocumentation = other.getApiDocumentation();
         this.serviceBaseUrlList = other.getServiceBaseUrlList();
+        this.statusEvents = other.getStatusEvents();
     }
 }
