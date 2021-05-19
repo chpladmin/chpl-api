@@ -160,6 +160,7 @@ public class SurveillanceUploadManager extends SecuredManager {
                                     for (String error : errors) {
                                         pendingSurv.getErrorMessages().add(error);
                                     }
+                                    setNonConformityCloseDate(pendingSurv);
                                     pendingSurvs.add(pendingSurv);
                                 } catch (final InvalidArgumentsException ex) {
                                     handlerErrors.add(ex.getMessage());
@@ -183,6 +184,7 @@ public class SurveillanceUploadManager extends SecuredManager {
                         for (String error : errors) {
                             pendingSurv.getErrorMessages().add(error);
                         }
+                        setNonConformityCloseDate(pendingSurv);
                         pendingSurvs.add(pendingSurv);
                     } catch (final InvalidArgumentsException ex) {
                         handlerErrors.add(ex.getMessage());
@@ -231,7 +233,9 @@ public class SurveillanceUploadManager extends SecuredManager {
         List<String> errors = new ArrayList<String>();
         for (SurveillanceRequirement req : pendingSurv.getRequirements()) {
             for (SurveillanceNonconformity nc : req.getNonconformities()) {
-                if (nc.getStatus() != null && nc.getStatus().getName().equalsIgnoreCase(SurveillanceNonconformityStatus.CLOSED)) {
+                if (nc.getStatus() != null
+                		&& nc.getStatus().getName().equalsIgnoreCase(SurveillanceNonconformityStatus.CLOSED)
+                		&& nc.getCapEndDate() == null) {
                     errors.add(errorMessageUtil.getMessage("surveillance.nonconformity.closedStatusInvalid", pendingSurv.getCertifiedProduct().getChplProductNumber()));
                 }
             }
@@ -258,4 +262,16 @@ public class SurveillanceUploadManager extends SecuredManager {
         return errors;
     }
 
+    public Surveillance setNonConformityCloseDate(Surveillance pendingSurv) {
+        for (SurveillanceRequirement req : pendingSurv.getRequirements()) {
+            for (SurveillanceNonconformity nc : req.getNonconformities()) {
+                if (nc.getStatus() != null
+                	   && nc.getStatus().getName().equalsIgnoreCase(SurveillanceNonconformityStatus.CLOSED)
+                	   && nc.getCapEndDate() != null) {
+                    nc.setNonConformityCloseDate(nc.getCapEndDate());
+                }
+            }
+        }
+        return pendingSurv;
+    }
 }
