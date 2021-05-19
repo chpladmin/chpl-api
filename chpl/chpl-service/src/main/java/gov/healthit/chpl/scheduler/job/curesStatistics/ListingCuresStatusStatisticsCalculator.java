@@ -30,8 +30,11 @@ public class ListingCuresStatusStatisticsCalculator {
 
     @Transactional
     public ListingCuresStatusStatisticDTO calculateCurrentStatistics(LocalDate statisticDate) {
+        LOGGER.info("Calculating cures status statistics for " + statisticDate);
         Long curesListingsCount = listingCuresStatusStatisticsDao.getListingCountWithCuresUpdateStatus();
+        LOGGER.info("Found " + curesListingsCount + " listings with Cures designation.");
         Long totalListingsCount = listingCuresStatusStatisticsDao.getTotalListingCount();
+        LOGGER.info("Found " + totalListingsCount + " total listings.");
 
         return ListingCuresStatusStatisticDTO.builder()
                 .curesListingCount(curesListingsCount)

@@ -57,7 +57,7 @@ public class PrivacyAndSecurityListingStatisticsDAO extends BaseDAOImpl {
     }
 
     public Long getListingCountWithPrivacyAndSecurityCriteria() {
-        String hql = "SELECT count(listing.id) "
+        String hql = "SELECT count(distinct listing.id) "
                 + "FROM CertifiedProductDetailsEntitySimple listing, CertificationResultEntity cre "
                 + "WHERE listing.id = cre.certifiedProductId "
                 + "AND listing.certificationStatusName IN (:statusNames) "
@@ -78,24 +78,24 @@ public class PrivacyAndSecurityListingStatisticsDAO extends BaseDAOImpl {
     }
 
     public Long getListingCountRequiringPrivacyAndSecurityCriteria() {
-        String hql = "SELECT count(*) FROM "
-                + "(SELECT DISTINCT listing.id "
+        String hql = "SELECT count(distinct listing.id) "
                 + "FROM CertifiedProductDetailsEntitySimple listing, CertificationResultEntity cre "
                 + "WHERE listing.id = cre.certifiedProductId "
                 + "AND listing.certificationStatusName IN (:statusNames) "
                 + "AND cre.deleted = false "
                 + "AND cre.certificationCriterionId IN (:privacyAndSecurityCriteriaIds) "
                 + "AND cre.success = true "
-                + "AND listing.deleted = false ) "
-                + "INTERSECT "
-                + "(SELECT DISTINCT listing.id "
-                + "FROM CertifiedProductDetailsEntitySimple listing, CertificationResultEntity cre "
-                + "WHERE listing.id = cre.certifiedProductId "
-                + "AND listing.certificationStatusName IN (:statusNames) "
-                + "AND cre.deleted = false "
-                + "AND cre.certificationCriterionId IN (:privacyAndSecurityRequiredCriteriaIds) "
-                + "AND cre.success = false "
-                + "AND listing.deleted = false ) ";
+                + "AND listing.deleted = false "
+                + "AND listing.id IN ("
+                    + "SELECT distinct listing2.id "
+                    + "FROM CertifiedProductDetailsEntitySimple listing2, CertificationResultEntity cre2 "
+                    + "WHERE listing2.id = cre2.certifiedProductId "
+                    + "AND listing2.certificationStatusName IN (:statusNames) "
+                    + "AND cre2.deleted = false "
+                    + "AND cre2.certificationCriterionId IN (:privacyAndSecurityRequiredCriteriaIds) "
+                    + "AND cre2.success = false "
+                    + "AND listing2.deleted = false "
+                + ")";
         Query query = entityManager.createQuery(hql);
         query.setParameter("statusNames", activeStatusNames);
         query.setParameter("privacyAndSecurityCriteriaIds", privacyAndSecurityCriteriaIds);

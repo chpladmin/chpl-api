@@ -30,8 +30,11 @@ public class PrivacyAndSecurityListingStatisticsCalculator {
 
     @Transactional
     public PrivacyAndSecurityListingStatisticDTO calculateCurrentStatistics(LocalDate statisticDate) {
+        LOGGER.info("Calculating privacy and security statistics for " + statisticDate);
         Long hasPrivacyAndSecurityCriteriaCount = privacyAndSecurityListingStatisticsDao.getListingCountWithPrivacyAndSecurityCriteria();
+        LOGGER.info("Found " + hasPrivacyAndSecurityCriteriaCount + " listings with P&S criteria.");
         Long requiresPrivacyAndSecurityCriteriaCount = privacyAndSecurityListingStatisticsDao.getListingCountRequiringPrivacyAndSecurityCriteria();
+        LOGGER.info("Found " + requiresPrivacyAndSecurityCriteriaCount + " listings requiring P&S criteria.");
 
         return PrivacyAndSecurityListingStatisticDTO.builder()
                 .listingsWithPrivacyAndSecurityCount(hasPrivacyAndSecurityCriteriaCount)

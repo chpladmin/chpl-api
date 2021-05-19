@@ -31,7 +31,7 @@ public class ListingCuresStatusStatisticsDAO extends BaseDAOImpl {
     }
 
     public Long getListingCountWithCuresUpdateStatus() {
-        String hql = "SELECT count(listing.id) "
+        String hql = "SELECT count(distinct listing.id) "
                 + "FROM CertifiedProductDetailsEntitySimple listing "
                 + "WHERE listing.certificationStatusName IN (:statusNames) "
                 + "AND listing.curesUpdate = true "
@@ -42,7 +42,7 @@ public class ListingCuresStatusStatisticsDAO extends BaseDAOImpl {
     }
 
     public Long getTotalListingCount() {
-        String hql = "SELECT count(listing.id) "
+        String hql = "SELECT count(distinct listing.id) "
                 + "FROM CertifiedProductDetailsEntitySimple listing "
                 + "WHERE listing.certificationStatusName IN (:statusNames) "
                 + "AND listing.deleted = false ";

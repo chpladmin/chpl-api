@@ -33,7 +33,7 @@ public class CriterionListingStatisticsDAO extends BaseDAOImpl {
     }
 
     public Long getListingCountForCriterion(Long certificationCriterionId) {
-        String hql = "SELECT count(listing.id) "
+        String hql = "SELECT count(distinct listing.id) "
                 + "FROM CertifiedProductDetailsEntitySimple listing, CertificationResultEntity cre "
                 + "WHERE listing.id = cre.certifiedProductId "
                 + "AND listing.certificationStatusName IN (:statusNames) "
