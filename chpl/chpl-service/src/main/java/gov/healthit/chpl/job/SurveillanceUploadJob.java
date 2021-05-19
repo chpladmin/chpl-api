@@ -141,8 +141,8 @@ public class SurveillanceUploadJob extends RunnableJob {
                                             SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading,
                                                     rows);
                                             Surveillance pendingSurv = handler.handle();
-                                            List<String> errors = survUploadManager
-                                                    .checkUploadedSurveillanceOwnership(pendingSurv);
+                                            List<String> errors = survUploadManager.checkUploadedSurveillanceOwnership(pendingSurv);
+                                            errors.addAll(survUploadManager.checkNonConformityStatusAndCloseDate(pendingSurv));
                                             // Add any errors that were found when getting the Surveillance
                                             errors.addAll(pendingSurv.getErrorMessages());
 
