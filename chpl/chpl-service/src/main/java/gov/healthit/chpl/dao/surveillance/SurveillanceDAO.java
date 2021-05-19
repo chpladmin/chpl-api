@@ -818,16 +818,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
         return result;
     }
 
-    private SurveillanceNonconformityStatus convert(NonconformityStatusEntity entity) {
-        SurveillanceNonconformityStatus result = null;
-        if (entity != null) {
-            result = new SurveillanceNonconformityStatus();
-            result.setId(entity.getId());
-            result.setName(entity.getName());
-        }
-        return result;
-    }
-
     private void populateSurveillanceEntity(SurveillanceEntity to, Surveillance from)
             throws UserPermissionRetrievalException {
         if (from.getCertifiedProduct() != null) {
