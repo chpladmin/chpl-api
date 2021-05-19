@@ -30,6 +30,7 @@ public class CertificationCriterionService {
 
     private Map<Long, CertificationCriterion> criteriaByIdMap = new HashMap<Long, CertificationCriterion>();
     private Map<String, List<CertificationCriterion>> criteriaByNumberMap = new HashMap<String, List<CertificationCriterion>>();
+    private Map<CertificationCriterion, CertificationCriterion> originalToCuresCriteriaMap = new HashMap<CertificationCriterion, CertificationCriterion>();
     private List<String> referenceSortingCriteriaList = new ArrayList<String>();
 
     @Autowired
@@ -45,8 +46,27 @@ public class CertificationCriterionService {
                 .collect(Collectors.toMap(CertificationCriterion::getId, cc -> cc));
         criteriaByNumberMap = criteriaByIdMap.values().stream()
                 .collect(Collectors.groupingBy(CertificationCriterion::getNumber));
-
         referenceSortingCriteriaList = getReferenceSortingCriteriaList();
+        initOriginalToCuresCriteriaMap();
+    }
+
+    private void initOriginalToCuresCriteriaMap() {
+        originalToCuresCriteriaMap.put(get("criterion.170_315_b_1_old"), get("criterion.170_315_b_1_cures"));
+        originalToCuresCriteriaMap.put(get("criterion.170_315_b_2_old"), get("criterion.170_315_b_2_cures"));
+        originalToCuresCriteriaMap.put(get("criterion.170_315_b_3_old"), get("criterion.170_315_b_3_cures"));
+        originalToCuresCriteriaMap.put(get("criterion.170_315_b_7_old"), get("criterion.170_315_b_7_cures"));
+        originalToCuresCriteriaMap.put(get("criterion.170_315_b_8_old"), get("criterion.170_315_b_8_cures"));
+        originalToCuresCriteriaMap.put(get("criterion.170_315_b_9_old"), get("criterion.170_315_b_9_cures"));
+        originalToCuresCriteriaMap.put(get("criterion.170_315_b_8"), get("criterion.170_315_b_10"));
+        originalToCuresCriteriaMap.put(get("criterion.170_315_c_3_old"), get("criterion.170_315_c_3_cures"));
+        originalToCuresCriteriaMap.put(get("criterion.170_315_d_2_old"), get("criterion.170_315_d_2_cures"));
+        originalToCuresCriteriaMap.put(get("criterion.170_315_d_3_old"), get("criterion.170_315_d_3_cures"));
+        originalToCuresCriteriaMap.put(get("criterion.170_315_d_10_old"), get("criterion.170_315_d_10_cures"));
+        originalToCuresCriteriaMap.put(get("criterion.170_315_e_1_old"), get("criterion.170_315_e_1_cures"));
+        originalToCuresCriteriaMap.put(get("criterion.170_315_f_5_old"), get("criterion.170_315_f_5_cures"));
+        originalToCuresCriteriaMap.put(get("criterion.170_315_g_6_old"), get("criterion.170_315_g_6_cures"));
+        originalToCuresCriteriaMap.put(get("criterion.170_315_g_9_old"), get("criterion.170_315_g_9_cures"));
+        originalToCuresCriteriaMap.put(get("criterion.170_315_g_8"), get("criterion.170_315_g_10"));
     }
 
     public CertificationCriterion get(Long certificationCriterionId) {
@@ -63,6 +83,10 @@ public class CertificationCriterionService {
 
     public List<CertificationCriterion> getByNumber(String certificationCriterionNumber) {
         return criteriaByNumberMap.get(certificationCriterionNumber);
+    }
+
+    public Map<CertificationCriterion, CertificationCriterion> getOriginalToCuresCriteriaMap() {
+        return originalToCuresCriteriaMap;
     }
 
     public int sortCriteria(CertificationCriterionDTO c1, CertificationCriterionDTO c2) {

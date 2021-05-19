@@ -1,0 +1,125 @@
+package gov.healthit.chpl.dao.statistics;
+
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.persistence.Query;
+
+import org.springframework.stereotype.Repository;
+
+import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.dto.statistics.CuresCriterionUpgradedWithoutOriginalListingStatisticDTO;
+import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntitySimple;
+import gov.healthit.chpl.entity.statistics.CuresCriterionUpgradedWithoutOriginalListingStatisticEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
+
+@Repository("curesCriterionUpgradedWithoutOriginalListingStatisticsDAO")
+public class CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO extends BaseDAOImpl {
+    private List<String> activeStatusNames;
+
+    public CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO() {
+        activeStatusNames = Stream.of(CertificationStatusType.Active.getName(),
+                CertificationStatusType.SuspendedByAcb.getName(),
+                CertificationStatusType.SuspendedByOnc.getName())
+                .collect(Collectors.toList());
+    }
+
+    public List<Long> getListingIdsAttestingToCriterion(Long criterionId) {
+        Query query = entityManager.createQuery("SELECT listing "
+                + "FROM CertifiedProductDetailsEntitySimple listing, CertificationResultEntity cre "
+                + "WHERE listing.id = cre.certifiedProductId "
+                + "AND listing.certificationStatusName IN (:statusNames) "
+                + "AND cre.deleted = false "
+                + "AND cre.certificationCriterionId = :criterionId "
+                + "AND cre.success = true "
+                + "AND listing.deleted = false ",
+                CertifiedProductDetailsEntitySimple.class);
+        query.setParameter("statusNames", activeStatusNames);
+        query.setParameter("criterionId", criterionId);
+        List<CertifiedProductDetailsEntitySimple> results = query.getResultList();
+        return results.stream()
+                .map(result -> result.getId())
+                .collect(Collectors.toList());
+    }
+
+    public List<CuresCriterionUpgradedWithoutOriginalListingStatisticDTO> findAll() {
+        List<CuresCriterionUpgradedWithoutOriginalListingStatisticEntity> entities = this.findAllEntities();
+        return entities.stream()
+                .map(entity -> entity.toDto())
+                .collect(Collectors.toList());
+    }
+
+    public List<CuresCriterionUpgradedWithoutOriginalListingStatisticDTO> getStatisticsForDate(LocalDate statisticDate) {
+        Query query = entityManager.createQuery("SELECT stats "
+                + "FROM CuresCriterionUpgradedWithoutOriginalListingStatisticEntity stats "
+                + "LEFT OUTER JOIN FETCH stats.certificationCriterion cce "
+                + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+                + "WHERE (stats.deleted = false) "
+                + "AND stats.statisticDate = :statisticDate ",
+                CuresCriterionUpgradedWithoutOriginalListingStatisticEntity.class);
+        query.setParameter("statisticDate", statisticDate);
+        List<CuresCriterionUpgradedWithoutOriginalListingStatisticEntity> entities = query.getResultList();
+        return entities.stream()
+                .map(entity -> entity.toDto())
+                .collect(Collectors.toList());
+    }
+
+    public void delete(Long id) throws EntityRetrievalException {
+        CuresCriterionUpgradedWithoutOriginalListingStatisticEntity toDelete = getEntityById(id);
+        if (toDelete != null) {
+            toDelete.setDeleted(true);
+            toDelete.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
+            update(toDelete);
+        }
+    }
+
+    public void create(CuresCriterionUpgradedWithoutOriginalListingStatisticDTO dto)
+            throws EntityCreationException, EntityRetrievalException {
+        CuresCriterionUpgradedWithoutOriginalListingStatisticEntity entity = new CuresCriterionUpgradedWithoutOriginalListingStatisticEntity();
+        entity.setListingCount(dto.getListingsUpgradedWithoutAttestingToOriginalCount());
+        entity.setCertificationCriterionId(dto.getCuresCriterion().getId());
+        entity.setStatisticDate(dto.getStatisticDate());
+        entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
+        entity.setLastModifiedDate(new Date());
+        entity.setCreationDate(new Date());
+        entity.setDeleted(false);
+
+        create(entity);
+    }
+
+    private List<CuresCriterionUpgradedWithoutOriginalListingStatisticEntity> findAllEntities() {
+        Query query = entityManager.createQuery("SELECT stats "
+                + "FROM CuresCriterionUpgradedWithoutOriginalListingStatisticEntity stats "
+                + "LEFT OUTER JOIN FETCH stats.certificationCriterion cce "
+                + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+                + "WHERE (stats.deleted = false)",
+                CuresCriterionUpgradedWithoutOriginalListingStatisticEntity.class);
+        return query.getResultList();
+    }
+
+    private CuresCriterionUpgradedWithoutOriginalListingStatisticEntity getEntityById(Long id) throws EntityRetrievalException {
+        CuresCriterionUpgradedWithoutOriginalListingStatisticEntity entity = null;
+        Query query = entityManager.createQuery("SELECT stats "
+                + "FROM CuresCriterionUpgradedWithoutOriginalListingStatisticEntity stats "
+                + "LEFT OUTER JOIN FETCH stats.certificationCriterion cce "
+                + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+                + "WHERE (stats.deleted = false) "
+                + "AND (stats.id = :id)",
+                CuresCriterionUpgradedWithoutOriginalListingStatisticEntity.class);
+        query.setParameter("id", id);
+        List<CuresCriterionUpgradedWithoutOriginalListingStatisticEntity> result = query.getResultList();
+
+        if (result.size() == 1) {
+            entity = result.get(0);
+        } else {
+            throw new EntityRetrievalException("Data error. Did not find only one entity.");
+        }
+        return entity;
+    }
+}

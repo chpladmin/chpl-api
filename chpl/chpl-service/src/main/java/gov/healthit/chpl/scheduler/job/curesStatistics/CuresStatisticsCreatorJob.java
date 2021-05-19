@@ -15,6 +15,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dto.statistics.CriterionListingCountStatisticDTO;
+import gov.healthit.chpl.dto.statistics.CuresCriterionUpgradedWithoutOriginalListingStatisticDTO;
 import gov.healthit.chpl.dto.statistics.ListingCuresStatusStatisticDTO;
 import gov.healthit.chpl.dto.statistics.PrivacyAndSecurityListingStatisticDTO;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
@@ -31,6 +32,9 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
     private CriterionListingStatisticsCalculator criterionListingStatisticsCalculator;
 
     @Autowired
+    private CuresCriterionActivityStatisticsCalculator curesCriterionActivityStatisticsCalculator;
+
+    @Autowired
     private ListingCuresStatusStatisticsCalculator listingCuresStatusStatisticsCalculator;
 
     @Autowired
@@ -45,9 +49,10 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
         LocalDate yesterday = today.minus(Period.ofDays(ONE_DAY));
         LOGGER.info("Calculating statistics for " + yesterday);
 
-        setCriterionListingCountStatisticsForDate(yesterday);
-        setListingCuresStatusStatisticsForDate(yesterday);
-        setPrivacyAndSecurityListingStatisticsForDate(yesterday);
+        //setCriterionListingCountStatisticsForDate(yesterday);
+        setCuresCriterionActivityStatisticsForDate(yesterday);
+        //setListingCuresStatusStatisticsForDate(yesterday);
+        //setPrivacyAndSecurityListingStatisticsForDate(yesterday);
         //TODO: other statistic types
 
         LOGGER.info("*****Cures Reporting Statistics Job is complete.*****");
@@ -64,6 +69,21 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
                 }
                 List<CriterionListingCountStatisticDTO> currentStatistics = criterionListingStatisticsCalculator.calculateCurrentStatistics(statisticDate);
                 criterionListingStatisticsCalculator.save(currentStatistics);
+            }
+        });
+    }
+
+    private void setCuresCriterionActivityStatisticsForDate(LocalDate statisticDate) {
+        TransactionTemplate txTemplate = new TransactionTemplate(txManager);
+        txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        txTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                if (curesCriterionActivityStatisticsCalculator.hasStatisticsForDate(statisticDate)) {
+                    curesCriterionActivityStatisticsCalculator.deleteStatisticsForDate(statisticDate);
+                }
+                List<CuresCriterionUpgradedWithoutOriginalListingStatisticDTO> currentStatistics = curesCriterionActivityStatisticsCalculator.calculateCurrentStatistics(statisticDate);
+                curesCriterionActivityStatisticsCalculator.save(currentStatistics);
             }
         });
     }
