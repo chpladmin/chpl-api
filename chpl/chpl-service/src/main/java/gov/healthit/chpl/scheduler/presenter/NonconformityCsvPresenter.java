@@ -17,27 +17,15 @@ import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.service.CertificationCriterionService;
 
-/**
- * Writes out only surveillance records that resulted in nonconformities.
- *
- * @author kekey
- *
- */
 public class NonconformityCsvPresenter extends SurveillanceCsvPresenter {
     private static final Logger LOGGER = LogManager.getLogger(NonconformityCsvPresenter.class);
 
-    /**
-     * Constructor with properties.
-     * 
-     * @param props
-     *            the properties file
-     */
     public NonconformityCsvPresenter(Environment env, CertificationCriterionService criterionService) {
         super(env, criterionService);
     }
 
     @Override
-    public void presentAsFile(final File file, final List<CertifiedProductSearchDetails> cpList) {
+    public void presentAsFile(File file, List<CertifiedProductSearchDetails> cpList) {
         try (FileWriter writer = new FileWriter(file);
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
             writer.write('\ufeff');

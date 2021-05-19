@@ -46,9 +46,6 @@ public class SurveillanceNonconformityEntity {
     @Column(name = "nonconformity_type")
     private String type;
 
-    @Column(name = "nonconformity_status_id")
-    private Long nonconformityStatusId;
-
     @Column(name = "date_of_determination")
     private Date dateOfDetermination;
 

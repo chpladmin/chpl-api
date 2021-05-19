@@ -25,8 +25,7 @@ public class NonconformityOpenCapCompleteComplianceChecker implements RuleCompli
     @Override
     public Date check(CertifiedProductSearchDetails cp, Surveillance surv, SurveillanceNonconformity nc) {
         Date result = null;
-        if (nc.getNonConformityCloseDate() == null  // SurveillanceNonconformityStatus.OPEN.getName())
-                && nc.getCapEndDate() != null) {
+        if (nc.getNonConformityCloseDate() == null&& nc.getCapEndDate() != null) {
             LocalDateTime capCompleteDate = null;
             capCompleteDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getCapEndDate().getTime()),
                     ZoneId.systemDefault());
