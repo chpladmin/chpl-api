@@ -626,6 +626,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
                 .openSurveillanceNonConformityCount(entity.getOpenSurveillanceNonConformityCount())
                 .closedSurveillanceNonConformityCount(entity.getClosedSurveillanceNonConformityCount())
                 .surveillanceDates(entity.getSurveillanceDates())
+                .statusEvents(entity.getStatusEvents())
                 .criteriaMet(entity.getCerts())
                 .cqmsMet(entity.getCqms())
                 .previousDevelopers(entity.getPreviousDevelopers())
