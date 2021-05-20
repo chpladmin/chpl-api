@@ -76,6 +76,7 @@ public class SurveillanceCsvPresenter {
         result.add("SURVEILLED_REQUIREMENT_TYPE");
         result.add("SURVEILLED_REQUIREMENT");
         result.add("SURVEILLANCE_RESULT");
+        result.add("NON_CONFORMITY_TYPE");
         result.add("NON_CONFORMITY_CLOSE_DATE");
         result.add("DATE_OF_DETERMINATION");
         result.add("CAP_APPROVAL_DATE");
