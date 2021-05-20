@@ -78,24 +78,27 @@ public class CuresCriterionActivityStatisticsCalculator {
     }
 
     private boolean didListingRemoveAttestationToCriterionDuringTimeInterval(Long listingId, CertificationCriterion criterion, Date startDate, Date endDate) {
-        LOGGER.info("Determining if listing ID " + listingId + " removed attestation to " + criterion.getId() + " between " + startDate + " and " + endDate);
+        LOGGER.info("Determining if listing ID " + listingId + " removed attestation for " + criterion.getId() + " between " + startDate + " and " + endDate);
         List<ActivityDTO> listingActivities = activityDao.findByObjectId(listingId, ActivityConcept.CERTIFIED_PRODUCT, startDate, endDate);
         for (ActivityDTO listingActivity : listingActivities) {
             CertifiedProductSearchDetails originalListingInActivity = getListing(listingActivity.getOriginalData());
             CertifiedProductSearchDetails updatedListingInActivity = getListing(listingActivity.getNewData());
-            CertificationResult originalListingCertResultForCriterion
-                = originalListingInActivity.getCertificationResults().stream()
+            if (originalListingInActivity != null && updatedListingInActivity != null) {
+                CertificationResult originalListingCertResultForCriterion
+                    = originalListingInActivity.getCertificationResults().stream()
+                        .filter(certResult -> certResult.getCriterion() != null && certResult.getCriterion().getId().equals(criterion.getId()))
+                        .findAny().get();
+                CertificationResult updatedListingCertResultForCriterion
+                = updatedListingInActivity.getCertificationResults().stream()
                     .filter(certResult -> certResult.getCriterion() != null && certResult.getCriterion().getId().equals(criterion.getId()))
                     .findAny().get();
-            CertificationResult updatedListingCertResultForCriterion
-            = updatedListingInActivity.getCertificationResults().stream()
-                .filter(certResult -> certResult.getCriterion() != null && certResult.getCriterion().getId().equals(criterion.getId()))
-                .findAny().get();
-            if (originalListingCertResultForCriterion.isSuccess() && !updatedListingCertResultForCriterion.isSuccess()) {
-                LOGGER.info("Listing ID " + listingId + " unattested to criterion " + criterion.getId() +  " on " + listingActivity.getActivityDate());
-                return true;
+                if (originalListingCertResultForCriterion.isSuccess() && !updatedListingCertResultForCriterion.isSuccess()) {
+                    LOGGER.info("Listing ID " + listingId + " unattested to criterion " + criterion.getId() +  " on " + listingActivity.getActivityDate());
+                    return true;
+                }
             }
         }
+        LOGGER.info("Listing ID " + listingId + " never unattested to criterion " + criterion.getId() +  " during the dates specified.");
         return false;
     }
 
