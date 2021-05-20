@@ -1,43 +1,1077 @@
 {
 	"info": {
-		"_postman_id": "369a0b43-fa49-44cf-a709-ec0cc0a052fa",
-		"name": "testing-lab-controller",
+		"name": "testing-lab-controller Copy",
+		"description": "This is CHPL test collection for ATL controller",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "{{url}}/rest/atls - without API Key",
+			"name": "AnonymousUsers",
+			"item": [
+				{
+					"name": "GET  /atls/{atlId}/users - anonymous",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect anonymous user to receive 401 unauthorized response on request to get list of ATL users\", () => {",
+									"  pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"expect anonymous user to receive access denied error on request to get list of ATL users\", () => {",
+									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/atls/1/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"atls",
+								"1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET  /atls/{atlId} -  anonymous",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect anonymous user to get Status code 200 in response to get details of a specific ATL\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"expect anonymous user to get details of a specific ATL as requested\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Drummond Group\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/atls/3?api_key={{apiKey}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"atls",
+								"3"
+							],
+							"query": [
+								{
+									"key": "api_key",
+									"value": "{{apiKey}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT /atls/{atlId} -  anonymous",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect anonymous user to receive 401 unauthorized response on ATL edit request\", () => {",
+									"  pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"expect anonymous user to receive access denied error on ATL edit request\", () => {",
+									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"id\":1,\"atlCode\":\"02\",\"name\":\"UL LLC\",\"website\":\"https://testwebsite.com\",\"address\":{\"addressId\":1,\"line1\":\"address\",\"line2\":null,\"city\":\"city\",\"state\":\"state\",\"zipcode\":\"111111\",\"country\":\"country\"},\"retired\":false,\"retirementDate\":null}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/atls/1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"atls",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /atls -  anonymous",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect anonymous user to receive 401 unauthorized response on create new ATL request\", () => {",
+									"  pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"expect anonymous user to receive access denied error on create new ATL request\", () => {",
+									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "API-KEY",
+								"type": "text",
+								"value": "{{apiKey}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\":\"Test atl\",\"website\":\"https://www.testweb.com\",\"address\":{\"line1\":\"address\",\"city\":\"city\",\"line2\":\"address2\",\"state\":\"MD\",\"zipcode\":\"11111\",\"country\":\"Country\"}}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/atls",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"atls"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /atls -anonymous",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect Status code 200 in response to GET ATL list request by anonymous user\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"expect to see all existing ATL organizations details in response to GET ATL list request by anonymous user\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"UL LLC\");",
+									"    pm.expect(pm.response.text()).to.include(\"ICSA Labs\");",
+									"    pm.expect(pm.response.text()).to.include(\"SLI Compliance\");",
+									"    pm.expect(pm.response.text()).to.include(\"Drummond Group\");",
+									"    pm.expect(pm.response.text()).to.include(\"National Committee for Quality Assurance (NCQA)\");",
+									"    pm.expect(pm.response.text()).to.include(\"National Technical Systems\");",
+									"    pm.expect(pm.response.text()).to.include(\"CCHIT\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/atls?api_key={{apiKey}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"atls"
+							],
+							"query": [
+								{
+									"key": "api_key",
+									"value": "{{apiKey}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ROLE_ONC",
+			"item": [
+				{
+					"name": "GET  /atls/{atlId}/users - ONC",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect ONC user to receive status code 200 in response on request to get list of ATL users\", () => {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"expect ONC user to receive list of ATL users associated with specific ATL\", () => {",
+									"     pm.test(\"expect response to have user properties\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData.users[0].role).to.eql(\"ROLE_ATL\");",
+									"        pm.expect(jsonData.users[0].fullName).to.be.a('String');",
+									"        pm.expect(jsonData.users[0].email).to.be.a('String');",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/atls/1/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"atls",
+								"1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET / atls/{atlId}- ONC",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect ONC user to get Status code 200 in response to get details of a specific ATL\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"expect ONC user to receive ATL details in response\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData.name).to.eql(\"Drummond Group\");",
+									"        pm.expect(jsonData.atlCode).to.eql(\"04\");",
+									"    });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/atls/3",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"atls",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /atls - ONC",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect to get Status code 200 in response to GET ATL list request by ONC user\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"expect to see all existing ATL organizations details in response to GET ATL list request by ONC user\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"UL LLC\");",
+									"    pm.expect(pm.response.text()).to.include(\"ICSA Labs\");",
+									"    pm.expect(pm.response.text()).to.include(\"SLI Compliance\");",
+									"    pm.expect(pm.response.text()).to.include(\"Drummond Group\");",
+									"    pm.expect(pm.response.text()).to.include(\"National Committee for Quality Assurance (NCQA)\");",
+									"    pm.expect(pm.response.text()).to.include(\"National Technical Systems\");",
+									"    pm.expect(pm.response.text()).to.include(\"CCHIT\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "API-KEY",
+								"type": "text",
+								"value": "{{apiKey}}"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/atls",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"atls"
+							]
+						}
+					},
+					"response": []
+				}
+			],
 			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var ReqBody= {",
+							"        userName:pm.environment.get(\"usernameONC\"),password:pm.environment.get(\"passwordONC\")",
+							"    };",
+							"pm.sendRequest({",
+							"    url: pm.environment.get(\"authurl\"),",
+							"    method: \"POST\",",
+							"    header: {",
+							"        \"Content-Type\": \"application/json\",",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")",
+							"    },",
+							"    body: JSON.stringify(ReqBody)",
+							"}, function (err, response) {",
+							"   var jsonData = response.json();",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])",
+							"});"
+						]
+					}
+				},
 				{
 					"listen": "test",
 					"script": {
-						"id": "8bee3ebd-e566-4f90-8bbc-63bdc093f32e",
+						"type": "text/javascript",
 						"exec": [
-							"pm.test(\"Missing API Key returns Status code 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});"
-						],
-						"type": "text/javascript"
+							""
+						]
 					}
 				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{url}}/rest/atls",
-					"host": [
-						"{{url}}"
+			]
+		},
+		{
+			"name": "ROLE_ONC_STAFF",
+			"item": [
+				{
+					"name": "GET  /atls/{atlId}/users - ONC STAFF",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect ONC STAFF user to receive 401 unauthorized response on request to get a list of ATL users\", () => {",
+									"  pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"expect ONC STAFF user to receive access denied error on request to get list of ATL users\", () => {",
+									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
 					],
-					"path": [
-						"rest",
-						"atls"
-					]
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/atls/1/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"atls",
+								"1",
+								"users"
+							]
+						}
+					},
+					"response": []
 				},
-				"description": "API Requests without api key gives status : 400"
-			},
-			"response": []
+				{
+					"name": "GET  /atls/{atlId} -  ONC STAFF",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect ONC STAFF user to get Status code 200 in response to get details of a specific ATL\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"expect ONC STAFF user to get details of a specific ATL as requested\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Drummond Group\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/atls/3",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"atls",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT /atls/{atlId} -  ONC STAFF",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect ONC STAFF user to receive 401 unauthorized response on ATL edit request\", () => {",
+									"  pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"expect ONC STAFF user to receive access denied error on ATL edit request\", () => {",
+									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"id\":1,\"atlCode\":\"02\",\"name\":\"UL LLC\",\"website\":\"https://testwebsite.com\",\"address\":{\"addressId\":1,\"line1\":\"address\",\"line2\":null,\"city\":\"city\",\"state\":\"state\",\"zipcode\":\"111111\",\"country\":\"country\"},\"retired\":false,\"retirementDate\":null}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/atls/1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"atls",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /atls -  ONC STAFF",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect ONC STAFF user to receive 401 unauthorized response on create new ATL request\", () => {",
+									"  pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"expect ONC STAFF user to receive access denied error on create new ATL request\", () => {",
+									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "API-KEY",
+								"type": "text",
+								"value": "{{apiKey}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\":\"Test atl\",\"website\":\"https://www.testweb.com\",\"address\":{\"line1\":\"address\",\"city\":\"city\",\"line2\":\"address2\",\"state\":\"MD\",\"zipcode\":\"11111\",\"country\":\"Country\"}}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/atls",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"atls"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /atls - ONC STAFF",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect Status code 200 in response to GET ATL list request by ONC STAFF user\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"expect to see all existing ATL organizations details in response to GET ATL list request by ONC STAFF user\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"UL LLC\");",
+									"    pm.expect(pm.response.text()).to.include(\"ICSA Labs\");",
+									"    pm.expect(pm.response.text()).to.include(\"SLI Compliance\");",
+									"    pm.expect(pm.response.text()).to.include(\"Drummond Group\");",
+									"    pm.expect(pm.response.text()).to.include(\"National Committee for Quality Assurance (NCQA)\");",
+									"    pm.expect(pm.response.text()).to.include(\"National Technical Systems\");",
+									"    pm.expect(pm.response.text()).to.include(\"CCHIT\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/atls",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"atls"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var ReqBody= {",
+							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")",
+							"    };",
+							"pm.sendRequest({",
+							"    url: pm.environment.get(\"authurl\"),",
+							"    method: \"POST\",",
+							"    header: {",
+							"        \"Content-Type\": \"application/json\",",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")",
+							"    },",
+							"    body: JSON.stringify(ReqBody)",
+							"}, function (err, response) {",
+							"   var jsonData = response.json();",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "ROLE_ACB",
+			"item": [
+				{
+					"name": "GET  /atls/{atlId}/users - ACB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect ACB user to receive 401 unauthorized response on request to get a list of ATL users\", () => {",
+									"  pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"expect ACB user to receive access denied error on request to get list of ATL users\", () => {",
+									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "API-KEY",
+								"type": "text",
+								"value": "{{apiKey}}"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/atls/1/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"atls",
+								"1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET  /atls/{atlId} -  ACB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect ACB user to get Status code 200 in response to get details of a specific ATL\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"expect ACB user to get details of a specific ATL as requested\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Drummond Group\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "API-KEY",
+								"type": "text",
+								"value": "{{apiKey}}"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/atls/3",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"atls",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT /atls/{atlId} -  ACB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect ACB user to receive 401 unauthorized response on ATL edit request\", () => {",
+									"  pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"expect ACB user to receive access denied error on ATL edit request\", () => {",
+									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "API-KEY",
+								"type": "text",
+								"value": "{{apiKey}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"id\":1,\"atlCode\":\"02\",\"name\":\"UL LLC\",\"website\":\"https://testwebsite.com\",\"address\":{\"addressId\":1,\"line1\":\"address\",\"line2\":null,\"city\":\"city\",\"state\":\"state\",\"zipcode\":\"111111\",\"country\":\"country\"},\"retired\":false,\"retirementDate\":null}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/atls/1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"atls",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /atls -  ACB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect ACB user to receive 401 unauthorized response on create new ATL request\", () => {",
+									"  pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"expect ACB user to receive access denied error on create new ATL request\", () => {",
+									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "API-KEY",
+								"type": "text",
+								"value": "{{apiKey}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\":\"Test atl\",\"website\":\"https://www.testweb.com\",\"address\":{\"line1\":\"address\",\"city\":\"city\",\"line2\":\"address2\",\"state\":\"MD\",\"zipcode\":\"11111\",\"country\":\"Country\"}}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/atls",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"atls"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /atls - ACB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect Status code 200 in response to GET ATL list request by ACB user\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"expect to see all existing ATL organizations details in response to GET ATL list request by ACB user\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"UL LLC\");",
+									"    pm.expect(pm.response.text()).to.include(\"ICSA Labs\");",
+									"    pm.expect(pm.response.text()).to.include(\"SLI Compliance\");",
+									"    pm.expect(pm.response.text()).to.include(\"Drummond Group\");",
+									"    pm.expect(pm.response.text()).to.include(\"National Committee for Quality Assurance (NCQA)\");",
+									"    pm.expect(pm.response.text()).to.include(\"National Technical Systems\");",
+									"    pm.expect(pm.response.text()).to.include(\"CCHIT\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/atls",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"atls"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var ReqBody= {",
+							"        userName:pm.environment.get(\"usernameACB\"),password:pm.environment.get(\"passwordACB\")",
+							"    };",
+							"pm.sendRequest({",
+							"    url: pm.environment.get(\"authurl\"),",
+							"    method: \"POST\",",
+							"    header: {",
+							"        \"Content-Type\": \"application/json\",",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")",
+							"    },",
+							"    body: JSON.stringify(ReqBody)",
+							"}, function (err, response) {",
+							"   var jsonData = response.json();",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
 		}
 	],
-	"protocolProfileBehavior": {}
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
 }

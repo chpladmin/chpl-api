@@ -1,142 +1,1006 @@
 {
-    "info": {
-        "_postman_id": "057df124-926f-44cb-acbe-705ba23149eb",
-        "name": "acb-controller",
-        "description": "This is CHPL test collection",
-        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-    },
-    "item": [
-        {
-            "name": "GET /acbs",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "id": "6675a46a-e0c6-45fa-b349-03c95ab41f1d",
-                        "exec": [
-                            "pm.test(\"Status code is 200\", function () {",
-                            "    pm.response.to.have.status(200);",
-                            "});",
-                            "",
-                            "pm.test(\"All 6 Acbs are extracted\", function () {",
-                            "    var jsonData = pm.response.json();",
-                            "    pm.expect(jsonData.acbs.length).to.equal(6);",
-                            "});",
-                            "",
-                            "pm.test(\"Check if all of acbs exist\", function () {",
-                            "    pm.expect(pm.response.text()).to.include(\"UL LLC\");",
-                            "    pm.expect(pm.response.text()).to.include(\"ICSA Labs\");",
-                            "    pm.expect(pm.response.text()).to.include(\"SLI Compliance\");",
-                            "    pm.expect(pm.response.text()).to.include(\"Drummond Group\");",
-                            "    pm.expect(pm.response.text()).to.include(\"Surescripts LLC\");",
-                            "    pm.expect(pm.response.text()).to.include(\"CCHIT\");",
-                            "});"
-                        ],
-                        "type": "text/javascript"
-                    }
-                }
-            ],
-            "request": {
-                "method": "GET",
-                "header": [
-                    {
-                        "key": "Content-Type",
-                        "value": "application/json",
-                        "type": "text"
-                    }
-                ],
-                "url": {
-                    "raw": "{{url}}/rest/acbs?api_key={{apiKey}}",
-                    "host": [
-                        "{{url}}"
-                    ],
-                    "path": [
-                        "rest",
-                        "acbs"
-                    ],
-                    "query": [
-                        {
-                            "key": "api_key",
-                            "value": "{{apiKey}}"
-                        }
-                    ]
-                }
-            },
-            "response": [
-            ]
-        },
-        {
-            "name": "GET /acbs/{id}",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "id": "0127e346-3602-4ef0-9987-362dd5003565",
-                        "exec": [
-                            "pm.test(\"Status code is 200\", function () {",
-                            "    pm.response.to.have.status(200);",
-                            "});",
-                            "pm.test(\"Acb name as Drummond Group should return\", function () {",
-                            "    pm.expect(pm.response.text()).to.include(\"Drummond Group\");",
-                            "});"
-                        ],
-                        "type": "text/javascript"
-                    }
-                }
-            ],
-            "request": {
-                "method": "GET",
-                "header": [
-                    {
-                        "key": "Content-Type",
-                        "value": "application/json",
-                        "type": "text"
-                    }
-                ],
-                "url": {
-                    "raw": "{{url}}/rest/acbs/3?api_key={{apiKey}}",
-                    "host": [
-                        "{{url}}"
-                    ],
-                    "path": [
-                        "rest",
-                        "acbs",
-                        "3"
-                    ],
-                    "query": [
-                        {
-                            "key": "api_key",
-                            "value": "{{apiKey}}"
-                        }
-                    ]
-                }
-            },
-            "response": [
-            ]
-        }
-    ],
-    "event": [
-        {
-            "listen": "prerequest",
-            "script": {
-                "id": "bec8c3cd-2eb0-4256-ba06-bf10a398760f",
-                "type": "text/javascript",
-                "exec": [
-                    ""
-                ]
-            }
-        },
-        {
-            "listen": "test",
-            "script": {
-                "id": "3f81ef52-8d54-4ace-aa75-2849ffafd852",
-                "type": "text/javascript",
-                "exec": [
-                    ""
-                ]
-            }
-        }
-    ],
-    "protocolProfileBehavior": {
-    }
+	"info": {
+		"name": "certification-body-controller",
+		"description": "This is CHPL test collection for ACB controller",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "ROLE_ACB",
+			"item": [
+				{
+					"name": "GET  /acbs/{acbId}/users - ACB (not own)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect ACB user to receive 401 unauthorized response on request to get a list of ACB users that are not associated to their own\", () => {",
+									"  pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"expect anonymous user to receive access denied error on request to get list of ACB users that are not associated to their own\", () => {",
+									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/acbs/1/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"acbs",
+								"1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /acbs -  ACB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect ACB user to receive 401 unauthorized response on create new ACB request\", () => {",
+									"  pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"expect ACB user to receive access denied error on create new ACB request\", () => {",
+									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "API-KEY",
+								"type": "text",
+								"value": "{{apiKey}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\":\"Test acb\",\"website\":\"https://www.testweb.com\",\"address\":{\"line1\":\"address\",\"city\":\"city\",\"line2\":\"address2\",\"state\":\"MD\",\"zipcode\":\"11111\",\"country\":\"Country\"}}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/acbs",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"acbs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT /acbs/{acbId} -  ACB (not own)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect ACB user to receive 401 unauthorized response on ACB edit request that is not their own organization\", () => {",
+									"  pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"expect ACB user to receive access denied error on ACB edit request for organization that is not their own\", () => {",
+									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "API-KEY",
+								"type": "text",
+								"value": "{{apiKey}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"id\":1,\"acbCode\":\"02\",\"name\":\"UL LLC\",\"website\":\"https://testwebsite.com\",\"address\":{\"addressId\":1,\"line1\":\"address\",\"line2\":null,\"city\":\"city\",\"state\":\"state\",\"zipcode\":\"111111\",\"country\":\"country\"},\"retired\":false,\"retirementDate\":null}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/acbs/1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"acbs",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var ReqBody= {",
+							"        userName:pm.environment.get(\"usernameACB\"),password:pm.environment.get(\"passwordACB\")",
+							"    };",
+							"pm.sendRequest({",
+							"    url: pm.environment.get(\"authurl\"),",
+							"    method: \"POST\",",
+							"    header: {",
+							"        \"Content-Type\": \"application/json\",",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")",
+							"    },",
+							"    body: JSON.stringify(ReqBody)",
+							"}, function (err, response) {",
+							"   var jsonData = response.json();",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "AnonymousUsers",
+			"item": [
+				{
+					"name": "GET  /acbs/{acbId}/users - anonymous",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect anonymous user to receive 401 unauthorized response on request to get list of ACB users\", () => {",
+									"  pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"expect anonymous user to receive access denied error on request to get list of ACB users\", () => {",
+									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/acbs/1/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"acbs",
+								"1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET  /acbs/{acbId} -  anonymous",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect anonymous user to get Status code 200 in response to get details of a specific ACB\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"expect anonymous user to get details of a specific ACB as requested\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Drummond Group\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/acbs/3?api_key={{apiKey}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"acbs",
+								"3"
+							],
+							"query": [
+								{
+									"key": "api_key",
+									"value": "{{apiKey}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT /acbs/{acbId} -  anonymous",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect anonymous user to receive 401 unauthorized response on ACB edit request\", () => {",
+									"  pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"expect anonymous user to receive access denied error on ACB edit request\", () => {",
+									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"id\":1,\"acbCode\":\"02\",\"name\":\"UL LLC\",\"website\":\"https://testwebsite.com\",\"address\":{\"addressId\":1,\"line1\":\"address\",\"line2\":null,\"city\":\"city\",\"state\":\"state\",\"zipcode\":\"111111\",\"country\":\"country\"},\"retired\":false,\"retirementDate\":null}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/acbs/1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"acbs",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /acbs -  anonymous",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect anonymous user to receive 401 unauthorized response on create new ACB request\", () => {",
+									"  pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"expect anonymous user to receive access denied error on create new ACB request\", () => {",
+									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "API-KEY",
+								"type": "text",
+								"value": "{{apiKey}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\":\"Test acb\",\"website\":\"https://www.testweb.com\",\"address\":{\"line1\":\"address\",\"city\":\"city\",\"line2\":\"address2\",\"state\":\"MD\",\"zipcode\":\"11111\",\"country\":\"Country\"}}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/acbs",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"acbs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /acbs -anonymous",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect Status code 200 in response to GET ACB list request by anonymous user\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"expect to see all existing ACB organizations details in response to GET ACB list request by anonymous user\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"UL LLC\");",
+									"    pm.expect(pm.response.text()).to.include(\"ICSA Labs\");",
+									"    pm.expect(pm.response.text()).to.include(\"SLI Compliance\");",
+									"    pm.expect(pm.response.text()).to.include(\"Drummond Group\");",
+									"    pm.expect(pm.response.text()).to.include(\"Surescripts LLC\");",
+									"    pm.expect(pm.response.text()).to.include(\"CCHIT\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/acbs?api_key={{apiKey}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"acbs"
+							],
+							"query": [
+								{
+									"key": "api_key",
+									"value": "{{apiKey}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ROLE_ONC",
+			"item": [
+				{
+					"name": "GET  /acbs/{acbId}/users - ONC",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect ONC user to receive status code 200 in response on request to get list of ACB users\", () => {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"expect ONC user to receive list of ACB users associated with specific ACB\", () => {",
+									"     pm.test(\"expect response to have user properties\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData.users[0].role).to.eql(\"ROLE_ACB\");",
+									"        pm.expect(jsonData.users[0].fullName).to.be.a('String');",
+									"        pm.expect(jsonData.users[0].email).to.be.a('String');",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/acbs/1/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"acbs",
+								"1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET / acbs/{acbId}- ONC",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect ONC user to get Status code 200 in response to get details of a specific ACB\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"expect ONC user to receive ACB details in response\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData.name).to.eql(\"Drummond Group\");",
+									"        pm.expect(jsonData.acbCode).to.eql(\"04\");",
+									"    });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/acbs/3",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"acbs",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /acbs - ONC",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect to get Status code 200 in response to GET ACB list request by ONC user\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"expect to see all existing ACB organizations details in response to GET ACB list request by ONC user\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"UL LLC\");",
+									"    pm.expect(pm.response.text()).to.include(\"ICSA Labs\");",
+									"    pm.expect(pm.response.text()).to.include(\"SLI Compliance\");",
+									"    pm.expect(pm.response.text()).to.include(\"Drummond Group\");",
+									"    pm.expect(pm.response.text()).to.include(\"Surescripts LLC\");",
+									"    pm.expect(pm.response.text()).to.include(\"CCHIT\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "API-KEY",
+								"type": "text",
+								"value": "{{apiKey}}"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/acbs",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"acbs"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var ReqBody= {",
+							"        userName:pm.environment.get(\"usernameONC\"),password:pm.environment.get(\"passwordONC\")",
+							"    };",
+							"pm.sendRequest({",
+							"    url: pm.environment.get(\"authurl\"),",
+							"    method: \"POST\",",
+							"    header: {",
+							"        \"Content-Type\": \"application/json\",",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")",
+							"    },",
+							"    body: JSON.stringify(ReqBody)",
+							"}, function (err, response) {",
+							"   var jsonData = response.json();",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "ROLE_ONC_STAFF",
+			"item": [
+				{
+					"name": "GET  /acbs/{acbId}/users - ONC STAFF",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect ONC STAFF user to receive 401 unauthorized response on request to get a list of ACB users\", () => {",
+									"  pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"expect ONC STAFF user to receive access denied error on request to get list of ACB users\", () => {",
+									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/acbs/1/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"acbs",
+								"1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET  /acbs/{acbId} -  ONC STAFF",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect ONC STAFF user to get Status code 200 in response to get details of a specific ACB\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"expect ONC STAFF user to get details of a specific ACB as requested\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Drummond Group\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/acbs/3",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"acbs",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT /acbs/{acbId} -  ONC STAFF",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect ONC STAFF user to receive 401 unauthorized response on ACB edit request\", () => {",
+									"  pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"expect ONC STAFF user to receive access denied error on ACB edit request\", () => {",
+									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"id\":1,\"acbCode\":\"02\",\"name\":\"UL LLC\",\"website\":\"https://testwebsite.com\",\"address\":{\"addressId\":1,\"line1\":\"address\",\"line2\":null,\"city\":\"city\",\"state\":\"state\",\"zipcode\":\"111111\",\"country\":\"country\"},\"retired\":false,\"retirementDate\":null}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/acbs/1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"acbs",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /acbs -  ONC STAFF",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect ONC STAFF user to receive 401 unauthorized response on create new ACB request\", () => {",
+									"  pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"expect ONC STAFF user to receive access denied error on create new ACB request\", () => {",
+									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "API-KEY",
+								"type": "text",
+								"value": "{{apiKey}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\":\"Test acb\",\"website\":\"https://www.testweb.com\",\"address\":{\"line1\":\"address\",\"city\":\"city\",\"line2\":\"address2\",\"state\":\"MD\",\"zipcode\":\"11111\",\"country\":\"Country\"}}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/acbs",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"acbs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /acbs - ONC STAFF",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect Status code 200 in response to GET ACB list request by ONC STAFF user\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"expect to see all existing ACB organizations details in response to GET ACB list request by ONC STAFF user\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"UL LLC\");",
+									"    pm.expect(pm.response.text()).to.include(\"ICSA Labs\");",
+									"    pm.expect(pm.response.text()).to.include(\"SLI Compliance\");",
+									"    pm.expect(pm.response.text()).to.include(\"Drummond Group\");",
+									"    pm.expect(pm.response.text()).to.include(\"Surescripts LLC\");",
+									"    pm.expect(pm.response.text()).to.include(\"CCHIT\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/acbs",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"acbs"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var ReqBody= {",
+							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")",
+							"    };",
+							"pm.sendRequest({",
+							"    url: pm.environment.get(\"authurl\"),",
+							"    method: \"POST\",",
+							"    header: {",
+							"        \"Content-Type\": \"application/json\",",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")",
+							"    },",
+							"    body: JSON.stringify(ReqBody)",
+							"}, function (err, response) {",
+							"   var jsonData = response.json();",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
 }
