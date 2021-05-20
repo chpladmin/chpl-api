@@ -1,5 +1,8 @@
 package gov.healthit.chpl.scheduler.job.versionActivity;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -32,6 +35,7 @@ import lombok.extern.log4j.Log4j2;
 @DisallowConcurrentExecution
 @Log4j2(topic = "versionActivityUpdaterJobLogger")
 public class VersionActivityUpdaterJob implements Job {
+    private static final String PRODUCT_OWNER_HISTORY_TABLE_EXISTS_DATE = "11/15/2016";
 
     @Autowired
     private ProductVersionManager versionManager;
@@ -45,13 +49,30 @@ public class VersionActivityUpdaterJob implements Job {
     @Autowired
     private UpdateableActivityDao activityUpdateDao;
 
+    private Date productOwnerHistoryTableExists = null;
     private ObjectMapper jsonMapper;
+
+    public VersionActivityUpdaterJob() {
+        jsonMapper = new ObjectMapper();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+        try {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(sdf.parse(PRODUCT_OWNER_HISTORY_TABLE_EXISTS_DATE));
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+        productOwnerHistoryTableExists = cal.getTime();
+        } catch (ParseException ex) {
+            LOGGER.fatal("Could not parse " + PRODUCT_OWNER_HISTORY_TABLE_EXISTS_DATE + " as a date.");
+        }
+    }
 
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Version Activity Updater job. *********");
-        jsonMapper = new ObjectMapper();
 
         List<ActivityDTO> allVersionActivity = activityUpdateDao.getAllVersionActivityMetadata();
         LOGGER.info("Found " + allVersionActivity.size() + " version activity database entries.");
@@ -289,27 +310,36 @@ public class VersionActivityUpdaterJob implements Job {
         }
         if (product == null) {
             return null;
+        } else if (product.getLastModifiedDate().getTime() <= date.getTime()){
+            //if the product's last modified date hasn't changed since the activity date
+            //then we can use the developer ID associated with it in the DB
+            return product.getOwner();
+        } else if (date.before(productOwnerHistoryTableExists)) {
+            LOGGER.warn("Cannot determine relevant developer/product owner on " + date
+                    + " since it is before " + PRODUCT_OWNER_HISTORY_TABLE_EXISTS_DATE + " when the "
+                    + "product_owner_history_map table existed.");
+            return null;
+        } else {
+            ProductOwnerDTO productOwnerOnActivityDate = product.getOwnerOnDate(date);
+            //The above code gets the developer that was associated with the product at the date specified.
+            //If the developer has been updated, merged, or split since the date of the version activity
+            //then it is possible the retrieved developer information does not match what it looked like
+            //at the time of the version activity.
+            //So - query for any update (potentially a different name), split, or merge activity for
+            //this developer that has occurred since the version activity.
+            //If it exists, I do not think we can continue with this developer with confidence.
+            // Up to the team/PO if we need to try to:
+            //   1) Trace through the activity to see what developer the product was under at the time of activity
+            //      a) Can we even do that? Can QA or anyone even validate that it's right?
+            //   2) Proceed with this developer, or
+            //   3) Leave the developer blank
+            DeveloperDTO developer = null;
+            if (productOwnerOnActivityDate != null) {
+                Long developerId = productOwnerOnActivityDate.getDeveloper().getId();
+                developer = findDeveloperWithIdOnDate(developerId, date);
+            }
+            return developer;
         }
-
-        ProductOwnerDTO productOwnerOnActivityDate = product.getOwnerOnDate(date);
-        //The above code gets the developer that was associated with the product at the date specified.
-        //If the developer has been updated, merged, or split since the date of the version activity
-        //then it is possible the retrieved developer information does not match what it looked like
-        //at the time of the version activity.
-        //So - query for any update (potentially a different name), split, or merge activity for
-        //this developer that has occurred since the version activity.
-        //If it exists, I do not think we can continue with this developer with confidence.
-        // Up to the team/PO if we need to try to:
-        //   1) Trace through the activity to see what developer the product was under at the time of activity
-        //      a) Can we even do that? Can QA or anyone even validate that it's right?
-        //   2) Proceed with this developer, or
-        //   3) Leave the developer blank
-        DeveloperDTO developer = null;
-        if (productOwnerOnActivityDate != null) {
-            Long developerId = productOwnerOnActivityDate.getDeveloper().getId();
-            developer = findDeveloperWithIdOnDate(developerId, date);
-        }
-        return developer;
     }
 
     private DeveloperDTO findDeveloperWithIdOnDate(Long developerId, Date date) {
@@ -317,7 +347,7 @@ public class VersionActivityUpdaterJob implements Job {
         List<ActivityDTO> developerActivitySinceDate = getDeveloperActivitySinceDate(developerId, date);
         if (developerActivitySinceDate != null && developerActivitySinceDate.size() > 0) {
             LOGGER.info("Developer " + developerId + " has had activity since " + date.toString());
-            DeveloperDTO developerOnActivityDate = getDeveloperOnActivityDate(developerActivitySinceDate, date);
+            DeveloperDTO developerOnActivityDate = getDeveloperOnActivityDate(developerId, developerActivitySinceDate, date);
             if (developerOnActivityDate == null) {
                 LOGGER.warn("Could not determine developer data on " + date.toString() + " and will not proceed with this activity.");
             }
@@ -346,7 +376,7 @@ public class VersionActivityUpdaterJob implements Job {
         return null;
     }
 
-    private DeveloperDTO getDeveloperOnActivityDate(List<ActivityDTO> developerActivities, Date date) {
+    private DeveloperDTO getDeveloperOnActivityDate(Long developerId, List<ActivityDTO> developerActivities, Date date) {
         ActivityDTO developerActivity = null;
         developerActivities.sort(new Comparator<ActivityDTO>() {
             @Override
@@ -369,7 +399,11 @@ public class VersionActivityUpdaterJob implements Job {
             List<DeveloperDTO> developersFromOriginalData = parseJsonAsDeveloperDtoList(developerActivity.getOriginalData());
             //this action was a merge - sometimes all the original things had the same name
             //so if they did we can return a developer object with the name filled in
-            if (developersFromOriginalData != null && developersFromOriginalData.stream().map(dev -> dev.getName()).distinct().count() == 1) {
+            if (developersFromOriginalData != null && developersFromOriginalData.stream().filter(dev -> dev.getId().equals(developerId)).count() == 1) {
+                developerFromOriginalData = developersFromOriginalData.stream()
+                        .filter(dev -> dev.getId().equals(developerId))
+                        .findAny().get();
+            } else if (developersFromOriginalData != null && developersFromOriginalData.stream().map(dev -> dev.getName()).distinct().count() == 1) {
                 developerFromOriginalData = DeveloperDTO.builder()
                         .name(developersFromOriginalData.get(0).getName())
                         .build();
