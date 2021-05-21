@@ -49,6 +49,9 @@ public class VersionActivityUpdaterJob implements Job {
     @Autowired
     private UpdateableActivityDao activityUpdateDao;
 
+    @Autowired
+    private ProductOwnerHistoryDao productOwnerHistoryDao;
+
     private Date productOwnerHistoryTableExists = null;
     private ObjectMapper jsonMapper;
 
@@ -310,7 +313,7 @@ public class VersionActivityUpdaterJob implements Job {
         }
         if (product == null) {
             return null;
-        } else if (product.getLastModifiedDate().getTime() <= date.getTime()){
+        } else if (product.getLastModifiedDate().getTime() <= date.getTime()) {
             //if the product's last modified date hasn't changed since the activity date
             //then we can use the developer ID associated with it in the DB
             return product.getOwner();
@@ -320,6 +323,8 @@ public class VersionActivityUpdaterJob implements Job {
                     + "product_owner_history_map table existed.");
             return null;
         } else {
+            List<ProductOwnerDTO> productOwnerHistory = productOwnerHistoryDao.getProductOwnerHistoryAsOfDate(product.getId(), date);
+            product.setOwnerHistory(productOwnerHistory);
             ProductOwnerDTO productOwnerOnActivityDate = product.getOwnerOnDate(date);
             //The above code gets the developer that was associated with the product at the date specified.
             //If the developer has been updated, merged, or split since the date of the version activity
