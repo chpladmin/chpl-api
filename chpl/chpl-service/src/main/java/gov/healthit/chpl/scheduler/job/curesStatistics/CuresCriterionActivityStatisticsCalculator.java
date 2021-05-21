@@ -5,24 +5,20 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.healthit.chpl.SpecialProperties;
-import gov.healthit.chpl.dao.ActivityDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.statistics.CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.statistics.CuresCriterionUpgradedWithoutOriginalListingStatisticDTO;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.extern.log4j.Log4j2;
 
@@ -30,23 +26,29 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2(topic = "curesStatisticsCreatorJobLogger")
 public class CuresCriterionActivityStatisticsCalculator {
     private CertificationCriterionService criteriaService;
-    private ActivityDAO activityDao;
+    private CertifiedProductDAO certifiedProductDao;
+    private CriterionActivityStatisticsHelper activityStatisticsHelper;
     private CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO curesCriterionUpgradedWithoutOriginalStatisticDao;
-    private ObjectMapper jsonMapper;
     private Date curesEffectiveDate;
     private Date currentDate;
+    private List<CertificationStatusType> activeStatuses;
 
     @Autowired
     public CuresCriterionActivityStatisticsCalculator(CertificationCriterionService criteriaService,
-            ActivityDAO activityDao,
+            CriterionActivityStatisticsHelper activityStatisticsHelper,
+            CertifiedProductDAO certifiedProductDao,
             CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO curesCriterionUpgradedWithoutOriginalStatisticDao,
             SpecialProperties specialProperties) {
         this.criteriaService = criteriaService;
-        this.activityDao = activityDao;
+        this.activityStatisticsHelper = activityStatisticsHelper;
+        this.certifiedProductDao = certifiedProductDao;
         this.curesCriterionUpgradedWithoutOriginalStatisticDao = curesCriterionUpgradedWithoutOriginalStatisticDao;
-        jsonMapper = new ObjectMapper();
         curesEffectiveDate = specialProperties.getEffectiveRuleTimestamp();
         currentDate = new Date();
+        activeStatuses = Stream.of(CertificationStatusType.Active,
+                CertificationStatusType.SuspendedByAcb,
+                CertificationStatusType.SuspendedByOnc)
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -66,53 +68,15 @@ public class CuresCriterionActivityStatisticsCalculator {
         for (CertificationCriterion originalCriterion : originalToCuresCriteriaMap.keySet()) {
             long listingCount = 0;
             CertificationCriterion curesCriterion = originalToCuresCriteriaMap.get(originalCriterion);
-            List<Long> listingIdsAttestingToCriterion = curesCriterionUpgradedWithoutOriginalStatisticDao.getListingIdsAttestingToCriterion(curesCriterion.getId());
+            List<Long> listingIdsAttestingToCriterion = certifiedProductDao.getListingIdsAttestingToCriterion(curesCriterion.getId(), activeStatuses);
             for (Long listingId : listingIdsAttestingToCriterion) {
-                if (!didListingRemoveAttestationToCriterionDuringTimeInterval(listingId, originalCriterion, curesEffectiveDate, currentDate)) {
+                if (!activityStatisticsHelper.didListingRemoveAttestationToCriterionDuringTimeInterval(listingId, originalCriterion, curesEffectiveDate, currentDate)) {
                     listingCount++;
                 }
             }
             results.add(buildStatistic(curesCriterion, listingCount, statisticDate));
         }
         return results;
-    }
-
-    private boolean didListingRemoveAttestationToCriterionDuringTimeInterval(Long listingId, CertificationCriterion criterion, Date startDate, Date endDate) {
-        LOGGER.info("Determining if listing ID " + listingId + " removed attestation for " + criterion.getId() + " between " + startDate + " and " + endDate);
-        List<ActivityDTO> listingActivities = activityDao.findByObjectId(listingId, ActivityConcept.CERTIFIED_PRODUCT, startDate, endDate);
-        for (ActivityDTO listingActivity : listingActivities) {
-            CertifiedProductSearchDetails originalListingInActivity = getListing(listingActivity.getOriginalData());
-            CertifiedProductSearchDetails updatedListingInActivity = getListing(listingActivity.getNewData());
-            if (originalListingInActivity != null && updatedListingInActivity != null) {
-                CertificationResult originalListingCertResultForCriterion
-                    = originalListingInActivity.getCertificationResults().stream()
-                        .filter(certResult -> certResult.getCriterion() != null && certResult.getCriterion().getId().equals(criterion.getId()))
-                        .findAny().get();
-                CertificationResult updatedListingCertResultForCriterion
-                = updatedListingInActivity.getCertificationResults().stream()
-                    .filter(certResult -> certResult.getCriterion() != null && certResult.getCriterion().getId().equals(criterion.getId()))
-                    .findAny().get();
-                if (originalListingCertResultForCriterion.isSuccess() && !updatedListingCertResultForCriterion.isSuccess()) {
-                    LOGGER.info("Listing ID " + listingId + " unattested to criterion " + criterion.getId() +  " on " + listingActivity.getActivityDate());
-                    return true;
-                }
-            }
-        }
-        LOGGER.info("Listing ID " + listingId + " never unattested to criterion " + criterion.getId() +  " during the dates specified.");
-        return false;
-    }
-
-    private CertifiedProductSearchDetails getListing(String listingJson) {
-        CertifiedProductSearchDetails listing = null;
-        if (!StringUtils.isEmpty(listingJson)) {
-            try {
-                listing =
-                    jsonMapper.readValue(listingJson, CertifiedProductSearchDetails.class);
-            } catch (Exception ex) {
-                LOGGER.error("Could not parse activity JSON " + listingJson, ex);
-            }
-        }
-        return listing;
     }
 
     private CuresCriterionUpgradedWithoutOriginalListingStatisticDTO buildStatistic(

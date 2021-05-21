@@ -274,6 +274,25 @@ public class CertifiedProductDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
+
+    public List<Long> getListingIdsAttestingToCriterion(Long criterionId, List<CertificationStatusType> statuses) {
+        Query query = entityManager.createQuery("SELECT listing "
+                + "FROM CertifiedProductDetailsEntitySimple listing, CertificationResultEntity cre "
+                + "WHERE listing.id = cre.certifiedProductId "
+                + "AND listing.certificationStatusName IN (:statusNames) "
+                + "AND cre.deleted = false "
+                + "AND cre.certificationCriterionId = :criterionId "
+                + "AND cre.success = true "
+                + "AND listing.deleted = false ",
+                CertifiedProductDetailsEntitySimple.class);
+        query.setParameter("statusNames", statuses.stream().map(status -> status.getName()).collect(Collectors.toList()));
+        query.setParameter("criterionId", criterionId);
+        List<CertifiedProductDetailsEntitySimple> results = query.getResultList();
+        return results.stream()
+                .map(result -> result.getId())
+                .collect(Collectors.toList());
+    }
+
     @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> findByEdition(final String edition) {
         Query query = entityManager.createQuery("SELECT cpd " + "FROM CertifiedProductDetailsEntity cpd "

@@ -64,7 +64,7 @@ public class CriterionUpgradedToCuresFromOriginalListingStatisticEntity {
     public CriterionUpgradedToCuresFromOriginalListingStatisticDTO toDto() {
         return CriterionUpgradedToCuresFromOriginalListingStatisticDTO.builder()
                 .id(this.getId())
-                .criterion(CertificationCriterionDTO.builder()
+                .curesCriterion(CertificationCriterionDTO.builder()
                         .id(this.getCertificationCriterionId())
                         .number(this.getCertificationCriterion() != null ? this.getCertificationCriterion().getNumber() : null)
                         .title(this.getCertificationCriterion() != null ? this.getCertificationCriterion().getTitle() : null)

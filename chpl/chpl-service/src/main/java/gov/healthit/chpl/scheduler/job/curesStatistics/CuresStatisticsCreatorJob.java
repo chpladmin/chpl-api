@@ -15,6 +15,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dto.statistics.CriterionListingCountStatisticDTO;
+import gov.healthit.chpl.dto.statistics.CriterionUpgradedToCuresFromOriginalListingStatisticDTO;
 import gov.healthit.chpl.dto.statistics.CuresCriterionUpgradedWithoutOriginalListingStatisticDTO;
 import gov.healthit.chpl.dto.statistics.ListingCuresStatusStatisticDTO;
 import gov.healthit.chpl.dto.statistics.PrivacyAndSecurityListingStatisticDTO;
@@ -30,6 +31,9 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
 
     @Autowired
     private CriterionListingStatisticsCalculator criterionListingStatisticsCalculator;
+
+    @Autowired
+    private OriginalCriterionActivityStatisticsCalculator originalCriterionActivityStatisticsCalculator;
 
     @Autowired
     private CuresCriterionActivityStatisticsCalculator curesCriterionActivityStatisticsCalculator;
@@ -50,6 +54,7 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
         LOGGER.info("Calculating statistics for " + yesterday);
 
         //setCriterionListingCountStatisticsForDate(yesterday);
+        setOriginalCriterionActivityStatisticsForDate(yesterday);
         setCuresCriterionActivityStatisticsForDate(yesterday);
         //setListingCuresStatusStatisticsForDate(yesterday);
         //setPrivacyAndSecurityListingStatisticsForDate(yesterday);
@@ -69,6 +74,21 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
                 }
                 List<CriterionListingCountStatisticDTO> currentStatistics = criterionListingStatisticsCalculator.calculateCurrentStatistics(statisticDate);
                 criterionListingStatisticsCalculator.save(currentStatistics);
+            }
+        });
+    }
+
+    private void setOriginalCriterionActivityStatisticsForDate(LocalDate statisticDate) {
+        TransactionTemplate txTemplate = new TransactionTemplate(txManager);
+        txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        txTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                if (originalCriterionActivityStatisticsCalculator.hasStatisticsForDate(statisticDate)) {
+                    originalCriterionActivityStatisticsCalculator.deleteStatisticsForDate(statisticDate);
+                }
+                List<CriterionUpgradedToCuresFromOriginalListingStatisticDTO> currentStatistics = originalCriterionActivityStatisticsCalculator.calculateCurrentStatistics(statisticDate);
+                originalCriterionActivityStatisticsCalculator.save(currentStatistics);
             }
         });
     }

@@ -15,6 +15,6 @@ import lombok.NoArgsConstructor;
 public class CriterionUpgradedToCuresFromOriginalListingStatisticDTO {
     private Long id;
     private LocalDate statisticDate;
-    private CertificationCriterionDTO criterion;
+    private CertificationCriterionDTO curesCriterion;
     private Long listingsUpgradedFromOriginalCount;
 }

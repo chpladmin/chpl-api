@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.persistence.Query;
 
@@ -13,22 +12,12 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.statistics.CriterionUpgradedToCuresFromOriginalListingStatisticDTO;
-import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.statistics.CriterionUpgradedToCuresFromOriginalListingStatisticEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("criterionUpgradedToCuresFromOriginalListingStatisticsDAO")
 public class CriterionUpgradedToCuresFromOriginalListingStatisticsDAO extends BaseDAOImpl {
-    private List<String> activeStatusNames;
-
-    public CriterionUpgradedToCuresFromOriginalListingStatisticsDAO() {
-        activeStatusNames = Stream.of(CertificationStatusType.Active.getName(),
-                CertificationStatusType.SuspendedByAcb.getName(),
-                CertificationStatusType.SuspendedByOnc.getName())
-                .collect(Collectors.toList());
-    }
-
 
     public List<CriterionUpgradedToCuresFromOriginalListingStatisticDTO> findAll() {
         List<CriterionUpgradedToCuresFromOriginalListingStatisticEntity> entities = this.findAllEntities();
@@ -65,7 +54,7 @@ public class CriterionUpgradedToCuresFromOriginalListingStatisticsDAO extends Ba
             throws EntityCreationException, EntityRetrievalException {
         CriterionUpgradedToCuresFromOriginalListingStatisticEntity entity = new CriterionUpgradedToCuresFromOriginalListingStatisticEntity();
         entity.setListingCount(dto.getListingsUpgradedFromOriginalCount());
-        entity.setCertificationCriterionId(dto.getCriterion().getId());
+        entity.setCertificationCriterionId(dto.getCuresCriterion().getId());
         entity.setStatisticDate(dto.getStatisticDate());
         entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
         entity.setLastModifiedDate(new Date());
