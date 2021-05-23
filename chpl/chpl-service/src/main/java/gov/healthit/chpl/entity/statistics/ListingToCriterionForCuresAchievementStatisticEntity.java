@@ -14,14 +14,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.dto.statistics.ListingToCriterionForCuresAchievementStatisticDTO;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
-import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "listing_to_cures_criterion")
-public class ListingToCuresStatisticEntity {
+@Table(name = "listing_to_criterion_for_cures_achievement_statistic")
+public class ListingToCriterionForCuresAchievementStatisticEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -31,10 +32,6 @@ public class ListingToCuresStatisticEntity {
     @Basic(optional = false)
     @Column(name = "listing_id", nullable = false)
     private Long listingId;
-
-    @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "listing_id", insertable = false, updatable = false)
-    private CertifiedProductDetailsEntity certificationProduct;
 
     @Basic(optional = false)
     @Column(name = "certification_criterion_id", nullable = false)
@@ -63,4 +60,17 @@ public class ListingToCuresStatisticEntity {
     @Basic(optional = false)
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
+
+    public ListingToCriterionForCuresAchievementStatisticDTO toDto() {
+        return ListingToCriterionForCuresAchievementStatisticDTO.builder()
+                .id(this.getId())
+                .criterion(CertificationCriterionDTO.builder()
+                        .id(this.getCertificationCriterionId())
+                        .number(this.getCertificationCriterion() != null ? this.getCertificationCriterion().getNumber() : null)
+                        .title(this.getCertificationCriterion() != null ? this.getCertificationCriterion().getTitle() : null)
+                        .build())
+                .listingId(this.getListingId())
+                .statisticDate(this.getStatisticDate())
+        .build();
+    }
 }

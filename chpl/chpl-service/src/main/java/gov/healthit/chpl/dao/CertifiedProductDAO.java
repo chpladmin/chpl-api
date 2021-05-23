@@ -274,7 +274,6 @@ public class CertifiedProductDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
-
     public List<Long> getListingIdsAttestingToCriterion(Long criterionId, List<CertificationStatusType> statuses) {
         Query query = entityManager.createQuery("SELECT listing "
                 + "FROM CertifiedProductDetailsEntitySimple listing, CertificationResultEntity cre "
