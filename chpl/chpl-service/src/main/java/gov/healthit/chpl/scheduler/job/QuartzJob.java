@@ -9,11 +9,13 @@ import org.springframework.core.env.Environment;
 
 /**
  * Base class for Quartz jobs that depend on Spring context.
- * 
+ *
  * @author alarned
  *
  */
 public abstract class QuartzJob implements Job {
+    protected static final String JOB_DATA_KEY_EMAIL = "email";
+
     private Environment env;
 
     @Autowired

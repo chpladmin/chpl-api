@@ -57,11 +57,11 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
         LocalDate yesterday = today.minus(Period.ofDays(ONE_DAY));
         LOGGER.info("Calculating statistics for " + yesterday);
 
-        //setCriterionListingCountStatisticsForDate(yesterday);
-        //setOriginalCriterionActivityStatisticsForDate(yesterday);
-        //setCuresCriterionActivityStatisticsForDate(yesterday);
-        //setListingCuresStatusStatisticsForDate(yesterday);
-        //setPrivacyAndSecurityListingStatisticsForDate(yesterday);
+        setCriterionListingCountStatisticsForDate(yesterday);
+        setOriginalCriterionActivityStatisticsForDate(yesterday);
+        setCuresCriterionActivityStatisticsForDate(yesterday);
+        setListingCuresStatusStatisticsForDate(yesterday);
+        setPrivacyAndSecurityListingStatisticsForDate(yesterday);
         setCriteriaNeededToAchieveCuresStatisticsForDate(yesterday);
 
         LOGGER.info("*****Cures Reporting Statistics Job is complete.*****");

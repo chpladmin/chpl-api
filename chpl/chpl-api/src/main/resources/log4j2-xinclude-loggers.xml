@@ -22,6 +22,10 @@
         additivity="false">
         <AppenderRef ref="curesStatisticsCreatorJob" />
     </Logger>
+    <Logger name="curesStatisticsEmailJobLogger" level="INFO"
+        additivity="false">
+        <AppenderRef ref="curesStatisticsEmailJob" />
+    </Logger>
     <Logger name="urlStatusDataCollectorJobLogger" level="INFO"
         additivity="false">
         <AppenderRef ref="urlStatusDataCollectorJob" />

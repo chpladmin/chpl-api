@@ -60,6 +60,18 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
+    <RollingFile name="curesStatisticsEmailJob"
+        fileName="${logDir}/scheduler/curesStatisticsEmailJob.log"
+        filePattern="${logDir}/scheduler/history/curesStatisticsEmailJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
+        <PatternLayout>
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
+        </PatternLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+    </RollingFile>
     <RollingFile name="urlStatusDataCollectorJob"
         fileName="${logDir}/scheduler/urlStatusDataCollectorJob.log"
         filePattern="${logDir}/scheduler/history/urlStatusDataCollectorJob-%d{yyyy-MM-dd}.log"

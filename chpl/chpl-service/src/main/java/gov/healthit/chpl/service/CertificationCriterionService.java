@@ -57,7 +57,7 @@ public class CertificationCriterionService {
         originalToCuresCriteriaMap.put(get("criterion.170_315_b_7_old"), get("criterion.170_315_b_7_cures"));
         originalToCuresCriteriaMap.put(get("criterion.170_315_b_8_old"), get("criterion.170_315_b_8_cures"));
         originalToCuresCriteriaMap.put(get("criterion.170_315_b_9_old"), get("criterion.170_315_b_9_cures"));
-        originalToCuresCriteriaMap.put(get("criterion.170_315_b_8"), get("criterion.170_315_b_10"));
+        originalToCuresCriteriaMap.put(get("criterion.170_315_b_6"), get("criterion.170_315_b_10"));
         originalToCuresCriteriaMap.put(get("criterion.170_315_c_3_old"), get("criterion.170_315_c_3_cures"));
         originalToCuresCriteriaMap.put(get("criterion.170_315_d_2_old"), get("criterion.170_315_d_2_cures"));
         originalToCuresCriteriaMap.put(get("criterion.170_315_d_3_old"), get("criterion.170_315_d_3_cures"));

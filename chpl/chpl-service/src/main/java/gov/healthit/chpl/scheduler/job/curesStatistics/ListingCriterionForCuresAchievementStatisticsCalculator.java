@@ -70,6 +70,7 @@ public class ListingCriterionForCuresAchievementStatisticsCalculator {
     @Transactional
     public List<ListingToCriterionForCuresAchievementStatisticDTO> calculateCurrentStatistics(LocalDate statisticDate) {
         List<Long> listingIdsWithoutCuresUpdate = listingToCuresAchievementDao.getListingIdsWithoutCuresUpdateStatus();
+        LOGGER.info("There are " + listingIdsWithoutCuresUpdate + " Active listings without cures update status.");
         List<ListingToCriterionForCuresAchievementStatisticDTO> statistics
             = listingIdsWithoutCuresUpdate.stream()
                 .map(listingId -> getListingDetails(listingId))
@@ -87,12 +88,17 @@ public class ListingCriterionForCuresAchievementStatisticsCalculator {
         } catch (EntityRetrievalException ex) {
             LOGGER.error("Could not find listing with ID " + listingId, ex);
         }
+        LOGGER.info("Got listing details for " + listingId);
         return details;
     }
 
     private List<ListingToCriterionForCuresAchievementStatisticDTO> calculateCurrentStatistic(LocalDate statisticDate, CertifiedProductSearchDetails listing) {
         List<ListingToCriterionForCuresAchievementStatisticDTO> statisticsWithNeededCuresCriterion
             = new ArrayList<ListingToCriterionForCuresAchievementStatisticDTO>();
+        LOGGER.info("Getting criterion needed for Cures status for listing " + listing.getId());
+        //TODO: what about a two-stage update that would be needed?
+        //like if they have b3 original they need to upgrade to b3 cures but then after that upgrade
+        //they might require d12/d13 when they previously would not have
         List<CertificationCriterionDTO> neededCriteria = getCriterionNeededForCures(listing);
         if (neededCriteria != null && neededCriteria.size() > 0) {
             for (CertificationCriterionDTO criterion : neededCriteria) {
@@ -103,6 +109,8 @@ public class ListingCriterionForCuresAchievementStatisticsCalculator {
                     .build());
             }
         }
+        LOGGER.info("Listing " + listing.getId() + " needs updates to " + statisticsWithNeededCuresCriterion.size() + " criteria.");
+        LOGGER.info("\t" + statisticsWithNeededCuresCriterion.stream().map(stat -> stat.getCriterion().getNumber()).collect(Collectors.joining(",")));
         return statisticsWithNeededCuresCriterion;
     }
 

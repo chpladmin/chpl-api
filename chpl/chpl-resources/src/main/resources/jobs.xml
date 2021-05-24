@@ -137,7 +137,27 @@
 
         <!-- Cures statistics generator -->
         <job>
-            <name>curesStatisticsCreator</name>
+            <name>Cures Statistics Email</name>
+            <group>systemJobs</group>
+            <description>Send the Cures Update statistics as a CSV report.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.curesStatistics.CuresStatisticsEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value><!-- NEEDS TO BE DAILY -->
+                </entry>
+            </job-data-map>
+        </job>
+
+        <!-- Cures statistics email job -->
+        <job>
+            <name>curesStatisticsEmail</name>
             <group>systemJobs</group>
             <description>Generates data that is used to create cures statistics report</description>
             <job-class>gov.healthit.chpl.scheduler.job.curesStatistics.CuresStatisticsCreatorJob</job-class>
