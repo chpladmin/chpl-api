@@ -1,5 +1,6 @@
-package gov.healthit.chpl.scheduler.job.curesStatistics;
+package gov.healthit.chpl.scheduler.job.curesStatistics.email;
 
+import java.io.File;
 import java.util.Collections;
 
 import javax.mail.MessagingException;
@@ -10,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.dao.statistics.CriterionListingStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.CriterionUpgradedToCuresFromOriginalListingStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.ListingCuresStatusStatisticsDAO;
@@ -23,7 +23,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2(topic = "curesStatisticsEmailJobLogger")
 public class CuresStatisticsEmailJob  extends QuartzJob {
     @Autowired
-    private CriterionListingStatisticsDAO criterionListingStatisticsDao;
+    private CriterionListingStatisticsCsvCreator criterionListingStatisticsCsvCreator;
 
     @Autowired
     private CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO curesCriterionUpgradedWithoutOriginalStatisticDao;
@@ -48,6 +48,7 @@ public class CuresStatisticsEmailJob  extends QuartzJob {
         LOGGER.info("*****Cures Reporting Email Job is starting.*****");
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         try {
+            File criterionListingStatisticsCsv = criterionListingStatisticsCsvCreator.createCsvFile();
             sendEmail(context);
         } catch (MessagingException ex) {
             LOGGER.error("Error sending email!", ex);

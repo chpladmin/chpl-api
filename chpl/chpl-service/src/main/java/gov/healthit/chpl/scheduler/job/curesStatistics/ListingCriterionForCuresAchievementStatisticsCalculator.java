@@ -19,6 +19,7 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.statistics.ListingToCriterionForCuresAchievementStatisticDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.service.CuresUpdateService;
 import lombok.extern.log4j.Log4j2;
 
@@ -29,6 +30,7 @@ public class ListingCriterionForCuresAchievementStatisticsCalculator {
     private CuresUpdateService curesUpdateService;
     private ListingToCriterionForCuresAchievementStatisticsDAO listingToCuresAchievementDao;
     private CertifiedProductDetailsManager cpdManager;
+    private Long b6Id;
     private List<Long> privacyAndSecurityCriteriaIds;
     private List<Long> privacyAndSecurityRequiredCriteriaIds;
 
@@ -44,6 +46,7 @@ public class ListingCriterionForCuresAchievementStatisticsCalculator {
         this.listingToCuresAchievementDao = listingToCuresAchievementDao;
         this.cpdManager = cpdManager;
 
+        this.b6Id = certService.get(Criteria2015.B_6).getId();
         if (!StringUtils.isEmpty(privacyAndSecurityCriteriaIdList)) {
             privacyAndSecurityCriteriaIds = Stream.of(privacyAndSecurityCriteriaIdList.split(","))
                 .map(criterionId -> new Long(criterionId))
@@ -96,9 +99,6 @@ public class ListingCriterionForCuresAchievementStatisticsCalculator {
         List<ListingToCriterionForCuresAchievementStatisticDTO> statisticsWithNeededCuresCriterion
             = new ArrayList<ListingToCriterionForCuresAchievementStatisticDTO>();
         LOGGER.info("Getting criterion needed for Cures status for listing " + listing.getId());
-        //TODO: what about a two-stage update that would be needed?
-        //like if they have b3 original they need to upgrade to b3 cures but then after that upgrade
-        //they might require d12/d13 when they previously would not have
         List<CertificationCriterionDTO> neededCriteria = getCriterionNeededForCures(listing);
         if (neededCriteria != null && neededCriteria.size() > 0) {
             for (CertificationCriterionDTO criterion : neededCriteria) {
@@ -125,6 +125,8 @@ public class ListingCriterionForCuresAchievementStatisticsCalculator {
 
     private List<CertificationCriterionDTO> getCriteriaNeedingUpdates(CertifiedProductSearchDetails listing) {
         List<Long> criteriaIdsNeedingUpdate = curesUpdateService.getNeedsToBeUpdatedCriteriaIds();
+        //in addition to whatever criteria need updated, b6 will have to be removed.
+        criteriaIdsNeedingUpdate.add(b6Id);
         List<Long> attestedCriterionIdsNeedingUpdate = listing.getCertificationResults().stream()
             .filter(certResult -> certResult.isSuccess())
             .map(attestedCertResult -> attestedCertResult.getCriterion().getId())

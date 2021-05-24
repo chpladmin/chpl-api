@@ -60,6 +60,19 @@ public class CriterionListingStatisticsDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
+    public LocalDate getDateOfMostRecentStatistics() {
+        LocalDate result = null;
+        Query query = entityManager.createQuery("SELECT max(statisticDate) "
+                + "FROM CriterionListingCountStatisticEntity stats "
+                + "WHERE (stats.deleted = false) ",
+                LocalDate.class);
+        Object queryResult = query.getSingleResult();
+        if (queryResult instanceof LocalDate) {
+            result = (LocalDate) queryResult;
+        }
+        return result;
+    }
+
     public List<CriterionListingCountStatisticDTO> getStatisticsForDate(LocalDate statisticDate) {
         Query query = entityManager.createQuery("SELECT stats "
                 + "FROM CriterionListingCountStatisticEntity stats "

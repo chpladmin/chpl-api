@@ -140,7 +140,7 @@
             <name>Cures Statistics Email</name>
             <group>systemJobs</group>
             <description>Send the Cures Update statistics as a CSV report.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.curesStatistics.CuresStatisticsEmailJob</job-class>
+            <job-class>gov.healthit.chpl.scheduler.job.curesStatistics.email.CuresStatisticsEmailJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>
@@ -150,7 +150,7 @@
                 </entry>
                 <entry>
                     <key>frequency</key>
-                    <value>DAILY</value><!-- NEEDS TO BE DAILY -->
+                    <value>DAILY</value>
                 </entry>
             </job-data-map>
         </job>
