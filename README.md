@@ -9,7 +9,7 @@ The CHPL api
 Java 1.8.0
 Postgres 10.15
 mvn 3.3.3
-Tomcat 8.5.64
+Tomcat 8.5.x -- latest version
 Eclipse (latest)
 
 ## Clone the repository
@@ -35,7 +35,7 @@ chpl/chpl-service/src/test/resources/environment.test.properties
 
 ## Properties files
 
-The following Proiperties Files exist within the CHPL Resources project.
+The following Properties Files exist within the CHPL Resources project.
 
 ```
 chpl/chpl-resources/src/main/resources/email.properties
@@ -48,7 +48,7 @@ Any value in the above files can be overridden by creating an "override" file.  
 Each of the above files has "default" values for each key, though a few keys within the files have a value of "SECRET".  This applies to certain values that only apply to a particular instance of CHPL - things like server names, usernames, passwords, etc.
 
 | File                   | Key                                | Description                                                                                       |
--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|------------------------|------------------------------------|---------------------------------------------------------------------------------------------------|
 | email.properties       | directReview.chplChanges.email     |                                                                                                   |
 | email.properties       | directReviewunknownChanges.email   |                                                                                                   |
 | environment.properties | downloadFolderPath                 | Path to the downloadable files in CHPL                                                            |
