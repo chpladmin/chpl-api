@@ -35,7 +35,7 @@ public class ListingCriterionForCuresAchievementStatisticsCsvCreator {
     @Autowired
     public ListingCriterionForCuresAchievementStatisticsCsvCreator(
             ListingToCriterionForCuresAchievementStatisticsDAO listingToCriterionForCuresAchievementStatisticsDao,
-            @Value("{curesStatisticsReport.listingCriterionForCuresAchievement.fileName}") String filename) {
+            @Value("${curesStatisticsReport.listingCriterionForCuresAchievement.fileName}") String filename) {
         this.listingToCriterionForCuresAchievementStatisticsDao = listingToCriterionForCuresAchievementStatisticsDao;
         this.dateFormatter = DateTimeFormatter.ofPattern(FILENAME_DATE_FORMAT);
     }

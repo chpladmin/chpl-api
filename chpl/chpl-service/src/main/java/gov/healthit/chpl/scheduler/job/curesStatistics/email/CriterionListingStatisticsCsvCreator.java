@@ -32,7 +32,7 @@ public class CriterionListingStatisticsCsvCreator {
 
     @Autowired
     public CriterionListingStatisticsCsvCreator(CriterionListingStatisticsDAO criterionListingStatisticsDao,
-            @Value("{curesStatisticsReport.listingCriterionStatistics.fileName}") String filename) {
+            @Value("${curesStatisticsReport.listingCriterionStatistics.fileName}") String filename) {
         this.criterionListingStatisticsDao = criterionListingStatisticsDao;
         this.filename = filename;
         this.dateFormatter = DateTimeFormatter.ofPattern(FILENAME_DATE_FORMAT);

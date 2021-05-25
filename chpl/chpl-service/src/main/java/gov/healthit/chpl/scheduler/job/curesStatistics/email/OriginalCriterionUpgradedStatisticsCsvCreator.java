@@ -33,7 +33,7 @@ public class OriginalCriterionUpgradedStatisticsCsvCreator {
     @Autowired
     public OriginalCriterionUpgradedStatisticsCsvCreator(
             CriterionUpgradedToCuresFromOriginalListingStatisticsDAO criterionUpgradedToCuresFromOriginalStatisticsDao,
-            @Value("{curesStatisticsReport.originalCriterionUpgraded.fileName}") String filename) {
+            @Value("${curesStatisticsReport.originalCriterionUpgraded.fileName}") String filename) {
         this.criterionUpgradedToCuresFromOriginalStatisticsDao = criterionUpgradedToCuresFromOriginalStatisticsDao;
         this.dateFormatter = DateTimeFormatter.ofPattern(FILENAME_DATE_FORMAT);
     }
