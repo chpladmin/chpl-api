@@ -47,24 +47,24 @@ Any value in the above files can be overridden by creating an "override" file.  
 
 Each of the above files has "default" values for each key, though a few keys within the files have a value of "SECRET".  This applies to certain values that only apply to a particular instance of CHPL - things like server names, usernames, passwords, etc.
 
-| File                   | Key                                | Description                                                                                       |
-|------------------------|------------------------------------|---------------------------------------------------------------------------------------------------|
-| email.properties       | directReview.chplChanges.email     |                                                                                                   |
-| email.properties       | directReviewunknownChanges.email   |                                                                                                   |
-| environment.properties | downloadFolderPath                 | Path to the downloadable files in CHPL                                                            |
-| environment.properties | keyLocation                        | Path and filename of file representing RSA JSON key                                               |
-| environment.properties | uploadErrorEmailRecipients         | Email address or user or group who should be notified if there is an error uploading a file       |
-| environment.properties | splitDeveloperErrorEmailRecipients | Email address or user or group who should be notified if there is an error splittinng a developer |
-| environment.properties | mergeDeveloperErrorEmailRecipients | Email address or user or group who should be notified if there is an error merging a developer    |
-| environment.properties | smtpFrom                           | Email address that CHPL generated emails should be "from"                                         |
-| environment.properties | smtpHost                           | SMTP email server to send emails                                                                  |
-| environment.properties | smtpPassword                       | User's password for authenticating with the email server                                          |
-| environment.properties | smtpPort                           | Email server's port                                                                               |
-| environment.properties | smtpUsername                       | Username for authenticating with the email server                                                 |
-| environment.properties | emailBuilder_config_forwardAddress | For Non-PROD environments, emails will be sent to this address for verification                   |
-| environment.properties | jira.username                      | Username for authenticating with JIRA                                                             |
-| environment.properties | jira.password                      | Password for authenticating with JIRA                                                             |
-| environment.properties | auditDateFilePath                  | Location on server where "rolled off" log data files are placed                                   |
+| File                   | Key                                | Description                                                                                                  |
+|------------------------|------------------------------------|--------------------------------------------------------------------------------------------------------------|
+| email.properties       | directReview.chplChanges.email     | Email address to be notified when changes are made to CHPL entities that involve Direct Reviews              |
+| email.properties       | directReviewunknownChanges.email   | Email address to be notified when changes are made to CHPL entities that possibley involve Direct Reviews    |
+| environment.properties | downloadFolderPath                 | Path to the downloadable files in CHPL                                                                       |
+| environment.properties | keyLocation                        | Path and filename of file representing RSA JSON key                                                          |
+| environment.properties | uploadErrorEmailRecipients         | Email address or user or group who should be notified if there is an error uploading a file                  |
+| environment.properties | splitDeveloperErrorEmailRecipients | Email address or user or group who should be notified if there is an error splittinng a developer            |
+| environment.properties | mergeDeveloperErrorEmailRecipients | Email address or user or group who should be notified if there is an error merging a developer               |
+| environment.properties | smtpFrom                           | Email address that CHPL generated emails should be "from"                                                    |
+| environment.properties | smtpHost                           | SMTP email server to send emails                                                                             |
+| environment.properties | smtpPassword                       | User's password for authenticating with the email server                                                     |
+| environment.properties | smtpPort                           | Email server's port                                                                                          |
+| environment.properties | smtpUsername                       | Username for authenticating with the email server                                                            |
+| environment.properties | emailBuilder_config_forwardAddress | For Non-PROD environments, emails will be sent to this address for verification                              |
+| environment.properties | jira.username                      | Username for authenticating with JIRA                                                                        |
+| environment.properties | jira.password                      | Password for authenticating with JIRA                                                                        |
+| environment.properties | auditDateFilePath                  | Location on server where "rolled off" log data files are placed                                              |
 
 
 ## Tomcat server
