@@ -56,6 +56,19 @@ public class PrivacyAndSecurityListingStatisticsDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
+    public LocalDate getDateOfMostRecentStatistics() {
+        LocalDate result = null;
+        Query query = entityManager.createQuery("SELECT max(statisticDate) "
+                + "FROM PrivacyAndSecurityListingStatisticEntity stats "
+                + "WHERE (stats.deleted = false) ",
+                LocalDate.class);
+        Object queryResult = query.getSingleResult();
+        if (queryResult instanceof LocalDate) {
+            result = (LocalDate) queryResult;
+        }
+        return result;
+    }
+
     public Long getListingCountWithPrivacyAndSecurityCriteria() {
         String hql = "SELECT count(distinct listing.id) "
                 + "FROM CertifiedProductDetailsEntitySimple listing, CertificationResultEntity cre "

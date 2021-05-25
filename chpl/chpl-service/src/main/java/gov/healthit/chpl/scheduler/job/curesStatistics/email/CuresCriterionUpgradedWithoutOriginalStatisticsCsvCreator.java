@@ -15,40 +15,40 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.statistics.CriterionListingStatisticsDAO;
-import gov.healthit.chpl.dto.statistics.CriterionListingCountStatisticDTO;
+import gov.healthit.chpl.dao.statistics.CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO;
+import gov.healthit.chpl.dto.statistics.CuresCriterionUpgradedWithoutOriginalListingStatisticDTO;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2(topic = "curesStatisticsEmailJobLogger")
-public class CriterionListingStatisticsCsvCreator {
+public class CuresCriterionUpgradedWithoutOriginalStatisticsCsvCreator {
     private static final String FILENAME_DATE_FORMAT = "yyyyMMdd";
     private static final String NEW_LINE_SEPARATOR = "\n";
     private static final String[] HEADING = {"Certification Criterion", "Listing Count"};
-    private CriterionListingStatisticsDAO criterionListingStatisticsDao;
+    private CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO criterionUpgradedWithoutOriginalStatisticsDao;
     private DateTimeFormatter dateFormatter;
     private String filename;
 
     @Autowired
-    public CriterionListingStatisticsCsvCreator(CriterionListingStatisticsDAO criterionListingStatisticsDao,
-            @Value("{curesStatisticsReport.listingCriterionStatistics.fileName}") String filename) {
-        this.criterionListingStatisticsDao = criterionListingStatisticsDao;
-        this.filename = filename;
+    public CuresCriterionUpgradedWithoutOriginalStatisticsCsvCreator(
+            CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO criterionUpgradedWithoutOriginalStatisticsDao,
+            @Value("{curesStatisticsReport.curesUpgradedWithoutOriginal.fileName}") String filename) {
+        this.criterionUpgradedWithoutOriginalStatisticsDao = criterionUpgradedWithoutOriginalStatisticsDao;
         this.dateFormatter = DateTimeFormatter.ofPattern(FILENAME_DATE_FORMAT);
     }
 
     public File createCsvFile() throws IOException {
         File csvFile = null;
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.withRecordSeparator(NEW_LINE_SEPARATOR);
-        LocalDate statisticDate = criterionListingStatisticsDao.getDateOfMostRecentStatistics();
+        LocalDate statisticDate = criterionUpgradedWithoutOriginalStatisticsDao.getDateOfMostRecentStatistics();
         if (statisticDate != null) {
             LOGGER.info("Most recent statistic date is " + statisticDate);
             csvFile = getOutputFile(statisticDate);
             try (FileWriter fileWriter = new FileWriter(csvFile);
                     CSVPrinter csvFilePrinter = new CSVPrinter(fileWriter, csvFileFormat)) {
                 csvFilePrinter.printRecord(generateHeader());
-                List<CriterionListingCountStatisticDTO> statisticsForDate = criterionListingStatisticsDao.getStatisticsForDate(statisticDate);
+                List<CuresCriterionUpgradedWithoutOriginalListingStatisticDTO> statisticsForDate = criterionUpgradedWithoutOriginalStatisticsDao.getStatisticsForDate(statisticDate);
                 statisticsForDate.stream()
                     .forEach(statistic -> printRow(csvFilePrinter, statistic));
                 LOGGER.info("Completed generating records for " + statisticsForDate.size() + " statistics.");
@@ -59,7 +59,7 @@ public class CriterionListingStatisticsCsvCreator {
         return csvFile;
     }
 
-    private void printRow(CSVPrinter csvFilePrinter, CriterionListingCountStatisticDTO statistic) {
+    private void printRow(CSVPrinter csvFilePrinter, CuresCriterionUpgradedWithoutOriginalListingStatisticDTO statistic) {
         try {
             csvFilePrinter.printRecord(generateRow(statistic));
         } catch (IOException e) {
@@ -71,9 +71,9 @@ public class CriterionListingStatisticsCsvCreator {
         return Stream.of(HEADING).collect(Collectors.toList());
     }
 
-    private List<String> generateRow(CriterionListingCountStatisticDTO statistic) {
-        return Stream.of(CertificationCriterionService.formatCriteriaNumber(statistic.getCriterion()),
-        statistic.getListingsCertifyingToCriterionCount().toString()).collect(Collectors.toList());
+    private List<String> generateRow(CuresCriterionUpgradedWithoutOriginalListingStatisticDTO statistic) {
+        return Stream.of(CertificationCriterionService.formatCriteriaNumber(statistic.getCuresCriterion()),
+        statistic.getListingsUpgradedWithoutAttestingToOriginalCount().toString()).collect(Collectors.toList());
     }
 
     private File getOutputFile(LocalDate statisticDate) {

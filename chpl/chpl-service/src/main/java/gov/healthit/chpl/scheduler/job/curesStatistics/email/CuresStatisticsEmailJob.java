@@ -1,7 +1,9 @@
 package gov.healthit.chpl.scheduler.job.curesStatistics.email;
 
 import java.io.File;
-import java.util.Collections;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.mail.MessagingException;
 
@@ -11,11 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.dao.statistics.CriterionUpgradedToCuresFromOriginalListingStatisticsDAO;
-import gov.healthit.chpl.dao.statistics.CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO;
-import gov.healthit.chpl.dao.statistics.ListingCuresStatusStatisticsDAO;
-import gov.healthit.chpl.dao.statistics.ListingToCriterionForCuresAchievementStatisticsDAO;
-import gov.healthit.chpl.dao.statistics.PrivacyAndSecurityListingStatisticsDAO;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.util.EmailBuilder;
 import lombok.extern.log4j.Log4j2;
@@ -26,19 +23,19 @@ public class CuresStatisticsEmailJob  extends QuartzJob {
     private CriterionListingStatisticsCsvCreator criterionListingStatisticsCsvCreator;
 
     @Autowired
-    private CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO curesCriterionUpgradedWithoutOriginalStatisticDao;
+    private OriginalCriterionUpgradedStatisticsCsvCreator originalCriterionUpgradedStatisticsCsvCreator;
 
     @Autowired
-    private CriterionUpgradedToCuresFromOriginalListingStatisticsDAO criterionUpgradedToCuresFromOriginalStatisticsDao;
+    private CuresCriterionUpgradedWithoutOriginalStatisticsCsvCreator curesCriterionUpgradedWithoutOriginalStatisticsCsvCreator;
 
     @Autowired
-    private ListingCuresStatusStatisticsDAO listingCuresStatusStatisticsDao;
+    private ListingCriterionForCuresAchievementStatisticsCsvCreator listingCriterionForCuresAchievementStatisticsCsvCreator;
 
     @Autowired
-    private PrivacyAndSecurityListingStatisticsDAO privacyAndSecurityListingStatisticsDao;
+    private ListingCuresStatusStatisticsHtmlCreator listingCuresStatusStatisticsHtmlCreator;
 
     @Autowired
-    private ListingToCriterionForCuresAchievementStatisticsDAO listingToCuresAchievementDao;
+    private PrivacyAndSecurityListingStatisticsHtmlCreator privacyAndSecurityListingStatisticsHtmlCreator;
 
     @Autowired
     private Environment env;
@@ -47,9 +44,34 @@ public class CuresStatisticsEmailJob  extends QuartzJob {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         LOGGER.info("*****Cures Reporting Email Job is starting.*****");
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+        List<File> csvAttachments = new ArrayList<File>();
         try {
-            File criterionListingStatisticsCsv = criterionListingStatisticsCsvCreator.createCsvFile();
-            sendEmail(context);
+            File statisticsCsv = criterionListingStatisticsCsvCreator.createCsvFile();
+            csvAttachments.add(statisticsCsv);
+        } catch (IOException ex) {
+            LOGGER.error("Error creating statistics", ex);
+        }
+        try {
+            File statisticsCsv = originalCriterionUpgradedStatisticsCsvCreator.createCsvFile();
+            csvAttachments.add(statisticsCsv);
+        } catch (IOException ex) {
+            LOGGER.error("Error creating statistics", ex);
+        }
+        try {
+            File statisticsCsv = curesCriterionUpgradedWithoutOriginalStatisticsCsvCreator.createCsvFile();
+            csvAttachments.add(statisticsCsv);
+        } catch (IOException ex) {
+            LOGGER.error("Error creating statistics", ex);
+        }
+        try {
+            File statisticsCsv = listingCriterionForCuresAchievementStatisticsCsvCreator.createCsvFile();
+            csvAttachments.add(statisticsCsv);
+        } catch (IOException ex) {
+            LOGGER.error("Error creating statistics", ex);
+        }
+
+        try {
+            sendEmail(context, csvAttachments);
         } catch (MessagingException ex) {
             LOGGER.error("Error sending email!", ex);
         }
@@ -57,14 +79,21 @@ public class CuresStatisticsEmailJob  extends QuartzJob {
         LOGGER.info("*****Cures Reporting Email Job is complete.*****");
     }
 
-    private void sendEmail(JobExecutionContext context) throws MessagingException {
+    private String createEmailBody() {
+        String emailBody = "<h2>Cures Upgrade Statistics</h4><br/>";
+        emailBody += listingCuresStatusStatisticsHtmlCreator.createEmailBody();
+        emailBody += privacyAndSecurityListingStatisticsHtmlCreator.createEmailBody();
+        return emailBody;
+    }
+
+    private void sendEmail(JobExecutionContext context, List<File> attachments) throws MessagingException {
         String emailAddress = context.getMergedJobDataMap().getString(JOB_DATA_KEY_EMAIL);
         LOGGER.info("Sending email to: " + emailAddress);
         EmailBuilder emailBuilder = new EmailBuilder(env);
         emailBuilder.recipient(emailAddress)
                 .subject(env.getProperty("curesStatisticsReport.subject"))
-                .htmlMessage("") //TODO:
-                .fileAttachments(Collections.emptyList()) //TODO:
+                .htmlMessage(createEmailBody())
+                .fileAttachments(attachments)
                 .sendEmail();
         LOGGER.info("Completed Sending email to: " + emailAddress);
     }
