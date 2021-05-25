@@ -73,7 +73,7 @@ public class ListingCriterionForCuresAchievementStatisticsCalculator {
     @Transactional
     public List<ListingToCriterionForCuresAchievementStatisticDTO> calculateCurrentStatistics(LocalDate statisticDate) {
         List<Long> listingIdsWithoutCuresUpdate = listingToCuresAchievementDao.getListingIdsWithoutCuresUpdateStatus();
-        LOGGER.info("There are " + listingIdsWithoutCuresUpdate + " Active listings without cures update status.");
+        LOGGER.info("There are " + listingIdsWithoutCuresUpdate.size() + " Active listings without cures update status.");
         List<ListingToCriterionForCuresAchievementStatisticDTO> statistics
             = listingIdsWithoutCuresUpdate.stream()
                 .map(listingId -> getListingDetails(listingId))

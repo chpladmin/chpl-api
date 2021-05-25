@@ -35,6 +35,7 @@ public class CuresCriterionUpgradedWithoutOriginalStatisticsCsvCreator {
             CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO criterionUpgradedWithoutOriginalStatisticsDao,
             @Value("${curesStatisticsReport.curesUpgradedWithoutOriginal.fileName}") String filename) {
         this.criterionUpgradedWithoutOriginalStatisticsDao = criterionUpgradedWithoutOriginalStatisticsDao;
+        this.filename = filename;
         this.dateFormatter = DateTimeFormatter.ofPattern(FILENAME_DATE_FORMAT);
     }
 
