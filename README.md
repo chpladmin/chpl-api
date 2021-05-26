@@ -6,11 +6,11 @@ The CHPL api
 
 ## Install required software
 
-Java 1.8.0
-Postgres 10.15
-mvn 3.3.3
-Tomcat 8.5.x -- latest version
-Eclipse (latest)
+* Java 1.8.0
+* Postgres 10.15
+* mvn 3.3.3
+* Tomcat 8.5.x -- latest version
+* Eclipse (latest)
 
 ## Clone the repository
 
@@ -50,7 +50,7 @@ Each of the above files has "default" values for each key, though a few keys wit
 | File                   | Key                                | Description                                                                                                  |
 |------------------------|------------------------------------|--------------------------------------------------------------------------------------------------------------|
 | email.properties       | directReview.chplChanges.email     | Email address to be notified when changes are made to CHPL entities that involve Direct Reviews              |
-| email.properties       | directReviewunknownChanges.email   | Email address to be notified when changes are made to CHPL entities that possibley involve Direct Reviews    |
+| email.properties       | directReviewunknownChanges.email   | Email address to be notified when changes are made to CHPL entities that possibly involve Direct Reviews     |
 | environment.properties | downloadFolderPath                 | Path to the downloadable files in CHPL                                                                       |
 | environment.properties | keyLocation                        | Path and filename of file representing RSA JSON key                                                          |
 | environment.properties | uploadErrorEmailRecipients         | Email address or user or group who should be notified if there is an error uploading a file                  |
