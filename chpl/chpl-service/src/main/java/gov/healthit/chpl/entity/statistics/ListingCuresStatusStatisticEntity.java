@@ -25,7 +25,7 @@ public class ListingCuresStatusStatisticEntity {
     private Long id;
 
     @Basic(optional = false)
-    @Column(name = "cures_lisitngs_count", nullable = false)
+    @Column(name = "cures_listings_count", nullable = false)
     private Long curesListingCount;
 
     @Basic(optional = false)
