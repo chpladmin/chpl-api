@@ -35,14 +35,14 @@ public class PrivacyAndSecurityListingStatisticsHtmlCreator {
 
     public String createEmailBody() {
         LocalDate statisticDate = privacyAndSecurityStatisticsDao.getDateOfMostRecentStatistics();
+        List<PrivacyAndSecurityListingStatistic> statistics = null;
         if (statisticDate != null) {
-            List<PrivacyAndSecurityListingStatistic> statistics = privacyAndSecurityStatisticsDao.getStatisticsForDate(statisticDate);
+            statistics = privacyAndSecurityStatisticsDao.getStatisticsForDate(statisticDate);
             LOGGER.info("Generating HTML email text for " + statistics.size() + " statistics.");
-            return getEmailText(statisticDate, statistics);
         } else {
-            LOGGER.error("No most recent statistic date was found.");
-            return null;
+            LOGGER.error("No statistics were found.");
         }
+        return getEmailText(statisticDate, statistics);
     }
 
     private String getEmailText(LocalDate statisticsDate, List<PrivacyAndSecurityListingStatistic> statistics) {
@@ -53,7 +53,14 @@ public class PrivacyAndSecurityListingStatisticsHtmlCreator {
     }
 
     private String getBody(LocalDate statisticsDate, List<PrivacyAndSecurityListingStatistic> statistics) {
-        return String.format(emailBody, dateFormatter.format(statisticsDate), getTable(statistics));
+        return String.format(emailBody, formatStatisticsDate(statisticsDate), getTable(statistics));
+    }
+
+    private String formatStatisticsDate(LocalDate statisticsDate) {
+        if (statisticsDate == null) {
+            return "No Date Available";
+        }
+        return dateFormatter.format(statisticsDate);
     }
 
     private String getTable(List<PrivacyAndSecurityListingStatistic> statistics) {
@@ -70,8 +77,12 @@ public class PrivacyAndSecurityListingStatisticsHtmlCreator {
         table.append("        </tr>\n");
         table.append("    </thead>\n");
         table.append("    <tbody>\n");
-        IntStream.range(0, statistics.size())
-            .forEach(index -> table.append(getTableRow((index % 2 == 0), statistics.get(index))));
+        if (statistics != null && statistics.size() > 0) {
+            IntStream.range(0, statistics.size())
+                .forEach(index -> table.append(getTableRow((index % 2 == 0), statistics.get(index))));
+        } else {
+            table.append(getNoResultsTableRow());
+        }
         table.append("    </tbody>\n");
         table.append("</table>\n");
         return table.toString();
@@ -90,4 +101,7 @@ public class PrivacyAndSecurityListingStatisticsHtmlCreator {
         return row.toString();
     }
 
+    private String getNoResultsTableRow() {
+        return "        <tr colspan='2'>No data available</tr>\n";
+    }
 }

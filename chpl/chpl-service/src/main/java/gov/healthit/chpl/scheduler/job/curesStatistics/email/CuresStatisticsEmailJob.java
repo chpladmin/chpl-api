@@ -47,25 +47,33 @@ public class CuresStatisticsEmailJob  extends QuartzJob {
         List<File> csvAttachments = new ArrayList<File>();
         try {
             File statisticsCsv = criterionListingStatisticsCsvCreator.createCsvFile();
-            csvAttachments.add(statisticsCsv);
+            if (statisticsCsv != null) {
+                csvAttachments.add(statisticsCsv);
+            }
         } catch (IOException ex) {
             LOGGER.error("Error creating statistics", ex);
         }
         try {
             File statisticsCsv = originalCriterionUpgradedStatisticsCsvCreator.createCsvFile();
-            csvAttachments.add(statisticsCsv);
+            if (statisticsCsv != null) {
+                csvAttachments.add(statisticsCsv);
+            }
         } catch (IOException ex) {
             LOGGER.error("Error creating statistics", ex);
         }
         try {
             File statisticsCsv = curesCriterionUpgradedWithoutOriginalStatisticsCsvCreator.createCsvFile();
-            csvAttachments.add(statisticsCsv);
+            if (statisticsCsv != null) {
+                csvAttachments.add(statisticsCsv);
+            }
         } catch (IOException ex) {
             LOGGER.error("Error creating statistics", ex);
         }
         try {
             File statisticsCsv = listingCriterionForCuresAchievementStatisticsCsvCreator.createCsvFile();
-            csvAttachments.add(statisticsCsv);
+            if (statisticsCsv != null) {
+                csvAttachments.add(statisticsCsv);
+            }
         } catch (IOException ex) {
             LOGGER.error("Error creating statistics", ex);
         }

@@ -34,15 +34,15 @@ public class ListingCuresStatusStatisticsHtmlCreator {
     }
 
     public String createEmailBody() {
+        List<ListingCuresStatusStatistic> statistics = null;
         LocalDate statisticDate = listingCuresStatusStatisticsDao.getDateOfMostRecentStatistics();
         if (statisticDate != null) {
-            List<ListingCuresStatusStatistic> statistics = listingCuresStatusStatisticsDao.getStatisticsForDate(statisticDate);
+            statistics = listingCuresStatusStatisticsDao.getStatisticsForDate(statisticDate);
             LOGGER.info("Generating HTML email text for " + statistics.size() + " statistics.");
-            return getEmailText(statisticDate, statistics);
         } else {
-            LOGGER.error("No most recent statistic date was found.");
-            return null;
+            LOGGER.error("No most statistics were found.");
         }
+        return getEmailText(statisticDate, statistics);
     }
 
     private String getEmailText(LocalDate statisticsDate, List<ListingCuresStatusStatistic> statistics) {
@@ -53,7 +53,14 @@ public class ListingCuresStatusStatisticsHtmlCreator {
     }
 
     private String getBody(LocalDate statisticsDate, List<ListingCuresStatusStatistic> statistics) {
-        return String.format(emailBody, dateFormatter.format(statisticsDate), getTable(statistics));
+        return String.format(emailBody, formatStatisticsDate(statisticsDate), getTable(statistics));
+    }
+
+    private String formatStatisticsDate(LocalDate statisticsDate) {
+        if (statisticsDate == null) {
+            return "No Date Available";
+        }
+        return dateFormatter.format(statisticsDate);
     }
 
     private String getTable(List<ListingCuresStatusStatistic> statistics) {
@@ -70,8 +77,12 @@ public class ListingCuresStatusStatisticsHtmlCreator {
         table.append("        </tr>\n");
         table.append("    </thead>\n");
         table.append("    <tbody>\n");
-        IntStream.range(0, statistics.size())
-            .forEach(index -> table.append(getTableRow((index % 2 == 0), statistics.get(index))));
+        if (statistics != null && statistics.size() > 0) {
+            IntStream.range(0, statistics.size())
+                .forEach(index -> table.append(getTableRow((index % 2 == 0), statistics.get(index))));
+        } else {
+            table.append(getNoResultsTableRow());
+        }
         table.append("    </tbody>\n");
         table.append("</table>\n");
         return table.toString();
@@ -88,5 +99,9 @@ public class ListingCuresStatusStatisticsHtmlCreator {
         row.append("            </td>\n");
         row.append("        </tr>\n");
         return row.toString();
+    }
+
+    private String getNoResultsTableRow() {
+        return "        <tr colspan='2'>No data available</tr>\n";
     }
 }
