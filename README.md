@@ -43,7 +43,7 @@ chpl/chpl-resources/src/main/resources/environment.properties
 chpl/chpl-resources/src/main/resources/errors.properties
 chpl/chpl-resources/src/main/resources/lookup.properties
 ```
-Any value in the above files can be overridden by creating an "override" file.  The file should be name `originalFileName-override.properites` and be placed somewhere on the classpath.  In the "override" file, you can redefine any existing key with a new value.
+Any value in the above files can be overridden by creating an "override" file.  The file should be name `originalFileName-override.properties` and be placed somewhere on the classpath.  In the "override" file, you can redefine any existing key with a new value.
 
 Each of the above files has "default" values for each key, though a few keys within the files have a value of "SECRET".  This applies to certain values that only apply to a particular instance of CHPL - things like server names, usernames, passwords, etc.
 
