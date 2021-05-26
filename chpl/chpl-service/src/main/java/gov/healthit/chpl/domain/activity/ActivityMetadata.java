@@ -11,16 +11,18 @@ import gov.healthit.chpl.util.Util;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.Singular;
+import lombok.ToString;
 
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-@Data
+@ToString
+@Getter
+@Setter
+@RequiredArgsConstructor
 public class ActivityMetadata implements Serializable {
     private static final long serialVersionUID = -3855142961571082535L;
 

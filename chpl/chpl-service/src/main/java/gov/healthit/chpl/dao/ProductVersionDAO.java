@@ -64,7 +64,7 @@ public class ProductVersionDAO extends BaseDAOImpl {
             create(entity);
         }
 
-        return new ProductVersionDTO(entity);
+        return getById(entity.getId());
     }
 
 
