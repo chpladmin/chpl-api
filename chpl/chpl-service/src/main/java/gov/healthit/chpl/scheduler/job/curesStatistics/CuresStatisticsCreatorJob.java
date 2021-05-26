@@ -14,12 +14,12 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.dto.statistics.CriterionListingCountStatisticDTO;
-import gov.healthit.chpl.dto.statistics.CriterionUpgradedToCuresFromOriginalListingStatisticDTO;
-import gov.healthit.chpl.dto.statistics.CuresCriterionUpgradedWithoutOriginalListingStatisticDTO;
-import gov.healthit.chpl.dto.statistics.ListingCuresStatusStatisticDTO;
-import gov.healthit.chpl.dto.statistics.ListingToCriterionForCuresAchievementStatisticDTO;
-import gov.healthit.chpl.dto.statistics.PrivacyAndSecurityListingStatisticDTO;
+import gov.healthit.chpl.domain.statistics.CriterionListingCountStatistic;
+import gov.healthit.chpl.domain.statistics.CriterionUpgradedToCuresFromOriginalListingStatistic;
+import gov.healthit.chpl.domain.statistics.CuresCriterionUpgradedWithoutOriginalListingStatistic;
+import gov.healthit.chpl.domain.statistics.ListingCuresStatusStatistic;
+import gov.healthit.chpl.domain.statistics.ListingToCriterionForCuresAchievementStatistic;
+import gov.healthit.chpl.domain.statistics.PrivacyAndSecurityListingStatistic;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import lombok.extern.log4j.Log4j2;
 
@@ -76,7 +76,7 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
                 if (criterionListingStatisticsCalculator.hasStatisticsForDate(statisticDate)) {
                     criterionListingStatisticsCalculator.deleteStatisticsForDate(statisticDate);
                 }
-                List<CriterionListingCountStatisticDTO> currentStatistics = criterionListingStatisticsCalculator.calculateCurrentStatistics(statisticDate);
+                List<CriterionListingCountStatistic> currentStatistics = criterionListingStatisticsCalculator.calculateCurrentStatistics(statisticDate);
                 criterionListingStatisticsCalculator.save(currentStatistics);
             }
         });
@@ -91,7 +91,7 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
                 if (originalCriterionActivityStatisticsCalculator.hasStatisticsForDate(statisticDate)) {
                     originalCriterionActivityStatisticsCalculator.deleteStatisticsForDate(statisticDate);
                 }
-                List<CriterionUpgradedToCuresFromOriginalListingStatisticDTO> currentStatistics = originalCriterionActivityStatisticsCalculator.calculateCurrentStatistics(statisticDate);
+                List<CriterionUpgradedToCuresFromOriginalListingStatistic> currentStatistics = originalCriterionActivityStatisticsCalculator.calculateCurrentStatistics(statisticDate);
                 originalCriterionActivityStatisticsCalculator.save(currentStatistics);
             }
         });
@@ -106,7 +106,7 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
                 if (curesCriterionActivityStatisticsCalculator.hasStatisticsForDate(statisticDate)) {
                     curesCriterionActivityStatisticsCalculator.deleteStatisticsForDate(statisticDate);
                 }
-                List<CuresCriterionUpgradedWithoutOriginalListingStatisticDTO> currentStatistics = curesCriterionActivityStatisticsCalculator.calculateCurrentStatistics(statisticDate);
+                List<CuresCriterionUpgradedWithoutOriginalListingStatistic> currentStatistics = curesCriterionActivityStatisticsCalculator.calculateCurrentStatistics(statisticDate);
                 curesCriterionActivityStatisticsCalculator.save(currentStatistics);
             }
         });
@@ -121,7 +121,7 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
                 if (listingCuresStatusStatisticsCalculator.hasStatisticsForDate(statisticDate)) {
                     listingCuresStatusStatisticsCalculator.deleteStatisticsForDate(statisticDate);
                 }
-                ListingCuresStatusStatisticDTO currentStatistic = listingCuresStatusStatisticsCalculator.calculateCurrentStatistics(statisticDate);
+                ListingCuresStatusStatistic currentStatistic = listingCuresStatusStatisticsCalculator.calculateCurrentStatistics(statisticDate);
                 listingCuresStatusStatisticsCalculator.save(currentStatistic);
             }
         });
@@ -136,7 +136,7 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
                 if (privacyAndSecurityListingStatisticsCalculator.hasStatisticsForDate(statisticDate)) {
                     privacyAndSecurityListingStatisticsCalculator.deleteStatisticsForDate(statisticDate);
                 }
-                PrivacyAndSecurityListingStatisticDTO currentStatistic = privacyAndSecurityListingStatisticsCalculator.calculateCurrentStatistics(statisticDate);
+                PrivacyAndSecurityListingStatistic currentStatistic = privacyAndSecurityListingStatisticsCalculator.calculateCurrentStatistics(statisticDate);
                 privacyAndSecurityListingStatisticsCalculator.save(currentStatistic);
             }
         });
@@ -151,7 +151,7 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
                 if (listingCriterionForCuresAchievementStatisticsCalculator.hasStatisticsForDate(statisticDate)) {
                     listingCriterionForCuresAchievementStatisticsCalculator.deleteStatisticsForDate(statisticDate);
                 }
-                List<ListingToCriterionForCuresAchievementStatisticDTO> currentStatistics = listingCriterionForCuresAchievementStatisticsCalculator.calculateCurrentStatistics(statisticDate);
+                List<ListingToCriterionForCuresAchievementStatistic> currentStatistics = listingCriterionForCuresAchievementStatisticsCalculator.calculateCurrentStatistics(statisticDate);
                 listingCriterionForCuresAchievementStatisticsCalculator.save(currentStatistics);
             }
         });

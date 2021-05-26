@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.statistics.CriterionUpgradedToCuresFromOriginalListingStatisticsDAO;
-import gov.healthit.chpl.dto.statistics.CriterionUpgradedToCuresFromOriginalListingStatisticDTO;
+import gov.healthit.chpl.domain.statistics.CriterionUpgradedToCuresFromOriginalListingStatistic;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.extern.log4j.Log4j2;
 
@@ -50,7 +50,7 @@ public class OriginalCriterionUpgradedStatisticsCsvCreator {
                     CSVPrinter csvFilePrinter = new CSVPrinter(fileWriter, csvFileFormat)) {
 
                 csvFilePrinter.printRecord(generateHeader());
-                List<CriterionUpgradedToCuresFromOriginalListingStatisticDTO> statisticsForDate = criterionUpgradedToCuresFromOriginalStatisticsDao.getStatisticsForDate(statisticDate);
+                List<CriterionUpgradedToCuresFromOriginalListingStatistic> statisticsForDate = criterionUpgradedToCuresFromOriginalStatisticsDao.getStatisticsForDate(statisticDate);
                 statisticsForDate.stream()
                     .forEach(statistic -> printRow(csvFilePrinter, statistic));
                 LOGGER.info("Completed generating records for " + statisticsForDate.size() + " statistics.");
@@ -61,7 +61,7 @@ public class OriginalCriterionUpgradedStatisticsCsvCreator {
         return csvFile;
     }
 
-    private void printRow(CSVPrinter csvFilePrinter, CriterionUpgradedToCuresFromOriginalListingStatisticDTO statistic) {
+    private void printRow(CSVPrinter csvFilePrinter, CriterionUpgradedToCuresFromOriginalListingStatistic statistic) {
         try {
             csvFilePrinter.printRecord(generateRow(statistic));
         } catch (IOException e) {
@@ -73,7 +73,7 @@ public class OriginalCriterionUpgradedStatisticsCsvCreator {
         return Stream.of(HEADING).collect(Collectors.toList());
     }
 
-    private List<String> generateRow(CriterionUpgradedToCuresFromOriginalListingStatisticDTO statistic) {
+    private List<String> generateRow(CriterionUpgradedToCuresFromOriginalListingStatistic statistic) {
         return Stream.of(CertificationCriterionService.formatCriteriaNumber(statistic.getCuresCriterion()),
         statistic.getListingsUpgradedFromOriginalCount().toString()).collect(Collectors.toList());
     }

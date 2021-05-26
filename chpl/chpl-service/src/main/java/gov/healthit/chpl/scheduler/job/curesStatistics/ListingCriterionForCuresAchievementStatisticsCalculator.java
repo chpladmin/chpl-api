@@ -15,8 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.statistics.ListingToCriterionForCuresAchievementStatisticsDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.statistics.ListingToCriterionForCuresAchievementStatistic;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
-import gov.healthit.chpl.dto.statistics.ListingToCriterionForCuresAchievementStatisticDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
@@ -65,16 +65,16 @@ public class ListingCriterionForCuresAchievementStatisticsCalculator {
 
     @Transactional
     public boolean hasStatisticsForDate(LocalDate statisticDate) {
-        List<ListingToCriterionForCuresAchievementStatisticDTO> statisticsForDate
+        List<ListingToCriterionForCuresAchievementStatistic> statisticsForDate
             = listingToCuresAchievementDao.getStatisticsForDate(statisticDate);
         return statisticsForDate != null && statisticsForDate.size() > 0;
     }
 
     @Transactional
-    public List<ListingToCriterionForCuresAchievementStatisticDTO> calculateCurrentStatistics(LocalDate statisticDate) {
+    public List<ListingToCriterionForCuresAchievementStatistic> calculateCurrentStatistics(LocalDate statisticDate) {
         List<Long> listingIdsWithoutCuresUpdate = listingToCuresAchievementDao.getListingIdsWithoutCuresUpdateStatus();
         LOGGER.info("There are " + listingIdsWithoutCuresUpdate.size() + " Active listings without cures update status.");
-        List<ListingToCriterionForCuresAchievementStatisticDTO> statistics
+        List<ListingToCriterionForCuresAchievementStatistic> statistics
             = listingIdsWithoutCuresUpdate.stream()
                 .map(listingId -> getListingDetails(listingId))
                 .filter(listing -> listing != null)
@@ -95,14 +95,14 @@ public class ListingCriterionForCuresAchievementStatisticsCalculator {
         return details;
     }
 
-    private List<ListingToCriterionForCuresAchievementStatisticDTO> calculateCurrentStatistic(LocalDate statisticDate, CertifiedProductSearchDetails listing) {
-        List<ListingToCriterionForCuresAchievementStatisticDTO> statisticsWithNeededCuresCriterion
-            = new ArrayList<ListingToCriterionForCuresAchievementStatisticDTO>();
+    private List<ListingToCriterionForCuresAchievementStatistic> calculateCurrentStatistic(LocalDate statisticDate, CertifiedProductSearchDetails listing) {
+        List<ListingToCriterionForCuresAchievementStatistic> statisticsWithNeededCuresCriterion
+            = new ArrayList<ListingToCriterionForCuresAchievementStatistic>();
         LOGGER.info("Getting criterion needed for Cures status for listing " + listing.getId());
         List<CertificationCriterionDTO> neededCriteria = getCriterionNeededForCures(listing);
         if (neededCriteria != null && neededCriteria.size() > 0) {
             for (CertificationCriterionDTO criterion : neededCriteria) {
-                statisticsWithNeededCuresCriterion.add(ListingToCriterionForCuresAchievementStatisticDTO.builder()
+                statisticsWithNeededCuresCriterion.add(ListingToCriterionForCuresAchievementStatistic.builder()
                         .statisticDate(statisticDate)
                         .listingId(listing.getId())
                         .criterion(criterion)
@@ -167,8 +167,8 @@ public class ListingCriterionForCuresAchievementStatisticsCalculator {
     }
 
     @Transactional
-    public void save(List<ListingToCriterionForCuresAchievementStatisticDTO> statistics) {
-        for (ListingToCriterionForCuresAchievementStatisticDTO statistic : statistics) {
+    public void save(List<ListingToCriterionForCuresAchievementStatistic> statistics) {
+        for (ListingToCriterionForCuresAchievementStatistic statistic : statistics) {
             try {
                 listingToCuresAchievementDao.create(statistic);
             } catch (Exception ex) {
@@ -181,8 +181,8 @@ public class ListingCriterionForCuresAchievementStatisticsCalculator {
 
     @Transactional
     public void deleteStatisticsForDate(LocalDate statisticDate) {
-        List<ListingToCriterionForCuresAchievementStatisticDTO> statisticsForDate = listingToCuresAchievementDao.getStatisticsForDate(statisticDate);
-        for (ListingToCriterionForCuresAchievementStatisticDTO statistic : statisticsForDate) {
+        List<ListingToCriterionForCuresAchievementStatistic> statisticsForDate = listingToCuresAchievementDao.getStatisticsForDate(statisticDate);
+        for (ListingToCriterionForCuresAchievementStatistic statistic : statisticsForDate) {
             try {
                 listingToCuresAchievementDao.delete(statistic.getId());
             } catch (Exception ex) {

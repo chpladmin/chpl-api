@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.statistics.ListingCuresStatusStatisticDTO;
+import gov.healthit.chpl.domain.statistics.ListingCuresStatusStatistic;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.statistics.ListingCuresStatusStatisticEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -64,14 +64,14 @@ public class ListingCuresStatusStatisticsDAO extends BaseDAOImpl {
         return (Long) query.getSingleResult();
     }
 
-    public List<ListingCuresStatusStatisticDTO> findAll() {
+    public List<ListingCuresStatusStatistic> findAll() {
         List<ListingCuresStatusStatisticEntity> entities = this.findAllEntities();
         return entities.stream()
-                .map(entity -> entity.toDto())
+                .map(entity -> entity.toDomain())
                 .collect(Collectors.toList());
     }
 
-    public List<ListingCuresStatusStatisticDTO> getStatisticsForDate(LocalDate statisticDate) {
+    public List<ListingCuresStatusStatistic> getStatisticsForDate(LocalDate statisticDate) {
         Query query = entityManager.createQuery("SELECT stats "
                 + "FROM ListingCuresStatusStatisticEntity stats "
                 + "WHERE (stats.deleted = false) "
@@ -80,7 +80,7 @@ public class ListingCuresStatusStatisticsDAO extends BaseDAOImpl {
         query.setParameter("statisticDate", statisticDate);
         List<ListingCuresStatusStatisticEntity> entities = query.getResultList();
         return entities.stream()
-                .map(entity -> entity.toDto())
+                .map(entity -> entity.toDomain())
                 .collect(Collectors.toList());
     }
 
@@ -93,7 +93,7 @@ public class ListingCuresStatusStatisticsDAO extends BaseDAOImpl {
         }
     }
 
-    public void create(ListingCuresStatusStatisticDTO dto)
+    public void create(ListingCuresStatusStatistic dto)
             throws EntityCreationException, EntityRetrievalException {
         ListingCuresStatusStatisticEntity entity = new ListingCuresStatusStatisticEntity();
         entity.setCuresListingCount(dto.getCuresListingCount());

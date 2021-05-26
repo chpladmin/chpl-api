@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.statistics.ListingToCriterionForCuresAchievementStatisticDTO;
+import gov.healthit.chpl.domain.statistics.ListingToCriterionForCuresAchievementStatistic;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.statistics.ListingToCriterionForCuresAchievementStatisticEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -55,14 +55,14 @@ public class ListingToCriterionForCuresAchievementStatisticsDAO extends BaseDAOI
         return query.getResultList();
     }
 
-    public List<ListingToCriterionForCuresAchievementStatisticDTO> findAll() {
+    public List<ListingToCriterionForCuresAchievementStatistic> findAll() {
         List<ListingToCriterionForCuresAchievementStatisticEntity> entities = this.findAllEntities();
         return entities.stream()
-                .map(entity -> entity.toDto())
+                .map(entity -> entity.toDomain())
                 .collect(Collectors.toList());
     }
 
-    public List<ListingToCriterionForCuresAchievementStatisticDTO> getStatisticsForDate(LocalDate statisticDate) {
+    public List<ListingToCriterionForCuresAchievementStatistic> getStatisticsForDate(LocalDate statisticDate) {
         Query query = entityManager.createQuery("SELECT stats "
                 + "FROM ListingToCriterionForCuresAchievementStatisticEntity stats "
                 + "LEFT OUTER JOIN FETCH stats.certificationCriterion cce "
@@ -73,7 +73,7 @@ public class ListingToCriterionForCuresAchievementStatisticsDAO extends BaseDAOI
         query.setParameter("statisticDate", statisticDate);
         List<ListingToCriterionForCuresAchievementStatisticEntity> entities = query.getResultList();
         return entities.stream()
-                .map(entity -> entity.toDto())
+                .map(entity -> entity.toDomain())
                 .collect(Collectors.toList());
     }
 
@@ -86,7 +86,7 @@ public class ListingToCriterionForCuresAchievementStatisticsDAO extends BaseDAOI
         }
     }
 
-    public void create(ListingToCriterionForCuresAchievementStatisticDTO dto)
+    public void create(ListingToCriterionForCuresAchievementStatistic dto)
             throws EntityCreationException, EntityRetrievalException {
         ListingToCriterionForCuresAchievementStatisticEntity entity = new ListingToCriterionForCuresAchievementStatisticEntity();
         entity.setListingId(dto.getListingId());

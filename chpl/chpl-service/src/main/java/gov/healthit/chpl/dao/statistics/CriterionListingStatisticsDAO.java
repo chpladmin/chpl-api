@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.statistics.CriterionListingCountStatisticDTO;
+import gov.healthit.chpl.domain.statistics.CriterionListingCountStatistic;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.statistics.CriterionListingCountStatisticEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -53,10 +53,10 @@ public class CriterionListingStatisticsDAO extends BaseDAOImpl {
         return result;
     }
 
-    public List<CriterionListingCountStatisticDTO> findAll() {
+    public List<CriterionListingCountStatistic> findAll() {
         List<CriterionListingCountStatisticEntity> entities = this.findAllEntities();
         return entities.stream()
-                .map(entity -> entity.toDto())
+                .map(entity -> entity.toDomain())
                 .collect(Collectors.toList());
     }
 
@@ -73,7 +73,7 @@ public class CriterionListingStatisticsDAO extends BaseDAOImpl {
         return result;
     }
 
-    public List<CriterionListingCountStatisticDTO> getStatisticsForDate(LocalDate statisticDate) {
+    public List<CriterionListingCountStatistic> getStatisticsForDate(LocalDate statisticDate) {
         Query query = entityManager.createQuery("SELECT stats "
                 + "FROM CriterionListingCountStatisticEntity stats "
                 + "LEFT OUTER JOIN FETCH stats.certificationCriterion cce "
@@ -84,7 +84,7 @@ public class CriterionListingStatisticsDAO extends BaseDAOImpl {
         query.setParameter("statisticDate", statisticDate);
         List<CriterionListingCountStatisticEntity> entities = query.getResultList();
         return entities.stream()
-                .map(entity -> entity.toDto())
+                .map(entity -> entity.toDomain())
                 .collect(Collectors.toList());
     }
 
@@ -97,7 +97,7 @@ public class CriterionListingStatisticsDAO extends BaseDAOImpl {
         }
     }
 
-    public void create(CriterionListingCountStatisticDTO dto)
+    public void create(CriterionListingCountStatistic dto)
             throws EntityCreationException, EntityRetrievalException {
         CriterionListingCountStatisticEntity entity = new CriterionListingCountStatisticEntity();
         entity.setListingCount(dto.getListingsCertifyingToCriterionCount());

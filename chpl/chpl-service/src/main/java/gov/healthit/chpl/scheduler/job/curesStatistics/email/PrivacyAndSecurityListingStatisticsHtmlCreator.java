@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.statistics.PrivacyAndSecurityListingStatisticsDAO;
-import gov.healthit.chpl.dto.statistics.PrivacyAndSecurityListingStatisticDTO;
+import gov.healthit.chpl.domain.statistics.PrivacyAndSecurityListingStatistic;
 import gov.healthit.chpl.util.HtmlEmailTemplate;
 import lombok.extern.log4j.Log4j2;
 
@@ -36,7 +36,7 @@ public class PrivacyAndSecurityListingStatisticsHtmlCreator {
     public String createEmailBody() {
         LocalDate statisticDate = privacyAndSecurityStatisticsDao.getDateOfMostRecentStatistics();
         if (statisticDate != null) {
-            List<PrivacyAndSecurityListingStatisticDTO> statistics = privacyAndSecurityStatisticsDao.getStatisticsForDate(statisticDate);
+            List<PrivacyAndSecurityListingStatistic> statistics = privacyAndSecurityStatisticsDao.getStatisticsForDate(statisticDate);
             LOGGER.info("Generating HTML email text for " + statistics.size() + " statistics.");
             return getEmailText(statisticDate, statistics);
         } else {
@@ -45,18 +45,18 @@ public class PrivacyAndSecurityListingStatisticsHtmlCreator {
         }
     }
 
-    private String getEmailText(LocalDate statisticsDate, List<PrivacyAndSecurityListingStatisticDTO> statistics) {
+    private String getEmailText(LocalDate statisticsDate, List<PrivacyAndSecurityListingStatistic> statistics) {
         HtmlEmailTemplate email = new HtmlEmailTemplate();
         email.setStyles(emailStyles);
         email.setBody(getBody(statisticsDate, statistics));
         return email.build();
     }
 
-    private String getBody(LocalDate statisticsDate, List<PrivacyAndSecurityListingStatisticDTO> statistics) {
+    private String getBody(LocalDate statisticsDate, List<PrivacyAndSecurityListingStatistic> statistics) {
         return String.format(emailBody, dateFormatter.format(statisticsDate), getTable(statistics));
     }
 
-    private String getTable(List<PrivacyAndSecurityListingStatisticDTO> statistics) {
+    private String getTable(List<PrivacyAndSecurityListingStatistic> statistics) {
         StringBuilder table = new StringBuilder();
         table.append("<table class='blueTable'>\n");
         table.append("    <thead>\n");
@@ -77,7 +77,7 @@ public class PrivacyAndSecurityListingStatisticsHtmlCreator {
         return table.toString();
     }
 
-    private String getTableRow(boolean isEven, PrivacyAndSecurityListingStatisticDTO statistic) {
+    private String getTableRow(boolean isEven, PrivacyAndSecurityListingStatistic statistic) {
         StringBuilder row = new StringBuilder();
         row.append("        <tr class='" + (isEven ? "even" : "odd") + "'>\n");
         row.append("            <td>\n");

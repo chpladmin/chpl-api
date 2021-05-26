@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.statistics.PrivacyAndSecurityListingStatisticDTO;
+import gov.healthit.chpl.domain.statistics.PrivacyAndSecurityListingStatistic;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.statistics.PrivacyAndSecurityListingStatisticEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -122,14 +122,14 @@ public class PrivacyAndSecurityListingStatisticsDAO extends BaseDAOImpl {
         return result;
     }
 
-    public List<PrivacyAndSecurityListingStatisticDTO> findAll() {
+    public List<PrivacyAndSecurityListingStatistic> findAll() {
         List<PrivacyAndSecurityListingStatisticEntity> entities = this.findAllEntities();
         return entities.stream()
-                .map(entity -> entity.toDto())
+                .map(entity -> entity.toDomain())
                 .collect(Collectors.toList());
     }
 
-    public List<PrivacyAndSecurityListingStatisticDTO> getStatisticsForDate(LocalDate statisticDate) {
+    public List<PrivacyAndSecurityListingStatistic> getStatisticsForDate(LocalDate statisticDate) {
         Query query = entityManager.createQuery("SELECT stats "
                 + "FROM PrivacyAndSecurityListingStatisticEntity stats "
                 + "WHERE (stats.deleted = false) "
@@ -138,7 +138,7 @@ public class PrivacyAndSecurityListingStatisticsDAO extends BaseDAOImpl {
         query.setParameter("statisticDate", statisticDate);
         List<PrivacyAndSecurityListingStatisticEntity> entities = query.getResultList();
         return entities.stream()
-                .map(entity -> entity.toDto())
+                .map(entity -> entity.toDomain())
                 .collect(Collectors.toList());
     }
 
@@ -151,7 +151,7 @@ public class PrivacyAndSecurityListingStatisticsDAO extends BaseDAOImpl {
         }
     }
 
-    public void create(PrivacyAndSecurityListingStatisticDTO dto)
+    public void create(PrivacyAndSecurityListingStatistic dto)
             throws EntityCreationException, EntityRetrievalException {
         PrivacyAndSecurityListingStatisticEntity entity = new PrivacyAndSecurityListingStatisticEntity();
         entity.setListingsRequiringPrivacyAndSecurityCount(dto.getListingsRequiringPrivacyAndSecurityCount());

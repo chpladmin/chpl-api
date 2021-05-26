@@ -11,17 +11,17 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.statistics.CuresCriterionUpgradedWithoutOriginalListingStatisticDTO;
+import gov.healthit.chpl.domain.statistics.CuresCriterionUpgradedWithoutOriginalListingStatistic;
 import gov.healthit.chpl.entity.statistics.CuresCriterionUpgradedWithoutOriginalListingStatisticEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("curesCriterionUpgradedWithoutOriginalListingStatisticsDAO")
 public class CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO extends BaseDAOImpl {
-    public List<CuresCriterionUpgradedWithoutOriginalListingStatisticDTO> findAll() {
+    public List<CuresCriterionUpgradedWithoutOriginalListingStatistic> findAll() {
         List<CuresCriterionUpgradedWithoutOriginalListingStatisticEntity> entities = this.findAllEntities();
         return entities.stream()
-                .map(entity -> entity.toDto())
+                .map(entity -> entity.toDomain())
                 .collect(Collectors.toList());
     }
 
@@ -38,7 +38,7 @@ public class CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO extends B
         return result;
     }
 
-    public List<CuresCriterionUpgradedWithoutOriginalListingStatisticDTO> getStatisticsForDate(LocalDate statisticDate) {
+    public List<CuresCriterionUpgradedWithoutOriginalListingStatistic> getStatisticsForDate(LocalDate statisticDate) {
         Query query = entityManager.createQuery("SELECT stats "
                 + "FROM CuresCriterionUpgradedWithoutOriginalListingStatisticEntity stats "
                 + "LEFT OUTER JOIN FETCH stats.certificationCriterion cce "
@@ -49,7 +49,7 @@ public class CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO extends B
         query.setParameter("statisticDate", statisticDate);
         List<CuresCriterionUpgradedWithoutOriginalListingStatisticEntity> entities = query.getResultList();
         return entities.stream()
-                .map(entity -> entity.toDto())
+                .map(entity -> entity.toDomain())
                 .collect(Collectors.toList());
     }
 
@@ -62,7 +62,7 @@ public class CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO extends B
         }
     }
 
-    public void create(CuresCriterionUpgradedWithoutOriginalListingStatisticDTO dto)
+    public void create(CuresCriterionUpgradedWithoutOriginalListingStatistic dto)
             throws EntityCreationException, EntityRetrievalException {
         CuresCriterionUpgradedWithoutOriginalListingStatisticEntity entity = new CuresCriterionUpgradedWithoutOriginalListingStatisticEntity();
         entity.setListingCount(dto.getListingsUpgradedWithoutAttestingToOriginalCount());

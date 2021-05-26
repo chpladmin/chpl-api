@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dto.statistics;
+package gov.healthit.chpl.domain.statistics;
 
 import java.time.LocalDate;
 
@@ -12,9 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ListingToCriterionForCuresAchievementStatisticDTO {
+public class CuresCriterionUpgradedWithoutOriginalListingStatistic {
     private Long id;
     private LocalDate statisticDate;
-    private CertificationCriterionDTO criterion;
-    private Long listingId;
+    private CertificationCriterionDTO curesCriterion;
+    private Long listingsUpgradedWithoutAttestingToOriginalCount;
 }

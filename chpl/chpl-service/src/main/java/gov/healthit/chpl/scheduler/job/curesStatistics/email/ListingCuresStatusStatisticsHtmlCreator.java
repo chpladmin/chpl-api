@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.statistics.ListingCuresStatusStatisticsDAO;
-import gov.healthit.chpl.dto.statistics.ListingCuresStatusStatisticDTO;
+import gov.healthit.chpl.domain.statistics.ListingCuresStatusStatistic;
 import gov.healthit.chpl.util.HtmlEmailTemplate;
 import lombok.extern.log4j.Log4j2;
 
@@ -36,7 +36,7 @@ public class ListingCuresStatusStatisticsHtmlCreator {
     public String createEmailBody() {
         LocalDate statisticDate = listingCuresStatusStatisticsDao.getDateOfMostRecentStatistics();
         if (statisticDate != null) {
-            List<ListingCuresStatusStatisticDTO> statistics = listingCuresStatusStatisticsDao.getStatisticsForDate(statisticDate);
+            List<ListingCuresStatusStatistic> statistics = listingCuresStatusStatisticsDao.getStatisticsForDate(statisticDate);
             LOGGER.info("Generating HTML email text for " + statistics.size() + " statistics.");
             return getEmailText(statisticDate, statistics);
         } else {
@@ -45,18 +45,18 @@ public class ListingCuresStatusStatisticsHtmlCreator {
         }
     }
 
-    private String getEmailText(LocalDate statisticsDate, List<ListingCuresStatusStatisticDTO> statistics) {
+    private String getEmailText(LocalDate statisticsDate, List<ListingCuresStatusStatistic> statistics) {
         HtmlEmailTemplate email = new HtmlEmailTemplate();
         email.setStyles(emailStyles);
         email.setBody(getBody(statisticsDate, statistics));
         return email.build();
     }
 
-    private String getBody(LocalDate statisticsDate, List<ListingCuresStatusStatisticDTO> statistics) {
+    private String getBody(LocalDate statisticsDate, List<ListingCuresStatusStatistic> statistics) {
         return String.format(emailBody, dateFormatter.format(statisticsDate), getTable(statistics));
     }
 
-    private String getTable(List<ListingCuresStatusStatisticDTO> statistics) {
+    private String getTable(List<ListingCuresStatusStatistic> statistics) {
         StringBuilder table = new StringBuilder();
         table.append("<table class='blueTable'>\n");
         table.append("    <thead>\n");
@@ -77,7 +77,7 @@ public class ListingCuresStatusStatisticsHtmlCreator {
         return table.toString();
     }
 
-    private String getTableRow(boolean isEven, ListingCuresStatusStatisticDTO statistic) {
+    private String getTableRow(boolean isEven, ListingCuresStatusStatistic statistic) {
         StringBuilder row = new StringBuilder();
         row.append("        <tr class='" + (isEven ? "even" : "odd") + "'>\n");
         row.append("            <td>\n");

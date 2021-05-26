@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dto.statistics;
+package gov.healthit.chpl.domain.statistics;
 
 import java.time.LocalDate;
 
@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PrivacyAndSecurityListingStatisticDTO {
+public class ListingCuresStatusStatistic {
     private Long id;
     private LocalDate statisticDate;
-    private Long listingsWithPrivacyAndSecurityCount;
-    private Long listingsRequiringPrivacyAndSecurityCount;
+    private Long curesListingCount;
+    private Long totalListingCount;
 }

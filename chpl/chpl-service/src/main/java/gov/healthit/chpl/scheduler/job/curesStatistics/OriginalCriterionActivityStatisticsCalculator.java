@@ -16,8 +16,8 @@ import gov.healthit.chpl.SpecialProperties;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.statistics.CriterionUpgradedToCuresFromOriginalListingStatisticsDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.statistics.CriterionUpgradedToCuresFromOriginalListingStatistic;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
-import gov.healthit.chpl.dto.statistics.CriterionUpgradedToCuresFromOriginalListingStatisticDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.extern.log4j.Log4j2;
@@ -53,16 +53,16 @@ public class OriginalCriterionActivityStatisticsCalculator {
 
     @Transactional
     public boolean hasStatisticsForDate(LocalDate statisticDate) {
-        List<CriterionUpgradedToCuresFromOriginalListingStatisticDTO> statisticsForDate
+        List<CriterionUpgradedToCuresFromOriginalListingStatistic> statisticsForDate
             = criterionUpgradedToCuresFromOriginalStatisticsDao.getStatisticsForDate(statisticDate);
         return statisticsForDate != null && statisticsForDate.size() > 0;
     }
 
     @Transactional
-    public List<CriterionUpgradedToCuresFromOriginalListingStatisticDTO> calculateCurrentStatistics(LocalDate statisticDate) {
+    public List<CriterionUpgradedToCuresFromOriginalListingStatistic> calculateCurrentStatistics(LocalDate statisticDate) {
         LOGGER.info("Calculating original criteria upgraded to cures statistics for " + statisticDate);
-        List<CriterionUpgradedToCuresFromOriginalListingStatisticDTO> results
-            = new ArrayList<CriterionUpgradedToCuresFromOriginalListingStatisticDTO>();
+        List<CriterionUpgradedToCuresFromOriginalListingStatistic> results
+            = new ArrayList<CriterionUpgradedToCuresFromOriginalListingStatistic>();
 
         Map<CertificationCriterion, CertificationCriterion> originalToCuresCriteriaMap = criteriaService.getOriginalToCuresCriteriaMap();
         for (CertificationCriterion originalCriterion : originalToCuresCriteriaMap.keySet()) {
@@ -79,9 +79,9 @@ public class OriginalCriterionActivityStatisticsCalculator {
         return results;
     }
 
-    private CriterionUpgradedToCuresFromOriginalListingStatisticDTO buildStatistic(
+    private CriterionUpgradedToCuresFromOriginalListingStatistic buildStatistic(
             CertificationCriterion criterion, long listingCount, LocalDate statisticDate) {
-        return CriterionUpgradedToCuresFromOriginalListingStatisticDTO.builder()
+        return CriterionUpgradedToCuresFromOriginalListingStatistic.builder()
                 .listingsUpgradedFromOriginalCount(listingCount)
                 .curesCriterion(CertificationCriterionDTO.builder()
                         .id(criterion.getId())
@@ -93,8 +93,8 @@ public class OriginalCriterionActivityStatisticsCalculator {
     }
 
     @Transactional
-    public void save(List<CriterionUpgradedToCuresFromOriginalListingStatisticDTO> statistics) {
-        for (CriterionUpgradedToCuresFromOriginalListingStatisticDTO statistic : statistics) {
+    public void save(List<CriterionUpgradedToCuresFromOriginalListingStatistic> statistics) {
+        for (CriterionUpgradedToCuresFromOriginalListingStatistic statistic : statistics) {
             try {
                 criterionUpgradedToCuresFromOriginalStatisticsDao.create(statistic);
             } catch (Exception ex) {
@@ -107,9 +107,9 @@ public class OriginalCriterionActivityStatisticsCalculator {
 
     @Transactional
     public void deleteStatisticsForDate(LocalDate statisticDate) {
-        List<CriterionUpgradedToCuresFromOriginalListingStatisticDTO> statisticsForDate
+        List<CriterionUpgradedToCuresFromOriginalListingStatistic> statisticsForDate
             = criterionUpgradedToCuresFromOriginalStatisticsDao.getStatisticsForDate(statisticDate);
-        for (CriterionUpgradedToCuresFromOriginalListingStatisticDTO statistic : statisticsForDate) {
+        for (CriterionUpgradedToCuresFromOriginalListingStatistic statistic : statisticsForDate) {
             try {
                 criterionUpgradedToCuresFromOriginalStatisticsDao.delete(statistic.getId());
             } catch (Exception ex) {

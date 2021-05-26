@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.statistics.ListingToCriterionForCuresAchievementStatisticsDAO;
-import gov.healthit.chpl.dto.statistics.ListingToCriterionForCuresAchievementStatisticDTO;
+import gov.healthit.chpl.domain.statistics.ListingToCriterionForCuresAchievementStatistic;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -51,10 +51,10 @@ public class ListingCriterionForCuresAchievementStatisticsCsvCreator {
             try (FileWriter fileWriter = new FileWriter(csvFile);
                     CSVPrinter csvFilePrinter = new CSVPrinter(fileWriter, csvFileFormat)) {
                 csvFilePrinter.printRecord(generateHeader());
-                List<ListingToCriterionForCuresAchievementStatisticDTO> statisticsForDate = listingToCriterionForCuresAchievementStatisticsDao.getStatisticsForDate(statisticDate);
-                Map<Long, List<ListingToCriterionForCuresAchievementStatisticDTO>> statisticsByListing
+                List<ListingToCriterionForCuresAchievementStatistic> statisticsForDate = listingToCriterionForCuresAchievementStatisticsDao.getStatisticsForDate(statisticDate);
+                Map<Long, List<ListingToCriterionForCuresAchievementStatistic>> statisticsByListing
                     = statisticsForDate.stream()
-                    .collect(Collectors.groupingBy(ListingToCriterionForCuresAchievementStatisticDTO::getListingId));
+                    .collect(Collectors.groupingBy(ListingToCriterionForCuresAchievementStatistic::getListingId));
                 Map<Long, Long> countedStatistics = new HashMap<Long, Long>();
                 statisticsByListing.keySet().stream()
                     .forEach(listingId -> countStatistic(new Long(statisticsByListing.get(listingId).size()), countedStatistics));

@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.statistics.CriterionListingStatisticsDAO;
-import gov.healthit.chpl.dto.statistics.CriterionListingCountStatisticDTO;
+import gov.healthit.chpl.domain.statistics.CriterionListingCountStatistic;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.extern.log4j.Log4j2;
 
@@ -48,7 +48,7 @@ public class CriterionListingStatisticsCsvCreator {
             try (FileWriter fileWriter = new FileWriter(csvFile);
                     CSVPrinter csvFilePrinter = new CSVPrinter(fileWriter, csvFileFormat)) {
                 csvFilePrinter.printRecord(generateHeader());
-                List<CriterionListingCountStatisticDTO> statisticsForDate = criterionListingStatisticsDao.getStatisticsForDate(statisticDate);
+                List<CriterionListingCountStatistic> statisticsForDate = criterionListingStatisticsDao.getStatisticsForDate(statisticDate);
                 statisticsForDate.stream()
                     .forEach(statistic -> printRow(csvFilePrinter, statistic));
                 LOGGER.info("Completed generating records for " + statisticsForDate.size() + " statistics.");
@@ -59,7 +59,7 @@ public class CriterionListingStatisticsCsvCreator {
         return csvFile;
     }
 
-    private void printRow(CSVPrinter csvFilePrinter, CriterionListingCountStatisticDTO statistic) {
+    private void printRow(CSVPrinter csvFilePrinter, CriterionListingCountStatistic statistic) {
         try {
             csvFilePrinter.printRecord(generateRow(statistic));
         } catch (IOException e) {
@@ -71,7 +71,7 @@ public class CriterionListingStatisticsCsvCreator {
         return Stream.of(HEADING).collect(Collectors.toList());
     }
 
-    private List<String> generateRow(CriterionListingCountStatisticDTO statistic) {
+    private List<String> generateRow(CriterionListingCountStatistic statistic) {
         return Stream.of(CertificationCriterionService.formatCriteriaNumber(statistic.getCriterion()),
         statistic.getListingsCertifyingToCriterionCount().toString()).collect(Collectors.toList());
     }

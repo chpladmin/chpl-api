@@ -14,8 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.domain.statistics.CriterionListingCountStatistic;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
-import gov.healthit.chpl.dto.statistics.CriterionListingCountStatisticDTO;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import lombok.Data;
 
@@ -61,8 +61,8 @@ public class CriterionListingCountStatisticEntity {
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
-    public CriterionListingCountStatisticDTO toDto() {
-        return CriterionListingCountStatisticDTO.builder()
+    public CriterionListingCountStatistic toDomain() {
+        return CriterionListingCountStatistic.builder()
                 .id(this.getId())
                 .criterion(CertificationCriterionDTO.builder()
                         .id(this.getCertificationCriterionId())

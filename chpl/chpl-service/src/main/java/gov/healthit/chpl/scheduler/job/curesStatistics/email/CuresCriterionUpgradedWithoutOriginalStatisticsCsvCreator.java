@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.statistics.CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO;
-import gov.healthit.chpl.dto.statistics.CuresCriterionUpgradedWithoutOriginalListingStatisticDTO;
+import gov.healthit.chpl.domain.statistics.CuresCriterionUpgradedWithoutOriginalListingStatistic;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.extern.log4j.Log4j2;
 
@@ -49,7 +49,7 @@ public class CuresCriterionUpgradedWithoutOriginalStatisticsCsvCreator {
             try (FileWriter fileWriter = new FileWriter(csvFile);
                     CSVPrinter csvFilePrinter = new CSVPrinter(fileWriter, csvFileFormat)) {
                 csvFilePrinter.printRecord(generateHeader());
-                List<CuresCriterionUpgradedWithoutOriginalListingStatisticDTO> statisticsForDate = criterionUpgradedWithoutOriginalStatisticsDao.getStatisticsForDate(statisticDate);
+                List<CuresCriterionUpgradedWithoutOriginalListingStatistic> statisticsForDate = criterionUpgradedWithoutOriginalStatisticsDao.getStatisticsForDate(statisticDate);
                 statisticsForDate.stream()
                     .forEach(statistic -> printRow(csvFilePrinter, statistic));
                 LOGGER.info("Completed generating records for " + statisticsForDate.size() + " statistics.");
@@ -60,7 +60,7 @@ public class CuresCriterionUpgradedWithoutOriginalStatisticsCsvCreator {
         return csvFile;
     }
 
-    private void printRow(CSVPrinter csvFilePrinter, CuresCriterionUpgradedWithoutOriginalListingStatisticDTO statistic) {
+    private void printRow(CSVPrinter csvFilePrinter, CuresCriterionUpgradedWithoutOriginalListingStatistic statistic) {
         try {
             csvFilePrinter.printRecord(generateRow(statistic));
         } catch (IOException e) {
@@ -72,7 +72,7 @@ public class CuresCriterionUpgradedWithoutOriginalStatisticsCsvCreator {
         return Stream.of(HEADING).collect(Collectors.toList());
     }
 
-    private List<String> generateRow(CuresCriterionUpgradedWithoutOriginalListingStatisticDTO statistic) {
+    private List<String> generateRow(CuresCriterionUpgradedWithoutOriginalListingStatistic statistic) {
         return Stream.of(CertificationCriterionService.formatCriteriaNumber(statistic.getCuresCriterion()),
         statistic.getListingsUpgradedWithoutAttestingToOriginalCount().toString()).collect(Collectors.toList());
     }
