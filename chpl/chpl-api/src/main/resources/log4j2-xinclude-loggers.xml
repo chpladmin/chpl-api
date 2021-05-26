@@ -171,4 +171,8 @@
         additivity="false">
         <AppenderRef ref="meaningfulUseUploadJob" />
     </Logger>
+    <Logger name="versionActivityUpdaterJobLogger" level="INFO"
+        additivity="false">
+        <AppenderRef ref="versionActivityUpdaterJob" />
+    </Logger>
 </Loggers>
