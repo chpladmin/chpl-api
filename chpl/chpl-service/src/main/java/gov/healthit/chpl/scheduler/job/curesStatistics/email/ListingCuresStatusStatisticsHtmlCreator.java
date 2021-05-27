@@ -40,7 +40,7 @@ public class ListingCuresStatusStatisticsHtmlCreator {
             statistics = listingCuresStatusStatisticsDao.getStatisticsForDate(statisticDate);
             LOGGER.info("Generating HTML email text for " + statistics.size() + " statistics.");
         } else {
-            LOGGER.error("No most statistics were found.");
+            LOGGER.error("No statistics were found.");
         }
         return getEmailText(statisticDate, statistics);
     }
