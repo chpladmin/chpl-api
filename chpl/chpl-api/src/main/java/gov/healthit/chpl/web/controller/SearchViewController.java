@@ -1004,7 +1004,11 @@ public class SearchViewController {
         Set<OptionalStandard> data = dimensionalDataManager.getOptionalStandards();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
-        result.setData(data);
+        if (ff4j.check(FeatureList.OPTIONAL_STANDARDS)) {
+            result.setData(data);
+        } else {
+            result.setData(null);
+        }
         return result;
     }
 
