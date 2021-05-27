@@ -15,7 +15,7 @@ public final class CellHelper {
         if (value != null) {
             cell.setCellValue(value);
         } else {
-            cell.setCellValue("");
+            cell.setCellValue("N/A");
         }
         return cell;
     }
@@ -28,7 +28,7 @@ public final class CellHelper {
         if (value != null) {
             cell.setCellValue(convertLocalDateToDate(value));
         } else {
-            cell.setCellValue("");
+            cell.setCellValue("N/A");
         }
         if (style != null) {
             cell.setCellStyle(style);
@@ -44,7 +44,7 @@ public final class CellHelper {
         if (value != null) {
             cell.setCellValue(value);
         } else {
-            cell.setCellValue("");
+            cell.setCellValue("N/A");
         }
         if (style != null) {
             cell.setCellStyle(style);

@@ -4,6 +4,7 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Workbook;
 
@@ -51,6 +52,7 @@ public class StatisticsWorksheetStyles {
         font.setFontHeightInPoints(DEFAULT_FONT_SIZE);
 
         CellStyle style = workbook.createCellStyle();
+        style.setAlignment(HorizontalAlignment.RIGHT);
         style.setFont(font);
         style.setDataFormat(workbook.createDataFormat().getFormat("0"));
         if (useAlternateColor) {
@@ -68,6 +70,7 @@ public class StatisticsWorksheetStyles {
         font.setFontHeightInPoints(DEFAULT_FONT_SIZE);
 
         CellStyle style = workbook.createCellStyle();
+        style.setAlignment(HorizontalAlignment.RIGHT);
         style.setFont(font);
         if (useAlternateColor) {
             style.setFillForegroundColor(IndexedColors.LIGHT_TURQUOISE1.index);
