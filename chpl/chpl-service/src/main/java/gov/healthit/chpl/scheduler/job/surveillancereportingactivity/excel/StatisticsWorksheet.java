@@ -10,6 +10,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.Statistics;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceData;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceData.RecordType;
@@ -49,12 +50,14 @@ public class StatisticsWorksheet {
 
 
     private Workbook workbook;
+    private List<CertificationBodyDTO> allAcbs;
     private List<String> mainHeaders = Arrays.asList(
             "Time to Assess Conformity", "Time to Approve CAP", "Duration of CAP", "Time from CAP Approval to Surveillance Close",
             "Time from CAP Close to Surveillance Close", "Duration of Closed Surveillance");
 
-    public StatisticsWorksheet(Workbook workbook) {
+    public StatisticsWorksheet(Workbook workbook, List<CertificationBodyDTO> allAcbs) {
         this.workbook = workbook;
+        this.allAcbs = allAcbs;
     }
 
     public Workbook generateWorksheet(List<SurveillanceData> surveillances) {
@@ -66,9 +69,9 @@ public class StatisticsWorksheet {
             sheet = generateMainHeaders(sheet);
 
             Integer startingRowForAcb = 1;
-            List<String> acbs = SurveillanceDataService.getUniqueAcbName(surveillances);
-            for (String acbName : acbs) {
-                sheet = generateStatisticsForAcb(sheet, acbName, startingRowForAcb, surveillances);
+
+            for (CertificationBodyDTO acb : allAcbs) {
+                sheet = generateStatisticsForAcb(sheet, acb.getName(), startingRowForAcb, surveillances);
                 startingRowForAcb += 24;
             }
 

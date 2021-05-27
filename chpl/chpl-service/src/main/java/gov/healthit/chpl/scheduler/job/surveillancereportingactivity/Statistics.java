@@ -25,6 +25,9 @@ public final class Statistics {
     }
 
     public static Integer getMean(List<Integer> values) {
+        if (values == null || values.size() == 0) {
+            return null;
+        }
         return (int) Math.round(values.stream()
                 .filter(item -> item != null)
                 .mapToDouble(a -> a)
@@ -33,6 +36,7 @@ public final class Statistics {
     }
 
     public static Integer getMedian(List<Integer> values) {
+
         List<Integer> filtered = values.stream()
                 .filter(item -> item != null)
                 .collect(Collectors.toList());
@@ -48,6 +52,10 @@ public final class Statistics {
     }
 
     public static Integer getMode(List<Integer> values) {
+        if (values == null || values.size() == 0) {
+            return null;
+        }
+
         Integer modeCount = 0;  // The count of the mode value
         Integer mode = 0;       // The value of the mode
 
@@ -79,8 +87,11 @@ public final class Statistics {
     }
 
     public static Integer getCountInRange(List<Integer> values, Integer minRange, Integer maxRange) {
-        final Integer min = minRange == null ? Integer.MIN_VALUE : minRange;
-        final Integer max = maxRange == null ? Integer.MAX_VALUE : maxRange;
+        if (values == null || values.size() == 0) {
+            return null;
+        }
+        Integer min = minRange == null ? Integer.MIN_VALUE : minRange;
+        Integer max = maxRange == null ? Integer.MAX_VALUE : maxRange;
         return Math.toIntExact(values.stream()
                 .filter(val -> val != null && val >= min && val <= max)
                 .count());

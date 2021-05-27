@@ -12,6 +12,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceData;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.charts.CapApprovalToSurveillanceCloseByIntervalChart;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.charts.ClosedSurveillanceByIntervalChart;
@@ -22,9 +23,11 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2(topic = "surveillanceActivityReportJobLogger")
 public class ChartsWorksheet {
     private Workbook workbook;
+    private List<CertificationBodyDTO> allAcbs;
 
-    public ChartsWorksheet(Workbook workbook) {
+    public ChartsWorksheet(Workbook workbook, List<CertificationBodyDTO> allAcbs) {
         this.workbook = workbook;
+        this.allAcbs = allAcbs;
     }
 
     public Sheet generateWorksheet(List<SurveillanceData> surveillances) throws IOException {
@@ -32,9 +35,9 @@ public class ChartsWorksheet {
             LOGGER.info("Starting to build the Charts worksheet.");
             Sheet sheet = workbook.createSheet("Charts");
             insertChart(sheet, getClosedSurveillanceDurationByQuartileChart(surveillances), 0, 1);
-            insertChart(sheet, getClosedSurveillanceDurationChart(surveillances), 0, 25);
-            insertChart(sheet, getClosedSurveillanceByIntervalChart(surveillances), 9, 1);
-            insertChart(sheet, getCapApprovalToSurveillanceCloseByIntervalChart(surveillances), 9, 25);
+            insertChart(sheet, getClosedSurveillanceDurationChart(surveillances), 0, 28);
+            insertChart(sheet, getClosedSurveillanceByIntervalChart(surveillances), 0, 55);
+            insertChart(sheet, getCapApprovalToSurveillanceCloseByIntervalChart(surveillances), 0, 82);
             return sheet;
         } finally {
             LOGGER.info("Completed to building the Charts worksheet.");
@@ -45,7 +48,7 @@ public class ChartsWorksheet {
     private Sheet insertChart(Sheet sheet, JFreeChart chart, Integer columnAnchorCell, Integer rowAnchorCell) throws IOException {
         Drawing drawing = sheet.createDrawingPatriarch();
 
-        BufferedImage image = chart.createBufferedImage(450, 450, 450, 450, null);
+        BufferedImage image = chart.createBufferedImage(750, 500, 750, 500, null);
         int imageIndex = sheet.getWorkbook().addPicture(ChartUtils.encodeAsPNG(image), Workbook.PICTURE_TYPE_PNG);
 
         ClientAnchor anchor = sheet.getWorkbook().getCreationHelper().createClientAnchor();
@@ -58,21 +61,21 @@ public class ChartsWorksheet {
 
     private JFreeChart getClosedSurveillanceDurationByQuartileChart(List<SurveillanceData> surveillances) {
         ClosedSurveillanceDurationByQuartileChart chart = new ClosedSurveillanceDurationByQuartileChart();
-        return chart.generateChart(surveillances);
+        return chart.generateChart(surveillances, allAcbs);
     }
 
     private JFreeChart getClosedSurveillanceDurationChart(List<SurveillanceData> surveillances) {
         ClosedSurveillanceDurationChart chart = new ClosedSurveillanceDurationChart();
-        return chart.generateChart(surveillances);
+        return chart.generateChart(surveillances, allAcbs);
     }
 
     private JFreeChart getClosedSurveillanceByIntervalChart(List<SurveillanceData> surveillances) {
         ClosedSurveillanceByIntervalChart chart = new ClosedSurveillanceByIntervalChart();
-        return chart.generateChart(surveillances);
+        return chart.generateChart(surveillances, allAcbs);
     }
 
     private JFreeChart getCapApprovalToSurveillanceCloseByIntervalChart(List<SurveillanceData> surveillances) {
         CapApprovalToSurveillanceCloseByIntervalChart chart = new CapApprovalToSurveillanceCloseByIntervalChart();
-        return chart.generateChart(surveillances);
+        return chart.generateChart(surveillances, allAcbs);
     }
 }

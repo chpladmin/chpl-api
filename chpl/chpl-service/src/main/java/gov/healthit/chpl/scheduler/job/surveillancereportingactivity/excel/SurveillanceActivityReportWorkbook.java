@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbookFactory;
 
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceData;
 import lombok.extern.log4j.Log4j2;
 
@@ -15,14 +16,14 @@ import lombok.extern.log4j.Log4j2;
 public class SurveillanceActivityReportWorkbook {
 
     @SuppressWarnings("resource")
-    public File generateWorkbook(List<SurveillanceData> surveillances) throws IOException {
+    public File generateWorkbook(List<SurveillanceData> surveillances, List<CertificationBodyDTO> allAcbs) throws IOException {
         try {
             LOGGER.info("Starting to build the Excel spreadhseet.");
             Workbook workbook = XSSFWorkbookFactory.create(true);
 
             SurveillanceDataWorksheet surveillanceDataWorksheet = new SurveillanceDataWorksheet(workbook);
-            StatisticsWorksheet statsSheet = new StatisticsWorksheet(workbook);
-            ChartsWorksheet chartsSheet = new ChartsWorksheet(workbook);
+            StatisticsWorksheet statsSheet = new StatisticsWorksheet(workbook, allAcbs);
+            ChartsWorksheet chartsSheet = new ChartsWorksheet(workbook, allAcbs);
 
             surveillanceDataWorksheet.generateWorksheet(surveillances);
             statsSheet.generateWorksheet(surveillances);

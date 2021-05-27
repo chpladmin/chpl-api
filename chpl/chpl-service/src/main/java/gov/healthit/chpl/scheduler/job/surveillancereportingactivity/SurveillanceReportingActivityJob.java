@@ -4,6 +4,7 @@ import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.excel.SurveillanceActivityReportWorkbook;
 import gov.healthit.chpl.util.EmailBuilder;
@@ -35,6 +38,9 @@ public class SurveillanceReportingActivityJob implements Job {
     @Autowired
     private Environment env;
 
+    @Autowired
+    private CertificationBodyDAO certificationBodyDAO;
+
     private DateTimeFormatter emailDateFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
     @Override
@@ -50,7 +56,10 @@ public class SurveillanceReportingActivityJob implements Job {
 
             SurveillanceActivityReportWorkbook workbook = new SurveillanceActivityReportWorkbook();
 
-            File excelFile = workbook.generateWorkbook(surveillances);
+            List<CertificationBodyDTO> allAcbs = certificationBodyDAO.findAllActive();
+            allAcbs.sort(Comparator.comparing(CertificationBodyDTO::getName));
+
+            File excelFile = workbook.generateWorkbook(surveillances, allAcbs);
 
             sendSuccessEmail(excelFile, context);
         } catch (Exception e) {
