@@ -71,6 +71,8 @@ public class StatisticsWorksheet {
                 sheet = generateStatisticsForAcb(sheet, acbName, startingRowForAcb, surveillances);
                 startingRowForAcb += 24;
             }
+
+            sheet.createFreezePane(0, 1);
             return workbook;
         } finally {
             LOGGER.info("Completed building the Statistics worksheet.");
