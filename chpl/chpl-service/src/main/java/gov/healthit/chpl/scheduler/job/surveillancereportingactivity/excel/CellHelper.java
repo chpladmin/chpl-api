@@ -27,11 +27,11 @@ public final class CellHelper {
     public static Cell setCellValueAsLocalDate(Cell cell, LocalDate value, CellStyle style) {
         if (value != null) {
             cell.setCellValue(convertLocalDateToDate(value));
-            if (style != null) {
-                cell.setCellStyle(style);
-            }
         } else {
             cell.setCellValue("");
+        }
+        if (style != null) {
+            cell.setCellStyle(style);
         }
         return cell;
     }
@@ -43,11 +43,11 @@ public final class CellHelper {
     public static Cell setCellValueAsInteger(Cell cell, Integer value, CellStyle style) {
         if (value != null) {
             cell.setCellValue(value);
-            if (style != null) {
-                cell.setCellStyle(style);
-            }
         } else {
             cell.setCellValue("");
+        }
+        if (style != null) {
+            cell.setCellStyle(style);
         }
         return cell;
     }
