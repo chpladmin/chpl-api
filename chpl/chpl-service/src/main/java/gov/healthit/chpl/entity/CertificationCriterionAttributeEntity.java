@@ -37,6 +37,9 @@ public class CertificationCriterionAttributeEntity {
     @JoinColumn(name = "criterion_id", insertable = false, updatable = false)
     private CertificationCriterionEntity criterion;
 
+    @Column(name = "optional_standard")
+    private Boolean optionalStandard;
+
     @Column(name = "svap")
     private Boolean svap;
 

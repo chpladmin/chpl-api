@@ -20,6 +20,7 @@ import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
+import gov.healthit.chpl.dao.OptionalStandardDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
@@ -43,6 +44,7 @@ import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.domain.NonconformityType;
+import gov.healthit.chpl.domain.OptionalStandard;
 import gov.healthit.chpl.domain.SearchableDimensionalData;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
@@ -74,6 +76,7 @@ import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
+import gov.healthit.chpl.entity.OptionalStandardEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
@@ -89,6 +92,7 @@ public class DimensionalDataManager {
     private CertificationCriterionDAO certificationCriterionDao;
     private EducationTypeDAO educationTypeDao;
     private AgeRangeDAO ageRangeDao;
+    private OptionalStandardDAO optionalStandardDao;
     private TestFunctionalityDAO testFuncDao;
     private TestStandardDAO testStandardDao;
     private TestToolDAO testToolDao;
@@ -120,12 +124,13 @@ public class DimensionalDataManager {
                                   SurveillanceDAO survDao, UploadTemplateVersionDAO uploadTemplateDao, QuarterDAO quarterDao,
                                   ProductDAO productDao, DeveloperDAO devDao, MeasureDAO measureDao,
                                   ListingMeasureDAO listingMeasureDao, CQMCriterionDAO cqmCriterionDao,
-                                  CertificationEditionDAO certEditionDao) {
+                                  CertificationEditionDAO certEditionDao, OptionalStandardDAO optionalStandardDao) {
         this.cacheableDimensionalDataManager = cacheableDimensionalDataManager;
         this.certificationBodyDao = certificationBodyDao;
         this.certificationCriterionDao = certificationCriterionDao;
         this.educationTypeDao = educationTypeDao;
         this.ageRangeDao = ageRangeDao;
+        this.optionalStandardDao = optionalStandardDao;
         this.testFuncDao = testFuncDao;
         this.testStandardDao = testStandardDao;
         this.testToolDao = testToolDao;
@@ -196,6 +201,20 @@ public class DimensionalDataManager {
         }
 
         return ageRanges;
+    }
+
+    @Transactional
+    public Set<OptionalStandard> getOptionalStandards() {
+        LOGGER.debug("Getting all optional standards from the database (not cached).");
+
+        List<OptionalStandardEntity> entities = this.optionalStandardDao.findAll();
+        Set<OptionalStandard> optionalStds = new HashSet<OptionalStandard>();
+
+        for (OptionalStandardEntity entity : entities) {
+            optionalStds.add(new OptionalStandard(entity));
+        }
+
+        return optionalStds;
     }
 
     @Transactional

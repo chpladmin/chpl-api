@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import gov.healthit.chpl.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import lombok.Data;
@@ -32,6 +33,7 @@ public class CertificationResultDetailsDTO implements Serializable {
     private String privacySecurityFramework;
     private CertificationCriterionDTO criterion;
 
+    private List<CertificationResultOptionalStandard> optionalStandards;
     private List<CertificationResultTestFunctionalityDTO> testFunctionality;
     private List<CertificationResultTestProcedureDTO> testProcedures;
     private List<CertificationResultTestDataDTO> testData;
@@ -60,6 +62,12 @@ public class CertificationResultDetailsDTO implements Serializable {
         this.privacySecurityFramework = entity.getPrivacySecurityFramework();
         if (entity.getCertificationCriterion() != null) {
             this.criterion = new CertificationCriterionDTO(entity.getCertificationCriterion());
+        }
+
+        if (entity.getCertificationResultOptionalStandards() != null) {
+            this.optionalStandards = entity.getCertificationResultOptionalStandards().stream()
+                    .map(e -> new CertificationResultOptionalStandard(e))
+                    .collect(Collectors.toList());
         }
 
         if (entity.getCertificationResultTestData() != null) {

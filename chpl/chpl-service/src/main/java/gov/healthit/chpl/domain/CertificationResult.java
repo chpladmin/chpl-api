@@ -195,6 +195,16 @@ public class CertificationResult implements Serializable {
     private List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
 
     /**
+     * An optional standard used to meet a certification criterion for 2015 Edition. You can find a list of potential
+     * values in the 2015 Functionality and Standards Reference Tables. Allowed values are the corresponding
+     * paragraph number for the standard within the regulation.
+     */
+    @XmlElementWrapper(name = "optionalStandards", nillable = true, required = false)
+    @XmlElement(name = "optionalStandard")
+    @Singular
+    private List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
+
+    /**
      * A standard used to meet a certification criterion for 2014 and 2015 Edition. You can find a list of potential
      * values in the 2014 or 2015 Functionality and Standards Reference Tables. Allowed values are the corresponding
      * paragraph number for the standard within the regulation.
@@ -343,6 +353,7 @@ public class CertificationResult implements Serializable {
             this.criterion = new CertificationCriterion(certResult.getCriterion());
         }
 
+        this.setOptionalStandards(getOptionalStandards(certResult, certRules));
         this.setTestFunctionality(getTestFunctionalities(certResult, certRules));
         this.setTestProcedures(getTestProcedures(certResult, certRules));
         this.setTestDataUsed(getTestData(certResult, certRules));
@@ -355,6 +366,15 @@ public class CertificationResult implements Serializable {
     private List<CertificationResultSvap> getSvaps(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.SVAP)) {
             return certResult.getSvaps();
+        } else {
+            return null;
+        }
+    }
+
+    private List<CertificationResultOptionalStandard> getOptionalStandards(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
+        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.OPTIONAL_STANDARD)) {
+            return certResult.getOptionalStandards().stream()
+                    .collect(Collectors.toList());
         } else {
             return null;
         }
@@ -498,6 +518,14 @@ public class CertificationResult implements Serializable {
 
     public void setG2Success(Boolean g2Success) {
         this.g2Success = g2Success;
+    }
+
+    public List<CertificationResultOptionalStandard> getOptionalStandards() {
+        return optionalStandards;
+    }
+
+    public void setOptionalStandards(List<CertificationResultOptionalStandard> optionalStandards) {
+        this.optionalStandards = optionalStandards;
     }
 
     public List<CertificationResultTestTool> getTestToolsUsed() {

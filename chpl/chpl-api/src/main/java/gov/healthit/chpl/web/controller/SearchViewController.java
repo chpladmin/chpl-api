@@ -44,6 +44,7 @@ import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
+import gov.healthit.chpl.domain.OptionalStandard;
 import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.SearchableDimensionalData;
 import gov.healthit.chpl.domain.TestFunctionality;
@@ -988,6 +989,19 @@ public class SearchViewController {
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getAgeRanges() {
         Set<KeyValueModel> data = dimensionalDataManager.getAgeRanges();
+        SearchOption result = new SearchOption();
+        result.setExpandable(false);
+        result.setData(data);
+        return result;
+    }
+
+    @ApiOperation(value = "Get all possible optional standard options in the CHPL",
+            notes = "This is useful for knowing what values one might possibly search for.")
+    @RequestMapping(value = "/data/optional_standards", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody SearchOption getOptionalStandards() {
+        Set<OptionalStandard> data = dimensionalDataManager.getOptionalStandards();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
