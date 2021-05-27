@@ -216,6 +216,7 @@ public class CertificationResult implements Serializable {
      */
     @XmlElementWrapper(name = "testTools", nillable = true, required = false)
     @XmlElement(name = "testTool")
+    @Builder.Default
     private List<CertificationResultTestTool> testToolsUsed = new ArrayList<CertificationResultTestTool>();
 
     /**

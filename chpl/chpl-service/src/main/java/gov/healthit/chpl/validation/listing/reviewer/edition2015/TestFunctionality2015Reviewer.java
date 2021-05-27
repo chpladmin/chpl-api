@@ -27,11 +27,6 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 
-/**
- * Makes sure test functionality is valid given criteria it is applied to.
- * @author tyoung
- *
- */
 @Component("testFunctionality2015Reviewer")
 @Transactional
 @DependsOn("certificationEditionDAO")
