@@ -107,7 +107,7 @@ public class SurveillanceDataWorksheet {
     public Sheet generateWorksheet(List<SurveillanceData> surveillances) {
         try {
             LOGGER.info("Starting to build the Surveillance Data worksheet.");
-            Sheet sheet = workbook.createSheet("surveillance-all");
+            Sheet sheet = workbook.createSheet("Surveillance Data");
             sheet = populateSheet(sheet, surveillances);
             return sheet;
         } finally {
