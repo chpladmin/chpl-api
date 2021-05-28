@@ -401,6 +401,7 @@ public class StatisticsWorksheet {
 
         cell = row.createCell(DURATION_SURV_CLOSE_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getCountInRange(dataForAcb.stream()
+                .filter(item -> item != null && item.getRecordType().equals(RecordType.UPDATE))
                 .map(item -> item.getDurationOfClosedSurveillance())
                 .collect(Collectors.toList()), min, max),
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
