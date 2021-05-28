@@ -1,5 +1,6 @@
 package gov.healthit.chpl.scheduler.job.surveillancereportingactivity.charts;
 
+import java.awt.Color;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,8 @@ public class ClosedSurveillanceDurationByQuartileChart {
             renderer.setMaxOutlierVisible(false);
             renderer.setMinOutlierVisible(false);
             renderer.setMeanVisible(false);
+            renderer.setDefaultOutlinePaint(Color.RED);
+            renderer.setDefaultPaint(Color.RED);
 
             CategoryPlot plot = new CategoryPlot(getData(surveillances, allAcbs), xAxis, yAxis, renderer);
 
