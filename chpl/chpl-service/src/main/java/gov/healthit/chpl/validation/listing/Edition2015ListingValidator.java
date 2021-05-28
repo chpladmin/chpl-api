@@ -36,6 +36,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.InvalidCriteria
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.MeasureComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.MeasureValidityReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.OldCriteriaWithoutIcsReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.OptionalStandardReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaTestTaskComparisonReviewer;
@@ -96,6 +97,10 @@ public class Edition2015ListingValidator extends Validator {
     @Autowired
     @Qualifier("unattestedCriteriaWithDataReviewer")
     private UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
+
+    @Autowired
+    @Qualifier("optionalStandardReviewer")
+    private OptionalStandardReviewer osReviewer;
 
     @Autowired
     @Qualifier("testStandardReviewer")
@@ -217,6 +222,7 @@ public class Edition2015ListingValidator extends Validator {
             reviewers.add(certStatusReviewer);
             reviewers.add(certDateReviewer);
             reviewers.add(unattestedCriteriaWithDataReviewer);
+            reviewers.add(osReviewer);
             reviewers.add(tsReviewer);
             reviewers.add(inheritanceReviewer);
             reviewers.add(ttReviewer);
