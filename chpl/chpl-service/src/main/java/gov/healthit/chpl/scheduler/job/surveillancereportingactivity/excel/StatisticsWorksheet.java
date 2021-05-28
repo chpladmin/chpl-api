@@ -138,36 +138,42 @@ public class StatisticsWorksheet {
                 .filter(item -> item.getRecordType().equals(RecordType.UPDATE))
                 .map(item -> item.getTimeToAssessConformity())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(APPROVE_CAP_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMinimum(dataForAcb.stream()
                 .map(item -> item.getTimeToApproveCap())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(DURATION_CAP_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMinimum(dataForAcb.stream()
                 .map(item -> item.getDurationOfCap())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(CAP_APPROVAL_TO_SURV_CLOSE_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMinimum(dataForAcb.stream()
                 .map(item -> item.getTimeFromCapApprovalToSurveillanceClose())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(CAP_CLOSE_TO_SURV_CLOSE_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMinimum(dataForAcb.stream()
                 .map(item -> item.getTimeFromCapCloseToSurveillanceClose())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(DURATION_SURV_CLOSE_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMinimum(dataForAcb.stream()
                 .map(item -> item.getDurationOfClosedSurveillance())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         return row;
@@ -185,36 +191,42 @@ public class StatisticsWorksheet {
                 .filter(item -> item.getRecordType().equals(RecordType.UPDATE))
                 .map(item -> item.getTimeToAssessConformity())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(APPROVE_CAP_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMaximum(dataForAcb.stream()
                 .map(item -> item.getTimeToApproveCap())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(DURATION_CAP_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMaximum(dataForAcb.stream()
                 .map(item -> item.getDurationOfCap())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(CAP_APPROVAL_TO_SURV_CLOSE_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMaximum(dataForAcb.stream()
                 .map(item -> item.getTimeFromCapApprovalToSurveillanceClose())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(CAP_CLOSE_TO_SURV_CLOSE_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMaximum(dataForAcb.stream()
                 .map(item -> item.getTimeFromCapCloseToSurveillanceClose())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(DURATION_SURV_CLOSE_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMaximum(dataForAcb.stream()
                 .map(item -> item.getDurationOfClosedSurveillance())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         return row;
@@ -232,36 +244,42 @@ public class StatisticsWorksheet {
                 .filter(item -> item.getRecordType().equals(RecordType.UPDATE))
                 .map(item -> item.getTimeToAssessConformity())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(APPROVE_CAP_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMean(dataForAcb.stream()
                 .map(item -> item.getTimeToApproveCap())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(DURATION_CAP_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMean(dataForAcb.stream()
                 .map(item -> item.getDurationOfCap())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(CAP_APPROVAL_TO_SURV_CLOSE_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMean(dataForAcb.stream()
                 .map(item -> item.getTimeFromCapApprovalToSurveillanceClose())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(CAP_CLOSE_TO_SURV_CLOSE_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMean(dataForAcb.stream()
                 .map(item -> item.getTimeFromCapCloseToSurveillanceClose())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(DURATION_SURV_CLOSE_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMean(dataForAcb.stream()
                 .map(item -> item.getDurationOfClosedSurveillance())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         return row;
@@ -279,36 +297,42 @@ public class StatisticsWorksheet {
                 .filter(item -> item.getRecordType().equals(RecordType.UPDATE))
                 .map(item -> item.getTimeToAssessConformity())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(APPROVE_CAP_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMedian(dataForAcb.stream()
                 .map(item -> item.getTimeToApproveCap())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(DURATION_CAP_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMedian(dataForAcb.stream()
                 .map(item -> item.getDurationOfCap())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(CAP_APPROVAL_TO_SURV_CLOSE_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMedian(dataForAcb.stream()
                 .map(item -> item.getTimeFromCapApprovalToSurveillanceClose())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(CAP_CLOSE_TO_SURV_CLOSE_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMedian(dataForAcb.stream()
                 .map(item -> item.getTimeFromCapCloseToSurveillanceClose())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(DURATION_SURV_CLOSE_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMedian(dataForAcb.stream()
                 .map(item -> item.getDurationOfClosedSurveillance())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         return row;
@@ -326,36 +350,42 @@ public class StatisticsWorksheet {
                 .filter(item -> item.getRecordType().equals(RecordType.UPDATE))
                 .map(item -> item.getTimeToAssessConformity())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(APPROVE_CAP_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMode(dataForAcb.stream()
                 .map(item -> item.getTimeToApproveCap())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(DURATION_CAP_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMode(dataForAcb.stream()
                 .map(item -> item.getDurationOfCap())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(CAP_APPROVAL_TO_SURV_CLOSE_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMode(dataForAcb.stream()
                 .map(item -> item.getTimeFromCapApprovalToSurveillanceClose())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(CAP_CLOSE_TO_SURV_CLOSE_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMode(dataForAcb.stream()
                 .map(item -> item.getTimeFromCapCloseToSurveillanceClose())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(DURATION_SURV_CLOSE_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMode(dataForAcb.stream()
                 .map(item -> item.getDurationOfClosedSurveillance())
                 .collect(Collectors.toList())),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         return row;
@@ -373,30 +403,35 @@ public class StatisticsWorksheet {
                 .filter(item -> item.getRecordType().equals(RecordType.UPDATE))
                 .map(item -> item.getTimeToAssessConformity())
                 .collect(Collectors.toList()), min, max),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(APPROVE_CAP_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getCountInRange(dataForAcb.stream()
                 .map(item -> item.getTimeToApproveCap())
                 .collect(Collectors.toList()), min, max),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(DURATION_CAP_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getCountInRange(dataForAcb.stream()
                 .map(item -> item.getDurationOfCap())
                 .collect(Collectors.toList()), min, max),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(CAP_APPROVAL_TO_SURV_CLOSE_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getCountInRange(dataForAcb.stream()
                 .map(item -> item.getTimeFromCapApprovalToSurveillanceClose())
                 .collect(Collectors.toList()), min, max),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(CAP_CLOSE_TO_SURV_CLOSE_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getCountInRange(dataForAcb.stream()
                 .map(item -> item.getTimeFromCapCloseToSurveillanceClose())
                 .collect(Collectors.toList()), min, max),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         cell = row.createCell(DURATION_SURV_CLOSE_COLUMN);
@@ -404,6 +439,7 @@ public class StatisticsWorksheet {
                 .filter(item -> item != null && item.getRecordType().equals(RecordType.UPDATE))
                 .map(item -> item.getDurationOfClosedSurveillance())
                 .collect(Collectors.toList()), min, max),
+                "N/A",
                 StatisticsWorksheetStyles.getDefaultStatStyle(wb, useAlternateStyle));
 
         return row;
@@ -421,36 +457,42 @@ public class StatisticsWorksheet {
                 .filter(item -> item.getRecordType().equals(RecordType.UPDATE))
                 .map(item -> item.getTimeToAssessConformity())
                 .collect(Collectors.toList()), null, null),
+                "N/A",
                 StatisticsWorksheetStyles.getSubheaderStyle(wb));
 
         cell = row.createCell(APPROVE_CAP_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getCountInRange(dataForAcb.stream()
                 .map(item -> item.getTimeToApproveCap())
                 .collect(Collectors.toList()), null, null),
+                "N/A",
                 StatisticsWorksheetStyles.getSubheaderStyle(wb));
 
         cell = row.createCell(DURATION_CAP_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getCountInRange(dataForAcb.stream()
                 .map(item -> item.getDurationOfCap())
                 .collect(Collectors.toList()), null, null),
+                "N/A",
                 StatisticsWorksheetStyles.getSubheaderStyle(wb));
 
         cell = row.createCell(CAP_APPROVAL_TO_SURV_CLOSE_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getCountInRange(dataForAcb.stream()
                 .map(item -> item.getTimeFromCapApprovalToSurveillanceClose())
                 .collect(Collectors.toList()), null, null),
+                "N/A",
                 StatisticsWorksheetStyles.getSubheaderStyle(wb));
 
         cell = row.createCell(CAP_CLOSE_TO_SURV_CLOSE_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getCountInRange(dataForAcb.stream()
                 .map(item -> item.getTimeFromCapCloseToSurveillanceClose())
                 .collect(Collectors.toList()), null, null),
+                "N/A",
                 StatisticsWorksheetStyles.getSubheaderStyle(wb));
 
         cell = row.createCell(DURATION_SURV_CLOSE_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getCountInRange(dataForAcb.stream()
                 .map(item -> item.getDurationOfClosedSurveillance())
                 .collect(Collectors.toList()), null, null),
+                "N/A",
                 StatisticsWorksheetStyles.getSubheaderStyle(wb));
 
         return row;

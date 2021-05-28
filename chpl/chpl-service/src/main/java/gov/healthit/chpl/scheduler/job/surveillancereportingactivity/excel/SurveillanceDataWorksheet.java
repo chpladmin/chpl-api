@@ -168,15 +168,15 @@ public class SurveillanceDataWorksheet {
     }
 
     private Cell setCellValueAsString(Cell cell, String value) {
-        return CellHelper.setCellValueAsString(cell, value);
+        return CellHelper.setCellValueAsString(cell, value, "");
     }
 
     private Cell setCellValueAsLocalDate(Cell cell, LocalDate value) {
-        return CellHelper.setCellValueAsLocalDate(cell, value, dateCellStyle);
+        return CellHelper.setCellValueAsLocalDate(cell, value, "", dateCellStyle);
     }
 
     private Cell setCellValueAsInteger(Cell cell, Integer value) {
-        return CellHelper.setCellValueAsInteger(cell, value, integerCellStyle);
+        return CellHelper.setCellValueAsInteger(cell, value, "", integerCellStyle);
     }
 
     private Row populateHeaderRow(Row row) {

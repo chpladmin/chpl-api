@@ -11,24 +11,24 @@ public final class CellHelper {
 
     private CellHelper() { }
 
-    public static Cell setCellValueAsString(Cell cell, String value) {
+    public static Cell setCellValueAsString(Cell cell, String value, String defaultValue) {
         if (value != null) {
             cell.setCellValue(value);
         } else {
-            cell.setCellValue("N/A");
+            cell.setCellValue(defaultValue);
         }
         return cell;
     }
 
-    public static Cell setCellValueAsLocalDate(Cell cell, LocalDate value) {
-        return setCellValueAsLocalDate(cell, value, null);
+    public static Cell setCellValueAsLocalDate(Cell cell, LocalDate value, String defaultValue) {
+        return setCellValueAsLocalDate(cell, value, defaultValue, null);
     }
 
-    public static Cell setCellValueAsLocalDate(Cell cell, LocalDate value, CellStyle style) {
+    public static Cell setCellValueAsLocalDate(Cell cell, LocalDate value, String defaultValue, CellStyle style) {
         if (value != null) {
             cell.setCellValue(convertLocalDateToDate(value));
         } else {
-            cell.setCellValue("N/A");
+            cell.setCellValue(defaultValue);
         }
         if (style != null) {
             cell.setCellStyle(style);
@@ -36,15 +36,15 @@ public final class CellHelper {
         return cell;
     }
 
-    public static Cell setCellValueAsInteger(Cell cell, Integer value) {
-        return setCellValueAsInteger(cell, value, null);
+    public static Cell setCellValueAsInteger(Cell cell, Integer value, String defaultValue) {
+        return setCellValueAsInteger(cell, value, defaultValue, null);
     }
 
-    public static Cell setCellValueAsInteger(Cell cell, Integer value, CellStyle style) {
+    public static Cell setCellValueAsInteger(Cell cell, Integer value, String defaultValue, CellStyle style) {
         if (value != null) {
             cell.setCellValue(value);
         } else {
-            cell.setCellValue("N/A");
+            cell.setCellValue(defaultValue);
         }
         if (style != null) {
             cell.setCellStyle(style);
