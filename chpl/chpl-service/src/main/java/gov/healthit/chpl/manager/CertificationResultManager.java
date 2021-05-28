@@ -599,7 +599,7 @@ private SvapDAO svapDao;
         for (CertificationResultOptionalStandard toAdd : optionalStandardToAdd) {
             CertificationResultOptionalStandardEntity toAddEntity = new CertificationResultOptionalStandardEntity();
             toAddEntity.setCertificationResultId(certResult.getId());
-            toAddEntity.setOptionalStandardId(toAdd.getId());
+            toAddEntity.setOptionalStandardId(toAdd.getOptionalStandard().getId());
             certResultDAO.addOptionalStandardMapping(toAddEntity);
         }
 

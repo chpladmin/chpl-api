@@ -502,7 +502,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
             throws EntityCreationException {
         CertificationResultOptionalStandardEntity mapping = new CertificationResultOptionalStandardEntity();
         mapping.setCertificationResultId(entity.getCertificationResultId());
-        mapping.setOptionalStandard(entity.getOptionalStandard());
+        mapping.setOptionalStandardId(entity.getOptionalStandardId());
         mapping.setCreationDate(new Date());
         mapping.setDeleted(false);
         mapping.setLastModifiedDate(new Date());
@@ -546,7 +546,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
         CertificationResultOptionalStandardEntity entity = null;
 
         Query query = entityManager.createQuery(
-                "SELECT ts " + "FROM CertificationResultOptionalStandardEntity os "
+                "SELECT os " + "FROM CertificationResultOptionalStandardEntity os "
                         + "LEFT OUTER JOIN FETCH os.optionalStandard " + "where (NOT os.deleted = true) AND (os.id = :id) ",
                 CertificationResultOptionalStandardEntity.class);
         query.setParameter("id", id);
@@ -560,7 +560,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
 
     private List<CertificationResultOptionalStandardEntity> getOptionalStandardsForCertification(Long certificationResultId) {
         Query query = entityManager.createQuery(
-                "SELECT ts " + "FROM CertificationResultOptionalStandardEntity os "
+                "SELECT os " + "FROM CertificationResultOptionalStandardEntity os "
                         + "LEFT OUTER JOIN FETCH os.optionalStandard "
                         + "where (NOT os.deleted = true) AND (certification_result_id = :certificationResultId) ",
                 CertificationResultOptionalStandardEntity.class);
