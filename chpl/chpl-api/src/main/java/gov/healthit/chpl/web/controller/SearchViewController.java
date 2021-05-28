@@ -1007,7 +1007,7 @@ public class SearchViewController {
         if (ff4j.check(FeatureList.OPTIONAL_STANDARDS)) {
             result.setData(data);
         } else {
-            result.setData(null);
+            result.setData(new HashSet<OptionalStandard>());
         }
         return result;
     }
