@@ -25,10 +25,12 @@ public class OptionalStandardReviewer implements Reviewer {
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
-        listing.getCertificationResults().stream()
-        .filter(cert -> (cert.getTestStandards() != null && cert.getTestStandards().size() > 0))
-        .forEach(certResult -> certResult.getTestStandards().stream()
-                .forEach(testStandard -> reviewTestStandard(listing, certResult, testStandard)));
+        if (ff4j.check(FeatureList.OPTIONAL_STANDARDS)) {
+            listing.getCertificationResults().stream()
+            .filter(cert -> (cert.getTestStandards() != null && cert.getTestStandards().size() > 0))
+            .forEach(certResult -> certResult.getTestStandards().stream()
+                    .forEach(testStandard -> reviewTestStandard(listing, certResult, testStandard)));
+        }
     }
 
     private void reviewTestStandard(CertifiedProductSearchDetails listing, CertificationResult certResult,
