@@ -15,6 +15,7 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
@@ -72,6 +73,7 @@ public class TestToolReviewerTest {
                                 .number("170.315 (a)(1)")
                                 .build())
                         .gap(false)
+                        .success(true)
                         .build())
                 .build();
         listing.getCertificationResults().get(0).setTestToolsUsed(null);
@@ -97,6 +99,7 @@ public class TestToolReviewerTest {
                                 .number("170.315 (a)(1)")
                                 .build())
                         .gap(false)
+                        .success(true)
                         .build())
                 .build();
         reviewer.review(listing);
@@ -121,6 +124,7 @@ public class TestToolReviewerTest {
                                 .number("170.315 (a)(1)")
                                 .build())
                         .gap(true)
+                        .success(true)
                         .build())
                 .build();
         listing.getCertificationResults().get(0).setTestToolsUsed(null);
@@ -144,6 +148,7 @@ public class TestToolReviewerTest {
                                 .number("170.315 (a)(1)")
                                 .build())
                         .gap(true)
+                        .success(true)
                         .build())
                 .build();
         reviewer.review(listing);
@@ -165,6 +170,7 @@ public class TestToolReviewerTest {
         testTools.add(CertificationResultTestTool.builder()
                 .testToolId(1L)
                 .testToolName("good name")
+                .testToolVersion("1")
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -173,6 +179,7 @@ public class TestToolReviewerTest {
                                 .number("170.315 (a)(1)")
                                 .build())
                         .gap(false)
+                        .success(true)
                         .testToolsUsed(testTools)
                         .build())
                 .build();
@@ -186,166 +193,232 @@ public class TestToolReviewerTest {
     }
 
     @Test
-    public void review_emptyTestToolsWithGapCriteria_noError() {
+    public void review_testToolWithoutNameNoId_hasError() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
-            .thenReturn(true);
+            .thenReturn(false);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
+        List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolName("")
+                .testToolVersion("1")
+                .build());
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolId(1L)
+                .testToolName("good name")
+                .testToolVersion("1")
+                .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
                                 .build())
-                        .gap(true)
+                        .gap(false)
+                        .success(true)
+                        .testToolsUsed(testTools)
                         .build())
                 .build();
         reviewer.review(listing);
 
+        assertEquals(1, listing.getCertificationResults().get(0).getTestToolsUsed().size());
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(
+                String.format(TEST_TOOL_NOT_FOUND_REMOVED, "170.315 (a)(1)", "")));
+    }
+
+    @Test
+    public void review_testToolWithoutNameWithId_hasError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+            .thenReturn(true);
+
+        List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolId(2L)
+                .testToolName("")
+                .testToolVersion("1")
+                .build());
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolId(1L)
+                .testToolName("good name")
+                .testToolVersion("1")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .build())
+                        .gap(false)
+                        .success(true)
+                        .testToolsUsed(testTools)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(2, listing.getCertificationResults().get(0).getTestToolsUsed().size());
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(
+                String.format(MISSING_TEST_TOOL_NAME, "170.315 (a)(1)")));
+    }
+
+    @Test
+    public void review_testToolMissingVersion_hasError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+            .thenReturn(true);
+
+        List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolId(2L)
+                .testToolName("missing version")
+                .build());
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolId(1L)
+                .testToolName("good name")
+                .testToolVersion("1")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .build())
+                        .gap(false)
+                        .success(true)
+                        .testToolsUsed(testTools)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(2, listing.getCertificationResults().get(0).getTestToolsUsed().size());
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(
+                String.format(MISSING_TEST_TOOL_VERSION, "missing version", "170.315 (a)(1)")));
+    }
+
+    @Test
+    public void review_retiredTestToolWithoutListingIcs_hasError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+            .thenReturn(true);
+
+        List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolId(2L)
+                .testToolName("retired tool")
+                .testToolVersion("1")
+                .retired(true)
+                .build());
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolId(1L)
+                .testToolName("good name")
+                .testToolVersion("1")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.2526.WErB.06.00.1.123456")
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .build())
+                        .gap(false)
+                        .success(true)
+                        .testToolsUsed(testTools)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(2, listing.getCertificationResults().get(0).getTestToolsUsed().size());
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(
+                String.format(RETIRED_TEST_TOOL_NOT_ALLOWED, "retired tool", "170.315 (a)(1)")));
+    }
+
+    @Test
+    public void review_retiredTestToolWithIcs_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+            .thenReturn(true);
+
+        List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolId(2L)
+                .testToolName("retired tool")
+                .testToolVersion("1")
+                .retired(true)
+                .build());
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolId(1L)
+                .testToolName("good name")
+                .testToolVersion("1")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.2526.WErB.06.01.1.123456")
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .build())
+                        .gap(false)
+                        .success(true)
+                        .testToolsUsed(testTools)
+                        .build())
+                .ics(InheritedCertificationStatus.builder()
+                        .inherits(true)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(2, listing.getCertificationResults().get(0).getTestToolsUsed().size());
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(0, listing.getErrorMessages().size());
     }
 
-//    @Test
-//    public void review_hasNullQmsStandardName_hasError() {
-//        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-//                .qmsStandard(CertifiedProductQmsStandard.builder()
-//                        .id(1L)
-//                        .qmsStandardName(null)
-//                        .qmsStandardId(null)
-//                        .qmsModification(null)
-//                        .applicableCriteria("test")
-//                        .build())
-//                .build();
-//        reviewer.review(listing);
-//
-//        assertEquals(0, listing.getWarningMessages().size());
-//        assertEquals(1, listing.getErrorMessages().size());
-//        assertTrue(listing.getErrorMessages().contains(MISSING_NAME));
-//    }
-//
-//    @Test
-//    public void review_hasEmptyQmsStandardName_hasError() {
-//        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-//                .qmsStandard(CertifiedProductQmsStandard.builder()
-//                        .id(1L)
-//                        .qmsStandardName("")
-//                        .qmsStandardId(null)
-//                        .qmsModification(null)
-//                        .applicableCriteria("test")
-//                        .build())
-//                .build();
-//        reviewer.review(listing);
-//
-//        assertEquals(0, listing.getWarningMessages().size());
-//        assertEquals(1, listing.getErrorMessages().size());
-//        assertTrue(listing.getErrorMessages().contains(MISSING_NAME));
-//    }
-//
-//    @Test
-//    public void review_hasNullQmsStandardApplicableCriteria_hasError() {
-//        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-//                .qmsStandard(CertifiedProductQmsStandard.builder()
-//                        .id(1L)
-//                        .qmsStandardName("test")
-//                        .qmsStandardId(null)
-//                        .qmsModification(null)
-//                        .applicableCriteria(null)
-//                        .build())
-//                .build();
-//        reviewer.review(listing);
-//
-//        assertEquals(0, listing.getWarningMessages().size());
-//        assertEquals(1, listing.getErrorMessages().size());
-//        assertTrue(listing.getErrorMessages().contains(MISSING_APPLICABLE_CRITERIA));
-//    }
-//
-//    @Test
-//    public void review_hasEmptyQmsStandardApplicableCriteria_hasError() {
-//        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-//                .qmsStandard(CertifiedProductQmsStandard.builder()
-//                        .id(1L)
-//                        .qmsStandardName("test")
-//                        .qmsStandardId(null)
-//                        .qmsModification(null)
-//                        .applicableCriteria("")
-//                        .build())
-//                .build();
-//        reviewer.review(listing);
-//
-//        assertEquals(0, listing.getWarningMessages().size());
-//        assertEquals(1, listing.getErrorMessages().size());
-//        assertTrue(listing.getErrorMessages().contains(MISSING_APPLICABLE_CRITERIA));
-//    }
-//
-//    @Test
-//    public void review_hasQmsStandardNameAndApplicableCriteria_noError() {
-//        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-//                .qmsStandard(CertifiedProductQmsStandard.builder()
-//                        .id(1L)
-//                        .qmsStandardName("test")
-//                        .qmsStandardId(null)
-//                        .qmsModification(null)
-//                        .applicableCriteria("ac")
-//                        .build())
-//                .build();
-//        reviewer.review(listing);
-//
-//        assertEquals(0, listing.getWarningMessages().size());
-//        assertEquals(0, listing.getErrorMessages().size());
-//    }
-//
-//    @Test
-//    public void review_hasQmsStandardNameAndApplicableCriteriaAndId_noError() {
-//        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-//                .qmsStandard(CertifiedProductQmsStandard.builder()
-//                        .id(1L)
-//                        .qmsStandardName("test")
-//                        .qmsStandardId(2L)
-//                        .qmsModification(null)
-//                        .applicableCriteria("ac")
-//                        .build())
-//                .build();
-//        reviewer.review(listing);
-//
-//        assertEquals(0, listing.getWarningMessages().size());
-//        assertEquals(0, listing.getErrorMessages().size());
-//    }
-//
-//    @Test
-//    public void review_hasQmsStandardNameAndApplicableCriteriaAndIdAndModification_noError() {
-//        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-//                .qmsStandard(CertifiedProductQmsStandard.builder()
-//                        .id(1L)
-//                        .qmsStandardName("test")
-//                        .qmsStandardId(2L)
-//                        .qmsModification("mod")
-//                        .applicableCriteria("ac")
-//                        .build())
-//                .build();
-//        reviewer.review(listing);
-//
-//        assertEquals(0, listing.getWarningMessages().size());
-//        assertEquals(0, listing.getErrorMessages().size());
-//    }
-//
-//    @Test
-//    public void review_hasQmsStandardNameNullIdFindsFuzzyMatch_hasWarning() {
-//        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-//                .qmsStandard(CertifiedProductQmsStandard.builder()
-//                        .id(1L)
-//                        .qmsStandardName("test")
-//                        .userEnteredQmsStandardName("tst")
-//                        .qmsStandardId(null)
-//                        .qmsModification("mod")
-//                        .applicableCriteria("ac")
-//                        .build())
-//                .build();
-//        reviewer.review(listing);
-//
-//        assertEquals(0, listing.getErrorMessages().size());
-//        assertEquals(1, listing.getWarningMessages().size());
-//        assertTrue(listing.getWarningMessages().contains(String.format(FUZZY_MATCH_REPLACEMENT, FuzzyType.QMS_STANDARD.fuzzyType(), "tst", "test")));
-//    }
+    @Test
+    public void review_retiredTestToolsWithAllData_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+            .thenReturn(true);
+
+        List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolId(2L)
+                .testToolName("retired tool")
+                .testToolVersion("1")
+                .build());
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolId(1L)
+                .testToolName("good name")
+                .testToolVersion("1")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.2526.WErB.06.00.1.123456")
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .build())
+                        .gap(false)
+                        .success(true)
+                        .testToolsUsed(testTools)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(2, listing.getCertificationResults().get(0).getTestToolsUsed().size());
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
 }

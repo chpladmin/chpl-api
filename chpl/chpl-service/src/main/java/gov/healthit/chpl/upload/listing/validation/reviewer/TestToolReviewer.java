@@ -37,33 +37,15 @@ public class TestToolReviewer extends PermissionBasedReviewer {
     }
 
     public void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        removeTestToolsWithoutIds(listing, certResult);
         reviewTestToolsRequiredWhenCertResultIsNotGap(listing, certResult);
-        if (certResult.isSuccess() != null && certResult.isSuccess().equals(Boolean.TRUE)
-                && certResult.getTestToolsUsed() != null && certResult.getTestToolsUsed().size() > 0) {
-            certResult.getTestToolsUsed().stream()
-                .forEach(testTool -> reviewTestToolFields(listing, certResult, testTool));
+        if (certResult.isSuccess() != null && certResult.isSuccess()) {
+            removeTestToolsWithoutIds(listing, certResult);
+            if (certResult.getTestToolsUsed() != null && certResult.getTestToolsUsed().size() > 0) {
+                certResult.getTestToolsUsed().stream()
+                    .forEach(testTool -> reviewTestToolFields(listing, certResult, testTool));
+            }
         }
     }
-
-//    private void removeTestToolsWithoutIds(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-//        if (certResult.getTestToolsUsed() == null || certResult.getTestToolsUsed().size() == 0) {
-//            return;
-//        }
-//
-//        List<CertificationResultTestTool> duplicateTestToolList
-//            = new ArrayList<CertificationResultTestTool>(certResult.getTestToolsUsed());
-//        duplicateTestToolList.stream()
-//                .filter(testTool -> testTool.getTestToolId() == null)
-//                .forEach(testTool -> removeTestTool(listing, certResult, testTool));
-//    }
-//
-//    private void removeTestTool(CertifiedProductSearchDetails listing, CertificationResult certResult,
-//            CertificationResultTestTool testTool) {
-//        certResult.getTestToolsUsed().remove(testTool);
-//        addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.testToolNotFoundAndRemoved",
-//                Util.formatCriteriaNumber(certResult.getCriterion()), testTool.getTestToolName());
-//    }
 
     private void removeTestToolsWithoutIds(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResult.getTestToolsUsed() == null || certResult.getTestToolsUsed().size() == 0) {
