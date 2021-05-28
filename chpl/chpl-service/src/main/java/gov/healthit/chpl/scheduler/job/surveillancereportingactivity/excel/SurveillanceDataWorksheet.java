@@ -66,7 +66,7 @@ public class SurveillanceDataWorksheet {
         integerCellStyle = workbook.createCellStyle();
         integerCellStyle.setDataFormat(workbook.getCreationHelper().createDataFormat().getFormat("0"));
 
-        headers.put("?RECORD_STATUS__C", RECORD_STATUS_C_INDEX);
+        headers.put("RECORD_STATUS__C", RECORD_STATUS_C_INDEX);
         headers.put("UNIQUE_CHPL_ID__C", UNIQUE_CHPL_ID_C_INDEX);
         headers.put("URL", URL_INDEX);
         headers.put("ACB_NAME", ACB_NAME_INDEX);
