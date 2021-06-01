@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.util.CertificationResultRules;
@@ -160,6 +161,9 @@ public class CertificationResult implements Serializable {
 
     @XmlTransient
     private List<Svap> allowedSvaps;
+
+    @XmlTransient
+    private List<OptionalStandard> allowedOptionalStandards;
 
     /**
      * Any optional, alternative, ambulatory (2015 only), or inpatient (2015 only) capabilities within a certification
@@ -672,6 +676,14 @@ public class CertificationResult implements Serializable {
 
     public void setSuccessStr(String successStr) {
         this.successStr = successStr;
+    }
+
+    public List<OptionalStandard> getAllowedOptionalStandards() {
+        return allowedOptionalStandards;
+    }
+
+    public void setAllowedOptionalStandards(List<OptionalStandard> allowedOptionalStandards) {
+        this.allowedOptionalStandards = allowedOptionalStandards;
     }
 
     public List<Svap> getAllowedSvaps() {
