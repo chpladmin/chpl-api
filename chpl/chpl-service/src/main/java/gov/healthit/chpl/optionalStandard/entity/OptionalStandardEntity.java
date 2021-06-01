@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.optionalStandard.entity;
 
 import java.util.Date;
 
@@ -23,11 +23,8 @@ public class OptionalStandardEntity {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "name", nullable = false)
-    private String name;
-
-    @Column(name = "description", nullable = false)
-    private String description;
+    @Column(name = "optional_standard", nullable = false)
+    private String optionalStandard;
 
     @Column(name = "deleted", nullable = false)
     private Boolean deleted;

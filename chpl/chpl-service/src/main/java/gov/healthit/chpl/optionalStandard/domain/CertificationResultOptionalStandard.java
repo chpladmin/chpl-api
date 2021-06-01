@@ -1,4 +1,4 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.optionalStandard.domain;
 
 import java.io.Serializable;
 
@@ -48,8 +48,7 @@ public class CertificationResultOptionalStandard implements Serializable {
         OptionalStandard os = new OptionalStandard();
         if (entity.getOptionalStandard() != null) {
             os.setId(entity.getOptionalStandard().getId());
-            os.setName(entity.getOptionalStandard().getName());
-            os.setDescription(entity.getOptionalStandard().getDescription());
+            os.setOptionalStandard(entity.getOptionalStandard().getOptionalStandard());
         }
         this.optionalStandard = os;
     }

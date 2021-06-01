@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import gov.healthit.chpl.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
+import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import lombok.Data;
 import lombok.NoArgsConstructor;

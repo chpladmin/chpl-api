@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dao;
+package gov.healthit.chpl.optionalStandard.dao;
 
 import java.util.List;
 
@@ -7,8 +7,8 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.domain.OptionalStandard;
-import gov.healthit.chpl.entity.OptionalStandardEntity;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
+import gov.healthit.chpl.optionalStandard.entity.OptionalStandardEntity;
 
 @Repository("optionalStandardDAO")
 public class OptionalStandardDAO extends BaseDAOImpl {
@@ -23,8 +23,8 @@ public class OptionalStandardDAO extends BaseDAOImpl {
         return entities;
     }
 
-    public OptionalStandard getByName(String name) {
-        List<OptionalStandardEntity> entities = getEntitiesByName(name);
+    public OptionalStandard getByOptionalStandard(String optionalStandard) {
+        List<OptionalStandardEntity> entities = getEntitiesByOptionalStandard(optionalStandard);
         OptionalStandard obj = null;
         if (entities != null && entities.size() > 0) {
             obj = new OptionalStandard(entities.get(0));
@@ -52,20 +52,19 @@ public class OptionalStandardDAO extends BaseDAOImpl {
         return entity;
     }
 
-    private List<OptionalStandardEntity> getEntitiesByName(String name) {
-        OptionalStandardEntity entity = null;
-        String tsQuery = "SELECT ts " + "FROM OptionalStandardEntity os "
-                + "WHERE os.deleted <> true " + "AND UPPER(os.name) = :name ";
-        Query query = entityManager.createQuery(tsQuery, OptionalStandardEntity.class);
-        query.setParameter("name", name.toUpperCase());
+    private List<OptionalStandardEntity> getEntitiesByOptionalStandard(String optionalStandard) {
+        String osQuery = "SELECT os " + "FROM OptionalStandardEntity os "
+                + "WHERE os.deleted <> true " + "AND UPPER(os.optionalStandard) = :optionalStandard ";
+        Query query = entityManager.createQuery(osQuery, OptionalStandardEntity.class);
+        query.setParameter("optionalStandard", optionalStandard.toUpperCase());
 
         List<OptionalStandardEntity> matches = query.getResultList();
         if (matches == null || matches.size() == 0) {
             // if this didn't find anything try again with spaces removed from
-            // the number
-            query = entityManager.createQuery(tsQuery, OptionalStandardEntity.class);
-            String numberWithoutSpaces = name.replaceAll("\\s", "");
-            query.setParameter("number", numberWithoutSpaces.toUpperCase());
+            // the optional standard
+            query = entityManager.createQuery(osQuery, OptionalStandardEntity.class);
+            String optionalStandardWithoutSpaces = optionalStandard.replaceAll("\\s", "");
+            query.setParameter("optionalStandard", optionalStandardWithoutSpaces.toUpperCase());
             matches = query.getResultList();
         }
         return matches;

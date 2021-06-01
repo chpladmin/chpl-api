@@ -44,7 +44,6 @@ import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
-import gov.healthit.chpl.domain.OptionalStandard;
 import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.SearchableDimensionalData;
 import gov.healthit.chpl.domain.TestFunctionality;
@@ -68,6 +67,7 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.manager.FilterManager;
 import gov.healthit.chpl.manager.FuzzyChoicesManager;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
 import gov.healthit.chpl.svap.manager.SvapManager;
 import gov.healthit.chpl.util.FileUtils;
@@ -997,7 +997,7 @@ public class SearchViewController {
 
     @ApiOperation(value = "Get all possible optional standard options in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
-    @RequestMapping(value = "/data/optional_standards", method = RequestMethod.GET,
+    @RequestMapping(value = "/data/optional-standards", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getOptionalStandards() {

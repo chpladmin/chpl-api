@@ -1,8 +1,8 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.optionalStandard.domain;
 
 import java.io.Serializable;
 
-import gov.healthit.chpl.entity.OptionalStandardEntity;
+import gov.healthit.chpl.optionalStandard.entity.OptionalStandardEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,12 +11,10 @@ import lombok.NoArgsConstructor;
 public class OptionalStandard implements Serializable {
     private static final long serialVersionUID = 620315627813875501L;
     private Long id;
-    private String name;
-    private String description;
+    private String optionalStandard;
 
     public OptionalStandard(OptionalStandardEntity entity) {
         this.id = entity.getId();
-        this.name = entity.getName();
-        this.description = entity.getDescription();
+        this.optionalStandard = entity.getOptionalStandard();
     }
 }
