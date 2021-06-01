@@ -45,7 +45,7 @@ public final class Statistics {
         filtered.sort((v1, v2) -> v1 - v2);
 
         if (filtered.size() > middle) {
-            return values.get(middle);
+            return filtered.get(middle);
         } else {
             return null;
         }

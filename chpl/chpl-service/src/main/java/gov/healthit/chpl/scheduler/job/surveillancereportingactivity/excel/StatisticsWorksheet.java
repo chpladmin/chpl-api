@@ -171,6 +171,7 @@ public class StatisticsWorksheet {
 
         cell = row.createCell(DURATION_SURV_CLOSE_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMinimum(dataForAcb.stream()
+                .filter(item -> item != null && item.getRecordType().equals(SurveillanceData.RecordType.UPDATE))
                 .map(item -> item.getDurationOfClosedSurveillance())
                 .collect(Collectors.toList())),
                 "N/A",
@@ -224,6 +225,7 @@ public class StatisticsWorksheet {
 
         cell = row.createCell(DURATION_SURV_CLOSE_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMaximum(dataForAcb.stream()
+                .filter(item -> item != null && item.getRecordType().equals(SurveillanceData.RecordType.UPDATE))
                 .map(item -> item.getDurationOfClosedSurveillance())
                 .collect(Collectors.toList())),
                 "N/A",
@@ -277,6 +279,7 @@ public class StatisticsWorksheet {
 
         cell = row.createCell(DURATION_SURV_CLOSE_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMean(dataForAcb.stream()
+                .filter(item -> item != null && item.getRecordType().equals(SurveillanceData.RecordType.UPDATE))
                 .map(item -> item.getDurationOfClosedSurveillance())
                 .collect(Collectors.toList())),
                 "N/A",
@@ -330,6 +333,7 @@ public class StatisticsWorksheet {
 
         cell = row.createCell(DURATION_SURV_CLOSE_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMedian(dataForAcb.stream()
+                .filter(item -> item != null && item.getRecordType().equals(RecordType.UPDATE))
                 .map(item -> item.getDurationOfClosedSurveillance())
                 .collect(Collectors.toList())),
                 "N/A",
@@ -383,6 +387,7 @@ public class StatisticsWorksheet {
 
         cell = row.createCell(DURATION_SURV_CLOSE_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getMode(dataForAcb.stream()
+                .filter(item -> item != null && item.getRecordType().equals(RecordType.UPDATE))
                 .map(item -> item.getDurationOfClosedSurveillance())
                 .collect(Collectors.toList())),
                 "N/A",
@@ -490,6 +495,7 @@ public class StatisticsWorksheet {
 
         cell = row.createCell(DURATION_SURV_CLOSE_COLUMN);
         CellHelper.setCellValueAsInteger(cell, Statistics.getCountInRange(dataForAcb.stream()
+                .filter(item -> item != null && item.getRecordType().equals(RecordType.UPDATE))
                 .map(item -> item.getDurationOfClosedSurveillance())
                 .collect(Collectors.toList()), null, null),
                 "N/A",
