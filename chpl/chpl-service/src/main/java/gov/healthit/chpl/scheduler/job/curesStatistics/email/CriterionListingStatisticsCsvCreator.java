@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -26,13 +27,16 @@ public class CriterionListingStatisticsCsvCreator {
     private static final String FILENAME_DATE_FORMAT = "yyyyMMdd";
     private static final String NEW_LINE_SEPARATOR = "\n";
     private static final String[] HEADING = {"Certification Criterion", "Listing Count"};
+    private CertificationCriterionService criterionService;
     private CriterionListingStatisticsDAO criterionListingStatisticsDao;
     private DateTimeFormatter dateFormatter;
     private String filename;
 
     @Autowired
-    public CriterionListingStatisticsCsvCreator(CriterionListingStatisticsDAO criterionListingStatisticsDao,
+    public CriterionListingStatisticsCsvCreator(CertificationCriterionService criterionService,
+            CriterionListingStatisticsDAO criterionListingStatisticsDao,
             @Value("${curesStatisticsReport.listingCriterionStatistics.fileName}") String filename) {
+        this.criterionService = criterionService;
         this.criterionListingStatisticsDao = criterionListingStatisticsDao;
         this.filename = filename;
         this.dateFormatter = DateTimeFormatter.ofPattern(FILENAME_DATE_FORMAT);
@@ -49,6 +53,12 @@ public class CriterionListingStatisticsCsvCreator {
                     CSVPrinter csvFilePrinter = new CSVPrinter(fileWriter, csvFileFormat)) {
                 csvFilePrinter.printRecord(generateHeader());
                 List<CriterionListingCountStatistic> statisticsForDate = criterionListingStatisticsDao.getStatisticsForDate(statisticDate);
+                statisticsForDate.sort(new Comparator<CriterionListingCountStatistic>() {
+                    @Override
+                    public int compare(CriterionListingCountStatistic o1, CriterionListingCountStatistic o2) {
+                        return criterionService.sortCriteria(o1.getCriterion(), o2.getCriterion());
+                    }
+                });
                 statisticsForDate.stream()
                     .forEach(statistic -> printRow(csvFilePrinter, statistic));
                 LOGGER.info("Completed generating records for " + statisticsForDate.size() + " statistics.");
