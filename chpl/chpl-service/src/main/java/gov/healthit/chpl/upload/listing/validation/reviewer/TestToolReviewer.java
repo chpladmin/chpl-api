@@ -37,13 +37,22 @@ public class TestToolReviewer extends PermissionBasedReviewer {
     }
 
     public void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        reviewTestToolsRequiredWhenCertResultIsNotGap(listing, certResult);
         if (certResult.isSuccess() != null && certResult.isSuccess()) {
             removeTestToolsWithoutIds(listing, certResult);
+            reviewTestToolsApplicableToCriteria(listing, certResult);
+            reviewTestToolsRequiredWhenCertResultIsNotGap(listing, certResult);
             if (certResult.getTestToolsUsed() != null && certResult.getTestToolsUsed().size() > 0) {
                 certResult.getTestToolsUsed().stream()
                     .forEach(testTool -> reviewTestToolFields(listing, certResult, testTool));
             }
+        }
+    }
+
+    private void reviewTestToolsApplicableToCriteria(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_TOOLS_USED)
+                && certResult.getTestToolsUsed() != null && certResult.getTestToolsUsed().size() > 0) {
+            listing.getErrorMessages().add(msgUtil.getMessage(
+                    "listing.criteria.testToolsNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
 

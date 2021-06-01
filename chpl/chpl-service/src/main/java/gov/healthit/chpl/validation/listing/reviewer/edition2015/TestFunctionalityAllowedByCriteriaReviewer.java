@@ -17,7 +17,6 @@ import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.TestFunctionalityCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
@@ -27,15 +26,15 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 
-@Component("testFunctionality2015Reviewer")
+@Component("testFunctionalityAllowedByCriteriaReviewer")
 @Transactional
 @DependsOn("certificationEditionDAO")
-public class TestFunctionality2015Reviewer extends PermissionBasedReviewer {
+public class TestFunctionalityAllowedByCriteriaReviewer extends PermissionBasedReviewer {
     private TestFunctionalityDAO testFunctionalityDAO;
     private DimensionalDataManager dimensionalDataManager;
 
     @Autowired
-    public TestFunctionality2015Reviewer(TestFunctionalityDAO testFunctionalityDAO,
+    public TestFunctionalityAllowedByCriteriaReviewer(TestFunctionalityDAO testFunctionalityDAO,
             CertificationEditionDAO editionDAO,
             DimensionalDataManager dimensionalDataManager,
             ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
@@ -78,8 +77,7 @@ public class TestFunctionality2015Reviewer extends PermissionBasedReviewer {
     private Boolean isTestFunctionalityCritierionValid(Long criteriaId, TestFunctionalityDTO tf, String year) {
 
         List<TestFunctionalityDTO> validTestFunctionalityForCriteria =
-                testFunctionalityDAO.getTestFunctionalityCriteriaMaps(
-                        CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).get(criteriaId);
+                testFunctionalityDAO.getTestFunctionalityCriteriaMaps(year).get(criteriaId);
 
         if (validTestFunctionalityForCriteria == null) {
             return false;

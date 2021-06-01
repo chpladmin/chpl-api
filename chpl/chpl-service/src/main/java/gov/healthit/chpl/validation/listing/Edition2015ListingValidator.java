@@ -43,7 +43,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteria
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionality2015Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionalityAllowedByCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionalityAllowedByRoleReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestTool2015Reviewer;
 
@@ -122,8 +122,8 @@ public class Edition2015ListingValidator extends Validator {
     private UrlReviewer urlReviewer;
 
     @Autowired
-    @Qualifier("testFunctionality2015Reviewer")
-    private TestFunctionality2015Reviewer testFunctionalityReviewer;
+    @Qualifier("testFunctionalityAllowedByCriteriaReviewer")
+    private TestFunctionalityAllowedByCriteriaReviewer testFunctionalityReviewer;
 
     @Autowired
     @Qualifier("duplicateDataReviewer")

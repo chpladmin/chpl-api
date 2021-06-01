@@ -38,8 +38,9 @@ public class TestDataReviewer extends PermissionBasedReviewer {
 
     public void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResult.isSuccess() != null && certResult.isSuccess()) {
+            reviewTestDataApplicableToCriteria(listing, certResult);
             reviewTestDataRequiredForG1AndG2WhenCertResultIsNotGap(listing, certResult);
-            reviewReplacedTestData(listing, certResult);
+            reviewTestDataForReplacements(listing, certResult);
             if (certResult.getTestDataUsed() != null && certResult.getTestDataUsed().size() > 0) {
                 certResult.getTestDataUsed().stream()
                     .forEach(testData -> reviewTestDataFields(listing, certResult, testData));
@@ -47,7 +48,15 @@ public class TestDataReviewer extends PermissionBasedReviewer {
         }
     }
 
-    private void reviewReplacedTestData(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    private void reviewTestDataApplicableToCriteria(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_DATA)
+                && certResult.getTestDataUsed() != null && certResult.getTestDataUsed().size() > 0) {
+            listing.getErrorMessages().add(msgUtil.getMessage(
+                    "listing.criteria.testDataNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+        }
+    }
+
+    private void reviewTestDataForReplacements(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResult.getTestDataUsed() == null || certResult.getTestDataUsed().size() == 0) {
             return;
         }

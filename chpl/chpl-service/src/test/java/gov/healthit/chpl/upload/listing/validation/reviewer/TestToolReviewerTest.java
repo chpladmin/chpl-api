@@ -22,6 +22,7 @@ import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class TestToolReviewerTest {
+    private static final String TEST_TOOL_NOT_APPLICABLE = "Test tools are not applicable for the criterion %s.";
     private static final String TEST_TOOL_NOT_FOUND_REMOVED = "Criteria %s contains an invalid test tool '%s'. It has been removed from the pending listing.";
     private static final String TEST_TOOLS_MISSING = "Test tools are required for certification criteria %s.";
     private static final String MISSING_TEST_TOOL_NAME = "There was no test tool name found for certification criteria %s.";
@@ -41,6 +42,9 @@ public class TestToolReviewerTest {
         certResultRules = Mockito.mock(CertificationResultRules.class);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
 
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testToolsNotApplicable"),
+                ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(TEST_TOOL_NOT_APPLICABLE, i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testToolNotFoundAndRemoved"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(TEST_TOOL_NOT_FOUND_REMOVED, i.getArgument(1), i.getArgument(2)));
@@ -155,6 +159,38 @@ public class TestToolReviewerTest {
 
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_testToolsNotApplicableToCriteria_hasError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(true);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+            .thenReturn(false);
+        List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolId(1L)
+                .testToolName("good name")
+                .testToolVersion("1")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .build())
+                        .gap(true)
+                        .success(true)
+                        .testToolsUsed(testTools)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getCertificationResults().get(0).getTestToolsUsed().size());
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(
+                String.format(TEST_TOOL_NOT_APPLICABLE, "170.315 (a)(1)")));
     }
 
     @Test
