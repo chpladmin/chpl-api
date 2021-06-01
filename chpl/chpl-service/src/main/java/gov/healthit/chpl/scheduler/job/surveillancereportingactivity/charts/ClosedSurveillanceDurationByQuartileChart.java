@@ -29,12 +29,12 @@ public class ClosedSurveillanceDurationByQuartileChart {
 
             BoxAndWhiskerRenderer renderer = new BoxAndWhiskerRenderer();
             renderer.setFillBox(false);
-            renderer.setMaximumBarWidth(25);
             renderer.setMaxOutlierVisible(false);
             renderer.setMinOutlierVisible(false);
             renderer.setMeanVisible(false);
             renderer.setDefaultOutlinePaint(Color.RED);
             renderer.setDefaultPaint(Color.RED);
+            renderer.setArtifactPaint(Color.RED);
 
             CategoryPlot plot = new CategoryPlot(getData(surveillances, allAcbs), xAxis, yAxis, renderer);
 
