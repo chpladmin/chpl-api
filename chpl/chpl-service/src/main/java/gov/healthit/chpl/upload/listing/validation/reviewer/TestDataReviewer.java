@@ -33,22 +33,21 @@ public class TestDataReviewer extends PermissionBasedReviewer {
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
+            .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess())
             .forEach(certResult -> review(listing, certResult));
     }
 
     public void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (certResult.isSuccess() != null && certResult.isSuccess()) {
-            reviewTestDataApplicableToCriteria(listing, certResult);
-            reviewTestDataRequiredForG1AndG2WhenCertResultIsNotGap(listing, certResult);
-            reviewTestDataForReplacements(listing, certResult);
-            if (certResult.getTestDataUsed() != null && certResult.getTestDataUsed().size() > 0) {
-                certResult.getTestDataUsed().stream()
-                    .forEach(testData -> reviewTestDataFields(listing, certResult, testData));
-            }
+        reviewCriteriaCanHaveTestData(listing, certResult);
+        reviewTestDataRequiredForG1AndG2WhenCertResultIsNotGap(listing, certResult);
+        reviewTestDataForReplacements(listing, certResult);
+        if (certResult.getTestDataUsed() != null && certResult.getTestDataUsed().size() > 0) {
+            certResult.getTestDataUsed().stream()
+                .forEach(testData -> reviewTestDataFields(listing, certResult, testData));
         }
     }
 
-    private void reviewTestDataApplicableToCriteria(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    private void reviewCriteriaCanHaveTestData(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_DATA)
                 && certResult.getTestDataUsed() != null && certResult.getTestDataUsed().size() > 0) {
             listing.getErrorMessages().add(msgUtil.getMessage(

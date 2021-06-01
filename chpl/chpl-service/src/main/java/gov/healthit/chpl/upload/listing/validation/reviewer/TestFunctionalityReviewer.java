@@ -1,53 +1,57 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
 import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.dto.TestFunctionalityCriteriaMapDTO;
+import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionalityAllowedByCriteriaReviewer;
 
 @Component("listingUploadTestFunctionalityReviewer")
 public class TestFunctionalityReviewer extends PermissionBasedReviewer {
     private CertificationResultRules certResultRules;
-    private TestFunctionalityAllowedByCriteriaReviewer testFunctionalityCriteriaReviewer;
+    private TestFunctionalityDAO testFunctionalityDao;
 
     @Autowired
     public TestFunctionalityReviewer(CertificationResultRules certResultRules,
-            TestFunctionalityAllowedByCriteriaReviewer testFunctionalityCriteriaReviewer,
+            TestFunctionalityDAO testFunctionalityDao,
             ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
         super(msgUtil, resourcePermissions);
         this.certResultRules = certResultRules;
-        this.testFunctionalityCriteriaReviewer = testFunctionalityCriteriaReviewer;
+        this.testFunctionalityDao = testFunctionalityDao;
     }
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
+            .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess())
             .forEach(certResult -> review(listing, certResult));
     }
 
     public void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (certResult.isSuccess() != null && certResult.isSuccess()) {
-            removeTestFunctionalityWithoutIds(listing, certResult);
-            reviewTestFunctionalityApplicableToCriteria(listing, certResult);
-            if (certResult.getTestFunctionality() != null && certResult.getTestFunctionality().size() > 0) {
-                certResult.getTestFunctionality().stream()
-                    .forEach(testFunc -> reviewTestFunctionalityFields(listing, certResult, testFunc));
-            }
+        removeTestFunctionalityWithoutIds(listing, certResult);
+        reviewCriteriaCanHaveTestFunctionalityData(listing, certResult);
+        if (certResult.getTestFunctionality() != null && certResult.getTestFunctionality().size() > 0) {
+            certResult.getTestFunctionality().stream()
+                .forEach(testFunc -> reviewTestFunctionalityFields(listing, certResult, testFunc));
         }
     }
 
-    private void reviewTestFunctionalityApplicableToCriteria(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    private void reviewCriteriaCanHaveTestFunctionalityData(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)
                 && certResult.getTestFunctionality() != null && certResult.getTestFunctionality().size() > 0) {
             listing.getErrorMessages().add(msgUtil.getMessage(
@@ -72,9 +76,48 @@ public class TestFunctionalityReviewer extends PermissionBasedReviewer {
 
     private void reviewTestFunctionalityFields(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultTestFunctionality testFunctionality) {
+        reviewTestFunctionalityName(listing, certResult, testFunctionality);
+        reviewTestFunctionalityAllowedForCriterion(listing, certResult, testFunctionality);
+    }
+
+    private void reviewTestFunctionalityName(CertifiedProductSearchDetails listing,
+            CertificationResult certResult, CertificationResultTestFunctionality testFunctionality) {
         if (StringUtils.isEmpty(testFunctionality.getName())) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingTestFunctionalityName",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         }
+    }
+
+    private void reviewTestFunctionalityAllowedForCriterion(CertifiedProductSearchDetails listing,
+            CertificationResult certResult, CertificationResultTestFunctionality testFunctionality) {
+        String year = MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY);
+        if (!isTestFunctionalityCritierionValid(certResult.getCriterion().getId(),
+                testFunctionality.getTestFunctionalityId(), year)) {
+            addCriterionErrorOrWarningByPermission(listing, certResult,
+                    msgUtil.getMessage("listing.criteria.testFunctionalityCriterionMismatch",
+                        Util.formatCriteriaNumber(certResult.getCriterion()),
+                        testFunctionality.getName(),
+                        getDelimitedListOfValidCriteriaNumbers(testFunctionality.getTestFunctionalityId(), year),
+                        Util.formatCriteriaNumber(certResult.getCriterion())));
+        }
+    }
+
+    private Boolean isTestFunctionalityCritierionValid(Long criteriaId, Long testFunctionalityId, String year) {
+        List<TestFunctionalityDTO> validTestFunctionalityForCriteria =
+                testFunctionalityDao.getTestFunctionalityCriteriaMaps(year).get(criteriaId);
+        if (validTestFunctionalityForCriteria == null) {
+            return false;
+        } else {
+            return validTestFunctionalityForCriteria.stream().filter(validTf -> validTf.getId().equals(testFunctionalityId)).count() > 0;
+        }
+    }
+
+    private String getDelimitedListOfValidCriteriaNumbers(Long testFunctionalityId, String year) {
+        List<TestFunctionalityCriteriaMapDTO> testFunctionalityMaps = testFunctionalityDao.getTestFunctionalityCritieriaMaps();
+        return testFunctionalityMaps.stream().
+            filter(testFunctionalityMap -> testFunctionalityMap.getCriteria().getCertificationEdition().equals(year)
+                    && testFunctionalityId.equals(testFunctionalityMap.getTestFunctionality().getId()))
+            .map(testFunctionalityMap -> Util.formatCriteriaNumber(testFunctionalityMap.getCriteria()))
+            .collect(Collectors.joining(","));
     }
 }

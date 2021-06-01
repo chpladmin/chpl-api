@@ -24,6 +24,7 @@ import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class TestDataReviewerTest {
+    private static final String TEST_DATA_NOT_APPLICABLE = "Test data is not applicable for the criterion %s.";
     private static final String TEST_DATA_NAME_INVALID = "Test data '%s' is invalid for certification %s. %s will be used instead.";
     private static final String TEST_DATA_REQUIRED = "Test data is required for certification %s.";
     private static final String MISSING_TEST_DATA_NAME = "Test data was not provided for certification %s. %s will be used.";
@@ -53,6 +54,9 @@ public class TestDataReviewerTest {
                 .id(101L)
                 .number("170.315 (g)(2)")
                 .build());
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testDataNotApplicable"),
+                ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(TEST_DATA_NOT_APPLICABLE, i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.badTestDataName"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(TEST_DATA_NAME_INVALID, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
@@ -160,6 +164,41 @@ public class TestDataReviewerTest {
 
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_testDataNotApplicableToCriteria_hasError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(true);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+            .thenReturn(false);
+        List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
+        testData.add(CertificationResultTestData.builder()
+                .userEnteredName(TestDataDTO.DEFALUT_TEST_DATA)
+                .testData(TestData.builder()
+                        .id(1L)
+                        .name(TestDataDTO.DEFALUT_TEST_DATA)
+                        .build())
+                .version("1")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .build())
+                        .gap(true)
+                        .success(true)
+                        .testDataUsed(testData)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getCertificationResults().get(0).getTestDataUsed().size());
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(
+                String.format(TEST_DATA_NOT_APPLICABLE, "170.315 (a)(1)")));
     }
 
     @Test

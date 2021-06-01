@@ -11,6 +11,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class CertificationResultReviewer {
     private TestToolReviewer testToolReviewer;
     private TestDataReviewer testDataReviewer;
+    private TestFunctionalityReviewer testFunctionalityReviewer;
     private UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
     private ErrorMessageUtil msgUtil;
 
@@ -18,21 +19,26 @@ public class CertificationResultReviewer {
     @SuppressWarnings("checkstyle:parameternumber")
     public CertificationResultReviewer(@Qualifier("listingUploadTestToolReviewer") TestToolReviewer testToolReviewer,
             @Qualifier("listingUploadTestDataReviewer") TestDataReviewer testDataReviewer,
+            @Qualifier("listingUploadTestFunctionalityReviewer") TestFunctionalityReviewer testFunctionalityReviewer,
             @Qualifier("uploadedListingUnattestedCriteriaWithDataReviewer") UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer,
             ErrorMessageUtil msgUtil) {
         this.testToolReviewer = testToolReviewer;
         this.testDataReviewer = testDataReviewer;
+        this.testFunctionalityReviewer = testFunctionalityReviewer;
         this.unattestedCriteriaWithDataReviewer = unattestedCriteriaWithDataReviewer;
         this.msgUtil = msgUtil;
     }
 
     public void review(CertifiedProductSearchDetails listing) {
-        if (listing.getCertificationResults() == null || listing.getCertificationResults().size() == 0
-                || hasNoAttestedCriteria(listing)) {
+        if (listing.getCertificationResults() == null) {
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.missingCertificationResults"));
+            return;
+        } else if (listing.getCertificationResults().size() == 0 || hasNoAttestedCriteria(listing)) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.missingCertificationResults"));
         }
         testToolReviewer.review(listing);
         testDataReviewer.review(listing);
+        testFunctionalityReviewer.review(listing);
         unattestedCriteriaWithDataReviewer.review(listing);
     }
 

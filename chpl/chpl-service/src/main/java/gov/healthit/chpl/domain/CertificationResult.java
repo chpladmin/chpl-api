@@ -169,7 +169,7 @@ public class CertificationResult implements Serializable {
      */
     @XmlElementWrapper(name = "testFunctionalityList", nillable = true, required = false)
     @XmlElement(name = "testFunctionality")
-    @Singular("testFunctionalitySingle")
+    @Builder.Default
     private List<CertificationResultTestFunctionality> testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
 
     /**
