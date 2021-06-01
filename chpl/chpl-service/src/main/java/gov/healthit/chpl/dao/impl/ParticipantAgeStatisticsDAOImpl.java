@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.ParticipantAgeStatisticsDAO;
 import gov.healthit.chpl.dto.ParticipantAgeStatisticsDTO;
-import gov.healthit.chpl.entity.ParticipantAgeStatisticsEntity;
+import gov.healthit.chpl.entity.statistics.ParticipantAgeStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 

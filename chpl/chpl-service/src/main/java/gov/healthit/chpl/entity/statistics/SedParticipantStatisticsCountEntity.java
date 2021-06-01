@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.statistics;
 
 import java.io.Serializable;
 import java.util.Date;
