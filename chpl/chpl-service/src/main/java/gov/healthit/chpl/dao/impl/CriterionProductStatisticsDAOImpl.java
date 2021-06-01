@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.CriterionProductStatisticsDAO;
 import gov.healthit.chpl.dto.CriterionProductStatisticsDTO;
-import gov.healthit.chpl.entity.CriterionProductStatisticsEntity;
+import gov.healthit.chpl.entity.statistics.CriterionProductStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 

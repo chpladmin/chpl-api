@@ -20,7 +20,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
-import gov.healthit.chpl.entity.ParticipantGenderStatisticsEntity;
+import gov.healthit.chpl.entity.statistics.ParticipantGenderStatisticsEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 /**

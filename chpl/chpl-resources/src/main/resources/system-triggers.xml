@@ -117,6 +117,17 @@
 
         <trigger>
             <cron>
+                <name>generateCuresStatistics</name>
+                <group>generateCuresStatisticsTrigger</group>
+                <job-name>curesStatisticsCreator</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 30 8 * * ?</cron-expression> <!-- At 0830 UTC every day -->
+            </cron>
+        </trigger>
+
+        <trigger>
+            <cron>
                 <name>apiKeyDeleteWarningEmail</name>
                 <group>apiKeyDeleteWarningEmailTrigger</group>
                 <job-name>apiKeyDeleteWarningEmailJob</job-name>
