@@ -3,9 +3,11 @@ package gov.healthit.chpl.certifiedproduct.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -35,17 +37,19 @@ public class CertificationResultService {
     private CertificationResultDetailsDAO certificationResultDetailsDAO;
     private SvapDAO svapDao;
     private OptionalStandardDAO optionalStandardDAO;
+    private FF4j ff4j;
 
     @Autowired
     public CertificationResultService(CertificationResultRules certRules, CertificationResultManager certResultManager,
             TestingFunctionalityManager testFunctionalityManager, CertificationResultDetailsDAO certificationResultDetailsDAO,
-            SvapDAO svapDAO, OptionalStandardDAO optionalStandardDAO) {
+            SvapDAO svapDAO, OptionalStandardDAO optionalStandardDAO, FF4j ff4j) {
         this.certRules = certRules;
         this.certResultManager = certResultManager;
         this.testFunctionalityManager = testFunctionalityManager;
         this.certificationResultDetailsDAO = certificationResultDetailsDAO;
         this.svapDao = svapDAO;
         this.optionalStandardDAO = optionalStandardDAO;
+        this.ff4j = ff4j;
     }
 
     public List<CertificationResult> getCertificationResults(CertifiedProductSearchDetails searchDetails) throws EntityRetrievalException {
@@ -124,7 +128,7 @@ public class CertificationResultService {
 
     private List<OptionalStandard> getAvailableOptionalStandardsForCriteria(CertificationResult result, List<OptionalStandardCriteriaMap> optionalStandardCriteriaMap) {
         return optionalStandardCriteriaMap.stream()
-                .filter(osm -> osm.getCriterion().getId().equals(result.getCriterion().getId()))
+                .filter(osm -> ff4j.check(FeatureList.OPTIONAL_STANDARDS) && osm.getCriterion().getId().equals(result.getCriterion().getId()))
                 .map(osm -> osm.getOptionalStandard())
                 .collect(Collectors.toList());
     }
