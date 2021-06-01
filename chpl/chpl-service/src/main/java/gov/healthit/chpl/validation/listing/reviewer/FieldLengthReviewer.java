@@ -7,6 +7,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -106,13 +107,33 @@ public class FieldLengthReviewer implements Reviewer {
 
     private void checkCriteria(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-        .forEach(criteria -> {
-            checkFieldLength(listing, criteria.getApiDocumentation(), "apiDocumentationLink");
-            checkFieldLength(listing, criteria.getExportDocumentation(), "exportDocumentationLink");
-            checkFieldLength(listing, criteria.getDocumentationUrl(), "documentationUrlLink");
-            checkFieldLength(listing, criteria.getUseCases(), "useCasesLink");
-            checkFieldLength(listing, criteria.getServiceBaseUrlList(), "serviceBaseUrlListLink");
+        .forEach(certResult -> {
+            checkFieldLength(listing, certResult.getApiDocumentation(), "apiDocumentationLink");
+            checkFieldLength(listing, certResult.getExportDocumentation(), "exportDocumentationLink");
+            checkFieldLength(listing, certResult.getDocumentationUrl(), "documentationUrlLink");
+            checkFieldLength(listing, certResult.getUseCases(), "useCasesLink");
+            checkFieldLength(listing, certResult.getServiceBaseUrlList(), "serviceBaseUrlListLink");
+            checkTestToolFields(listing, certResult);
+            checkTestDataFields(listing, certResult);
         });
+    }
+
+    private void checkTestToolFields(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        if (certResult.getTestToolsUsed() != null && certResult.getTestToolsUsed().size() > 0) {
+            certResult.getTestToolsUsed().stream()
+                .forEach(testTool -> {
+                    checkFieldLength(listing, testTool.getTestToolVersion(), "testToolVersion");
+                });
+        }
+    }
+
+    private void checkTestDataFields(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        if (certResult.getTestDataUsed() != null && certResult.getTestDataUsed().size() > 0) {
+            certResult.getTestDataUsed().stream()
+                .forEach(testData -> {
+                    checkFieldLength(listing, testData.getVersion(), "testDataVersion");
+                });
+        }
     }
 
     private void checkFieldLength(CertifiedProductSearchDetails product, String field, String errorField) {

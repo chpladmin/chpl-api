@@ -7,8 +7,6 @@ import java.util.Set;
 
 import javax.persistence.Query;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -19,8 +17,6 @@ import gov.healthit.chpl.entity.TestDataEntity;
 
 @Repository("testDataDAO")
 public class TestDataDAO extends BaseDAOImpl {
-    private static Logger LOGGER = LogManager.getLogger(TestDataDAO.class);
-
 
     public List<TestDataDTO> getByCriterionId(Long criterionId) {
         Set<TestDataEntity> entities = getTestDataByCertificationCriteria(criterionId);
@@ -31,9 +27,7 @@ public class TestDataDAO extends BaseDAOImpl {
             dtos.add(dto);
         }
         return dtos;
-
     }
-
 
     public TestDataDTO getByCriterionAndValue(Long criterionId, String value) {
         TestDataEntity entity = getTestDataByCertificationCriteriaAndValue(criterionId, value);
@@ -43,9 +37,7 @@ public class TestDataDAO extends BaseDAOImpl {
         return new TestDataDTO(entity);
     }
 
-
     public List<TestDataCriteriaMapDTO> findAllWithMappedCriteria() {
-
         List<TestDataCriteriaMapEntity> entities =
                 entityManager.createQuery("SELECT tdMap "
                         + "FROM TestDataCriteriaMapEntity tdMap "
