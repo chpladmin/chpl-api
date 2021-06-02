@@ -21,7 +21,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.ParticipantExperienceStatisticsDTO;
-import gov.healthit.chpl.entity.ParticipantExperienceStatisticsEntity;
+import gov.healthit.chpl.entity.statistics.ParticipantExperienceStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 

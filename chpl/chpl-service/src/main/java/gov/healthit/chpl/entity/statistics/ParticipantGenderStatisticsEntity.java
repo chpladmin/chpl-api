@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.statistics;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -6,26 +6,23 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import gov.healthit.chpl.util.Util;
 
 /**
- * Entity object representing the criterion_product_statistics table.
- * @author alarned
+ * Entity object representing the participant_gender_statistics table.
+ * @author TYoung
  *
  */
 @Entity
-@Table(name = "criterion_product_statistics")
-public class CriterionProductStatisticsEntity implements Serializable {
-    private static final long serialVersionUID = -4258273713908999510L;
+@Table(name = "participant_gender_statistics")
+public class ParticipantGenderStatisticsEntity implements Serializable {
+    private static final long serialVersionUID = 1313677047965534572L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,16 +31,16 @@ public class CriterionProductStatisticsEntity implements Serializable {
     private Long id;
 
     @Basic(optional = false)
-    @Column(name = "product_count", nullable = false)
-    private Long productCount;
+    @Column(name = "male_count", nullable = false)
+    private Long maleCount;
 
     @Basic(optional = false)
-    @Column(name = "certification_criterion_id", nullable = false)
-    private Long certificationCriterionId;
+    @Column(name = "female_count", nullable = false)
+    private Long femaleCount;
 
-    @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "certification_criterion_id", insertable = false, updatable = false)
-    private CertificationCriterionEntity certificationCriterion;
+    @Basic(optional = false)
+    @Column(name = "unknown_count", nullable = false)
+    private Long unknownCount;
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
@@ -64,7 +61,7 @@ public class CriterionProductStatisticsEntity implements Serializable {
     /**
      * Default constructor.
      */
-    public CriterionProductStatisticsEntity() {
+    public ParticipantGenderStatisticsEntity() {
         //Default Constructor
     }
 
@@ -72,13 +69,13 @@ public class CriterionProductStatisticsEntity implements Serializable {
      * Sets the id field upon creation.
      * @param id The value to set object's id equal to
      */
-    public CriterionProductStatisticsEntity(final Long id) {
+    public ParticipantGenderStatisticsEntity(final Long id) {
         this.id = id;
     }
 
     @Transient
     public Class<?> getClassType() {
-        return CriterionProductStatisticsEntity.class;
+        return ParticipantGenderStatisticsEntity.class;
     }
 
     public Long getId() {
@@ -89,28 +86,28 @@ public class CriterionProductStatisticsEntity implements Serializable {
         this.id = id;
     }
 
-    public CertificationCriterionEntity getCertificationCriterion() {
-        return certificationCriterion;
+    public Long getMaleCount() {
+        return maleCount;
     }
 
-    public void setCertificationCriterion(final CertificationCriterionEntity certificationCriterion) {
-        this.certificationCriterion = certificationCriterion;
+    public void setMaleCount(final Long maleCount) {
+        this.maleCount = maleCount;
     }
 
-    public Long getProductCount() {
-        return productCount;
+    public Long getFemaleCount() {
+        return femaleCount;
     }
 
-    public void setProductCount(final Long productCount) {
-        this.productCount = productCount;
+    public void setFemaleCount(final Long femaleCount) {
+        this.femaleCount = femaleCount;
     }
 
-    public Long getCertificationCriterionId() {
-        return certificationCriterionId;
+    public Long getUnknownCount() {
+        return unknownCount;
     }
 
-    public void setCertificationCriterionId(final Long certificationCriterionId) {
-        this.certificationCriterionId = certificationCriterionId;
+    public void setUnknownCount(final Long unknownCount) {
+        this.unknownCount = unknownCount;
     }
 
     public Date getCreationDate() {
@@ -144,4 +141,5 @@ public class CriterionProductStatisticsEntity implements Serializable {
     public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
+
 }

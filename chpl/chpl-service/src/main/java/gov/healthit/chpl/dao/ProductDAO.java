@@ -486,7 +486,6 @@ public class ProductDAO extends BaseDAOImpl {
                 + "LEFT JOIN FETCH pe.contact "
                 + "LEFT JOIN FETCH pe.ownerHistory "
                 + "LEFT JOIN FETCH pe.productVersions "
-                + "LEFT JOIN FETCH pe.productCertificationStatuses "
                 + "WHERE pe.id = :entityid ";
         if (!includeDeleted) {
             queryStr += " AND pe.deleted = false";
