@@ -12,13 +12,13 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
-@Component("optionalStandardReviewer")
-public class OptionalStandardReviewer implements Reviewer {
+@Component("testStandardRemovalReviewer")
+public class TestStandardRemovalReviewer implements Reviewer {
     private ErrorMessageUtil msgUtil;
     private FF4j ff4j;
 
     @Autowired
-    public OptionalStandardReviewer(ErrorMessageUtil msgUtil, FF4j ff4j) {
+    public TestStandardRemovalReviewer(ErrorMessageUtil msgUtil, FF4j ff4j) {
         this.msgUtil = msgUtil;
         this.ff4j = ff4j;
     }
