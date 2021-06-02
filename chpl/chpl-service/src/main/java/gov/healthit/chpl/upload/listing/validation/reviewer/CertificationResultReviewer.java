@@ -11,6 +11,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class CertificationResultReviewer {
     private TestToolReviewer testToolReviewer;
     private TestDataReviewer testDataReviewer;
+    private TestProcedureReviewer testProcedureReviewer;
     private TestFunctionalityReviewer testFunctionalityReviewer;
     private UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
     private ErrorMessageUtil msgUtil;
@@ -19,11 +20,13 @@ public class CertificationResultReviewer {
     @SuppressWarnings("checkstyle:parameternumber")
     public CertificationResultReviewer(@Qualifier("listingUploadTestToolReviewer") TestToolReviewer testToolReviewer,
             @Qualifier("listingUploadTestDataReviewer") TestDataReviewer testDataReviewer,
+            @Qualifier("listingUploadTestProcedureReviewer") TestProcedureReviewer testProcedureReviewer,
             @Qualifier("listingUploadTestFunctionalityReviewer") TestFunctionalityReviewer testFunctionalityReviewer,
             @Qualifier("uploadedListingUnattestedCriteriaWithDataReviewer") UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer,
             ErrorMessageUtil msgUtil) {
         this.testToolReviewer = testToolReviewer;
         this.testDataReviewer = testDataReviewer;
+        this.testProcedureReviewer = testProcedureReviewer;
         this.testFunctionalityReviewer = testFunctionalityReviewer;
         this.unattestedCriteriaWithDataReviewer = unattestedCriteriaWithDataReviewer;
         this.msgUtil = msgUtil;
@@ -38,6 +41,7 @@ public class CertificationResultReviewer {
         }
         testToolReviewer.review(listing);
         testDataReviewer.review(listing);
+        testProcedureReviewer.review(listing);
         testFunctionalityReviewer.review(listing);
         unattestedCriteriaWithDataReviewer.review(listing);
     }
