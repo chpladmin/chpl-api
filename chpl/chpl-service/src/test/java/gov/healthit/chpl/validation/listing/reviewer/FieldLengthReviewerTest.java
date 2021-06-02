@@ -14,6 +14,7 @@ import org.springframework.context.MessageSource;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestData;
+import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
@@ -23,6 +24,7 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.TestData;
+import gov.healthit.chpl.domain.TestProcedure;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class FieldLengthReviewerTest {
@@ -112,6 +114,11 @@ public class FieldLengthReviewerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.testDataVersion.maxlength"),
                 ArgumentMatchers.any(), ArgumentMatchers.any()))
                 .thenReturn(String.format(FIELD_TOO_LONG, "20", "test data version", "placeholder"));
+        Mockito.when(messageSource.getMessage(ArgumentMatchers.eq("maxLength.testProcedureVersion"), ArgumentMatchers.isNull(), ArgumentMatchers.any()))
+            .thenReturn("20");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.testProcedureVersion.maxlength"),
+                ArgumentMatchers.any(), ArgumentMatchers.any()))
+                .thenReturn(String.format(FIELD_TOO_LONG, "20", "test procedure version", "placeholder"));
         reviewer = new FieldLengthReviewer(errorMessageUtil, messageSource);
     }
 
@@ -542,6 +549,7 @@ public class FieldLengthReviewerTest {
     public void review_emptyTestTools_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
+                        .testToolsUsed(new ArrayList<CertificationResultTestTool>())
                         .build())
                 .build();
 
@@ -601,6 +609,7 @@ public class FieldLengthReviewerTest {
     public void review_emptyTestData_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
+                        .testDataUsed(new ArrayList<CertificationResultTestData>())
                         .build())
                 .build();
 
@@ -647,6 +656,70 @@ public class FieldLengthReviewerTest {
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "test data version", "placeholder")));
+    }
+
+    @Test
+    public void review_nullTestProcedure_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .build())
+                .build();
+        listing.getCertificationResults().get(0).setTestProcedures(null);
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_emptyTestProcedures_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .testProcedures(new ArrayList<CertificationResultTestProcedure>())
+                        .build())
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_shortTestProcedureVersion_noError() {
+        List<CertificationResultTestProcedure> testProcedures = new ArrayList<CertificationResultTestProcedure>();
+        testProcedures.add(CertificationResultTestProcedure.builder()
+                .testProcedure(TestProcedure.builder()
+                        .id(1L)
+                        .name("a name")
+                        .build())
+                .testProcedureVersion("1.1")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .testProcedures(testProcedures)
+                        .build())
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_longTestProcedureVersion_hasError() {
+        List<CertificationResultTestProcedure> testProcedures = new ArrayList<CertificationResultTestProcedure>();
+        testProcedures.add(CertificationResultTestProcedure.builder()
+                .testProcedure(TestProcedure.builder()
+                        .id(1L)
+                        .name("a name")
+                        .build())
+                .testProcedureVersion(createStringLongerThan(20, "A"))
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .testProcedures(testProcedures)
+                        .build())
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "test procedure version", "placeholder")));
     }
 
     private String createStringLongerThan(int minLength, String charToUse) {

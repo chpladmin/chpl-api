@@ -115,6 +115,7 @@ public class FieldLengthReviewer implements Reviewer {
             checkFieldLength(listing, certResult.getServiceBaseUrlList(), "serviceBaseUrlListLink");
             checkTestToolFields(listing, certResult);
             checkTestDataFields(listing, certResult);
+            checkTestProcedureFields(listing, certResult);
         });
     }
 
@@ -132,6 +133,15 @@ public class FieldLengthReviewer implements Reviewer {
             certResult.getTestDataUsed().stream()
                 .forEach(testData -> {
                     checkFieldLength(listing, testData.getVersion(), "testDataVersion");
+                });
+        }
+    }
+
+    private void checkTestProcedureFields(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        if (certResult.getTestProcedures() != null && certResult.getTestProcedures().size() > 0) {
+            certResult.getTestProcedures().stream()
+                .forEach(testProcedure -> {
+                    checkFieldLength(listing, testProcedure.getTestProcedureVersion(), "testProcedureVersion");
                 });
         }
     }
