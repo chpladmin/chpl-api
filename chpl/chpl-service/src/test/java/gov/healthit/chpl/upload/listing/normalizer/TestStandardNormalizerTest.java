@@ -43,6 +43,7 @@ public class TestStandardNormalizerTest {
                 .build();
         listing.getCertificationResults().get(0).setTestStandards(null);
         normalizer.normalize(listing);
+        assertNull(listing.getCertificationResults().get(0).getTestStandards());
     }
 
     @Test
@@ -58,6 +59,7 @@ public class TestStandardNormalizerTest {
                         .build())
                 .build();
         normalizer.normalize(listing);
+        assertEquals(0, listing.getCertificationResults().get(0).getTestStandards().size());
     }
 
     @Test

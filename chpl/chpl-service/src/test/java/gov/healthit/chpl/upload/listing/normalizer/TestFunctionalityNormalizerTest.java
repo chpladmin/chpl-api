@@ -54,6 +54,7 @@ public class TestFunctionalityNormalizerTest {
                 .build();
         listing.getCertificationResults().get(0).setTestFunctionality(null);
         normalizer.normalize(listing);
+        assertNull(listing.getCertificationResults().get(0).getTestFunctionality());
     }
 
     @Test
@@ -68,6 +69,7 @@ public class TestFunctionalityNormalizerTest {
                         .build())
                 .build();
         normalizer.normalize(listing);
+        assertEquals(0, listing.getCertificationResults().get(0).getTestFunctionality().size());
     }
 
     @Test

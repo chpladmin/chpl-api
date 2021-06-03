@@ -27,7 +27,6 @@ public class CriteriaReviewer extends PermissionBasedReviewer {
 
     public void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         reviewRemovedCriteriaAllowedForRole(listing, certResult);
-        //TODO: criteria relationship reviews may go here in the future
     }
 
     private void reviewRemovedCriteriaAllowedForRole(CertifiedProductSearchDetails listing, CertificationResult certResult) {
