@@ -23,7 +23,6 @@ import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.util.CertificationResultRules;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.NoArgsConstructor;
 import lombok.Singular;
 
 /**
@@ -34,7 +33,6 @@ import lombok.Singular;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 public class CertificationResult implements Serializable {
     private static final long serialVersionUID = -4917413876078419868L;
     public static final String PRIVACY_SECURITY_FRAMEWORK_DELIMITER = ";";
@@ -237,6 +235,16 @@ public class CertificationResult implements Serializable {
      */
     @XmlElement(name = "criterion")
     private CertificationCriterion criterion;
+
+    public CertificationResult() {
+        this.testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
+        this.testToolsUsed = new ArrayList<CertificationResultTestTool>();
+        this.testStandards = new ArrayList<CertificationResultTestStandard>();
+        this.additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
+        this.testDataUsed = new ArrayList<CertificationResultTestData>();
+        this.testProcedures = new ArrayList<CertificationResultTestProcedure>();
+        this.testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
+    }
 
     public CertificationResult(CertificationResultDetailsDTO certResult) {
         this();
