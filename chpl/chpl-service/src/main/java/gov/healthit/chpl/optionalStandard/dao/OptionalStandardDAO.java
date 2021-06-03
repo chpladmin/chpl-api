@@ -84,6 +84,7 @@ public class OptionalStandardDAO extends BaseDAOImpl {
         return entityManager.createQuery("SELECT DISTINCT osm "
                         + "FROM OptionalStandardCriteriaMapEntity osm "
                         + "JOIN FETCH osm.criteria c "
+                        + "JOIN FETCH c.certificationEdition "
                         + "JOIN FETCH osm.optionalStandard os "
                         + "WHERE osm.deleted <> true "
                         + "AND os.deleted <> true ",
