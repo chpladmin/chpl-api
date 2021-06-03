@@ -15,6 +15,7 @@ import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 
 @Component
 public class CertificationResultReviewer extends PermissionBasedReviewer {
+    private CriteriaReviewer criteriaReviewer;
     private PrivacyAndSecurityFrameworkReviewer privacyAndSecurityFrameworkReviewer;
     private TestToolReviewer testToolReviewer;
     private TestDataReviewer testDataReviewer;
@@ -27,7 +28,8 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
-    public CertificationResultReviewer(@Qualifier("listingUploadPrivacyAndSecurityFrameworkReviewer") PrivacyAndSecurityFrameworkReviewer privacyAndSecurityFrameworkReviewer,
+    public CertificationResultReviewer(@Qualifier("listingUploadCriteriaReviewer") CriteriaReviewer criteriaReviewer,
+            @Qualifier("listingUploadPrivacyAndSecurityFrameworkReviewer") PrivacyAndSecurityFrameworkReviewer privacyAndSecurityFrameworkReviewer,
             @Qualifier("listingUploadTestToolReviewer") TestToolReviewer testToolReviewer,
             @Qualifier("listingUploadTestDataReviewer") TestDataReviewer testDataReviewer,
             @Qualifier("listingUploadTestProcedureReviewer") TestProcedureReviewer testProcedureReviewer,
@@ -37,6 +39,7 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
             CertificationResultRules certResultRules, ErrorMessageUtil msgUtil,
             ResourcePermissions resourcePermissions) {
         super(msgUtil, resourcePermissions);
+        this.criteriaReviewer = criteriaReviewer;
         this.privacyAndSecurityFrameworkReviewer = privacyAndSecurityFrameworkReviewer;
         this.testToolReviewer = testToolReviewer;
         this.testDataReviewer = testDataReviewer;
@@ -58,6 +61,7 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
         listing.getCertificationResults().stream()
             .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess())
             .forEach(certResult -> reviewCertResultFields(listing, certResult));
+        criteriaReviewer.review(listing);
         privacyAndSecurityFrameworkReviewer.review(listing);
         //TODO: additional software reviewer
         //TODO: GAP reviewer? (f3 is not allowed to have GAP = true if a listing certification date is after cures effective date)
