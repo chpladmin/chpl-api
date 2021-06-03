@@ -96,7 +96,6 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
                 .count() == 0;
     }
 
-    //TODO: add unit tests
     private void reviewCertResultFields(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.GAP)
                 && certResult.isGap() == null) {

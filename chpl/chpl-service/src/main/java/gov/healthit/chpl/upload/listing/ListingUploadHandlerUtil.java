@@ -300,7 +300,7 @@ public class ListingUploadHandlerUtil {
                     certResultEndIndex = i - 1;
                 }
             }
-            if (certResultStartIndex >= 0 && certResultEndIndex < 0 && i == headingRecord.size() - 1) {
+            if (certResultStartIndex >= 0 && certResultEndIndex < 0 && i == (headingRecord.size() - 1)) {
                 certResultEndIndex = i;
             }
         }
