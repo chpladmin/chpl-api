@@ -12,17 +12,24 @@ import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.GapAllowedReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.OldCriteriaWithoutIcsReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
 
 @Component
 public class CertificationResultReviewer extends PermissionBasedReviewer {
     private CriteriaReviewer criteriaReviewer;
     private PrivacyAndSecurityFrameworkReviewer privacyAndSecurityFrameworkReviewer;
+    private AdditionalSoftwareReviewer additionalSoftwareReviewer;
+    private GapAllowedReviewer gapAllowedReviewer;
     private TestToolReviewer testToolReviewer;
     private TestDataReviewer testDataReviewer;
     private TestProcedureReviewer testProcedureReviewer;
     private TestFunctionalityReviewer testFunctionalityReviewer;
     private TestStandardReviewer testStandardReviewer;
     private UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
+    private OldCriteriaWithoutIcsReviewer oldCriteriaWithoutIcsReviewer;
+    private SedG32015Reviewer sedG3Reviewer;
     private CertificationResultRules certResultRules;
     private ErrorMessageUtil msgUtil;
 
@@ -30,23 +37,31 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
     @SuppressWarnings("checkstyle:parameternumber")
     public CertificationResultReviewer(@Qualifier("listingUploadCriteriaReviewer") CriteriaReviewer criteriaReviewer,
             @Qualifier("listingUploadPrivacyAndSecurityFrameworkReviewer") PrivacyAndSecurityFrameworkReviewer privacyAndSecurityFrameworkReviewer,
+            @Qualifier("listingUploadAdditionalSoftwareFrameworkReviewer") AdditionalSoftwareReviewer additionalSoftwareReviewer,
+            @Qualifier("gapAllowedReviewer") GapAllowedReviewer gapAllowedReviewer,
             @Qualifier("listingUploadTestToolReviewer") TestToolReviewer testToolReviewer,
             @Qualifier("listingUploadTestDataReviewer") TestDataReviewer testDataReviewer,
             @Qualifier("listingUploadTestProcedureReviewer") TestProcedureReviewer testProcedureReviewer,
             @Qualifier("listingUploadTestFunctionalityReviewer") TestFunctionalityReviewer testFunctionalityReviewer,
             @Qualifier("listingUploadTestStandardReviewer") TestStandardReviewer testStandardReviewer,
             @Qualifier("uploadedListingUnattestedCriteriaWithDataReviewer") UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer,
+            @Qualifier("oldCriteriaWithoutIcsReviewer") OldCriteriaWithoutIcsReviewer oldCriteriaWithoutIcsReviewer,
+            @Qualifier("sedG32015Reviewer") SedG32015Reviewer sedG3Reviewer,
             CertificationResultRules certResultRules, ErrorMessageUtil msgUtil,
             ResourcePermissions resourcePermissions) {
         super(msgUtil, resourcePermissions);
         this.criteriaReviewer = criteriaReviewer;
         this.privacyAndSecurityFrameworkReviewer = privacyAndSecurityFrameworkReviewer;
+        this.additionalSoftwareReviewer = additionalSoftwareReviewer;
+        this.gapAllowedReviewer = gapAllowedReviewer;
         this.testToolReviewer = testToolReviewer;
         this.testDataReviewer = testDataReviewer;
         this.testProcedureReviewer = testProcedureReviewer;
         this.testFunctionalityReviewer = testFunctionalityReviewer;
         this.testStandardReviewer = testStandardReviewer;
         this.unattestedCriteriaWithDataReviewer = unattestedCriteriaWithDataReviewer;
+        this.oldCriteriaWithoutIcsReviewer = oldCriteriaWithoutIcsReviewer;
+        this.sedG3Reviewer = sedG3Reviewer;
         this.certResultRules = certResultRules;
         this.msgUtil = msgUtil;
     }
@@ -63,14 +78,16 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
             .forEach(certResult -> reviewCertResultFields(listing, certResult));
         criteriaReviewer.review(listing);
         privacyAndSecurityFrameworkReviewer.review(listing);
-        //TODO: additional software reviewer
-        //TODO: GAP reviewer? (f3 is not allowed to have GAP = true if a listing certification date is after cures effective date)
+        additionalSoftwareReviewer.review(listing);
+        gapAllowedReviewer.review(listing);
         testToolReviewer.review(listing);
         testDataReviewer.review(listing);
         testProcedureReviewer.review(listing);
         testFunctionalityReviewer.review(listing);
         testStandardReviewer.review(listing);
         unattestedCriteriaWithDataReviewer.review(listing);
+        oldCriteriaWithoutIcsReviewer.review(listing);
+        sedG3Reviewer.review(listing);
     }
 
     private boolean hasNoAttestedCriteria(CertifiedProductSearchDetails listing) {
@@ -81,6 +98,13 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
 
     //TODO: add unit tests
     private void reviewCertResultFields(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.GAP)
+                && certResult.isGap() == null) {
+            addCriterionErrorOrWarningByPermission(listing, certResult,
+                    "listing.criteria.missingGap",
+                    Util.formatCriteriaNumber(certResult.getCriterion()));
+        }
+
         if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.ATTESTATION_ANSWER)
                 && certResult.getAttestationAnswer() == null) {
             addCriterionErrorOrWarningByPermission(listing, certResult,
