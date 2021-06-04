@@ -2,7 +2,7 @@ package gov.healthit.chpl.changerequest.validation;
 
 import java.util.HashMap;
 
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
