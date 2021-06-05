@@ -77,7 +77,7 @@ import org.springframework.web.servlet.view.JstlView;
         @PropertySource(value = "classpath:/email-override.properties", ignoreResourceNotFound = true),
 })
 @ComponentScan(basePackages = {
-        "org.springframework.security.**", "org.springframework.core.env.**", "gov.healthit.chpl.**"
+        "gov.healthit.chpl.**"
 })
 public class CHPLServiceConfig implements WebMvcConfigurer, EnvironmentAware {
 
