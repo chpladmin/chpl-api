@@ -58,28 +58,6 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
         </dependency>
-        <!--  required by Spring 5 
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webflux</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-rsocket</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-oauth2-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-messaging</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.rsocket</groupId>
-            <artifactId>rsocket-core</artifactId>
-            <version>1.1.0</version>
-        </dependency> -->
 
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -295,12 +273,12 @@
         <dependency>
             <groupId>org.ff4j</groupId>
             <artifactId>ff4j-core</artifactId>
-            <version>1.8</version>
+            <version>1.8.11</version>
         </dependency>
         <dependency>
             <groupId>org.ff4j</groupId>
             <artifactId>ff4j-store-ehcache</artifactId>
-            <version>1.8</version>
+            <version>1.8.11</version>
         </dependency>
 
         <!-- @Build annotation for generation of builder pattern -->
