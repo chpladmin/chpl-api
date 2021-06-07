@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -28,16 +29,25 @@ public class CertificationResultOptionalStandard implements Serializable {
     private static final long serialVersionUID = -9182555768595891414L;
 
     /**
-     * Optional standard to certification result mapping internal ID
+     * Optional standard to certification result mapping internal ID.
      */
     @XmlElement(required = true)
     private Long id;
 
+    @XmlTransient
+    private OptionalStandard optionalStandard;
+
+    /**
+     * The Optional Standard internal identifier.
+     */
+    @XmlElement(required = true)
+    private Long optionalStandardId;
+
     /**
      * The Optional Standard used to test the associated criteria.
      */
-    @XmlElement(required = false, nillable = true)
-    private OptionalStandard optionalStandard;
+    @XmlElement(required = true)
+    private String standard;
 
     public CertificationResultOptionalStandard() {
         super();
@@ -51,6 +61,8 @@ public class CertificationResultOptionalStandard implements Serializable {
             os.setOptionalStandard(entity.getOptionalStandard().getOptionalStandard());
         }
         this.optionalStandard = os;
+        this.standard = os.getOptionalStandard();
+        this.optionalStandardId = os.getId();
     }
 
     public boolean matches(CertificationResultOptionalStandard anotherStd) {
@@ -66,7 +78,7 @@ public class CertificationResultOptionalStandard implements Serializable {
         return id;
     }
 
-    public void setId(final Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -78,4 +90,19 @@ public class CertificationResultOptionalStandard implements Serializable {
         this.optionalStandard = optionalStandard;
     }
 
+    public Long getOptionalStandardId() {
+        return optionalStandardId;
+    }
+
+    public void setOptionalStandardId(Long optionalStandardId) {
+        this.optionalStandardId = optionalStandardId;
+    }
+
+    public String getStandard() {
+        return standard;
+    }
+
+    public void setStandard(String standard) {
+        this.standard = standard;
+    }
 }
