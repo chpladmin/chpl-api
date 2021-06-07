@@ -21,7 +21,6 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.upload.listing.ListingUploadDao;
 import gov.healthit.chpl.upload.listing.ListingUploadManager;
 import lombok.extern.log4j.Log4j2;
@@ -86,16 +85,16 @@ public class ListingUploadValidationJob implements Job {
                         LOGGER.error("Unable to get listing upload with id "
                                 + listingUploadId + ". Error and warning counts will be set to -1.", ex);
                     }
-                    CertifiedProductSearchDetails validatedListingUpload = null;
-                    try {
-                        validatedListingUpload = listingUploadManager.getDetailsById(listingUpload.getId());
-                    } catch (ValidationException | EntityRetrievalException ex) {
-                        LOGGER.error("Unable to get listing upload details with id "
-                                + listingUpload.getId() + ". Error and warning counts will be set to -1.", ex);
-                    }
 
                     LOGGER.info("Calculating error and warning counts for listing upload ID " + listingUploadId
                             + "; CHPL Product Number " + listingUpload.getChplProductNumber());
+                    CertifiedProductSearchDetails validatedListingUpload = null;
+                    try {
+                        validatedListingUpload = listingUploadManager.getDetailsById(listingUpload.getId());
+                    } catch (Exception ex) {
+                        LOGGER.error("Unable to get listing upload details with id "
+                                + listingUpload.getId() + ". Error and warning counts will be set to -1.", ex);
+                    }
 
                     if (listingUpload != null && validatedListingUpload != null) {
                         listingUpload.setErrorCount(validatedListingUpload.getErrorMessages() == null ? 0 : validatedListingUpload.getErrorMessages().size());
