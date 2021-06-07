@@ -7,11 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -20,14 +21,8 @@ import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
-import gov.healthit.chpl.svap.dao.SvapDAO;
-import gov.healthit.chpl.svap.domain.CertificationResultSvap;
-import gov.healthit.chpl.svap.domain.Svap;
-import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.listing.reviewer.OptionalStandardReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.SvapReviewer;
 
 public class OptionalStandardReviewerTest {
     private static final String INVALID_EDITION_ERROR_KEY = "listing.criteria.optionalStandard.invalidEdition";
@@ -36,20 +31,25 @@ public class OptionalStandardReviewerTest {
     private OptionalStandardDAO optionalStandardDAO;
     private ErrorMessageUtil errorMessageUtil;
     private OptionalStandardReviewer optionalStandardReviewer;
+    private FF4j ff4j;
 
     @Before
     public void before() throws EntityRetrievalException {
         optionalStandardDAO = Mockito.mock(OptionalStandardDAO.class);
         Mockito.when(optionalStandardDAO.getAllOptionalStandardCriteriaMap())
-                .thenReturn(getOptionalStandardCriteriaMaps());
+        .thenReturn(getOptionalStandardCriteriaMaps());
 
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(errorMessageUtil.getMessage(INVALID_EDITION_ERROR_KEY))
-                .thenReturn("Test Error Message 1");
+        .thenReturn("Test Error Message 1");
         Mockito.when(errorMessageUtil.getMessage(INVALID_OPTIONAL_STANDARD_CRITERIA_ERROR_KEY))
-                .thenReturn("Test Error Message 2");
+        .thenReturn("Test Error Message 2");
 
-        optionalStandardReviewer = new OptionalStandardReviewer(optionalStandardDAO, errorMessageUtil);
+        ff4j = Mockito.mock(FF4j.class);
+        Mockito.when(ff4j.check(FeatureList.OPTIONAL_STANDARDS))
+        .thenReturn(true);
+
+        optionalStandardReviewer = new OptionalStandardReviewer(optionalStandardDAO, errorMessageUtil, ff4j);
     }
 
     @Test
