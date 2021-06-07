@@ -10,7 +10,6 @@
         <filter-name>springSecurityFilterChain</filter-name>
         <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
     </filter>
-
     <filter-mapping>
         <filter-name>springSecurityFilterChain</filter-name>
         <url-pattern>/*</url-pattern>
@@ -35,8 +34,13 @@
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    
-    <security-constraint>
+    <servlet-mapping>
+        <servlet-name>ff4j-console</servlet-name>
+        <url-pattern>/ff4j-console/*</url-pattern>
+        <url-pattern>/static/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- security-constraint>
         <web-resource-collection>
             <web-resource-name>ApplicationContent</web-resource-name>
             <url-pattern>/ff4j-console/*</url-pattern>
@@ -54,13 +58,7 @@
      <login-config>
         <auth-method>BASIC</auth-method>
         <realm-name>SecuredApp</realm-name>
-     </login-config>
-  
-    <servlet-mapping>
-        <servlet-name>ff4j-console</servlet-name>
-        <url-pattern>/ff4j-console/*</url-pattern>
-        <url-pattern>/static/*</url-pattern>
-    </servlet-mapping>
+     </login-config -->
 
     <filter>
         <filter-name>javamelody</filter-name>

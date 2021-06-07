@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -30,13 +28,12 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.springframework.web.servlet.view.JstlView;
 
 import gov.healthit.chpl.api.ApiKeyManager;
 import gov.healthit.chpl.filter.APIKeyAuthenticationFilter;
 import gov.healthit.chpl.registration.RateLimitingInterceptor;
 import gov.healthit.chpl.web.controller.annotation.CacheControlHandlerInterceptor;
+import lombok.extern.log4j.Log4j2;
 
 @Configuration
 @EnableWebMvc
@@ -56,9 +53,8 @@ import gov.healthit.chpl.web.controller.annotation.CacheControlHandlerIntercepto
 @ComponentScan(basePackages = {
         "gov.healthit.chpl.**"
 })
+@Log4j2
 public class CHPLConfig implements WebMvcConfigurer {
-
-    private static final Logger LOGGER = LogManager.getLogger(CHPLConfig.class);
     private static final long MAX_UPLOAD_FILE_SIZE = 5242880;
     private static final int MAX_COOKIE_AGE_SECONDS = 3600;
 
@@ -134,21 +130,12 @@ public class CHPLConfig implements WebMvcConfigurer {
     }
 
     @Override
-    public void addInterceptors(final InterceptorRegistry registry) {
+    public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeInterceptor());
         registry.addInterceptor(rateLimitingInterceptor())
         .addPathPatterns("/**")
         .excludePathPatterns(APIKeyAuthenticationFilter.ALLOWED_REQUEST_PATHS);
         registry.addInterceptor(cacheControlHandlerInterceptor());
-    }
-
-    @Bean
-    public InternalResourceViewResolver viewResolver() {
-        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-        viewResolver.setViewClass(JstlView.class);
-        viewResolver.setPrefix("/webapp/WEB-INF/jsp/");
-        viewResolver.setSuffix(".jsp");
-        return viewResolver;
     }
 
     @Bean

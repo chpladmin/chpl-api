@@ -3,6 +3,7 @@ package gov.healthit.chpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
@@ -41,6 +43,15 @@ public class CHPLHttpSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private JWTUserConverter userConverter;
 
+    @Value("${ff4j.webconsole.username:admin}")
+    private String ff4jUsername;
+
+    @Value("${ff4j.webconsole.password:ff4j}")
+    private String ff4jPassword;
+
+    @Value("${ff4j.webconsole.url:/ff4j-console}")
+    private String ff4jWebConsoleUrl;
+
     public CHPLHttpSecurityConfig() {
         super(true);
     }
@@ -52,28 +63,43 @@ public class CHPLHttpSecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-    @Override
-    protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
-        LOGGER.info("configure AuthenticationManagerBuilder");
-        auth.inMemoryAuthentication().withUser("user").password("password").roles("USER").and().withUser("admin")
-        .password("password").roles("USER", "ADMIN");
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.inMemoryAuthentication()
+          .withUser(ff4jUsername).password(passwordEncoder().encode(ff4jPassword))
+          .roles("ff4jUser");
     }
 
     @Override
-    protected void configure(final HttpSecurity http) throws Exception {
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        LOGGER.info("configure AuthenticationManagerBuilder");
+        auth.inMemoryAuthentication()
+            .withUser(ff4jUsername).password("{bcrypt}" + passwordEncoder().encode(ff4jPassword)).roles("ff4jUser");
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
         LOGGER.info("configure HttpSecurity");
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+        http
+            .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and().exceptionHandling()
+            .and().anonymous()
+            .and().servletApi()
+            .and().authorizeRequests()
+                .antMatchers("/favicon.ico").permitAll()
+                .antMatchers("/resources/**").permitAll()
+                // allow anonymous resource requests
+                .antMatchers("/").permitAll()
+                .antMatchers(ff4jWebConsoleUrl + "/**").hasRole("ff4jUser").and().httpBasic().and().logout()
 
-        .exceptionHandling().and().anonymous().and().servletApi().and()
-        // .headers().cacheControl().and()
-        .authorizeRequests().antMatchers("/favicon.ico").permitAll().antMatchers("/resources/**").permitAll()
+            // custom Token based authentication based on the header previously given to the client
+            .and().addFilterBefore(new JWTAuthenticationFilter(userConverter), UsernamePasswordAuthenticationFilter.class)
+            .headers().cacheControl();
+    }
 
-        // allow anonymous resource requests
-        .antMatchers("/").permitAll().and()
-        // custom Token based authentication based on the header
-        // previously given to the client
-        .addFilterBefore(new JWTAuthenticationFilter(userConverter), UsernamePasswordAuthenticationFilter.class)
-        .headers().cacheControl();
-
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
