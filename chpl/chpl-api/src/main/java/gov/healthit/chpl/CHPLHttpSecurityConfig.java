@@ -1,7 +1,5 @@
 package gov.healthit.chpl;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
 import gov.healthit.chpl.filter.JWTAuthenticationFilter;
+import lombok.extern.log4j.Log4j2;
 
 @Configuration
 @EnableWebSecurity
@@ -36,20 +35,20 @@ import gov.healthit.chpl.filter.JWTAuthenticationFilter;
 })
 @ComponentScan(basePackages = { "gov.healthit.chpl.auth.**" }, excludeFilters = {
         @ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class) })
+@Log4j2
 public class CHPLHttpSecurityConfig extends WebSecurityConfigurerAdapter {
-
-    private static final Logger LOGGER = LogManager.getLogger(CHPLHttpSecurityConfig.class);
+    private static final String FF4J_ROLE = "ff4jUser";
 
     @Autowired
     private JWTUserConverter userConverter;
 
-    @Value("${ff4j.webconsole.username:admin}")
+    @Value("${ff4j.webconsole.username}")
     private String ff4jUsername;
 
-    @Value("${ff4j.webconsole.password:ff4j}")
+    @Value("${ff4j.webconsole.password}")
     private String ff4jPassword;
 
-    @Value("${ff4j.webconsole.url:/ff4j-console}")
+    @Value("${ff4j.webconsole.url}")
     private String ff4jWebConsoleUrl;
 
     public CHPLHttpSecurityConfig() {
@@ -67,14 +66,14 @@ public class CHPLHttpSecurityConfig extends WebSecurityConfigurerAdapter {
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
           .withUser(ff4jUsername).password(passwordEncoder().encode(ff4jPassword))
-          .roles("ff4jUser");
+          .roles(FF4J_ROLE);
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         LOGGER.info("configure AuthenticationManagerBuilder");
         auth.inMemoryAuthentication()
-            .withUser(ff4jUsername).password("{bcrypt}" + passwordEncoder().encode(ff4jPassword)).roles("ff4jUser");
+            .withUser(ff4jUsername).password("{bcrypt}" + passwordEncoder().encode(ff4jPassword)).roles(FF4J_ROLE);
     }
 
     @Override
@@ -91,8 +90,7 @@ public class CHPLHttpSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/resources/**").permitAll()
                 // allow anonymous resource requests
                 .antMatchers("/").permitAll()
-                .antMatchers(ff4jWebConsoleUrl + "/**").hasRole("ff4jUser").and().httpBasic().and().logout()
-
+                .antMatchers(ff4jWebConsoleUrl + "/**").hasRole(FF4J_ROLE).and().httpBasic()
             // custom Token based authentication based on the header previously given to the client
             .and().addFilterBefore(new JWTAuthenticationFilter(userConverter), UsernamePasswordAuthenticationFilter.class)
             .headers().cacheControl();
