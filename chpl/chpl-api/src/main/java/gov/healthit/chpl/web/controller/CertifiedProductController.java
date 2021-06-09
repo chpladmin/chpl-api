@@ -952,6 +952,7 @@ public class CertifiedProductController {
                 .countSurveillance(e.getCountSurveillance())
                 .decertificationDate(e.getDecertificationDate())
                 .developer(e.getDeveloper())
+                .directReviews(e.getDirectReviews())
                 .ics(e.getIcs())
                 .id(e.getId())
                 .lastModifiedDate(e.getLastModifiedDate())

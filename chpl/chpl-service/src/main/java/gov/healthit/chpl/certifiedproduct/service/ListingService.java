@@ -109,7 +109,6 @@ public class ListingService {
         searchDetails.setCqmResults(cqmResultsService.getCqmResultDetails(dto.getId(), dto.getYear()));
         searchDetails.setCertificationEvents(certificationStatusEventsService.getCertificationStatusEvents(dto.getId()));
         searchDetails.setMeaningfulUseUserHistory(meaningfulUseUserHistoryService.getMeaningfulUseUserHistory(dto.getId()));
-        searchDetails = populateDirectReviews(searchDetails);
 
         // get first-level parents and children
         searchDetails.getIcs().setParents(populateRelatedCertifiedProducts(getCertifiedProductParents(dto.getId())));
@@ -123,7 +122,7 @@ public class ListingService {
     }
 
     public CertifiedProductSearchDetails createCertifiedProductSearchDetailsBasic(CertifiedProductDetailsDTO dto) throws EntityRetrievalException {
-        CertifiedProductSearchDetails searchDetails = CertifiedProductSearchDetails.builder()
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .id(dto.getId())
                 .acbCertificationId(dto.getAcbCertificationId())
                 .certificationDate(dto.getCertificationDate() != null ? dto.getCertificationDate().getTime() : null)
@@ -171,8 +170,10 @@ public class ListingService {
 
         InheritedCertificationStatus ics = new InheritedCertificationStatus();
         ics.setInherits(dto.getIcs());
-        searchDetails.setIcs(ics);
-        return searchDetails;
+        listing.setIcs(ics);
+
+        listing = populateDirectReviews(listing);
+        return listing;
     }
 
     private List<CertifiedProductTestingLab> getTestingLabs(Long listingId) throws EntityRetrievalException {

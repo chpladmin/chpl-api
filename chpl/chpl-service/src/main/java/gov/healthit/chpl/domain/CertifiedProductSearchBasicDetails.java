@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
+import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.util.Util;
 import lombok.AllArgsConstructor;
@@ -263,6 +264,11 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
      * A hyperlink to SVAP Notice URL.
      */
     private String svapNoticeUrl;
+
+    /**
+     * Direct reviews that were conducted against this listing or its developer.
+     */
+    private List<DirectReview> directReviews = new ArrayList<DirectReview>();
 
     /**
      * URL where the listing's Real World Testing Plan is located
