@@ -103,7 +103,7 @@ public class ListingService {
     public CertifiedProductSearchDetails createCertifiedSearchDetails(Long listingId) throws EntityRetrievalException {
 
         CertifiedProductDetailsDTO dto = certifiedProductSearchResultDAO.getById(listingId);
-        CertifiedProductSearchDetails searchDetails = createCertifiedProductSearchDetailsBasic(certifiedProductSearchResultDAO.getById(listingId));
+        CertifiedProductSearchDetails searchDetails = createCertifiedProductSearchDetailsWithBasicDataOnly(certifiedProductSearchResultDAO.getById(listingId));
 
         searchDetails.setCertificationResults(certificationResultService.getCertificationResults(searchDetails));
         searchDetails.setCqmResults(cqmResultsService.getCqmResultDetails(dto.getId(), dto.getYear()));
@@ -118,10 +118,10 @@ public class ListingService {
 
     public CertifiedProductSearchDetails createCertifiedProductSearchDetailsBasic(Long listingId) throws EntityRetrievalException {
         CertifiedProductDetailsDTO dto = certifiedProductSearchResultDAO.getById(listingId);
-        return createCertifiedProductSearchDetailsBasic(dto);
+        return createCertifiedProductSearchDetailsWithBasicDataOnly(dto);
     }
 
-    public CertifiedProductSearchDetails createCertifiedProductSearchDetailsBasic(CertifiedProductDetailsDTO dto) throws EntityRetrievalException {
+    public CertifiedProductSearchDetails createCertifiedProductSearchDetailsWithBasicDataOnly(CertifiedProductDetailsDTO dto) throws EntityRetrievalException {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .id(dto.getId())
                 .acbCertificationId(dto.getAcbCertificationId())
