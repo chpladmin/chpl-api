@@ -23,7 +23,8 @@ public class CertificationResultOptionalStandardXmlGenerator extends XmlGenerato
             sw.writeStartElement(rootNodeName);
             createSimpleElement(standard.getId(), "id", sw);
             createSimpleElement(standard.getOptionalStandardId(), "optionalStandardId", sw);
-            createSimpleElement(standard.getStandard(), "standard", sw);
+            createSimpleElement(standard.getCitation(), "citation", sw);
+            createSimpleElement(standard.getDescription(), "description", sw);
             sw.writeEndElement();
         }
      }

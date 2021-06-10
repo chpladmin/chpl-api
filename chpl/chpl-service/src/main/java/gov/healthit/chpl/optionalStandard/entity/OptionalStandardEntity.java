@@ -23,8 +23,11 @@ public class OptionalStandardEntity {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "optional_standard", nullable = false)
-    private String optionalStandard;
+    @Column(name = "citation", nullable = false)
+    private String citation;
+
+    @Column(name = "description", nullable = false)
+    private String description;
 
     @Column(name = "deleted", nullable = false)
     private Boolean deleted;

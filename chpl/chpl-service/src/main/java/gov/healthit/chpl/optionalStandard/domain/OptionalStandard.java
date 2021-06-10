@@ -15,10 +15,12 @@ import lombok.NoArgsConstructor;
 public class OptionalStandard implements Serializable {
     private static final long serialVersionUID = 620315627813875501L;
     private Long id;
-    private String optionalStandard;
+    private String citation;
+    private String description;
 
     public OptionalStandard(OptionalStandardEntity entity) {
         this.id = entity.getId();
-        this.optionalStandard = entity.getOptionalStandard();
+        this.citation = entity.getCitation();
+        this.description = entity.getDescription();
     }
 }

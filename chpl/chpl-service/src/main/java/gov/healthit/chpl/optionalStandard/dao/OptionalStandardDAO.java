@@ -33,8 +33,8 @@ public class OptionalStandardDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
-    public OptionalStandard getByOptionalStandard(String optionalStandard) {
-        List<OptionalStandardEntity> entities = getEntitiesByOptionalStandard(optionalStandard);
+    public OptionalStandard getByCitation(String citation) {
+        List<OptionalStandardEntity> entities = getEntitiesByCitation(citation);
         OptionalStandard obj = null;
         if (entities != null && entities.size() > 0) {
             obj = new OptionalStandard(entities.get(0));
@@ -62,19 +62,19 @@ public class OptionalStandardDAO extends BaseDAOImpl {
         return entity;
     }
 
-    private List<OptionalStandardEntity> getEntitiesByOptionalStandard(String optionalStandard) {
+    private List<OptionalStandardEntity> getEntitiesByCitation(String citation) {
         String osQuery = "SELECT os " + "FROM OptionalStandardEntity os "
-                + "WHERE os.deleted <> true " + "AND UPPER(os.optionalStandard) = :optionalStandard ";
+                + "WHERE os.deleted <> true " + "AND UPPER(os.citation) = :citation ";
         Query query = entityManager.createQuery(osQuery, OptionalStandardEntity.class);
-        query.setParameter("optionalStandard", optionalStandard.toUpperCase());
+        query.setParameter("citation", citation.toUpperCase());
 
         List<OptionalStandardEntity> matches = query.getResultList();
         if (matches == null || matches.size() == 0) {
             // if this didn't find anything try again with spaces removed from
             // the optional standard
             query = entityManager.createQuery(osQuery, OptionalStandardEntity.class);
-            String optionalStandardWithoutSpaces = optionalStandard.replaceAll("\\s", "");
-            query.setParameter("optionalStandard", optionalStandardWithoutSpaces.toUpperCase());
+            String citationWithoutSpaces = citation.replaceAll("\\s", "");
+            query.setParameter("citation", citationWithoutSpaces.toUpperCase());
             matches = query.getResultList();
         }
         return matches;

@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.ToString;
 
 /**
  * An optional standard used to meet a certification criterion. You can find a list of
@@ -23,8 +24,9 @@ import lombok.Builder;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Builder
 @AllArgsConstructor
+@Builder
+@ToString
 public class CertificationResultOptionalStandard implements Serializable {
     private static final long serialVersionUID = -9182555768595891414L;
 
@@ -44,10 +46,16 @@ public class CertificationResultOptionalStandard implements Serializable {
     private Long optionalStandardId;
 
     /**
-     * The Optional Standard used to test the associated criteria.
+     * The citation for the Optional Standard used to test the associated criteria.
      */
     @XmlElement(required = true)
-    private String standard;
+    private String citation;
+
+    /**
+     * The description of the Optional Standard used to test the associated criteria.
+     */
+    @XmlElement(required = true)
+    private String description;
 
     public CertificationResultOptionalStandard() {
         super();
@@ -58,10 +66,12 @@ public class CertificationResultOptionalStandard implements Serializable {
         OptionalStandard os = new OptionalStandard();
         if (entity.getOptionalStandard() != null) {
             os.setId(entity.getOptionalStandard().getId());
-            os.setOptionalStandard(entity.getOptionalStandard().getOptionalStandard());
+            os.setCitation(entity.getOptionalStandard().getCitation());
+            os.setDescription(entity.getOptionalStandard().getDescription());
         }
         this.optionalStandard = os;
-        this.standard = os.getOptionalStandard();
+        this.citation = os.getCitation();
+        this.description = os.getDescription();
         this.optionalStandardId = os.getId();
     }
 
@@ -98,11 +108,19 @@ public class CertificationResultOptionalStandard implements Serializable {
         this.optionalStandardId = optionalStandardId;
     }
 
-    public String getStandard() {
-        return standard;
+    public String getCitation() {
+        return citation;
     }
 
-    public void setStandard(String standard) {
-        this.standard = standard;
+    public void setCitation(String citation) {
+        this.citation = citation;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
