@@ -271,6 +271,11 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
     private List<DirectReview> directReviews = new ArrayList<DirectReview>();
 
     /**
+     * Indicates whether the direct reviews were available when the call  was made
+     */
+    private boolean directReviewsAvailable;
+
+    /**
      * URL where the listing's Real World Testing Plan is located
      */
     private String rwtPlansUrl;

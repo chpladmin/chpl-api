@@ -953,6 +953,7 @@ public class CertifiedProductController {
                 .decertificationDate(e.getDecertificationDate())
                 .developer(e.getDeveloper())
                 .directReviews(e.getDirectReviews())
+                .directReviewsAvailable(e.isDirectReviewsAvailable())
                 .ics(e.getIcs())
                 .id(e.getId())
                 .lastModifiedDate(e.getLastModifiedDate())
