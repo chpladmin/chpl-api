@@ -13,8 +13,6 @@ import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.service.DirectReviewCachingService;
 import lombok.extern.log4j.Log4j2;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
 
 @Component
 @Log4j2
@@ -41,10 +39,6 @@ public class AsynchronousCacheInitialization {
         LOGGER.info("Starting cache initialization for SearchViewController.getPopulateSearchData()");
         dimensionalDataManager.getSearchableDimensionalData(true);
         dimensionalDataManager.getSearchableDimensionalData(false);
-        CacheManager manager = CacheManager.getInstance();
-        Cache productNamesCache = manager.getCache(CacheNames.PRODUCT_NAMES);
-        System.out.println("PRODUCT NAMES Cache KEy size: " + productNamesCache.getKeys().size());
-        productNamesCache.getKeys().stream().forEach(key -> System.out.println("PRODUCT_NAMES Cache Key: " + key));
         dimensionalDataManager.getDimensionalData(true);
         dimensionalDataManager.getDimensionalData(false);
         LOGGER.info("Finished cache initialization for SearchViewController.getPopulateSearchData()");
@@ -70,10 +64,6 @@ public class AsynchronousCacheInitialization {
             throws IOException, EntityRetrievalException, InterruptedException {
         LOGGER.info("Starting cache initialization for CertificationIdManager.getAll()");
         certificationIdManager.getAllCached();
-        CacheManager manager = CacheManager.getInstance();
-        Cache productNamesCache = manager.getCache(CacheNames.ALL_CERT_IDS);
-        System.out.println("ALL_CERT_IDS Key size: " + productNamesCache.getKeys().size());
-        productNamesCache.getKeys().stream().forEach(key -> System.out.println("ALL_CERT_IDS Cache Key: " + key));
         LOGGER.info("Finished cache initialization for CertificationIdManager.getAll()");
     }
 
