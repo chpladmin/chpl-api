@@ -252,6 +252,7 @@ public class CertificationResult implements Serializable {
         this.testDataUsed = new ArrayList<CertificationResultTestData>();
         this.testProcedures = new ArrayList<CertificationResultTestProcedure>();
         this.testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
+        this.svaps = new ArrayList<CertificationResultSvap>();
     }
 
     public CertificationResult(CertificationResultDetailsDTO certResult) {
