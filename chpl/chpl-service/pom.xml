@@ -514,6 +514,7 @@
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceType.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/TransparencyAttestationMap.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/TransparencyAttestation.java</source>
+                        <source>src/main/java/gov/healthit/chpl/optionalStandard/domain/CertificationResultOptionalStandard.java</source>
                         <source>src/main/java/gov/healthit/chpl/svap/domain/CertificationResultSvap.java</source>
                     </sources>
                 </configuration>
