@@ -22,6 +22,8 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class AdditionalSoftwareReviewerTest {
     private static final String ADDITIONAL_SOFTWARE_NOT_APPLICABLE = "Additional Software is not applicable for the criterion %s.";
+    private static final String HAS_ADDITIONAL_SOFTWARE_BUT_SHOULD_NOT = "Criteria %s contains additional software but it is not expected.";
+    private static final String NO_ADDITIONAL_SOFTWARE_BUT_SHOULD = "Criteria %s contains no additional software but it is expected.";
     private static final String ADDITIONAL_SOFTWARE_INVALID = "No CHPL product was found matching additional software %s for %s.";
     private static final String ADDITIONAL_SOFTWARE_BOTH_FIELDS_HAVE_DATA = "Additional Software for %s has both a listing and software name/version specified. Only one is expected.";
 
@@ -38,6 +40,12 @@ public class AdditionalSoftwareReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.additionalSoftwareFrameworkNotApplicable"),
                 ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(ADDITIONAL_SOFTWARE_NOT_APPLICABLE, i.getArgument(1), ""));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.hasAdditionalSoftwareMismatch"),
+                ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(HAS_ADDITIONAL_SOFTWARE_BUT_SHOULD_NOT, i.getArgument(1), ""));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.noAdditionalSoftwareMismatch"),
+                ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(NO_ADDITIONAL_SOFTWARE_BUT_SHOULD, i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.additionalSoftwareHasNameAndListingData"),
                 ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(ADDITIONAL_SOFTWARE_BOTH_FIELDS_HAVE_DATA, i.getArgument(1), ""));
@@ -116,6 +124,109 @@ public class AdditionalSoftwareReviewerTest {
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(
                 String.format(ADDITIONAL_SOFTWARE_NOT_APPLICABLE, "170.315 (a)(1)")));
+    }
+
+    @Test
+    public void review_additionalSoftwareNotExpected_hasError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
+            .thenReturn(true);
+
+        List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
+        additionalSoftware.add(CertificationResultAdditionalSoftware.builder()
+                .name("Windows")
+                .version("2020")
+                .grouping("A")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .build())
+                        .success(true)
+                        .hasAdditionalSoftware(false)
+                        .additionalSoftware(additionalSoftware)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(
+                String.format(HAS_ADDITIONAL_SOFTWARE_BUT_SHOULD_NOT, "170.315 (a)(1)")));
+    }
+
+    @Test
+    public void review_additionalSoftwareExpected_hasError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
+            .thenReturn(true);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .build())
+                        .success(true)
+                        .hasAdditionalSoftware(true)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(
+                String.format(NO_ADDITIONAL_SOFTWARE_BUT_SHOULD, "170.315 (a)(1)")));
+    }
+
+    @Test
+    public void review_additionalSoftwareExpectedAndHasAdditionalSoftware_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
+            .thenReturn(true);
+
+        List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
+        additionalSoftware.add(CertificationResultAdditionalSoftware.builder()
+                .name("Windows")
+                .version("2020")
+                .grouping("A")
+                .build());
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .build())
+                        .success(true)
+                        .hasAdditionalSoftware(true)
+                        .additionalSoftware(additionalSoftware)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_noAdditionalSoftwareExpectedAndHasNone_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
+            .thenReturn(true);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .build())
+                        .success(true)
+                        .hasAdditionalSoftware(false)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test

@@ -77,6 +77,14 @@ public class CertificationResult implements Serializable {
     @JsonIgnore
     private String gapStr;
 
+    @XmlTransient
+    @JsonIgnore
+    private Boolean hasAdditionalSoftware;
+
+    @XmlTransient
+    @JsonIgnore
+    private String hasAdditionalSoftwareStr;
+
     /**
      * This variable indicates if the corresponding certification criteria was submitted for safety-enhanced design
      * attestation during certification testing. It is a binary variable that takes either true or false value, and is
@@ -667,5 +675,21 @@ public class CertificationResult implements Serializable {
 
     public void setSvaps(List<CertificationResultSvap> svaps) {
         this.svaps = svaps;
+    }
+
+    public Boolean getHasAdditionalSoftware() {
+        return hasAdditionalSoftware;
+    }
+
+    public void setHasAdditionalSoftware(Boolean hasAdditionalSoftware) {
+        this.hasAdditionalSoftware = hasAdditionalSoftware;
+    }
+
+    public String getHasAdditionalSoftwareStr() {
+        return hasAdditionalSoftwareStr;
+    }
+
+    public void setHasAdditionalSoftwareStr(String hasAdditionalSoftwareStr) {
+        this.hasAdditionalSoftwareStr = hasAdditionalSoftwareStr;
     }
 }

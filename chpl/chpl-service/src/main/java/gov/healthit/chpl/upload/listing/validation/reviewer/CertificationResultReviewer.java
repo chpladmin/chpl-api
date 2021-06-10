@@ -99,16 +99,38 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
     private void reviewCertResultFields(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.GAP)
                 && certResult.isGap() == null) {
+            if (!StringUtils.isEmpty(certResult.getGapStr())) {
+                addCriterionErrorOrWarningByPermission(listing, certResult,
+                        "listing.criteria.invalidGap",
+                        Util.formatCriteriaNumber(certResult.getCriterion()),
+                        certResult.getGapStr());
+            } else {
+                addCriterionErrorOrWarningByPermission(listing, certResult,
+                        "listing.criteria.missingGap",
+                        Util.formatCriteriaNumber(certResult.getCriterion()));
+            }
+        }
+
+        if (!StringUtils.isEmpty(certResult.getHasAdditionalSoftwareStr())
+                && certResult.getHasAdditionalSoftware() == null) {
             addCriterionErrorOrWarningByPermission(listing, certResult,
-                    "listing.criteria.missingGap",
-                    Util.formatCriteriaNumber(certResult.getCriterion()));
+                    "listing.criteria.invalidHasAdditionalSoftware",
+                    Util.formatCriteriaNumber(certResult.getCriterion()),
+                    certResult.getHasAdditionalSoftwareStr());
         }
 
         if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.ATTESTATION_ANSWER)
                 && certResult.getAttestationAnswer() == null) {
-            addCriterionErrorOrWarningByPermission(listing, certResult,
-                    "listing.criteria.missingAttestationAnswer",
-                    Util.formatCriteriaNumber(certResult.getCriterion()));
+            if (!StringUtils.isEmpty(certResult.getAttestationAnswerStr())) {
+                addCriterionErrorOrWarningByPermission(listing, certResult,
+                        "listing.criteria.invalidAttestationAnswer",
+                        Util.formatCriteriaNumber(certResult.getCriterion()),
+                        certResult.getAttestationAnswerStr());
+            } else {
+                addCriterionErrorOrWarningByPermission(listing, certResult,
+                        "listing.criteria.missingAttestationAnswer",
+                        Util.formatCriteriaNumber(certResult.getCriterion()));
+            }
         }
 
         if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.API_DOCUMENTATION)
