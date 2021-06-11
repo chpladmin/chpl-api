@@ -44,8 +44,8 @@ public class TestFunctionalityNormalizer {
             CollectionType javaType = mapper.getTypeFactory().constructCollectionType(List.class,
                     RestrictedCriteriaTestFunctionality.class);
             restrictedCriteriaTestFunctionality = mapper.readValue(json, javaType);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            LOGGER.error("Unable to convert testFunctionalities.restrictions to Java object.", ex);
         }
     }
 
