@@ -111,36 +111,6 @@ public class OptionalStandardReviewerTest {
         assertEquals(1, listing.getErrorMessages().size());
     }
 
-    @Test
-    public void review_invalidEdition_ErrorMessageExists() {
-        Map<String, Object> certEdition = new HashMap<String, Object>();
-        certEdition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 2L);
-        certEdition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2014");
-
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationResult(CertificationResult.builder()
-                        .id(1L)
-                        .success(true)
-                        .criterion(CertificationCriterion.builder()
-                                .number("170.314 (a)(6)")
-                                .id(1L)
-                                .build())
-                        .optionalStandard(CertificationResultOptionalStandard.builder()
-                                .optionalStandard(OptionalStandard.builder()
-                                        .id(1L)
-                                        .citation("std1")
-                                        .build())
-                                .build())
-                        .build())
-                .certificationEdition(certEdition)
-                .build();
-
-
-        optionalStandardReviewer.review(listing);
-
-        assertEquals(1, listing.getErrorMessages().size());
-    }
-
     private List<OptionalStandardCriteriaMap> getOptionalStandardCriteriaMaps() {
         List<OptionalStandardCriteriaMap> map = new ArrayList<OptionalStandardCriteriaMap>();
 

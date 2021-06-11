@@ -1,4 +1,4 @@
-package gov.healthit.chpl.validation.listing.reviewer.edition2015;
+package gov.healthit.chpl.validation.listing.reviewer;
 
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,9 +8,9 @@ import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
-import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
 @Component("testStandardRemovalReviewer")
 public class TestStandardRemovalReviewer implements Reviewer {
@@ -39,10 +39,20 @@ public class TestStandardRemovalReviewer implements Reviewer {
         String message = msgUtil.getMessage("listing.criteria.testStandardNotAllowed",
                 Util.formatCriteriaNumber(certResult.getCriterion()),
                 testStandardName);
-        if ((certResult.getOptionalStandards() != null && certResult.getOptionalStandards().size() > 0) || ff4j.check(FeatureList.OPTIONAL_STANDARDS_ERROR)) {
+        if ((certResult.getOptionalStandards() != null && certResult.getOptionalStandards().size() > 0) || (ff4j.check(FeatureList.OPTIONAL_STANDARDS_ERROR) && isListing2015Edition(listing))) {
             listing.getErrorMessages().add(message);
         } else {
             listing.getWarningMessages().add(message);
         }
+    }
+
+    private boolean isListing2015Edition(CertifiedProductSearchDetails listing) {
+        return getListingEdition(listing).equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
+    }
+
+    private String getListingEdition(CertifiedProductSearchDetails listing) {
+        return listing.getCertificationEdition().containsKey(CertifiedProductSearchDetails.EDITION_NAME_KEY)
+                ? listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString()
+                        : "";
     }
 }
