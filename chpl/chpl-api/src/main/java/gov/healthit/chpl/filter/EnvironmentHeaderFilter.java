@@ -26,9 +26,9 @@ public class EnvironmentHeaderFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String serverEnvironment = env.getProperty("server.environment") != null ? env.getProperty("server.environment") : "";
         if (serverEnvironment.equalsIgnoreCase("production")) {
-            response.addHeader("ENVIRONMENT", "PRODUCTION");
+            response.addHeader("Environment", "PRODUCTION");
         } else {
-            response.addHeader("ENVIRONMENT", "NON-PRODUCTION");
+            response.addHeader("Environment", "NON-PRODUCTION");
         }
 
         filterChain.doFilter(request, response);
