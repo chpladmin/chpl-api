@@ -40,7 +40,7 @@ public class UrlReviewer extends PermissionBasedReviewer {
         addListingErrorIfNotValid(listing, listing.getSedReportFileLocation(),
                 "SED Report File Location '" + listing.getSedReportFileLocation() + "'");
         addListingErrorIfNotValid(listing, listing.getTransparencyAttestationUrl(),
-                "Transparency Attestation URL '" + listing.getTransparencyAttestationUrl() + "'");
+                "Mandatory Disclosures URL '" + listing.getTransparencyAttestationUrl() + "'");
 
         //check all criteria fields
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
