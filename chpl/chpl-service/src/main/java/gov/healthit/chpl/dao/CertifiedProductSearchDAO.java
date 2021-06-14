@@ -27,11 +27,11 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
-import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
+import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResultLegacy;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResultLegacy;
 import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
-import gov.healthit.chpl.domain.search.SearchRequest;
+import gov.healthit.chpl.domain.search.SearchRequestLegacy;
 import gov.healthit.chpl.domain.search.SearchSetOperator;
 import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 import gov.healthit.chpl.entity.search.CertifiedProductListingSearchResultEntity;
@@ -43,7 +43,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class CertifiedProductSearchDAO extends BaseDAOImpl {
     private final DateFormat certificationDateFormatter =
-            new SimpleDateFormat(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+            new SimpleDateFormat(SearchRequestLegacy.CERTIFICATION_DATE_SEARCH_FORMAT);
 
     public Long getListingIdByUniqueChplNumber(final String chplProductNumber) {
         Long id = null;
@@ -139,7 +139,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         return domainResults;
     }
 
-    public int getTotalResultCount(final SearchRequest searchRequest) {
+    public int getTotalResultCount(final SearchRequestLegacy searchRequest) {
         int totalCount = -1;
         String sql = "SELECT count(*) FROM ";
         sql += createFilterQuery(searchRequest);
@@ -152,7 +152,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         return totalCount;
     }
 
-    public Collection<CertifiedProductBasicSearchResult> search(final SearchRequest searchRequest) {
+    public Collection<CertifiedProductBasicSearchResultLegacy> search(final SearchRequestLegacy searchRequest) {
         //this is always the beginning of the query
         String sql = "SELECT row_number() OVER() as \"unique_id\", certified_product_search_result.* "
                 + "FROM "
@@ -178,14 +178,14 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
 
         List<CertifiedProductListingSearchResultEntity> queryResults = query.getResultList();
         //combine the results together into java objects
-        Map<Long, CertifiedProductBasicSearchResult> listingResultsMap
-        = new HashMap<Long, CertifiedProductBasicSearchResult>();
+        Map<Long, CertifiedProductBasicSearchResultLegacy> listingResultsMap
+        = new HashMap<Long, CertifiedProductBasicSearchResultLegacy>();
         for (CertifiedProductListingSearchResultEntity queryResult : queryResults) {
-            CertifiedProductBasicSearchResult currListing = listingResultsMap.get(queryResult.getId());
+            CertifiedProductBasicSearchResultLegacy currListing = listingResultsMap.get(queryResult.getId());
             if (currListing != null) {
                 convertToListing(queryResult, currListing);
             } else {
-                CertifiedProductBasicSearchResult newListing = new CertifiedProductBasicSearchResult();
+                CertifiedProductBasicSearchResultLegacy newListing = new CertifiedProductBasicSearchResultLegacy();
                 convertToListing(queryResult, newListing);
                 listingResultsMap.put(queryResult.getId(), newListing);
             }
@@ -193,7 +193,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         return listingResultsMap.values();
     }
 
-    private String createFilterQuery(SearchRequest searchRequest) {
+    private String createFilterQuery(SearchRequestLegacy searchRequest) {
         String sql = "(SELECT DISTINCT "
                 + "cp.certified_product_id, "
                 //all fields that can be ordered by need to go here
@@ -206,15 +206,15 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
                 + "DENSE_RANK() OVER(ORDER BY ";
         if (!StringUtils.isEmpty(searchRequest.getOrderBy())) {
             String orderBy = searchRequest.getOrderBy().trim();
-            if (orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_PRODUCT)) {
+            if (orderBy.equalsIgnoreCase(SearchRequestLegacy.ORDER_BY_PRODUCT)) {
                 sql += " product_name ";
-            } else if (orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_DEVELOPER)) {
+            } else if (orderBy.equalsIgnoreCase(SearchRequestLegacy.ORDER_BY_DEVELOPER)) {
                 sql += " vendor_name ";
-            } else if (orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_VERSION)) {
+            } else if (orderBy.equalsIgnoreCase(SearchRequestLegacy.ORDER_BY_VERSION)) {
                 sql += " product_version ";
-            } else if (orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_CERTIFICATION_BODY)) {
+            } else if (orderBy.equalsIgnoreCase(SearchRequestLegacy.ORDER_BY_CERTIFICATION_BODY)) {
                 sql += " certification_body_name ";
-            } else if (orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_CERTIFICATION_EDITION)) {
+            } else if (orderBy.equalsIgnoreCase(SearchRequestLegacy.ORDER_BY_CERTIFICATION_EDITION)) {
                 sql += " year ";
             }
             if (searchRequest.getSortDescending() != null && searchRequest.getSortDescending()) {
@@ -474,15 +474,15 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         sql += " ORDER BY ";
         if (!StringUtils.isEmpty(searchRequest.getOrderBy())) {
             String orderBy = searchRequest.getOrderBy().trim();
-            if (orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_PRODUCT)) {
+            if (orderBy.equalsIgnoreCase(SearchRequestLegacy.ORDER_BY_PRODUCT)) {
                 sql += " product_name ";
-            } else if (orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_DEVELOPER)) {
+            } else if (orderBy.equalsIgnoreCase(SearchRequestLegacy.ORDER_BY_DEVELOPER)) {
                 sql += " vendor_name ";
-            } else if (orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_VERSION)) {
+            } else if (orderBy.equalsIgnoreCase(SearchRequestLegacy.ORDER_BY_VERSION)) {
                 sql += " product_version ";
-            } else if (orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_CERTIFICATION_BODY)) {
+            } else if (orderBy.equalsIgnoreCase(SearchRequestLegacy.ORDER_BY_CERTIFICATION_BODY)) {
                 sql += " certification_body_name ";
-            } else if (orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_CERTIFICATION_EDITION)) {
+            } else if (orderBy.equalsIgnoreCase(SearchRequestLegacy.ORDER_BY_CERTIFICATION_EDITION)) {
                 sql += " year ";
             }
             if (searchRequest.getSortDescending() != null && searchRequest.getSortDescending()) {
@@ -495,7 +495,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         return sql;
     }
 
-    private void populateFilterQuery(final Query query, final SearchRequest searchRequest) {
+    private void populateFilterQuery(final Query query, final SearchRequestLegacy searchRequest) {
         if (!StringUtils.isEmpty(searchRequest.getVersion())) {
             query.setParameter("versionName", "%" + searchRequest.getVersion().toUpperCase() + "%");
         }
@@ -529,7 +529,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
             } catch (Exception ex) {
                 LOGGER.error("Could not parse " + searchRequest.getCertificationDateStart()
                 + " as a date in the format "
-                + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+                + SearchRequestLegacy.CERTIFICATION_DATE_SEARCH_FORMAT);
             }
         }
         if (!StringUtils.isEmpty(searchRequest.getCertificationDateEnd())) {
@@ -539,7 +539,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
             } catch (Exception ex) {
                 LOGGER.error("Could not parse " + searchRequest.getCertificationDateEnd()
                 + " as a date in the format "
-                + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+                + SearchRequestLegacy.CERTIFICATION_DATE_SEARCH_FORMAT);
             }
         }
         if (!StringUtils.isEmpty(searchRequest.getPracticeType())) {
@@ -582,7 +582,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         }
     }
 
-    private void populatePagingParams(final Query query, final SearchRequest searchRequest) {
+    private void populatePagingParams(final Query query, final SearchRequestLegacy searchRequest) {
         int firstResult = (searchRequest.getPageNumber() * searchRequest.getPageSize()) + 1;
         int lastResult = firstResult + searchRequest.getPageSize();
         query.setParameter("firstResult", firstResult);
@@ -635,7 +635,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
 
     @Deprecated
     private void convertToListing(CertifiedProductListingSearchResultEntity queryResult,
-            CertifiedProductBasicSearchResult listing) {
+            CertifiedProductBasicSearchResultLegacy listing) {
         listing.setId(queryResult.getId());
         listing.setChplProductNumber(queryResult.getChplProductNumber());
         listing.setCertificationStatus(queryResult.getCertificationStatus());

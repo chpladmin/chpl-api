@@ -50,8 +50,8 @@ import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.UploadTemplateVersion;
 import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
-import gov.healthit.chpl.domain.search.SearchRequest;
-import gov.healthit.chpl.domain.search.SearchResponse;
+import gov.healthit.chpl.domain.search.SearchRequestLegacy;
+import gov.healthit.chpl.domain.search.SearchResponseLegacy;
 import gov.healthit.chpl.domain.search.SearchSetOperator;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptionsDeprecated;
@@ -252,14 +252,15 @@ public class SearchViewController {
      * @throws InvalidArgumentsException if one or more parameters is not specified properly or has an invalid value
      * @throws EntityRetrievalException if there was an error retrieving a listing
      */
+    @Deprecated
     @SuppressWarnings({"checkstyle:methodlength", "checkstyle:parameternumber"})
     @ApiOperation(value = "Search the CHPL",
-    notes = "If paging parameters are not specified, the first 20 records are returned by default. "
+    notes = "DEPRECATED. If paging parameters are not specified, the first 20 records are returned by default. "
             + "All parameters are optional. "
             + "Any parameter that can accept multiple things (i.e. certificationStatuses) expects "
             + "a comma-delimited list of those things (i.e. certificationStatuses = Active,Suspended). "
             + "Date parameters are required to be in the format "
-            + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + ". ")
+            + SearchRequestLegacy.CERTIFICATION_DATE_SEARCH_FORMAT + ". ")
     @ApiImplicitParams({
         @ApiImplicitParam(name = "searchTerm",
                 value = "CHPL ID, Developer (or previous developer) Name, Product Name, ONC-ACB Certification ID",
@@ -318,11 +319,11 @@ public class SearchViewController {
         required = false, dataType = "string", paramType = "query"),
         @ApiImplicitParam(name = "certificationDateStart",
         value = "To return only listings certified after this date. Required format is "
-                + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT,
+                + SearchRequestLegacy.CERTIFICATION_DATE_SEARCH_FORMAT,
                 required = false, dataType = "string", paramType = "query"),
         @ApiImplicitParam(name = "certificationDateEnd",
         value = "To return only listings certified before this date. Required format is "
-                + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT,
+                + SearchRequestLegacy.CERTIFICATION_DATE_SEARCH_FORMAT,
                 required = false, dataType = "string", paramType = "query"),
         @ApiImplicitParam(name = "pageNumber",
         value = "Zero-based page number used in concert with pageSize. Defaults to 0.", required = false,
@@ -333,10 +334,10 @@ public class SearchViewController {
                 required = false, dataType = "string", paramType = "query"),
         @ApiImplicitParam(name = "orderBy",
         value = "What to order by. Options are one of the following: "
-                + SearchRequest.ORDER_BY_DEVELOPER + ", " + SearchRequest.ORDER_BY_PRODUCT + ", "
-                + SearchRequest.ORDER_BY_VERSION + ", " + SearchRequest.ORDER_BY_CERTIFICATION_EDITION + ", "
-                + ", or " + SearchRequest.ORDER_BY_CERTIFICATION_BODY + ", "
-                + ". Defaults to " + SearchRequest.ORDER_BY_PRODUCT + ".",
+                + SearchRequestLegacy.ORDER_BY_DEVELOPER + ", " + SearchRequestLegacy.ORDER_BY_PRODUCT + ", "
+                + SearchRequestLegacy.ORDER_BY_VERSION + ", " + SearchRequestLegacy.ORDER_BY_CERTIFICATION_EDITION + ", "
+                + ", or " + SearchRequestLegacy.ORDER_BY_CERTIFICATION_BODY + ", "
+                + ". Defaults to " + SearchRequestLegacy.ORDER_BY_PRODUCT + ".",
                 required = false, dataType = "string", paramType = "query"),
         @ApiImplicitParam(name = "sortDescending",
         value = "Use to specify the direction of the sort. Defaults to false (ascending sort).",
@@ -345,7 +346,7 @@ public class SearchViewController {
     @RequestMapping(value = "/search", method = RequestMethod.GET, produces = {
             "application/json; charset=utf-8", "application/xml"
     })
-    public @ResponseBody SearchResponse searchGet(
+    public @ResponseBody SearchResponseLegacy searchGet(
             @RequestParam(value = "searchTerm", required = false, defaultValue = "") String searchTerm,
             @RequestParam(value = "certificationStatuses", required = false,
             defaultValue = "") String certificationStatusesDelimited,
@@ -380,7 +381,7 @@ public class SearchViewController {
             @RequestParam(value = "sortDescending", required = false, defaultValue = "false") Boolean sortDescending)
                     throws InvalidArgumentsException, EntityRetrievalException {
 
-        SearchRequest searchRequest = new SearchRequest();
+        SearchRequestLegacy searchRequest = new SearchRequestLegacy();
         if (searchTerm != null) {
             searchRequest.setSearchTerm(searchTerm.trim());
         }
@@ -602,18 +603,19 @@ public class SearchViewController {
     }
 
     /**
-     * Search listings in the CHPL based on a set of filters.
+     * DEPRECATED. Search listings in the CHPL based on a set of filters.
      * @param searchRequest object containing all possible search parameters; not all are required.
      * @return listings matching the passed in search parameters
      * @throws InvalidArgumentsException if a search parameter has an invalid value
      * @throws EntityRetrievalException if there is an error retrieving a listing
      */
+    @Deprecated
     @ApiOperation(value = "Search the CHPL with an HTTP POST Request.",
             notes = "Search the CHPL by specifycing multiple fields of the data to search. "
                     + "If paging fields are not specified, the first 20 records are returned by default.")
     @RequestMapping(value = "/search", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public @ResponseBody SearchResponse searchPost(@RequestBody SearchRequest searchRequest)
+    public @ResponseBody SearchResponseLegacy searchPostLegacy(@RequestBody SearchRequestLegacy searchRequest)
             throws InvalidArgumentsException, EntityRetrievalException {
         //trim everything
         searchRequest.cleanAllParameters();
@@ -798,7 +800,7 @@ public class SearchViewController {
     }
 
     private void validateCertificationDateParameter(String dateStr) throws InvalidArgumentsException {
-        SimpleDateFormat format = new SimpleDateFormat(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+        SimpleDateFormat format = new SimpleDateFormat(SearchRequestLegacy.CERTIFICATION_DATE_SEARCH_FORMAT);
         if (dateStr != null) {
             if (!StringUtils.isEmpty(dateStr)) {
                 try {
@@ -808,7 +810,7 @@ public class SearchViewController {
                             messageSource.getMessage(
                                     new DefaultMessageSourceResolvable("search.certificationDate.invalid"),
                                     LocaleContextHolder.getLocale()),
-                            dateStr, SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+                            dateStr, SearchRequestLegacy.CERTIFICATION_DATE_SEARCH_FORMAT);
                     LOGGER.error(err);
                     throw new InvalidArgumentsException(err);
                 }
@@ -821,25 +823,25 @@ public class SearchViewController {
             String err = String.format(
                     messageSource.getMessage(new DefaultMessageSourceResolvable("search.pageSize.invalid"),
                             LocaleContextHolder.getLocale()),
-                    SearchRequest.MAX_PAGE_SIZE);
+                    SearchRequestLegacy.MAX_PAGE_SIZE);
             throw new InvalidArgumentsException(err);
         }
     }
 
     private void validateOrderBy(String orderBy) throws InvalidArgumentsException {
-        if (!orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_CERTIFICATION_BODY)
-                && !orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_CERTIFICATION_EDITION)
-                && !orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_DEVELOPER)
-                && !orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_PRODUCT)
-                && !orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_VERSION)) {
+        if (!orderBy.equalsIgnoreCase(SearchRequestLegacy.ORDER_BY_CERTIFICATION_BODY)
+                && !orderBy.equalsIgnoreCase(SearchRequestLegacy.ORDER_BY_CERTIFICATION_EDITION)
+                && !orderBy.equalsIgnoreCase(SearchRequestLegacy.ORDER_BY_DEVELOPER)
+                && !orderBy.equalsIgnoreCase(SearchRequestLegacy.ORDER_BY_PRODUCT)
+                && !orderBy.equalsIgnoreCase(SearchRequestLegacy.ORDER_BY_VERSION)) {
             String err = String.format(
                     messageSource.getMessage(new DefaultMessageSourceResolvable("search.orderBy.invalid"),
                             LocaleContextHolder.getLocale()),
-                    orderBy, SearchRequest.ORDER_BY_CERTIFICATION_BODY + ", "
-                            + SearchRequest.ORDER_BY_CERTIFICATION_EDITION + ", "
-                            + SearchRequest.ORDER_BY_DEVELOPER + ", "
-                            + SearchRequest.ORDER_BY_PRODUCT + ", or "
-                            + SearchRequest.ORDER_BY_VERSION);
+                    orderBy, SearchRequestLegacy.ORDER_BY_CERTIFICATION_BODY + ", "
+                            + SearchRequestLegacy.ORDER_BY_CERTIFICATION_EDITION + ", "
+                            + SearchRequestLegacy.ORDER_BY_DEVELOPER + ", "
+                            + SearchRequestLegacy.ORDER_BY_PRODUCT + ", or "
+                            + SearchRequestLegacy.ORDER_BY_VERSION);
             throw new InvalidArgumentsException(err);
         }
     }

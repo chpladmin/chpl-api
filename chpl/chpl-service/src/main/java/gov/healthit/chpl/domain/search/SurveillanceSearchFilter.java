@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+@Deprecated
 public class SurveillanceSearchFilter implements Serializable {
     private static final long serialVersionUID = 1329207628639701580L;
 

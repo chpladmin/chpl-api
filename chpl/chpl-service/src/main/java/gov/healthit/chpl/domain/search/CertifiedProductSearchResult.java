@@ -1,6 +1,9 @@
 package gov.healthit.chpl.domain.search;
 
 import java.io.Serializable;
+import java.util.Objects;
+
+import org.apache.commons.lang3.ObjectUtils;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -154,5 +157,28 @@ public class CertifiedProductSearchResult implements Serializable {
         this.numMeaningfulUse = other.getNumMeaningfulUse();
         this.numMeaningfulUseDate = other.getNumMeaningfulUseDate();
         this.transparencyAttestationUrl = other.getTransparencyAttestationUrl();
+    }
+
+    @Override
+    public boolean equals(Object another) {
+        if (another == null) {
+            return false;
+        }
+        if (!(another instanceof CertifiedProductSearchResult)) {
+            return false;
+        }
+        CertifiedProductSearchResult anotherSearchResult = (CertifiedProductSearchResult) another;
+        if (ObjectUtils.allNotNull(this, anotherSearchResult, this.getId(), anotherSearchResult.getId())) {
+            return Objects.equals(this.getId(), anotherSearchResult.getId());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        if (this.getId() == null) {
+            return -1;
+        }
+        return this.getId().hashCode();
     }
 }

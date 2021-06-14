@@ -20,11 +20,11 @@ import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
-import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
+import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResultLegacy;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResultLegacy;
-import gov.healthit.chpl.domain.search.SearchRequest;
-import gov.healthit.chpl.domain.search.SearchResponse;
+import gov.healthit.chpl.domain.search.SearchRequestLegacy;
+import gov.healthit.chpl.domain.search.SearchResponseLegacy;
 import gov.healthit.chpl.service.DirectReviewSearchService;
 import lombok.extern.log4j.Log4j2;
 
@@ -127,12 +127,12 @@ public class CertifiedProductSearchManager {
     }
 
     @Transactional
-    public SearchResponse search(SearchRequest searchRequest) {
+    public SearchResponseLegacy search(SearchRequestLegacy searchRequest) {
 
-        Collection<CertifiedProductBasicSearchResult> searchResults = searchDao.search(searchRequest);
+        Collection<CertifiedProductBasicSearchResultLegacy> searchResults = searchDao.search(searchRequest);
         int totalCountSearchResults = searchDao.getTotalResultCount(searchRequest);
 
-        SearchResponse response = new SearchResponse(Integer.valueOf(totalCountSearchResults),
+        SearchResponseLegacy response = new SearchResponseLegacy(Integer.valueOf(totalCountSearchResults),
                 searchResults, searchRequest.getPageSize(), searchRequest.getPageNumber());
         return response;
     }

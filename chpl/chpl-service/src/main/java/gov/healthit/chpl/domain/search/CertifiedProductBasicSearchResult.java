@@ -5,7 +5,12 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-public class CertifiedProductBasicSearchResult extends CertifiedProductSearchResultLegacy {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
+public class CertifiedProductBasicSearchResult extends CertifiedProductSearchResult {
     private static final long serialVersionUID = -2547390525592841038L;
 
     @JsonView({
@@ -17,7 +22,7 @@ public class CertifiedProductBasicSearchResult extends CertifiedProductSearchRes
     @JsonView({
             SearchViews.Default.class
     })
-    private Set<String> criteriaMet; // list of criteria numbers
+    private Set<Long> criteriaMet; // list of criteria IDs
 
     @JsonView({
             SearchViews.Default.class
@@ -27,42 +32,32 @@ public class CertifiedProductBasicSearchResult extends CertifiedProductSearchRes
     //list of start and end dates for surveillance, each entry will be start&end or just start&
     private Set<String> surveillanceDates;
 
+    //list of status changes for the listing, each entry will be of the format statusDate?statusName
+    private Set<String> statusEvents;
+
+    //list of criteria with API documentation and the corresponding value
+    private Set<String> apiDocumentation;
+
+    //list of criteria with Service Base URL List and the corresponding value
+    private Set<String> serviceBaseUrlList;
+
     public CertifiedProductBasicSearchResult() {
         previousDevelopers = new HashSet<String>();
-        criteriaMet = new HashSet<String>();
+        criteriaMet = new HashSet<Long>();
         cqmsMet = new HashSet<String>();
         surveillanceDates = new HashSet<String>();
+        statusEvents = new HashSet<String>();
+        apiDocumentation = new HashSet<String>();
+        serviceBaseUrlList = new HashSet<String>();
     }
 
-    public Set<String> getCriteriaMet() {
-        return criteriaMet;
+    @Override
+    public boolean equals(Object another) {
+        return super.equals(another);
     }
 
-    public void setCriteriaMet(final Set<String> criteriaMet) {
-        this.criteriaMet = criteriaMet;
-    }
-
-    public Set<String> getCqmsMet() {
-        return cqmsMet;
-    }
-
-    public void setCqmsMet(final Set<String> cqmsMet) {
-        this.cqmsMet = cqmsMet;
-    }
-
-    public Set<String> getPreviousDevelopers() {
-        return previousDevelopers;
-    }
-
-    public void setPreviousDevelopers(final Set<String> previousDevelopers) {
-        this.previousDevelopers = previousDevelopers;
-    }
-
-    public Set<String> getSurveillanceDates() {
-        return surveillanceDates;
-    }
-
-    public void setSurveillanceDates(final Set<String> surveillanceDates) {
-        this.surveillanceDates = surveillanceDates;
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }
