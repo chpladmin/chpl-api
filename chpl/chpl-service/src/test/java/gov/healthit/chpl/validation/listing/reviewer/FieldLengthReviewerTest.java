@@ -78,7 +78,7 @@ public class FieldLengthReviewerTest {
             .thenReturn("1024");
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.170523k1Url.maxlength"),
             ArgumentMatchers.any(), ArgumentMatchers.any()))
-            .thenReturn(String.format(FIELD_TOO_LONG, "20", "transparency attestation url", "placeholder"));
+            .thenReturn(String.format(FIELD_TOO_LONG, "20", "Mandatory Disclosures", "placeholder"));
         Mockito.when(messageSource.getMessage(ArgumentMatchers.eq("maxLength.apiDocumentationLink"), ArgumentMatchers.isNull(), ArgumentMatchers.any()))
             .thenReturn("1024");
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.apiDocumentationLink.maxlength"),
@@ -531,7 +531,7 @@ public class FieldLengthReviewerTest {
 
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "transparency attestation url", "placeholder")));
+        assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "Mandatory Disclosures", "placeholder")));
     }
 
     @Test
