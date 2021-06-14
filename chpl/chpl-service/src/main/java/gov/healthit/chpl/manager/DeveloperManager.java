@@ -66,7 +66,6 @@ import gov.healthit.chpl.manager.rules.developer.DeveloperValidationFactory;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
 import gov.healthit.chpl.scheduler.job.developer.MergeDeveloperJob;
-import gov.healthit.chpl.service.DirectReviewUpdateEmailService;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -95,7 +94,6 @@ public class DeveloperManager extends SecuredManager {
     private ValidationUtils validationUtils;
     private TransparencyAttestationManager transparencyAttestationManager;
     private SchedulerManager schedulerManager;
-    private DirectReviewUpdateEmailService directReviewEmailService;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
@@ -104,7 +102,7 @@ public class DeveloperManager extends SecuredManager {
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
             ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
             DeveloperValidationFactory developerValidationFactory, ValidationUtils validationUtils,
-            DirectReviewUpdateEmailService directReviewEmailService, TransparencyAttestationManager transparencyAttestationManager,
+            TransparencyAttestationManager transparencyAttestationManager,
             SchedulerManager schedulerManager) {
         this.developerDao = developerDao;
         this.productManager = productManager;
@@ -119,7 +117,6 @@ public class DeveloperManager extends SecuredManager {
         this.resourcePermissions = resourcePermissions;
         this.developerValidationFactory = developerValidationFactory;
         this.validationUtils = validationUtils;
-        this.directReviewEmailService = directReviewEmailService;
         this.transparencyAttestationManager = transparencyAttestationManager;
         this.schedulerManager = schedulerManager;
     }
