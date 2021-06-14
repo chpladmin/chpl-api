@@ -92,7 +92,7 @@ public class UnsupportedCharacterReviewer implements Reviewer {
                     "Transparency Attestation '" + listing.getTransparencyAttestation().getTransparencyAttestation() + "'");
         }
         addListingWarningIfNotValid(listing, listing.getTransparencyAttestationUrl(),
-                "Mandatory Disclosures URL '" + listing.getTransparencyAttestationUrl() + "'");
+                "Mandatory Disclosures '" + listing.getTransparencyAttestationUrl() + "'");
 
         // users can add to accessibility standards so check these
         for (PendingCertifiedProductAccessibilityStandardDTO accStd : listing.getAccessibilityStandards()) {
