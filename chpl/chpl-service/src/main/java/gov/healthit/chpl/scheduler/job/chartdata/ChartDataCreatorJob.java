@@ -50,7 +50,7 @@ public final class ChartDataCreatorJob extends QuartzJob {
     public void execute(JobExecutionContext arg0) throws JobExecutionException {
         LOGGER.info("*****Chart Data Generator is starting now.*****");
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        List<CertifiedProductFlatSearchResult> certifiedProducts = certifiedProductSearchDAO.getAllCertifiedProducts();
+        List<CertifiedProductFlatSearchResult> certifiedProducts = certifiedProductSearchDAO.getFlatCertifiedProducts();
         LOGGER.info("Certified Product Count: " + certifiedProducts.size());
 
         try {

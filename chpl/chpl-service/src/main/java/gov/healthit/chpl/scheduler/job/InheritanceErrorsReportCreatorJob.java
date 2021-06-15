@@ -98,7 +98,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
             return;
         }
 
-        List<CertifiedProductFlatSearchResult> listings = certifiedProductSearchDAO.getAllCertifiedProducts();
+        List<CertifiedProductFlatSearchResult> listings = certifiedProductSearchDAO.getFlatCertifiedProducts();
         List<CertifiedProductFlatSearchResult> certifiedProducts = filterData(listings);
 
         ExecutorService executorService = null;

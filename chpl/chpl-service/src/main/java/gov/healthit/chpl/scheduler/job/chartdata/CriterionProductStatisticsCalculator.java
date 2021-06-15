@@ -57,7 +57,7 @@ public class CriterionProductStatisticsCalculator {
         HashSet<String> uniqueProductSet = new HashSet<String>();
         for (CertifiedProductFlatSearchResult listing : listings) {
             if (listing.getCriteriaMet() != null && !listing.getCriteriaMet().isEmpty()) {
-                for (String certId : listing.getCriteriaMet().split(CertifiedProductFlatSearchResult.CERTS_SPLIT_CHAR)) {
+                for (String certId : listing.getCriteriaMet().split(CertifiedProductFlatSearchResult.SMILEY_SPLIT_CHAR)) {
                     String key = certId + "-" + listing.getDeveloper() + '-' + listing.getProduct();
                     if (!uniqueProductSet.contains(key)) {
                         if (!criterionMap.containsKey(certId)) {

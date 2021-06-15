@@ -79,7 +79,7 @@ public class SedDataCollector {
 
     private boolean containsAnyCriterion(CertifiedProductFlatSearchResult listing, List<CertificationCriterionDTO> criteria) {
         boolean result = false;
-        String[] certIdStrings = listing.getCriteriaMet().split(CertifiedProductFlatSearchResult.CERTS_SPLIT_CHAR);
+        String[] certIdStrings = listing.getCriteriaMet().split(CertifiedProductFlatSearchResult.SMILEY_SPLIT_CHAR);
         for (CertificationCriterionDTO criterion : criteria) {
             for (int i = 0; i < certIdStrings.length && !result; i++) {
                 String certIdStr = certIdStrings[i];

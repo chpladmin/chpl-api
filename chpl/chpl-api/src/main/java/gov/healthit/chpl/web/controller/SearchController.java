@@ -5,12 +5,9 @@ import java.text.SimpleDateFormat;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,15 +22,16 @@ import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
+import gov.healthit.chpl.domain.search.SearchRequest;
 import gov.healthit.chpl.domain.search.SearchRequestLegacy;
-import gov.healthit.chpl.domain.search.SearchResponseLegacy;
+import gov.healthit.chpl.domain.search.SearchResponse;
 import gov.healthit.chpl.domain.search.SearchSetOperator;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
-import gov.healthit.chpl.util.FileUtils;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -44,68 +42,30 @@ import lombok.extern.log4j.Log4j2;
 @RestController
 @Loggable
 @Log4j2
-@Deprecated
-public class SearchViewController {
+public class SearchController {
     private static final int MAX_PAGE_SIZE = 100;
 
-    private Environment env;
-    private MessageSource messageSource;
+    private ErrorMessageUtil msgUtil;
     private DimensionalDataManager dimensionalDataManager;
     private CertifiedProductSearchManager certifiedProductSearchManager;
-    private FF4j ff4j;
-    private FileUtils fileUtils;
 
     @Autowired
-    public SearchViewController(Environment env,
-            MessageSource messageSource,
+    public SearchController(ErrorMessageUtil msgUtil,
             DimensionalDataManager dimensionalDataManager,
-            CertifiedProductSearchManager certifiedProductSearchManager,
-            FF4j ff4j,
-            FileUtils fileUtils) {
-        this.env = env;
-        this.messageSource = messageSource;
+            CertifiedProductSearchManager certifiedProductSearchManager) {
+        this.msgUtil = msgUtil;
         this.dimensionalDataManager = dimensionalDataManager;
         this.certifiedProductSearchManager = certifiedProductSearchManager;
-        this.ff4j = ff4j;
-        this.fileUtils = fileUtils;
     }
 
-    /**
-     * Search listings on the CHPL with a generic search term and/or filters.
-     * @param searchTerm CHPL ID, Developer (or previous developer) Name, Product Name, ONC-ACB Certification ID
-     * @param certificationStatusesDelimited statuses to filter by
-     * @param certificationEditionsDelimited editions to filter by
-     * @param certificationCriteriaDelimited criteria to filter by
-     * @param certificationCriteriaOperatorStr and vs or for criteria filter
-     * @param cqmsDelimited cqms to filter by
-     * @param cqmsOperatorStr and vs or for cqm filter
-     * @param certificationBodiesDelimited acbs to filter by
-     * @param hasHadSurveillanceStr filter by whether listings have had surveillance
-     * @param nonconformityOptionsDelimited filter by whether listings have open/closed/no nonconformities
-     * @param nonconformityOptionsOperator and vs or for nonconformity filter
-     * @param developer filter by developer name
-     * @param product filter by product name
-     * @param version filter by version name
-     * @param practiceType filter by practice type name
-     * @param certificationDateStart filter by when listing was certified to the CHPL
-     * @param certificationDateEnd filter by when listing was certified to the CHPL
-     * @param pageNumber which page of data to return
-     * @param pageSize how many records to return per page
-     * @param orderBy field to order data by
-     * @param sortDescending sort order
-     * @return listings matching the given parameters
-     * @throws InvalidArgumentsException if one or more parameters is not specified properly or has an invalid value
-     * @throws EntityRetrievalException if there was an error retrieving a listing
-     */
-    @Deprecated
     @SuppressWarnings({"checkstyle:methodlength", "checkstyle:parameternumber"})
     @ApiOperation(value = "Search the CHPL",
-    notes = "DEPRECATED. If paging parameters are not specified, the first 20 records are returned by default. "
+    notes = "If paging parameters are not specified, the first 20 records are returned by default. "
             + "All parameters are optional. "
             + "Any parameter that can accept multiple things (i.e. certificationStatuses) expects "
             + "a comma-delimited list of those things (i.e. certificationStatuses = Active,Suspended). "
             + "Date parameters are required to be in the format "
-            + SearchRequestLegacy.CERTIFICATION_DATE_SEARCH_FORMAT + ". ")
+            + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + ". ")
     @ApiImplicitParams({
         @ApiImplicitParam(name = "searchTerm",
                 value = "CHPL ID, Developer (or previous developer) Name, Product Name, ONC-ACB Certification ID",
@@ -164,11 +124,11 @@ public class SearchViewController {
         required = false, dataType = "string", paramType = "query"),
         @ApiImplicitParam(name = "certificationDateStart",
         value = "To return only listings certified after this date. Required format is "
-                + SearchRequestLegacy.CERTIFICATION_DATE_SEARCH_FORMAT,
+                + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT,
                 required = false, dataType = "string", paramType = "query"),
         @ApiImplicitParam(name = "certificationDateEnd",
         value = "To return only listings certified before this date. Required format is "
-                + SearchRequestLegacy.CERTIFICATION_DATE_SEARCH_FORMAT,
+                + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT,
                 required = false, dataType = "string", paramType = "query"),
         @ApiImplicitParam(name = "pageNumber",
         value = "Zero-based page number used in concert with pageSize. Defaults to 0.", required = false,
@@ -178,11 +138,8 @@ public class SearchViewController {
                 + "Defaults to 20. Maximum allowed page size is 100.",
                 required = false, dataType = "string", paramType = "query"),
         @ApiImplicitParam(name = "orderBy",
-        value = "What to order by. Options are one of the following: "
-                + SearchRequestLegacy.ORDER_BY_DEVELOPER + ", " + SearchRequestLegacy.ORDER_BY_PRODUCT + ", "
-                + SearchRequestLegacy.ORDER_BY_VERSION + ", " + SearchRequestLegacy.ORDER_BY_CERTIFICATION_EDITION + ", "
-                + ", or " + SearchRequestLegacy.ORDER_BY_CERTIFICATION_BODY + ", "
-                + ". Defaults to " + SearchRequestLegacy.ORDER_BY_PRODUCT + ".",
+        value = "What to order by. Options are one of the following: CERTIFICATION_DATE, CHPL_ID, "
+                + "DEVELOPER, PRODUCT, VERSION, EDITION, or STATUS. Defaults to PRODUCT.",
                 required = false, dataType = "string", paramType = "query"),
         @ApiImplicitParam(name = "sortDescending",
         value = "Use to specify the direction of the sort. Defaults to false (ascending sort).",
@@ -191,7 +148,7 @@ public class SearchViewController {
     @RequestMapping(value = "/search", method = RequestMethod.GET, produces = {
             "application/json; charset=utf-8", "application/xml"
     })
-    public @ResponseBody SearchResponseLegacy searchGet(
+    public @ResponseBody SearchResponse search(
             @RequestParam(value = "searchTerm", required = false, defaultValue = "") String searchTerm,
             @RequestParam(value = "certificationStatuses", required = false,
             defaultValue = "") String certificationStatusesDelimited,
@@ -226,7 +183,7 @@ public class SearchViewController {
             @RequestParam(value = "sortDescending", required = false, defaultValue = "false") Boolean sortDescending)
                     throws InvalidArgumentsException, EntityRetrievalException {
 
-        SearchRequestLegacy searchRequest = new SearchRequestLegacy();
+        SearchRequest searchRequest = new SearchRequest();
         if (searchTerm != null) {
             searchRequest.setSearchTerm(searchTerm.trim());
         }
@@ -447,20 +404,12 @@ public class SearchViewController {
 
     }
 
-    /**
-     * DEPRECATED. Search listings in the CHPL based on a set of filters.
-     * @param searchRequest object containing all possible search parameters; not all are required.
-     * @return listings matching the passed in search parameters
-     * @throws InvalidArgumentsException if a search parameter has an invalid value
-     * @throws EntityRetrievalException if there is an error retrieving a listing
-     */
-    @Deprecated
     @ApiOperation(value = "Search the CHPL with an HTTP POST Request.",
             notes = "Search the CHPL by specifycing multiple fields of the data to search. "
                     + "If paging fields are not specified, the first 20 records are returned by default.")
     @RequestMapping(value = "/search", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public @ResponseBody SearchResponseLegacy searchPostLegacy(@RequestBody SearchRequestLegacy searchRequest)
+    public @ResponseBody SearchResponse searchPostLegacy(@RequestBody SearchRequest searchRequest)
             throws InvalidArgumentsException, EntityRetrievalException {
         //trim everything
         searchRequest.cleanAllParameters();

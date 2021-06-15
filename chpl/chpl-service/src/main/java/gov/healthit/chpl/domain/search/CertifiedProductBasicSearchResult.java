@@ -7,9 +7,11 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @AllArgsConstructor
+@SuperBuilder
 public class CertifiedProductBasicSearchResult extends CertifiedProductSearchResult {
     private static final long serialVersionUID = -2547390525592841038L;
 
@@ -22,7 +24,7 @@ public class CertifiedProductBasicSearchResult extends CertifiedProductSearchRes
     @JsonView({
             SearchViews.Default.class
     })
-    private Set<Long> criteriaMet; // list of criteria IDs
+    private Set<String> criteriaMet; // list of criteria IDs
 
     @JsonView({
             SearchViews.Default.class
@@ -43,7 +45,7 @@ public class CertifiedProductBasicSearchResult extends CertifiedProductSearchRes
 
     public CertifiedProductBasicSearchResult() {
         previousDevelopers = new HashSet<String>();
-        criteriaMet = new HashSet<Long>();
+        criteriaMet = new HashSet<String>();
         cqmsMet = new HashSet<String>();
         surveillanceDates = new HashSet<String>();
         statusEvents = new HashSet<String>();

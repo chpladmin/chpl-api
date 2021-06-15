@@ -117,7 +117,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
     }
 
     private List<CertifiedProductFlatSearchResult> getListingsForReport() {
-        return certifiedProductSearchDAO.getAllCertifiedProducts().stream()
+        return certifiedProductSearchDAO.getFlatCertifiedProducts().stream()
                 .filter(listing -> !isEdition2011(listing)
                         && (isCertificationStatusSuspendedByAcb(listing)
                                 || hasSurveillances(listing)))

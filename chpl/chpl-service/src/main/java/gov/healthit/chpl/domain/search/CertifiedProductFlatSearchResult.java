@@ -13,7 +13,6 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResult {
     private static final long serialVersionUID = -2547390525592841033L;
-    public static final String CERTS_SPLIT_CHAR = "\u263A";
 
     @JsonView({
             SearchViews.Default.class

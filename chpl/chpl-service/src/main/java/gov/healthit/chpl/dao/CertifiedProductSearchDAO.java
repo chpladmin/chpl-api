@@ -8,11 +8,13 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.Query;
@@ -27,10 +29,13 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
+import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResultLegacy;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResultLegacy;
+import gov.healthit.chpl.domain.search.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
+import gov.healthit.chpl.domain.search.SearchRequest;
 import gov.healthit.chpl.domain.search.SearchRequestLegacy;
 import gov.healthit.chpl.domain.search.SearchSetOperator;
 import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
@@ -43,9 +48,9 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class CertifiedProductSearchDAO extends BaseDAOImpl {
     private final DateFormat certificationDateFormatter =
-            new SimpleDateFormat(SearchRequestLegacy.CERTIFICATION_DATE_SEARCH_FORMAT);
+            new SimpleDateFormat(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
 
-    public Long getListingIdByUniqueChplNumber(final String chplProductNumber) {
+    public Long getListingIdByUniqueChplNumber(String chplProductNumber) {
         Long id = null;
         Query query = entityManager.createQuery(
                 "SELECT cps " + "FROM CertifiedProductBasicSearchResultEntity cps "
@@ -60,7 +65,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         return id;
     }
 
-    public CertifiedProduct getByChplProductNumber(final String chplProductNumber) throws EntityNotFoundException {
+    public CertifiedProduct getByChplProductNumber(String chplProductNumber) throws EntityNotFoundException {
         Query query = entityManager.createQuery(
                 "SELECT cps " + "FROM CertifiedProductBasicSearchResultEntity cps "
                         + "WHERE cps.chplProductNumber = :chplProductNumber",
@@ -82,7 +87,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         return result;
     }
 
-    public IcsFamilyTreeNode getICSFamilyTree(final Long certifiedProductId) {
+    public IcsFamilyTreeNode getICSFamilyTree(Long certifiedProductId) {
         Query query = entityManager.createQuery(
                 "SELECT cps " + "FROM CertifiedProductBasicSearchResultEntity cps "
                         + "WHERE certified_product_id = :certifiedProductId",
@@ -98,7 +103,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         }
     }
 
-    public List<CertifiedProductFlatSearchResult> getAllCertifiedProducts() {
+    public List<CertifiedProductFlatSearchResult> getFlatCertifiedProducts() {
         LOGGER.info("Starting basic search query.");
         Query query = entityManager.createQuery("SELECT cps "
                 + "FROM CertifiedProductBasicSearchResultEntity cps ",
@@ -118,8 +123,29 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         return domainResults;
     }
 
+    public List<CertifiedProductBasicSearchResult> getCertifiedProducts() {
+        LOGGER.info("Starting basic search query.");
+        Query query = entityManager.createQuery("SELECT cps "
+                + "FROM CertifiedProductBasicSearchResultEntity cps ",
+                CertifiedProductBasicSearchResultEntity.class);
+
+        Date startDate = new Date();
+        List<CertifiedProductBasicSearchResultEntity> results = query.getResultList();
+        Date endDate = new Date();
+        LOGGER.info("Got query results in " + (endDate.getTime() - startDate.getTime()) + " millis");
+        List<CertifiedProductBasicSearchResult> domainResults = null;
+
+        try {
+            domainResults = convertToListings(results);
+        } catch (Exception ex) {
+            LOGGER.error("Could not convert to basic listings " + ex.getMessage(), ex);
+        }
+        return domainResults;
+    }
+
+
     @Deprecated
-    public List<CertifiedProductFlatSearchResultLegacy> getAllCertifiedProductsLegacy() {
+    public List<CertifiedProductFlatSearchResultLegacy> getFlatCertifiedProductsLegacy() {
         LOGGER.info("Starting basic search query.");
         Query query = entityManager.createQuery("SELECT cps "
                 + "FROM CertifiedProductBasicSearchResultEntity cps ",
@@ -633,6 +659,59 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
                 .build();
     }
 
+    private List<CertifiedProductBasicSearchResult> convertToListings(List<CertifiedProductBasicSearchResultEntity> dbResults) {
+        List<CertifiedProductBasicSearchResult> results = new ArrayList<CertifiedProductBasicSearchResult>(
+                dbResults.size());
+        return dbResults.stream()
+            .map(dbResult -> buildBasicSearchResult(dbResult))
+            .collect(Collectors.toList());
+    }
+
+    private CertifiedProductBasicSearchResult buildBasicSearchResult(CertifiedProductBasicSearchResultEntity entity) {
+        return CertifiedProductBasicSearchResult.builder()
+                .id(entity.getId())
+                .chplProductNumber(entity.getChplProductNumber())
+                .edition(entity.getEdition())
+                .curesUpdate(entity.getCuresUpdate())
+                .acb(entity.getAcbName())
+                .acbCertificationId(entity.getAcbCertificationId())
+                .practiceType(entity.getPracticeTypeName())
+                .developerId(entity.getDeveloperId())
+                .developer(entity.getDeveloper())
+                .developerStatus(entity.getDeveloperStatus())
+                .product(entity.getProduct())
+                .version(entity.getVersion())
+                .numMeaningfulUse(entity.getMeaningfulUseUserCount())
+                .numMeaningfulUseDate(entity.getMeaningfulUseUserDate() != null
+                    ? entity.getMeaningfulUseUserDate().getTime() : null)
+                .decertificationDate(entity.getDecertificationDate() == null ? null : entity.getDecertificationDate().getTime())
+                .certificationDate(entity.getCertificationDate().getTime())
+                .certificationStatus(entity.getCertificationStatus())
+                .transparencyAttestationUrl(entity.getTransparencyAttestationUrl())
+                .apiDocumentation(convertToSetOfStringsWithDelimiter(entity.getApiDocumentation(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
+                .serviceBaseUrlList(convertToSetOfStringsWithDelimiter(entity.getServiceBaseUrlList(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
+                .surveillanceCount(entity.getSurveillanceCount())
+                .openSurveillanceCount(entity.getOpenSurveillanceCount())
+                .closedSurveillanceCount(entity.getClosedSurveillanceCount())
+                .openSurveillanceNonConformityCount(entity.getOpenSurveillanceNonConformityCount())
+                .closedSurveillanceNonConformityCount(entity.getClosedSurveillanceNonConformityCount())
+                .surveillanceDates(convertToSetOfStringsWithDelimiter(entity.getSurveillanceDates(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
+                .statusEvents(convertToSetOfStringsWithDelimiter(entity.getStatusEvents(), "&"))
+                .criteriaMet(convertToSetOfStringsWithDelimiter(entity.getCerts(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
+                .cqmsMet(convertToSetOfStringsWithDelimiter(entity.getCqms(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
+                .previousDevelopers(convertToSetOfStringsWithDelimiter(entity.getPreviousDevelopers(), "|"))
+                .build();
+    }
+
+    private Set<String> convertToSetOfStringsWithDelimiter(String value, String delimeter) {
+        if (StringUtils.isEmpty(value)) {
+            return new LinkedHashSet<String>();
+        }
+
+        String[] splitValues = value.split(delimeter);
+        return Stream.of(splitValues).collect(Collectors.toSet());
+    }
+
     @Deprecated
     private void convertToListing(CertifiedProductListingSearchResultEntity queryResult,
             CertifiedProductBasicSearchResultLegacy listing) {
@@ -737,9 +816,9 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         node.setVersion(pv);
         ArrayList<CertifiedProduct> childrenList = new ArrayList<CertifiedProduct>();
         if (result.getChild() != null) {
-            String[] children = result.getChild().split("\u263A");
+            String[] children = result.getChild().split(CertifiedProductSearchResult.SMILEY_SPLIT_CHAR);
             for (String child : children) {
-                String[] childInfo = child.split("\u2639");
+                String[] childInfo = child.split(CertifiedProductSearchResult.FROWNEY_SPLIT_CHAR);
                 CertifiedProduct cp = new CertifiedProduct();
                 cp.setChplProductNumber(childInfo[0]);
                 cp.setId(Long.decode(childInfo[1]));
@@ -749,9 +828,9 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         node.setChildren(childrenList);
         ArrayList<CertifiedProduct> parentList = new ArrayList<CertifiedProduct>();
         if (result.getParent() != null) {
-            String[] parents = result.getParent().split("\u263A");
+            String[] parents = result.getParent().split(CertifiedProductSearchResult.SMILEY_SPLIT_CHAR);
             for (String parent : parents) {
-                String[] parentInfo = parent.split("\u2639");
+                String[] parentInfo = parent.split(CertifiedProductSearchResult.FROWNEY_SPLIT_CHAR);
                 CertifiedProduct cp = new CertifiedProduct();
                 cp.setChplProductNumber(parentInfo[0]);
                 cp.setId(Long.decode(parentInfo[1]));
