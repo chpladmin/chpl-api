@@ -25,6 +25,7 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
+    <!-- FF4J config  -->
     <servlet>
         <servlet-name>ff4j-console</servlet-name>
         <servlet-class>org.ff4j.web.FF4jDispatcherServlet</servlet-class>
@@ -40,6 +41,7 @@
         <url-pattern>/static/*</url-pattern>
     </servlet-mapping>
 
+    <!-- JavaMelody config -->
     <filter>
         <filter-name>javamelody</filter-name>
         <filter-class>net.bull.javamelody.MonitoringFilter</filter-class>
@@ -49,6 +51,7 @@
         </init-param>
     </filter>
 
+    <!-- Quartz config -->
     <context-param>
         <param-name>quartz:config-file</param-name>
         <param-value>quartz.properties</param-value>

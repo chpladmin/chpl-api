@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -39,65 +40,89 @@ import lombok.extern.log4j.Log4j2;
 public class CHPLHttpSecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String FF4J_ROLE = "ff4jUser";
 
-    @Autowired
-    private JWTUserConverter userConverter;
+    @Configuration
+    @Order(1)
+    public static class FF4JSecurityConfig extends WebSecurityConfigurerAdapter {
+        @Value("${ff4j.webconsole.username}")
+        private String ff4jUsername;
 
-    @Value("${ff4j.webconsole.username}")
-    private String ff4jUsername;
+        @Value("${ff4j.webconsole.password}")
+        private String ff4jPassword;
 
-    @Value("${ff4j.webconsole.password}")
-    private String ff4jPassword;
+        @Value("${ff4j.webconsole.url}")
+        private String ff4jWebConsoleUrl;
 
-    @Value("${ff4j.webconsole.url}")
-    private String ff4jWebConsoleUrl;
+        @Autowired
+        public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+            auth.inMemoryAuthentication()
+              .withUser(ff4jUsername).password(passwordEncoder().encode(ff4jPassword))
+              .roles(FF4J_ROLE);
+        }
 
-    public CHPLHttpSecurityConfig() {
-        super(true);
+        @Override
+        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+            LOGGER.info("configure AuthenticationManagerBuilder");
+            auth.inMemoryAuthentication()
+                .withUser(ff4jUsername).password("{bcrypt}" + passwordEncoder().encode(ff4jPassword)).roles(FF4J_ROLE);
+        }
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            LOGGER.info("configure FF4J Security for urls like " + ff4jWebConsoleUrl);
+            http
+                .antMatcher(ff4jWebConsoleUrl + "/**")
+                .authorizeRequests().anyRequest().hasRole(FF4J_ROLE)
+                .and().httpBasic()
+                .and().sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        }
+
+        @Bean
+        public BCryptPasswordEncoder passwordEncoder() {
+            return new BCryptPasswordEncoder();
+        }
     }
 
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        LOGGER.info("get AuthenticationManager");
-        return super.authenticationManagerBean();
-    }
+    @Configuration
+    @Order(2)
+    public static class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-          .withUser(ff4jUsername).password(passwordEncoder().encode(ff4jPassword))
-          .roles(FF4J_ROLE);
-    }
+        public JwtSecurityConfig() {
+            super(true);
+        }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        LOGGER.info("configure AuthenticationManagerBuilder");
-        auth.inMemoryAuthentication()
-            .withUser(ff4jUsername).password("{bcrypt}" + passwordEncoder().encode(ff4jPassword)).roles(FF4J_ROLE);
-    }
+        @Autowired
+        private JWTUserConverter userConverter;
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        LOGGER.info("configure HttpSecurity");
-        http
-            .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and().exceptionHandling()
-            .and().anonymous()
-            .and().servletApi()
-            .and().authorizeRequests()
-                .antMatchers("/favicon.ico").permitAll()
-                .antMatchers("/resources/**").permitAll()
-                // allow anonymous resource requests
-                .antMatchers("/").permitAll()
-                .antMatchers(ff4jWebConsoleUrl + "/**").hasRole(FF4J_ROLE).and().httpBasic()
-            // custom Token based authentication based on the header previously given to the client
-            .and().addFilterBefore(new JWTAuthenticationFilter(userConverter), UsernamePasswordAuthenticationFilter.class)
+        @Bean
+        @Override
+        public AuthenticationManager authenticationManagerBean() throws Exception {
+            LOGGER.info("Get AuthenticationManager");
+            return super.authenticationManagerBean();
+        }
+
+        @Override
+        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+            LOGGER.info("Configure AuthenticationManagerBuilder");
+            auth.inMemoryAuthentication().withUser("user").password("password").roles("USER").and().withUser("admin")
+            .password("password").roles("USER", "ADMIN");
+        }
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            LOGGER.info("Configure CHPL Security");
+            http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+
+            .exceptionHandling().and().anonymous().and().servletApi().and()
+            // .headers().cacheControl().and()
+            .authorizeRequests().antMatchers("/favicon.ico").permitAll().antMatchers("/resources/**").permitAll()
+
+            // allow anonymous resource requests
+            .antMatchers("/").permitAll().and()
+            // custom Token based authentication based on the header
+            // previously given to the client
+            .addFilterBefore(new JWTAuthenticationFilter(userConverter), UsernamePasswordAuthenticationFilter.class)
             .headers().cacheControl();
-    }
-
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        }
     }
 }
