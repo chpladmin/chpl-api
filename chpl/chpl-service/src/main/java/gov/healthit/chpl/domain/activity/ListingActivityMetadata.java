@@ -1,14 +1,14 @@
 package gov.healthit.chpl.domain.activity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
-@EqualsAndHashCode(callSuper=true)
+@ToString
+@Getter
+@Setter
+@RequiredArgsConstructor
 public class ListingActivityMetadata extends ActivityMetadata {
     private static final long serialVersionUID = 5473773376581297578L;
 

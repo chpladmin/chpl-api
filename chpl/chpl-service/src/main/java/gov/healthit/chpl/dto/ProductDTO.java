@@ -2,19 +2,21 @@ package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.entity.ProductActiveOwnerEntity;
+import gov.healthit.chpl.entity.ProductCertificationStatusesEntity;
 import gov.healthit.chpl.entity.ProductEntity;
 import gov.healthit.chpl.entity.ProductEntitySimple;
 import gov.healthit.chpl.entity.ProductVersionEntity;
-import gov.healthit.chpl.util.Util;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -101,30 +103,46 @@ public class ProductDTO implements Serializable {
             }
         }
 
-        if (entity.getProductCertificationStatusesEntity() != null) {
-            this.statuses = new Statuses(entity.getProductCertificationStatusesEntity().getActive(),
-                    entity.getProductCertificationStatusesEntity().getRetired(),
-                    entity.getProductCertificationStatusesEntity().getWithdrawnByDeveloper(),
-                    entity.getProductCertificationStatusesEntity().getWithdrawnByAcb(),
-                    entity.getProductCertificationStatusesEntity().getSuspendedByAcb(),
-                    entity.getProductCertificationStatusesEntity().getSuspendedByOnc(),
-                    entity.getProductCertificationStatusesEntity().getTerminatedByOnc());
+        ProductCertificationStatusesEntity statusesEntity = entity.getProductCertificationStatusesEntity();
+        if (statusesEntity != null) {
+            this.statuses = new Statuses(statusesEntity.getActive(),
+                    statusesEntity.getRetired(),
+                    statusesEntity.getWithdrawnByDeveloper(),
+                    statusesEntity.getWithdrawnByAcb(),
+                    statusesEntity.getSuspendedByAcb(),
+                    statusesEntity.getSuspendedByOnc(),
+                    statusesEntity.getTerminatedByOnc());
         }
     }
 
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
+    public ProductOwnerDTO getOwnerOnDate(Date date) {
+        List<ProductOwnerDTO> localOwnerHistory = new ArrayList<ProductOwnerDTO>();
+        if (this.getOwnerHistory() != null && this.getOwnerHistory().size() > 0) {
+            localOwnerHistory.addAll(this.getOwnerHistory().stream().collect(Collectors.toList()));
+        }
+        localOwnerHistory.add(ProductOwnerDTO.builder()
+                .developer(this.getOwner())
+                .productId(this.getId())
+                .transferDate(System.currentTimeMillis())
+                .build());
+        // first we need to make sure the status events are in ascending order
+        localOwnerHistory.sort(new Comparator<ProductOwnerDTO>() {
+            @Override
+            public int compare(ProductOwnerDTO o1, ProductOwnerDTO o2) {
+                if (o1.getTransferDate() != null && o2.getTransferDate() != null) {
+                    return o1.getTransferDate().compareTo(o2.getTransferDate());
+                }
+                return 0;
+            }
+        });
 
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
+        ProductOwnerDTO result = null;
+        for (int i = 0; i < localOwnerHistory.size() && result == null; i++) {
+            ProductOwnerDTO currOwner = localOwnerHistory.get(i);
+            if (currOwner.getTransferDate() != null && currOwner.getTransferDate().longValue() >= date.getTime()) {
+                result = currOwner;
+            }
+        }
+        return result;
     }
 }

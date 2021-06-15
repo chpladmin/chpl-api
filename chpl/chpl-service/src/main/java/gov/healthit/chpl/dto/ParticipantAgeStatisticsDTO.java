@@ -3,7 +3,7 @@ package gov.healthit.chpl.dto;
 import java.io.Serializable;
 import java.util.Date;
 
-import gov.healthit.chpl.entity.ParticipantAgeStatisticsEntity;
+import gov.healthit.chpl.entity.statistics.ParticipantAgeStatisticsEntity;
 import gov.healthit.chpl.util.Util;
 
 /**
