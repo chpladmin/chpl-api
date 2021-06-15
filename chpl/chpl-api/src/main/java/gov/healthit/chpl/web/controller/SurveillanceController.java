@@ -1,24 +1,15 @@
 package gov.healthit.chpl.web.controller;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.MessageSourceAware;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -66,33 +57,35 @@ import gov.healthit.chpl.validation.surveillance.reviewer.AuthorityReviewer;
 import gov.healthit.chpl.web.controller.results.SurveillanceResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.log4j.Log4j2;
 
 @Api(value = "surveillance")
 @RestController
 @RequestMapping("/surveillance")
 @Loggable
-public class SurveillanceController implements MessageSourceAware {
-
-    private static final Logger LOGGER = LogManager.getLogger(SurveillanceController.class);
-
-    @Autowired
-    private Environment env;
-    @Autowired
-    private FileUtils fileUtils;
-    @Autowired
-    private MessageSource messageSource;
-    @Autowired
+@Log4j2
+public class SurveillanceController  {
     private SurveillanceManager survManager;
-    @Autowired
     private ActivityManager activityManager;
-    @Autowired
     private CertifiedProductDetailsManager cpdetailsManager;
-    @Autowired
     private AuthorityReviewer survAuthorityReviewer;
-    @Autowired
     private PendingSurveillanceManager pendingSurveillanceManager;
-    @Autowired
     private ResourcePermissions resourcePermissions;
+
+    @Autowired
+    public SurveillanceController(SurveillanceManager survManager,
+            ActivityManager activityManager,
+            CertifiedProductDetailsManager cpdetailsManager,
+            AuthorityReviewer survAuthorityReviewer,
+            PendingSurveillanceManager pendingSurveillanceManager,
+            ResourcePermissions resourcePermissions) {
+        this.survManager = survManager;
+        this.activityManager = activityManager;
+        this.cpdetailsManager = cpdetailsManager;
+        this.survAuthorityReviewer = survAuthorityReviewer;
+        this.pendingSurveillanceManager = pendingSurveillanceManager;
+        this.resourcePermissions = resourcePermissions;
+    }
 
     @ApiOperation(value = "Get the listing of all pending surveillance items that this user has access to.",
             notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority on the ACB associated "
@@ -411,56 +404,6 @@ public class SurveillanceController implements MessageSourceAware {
         }
     }
 
-    @ApiOperation(value = "Download surveillance as CSV.",
-            notes = "Once per day, all surveillance and nonconformities are written out to CSV "
-                    + "files on the CHPL servers. This method allows any user to download those files.")
-    @RequestMapping(value = "/download", method = RequestMethod.GET, produces = "text/csv")
-    public void download(@RequestParam(value = "type", required = false, defaultValue = "") final String type,
-            @RequestParam(value = "definition", defaultValue = "false", required = false) final Boolean isDefinition,
-            final HttpServletRequest request, final HttpServletResponse response)
-                    throws IOException, EntityRetrievalException {
-
-        File downloadFile = null;
-        if (isDefinition != null && isDefinition.booleanValue()) {
-            if (type.equalsIgnoreCase("basic")) {
-                downloadFile = fileUtils.getDownloadFile(env.getProperty("schemaBasicSurveillanceName"));
-            } else {
-                downloadFile = fileUtils.getDownloadFile(env.getProperty("schemaSurveillanceName"));
-            }
-        } else {
-            try {
-                if (type.equalsIgnoreCase("all")) {
-                    downloadFile = survManager.getAllSurveillanceDownloadFile();
-                } else if (type.equalsIgnoreCase("basic")) {
-                    downloadFile = survManager.getBasicReportDownloadFile();
-                } else {
-                    downloadFile = survManager.getSurveillanceWithNonconformitiesDownloadFile();
-                }
-            } catch (final IOException ex) {
-                response.getWriter().append(ex.getMessage());
-                return;
-            }
-        }
-
-        if (downloadFile == null) {
-            response.getWriter()
-            .append(String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("resources.schemaFileGeneralError"),
-                    LocaleContextHolder.getLocale())));
-            return;
-        }
-        if (!downloadFile.exists()) {
-            response.getWriter()
-            .write(String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("resources.schemaFileNotFound"),
-                    LocaleContextHolder.getLocale()), downloadFile.getAbsolutePath()));
-            return;
-        }
-
-        LOGGER.info("Downloading " + downloadFile.getName());
-        fileUtils.streamFileAsResponse(downloadFile, "text/csv", response);
-    }
-
     @ApiOperation(value = "Upload a file with surveillance and nonconformities for certified products.",
             notes = "Accepts a CSV file with very specific fields to create pending surveillance items. "
                     + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
@@ -479,10 +422,4 @@ public class SurveillanceController implements MessageSourceAware {
             return new ResponseEntity<SurveillanceResults>(results, HttpStatus.OK);
         }
     }
-
-    @Override
-    public void setMessageSource(final MessageSource messageSource) {
-        this.messageSource = messageSource;
-    }
-
 }
