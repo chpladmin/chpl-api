@@ -32,21 +32,20 @@ public class MeasureDuplicateReviewer {
             }
         }
         if (measureDuplicateResults.duplicatesExist()) {
-            listing.getWarningMessages().addAll(getWarnings(measureDuplicateResults.getDuplicateList()));
-            listing.setMeasures(measureDuplicateResults.getUniqueList());
+            listing.getErrorMessages().addAll(getErrors(measureDuplicateResults.getDuplicateList()));
         }
     }
 
-    private List<String> getWarnings(List<ListingMeasure> duplicates) {
-        List<String> warnings = new ArrayList<String>();
+    private List<String> getErrors(List<ListingMeasure> duplicates) {
+        List<String> errors = new ArrayList<String>();
         for (ListingMeasure duplicate : duplicates) {
-            String warning = errorMessageUtil.getMessage("listing.duplicateMeasure",
+            String error = errorMessageUtil.getMessage("listing.duplicateMeasure",
                     duplicate.getMeasureType().getName(),
                     duplicate.getMeasure().getName(),
                     duplicate.getMeasure().getAbbreviation());
-            warnings.add(warning);
+            errors.add(error);
         }
-        return warnings;
+        return errors;
     }
 
     private BiPredicate<ListingMeasure, ListingMeasure> getPredicate() {
