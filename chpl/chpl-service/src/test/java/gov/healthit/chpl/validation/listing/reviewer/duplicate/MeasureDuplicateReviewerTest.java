@@ -19,7 +19,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class MeasureDuplicateReviewerTest {
     private static final String DUPLICATE_MSG =
-            "Duplicate %s Measure: %s for %s was found. The duplicates have been removed.";
+            "Duplicate %s Measure: %s for %s was found. The measure must be associated with all of the relevant criteria as a single element.";
     private static final String MEASURE_NAME = "Patient-Specific Education: Eligible Professional";
     private static final String MEASURE_NAME_2 = "Secure Electronic Messaging: Eligible Clinician";
     private static final String RT3 = "RT3";
@@ -38,7 +38,7 @@ public class MeasureDuplicateReviewerTest {
     }
 
     @Test
-    public void review_duplicateExists_warningFoundAndDuplicateRemoved() {
+    public void review_duplicateExists_errorFound() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         ListingMeasure measure1 = getMeasure(1L, 1L, MEASURE_NAME, RT3, 1L, "G1");
         ListingMeasure measure2 = getMeasure(2L, 1L, MEASURE_NAME, RT3, 1L, "G1");
@@ -47,15 +47,15 @@ public class MeasureDuplicateReviewerTest {
 
         reviewer.review(listing);
 
-        assertEquals(1, listing.getWarningMessages().size());
-        assertEquals(1, listing.getWarningMessages().stream()
-                .filter(warning -> warning.equals(String.format(DUPLICATE_MSG, "G1", MEASURE_NAME, RT3)))
+        assertEquals(1, listing.getErrorMessages().size());
+        assertEquals(1, listing.getErrorMessages().stream()
+                .filter(error -> error.equals(String.format(DUPLICATE_MSG, "G1", MEASURE_NAME, RT3)))
                 .count());
-        assertEquals(1, listing.getMeasures().size());
+        assertEquals(2, listing.getMeasures().size());
     }
 
     @Test
-    public void review_duplicateExistsButDifferentCriteria_warningFoundAndDuplicateRemoved() {
+    public void review_duplicateExistsButDifferentCriteria_errorFound() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         CertificationCriterion a1Criterion = CertificationCriterion.builder()
                 .id(1L)
@@ -72,15 +72,15 @@ public class MeasureDuplicateReviewerTest {
 
         reviewer.review(listing);
 
-        assertEquals(1, listing.getWarningMessages().size());
-        assertEquals(1, listing.getWarningMessages().stream()
-                .filter(warning -> warning.equals(String.format(DUPLICATE_MSG, "G1", MEASURE_NAME, RT3)))
+        assertEquals(1, listing.getErrorMessages().size());
+        assertEquals(1, listing.getErrorMessages().stream()
+                .filter(error -> error.equals(String.format(DUPLICATE_MSG, "G1", MEASURE_NAME, RT3)))
                 .count());
-        assertEquals(1, listing.getMeasures().size());
+        assertEquals(2, listing.getMeasures().size());
     }
 
     @Test
-    public void review_differentTypes_noWarning() {
+    public void review_differentTypes_noError() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         ListingMeasure measure1 = getMeasure(1L, 1L, MEASURE_NAME, RT3, 1L, "G1");
         ListingMeasure measure2 = getMeasure(2L, 1L, MEASURE_NAME, RT3, 2L, "G2");
@@ -89,12 +89,12 @@ public class MeasureDuplicateReviewerTest {
 
         reviewer.review(listing);
 
-        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
         assertEquals(2, listing.getMeasures().size());
     }
 
     @Test
-    public void review_noDuplicates_noWarning() {
+    public void review_noDuplicates_noError() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         ListingMeasure measure1 = getMeasure(1L, 1L, MEASURE_NAME, RT3, 1L, "G1");
         ListingMeasure measure2 = getMeasure(2L, 2L, MEASURE_NAME_2, RT5, 2L, "G2");
@@ -103,18 +103,18 @@ public class MeasureDuplicateReviewerTest {
 
         reviewer.review(listing);
 
-        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
         assertEquals(2, listing.getMeasures().size());
     }
 
     @Test
-    public void review_emptyMeasures_noWarning() {
+    public void review_emptyMeasures_noError() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         listing.getMeasures().clear();
 
         reviewer.review(listing);
 
-        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
         assertEquals(0, listing.getMeasures().size());
     }
 
@@ -133,11 +133,11 @@ public class MeasureDuplicateReviewerTest {
 
         reviewer.review(listing);
 
-        assertEquals(1, listing.getWarningMessages().size());
-        assertEquals(1, listing.getWarningMessages().stream()
+        assertEquals(1, listing.getErrorMessages().size());
+        assertEquals(1, listing.getErrorMessages().stream()
                 .filter(warning -> warning.equals(String.format(DUPLICATE_MSG, "G1", MEASURE_NAME, RT3)))
                 .count());
-        assertEquals(3, listing.getMeasures().size());
+        assertEquals(4, listing.getMeasures().size());
     }
 
     private ListingMeasure getMeasure(Long id, Long measureId, String measureName,
