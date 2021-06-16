@@ -697,7 +697,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
                 .closedSurveillanceNonConformityCount(entity.getClosedSurveillanceNonConformityCount())
                 .surveillanceDates(convertToSetOfStringsWithDelimiter(entity.getSurveillanceDates(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
                 .statusEvents(convertToSetOfStringsWithDelimiter(entity.getStatusEvents(), "&"))
-                .criteriaMet(convertToSetOfStringsWithDelimiter(entity.getCerts(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
+                .criteriaMet(convertToSetOfLongsWithDelimiter(entity.getCerts(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
                 .cqmsMet(convertToSetOfStringsWithDelimiter(entity.getCqms(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
                 .previousDevelopers(convertToSetOfStringsWithDelimiter(entity.getPreviousDevelopers(), "|"))
                 .build();
@@ -710,6 +710,15 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
 
         String[] splitValues = value.split(delimeter);
         return Stream.of(splitValues).collect(Collectors.toSet());
+    }
+
+    private Set<Long> convertToSetOfLongsWithDelimiter(String value, String delimeter) {
+        if (StringUtils.isEmpty(value)) {
+            return new LinkedHashSet<Long>();
+        }
+
+        String[] splitValues = value.split(delimeter);
+        return Stream.of(splitValues).map(val -> new Long(val)).collect(Collectors.toSet());
     }
 
     @Deprecated

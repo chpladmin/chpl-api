@@ -4,10 +4,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,8 +22,8 @@ import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
+import gov.healthit.chpl.domain.search.OrderByOption;
 import gov.healthit.chpl.domain.search.SearchRequest;
-import gov.healthit.chpl.domain.search.SearchRequestLegacy;
 import gov.healthit.chpl.domain.search.SearchResponse;
 import gov.healthit.chpl.domain.search.SearchSetOperator;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -110,8 +110,8 @@ public class SearchController {
                 + "Indicates whether a listing must have met all nonconformityOptions "
                 + "specified or may have met any one or more of the nonconformityOptions",
                 required = false, dataType = "string", paramType = "query"),
-        @ApiImplicitParam(name = "hasHadSurveillance",
-        value = "True or False if a listing has ever had surveillance.", required = false,
+        @ApiImplicitParam(name = "hasHadComplianceActivity",
+        value = "True or False if a listing has ever had compliance activity (Surveillance or Direct Review).", required = false,
         dataType = "boolean", paramType = "query"),
         @ApiImplicitParam(name = "developer", value = "The full name of a developer.", required = false,
         dataType = "string", paramType = "query"),
@@ -154,8 +154,8 @@ public class SearchController {
             defaultValue = "") String certificationStatusesDelimited,
             @RequestParam(value = "certificationEditions", required = false,
             defaultValue = "") String certificationEditionsDelimited,
-            @RequestParam(value = "certificationCriteria", required = false,
-            defaultValue = "") String certificationCriteriaDelimited,
+            @RequestParam(value = "certificationCriteriaIds", required = false,
+            defaultValue = "") String certificationCriteriaIdsDelimited,
             @RequestParam(value = "certificationCriteriaOperator", required = false,
             defaultValue = "OR") String certificationCriteriaOperatorStr,
             @RequestParam(value = "cqms", required = false, defaultValue = "") String cqmsDelimited,
@@ -163,8 +163,8 @@ public class SearchController {
             defaultValue = "OR") String cqmsOperatorStr,
             @RequestParam(value = "certificationBodies", required = false,
             defaultValue = "") String certificationBodiesDelimited,
-            @RequestParam(value = "hasHadSurveillance", required = false,
-            defaultValue = "") String hasHadSurveillanceStr,
+            @RequestParam(value = "hasHadComplianceActivity", required = false,
+            defaultValue = "") String hasHadComplianceActivityStr,
             @RequestParam(value = "nonconformityOptions", required = false,
             defaultValue = "") String nonconformityOptionsDelimited,
             @RequestParam(value = "nonconformityOptionsOperator", required = false,
@@ -225,21 +225,21 @@ public class SearchController {
             }
         }
 
-        if (certificationCriteriaDelimited != null) {
-            String certificationCriteriaDelimitedTrimmed = certificationCriteriaDelimited.trim();
-            if (!StringUtils.isEmpty(certificationCriteriaDelimitedTrimmed)) {
-                String[] certificationCriteriaArr = certificationCriteriaDelimitedTrimmed.split(",");
-                if (certificationCriteriaArr.length > 0) {
-                    Set<String> certificationCriterion = new HashSet<String>();
+        if (certificationCriteriaIdsDelimited != null) {
+            String certificationCriteriaIdsDelimitedTrimmed = certificationCriteriaIdsDelimitedTrimmed.trim();
+            if (!StringUtils.isEmpty(certificationCriteriaIdsDelimitedTrimmed)) {
+                String[] certificationCriteriaIdArr = certificationCriteriaIdsDelimitedTrimmed.split(",");
+                if (certificationCriteriaIdArr.length > 0) {
+                    Set<Long> certificationCriterion = new HashSet<Long>();
                     Set<CriteriaSpecificDescriptiveModel> availableCriterion = dimensionalDataManager
                             .getCertificationCriterionNumbers();
 
-                    for (int i = 0; i < certificationCriteriaArr.length; i++) {
-                        String certCriteriaParam = certificationCriteriaArr[i].trim();
-                        validateCertificationCriteria(certCriteriaParam, availableCriterion);
-                        certificationCriterion.add(certCriteriaParam);
+                    for (int i = 0; i < certificationCriteriaIdArr.length; i++) {
+                        Long certCriteriaIdParam = new Long(certificationCriteriaIdArr[i].trim());
+                        validateCertificationCriteria(certCriteriaIdParam, availableCriterion);
+                        certificationCriterion.add(certCriteriaIdParam);
                     }
-                    searchRequest.setCertificationCriteria(certificationCriterion);
+                    searchRequest.setCertificationCriteriaIds(certificationCriterion);
                     if (!StringUtils.isEmpty(certificationCriteriaOperatorStr)) {
                         String certificationCriteriaOperatorStrTrimmed = certificationCriteriaOperatorStr.trim();
                         SearchSetOperator certificationCriteriaOperator =
@@ -292,17 +292,14 @@ public class SearchController {
             }
         }
 
-        if (!StringUtils.isEmpty(hasHadSurveillanceStr)) {
-            if (!hasHadSurveillanceStr.equalsIgnoreCase(Boolean.TRUE.toString())
-                    && !hasHadSurveillanceStr.equalsIgnoreCase(Boolean.FALSE.toString())) {
-                String err = String.format(messageSource.getMessage(
-                        new DefaultMessageSourceResolvable("search.hasHadSurveillance.invalid"),
-                        LocaleContextHolder.getLocale()),
-                        hasHadSurveillanceStr);
+        if (!StringUtils.isEmpty(hasHadComplianceActivityStr)) {
+            if (!hasHadComplianceActivityStr.equalsIgnoreCase(Boolean.TRUE.toString())
+                    && !hasHadComplianceActivityStr.equalsIgnoreCase(Boolean.FALSE.toString())) {
+                String err = msgUtil.getMessage("search.hasHadSurveillance.invalid", hasHadComplianceActivityStr);
                 throw new InvalidArgumentsException(err);
             }
-            Boolean hasHadSurveillance = Boolean.parseBoolean(hasHadSurveillanceStr);
-            searchRequest.getSurveillance().setHasHadSurveillance(hasHadSurveillance);
+            Boolean hasHadComplianceActivity = Boolean.parseBoolean(hasHadComplianceActivityStr);
+            searchRequest.getComplianceActivity().setHasHadComplianceActivity(hasHadComplianceActivity);
         }
 
         if (!StringUtils.isEmpty(nonconformityOptionsDelimited)) {
@@ -317,30 +314,24 @@ public class SearchController {
                         if (ncOpt != null) {
                             nonconformitySearchOptions.add(ncOpt);
                         } else {
-                            String err = String.format(messageSource.getMessage(
-                                    new DefaultMessageSourceResolvable("search.nonconformitySearchOption.invalid"),
-                                    LocaleContextHolder.getLocale()),
-                                    nonconformityOptionParam, NonconformitySearchOptions.CLOSED_NONCONFORMITY.name()
-                                    + ", " + NonconformitySearchOptions.NEVER_NONCONFORMITY.name()
-                                    + ", or " + NonconformitySearchOptions.OPEN_NONCONFORMITY.name());
+                            String err = msgUtil.getMessage("search.nonconformitySearchOption.invalid",
+                                    nonconformityOptionParam,
+                                    Stream.of(NonconformitySearchOptions.values()).map(value -> value.name()).collect(Collectors.joining(",")));
                             throw new InvalidArgumentsException(err);
                         }
                     } catch (Exception ex) {
-                        String err = String.format(messageSource.getMessage(
-                                new DefaultMessageSourceResolvable("search.nonconformitySearchOption.invalid"),
-                                LocaleContextHolder.getLocale()),
-                                nonconformityOptionParam, NonconformitySearchOptions.CLOSED_NONCONFORMITY.name()
-                                + ", " + NonconformitySearchOptions.NEVER_NONCONFORMITY.name()
-                                + ", or " + NonconformitySearchOptions.OPEN_NONCONFORMITY.name());
+                        String err = msgUtil.getMessage("search.nonconformitySearchOption.invalid",
+                                nonconformityOptionParam,
+                                Stream.of(NonconformitySearchOptions.values()).map(value -> value.name()).collect(Collectors.joining(",")));
                         throw new InvalidArgumentsException(err);
                     }
                 }
-                searchRequest.getSurveillance().setNonconformityOptions(nonconformitySearchOptions);
+                searchRequest.getComplianceActivity().setNonconformityOptions(nonconformitySearchOptions);
 
                 if (!StringUtils.isEmpty(nonconformityOptionsOperator)) {
                     String nonconformityOptionsOperatorTrimmed = nonconformityOptionsOperator.trim();
                     SearchSetOperator ncOperator = validateSearchSetOperator(nonconformityOptionsOperatorTrimmed);
-                    searchRequest.getSurveillance().setNonconformityOptionsOperator(ncOperator);
+                    searchRequest.getComplianceActivity().setNonconformityOptionsOperator(ncOperator);
                 }
             }
         }
@@ -395,7 +386,7 @@ public class SearchController {
 
         searchRequest.setPageNumber(pageNumber);
         searchRequest.setPageSize(pageSize);
-        searchRequest.setOrderBy(orderByTrimmed);
+        searchRequest.setOrderBy(OrderByOption.valueOf(orderByTrimmed));
         searchRequest.setSortDescending(sortDescending);
 
         //trim everything
@@ -428,11 +419,11 @@ public class SearchController {
             }
         }
 
-        if (searchRequest.getCertificationCriteria() != null && searchRequest.getCertificationCriteria().size() > 0) {
+        if (searchRequest.getCertificationCriteriaIds() != null && searchRequest.getCertificationCriteriaIds().size() > 0) {
             Set<CriteriaSpecificDescriptiveModel> availableCriterion = dimensionalDataManager
                     .getCertificationCriterionNumbers();
-            for (String criteria : searchRequest.getCertificationCriteria()) {
-                validateCertificationCriteria(criteria, availableCriterion);
+            for (Long criterionId : searchRequest.getCertificationCriteriaIds()) {
+                validateCertificationCriteria(criterionId, availableCriterion);
             }
         }
 
@@ -454,7 +445,6 @@ public class SearchController {
         validateCertificationDateParameter(searchRequest.getCertificationDateStart());
         validateCertificationDateParameter(searchRequest.getCertificationDateEnd());
         validatePageSize(searchRequest.getPageSize());
-        validateOrderBy(searchRequest.getOrderBy());
         return certifiedProductSearchManager.search(searchRequest);
     }
 
@@ -467,10 +457,7 @@ public class SearchController {
             }
         }
         if (!found) {
-            String err = String.format(
-                    messageSource.getMessage(new DefaultMessageSourceResolvable("search.certificationBodies.invalid"),
-                            LocaleContextHolder.getLocale()),
-                    certBodyParam);
+            String err = msgUtil.getMessage("search.certificationBodies.invalid", certBodyParam);
             LOGGER.error(err);
             throw new InvalidArgumentsException(err);
         }
@@ -485,28 +472,22 @@ public class SearchController {
             }
         }
         if (!found) {
-            String err = String.format(
-                    messageSource.getMessage(new DefaultMessageSourceResolvable("search.cqms.invalid"),
-                            LocaleContextHolder.getLocale()),
-                    cqmParam);
+            String err = msgUtil.getMessage("search.cqms.invalid", cqmParam);
             LOGGER.error(err);
             throw new InvalidArgumentsException(err);
         }
     }
 
-    private void validateCertificationCriteria(String certCriteriaParam,
+    private void validateCertificationCriteria(Long certCriteriaIdParam,
             Set<? extends DescriptiveModel> availableCriterion) throws InvalidArgumentsException {
         boolean found = false;
         for (DescriptiveModel currAvailableCriteria : availableCriterion) {
-            if (currAvailableCriteria.getName().equalsIgnoreCase(certCriteriaParam)) {
+            if (currAvailableCriteria.getId().equals(certCriteriaIdParam)) {
                 found = true;
             }
         }
         if (!found) {
-            String err = String.format(
-                    messageSource.getMessage(new DefaultMessageSourceResolvable("search.certificationCriteria.invalid"),
-                            LocaleContextHolder.getLocale()),
-                    certCriteriaParam);
+            String err = msgUtil.getMessage("search.certificationCriteria.invalid", certCriteriaIdParam);
             LOGGER.error(err);
             throw new InvalidArgumentsException(err);
         }
@@ -521,10 +502,7 @@ public class SearchController {
             }
         }
         if (!found) {
-            String err = String.format(
-                    messageSource.getMessage(new DefaultMessageSourceResolvable("search.certificationEdition.invalid"),
-                            LocaleContextHolder.getLocale()),
-                    certEditionParam);
+            String err = msgUtil.getMessage("search.certificationEdition.invalid", certEditionParam);
             LOGGER.error(err);
             throw new InvalidArgumentsException(err);
         }
@@ -539,10 +517,7 @@ public class SearchController {
             }
         }
         if (!found) {
-            String err = String.format(
-                    messageSource.getMessage(new DefaultMessageSourceResolvable("search.certificationStatuses.invalid"),
-                            LocaleContextHolder.getLocale()),
-                    certStatusParam);
+            String err = msgUtil.getMessage("search.certificationStatuses.invalid", certStatusParam);
             LOGGER.error(err);
             throw new InvalidArgumentsException(err);
         }
@@ -556,16 +531,12 @@ public class SearchController {
             if (operatorEnum != null) {
                 result = operatorEnum;
             } else {
-                String err = String.format(
-                        messageSource.getMessage(new DefaultMessageSourceResolvable("search.searchOperator.invalid"),
-                                LocaleContextHolder.getLocale()),
+                String err = msgUtil.getMessage("search.searchOperator.invalid",
                         searchSetOperator, SearchSetOperator.OR + " or " + SearchSetOperator.AND);
                 throw new InvalidArgumentsException(err);
             }
         } catch (Exception ex) {
-            String err = String.format(
-                    messageSource.getMessage(new DefaultMessageSourceResolvable("search.searchOperator.invalid"),
-                            LocaleContextHolder.getLocale()),
+            String err = msgUtil.getMessage("search.searchOperator.invalid",
                     searchSetOperator, SearchSetOperator.OR + " or " + SearchSetOperator.AND);
             throw new InvalidArgumentsException(err);
         }
@@ -583,10 +554,7 @@ public class SearchController {
             }
 
             if (!found) {
-                String err = String.format(
-                        messageSource.getMessage(new DefaultMessageSourceResolvable("search.practiceType.invalid"),
-                                LocaleContextHolder.getLocale()),
-                        practiceType);
+                String err = msgUtil.getMessage("search.practiceType.invalid", practiceType);
                 LOGGER.error(err);
                 throw new InvalidArgumentsException(err);
             }
@@ -594,17 +562,13 @@ public class SearchController {
     }
 
     private void validateCertificationDateParameter(String dateStr) throws InvalidArgumentsException {
-        SimpleDateFormat format = new SimpleDateFormat(SearchRequestLegacy.CERTIFICATION_DATE_SEARCH_FORMAT);
+        SimpleDateFormat format = new SimpleDateFormat(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
         if (dateStr != null) {
             if (!StringUtils.isEmpty(dateStr)) {
                 try {
                     format.parse(dateStr);
                 } catch (ParseException ex) {
-                    String err = String.format(
-                            messageSource.getMessage(
-                                    new DefaultMessageSourceResolvable("search.certificationDate.invalid"),
-                                    LocaleContextHolder.getLocale()),
-                            dateStr, SearchRequestLegacy.CERTIFICATION_DATE_SEARCH_FORMAT);
+                    String err = msgUtil.getMessage("search.certificationDate.invalid", dateStr, SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
                     LOGGER.error(err);
                     throw new InvalidArgumentsException(err);
                 }
@@ -614,28 +578,18 @@ public class SearchController {
 
     private void validatePageSize(Integer pageSize) throws InvalidArgumentsException {
         if (pageSize > MAX_PAGE_SIZE) {
-            String err = String.format(
-                    messageSource.getMessage(new DefaultMessageSourceResolvable("search.pageSize.invalid"),
-                            LocaleContextHolder.getLocale()),
-                    SearchRequestLegacy.MAX_PAGE_SIZE);
+            String err = msgUtil.getMessage("search.pageSize.invalid", SearchRequest.MAX_PAGE_SIZE);
             throw new InvalidArgumentsException(err);
         }
     }
 
     private void validateOrderBy(String orderBy) throws InvalidArgumentsException {
-        if (!orderBy.equalsIgnoreCase(SearchRequestLegacy.ORDER_BY_CERTIFICATION_BODY)
-                && !orderBy.equalsIgnoreCase(SearchRequestLegacy.ORDER_BY_CERTIFICATION_EDITION)
-                && !orderBy.equalsIgnoreCase(SearchRequestLegacy.ORDER_BY_DEVELOPER)
-                && !orderBy.equalsIgnoreCase(SearchRequestLegacy.ORDER_BY_PRODUCT)
-                && !orderBy.equalsIgnoreCase(SearchRequestLegacy.ORDER_BY_VERSION)) {
-            String err = String.format(
-                    messageSource.getMessage(new DefaultMessageSourceResolvable("search.orderBy.invalid"),
-                            LocaleContextHolder.getLocale()),
-                    orderBy, SearchRequestLegacy.ORDER_BY_CERTIFICATION_BODY + ", "
-                            + SearchRequestLegacy.ORDER_BY_CERTIFICATION_EDITION + ", "
-                            + SearchRequestLegacy.ORDER_BY_DEVELOPER + ", "
-                            + SearchRequestLegacy.ORDER_BY_PRODUCT + ", or "
-                            + SearchRequestLegacy.ORDER_BY_VERSION);
+        OrderByOption enumValue = null;
+        try {
+            enumValue = OrderByOption.valueOf(orderBy);
+        } catch (Exception ex) {
+            String err = msgUtil.getMessage("search.orderBy.invalid", orderBy,
+                    Stream.of(OrderByOption.values()).map(value -> value.name()).collect(Collectors.joining(",")));
             throw new InvalidArgumentsException(err);
         }
     }

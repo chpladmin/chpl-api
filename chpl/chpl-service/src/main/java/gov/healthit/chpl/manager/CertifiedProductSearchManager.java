@@ -55,7 +55,7 @@ public class CertifiedProductSearchManager {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = CacheNames.COLLECTIONS_SEARCH, key = "'listings'")
+    @Cacheable(value = CacheNames.COLLECTIONS_SEARCH)
     public List<CertifiedProductBasicSearchResult> getSearchListingCollection() {
         List<CertifiedProductBasicSearchResult> results = searchDao.getCertifiedProducts();
         results.stream()

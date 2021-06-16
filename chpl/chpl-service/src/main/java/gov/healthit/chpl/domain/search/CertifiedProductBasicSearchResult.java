@@ -24,7 +24,7 @@ public class CertifiedProductBasicSearchResult extends CertifiedProductSearchRes
     @JsonView({
             SearchViews.Default.class
     })
-    private Set<String> criteriaMet; // list of criteria IDs
+    private Set<Long> criteriaMet; // list of criteria IDs
 
     @JsonView({
             SearchViews.Default.class
@@ -45,7 +45,7 @@ public class CertifiedProductBasicSearchResult extends CertifiedProductSearchRes
 
     public CertifiedProductBasicSearchResult() {
         previousDevelopers = new HashSet<String>();
-        criteriaMet = new HashSet<String>();
+        criteriaMet = new HashSet<Long>();
         cqmsMet = new HashSet<String>();
         surveillanceDates = new HashSet<String>();
         statusEvents = new HashSet<String>();

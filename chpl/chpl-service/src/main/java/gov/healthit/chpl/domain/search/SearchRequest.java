@@ -16,7 +16,7 @@ public class SearchRequest implements Serializable {
     private String searchTerm;
     private Set<String> certificationStatuses = new HashSet<String>();
     private Set<String> certificationEditions = new HashSet<String>();
-    private Set<String> certificationCriteria = new HashSet<String>();
+    private Set<Long> certificationCriteriaIds = new HashSet<Long>();
     private SearchSetOperator certificationCriteriaOperator = SearchSetOperator.OR;
     private Set<String> cqms = new HashSet<String>();
     private SearchSetOperator cqmsOperator = SearchSetOperator.OR;
