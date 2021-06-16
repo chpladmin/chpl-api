@@ -2492,7 +2492,7 @@
 									"path": [
 										"rest",
 										"surveillance-report",
-										"quarterly "
+										"quarterly"
 									]
 								},
 								"description": "Expect anonymous user to get error on quarterly surveillance report PUT request"
