@@ -4,9 +4,15 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class SearchRequest implements Serializable {
     private static final long serialVersionUID = 1179207628667101580L;
     public static final String CERTIFICATION_DATE_SEARCH_FORMAT = "yyyy-MM-dd";
@@ -14,12 +20,19 @@ public class SearchRequest implements Serializable {
     public static final int MAX_PAGE_SIZE = 100;
 
     private String searchTerm;
+    @Builder.Default
     private Set<String> certificationStatuses = new HashSet<String>();
+    @Builder.Default
     private Set<String> certificationEditions = new HashSet<String>();
+    @Builder.Default
     private Set<Long> certificationCriteriaIds = new HashSet<Long>();
+    @Builder.Default
     private SearchSetOperator certificationCriteriaOperator = SearchSetOperator.OR;
+    @Builder.Default
     private Set<String> cqms = new HashSet<String>();
+    @Builder.Default
     private SearchSetOperator cqmsOperator = SearchSetOperator.OR;
+    @Builder.Default
     private Set<String> certificationBodies = new HashSet<String>();
 
     private String developer;
@@ -28,9 +41,13 @@ public class SearchRequest implements Serializable {
     private String practiceType;
     private String certificationDateStart;
     private String certificationDateEnd;
+    @Builder.Default
     private ComplianceSearchFilter complianceActivity = new ComplianceSearchFilter();
     private OrderByOption orderBy;
+    @Builder.Default
     private Boolean sortDescending = false;
+    @Builder.Default
     private Integer pageNumber = 0;
+    @Builder.Default
     private Integer pageSize = DEFAULT_PAGE_SIZE;
 }

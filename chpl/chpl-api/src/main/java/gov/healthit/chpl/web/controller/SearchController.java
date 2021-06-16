@@ -1,8 +1,7 @@
 package gov.healthit.chpl.web.controller;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -17,20 +16,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
-import gov.healthit.chpl.domain.DescriptiveModel;
-import gov.healthit.chpl.domain.KeyValueModel;
+import gov.healthit.chpl.domain.search.ComplianceSearchFilter;
 import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
 import gov.healthit.chpl.domain.search.OrderByOption;
 import gov.healthit.chpl.domain.search.SearchRequest;
 import gov.healthit.chpl.domain.search.SearchResponse;
 import gov.healthit.chpl.domain.search.SearchSetOperator;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.logging.Loggable;
-import gov.healthit.chpl.manager.CertifiedProductSearchManager;
-import gov.healthit.chpl.manager.DimensionalDataManager;
+import gov.healthit.chpl.service.ListingSearchService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -43,19 +37,14 @@ import lombok.extern.log4j.Log4j2;
 @Loggable
 @Log4j2
 public class SearchController {
-    private static final int MAX_PAGE_SIZE = 100;
-
+    private ListingSearchService searchService;
     private ErrorMessageUtil msgUtil;
-    private DimensionalDataManager dimensionalDataManager;
-    private CertifiedProductSearchManager certifiedProductSearchManager;
 
     @Autowired
-    public SearchController(ErrorMessageUtil msgUtil,
-            DimensionalDataManager dimensionalDataManager,
-            CertifiedProductSearchManager certifiedProductSearchManager) {
+    public SearchController(ListingSearchService searchService,
+            ErrorMessageUtil msgUtil) {
+        this.searchService = searchService;
         this.msgUtil = msgUtil;
-        this.dimensionalDataManager = dimensionalDataManager;
-        this.certifiedProductSearchManager = certifiedProductSearchManager;
     }
 
     @SuppressWarnings({"checkstyle:methodlength", "checkstyle:parameternumber"})
@@ -79,10 +68,10 @@ public class SearchController {
         value = "A comma-separated list of certification editions to be 'or'ed together "
                 + "(ex: \"2014,2015\" finds listings with either edition 2014 or 2015).",
                 required = false, dataType = "string", paramType = "query"),
-        @ApiImplicitParam(name = "certificationCriteria",
+        @ApiImplicitParam(name = "certificationCriteriaIds",
         value = "A comma-separated list of certification criteria to be queried together "
-                + "(ex: \"170.314 (a)(1),170.314 (a)(2)\" finds listings "
-                + "attesting to either 170.314 (a)(1) or 170.314 (a(2)).",
+                + "(ex: \"1,2\" finds listings "
+                + "attesting to either 170.315 (a)(1) or 170.315 (a(2)).",
                 required = false, dataType = "string", paramType = "query"),
         @ApiImplicitParam(name = "certificationCriteriaOperator",
         value = "Either AND or OR. Defaults to OR. "
@@ -145,7 +134,7 @@ public class SearchController {
         value = "Use to specify the direction of the sort. Defaults to false (ascending sort).",
         required = false, dataType = "boolean", paramType = "query")
     })
-    @RequestMapping(value = "/search", method = RequestMethod.GET, produces = {
+    @RequestMapping(value = "/listings-search", method = RequestMethod.GET, produces = {
             "application/json; charset=utf-8", "application/xml"
     })
     public @ResponseBody SearchResponse search(
@@ -181,416 +170,167 @@ public class SearchController {
             @RequestParam(value = "pageSize", required = false, defaultValue = "20") Integer pageSize,
             @RequestParam(value = "orderBy", required = false, defaultValue = "product") String orderBy,
             @RequestParam(value = "sortDescending", required = false, defaultValue = "false") Boolean sortDescending)
-                    throws InvalidArgumentsException, EntityRetrievalException {
+                    throws InvalidArgumentsException {
 
-        SearchRequest searchRequest = new SearchRequest();
-        if (searchTerm != null) {
-            searchRequest.setSearchTerm(searchTerm.trim());
-        }
-
-        if (certificationStatusesDelimited != null) {
-            String certificationStatusesDelimitedTrimmed = certificationStatusesDelimited.trim();
-            if (!StringUtils.isEmpty(certificationStatusesDelimitedTrimmed)) {
-                String[] certificationStatusArr = certificationStatusesDelimitedTrimmed.split(",");
-                if (certificationStatusArr.length > 0) {
-                    Set<String> certificationStatuses = new HashSet<String>();
-                    Set<KeyValueModel> availableCertificationStatuses = dimensionalDataManager.getCertificationStatuses();
-
-                    for (int i = 0; i < certificationStatusArr.length; i++) {
-                        String certStatusParam = certificationStatusArr[i].trim();
-                        validateCertificationStatus(certStatusParam, availableCertificationStatuses);
-                        certificationStatuses.add(certStatusParam);
-                    }
-                    searchRequest.setCertificationStatuses(certificationStatuses);
-                }
-            }
-        }
-
-        if (certificationEditionsDelimited != null) {
-            String certificationEditionsDelimitedTrimmed = certificationEditionsDelimited.trim();
-            if (!StringUtils.isEmpty(certificationEditionsDelimitedTrimmed)) {
-                String[] certificationEditionsArr = certificationEditionsDelimitedTrimmed.split(",");
-                if (certificationEditionsArr.length > 0) {
-                    Set<String> certificationEditions = new HashSet<String>();
-                    Set<KeyValueModel> availableCertificationEditions = dimensionalDataManager.getEditionNames(false);
-
-                    for (int i = 0; i < certificationEditionsArr.length; i++) {
-                        String certEditionParam = certificationEditionsArr[i].trim();
-                        validateCertificationEdition(certEditionParam, availableCertificationEditions);
-                        certificationEditions.add(certEditionParam);
-                    }
-
-                    searchRequest.setCertificationEditions(certificationEditions);
-                }
-            }
-        }
-
-        if (certificationCriteriaIdsDelimited != null) {
-            String certificationCriteriaIdsDelimitedTrimmed = certificationCriteriaIdsDelimitedTrimmed.trim();
-            if (!StringUtils.isEmpty(certificationCriteriaIdsDelimitedTrimmed)) {
-                String[] certificationCriteriaIdArr = certificationCriteriaIdsDelimitedTrimmed.split(",");
-                if (certificationCriteriaIdArr.length > 0) {
-                    Set<Long> certificationCriterion = new HashSet<Long>();
-                    Set<CriteriaSpecificDescriptiveModel> availableCriterion = dimensionalDataManager
-                            .getCertificationCriterionNumbers();
-
-                    for (int i = 0; i < certificationCriteriaIdArr.length; i++) {
-                        Long certCriteriaIdParam = new Long(certificationCriteriaIdArr[i].trim());
-                        validateCertificationCriteria(certCriteriaIdParam, availableCriterion);
-                        certificationCriterion.add(certCriteriaIdParam);
-                    }
-                    searchRequest.setCertificationCriteriaIds(certificationCriterion);
-                    if (!StringUtils.isEmpty(certificationCriteriaOperatorStr)) {
-                        String certificationCriteriaOperatorStrTrimmed = certificationCriteriaOperatorStr.trim();
-                        SearchSetOperator certificationCriteriaOperator =
-                                validateSearchSetOperator(certificationCriteriaOperatorStrTrimmed);
-                        searchRequest.setCertificationCriteriaOperator(certificationCriteriaOperator);
-                    }
-                }
-            }
-        }
-
-        if (cqmsDelimited != null) {
-            String cqmsDelimitedTrimmed = cqmsDelimited.trim();
-            if (!StringUtils.isEmpty(cqmsDelimitedTrimmed)) {
-                String[] cqmsArr = cqmsDelimitedTrimmed.split(",");
-                if (cqmsArr.length > 0) {
-                    Set<String> cqms = new HashSet<String>();
-                    Set<DescriptiveModel> availableCqms = dimensionalDataManager.getCQMCriterionNumbers(false);
-
-                    for (int i = 0; i < cqmsArr.length; i++) {
-                        String cqmParam = cqmsArr[i].trim();
-                        validateCqm(cqmParam, availableCqms);
-                        cqms.add(cqmParam.trim());
-                    }
-                    searchRequest.setCqms(cqms);
-
-                    if (!StringUtils.isEmpty(cqmsOperatorStr)) {
-                        String cqmsOperatorStrTrimmed = cqmsOperatorStr.trim();
-                        SearchSetOperator cqmOperator = validateSearchSetOperator(cqmsOperatorStrTrimmed);
-                        searchRequest.setCqmsOperator(cqmOperator);
-                    }
-                }
-            }
-        }
-
-        if (certificationBodiesDelimited != null) {
-            String certificationBodiesDelimitedTrimmed = certificationBodiesDelimited.trim();
-            if (!StringUtils.isEmpty(certificationBodiesDelimitedTrimmed)) {
-                String[] certificationBodiesArr = certificationBodiesDelimitedTrimmed.split(",");
-                if (certificationBodiesArr.length > 0) {
-                    Set<String> certBodies = new HashSet<String>();
-                    Set<CertificationBody> availableCertBodies = dimensionalDataManager.getCertBodyNames();
-
-                    for (int i = 0; i < certificationBodiesArr.length; i++) {
-                        String certBodyParam = certificationBodiesArr[i].trim();
-                        validateCertificationBody(certBodyParam, availableCertBodies);
-                        certBodies.add(certBodyParam);
-                    }
-                    searchRequest.setCertificationBodies(certBodies);
-                }
-            }
-        }
-
-        if (!StringUtils.isEmpty(hasHadComplianceActivityStr)) {
-            if (!hasHadComplianceActivityStr.equalsIgnoreCase(Boolean.TRUE.toString())
-                    && !hasHadComplianceActivityStr.equalsIgnoreCase(Boolean.FALSE.toString())) {
-                String err = msgUtil.getMessage("search.hasHadSurveillance.invalid", hasHadComplianceActivityStr);
-                throw new InvalidArgumentsException(err);
-            }
-            Boolean hasHadComplianceActivity = Boolean.parseBoolean(hasHadComplianceActivityStr);
-            searchRequest.getComplianceActivity().setHasHadComplianceActivity(hasHadComplianceActivity);
-        }
-
-        if (!StringUtils.isEmpty(nonconformityOptionsDelimited)) {
-            String nonconformityOptionsDelimitedTrimmed = nonconformityOptionsDelimited.trim();
-            String[] nonconformityOptionsArr = nonconformityOptionsDelimitedTrimmed.split(",");
-            if (nonconformityOptionsArr.length > 0) {
-                Set<NonconformitySearchOptions> nonconformitySearchOptions = new HashSet<NonconformitySearchOptions>();
-                for (int i = 0; i < nonconformityOptionsArr.length; i++) {
-                    String nonconformityOptionParam = nonconformityOptionsArr[i].trim();
-                    try {
-                        NonconformitySearchOptions ncOpt = NonconformitySearchOptions.valueOf(nonconformityOptionParam);
-                        if (ncOpt != null) {
-                            nonconformitySearchOptions.add(ncOpt);
-                        } else {
-                            String err = msgUtil.getMessage("search.nonconformitySearchOption.invalid",
-                                    nonconformityOptionParam,
-                                    Stream.of(NonconformitySearchOptions.values()).map(value -> value.name()).collect(Collectors.joining(",")));
-                            throw new InvalidArgumentsException(err);
-                        }
-                    } catch (Exception ex) {
-                        String err = msgUtil.getMessage("search.nonconformitySearchOption.invalid",
-                                nonconformityOptionParam,
-                                Stream.of(NonconformitySearchOptions.values()).map(value -> value.name()).collect(Collectors.joining(",")));
-                        throw new InvalidArgumentsException(err);
-                    }
-                }
-                searchRequest.getComplianceActivity().setNonconformityOptions(nonconformitySearchOptions);
-
-                if (!StringUtils.isEmpty(nonconformityOptionsOperator)) {
-                    String nonconformityOptionsOperatorTrimmed = nonconformityOptionsOperator.trim();
-                    SearchSetOperator ncOperator = validateSearchSetOperator(nonconformityOptionsOperatorTrimmed);
-                    searchRequest.getComplianceActivity().setNonconformityOptionsOperator(ncOperator);
-                }
-            }
-        }
-
-        if (developer != null) {
-            String developerTrimmed = developer.trim();
-            if (!StringUtils.isEmpty(developerTrimmed)) {
-                searchRequest.setDeveloper(developerTrimmed);
-            }
-        }
-
-        if (product != null) {
-            String productTrimmed = product.trim();
-            if (!StringUtils.isEmpty(productTrimmed)) {
-                searchRequest.setProduct(productTrimmed);
-            }
-        }
-
-        if (version != null) {
-            String versionTrimmed = version.trim();
-            if (!StringUtils.isEmpty(versionTrimmed)) {
-                searchRequest.setVersion(versionTrimmed);
-            }
-        }
-
-        if (practiceType != null) {
-            String practiceTypeTrimmed = practiceType.trim();
-            if (!StringUtils.isEmpty(practiceTypeTrimmed)) {
-                validatePracticeTypeParameter(practiceTypeTrimmed);
-                searchRequest.setPracticeType(practiceTypeTrimmed);
-            }
-        }
-
-        if (!StringUtils.isEmpty(certificationDateStart)) {
-            String certificationDateStartTrimmed = certificationDateStart.trim();
-            if (!StringUtils.isEmpty(certificationDateStartTrimmed)) {
-                validateCertificationDateParameter(certificationDateStartTrimmed);
-                searchRequest.setCertificationDateStart(certificationDateStartTrimmed);
-            }
-        }
-
-        if (!StringUtils.isEmpty(certificationDateEnd)) {
-            String certificationDateEndTrimmed = certificationDateEnd.trim();
-            if (!StringUtils.isEmpty(certificationDateEndTrimmed)) {
-                validateCertificationDateParameter(certificationDateEndTrimmed);
-                searchRequest.setCertificationDateEnd(certificationDateEndTrimmed);
-            }
-        }
-        validatePageSize(pageSize);
-        String orderByTrimmed = orderBy.trim();
-        validateOrderBy(orderByTrimmed);
-
-        searchRequest.setPageNumber(pageNumber);
-        searchRequest.setPageSize(pageSize);
-        searchRequest.setOrderBy(OrderByOption.valueOf(orderByTrimmed));
-        searchRequest.setSortDescending(sortDescending);
-
-        //trim everything
-        searchRequest.cleanAllParameters();
-        return certifiedProductSearchManager.search(searchRequest);
+        SearchRequest searchRequest = SearchRequest.builder()
+                .searchTerm(searchTerm.trim())
+                .certificationStatuses(convertToSetWithDelimeter(certificationStatusesDelimited, ","))
+                .certificationEditions(convertToSetWithDelimeter(certificationEditionsDelimited, ","))
+                .certificationCriteriaIds(convertToSetOfLongsWithDelimeter(certificationCriteriaIdsDelimited, ","))
+                .certificationCriteriaOperator(convertToSearchSetOperator(certificationCriteriaOperatorStr))
+                .cqms(convertToSetWithDelimeter(cqmsDelimited, ","))
+                .cqmsOperator(convertToSearchSetOperator(cqmsOperatorStr))
+                .certificationBodies(convertToSetWithDelimeter(certificationBodiesDelimited, ","))
+                .complianceActivity(ComplianceSearchFilter.builder()
+                        .hasHadComplianceActivity(convertToBoolean(hasHadComplianceActivityStr))
+                        .nonconformityOptions(convertToSetOfNonconformityOptionsWithDelimeter(nonconformityOptionsDelimited, ","))
+                        .nonconformityOptionsOperator(convertToSearchSetOperator(nonconformityOptionsOperator))
+                        .build())
+                .developer(developer)
+                .product(product)
+                .version(version)
+                .practiceType(practiceType)
+                .certificationDateStart(certificationDateStart)
+                .certificationDateEnd(certificationDateEnd)
+                .pageSize(pageSize)
+                .pageNumber(pageNumber)
+                .orderBy(convertToOrderByOption(orderBy))
+                .sortDescending(sortDescending)
+                .build();
+        return searchService.search(searchRequest);
 
     }
 
     @ApiOperation(value = "Search the CHPL with an HTTP POST Request.",
             notes = "Search the CHPL by specifycing multiple fields of the data to search. "
                     + "If paging fields are not specified, the first 20 records are returned by default.")
-    @RequestMapping(value = "/search", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
+    @RequestMapping(value = "/listings-search", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public @ResponseBody SearchResponse searchPostLegacy(@RequestBody SearchRequest searchRequest)
-            throws InvalidArgumentsException, EntityRetrievalException {
-        //trim everything
-        searchRequest.cleanAllParameters();
-
-        if (searchRequest.getCertificationStatuses() != null && searchRequest.getCertificationStatuses().size() > 0) {
-            Set<KeyValueModel> availableCertificationStatuses = dimensionalDataManager.getCertificationStatuses();
-            for (String certStatusName : searchRequest.getCertificationStatuses()) {
-                validateCertificationStatus(certStatusName, availableCertificationStatuses);
-            }
-        }
-
-        if (searchRequest.getCertificationEditions() != null && searchRequest.getCertificationEditions().size() > 0) {
-            Set<KeyValueModel> availableCertificationEditions = dimensionalDataManager.getEditionNames(false);
-            for (String certEditionName : searchRequest.getCertificationEditions()) {
-                validateCertificationEdition(certEditionName, availableCertificationEditions);
-            }
-        }
-
-        if (searchRequest.getCertificationCriteriaIds() != null && searchRequest.getCertificationCriteriaIds().size() > 0) {
-            Set<CriteriaSpecificDescriptiveModel> availableCriterion = dimensionalDataManager
-                    .getCertificationCriterionNumbers();
-            for (Long criterionId : searchRequest.getCertificationCriteriaIds()) {
-                validateCertificationCriteria(criterionId, availableCriterion);
-            }
-        }
-
-        if (searchRequest.getCqms() != null && searchRequest.getCqms().size() > 0) {
-            Set<DescriptiveModel> availableCqms = dimensionalDataManager.getCQMCriterionNumbers(false);
-            for (String cqm : searchRequest.getCqms()) {
-                validateCqm(cqm, availableCqms);
-            }
-        }
-
-        if (searchRequest.getCertificationBodies() != null && searchRequest.getCertificationBodies().size() > 0) {
-            Set<CertificationBody> availableCertBodies = dimensionalDataManager.getCertBodyNames();
-            for (String certBody : searchRequest.getCertificationBodies()) {
-                validateCertificationBody(certBody, availableCertBodies);
-            }
-        }
-
-        validatePracticeTypeParameter(searchRequest.getPracticeType());
-        validateCertificationDateParameter(searchRequest.getCertificationDateStart());
-        validateCertificationDateParameter(searchRequest.getCertificationDateEnd());
-        validatePageSize(searchRequest.getPageSize());
-        return certifiedProductSearchManager.search(searchRequest);
-    }
-
-    private void validateCertificationBody(String certBodyParam,
-            Set<CertificationBody> availableCertBodies) throws InvalidArgumentsException {
-        boolean found = false;
-        for (CertificationBody currAvailableCertBody : availableCertBodies) {
-            if (currAvailableCertBody.getName().equalsIgnoreCase(certBodyParam)) {
-                found = true;
-            }
-        }
-        if (!found) {
-            String err = msgUtil.getMessage("search.certificationBodies.invalid", certBodyParam);
-            LOGGER.error(err);
-            throw new InvalidArgumentsException(err);
-        }
-    }
-
-    private void validateCqm(String cqmParam,
-            Set<DescriptiveModel> availableCqms) throws InvalidArgumentsException {
-        boolean found = false;
-        for (DescriptiveModel currAvailableCqm : availableCqms) {
-            if (currAvailableCqm.getName().equalsIgnoreCase(cqmParam)) {
-                found = true;
-            }
-        }
-        if (!found) {
-            String err = msgUtil.getMessage("search.cqms.invalid", cqmParam);
-            LOGGER.error(err);
-            throw new InvalidArgumentsException(err);
-        }
-    }
-
-    private void validateCertificationCriteria(Long certCriteriaIdParam,
-            Set<? extends DescriptiveModel> availableCriterion) throws InvalidArgumentsException {
-        boolean found = false;
-        for (DescriptiveModel currAvailableCriteria : availableCriterion) {
-            if (currAvailableCriteria.getId().equals(certCriteriaIdParam)) {
-                found = true;
-            }
-        }
-        if (!found) {
-            String err = msgUtil.getMessage("search.certificationCriteria.invalid", certCriteriaIdParam);
-            LOGGER.error(err);
-            throw new InvalidArgumentsException(err);
-        }
-    }
-
-    private void validateCertificationEdition(String certEditionParam,
-            Set<KeyValueModel> availableCertificationEditions) throws InvalidArgumentsException {
-        boolean found = false;
-        for (KeyValueModel currAvailableEdition : availableCertificationEditions) {
-            if (currAvailableEdition.getName().equalsIgnoreCase(certEditionParam)) {
-                found = true;
-            }
-        }
-        if (!found) {
-            String err = msgUtil.getMessage("search.certificationEdition.invalid", certEditionParam);
-            LOGGER.error(err);
-            throw new InvalidArgumentsException(err);
-        }
-    }
-
-    private void validateCertificationStatus(String certStatusParam,
-            Set<KeyValueModel> availableCertificationStatuses) throws InvalidArgumentsException {
-        boolean found = false;
-        for (KeyValueModel currAvailableCertStatus : availableCertificationStatuses) {
-            if (currAvailableCertStatus.getName().equalsIgnoreCase(certStatusParam)) {
-                found = true;
-            }
-        }
-        if (!found) {
-            String err = msgUtil.getMessage("search.certificationStatuses.invalid", certStatusParam);
-            LOGGER.error(err);
-            throw new InvalidArgumentsException(err);
-        }
-    }
-
-    private SearchSetOperator validateSearchSetOperator(String searchSetOperator)
+    public @ResponseBody SearchResponse search(@RequestBody SearchRequest searchRequest)
             throws InvalidArgumentsException {
+        return searchService.search(searchRequest);
+    }
+
+    private Set<String> convertToSetWithDelimeter(String delimitedString, String delimeter) {
+        if (StringUtils.isEmpty(delimitedString)) {
+            return new LinkedHashSet<String>();
+        }
+        return Stream.of(delimitedString.split(delimeter))
+                .map(value -> value.trim())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    private Set<Long> convertToSetOfLongsWithDelimeter(String delimitedString, String delimeter)
+            throws InvalidArgumentsException {
+        if (StringUtils.isEmpty(delimitedString)) {
+            return new LinkedHashSet<Long>();
+        }
+        String[] splitString = delimitedString.split(delimeter);
+        validateAllValuesAreParseableLongs(Stream.of(splitString).collect(Collectors.toList()));
+        return Stream.of(splitString)
+                    .map(value -> convertToLong(value))
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    private Set<NonconformitySearchOptions> convertToSetOfNonconformityOptionsWithDelimeter(String delimitedString, String delimeter)
+            throws InvalidArgumentsException {
+        if (StringUtils.isEmpty(delimitedString)) {
+            return new LinkedHashSet<NonconformitySearchOptions>();
+        }
+        String[] splitString = delimitedString.split(delimeter);
+        validateAllValuesAreParseableNonconformitySearchOptions(Stream.of(splitString).collect(Collectors.toList()));
+        return Stream.of(splitString)
+                    .map(value -> convertToNonconformitySearchOption(value))
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    private SearchSetOperator convertToSearchSetOperator(String searchSetOperatorStr) throws InvalidArgumentsException {
+        if (StringUtils.isEmpty(searchSetOperatorStr)) {
+            return null;
+        }
         SearchSetOperator result = null;
         try {
-            SearchSetOperator operatorEnum = SearchSetOperator.valueOf(searchSetOperator);
-            if (operatorEnum != null) {
-                result = operatorEnum;
-            } else {
-                String err = msgUtil.getMessage("search.searchOperator.invalid",
-                        searchSetOperator, SearchSetOperator.OR + " or " + SearchSetOperator.AND);
-                throw new InvalidArgumentsException(err);
-            }
+            result = SearchSetOperator.valueOf(searchSetOperatorStr.toUpperCase());
         } catch (Exception ex) {
-            String err = msgUtil.getMessage("search.searchOperator.invalid",
-                    searchSetOperator, SearchSetOperator.OR + " or " + SearchSetOperator.AND);
-            throw new InvalidArgumentsException(err);
+            throw new InvalidArgumentsException("Invalid search set operator: " + searchSetOperatorStr);
         }
         return result;
     }
 
-    private void validatePracticeTypeParameter(String practiceType) throws InvalidArgumentsException {
-        if (!StringUtils.isEmpty(practiceType)) {
-            Set<KeyValueModel> availablePracticeTypes = dimensionalDataManager.getPracticeTypeNames();
-            boolean found = false;
-            for (KeyValueModel currAvailablePracticeType : availablePracticeTypes) {
-                if (currAvailablePracticeType.getName().equalsIgnoreCase(practiceType)) {
-                    found = true;
-                }
-            }
-
-            if (!found) {
-                String err = msgUtil.getMessage("search.practiceType.invalid", practiceType);
-                LOGGER.error(err);
-                throw new InvalidArgumentsException(err);
-            }
+    private NonconformitySearchOptions convertToNonconformitySearchOption(String ncSearchOptionStr) {
+        if (StringUtils.isEmpty(ncSearchOptionStr)) {
+            return null;
         }
+
+        return NonconformitySearchOptions.valueOf(ncSearchOptionStr.toUpperCase());
     }
 
-    private void validateCertificationDateParameter(String dateStr) throws InvalidArgumentsException {
-        SimpleDateFormat format = new SimpleDateFormat(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
-        if (dateStr != null) {
-            if (!StringUtils.isEmpty(dateStr)) {
-                try {
-                    format.parse(dateStr);
-                } catch (ParseException ex) {
-                    String err = msgUtil.getMessage("search.certificationDate.invalid", dateStr, SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
-                    LOGGER.error(err);
-                    throw new InvalidArgumentsException(err);
-                }
-            }
+    private OrderByOption convertToOrderByOption(String orderByStr) throws InvalidArgumentsException {
+        if (StringUtils.isEmpty(orderByStr)) {
+            return null;
         }
-    }
-
-    private void validatePageSize(Integer pageSize) throws InvalidArgumentsException {
-        if (pageSize > MAX_PAGE_SIZE) {
-            String err = msgUtil.getMessage("search.pageSize.invalid", SearchRequest.MAX_PAGE_SIZE);
-            throw new InvalidArgumentsException(err);
-        }
-    }
-
-    private void validateOrderBy(String orderBy) throws InvalidArgumentsException {
-        OrderByOption enumValue = null;
+        OrderByOption result = null;
         try {
-            enumValue = OrderByOption.valueOf(orderBy);
+            result = OrderByOption.valueOf(orderByStr.toUpperCase());
         } catch (Exception ex) {
-            String err = msgUtil.getMessage("search.orderBy.invalid", orderBy,
-                    Stream.of(OrderByOption.values()).map(value -> value.name()).collect(Collectors.joining(",")));
-            throw new InvalidArgumentsException(err);
+            throw new InvalidArgumentsException(msgUtil.getMessage("search.orderBy.invalid",
+                    orderByStr,
+                    Stream.of(OrderByOption.values())
+                        .map(value -> value.name())
+                        .collect(Collectors.joining(","))));
+        }
+        return result;
+    }
+
+    private Long convertToLong(String numberStr) {
+        if (StringUtils.isEmpty(numberStr)) {
+            return null;
+        }
+
+        Long result = null;
+        try {
+            result = Long.parseLong(numberStr);
+        } catch (Exception ex) {
+            LOGGER.error("Invalid number value: " + numberStr);
+        }
+        return result;
+    }
+
+    private Boolean convertToBoolean(String booleanStr) throws InvalidArgumentsException {
+        if (StringUtils.isEmpty(booleanStr)) {
+            return null;
+        }
+
+        Boolean result = null;
+        try {
+            result = Boolean.parseBoolean(booleanStr.trim());
+        } catch (Exception ex) {
+            throw new InvalidArgumentsException("Invalid boolean value: " + booleanStr);
+        }
+        return result;
+    }
+
+    private void validateAllValuesAreParseableLongs(List<String> values) throws InvalidArgumentsException {
+        for (String value : values) {
+            try {
+                Long.parseLong(value);
+            } catch (Exception ex) {
+                throw new InvalidArgumentsException(value + " is not a valid number.");
+            }
+        }
+    }
+
+    private void validateAllValuesAreParseableNonconformitySearchOptions(List<String> values) throws InvalidArgumentsException {
+        for (String value : values) {
+            try {
+                NonconformitySearchOptions.valueOf(value);
+            } catch (Exception ex) {
+                throw new InvalidArgumentsException(msgUtil.getMessage("search.nonconformitySearchOption.invalid",
+                        value,
+                        Stream.of(NonconformitySearchOptions.values())
+                            .map(ncVal -> ncVal.name())
+                            .collect(Collectors.joining(","))));
+            }
         }
     }
 }
