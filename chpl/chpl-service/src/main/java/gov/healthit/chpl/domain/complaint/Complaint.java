@@ -5,8 +5,13 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
+import gov.healthit.chpl.util.LocalDateDeserializer;
+import gov.healthit.chpl.util.LocalDateSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,6 +34,8 @@ public class Complaint implements Serializable {
     private String complainantTypeOther;
     private String oncComplaintId;
     private String acbComplaintId;
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate receivedDate;
     private String summary;
     private String actions;
@@ -36,6 +43,8 @@ public class Complaint implements Serializable {
     private boolean developerContacted;
     private boolean oncAtlContacted;
     private boolean flagForOncReview;
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate closedDate;
     @Builder.Default
     private Set<ComplaintListingMap> listings = new HashSet<ComplaintListingMap>();
