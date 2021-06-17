@@ -1,7 +1,7 @@
 package gov.healthit.chpl.domain.complaint;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,14 +29,14 @@ public class Complaint implements Serializable {
     private String complainantTypeOther;
     private String oncComplaintId;
     private String acbComplaintId;
-    private Date receivedDate;
+    private LocalDate receivedDate;
     private String summary;
     private String actions;
     private boolean complainantContacted;
     private boolean developerContacted;
     private boolean oncAtlContacted;
     private boolean flagForOncReview;
-    private Date closedDate;
+    private LocalDate closedDate;
     @Builder.Default
     private Set<ComplaintListingMap> listings = new HashSet<ComplaintListingMap>();
     @Builder.Default

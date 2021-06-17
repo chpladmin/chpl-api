@@ -1,6 +1,7 @@
 package gov.healthit.chpl.surveillance.report.dto;
 
-import java.util.Calendar;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -48,33 +49,33 @@ public class QuarterlyReportDTO {
         }
     }
 
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         if (getYear() == null || getQuarter() == null) {
             return null;
         }
-        Calendar quarterStartCal = Calendar.getInstance();
-        quarterStartCal.set(Calendar.YEAR, getYear());
-        quarterStartCal.set(Calendar.MONTH, getQuarter().getStartMonth() - 1);
-        quarterStartCal.set(Calendar.DAY_OF_MONTH, getQuarter().getStartDay());
-        quarterStartCal.set(Calendar.HOUR_OF_DAY, 0);
-        quarterStartCal.set(Calendar.MINUTE, 0);
-        quarterStartCal.set(Calendar.SECOND, 0);
-        quarterStartCal.set(Calendar.MILLISECOND, 0);
-        return quarterStartCal.getTime();
+        return LocalDate.of(getYear(), getQuarter().getStartMonth() - 1, getQuarter().getStartDay());
     }
 
-    public Date getEndDate() {
+    public Date getStartDateTime() {
+        LocalDate localDate = getStartDate();
+        if (localDate == null) {
+            return null;
+        }
+        return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    }
+
+    public LocalDate getEndDate() {
         if (getYear() == null || getQuarter() == null) {
             return null;
         }
-        Calendar quarterEndCal = Calendar.getInstance();
-        quarterEndCal.set(Calendar.YEAR, getYear());
-        quarterEndCal.set(Calendar.MONTH, getQuarter().getEndMonth() - 1);
-        quarterEndCal.set(Calendar.DAY_OF_MONTH, getQuarter().getEndDay());
-        quarterEndCal.set(Calendar.HOUR_OF_DAY, 23);
-        quarterEndCal.set(Calendar.MINUTE, 59);
-        quarterEndCal.set(Calendar.SECOND, 59);
-        quarterEndCal.set(Calendar.MILLISECOND, 999);
-        return quarterEndCal.getTime();
+        return LocalDate.of(getYear(), getQuarter().getEndMonth() - 1, getQuarter().getEndDay());
+    }
+
+    public Date getEndDateTime() {
+        LocalDate localDate = getEndDate();
+        if (localDate == null) {
+            return null;
+        }
+        return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 }

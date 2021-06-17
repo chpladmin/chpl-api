@@ -1,7 +1,7 @@
 package gov.healthit.chpl.manager;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -78,8 +78,8 @@ public class ComplaintManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).GET_ALL)")
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).GET_ALL, filterObject)")
-    public List<Complaint> getAllComplaintsBetweenDates(CertificationBodyDTO acb, Date startDate,
-            Date endDate) {
+    public List<Complaint> getAllComplaintsBetweenDates(CertificationBodyDTO acb, LocalDate startDate,
+            LocalDate endDate) {
         return complaintDAO.getAllComplaintsBetweenDates(acb.getId(), startDate, endDate);
     }
 
