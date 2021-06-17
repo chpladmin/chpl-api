@@ -134,7 +134,7 @@ public class SearchController {
         value = "Use to specify the direction of the sort. Defaults to false (ascending sort).",
         required = false, dataType = "boolean", paramType = "query")
     })
-    @RequestMapping(value = "/listings-search", method = RequestMethod.GET, produces = {
+    @RequestMapping(value = "/search/beta", method = RequestMethod.GET, produces = {
             "application/json; charset=utf-8", "application/xml"
     })
     public @ResponseBody SearchResponse search(
@@ -204,7 +204,7 @@ public class SearchController {
     @ApiOperation(value = "Search the CHPL with an HTTP POST Request.",
             notes = "Search the CHPL by specifycing multiple fields of the data to search. "
                     + "If paging fields are not specified, the first 20 records are returned by default.")
-    @RequestMapping(value = "/listings-search", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
+    @RequestMapping(value = "/search/beta", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public @ResponseBody SearchResponse search(@RequestBody SearchRequest searchRequest)
             throws InvalidArgumentsException {
@@ -252,7 +252,11 @@ public class SearchController {
         try {
             result = SearchSetOperator.valueOf(searchSetOperatorStr.toUpperCase());
         } catch (Exception ex) {
-            throw new InvalidArgumentsException("Invalid search set operator: " + searchSetOperatorStr);
+            throw new InvalidArgumentsException(msgUtil.getMessage("search.searchOperator.invalid",
+                    searchSetOperatorStr,
+                    Stream.of(SearchSetOperator.values())
+                        .map(value -> value.name())
+                        .collect(Collectors.joining(","))));
         }
         return result;
     }
@@ -291,7 +295,7 @@ public class SearchController {
         try {
             result = Long.parseLong(numberStr);
         } catch (Exception ex) {
-            LOGGER.error("Invalid number value: " + numberStr);
+            LOGGER.error(msgUtil.getMessage("search.certificationCriteriaId.invalid", numberStr));
         }
         return result;
     }
@@ -305,7 +309,7 @@ public class SearchController {
         try {
             result = Boolean.parseBoolean(booleanStr.trim());
         } catch (Exception ex) {
-            throw new InvalidArgumentsException("Invalid boolean value: " + booleanStr);
+            throw new InvalidArgumentsException(msgUtil.getMessage("search.hasHadComplianceActivity.invalid", booleanStr));
         }
         return result;
     }
@@ -315,7 +319,7 @@ public class SearchController {
             try {
                 Long.parseLong(value);
             } catch (Exception ex) {
-                throw new InvalidArgumentsException(value + " is not a valid number.");
+                throw new InvalidArgumentsException(msgUtil.getMessage("search.certificationCriteriaId.invalid", value));
             }
         }
     }
