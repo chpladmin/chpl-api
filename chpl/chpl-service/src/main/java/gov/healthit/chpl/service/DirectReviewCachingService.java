@@ -65,7 +65,7 @@ public class DirectReviewCachingService {
         this.mapper = mapper;
     }
 
-    @CacheEvict(value = { CacheNames.COLLECTIONS_LISTINGS }, allEntries = true)
+    @CacheEvict(value = { CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH }, allEntries = true)
     public void populateDirectReviewsCache() {
         LOGGER.info("Fetching all direct review data.");
         List<DirectReview> allDirectReviews = new ArrayList<DirectReview>();

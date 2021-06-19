@@ -132,7 +132,7 @@ public class SurveillanceManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).CREATE, #survToInsert)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
     public Long createSurveillance(Surveillance survToInsert)
             throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException,
@@ -174,7 +174,7 @@ public class SurveillanceManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).UPDATE, #survToUpdate)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
     public void updateSurveillance(final Surveillance survToUpdate) throws EntityRetrievalException,
             UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException,
@@ -216,7 +216,7 @@ public class SurveillanceManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).DELETE, #surv)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
     public void deleteSurveillance(Surveillance surv)
             throws EntityRetrievalException, SurveillanceAuthorityAccessDeniedException {
