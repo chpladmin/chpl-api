@@ -1,5 +1,10 @@
 package gov.healthit.chpl.service;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -11,9 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
+import gov.healthit.chpl.domain.search.ComplianceSearchFilter;
+import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
 import gov.healthit.chpl.domain.search.OrderByOption;
 import gov.healthit.chpl.domain.search.SearchRequest;
 import gov.healthit.chpl.domain.search.SearchResponse;
+import gov.healthit.chpl.domain.search.SearchSetOperator;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
@@ -30,6 +38,7 @@ public class ListingSearchService {
     private ErrorMessageUtil msgUtil;
     private DimensionalDataManager dimensionalDataManager;
     private CertifiedProductSearchManager cpSearchManager;
+    private DateTimeFormatter dateFormatter;
 
     @Autowired
     public ListingSearchService(ErrorMessageUtil msgUtil,
@@ -38,10 +47,11 @@ public class ListingSearchService {
         this.msgUtil = msgUtil;
         this.dimensionalDataManager = dimensionalDataManager;
         this.cpSearchManager = cpSearchManager;
+        dateFormatter = DateTimeFormatter.ofPattern(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
     }
 
     public SearchResponse search(SearchRequest searchRequest) throws InvalidArgumentsException {
-        //TODO: validate parameters
+        //TODO: validate parameters - maybe this is a separate validator class?
         //TODO: trim parameters
 
         List<CertifiedProductBasicSearchResult> listings = cpSearchManager.getSearchListingCollection();
@@ -55,10 +65,10 @@ public class ListingSearchService {
             .filter(listing -> matchesProduct(listing, searchRequest.getProduct()))
             .filter(listing -> matchesVersion(listing, searchRequest.getVersion()))
             .filter(listing -> matchesPracticeType(listing, searchRequest.getPracticeType()))
-
-            //TODO: certification dates
-            //TODO: criteria
-            //TODO: cqms
+            .filter(listing -> matchesCriteria(listing, searchRequest.getCertificationCriteriaIds(), searchRequest.getCertificationCriteriaOperator()))
+            .filter(listing -> matchesCqms(listing, searchRequest.getCqms(), searchRequest.getCqmsOperator()))
+            .filter(listing -> matchesCertificationDateRange(listing, searchRequest.getCertificationDateStart(), searchRequest.getCertificationDateEnd()))
+            .filter(listing -> matchesComplianceFilter(listing, searchRequest.getComplianceActivity()))
             //TODO: compliance
             .collect(Collectors.toList());
         LOGGER.debug("Total filtered listings: " + filteredListings.size());
@@ -149,6 +159,133 @@ public class ListingSearchService {
                 && listing.getPracticeType().toUpperCase().contains(practiceType.toUpperCase());
     }
 
+    private boolean matchesCriteria(CertifiedProductBasicSearchResult listing, Set<Long> criteriaIds,
+            SearchSetOperator searchOperator) {
+        if (criteriaIds == null || criteriaIds.size() == 0) {
+            return true;
+        }
+        if (searchOperator.equals(SearchSetOperator.AND)) {
+            return criteriaIds.stream()
+                .allMatch(criterionId -> listing.getCriteriaMet().contains(criterionId));
+        } else if (searchOperator.equals(SearchSetOperator.OR)) {
+            return criteriaIds.stream()
+                    .anyMatch(criterionId -> listing.getCriteriaMet().contains(criterionId));
+        }
+        return false;
+    }
+
+    private boolean matchesCqms(CertifiedProductBasicSearchResult listing, Set<String> cqmNumbers,
+            SearchSetOperator searchOperator) {
+        if (cqmNumbers == null || cqmNumbers.size() == 0) {
+            return true;
+        }
+        if (searchOperator.equals(SearchSetOperator.AND)) {
+            return cqmNumbers.stream()
+                .allMatch(cqmNumber -> listing.getCqmsMet().contains(cqmNumber));
+        } else if (searchOperator.equals(SearchSetOperator.OR)) {
+            return cqmNumbers.stream()
+                    .anyMatch(cqmNumber -> listing.getCqmsMet().contains(cqmNumber));
+        }
+        return false;
+    }
+
+    private boolean matchesComplianceFilter(CertifiedProductBasicSearchResult listing, ComplianceSearchFilter complianceFilter) {
+        if (complianceFilter == null
+                || (complianceFilter.getHasHadComplianceActivity() == null
+                    && (complianceFilter.getNonconformityOptions() == null || complianceFilter.getNonconformityOptions().size() == 0)
+                    && complianceFilter.getNonconformityOptionsOperator() == null)) {
+            return true;
+        }
+
+        boolean matcheshasHadComplianceActivityFilter = matchesHasHadComplianceFilter(listing, complianceFilter.getHasHadComplianceActivity());
+
+        boolean matchesNeverNonConformityFilter = true;
+        if (complianceFilter.getNonconformityOptions().contains(NonconformitySearchOptions.NEVER_NONCONFORMITY)) {
+            matchesNeverNonConformityFilter = listing.getClosedDirectReviewNonConformityCount() == 0
+                        && listing.getOpenDirectReviewNonConformityCount() == 0
+                        && listing.getClosedSurveillanceNonConformityCount() == 0
+                        && listing.getOpenSurveillanceNonConformityCount() == 0;
+        }
+        boolean matchesOpenNonConformityFilter = true;
+        if (complianceFilter.getNonconformityOptions().contains(NonconformitySearchOptions.OPEN_NONCONFORMITY)) {
+            matchesOpenNonConformityFilter = listing.getOpenDirectReviewNonConformityCount() > 0
+                        && listing.getOpenSurveillanceNonConformityCount() > 0;
+        }
+        boolean matchesClosedNonConformityFilter = true;
+        if (complianceFilter.getNonconformityOptions().contains(NonconformitySearchOptions.CLOSED_NONCONFORMITY)) {
+            matchesClosedNonConformityFilter = listing.getClosedDirectReviewNonConformityCount() > 0
+                        && listing.getClosedSurveillanceNonConformityCount() > 0;
+        }
+
+        boolean matchesNonConformityFilter = applyOperation(matchesNeverNonConformityFilter, matchesOpenNonConformityFilter,
+                matchesClosedNonConformityFilter, complianceFilter.getNonconformityOptionsOperator());
+        return matcheshasHadComplianceActivityFilter && matchesNonConformityFilter;
+    }
+
+    private boolean matchesHasHadComplianceFilter(CertifiedProductBasicSearchResult listing, Boolean hasHadComplianceFilter) {
+        if (hasHadComplianceFilter == null) {
+            return true;
+        }
+        if (hasHadComplianceFilter) {
+            return listing.getSurveillanceCount() > 0 || listing.getDirectReviewCount() > 0;
+        } else {
+            return listing.getSurveillanceCount() == 0 && listing.getDirectReviewCount() == 0;
+        }
+    }
+
+    private boolean applyOperation(boolean matchesNeverNonConformityFilter, boolean matchesOpenNonConformityFilter,
+            boolean matchesClosedNonConformityFilter, SearchSetOperator operation) {
+        if (operation == null) {
+            return true;
+        } else if (operation.equals(SearchSetOperator.AND)) {
+            return matchesNeverNonConformityFilter && matchesOpenNonConformityFilter && matchesClosedNonConformityFilter;
+        } else if (operation.equals(SearchSetOperator.OR)) {
+            return matchesNeverNonConformityFilter || matchesOpenNonConformityFilter || matchesClosedNonConformityFilter;
+        } else {
+            LOGGER.error("Unknown operation: " + operation);
+        }
+        return false;
+    }
+
+    private boolean matchesCertificationDateRange(CertifiedProductBasicSearchResult listing, String certificationDateRangeStart,
+            String certificationDateRangeEnd) {
+        if (StringUtils.isAllEmpty(certificationDateRangeStart, certificationDateRangeEnd)) {
+            return true;
+        }
+        LocalDate startDate = parseLocalDate(certificationDateRangeStart);
+        LocalDate endDate = parseLocalDate(certificationDateRangeEnd);
+        if (listing.getCertificationDate() != null) {
+            LocalDate listingCertificationDate = parseLocalDate(listing.getCertificationDate());
+            if (startDate == null && endDate != null) {
+                return listingCertificationDate.isEqual(endDate) || listingCertificationDate.isBefore(endDate);
+            } else if (startDate != null && endDate == null) {
+                return listingCertificationDate.isEqual(startDate) || listingCertificationDate.isAfter(startDate);
+            } else {
+                return listingCertificationDate.isEqual(startDate) || listingCertificationDate.isEqual(endDate)
+                        || (listingCertificationDate.isBefore(endDate) && listingCertificationDate.isAfter(startDate));
+            }
+        }
+        return false;
+    }
+
+    private LocalDate parseLocalDate(String dateString) {
+        if (StringUtils.isEmpty(dateString)) {
+            return null;
+        }
+
+        LocalDate date = null;
+        try {
+            date = LocalDate.parse(dateString, dateFormatter);
+        } catch (DateTimeParseException ex) {
+            LOGGER.error("Cannot parse " + dateString + " as date of the format " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+        }
+        return date;
+    }
+
+    private LocalDate parseLocalDate(Long millisSinceEpoch) {
+        return Instant.ofEpochMilli(millisSinceEpoch).atZone(ZoneId.systemDefault()).toLocalDate();
+    }
+
     private List<CertifiedProductBasicSearchResult> getPage(List<CertifiedProductBasicSearchResult> listings, int beginIndex, int endIndex) {
         if (endIndex > listings.size()) {
             endIndex = listings.size();
@@ -175,25 +312,25 @@ public class ListingSearchService {
 
         switch (orderBy) {
             case EDITION:
-                listings.sort(new EditionComparator());
+                listings.sort(new EditionComparator(descending));
                 break;
             case DEVELOPER:
-                listings.sort(new DeveloperComparator());
+                listings.sort(new DeveloperComparator(descending));
                 break;
             case PRODUCT:
-                listings.sort(new ProductComparator());
+                listings.sort(new ProductComparator(descending));
                 break;
             case VERSION:
-                listings.sort(new VersionComparator());
+                listings.sort(new VersionComparator(descending));
                 break;
             case CERTIFICATION_DATE:
-                listings.sort(new CertificationDateComparator());
+                listings.sort(new CertificationDateComparator(descending));
                 break;
             case CHPL_ID:
-                listings.sort(new ChplIdComparator());
+                listings.sort(new ChplIdComparator(descending));
                 break;
             case STATUS:
-                listings.sort(new CertificationStatusComparator());
+                listings.sort(new CertificationStatusComparator(descending));
                 break;
             default:
                 LOGGER.error("Unrecognized value for Order By: " + orderBy.name());
@@ -202,72 +339,121 @@ public class ListingSearchService {
     }
 
     private class EditionComparator implements Comparator<CertifiedProductBasicSearchResult> {
+        private boolean descending = false;
+
+        EditionComparator(boolean descending) {
+            this.descending = descending;
+        }
+
         @Override
         public int compare(CertifiedProductBasicSearchResult listing1, CertifiedProductBasicSearchResult listing2) {
             if (StringUtils.isAnyEmpty(listing1.getEdition(), listing2.getEdition())) {
                 return 0;
             }
-            return listing1.getEdition().compareTo(listing2.getEdition());
+            int sortFactor = descending ? -1 : 1;
+            return (listing1.getEdition().compareTo(listing2.getEdition())) * sortFactor;
         }
     }
 
     private class DeveloperComparator implements Comparator<CertifiedProductBasicSearchResult> {
+        private boolean descending = false;
+
+        DeveloperComparator(boolean descending) {
+            this.descending = descending;
+        }
+
         @Override
         public int compare(CertifiedProductBasicSearchResult listing1, CertifiedProductBasicSearchResult listing2) {
             if (StringUtils.isAnyEmpty(listing1.getDeveloper(), listing2.getDeveloper())) {
                 return 0;
             }
-            return listing1.getDeveloper().compareTo(listing2.getDeveloper());
+            int sortFactor = descending ? -1 : 1;
+            return (listing1.getDeveloper().compareTo(listing2.getDeveloper())) * sortFactor;
         }
     }
 
     private class ProductComparator implements Comparator<CertifiedProductBasicSearchResult> {
+        private boolean descending = false;
+
+        ProductComparator(boolean descending) {
+            this.descending = descending;
+        }
+
         @Override
         public int compare(CertifiedProductBasicSearchResult listing1, CertifiedProductBasicSearchResult listing2) {
             if (StringUtils.isAnyEmpty(listing1.getProduct(), listing2.getProduct())) {
                 return 0;
             }
-            return listing1.getProduct().compareTo(listing2.getProduct());
+            int sortFactor = descending ? -1 : 1;
+            return (listing1.getProduct().compareTo(listing2.getProduct())) * sortFactor;
         }
     }
 
     private class VersionComparator implements Comparator<CertifiedProductBasicSearchResult> {
+        private boolean descending = false;
+
+        VersionComparator(boolean descending) {
+            this.descending = descending;
+        }
+
         @Override
         public int compare(CertifiedProductBasicSearchResult listing1, CertifiedProductBasicSearchResult listing2) {
             if (StringUtils.isAnyEmpty(listing1.getVersion(), listing2.getVersion())) {
                 return 0;
             }
-            return listing1.getVersion().compareTo(listing2.getVersion());
+            int sortFactor = descending ? -1 : 1;
+            return (listing1.getVersion().compareTo(listing2.getVersion())) * sortFactor;
         }
     }
 
     private class CertificationDateComparator implements Comparator<CertifiedProductBasicSearchResult> {
+        private boolean descending = false;
+
+        CertificationDateComparator(boolean descending) {
+            this.descending = descending;
+        }
+
         @Override
         public int compare(CertifiedProductBasicSearchResult listing1, CertifiedProductBasicSearchResult listing2) {
             if (listing1.getCertificationDate() == null ||  listing2.getCertificationDate() == null) {
                 return 0;
             }
-            return listing1.getCertificationDate().compareTo(listing2.getCertificationDate());
+            int sortFactor = descending ? -1 : 1;
+            return (listing1.getCertificationDate().compareTo(listing2.getCertificationDate())) * sortFactor;
         }
     }
 
     private class ChplIdComparator implements Comparator<CertifiedProductBasicSearchResult> {
+        private boolean descending = false;
+
+        ChplIdComparator(boolean descending) {
+            this.descending = descending;
+        }
+
         @Override
         public int compare(CertifiedProductBasicSearchResult listing1, CertifiedProductBasicSearchResult listing2) {
             if (StringUtils.isAnyEmpty(listing1.getChplProductNumber(), listing2.getChplProductNumber())) {
                 return 0;
             }
-            return listing1.getChplProductNumber().compareTo(listing2.getChplProductNumber());
+            int sortFactor = descending ? -1 : 1;
+            return (listing1.getChplProductNumber().compareTo(listing2.getChplProductNumber())) * sortFactor;
         }
     }
 
     private class CertificationStatusComparator implements Comparator<CertifiedProductBasicSearchResult> {
+        private boolean descending = false;
+
+        CertificationStatusComparator(boolean descending) {
+            this.descending = descending;
+        }
+
         @Override
         public int compare(CertifiedProductBasicSearchResult listing1, CertifiedProductBasicSearchResult listing2) {
             if (StringUtils.isAnyEmpty(listing1.getCertificationStatus(), listing2.getCertificationStatus())) {
                 return 0;
             }
-            return listing1.getCertificationStatus().compareTo(listing2.getCertificationStatus());
+            int sortFactor = descending ? -1 : 1;
+            return (listing1.getCertificationStatus().compareTo(listing2.getCertificationStatus())) * sortFactor;
         }
     }
 }
