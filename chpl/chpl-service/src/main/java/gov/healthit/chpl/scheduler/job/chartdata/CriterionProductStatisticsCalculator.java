@@ -14,12 +14,12 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CriterionProductStatisticsDAO;
-import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CriterionProductStatisticsDTO;
 import gov.healthit.chpl.entity.statistics.CriterionProductStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
 
 /**
  * Populates the criterion_product_statistics table with summarized count

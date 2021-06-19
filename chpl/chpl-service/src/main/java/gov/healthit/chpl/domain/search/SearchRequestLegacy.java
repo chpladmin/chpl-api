@@ -6,6 +6,8 @@ import java.util.Set;
 
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.search.domain.SearchSetOperator;
+
 @Deprecated
 public class SearchRequestLegacy implements Serializable {
     private static final long serialVersionUID = 1179207628639701580L;

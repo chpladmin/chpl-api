@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertificationIdManager;
-import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
+import gov.healthit.chpl.search.CertifiedProductSearchManager;
 import gov.healthit.chpl.service.DirectReviewCachingService;
 import lombok.extern.log4j.Log4j2;
 

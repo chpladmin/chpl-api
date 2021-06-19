@@ -1,4 +1,4 @@
-package gov.healthit.chpl.manager;
+package gov.healthit.chpl.search;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -20,13 +20,13 @@ import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
-import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResultLegacy;
-import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResultLegacy;
-import gov.healthit.chpl.domain.search.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.search.SearchRequestLegacy;
 import gov.healthit.chpl.domain.search.SearchResponseLegacy;
+import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
+import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.search.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.service.DirectReviewSearchService;
 import lombok.extern.log4j.Log4j2;
 

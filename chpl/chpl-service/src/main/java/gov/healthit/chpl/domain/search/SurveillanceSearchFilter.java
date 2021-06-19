@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import gov.healthit.chpl.search.domain.NonconformitySearchOptions;
+import gov.healthit.chpl.search.domain.SearchSetOperator;
+
 @Deprecated
 public class SurveillanceSearchFilter implements Serializable {
     private static final long serialVersionUID = 1329207628639701580L;

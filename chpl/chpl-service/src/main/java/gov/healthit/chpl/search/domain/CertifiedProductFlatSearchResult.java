@@ -1,4 +1,4 @@
-package gov.healthit.chpl.domain.search;
+package gov.healthit.chpl.search.domain;
 
 import com.fasterxml.jackson.annotation.JsonView;
 

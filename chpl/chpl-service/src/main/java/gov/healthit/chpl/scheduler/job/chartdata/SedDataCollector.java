@@ -15,10 +15,10 @@ import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
-import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
+import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
 
 /**
  * Retrieves all of the 2015 SED Products and their details. Details are

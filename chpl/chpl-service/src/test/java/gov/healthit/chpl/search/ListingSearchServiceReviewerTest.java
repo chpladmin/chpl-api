@@ -1,4 +1,4 @@
-package gov.healthit.chpl.service;
+package gov.healthit.chpl.search;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -14,15 +14,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
-import gov.healthit.chpl.domain.search.OrderByOption;
-import gov.healthit.chpl.domain.search.SearchRequest;
-import gov.healthit.chpl.domain.search.SearchResponse;
-import gov.healthit.chpl.domain.search.SearchSetOperator;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
+import gov.healthit.chpl.search.ListingSearchService;
+import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
+import gov.healthit.chpl.search.domain.OrderByOption;
+import gov.healthit.chpl.search.domain.SearchRequest;
+import gov.healthit.chpl.search.domain.SearchResponse;
+import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class ListingSearchServiceReviewerTest {

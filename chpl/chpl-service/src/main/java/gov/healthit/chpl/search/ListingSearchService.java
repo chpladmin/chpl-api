@@ -1,4 +1,4 @@
-package gov.healthit.chpl.service;
+package gov.healthit.chpl.search;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -15,16 +15,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
-import gov.healthit.chpl.domain.search.ComplianceSearchFilter;
-import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
-import gov.healthit.chpl.domain.search.OrderByOption;
-import gov.healthit.chpl.domain.search.SearchRequest;
-import gov.healthit.chpl.domain.search.SearchResponse;
-import gov.healthit.chpl.domain.search.SearchSetOperator;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
+import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
+import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
+import gov.healthit.chpl.search.domain.NonconformitySearchOptions;
+import gov.healthit.chpl.search.domain.OrderByOption;
+import gov.healthit.chpl.search.domain.SearchRequest;
+import gov.healthit.chpl.search.domain.SearchResponse;
+import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -69,7 +68,6 @@ public class ListingSearchService {
             .filter(listing -> matchesCqms(listing, searchRequest.getCqms(), searchRequest.getCqmsOperator()))
             .filter(listing -> matchesCertificationDateRange(listing, searchRequest.getCertificationDateStart(), searchRequest.getCertificationDateEnd()))
             .filter(listing -> matchesComplianceFilter(listing, searchRequest.getComplianceActivity()))
-            //TODO: compliance
             .collect(Collectors.toList());
         LOGGER.debug("Total filtered listings: " + filteredListings.size());
 
