@@ -44,6 +44,14 @@ public class CertifiedProductBasicSearchResult extends CertifiedProductSearchRes
     private Set<String> serviceBaseUrlList;
 
     public CertifiedProductBasicSearchResult() {
+        this.setDirectReviewCount(0);
+        this.setSurveillanceCount(0L);
+        this.setOpenDirectReviewNonConformityCount(0);
+        this.setClosedDirectReviewNonConformityCount(0);
+        this.setOpenSurveillanceCount(0L);
+        this.setClosedSurveillanceCount(0L);
+        this.setOpenSurveillanceNonConformityCount(0L);
+        this.setClosedSurveillanceNonConformityCount(0L);
         previousDevelopers = new HashSet<String>();
         criteriaMet = new HashSet<Long>();
         cqmsMet = new HashSet<String>();

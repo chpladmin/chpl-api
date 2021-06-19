@@ -25,5 +25,5 @@ public class ComplianceSearchFilter implements Serializable {
     @Builder.Default
     private Set<NonconformitySearchOptions> nonconformityOptions = new HashSet<NonconformitySearchOptions>();
     @Builder.Default
-    private SearchSetOperator nonconformityOptionsOperator = SearchSetOperator.OR;
+    private SearchSetOperator nonconformityOptionsOperator = null;
 }

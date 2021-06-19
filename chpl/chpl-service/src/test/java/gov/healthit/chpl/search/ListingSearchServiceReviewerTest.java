@@ -2,6 +2,7 @@ package gov.healthit.chpl.search;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -17,8 +18,9 @@ import org.mockito.Mockito;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
-import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
+import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
+import gov.healthit.chpl.search.domain.NonconformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchResponse;
@@ -1125,6 +1127,289 @@ public class ListingSearchServiceReviewerTest {
         assertNotNull(searchResponse);
         assertEquals(1, searchResponse.getRecordCount());
         assertEquals(1, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_listingComplianceTrue_findsMatchingListings() throws InvalidArgumentsException {
+        List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(3);
+        allListings.get(0).setSurveillanceCount(0L);
+        allListings.get(0).setDirectReviewCount(0);
+        allListings.get(1).setSurveillanceCount(2L);
+        allListings.get(1).setDirectReviewCount(0);
+        allListings.get(2).setSurveillanceCount(0L);
+        allListings.get(2).setDirectReviewCount(1);
+
+        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .complianceActivity(ComplianceSearchFilter.builder()
+                    .hasHadComplianceActivity(true)
+                    .build())
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        SearchResponse searchResponse = listingSearchService.search(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(2, searchResponse.getRecordCount());
+        assertEquals(2, searchResponse.getResults().size());
+        searchResponse.getResults().forEach(result -> assertTrue(result.getSurveillanceCount() > 0 || result.getDirectReviewCount() > 0));
+    }
+
+    @Test
+    public void search_listingComplianceFalse_findsMatchingListings() throws InvalidArgumentsException {
+        List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(3);
+        allListings.get(0).setSurveillanceCount(0L);
+        allListings.get(0).setDirectReviewCount(0);
+        allListings.get(1).setSurveillanceCount(2L);
+        allListings.get(1).setDirectReviewCount(0);
+        allListings.get(2).setSurveillanceCount(0L);
+        allListings.get(2).setDirectReviewCount(1);
+
+        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .complianceActivity(ComplianceSearchFilter.builder()
+                    .hasHadComplianceActivity(false)
+                    .build())
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        SearchResponse searchResponse = listingSearchService.search(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+        searchResponse.getResults().forEach(result -> assertTrue(result.getSurveillanceCount() == 0 && result.getDirectReviewCount() == 0));
+    }
+
+    @Test
+    public void search_listingComplianceTrueAndOpenNonConformities_findsMatchingListings() throws InvalidArgumentsException {
+        List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(3);
+        allListings.get(0).setSurveillanceCount(0L);
+        allListings.get(0).setDirectReviewCount(0);
+        allListings.get(1).setSurveillanceCount(2L);
+        allListings.get(1).setDirectReviewCount(0);
+        allListings.get(1).setOpenSurveillanceNonConformityCount(1L);
+        allListings.get(2).setSurveillanceCount(0L);
+        allListings.get(2).setDirectReviewCount(1);
+
+        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .complianceActivity(ComplianceSearchFilter.builder()
+                    .hasHadComplianceActivity(true)
+                    .nonconformityOptions(Stream.of(NonconformitySearchOptions.OPEN_NONCONFORMITY).collect(Collectors.toSet()))
+                    .build())
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        SearchResponse searchResponse = listingSearchService.search(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+        searchResponse.getResults().forEach(result -> assertTrue(result.getOpenSurveillanceNonConformityCount() > 0 || result.getOpenDirectReviewNonConformityCount() > 0));
+    }
+
+    @Test
+    public void search_listingComplianceTrueAndClosedNonConformities_findsMatchingListings() throws InvalidArgumentsException {
+        List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(3);
+        allListings.get(0).setSurveillanceCount(0L);
+        allListings.get(0).setDirectReviewCount(0);
+        allListings.get(1).setSurveillanceCount(2L);
+        allListings.get(1).setDirectReviewCount(0);
+        allListings.get(1).setOpenSurveillanceNonConformityCount(1L);
+        allListings.get(2).setSurveillanceCount(0L);
+        allListings.get(2).setDirectReviewCount(1);
+        allListings.get(2).setClosedDirectReviewNonConformityCount(1);
+
+        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .complianceActivity(ComplianceSearchFilter.builder()
+                    .hasHadComplianceActivity(true)
+                    .nonconformityOptions(Stream.of(NonconformitySearchOptions.CLOSED_NONCONFORMITY).collect(Collectors.toSet()))
+                    .build())
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        SearchResponse searchResponse = listingSearchService.search(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+        searchResponse.getResults().forEach(result -> assertTrue(result.getClosedSurveillanceNonConformityCount() > 0 || result.getClosedDirectReviewNonConformityCount() > 0));
+    }
+
+    @Test
+    public void search_listingComplianceFalseAndClosedNonConformities_noMatchingListings() throws InvalidArgumentsException {
+        List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(3);
+        allListings.get(0).setSurveillanceCount(0L);
+        allListings.get(0).setDirectReviewCount(0);
+        allListings.get(1).setSurveillanceCount(2L);
+        allListings.get(1).setDirectReviewCount(0);
+        allListings.get(1).setOpenSurveillanceNonConformityCount(1L);
+        allListings.get(2).setSurveillanceCount(0L);
+        allListings.get(2).setDirectReviewCount(1);
+        allListings.get(2).setClosedDirectReviewNonConformityCount(1);
+
+        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .complianceActivity(ComplianceSearchFilter.builder()
+                    .hasHadComplianceActivity(false)
+                    .nonconformityOptions(Stream.of(NonconformitySearchOptions.CLOSED_NONCONFORMITY).collect(Collectors.toSet()))
+                    .build())
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        SearchResponse searchResponse = listingSearchService.search(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_listingComplianceTrueAndOpenOrClosedNonConformities_findsMatchingListings() throws InvalidArgumentsException {
+        List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(3);
+        allListings.get(0).setSurveillanceCount(0L);
+        allListings.get(0).setDirectReviewCount(0);
+        allListings.get(1).setSurveillanceCount(2L);
+        allListings.get(1).setDirectReviewCount(0);
+        allListings.get(1).setOpenSurveillanceNonConformityCount(1L);
+        allListings.get(2).setSurveillanceCount(0L);
+        allListings.get(2).setDirectReviewCount(1);
+        allListings.get(2).setClosedDirectReviewNonConformityCount(1);
+
+        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .complianceActivity(ComplianceSearchFilter.builder()
+                    .hasHadComplianceActivity(true)
+                    .nonconformityOptions(Stream.of(
+                            NonconformitySearchOptions.OPEN_NONCONFORMITY,
+                            NonconformitySearchOptions.CLOSED_NONCONFORMITY).collect(Collectors.toSet()))
+                    .nonconformityOptionsOperator(SearchSetOperator.OR)
+                    .build())
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        SearchResponse searchResponse = listingSearchService.search(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(2, searchResponse.getRecordCount());
+        assertEquals(2, searchResponse.getResults().size());
+        searchResponse.getResults().forEach(result -> assertTrue(
+                result.getClosedSurveillanceNonConformityCount() > 0
+                || result.getClosedDirectReviewNonConformityCount() > 0
+                || result.getOpenSurveillanceNonConformityCount() > 0
+                || result.getOpenDirectReviewNonConformityCount() > 0));
+    }
+
+    @Test
+    public void search_listingComplianceTrueAndOpenAndClosedNonConformities_findsMatchingListings() throws InvalidArgumentsException {
+        List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(3);
+        allListings.get(0).setSurveillanceCount(0L);
+        allListings.get(0).setDirectReviewCount(0);
+        allListings.get(1).setSurveillanceCount(2L);
+        allListings.get(1).setDirectReviewCount(0);
+        allListings.get(1).setOpenSurveillanceNonConformityCount(1L);
+        allListings.get(1).setClosedSurveillanceNonConformityCount(1L);
+        allListings.get(2).setSurveillanceCount(0L);
+        allListings.get(2).setDirectReviewCount(1);
+        allListings.get(2).setClosedDirectReviewNonConformityCount(1);
+
+        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .complianceActivity(ComplianceSearchFilter.builder()
+                    .hasHadComplianceActivity(true)
+                    .nonconformityOptions(Stream.of(
+                            NonconformitySearchOptions.OPEN_NONCONFORMITY,
+                            NonconformitySearchOptions.CLOSED_NONCONFORMITY).collect(Collectors.toSet()))
+                    .nonconformityOptionsOperator(SearchSetOperator.AND)
+                    .build())
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        SearchResponse searchResponse = listingSearchService.search(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+        searchResponse.getResults().forEach(result -> assertTrue(
+                (result.getClosedSurveillanceNonConformityCount() > 0
+                        || result.getClosedDirectReviewNonConformityCount() > 0)
+                && (result.getOpenSurveillanceNonConformityCount() > 0
+                        || result.getOpenDirectReviewNonConformityCount() > 0)));
+    }
+
+    @Test
+    public void search_listingComplianceFalseAndNeverNonConformities_findsMatchingListings() throws InvalidArgumentsException {
+        List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(3);
+        allListings.get(0).setSurveillanceCount(0L);
+        allListings.get(0).setDirectReviewCount(0);
+        allListings.get(1).setSurveillanceCount(2L);
+        allListings.get(1).setDirectReviewCount(0);
+        allListings.get(1).setOpenSurveillanceNonConformityCount(1L);
+        allListings.get(2).setSurveillanceCount(0L);
+        allListings.get(2).setDirectReviewCount(1);
+        allListings.get(2).setClosedDirectReviewNonConformityCount(1);
+
+        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .complianceActivity(ComplianceSearchFilter.builder()
+                    .hasHadComplianceActivity(false)
+                    .nonconformityOptions(Stream.of(
+                            NonconformitySearchOptions.NEVER_NONCONFORMITY).collect(Collectors.toSet()))
+                    .nonconformityOptionsOperator(SearchSetOperator.OR)
+                    .build())
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        SearchResponse searchResponse = listingSearchService.search(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+        searchResponse.getResults().forEach(result -> assertTrue(result.getSurveillanceCount() == 0
+                && result.getDirectReviewCount() == 0
+                && result.getClosedDirectReviewNonConformityCount() == 0
+                && result.getOpenDirectReviewNonConformityCount() == 0
+                && result.getClosedSurveillanceNonConformityCount() == 0
+                && result.getOpenSurveillanceNonConformityCount() == 0));
+    }
+
+    @Test
+    public void search_listingComplianceTrueAndNeverNonConformities_findsMatchingListings() throws InvalidArgumentsException {
+        List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(3);
+        allListings.get(0).setSurveillanceCount(1L);
+        allListings.get(0).setDirectReviewCount(0);
+        allListings.get(1).setSurveillanceCount(2L);
+        allListings.get(1).setDirectReviewCount(0);
+        allListings.get(1).setOpenSurveillanceNonConformityCount(1L);
+        allListings.get(2).setSurveillanceCount(0L);
+        allListings.get(2).setDirectReviewCount(1);
+        allListings.get(2).setClosedDirectReviewNonConformityCount(1);
+
+        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .complianceActivity(ComplianceSearchFilter.builder()
+                    .hasHadComplianceActivity(true)
+                    .nonconformityOptions(Stream.of(
+                            NonconformitySearchOptions.NEVER_NONCONFORMITY).collect(Collectors.toSet()))
+                    .nonconformityOptionsOperator(SearchSetOperator.OR)
+                    .build())
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        SearchResponse searchResponse = listingSearchService.search(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+        searchResponse.getResults().forEach(result -> assertTrue(
+                (result.getSurveillanceCount() > 0
+                        || result.getDirectReviewCount() > 0)
+                && result.getClosedDirectReviewNonConformityCount() == 0
+                && result.getOpenDirectReviewNonConformityCount() == 0
+                && result.getClosedSurveillanceNonConformityCount() == 0
+                && result.getOpenSurveillanceNonConformityCount() == 0));
     }
 
     private List<CertifiedProductBasicSearchResult> createBasicSearchResultCollection(int collectionSize) {
