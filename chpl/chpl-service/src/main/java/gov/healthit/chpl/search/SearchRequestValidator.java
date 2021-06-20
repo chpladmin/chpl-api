@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -21,6 +22,7 @@ import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
+@Component
 public class SearchRequestValidator {
     private ErrorMessageUtil msgUtil;
     private DimensionalDataManager dimensionalDataManager;

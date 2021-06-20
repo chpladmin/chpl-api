@@ -42,11 +42,10 @@ public class ListingSearchService {
 
     @Autowired
     public ListingSearchService(SearchRequestValidator searchRequestValidator,
-            SearchRequestNormalizer searchRequestNormalizer,
             CertifiedProductSearchManager cpSearchManager) {
         this.searchRequestValidator = searchRequestValidator;
-        this.searchRequestNormalizer = searchRequestNormalizer;
         this.cpSearchManager = cpSearchManager;
+        this.searchRequestNormalizer = new SearchRequestNormalizer();
         dateFormatter = DateTimeFormatter.ofPattern(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
     }
 

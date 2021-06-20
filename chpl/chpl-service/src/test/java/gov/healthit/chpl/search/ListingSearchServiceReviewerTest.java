@@ -32,11 +32,10 @@ public class ListingSearchServiceReviewerTest {
 
     @Before
     public void setup() {
-        SearchRequestNormalizer searchRequestNormalizer = Mockito.mock(SearchRequestNormalizer.class);
         SearchRequestValidator searchRequestValidator = Mockito.mock(SearchRequestValidator.class);
         cpSearchManager = Mockito.mock(CertifiedProductSearchManager.class);
 
-        listingSearchService = new ListingSearchService(searchRequestValidator, searchRequestNormalizer, cpSearchManager);
+        listingSearchService = new ListingSearchService(searchRequestValidator, cpSearchManager);
     }
 
     @Test

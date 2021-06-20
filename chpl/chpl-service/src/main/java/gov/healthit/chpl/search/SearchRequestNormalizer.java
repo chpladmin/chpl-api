@@ -20,6 +20,7 @@ public class SearchRequestNormalizer {
     private void normalizeCertificationStatuses(SearchRequest request) {
         if (request.getCertificationStatuses() != null && request.getCertificationStatuses().size() > 0) {
             request.setCertificationStatuses(request.getCertificationStatuses().stream()
+                    .filter(certificationStatus -> !StringUtils.isBlank(certificationStatus))
                     .map(certificationStatus -> certificationStatus.trim())
                     .collect(Collectors.toSet()));
         }
@@ -28,6 +29,7 @@ public class SearchRequestNormalizer {
     private void normalizeCertificationEditions(SearchRequest request) {
         if (request.getCertificationEditions() != null && request.getCertificationEditions().size() > 0) {
             request.setCertificationEditions(request.getCertificationEditions().stream()
+                    .filter(certificationEdition -> !StringUtils.isBlank(certificationEdition))
                     .map(certificationEdition -> certificationEdition.trim())
                     .collect(Collectors.toSet()));
         }
@@ -36,6 +38,7 @@ public class SearchRequestNormalizer {
     private void normalizeCqms(SearchRequest request) {
         if (request.getCqms() != null && request.getCqms().size() > 0) {
             request.setCqms(request.getCqms().stream()
+                    .filter(cqm -> !StringUtils.isBlank(cqm))
                     .map(cqm -> cqm.trim())
                     .collect(Collectors.toSet()));
         }
@@ -44,6 +47,7 @@ public class SearchRequestNormalizer {
     private void normalizeAcbs(SearchRequest request) {
         if (request.getCertificationBodies() != null && request.getCertificationBodies().size() > 0) {
             request.setCertificationBodies(request.getCertificationBodies().stream()
+                    .filter(acb -> !StringUtils.isBlank(acb))
                     .map(acb -> acb.trim())
                     .collect(Collectors.toSet()));
         }
