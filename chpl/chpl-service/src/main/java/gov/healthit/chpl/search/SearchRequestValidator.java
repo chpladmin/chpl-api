@@ -1,0 +1,176 @@
+package gov.healthit.chpl.search;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.DescriptiveModel;
+import gov.healthit.chpl.domain.KeyValueModel;
+import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.DimensionalDataManager;
+import gov.healthit.chpl.search.domain.SearchRequest;
+import gov.healthit.chpl.util.ErrorMessageUtil;
+
+public class SearchRequestValidator {
+    private ErrorMessageUtil msgUtil;
+    private DimensionalDataManager dimensionalDataManager;
+    private DateTimeFormatter dateFormatter;
+
+    @Autowired
+    public SearchRequestValidator(DimensionalDataManager dimensionalDataManager,
+            ErrorMessageUtil msgUtil) {
+        this.dimensionalDataManager = dimensionalDataManager;
+        this.msgUtil = msgUtil;
+        dateFormatter = DateTimeFormatter.ofPattern(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+    }
+
+    public void validate(SearchRequest request) throws ValidationException {
+        Set<String> errors = new LinkedHashSet<String>();
+        errors.addAll(getCertificationStatusErrors(request.getCertificationStatuses()));
+        errors.addAll(getCertificationEditionErrors(request.getCertificationEditions()));
+        errors.addAll(getCertificationCriteriaErrors(request.getCertificationCriteriaIds()));
+        errors.addAll(getCqmErrors(request.getCqms()));
+        errors.addAll(getAcbErrors(request.getCertificationBodies()));
+        errors.addAll(getPracticeTypeErrors(request.getPracticeType()));
+        errors.addAll(getCertificationDateErrors(request.getCertificationDateStart(), request.getCertificationDateEnd()));
+        errors.addAll(getPageSizeErrors(request.getPageSize()));
+        if (errors != null && errors.size() > 0) {
+            throw new ValidationException(errors);
+        }
+    }
+
+    private Set<String> getCertificationStatusErrors(Set<String> certificationStatuses) {
+        if (certificationStatuses == null || certificationStatuses.size() == 0) {
+            return Collections.emptySet();
+        }
+
+        Set<KeyValueModel> allCertificationStatuses = dimensionalDataManager.getCertificationStatuses();
+        return certificationStatuses.stream()
+            .filter(certificationStatus -> !isInSet(certificationStatus, allCertificationStatuses))
+            .map(certificationStatus -> msgUtil.getMessage("search.certificationStatuses.invalid", certificationStatus))
+            .collect(Collectors.toSet());
+    }
+
+    private Set<String> getCertificationEditionErrors(Set<String> certificationEditions) {
+        if (certificationEditions == null || certificationEditions.size() == 0) {
+            return Collections.emptySet();
+        }
+
+        Set<KeyValueModel> allCertificationEditions = dimensionalDataManager.getCertificationStatuses();
+        return certificationEditions.stream()
+            .filter(certificationEdition -> !isInSet(certificationEdition, allCertificationEditions))
+            .map(certificationEdition -> msgUtil.getMessage("search.certificationEdition.invalid", certificationEdition))
+            .collect(Collectors.toSet());
+    }
+
+    private Set<String> getCertificationCriteriaErrors(Set<Long> certificationCriteriaIds) {
+        if (certificationCriteriaIds == null || certificationCriteriaIds.size() == 0) {
+            return Collections.emptySet();
+        }
+
+        Set<CertificationCriterion> allCriteria = dimensionalDataManager.getCertificationCriterion();
+        return certificationCriteriaIds.stream()
+            .filter(certificationCriteriaId -> !isInSet(certificationCriteriaId, allCriteria))
+            .map(certificationCriteriaId -> msgUtil.getMessage("search.certificationCriteria.invalid", certificationCriteriaId))
+            .collect(Collectors.toSet());
+    }
+
+    private Set<String> getCqmErrors(Set<String> cqmNumbers) {
+        if (cqmNumbers == null || cqmNumbers.size() == 0) {
+            return Collections.emptySet();
+        }
+
+        Set<DescriptiveModel> allCqms = dimensionalDataManager.getCQMCriterionNumbers(false);
+        return cqmNumbers.stream()
+                .filter(cqm -> !isInSet(cqm, allCqms))
+                .map(cqm -> msgUtil.getMessage("search.cqm.invalid", cqm))
+                .collect(Collectors.toSet());
+    }
+
+    private Set<String> getAcbErrors(Set<String> acbs) {
+        if (acbs == null || acbs.size() == 0) {
+            return Collections.emptySet();
+        }
+
+        Set<CertificationBody> allAcbs = dimensionalDataManager.getCertBodyNames();
+        return acbs.stream()
+                .filter(acb -> !isInAcbSet(acb, allAcbs))
+                .map(acb -> msgUtil.getMessage("search.certificationBodies.invalid", acb))
+                .collect(Collectors.toSet());
+    }
+
+    private Set<String> getPracticeTypeErrors(String practiceType) {
+        if (StringUtils.isEmpty(practiceType)) {
+            return Collections.emptySet();
+        }
+
+        Set<KeyValueModel> allPracticeTypes = dimensionalDataManager.getPracticeTypeNames();
+        return Stream.of(practiceType)
+                .filter(ptype -> !isInSet(ptype, allPracticeTypes))
+                .map(ptype -> msgUtil.getMessage("search.practiceType.invalid", ptype))
+                .collect(Collectors.toSet());
+    }
+
+    private Set<String> getCertificationDateErrors(String certificationDateStart, String certificationDateEnd) {
+        if (StringUtils.isEmpty(certificationDateStart) && StringUtils.isEmpty(certificationDateEnd)) {
+            return Collections.emptySet();
+        }
+
+        Set<String> errors = new LinkedHashSet<String>();
+        LocalDate startDate = null;
+        try {
+            startDate = LocalDate.parse(certificationDateStart, dateFormatter);
+        } catch (DateTimeParseException ex) {
+            errors.add(msgUtil.getMessage("search.certificationDate.invalid", certificationDateStart, SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT));
+        }
+
+        LocalDate endDate = null;
+        try {
+            endDate = LocalDate.parse(certificationDateEnd, dateFormatter);
+        } catch (DateTimeParseException ex) {
+            errors.add(msgUtil.getMessage("search.certificationDate.invalid", certificationDateEnd, SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT));
+        }
+
+        if (endDate != null && startDate != null && endDate.isBefore(startDate)) {
+            errors.add(
+                    msgUtil.getMessage("search.certificationDateOrder.invalid", certificationDateEnd, certificationDateStart));
+        }
+        return errors;
+    }
+
+    private Set<String> getPageSizeErrors(Integer pageSize) {
+        if (pageSize != null && pageSize > SearchRequest.MAX_PAGE_SIZE) {
+            return Stream.of(msgUtil.getMessage("search.pageSize.invalid", SearchRequest.MAX_PAGE_SIZE))
+                    .collect(Collectors.toSet());
+        }
+        return Collections.emptySet();
+    }
+
+    private boolean isInSet(String value, Set<? extends KeyValueModel> setToSearch) {
+        return setToSearch.stream()
+            .filter(item -> item.getName().equalsIgnoreCase(value))
+            .count() > 0;
+    }
+
+    private boolean isInAcbSet(String value, Set<CertificationBody> setToSearch) {
+        return setToSearch.stream()
+            .filter(item -> item.getName().equalsIgnoreCase(value))
+            .count() > 0;
+    }
+
+    private boolean isInSet(Long value, Set<CertificationCriterion> setToSearch) {
+        return setToSearch.stream()
+            .filter(item -> item.getId().equals(value))
+            .count() > 0;
+    }
+}

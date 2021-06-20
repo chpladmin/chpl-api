@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
@@ -170,7 +171,7 @@ public class SearchController {
             @RequestParam(value = "pageSize", required = false, defaultValue = "20") Integer pageSize,
             @RequestParam(value = "orderBy", required = false, defaultValue = "product") String orderBy,
             @RequestParam(value = "sortDescending", required = false, defaultValue = "false") Boolean sortDescending)
-                    throws InvalidArgumentsException {
+                    throws InvalidArgumentsException, ValidationException {
 
         SearchRequest searchRequest = SearchRequest.builder()
                 .searchTerm(searchTerm.trim())
@@ -207,7 +208,7 @@ public class SearchController {
     @RequestMapping(value = "/search/beta", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public @ResponseBody SearchResponse search(@RequestBody SearchRequest searchRequest)
-            throws InvalidArgumentsException {
+            throws ValidationException {
         return searchService.search(searchRequest);
     }
 

@@ -16,8 +16,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.manager.DimensionalDataManager;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
 import gov.healthit.chpl.search.domain.NonconformitySearchOptions;
@@ -25,26 +24,23 @@ import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchResponse;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
-import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class ListingSearchServiceReviewerTest {
 
-    private ErrorMessageUtil msgUtil;
-    private DimensionalDataManager dimensionalDataManager;
     private CertifiedProductSearchManager cpSearchManager;
     private ListingSearchService listingSearchService;
 
     @Before
     public void setup() {
-        msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        dimensionalDataManager = Mockito.mock(DimensionalDataManager.class);
+        SearchRequestNormalizer searchRequestNormalizer = Mockito.mock(SearchRequestNormalizer.class);
+        SearchRequestValidator searchRequestValidator = Mockito.mock(SearchRequestValidator.class);
         cpSearchManager = Mockito.mock(CertifiedProductSearchManager.class);
 
-        listingSearchService = new ListingSearchService(msgUtil, dimensionalDataManager, cpSearchManager);
+        listingSearchService = new ListingSearchService(searchRequestValidator, searchRequestNormalizer, cpSearchManager);
     }
 
     @Test
-    public void search_validEmptySearchRequest_findsAllListings() throws InvalidArgumentsException {
+    public void search_validEmptySearchRequest_findsAllListings() throws ValidationException {
         Mockito.when(cpSearchManager.getSearchListingCollection())
             .thenReturn(createBasicSearchResultCollection(100));
         SearchRequest searchRequest = SearchRequest.builder()
@@ -59,7 +55,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_pageOutOfRangeSearchRequest_returnsEmptyResponse() throws InvalidArgumentsException {
+    public void search_pageOutOfRangeSearchRequest_returnsEmptyResponse() throws ValidationException {
         Mockito.when(cpSearchManager.getSearchListingCollection())
             .thenReturn(createBasicSearchResultCollection(100));
         SearchRequest searchRequest = SearchRequest.builder()
@@ -74,7 +70,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_noListingsWithSearchTerm_returnsEmptyResponse() throws InvalidArgumentsException {
+    public void search_noListingsWithSearchTerm_returnsEmptyResponse() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         allListings.get(1).setDeveloper("another name");
         allListings.get(2).setProduct("test");
@@ -95,7 +91,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_sortByEditionAscending_ordersResults() throws InvalidArgumentsException {
+    public void search_sortByEditionAscending_ordersResults() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(5);
         allListings.get(0).setEdition("2015");
         allListings.get(1).setEdition("2011");
@@ -122,7 +118,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_sortByEditionDescending_ordersResults() throws InvalidArgumentsException {
+    public void search_sortByEditionDescending_ordersResults() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(5);
         allListings.get(0).setEdition("2015");
         allListings.get(1).setEdition("2011");
@@ -149,7 +145,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_sortByDeveloperAscending_ordersResults() throws InvalidArgumentsException {
+    public void search_sortByDeveloperAscending_ordersResults() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(5);
         allListings.get(0).setDeveloper("z");
         allListings.get(1).setDeveloper("b");
@@ -176,7 +172,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_sortByDeveloperDescending_ordersResults() throws InvalidArgumentsException {
+    public void search_sortByDeveloperDescending_ordersResults() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(5);
         allListings.get(0).setDeveloper("z");
         allListings.get(1).setDeveloper("b");
@@ -203,7 +199,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_sortByProductAscending_ordersResults() throws InvalidArgumentsException {
+    public void search_sortByProductAscending_ordersResults() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(5);
         allListings.get(0).setProduct("z");
         allListings.get(1).setProduct("b");
@@ -230,7 +226,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_sortByProductDescending_ordersResults() throws InvalidArgumentsException {
+    public void search_sortByProductDescending_ordersResults() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(5);
         allListings.get(0).setProduct("z");
         allListings.get(1).setProduct("b");
@@ -257,7 +253,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_sortByVersionAscending_ordersResults() throws InvalidArgumentsException {
+    public void search_sortByVersionAscending_ordersResults() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(5);
         allListings.get(0).setVersion("z");
         allListings.get(1).setVersion("b");
@@ -284,7 +280,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_sortByVersionDescending_ordersResults() throws InvalidArgumentsException {
+    public void search_sortByVersionDescending_ordersResults() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(5);
         allListings.get(0).setVersion("z");
         allListings.get(1).setVersion("b");
@@ -311,7 +307,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_sortByCertificationDateDescending_ordersResults() throws InvalidArgumentsException {
+    public void search_sortByCertificationDateDescending_ordersResults() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(5);
         allListings.get(0).setCertificationDate(0L);
         allListings.get(1).setCertificationDate(100L);
@@ -338,7 +334,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_sortByCertificationDateAscending_ordersResults() throws InvalidArgumentsException {
+    public void search_sortByCertificationDateAscending_ordersResults() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(5);
         allListings.get(0).setCertificationDate(0L);
         allListings.get(1).setCertificationDate(100L);
@@ -365,7 +361,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_sortByChplIdAscending_ordersResults() throws InvalidArgumentsException {
+    public void search_sortByChplIdAscending_ordersResults() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(5);
         allListings.get(0).setChplProductNumber("CHP-12345");
         allListings.get(1).setChplProductNumber("15.04.04.1234.PROD.11.1.01.123456");
@@ -392,7 +388,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_sortByChplIdDescending_ordersResults() throws InvalidArgumentsException {
+    public void search_sortByChplIdDescending_ordersResults() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(5);
         allListings.get(0).setChplProductNumber("CHP-12345");
         allListings.get(1).setChplProductNumber("15.04.04.1234.PROD.11.1.01.123456");
@@ -419,7 +415,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_sortByCertificationStatusAscending_ordersResults() throws InvalidArgumentsException {
+    public void search_sortByCertificationStatusAscending_ordersResults() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(5);
         allListings.get(0).setCertificationStatus("Active");
         allListings.get(1).setCertificationStatus("Retired");
@@ -446,7 +442,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_sortByCertificationStatusDescending_ordersResults() throws InvalidArgumentsException {
+    public void search_sortByCertificationStatusDescending_ordersResults() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(5);
         allListings.get(0).setCertificationStatus("Active");
         allListings.get(1).setCertificationStatus("Retired");
@@ -473,7 +469,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_searchTermProvided_findsListingsWithMatchingDevelopers() throws InvalidArgumentsException {
+    public void search_searchTermProvided_findsListingsWithMatchingDevelopers() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         allListings.get(0).setDeveloper("dev name");
         allListings.get(1).setDeveloper("long DEV name here");
@@ -491,7 +487,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_searchTermProvided_findsListingsWithMatchingProducts() throws InvalidArgumentsException {
+    public void search_searchTermProvided_findsListingsWithMatchingProducts() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         allListings.get(0).setProduct("product name");
         allListings.get(1).setProduct("long PRODUCT name here");
@@ -509,7 +505,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_searchTermProvided_findsListingsWithMatchingChplProductNumber() throws InvalidArgumentsException {
+    public void search_searchTermProvided_findsListingsWithMatchingChplProductNumber() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         allListings.get(0).setChplProductNumber("15.02.02.3007.A056.01.00.0.180214");
         allListings.get(1).setChplProductNumber("CHP-123456");
@@ -528,7 +524,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_searchTermProvided_findsListingsWithMatchingAcbCertificationId() throws InvalidArgumentsException {
+    public void search_searchTermProvided_findsListingsWithMatchingAcbCertificationId() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         allListings.get(0).setAcbCertificationId("15.02.02.3007.A056.01.00.0.180214");
         allListings.get(1).setAcbCertificationId("CHP-123456");
@@ -547,7 +543,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_singleAcbNameProvided_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_singleAcbNameProvided_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         allListings.get(0).setAcb("ACB 1");
         allListings.get(1).setAcb("ACB 2");
@@ -568,7 +564,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_mutlipleAcbNamesProvided_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_mutlipleAcbNamesProvided_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         allListings.get(0).setAcb("ACB 1");
         allListings.get(1).setAcb("ACB 2");
@@ -593,7 +589,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_singleCertificationStatusProvided_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_singleCertificationStatusProvided_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         allListings.get(0).setCertificationStatus(CertificationStatusType.Active.getName());
         allListings.get(1).setCertificationStatus(CertificationStatusType.SuspendedByAcb.getName());
@@ -614,7 +610,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_multipleCertificationStatusProvided_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_multipleCertificationStatusProvided_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         allListings.get(0).setCertificationStatus(CertificationStatusType.Active.getName());
         allListings.get(1).setCertificationStatus(CertificationStatusType.SuspendedByAcb.getName());
@@ -639,7 +635,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_singleCertificationEditionProvided_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_singleCertificationEditionProvided_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         allListings.get(0).setEdition("2014");
         allListings.get(1).setEdition("2014");
@@ -661,7 +657,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_multipleCertificationEditionProvided_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_multipleCertificationEditionProvided_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         allListings.get(0).setEdition("2014");
         allListings.get(1).setEdition("2014");
@@ -688,7 +684,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_developerProvided_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_developerProvided_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         allListings.get(0).setDeveloper("dev name");
         allListings.get(1).setDeveloper("long DEV name here");
@@ -708,7 +704,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_productProvided_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_productProvided_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         allListings.get(0).setProduct("product name");
         allListings.get(1).setProduct("long PRODUCT name here");
@@ -728,7 +724,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_versionProvided_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_versionProvided_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         allListings.get(0).setVersion("version name");
         allListings.get(1).setVersion("long VERSION name here");
@@ -748,7 +744,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_practiceTypeProvided_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_practiceTypeProvided_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         allListings.get(0).setPracticeType("ambulatory");
         allListings.get(1).setPracticeType("AMbulatory");
@@ -768,7 +764,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_singleCriterionIdWithAndOperatorProvided_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_singleCriterionIdWithAndOperatorProvided_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         allListings.get(0).setCriteriaMet(Stream.of(1L, 2L, 3L).collect(Collectors.toSet()));
         allListings.get(1).setCriteriaMet(Stream.of(1L, 2L, 4L).collect(Collectors.toSet()));
@@ -791,7 +787,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_singleCriterionIdWithOrOperatorProvided_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_singleCriterionIdWithOrOperatorProvided_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         allListings.get(0).setCriteriaMet(Stream.of(1L, 2L, 3L).collect(Collectors.toSet()));
         allListings.get(1).setCriteriaMet(Stream.of(1L, 2L, 4L).collect(Collectors.toSet()));
@@ -814,7 +810,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_multipleCriteriaIdsWithAndOperatorProvided_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_multipleCriteriaIdsWithAndOperatorProvided_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         allListings.get(0).setCriteriaMet(Stream.of(1L, 2L, 3L).collect(Collectors.toSet()));
         allListings.get(1).setCriteriaMet(Stream.of(1L, 2L, 4L).collect(Collectors.toSet()));
@@ -838,7 +834,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_multipleCriteriaIdsWithOrOperatorProvided_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_multipleCriteriaIdsWithOrOperatorProvided_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         allListings.get(0).setCriteriaMet(Stream.of(1L, 2L, 3L).collect(Collectors.toSet()));
         allListings.get(1).setCriteriaMet(Stream.of(1L, 2L, 4L).collect(Collectors.toSet()));
@@ -863,7 +859,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_singleCqmWithAndOperatorProvided_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_singleCqmWithAndOperatorProvided_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         allListings.get(0).setCqmsMet(Stream.of("CMS1", "CMS2", "CMS3").collect(Collectors.toSet()));
         allListings.get(1).setCqmsMet(Stream.of("CMS1", "CMS2", "CMS4").collect(Collectors.toSet()));
@@ -886,7 +882,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_singleCqmWithOrOperatorProvided_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_singleCqmWithOrOperatorProvided_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         allListings.get(0).setCqmsMet(Stream.of("CMS1", "CMS2", "CMS3").collect(Collectors.toSet()));
         allListings.get(1).setCqmsMet(Stream.of("CMS1", "CMS2", "CMS4").collect(Collectors.toSet()));
@@ -909,7 +905,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_multipleCqmsWithAndOperatorProvided_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_multipleCqmsWithAndOperatorProvided_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         allListings.get(0).setCqmsMet(Stream.of("CMS1", "CMS2", "CMS3").collect(Collectors.toSet()));
         allListings.get(1).setCqmsMet(Stream.of("CMS1", "CMS2", "CMS4").collect(Collectors.toSet()));
@@ -933,7 +929,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_multipleCqmsWithOrOperatorProvided_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_multipleCqmsWithOrOperatorProvided_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         allListings.get(0).setCqmsMet(Stream.of("CMS1", "CMS2", "CMS3").collect(Collectors.toSet()));
         allListings.get(1).setCqmsMet(Stream.of("CMS1", "CMS2", "CMS4").collect(Collectors.toSet()));
@@ -958,7 +954,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_certificationStartDateEqualsListingCertificationDate_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_certificationStartDateEqualsListingCertificationDate_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         //Thu Jun 25 2020 19:37:15 GMT-0400
         allListings.get(0).setCertificationDate(1593128235254L);
@@ -979,7 +975,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_certificationStartDateBeforeListingCertificationDate_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_certificationStartDateBeforeListingCertificationDate_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         //Thu Jun 25 2020 19:37:15 GMT-0400
         allListings.get(0).setCertificationDate(1593128235254L);
@@ -1000,7 +996,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_certificationEndDateEqualsListingCertificationDate_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_certificationEndDateEqualsListingCertificationDate_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         //Thu Jun 25 2020 19:37:15 GMT-0400
         allListings.get(0).setCertificationDate(1593128235254L);
@@ -1021,7 +1017,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_certificationEndDateAfterListingCertificationDate_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_certificationEndDateAfterListingCertificationDate_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         //Thu Jun 25 2020 19:37:15 GMT-0400
         allListings.get(0).setCertificationDate(1593128235254L);
@@ -1042,7 +1038,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_listingCertificationDateBetweenStartAndEnd_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_listingCertificationDateBetweenStartAndEnd_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         //Thu Jun 25 2020 19:37:15 GMT-0400
         allListings.get(0).setCertificationDate(1593128235254L);
@@ -1064,7 +1060,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_listingCertificationDateEqualsStartAndBeforeEnd_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_listingCertificationDateEqualsStartAndBeforeEnd_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         //Thu Jun 25 2020 19:37:15 GMT-0400
         allListings.get(0).setCertificationDate(1593128235254L);
@@ -1086,7 +1082,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_listingCertificationDateEqualsEndAndAfterStart_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_listingCertificationDateEqualsEndAndAfterStart_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         //Thu Jun 25 2020 19:37:15 GMT-0400
         allListings.get(0).setCertificationDate(1593128235254L);
@@ -1108,7 +1104,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_listingCertificationDateEqualsEndAndStart_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_listingCertificationDateEqualsEndAndStart_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         //Thu Jun 25 2020 19:37:15 GMT-0400
         allListings.get(0).setCertificationDate(1593128235254L);
@@ -1130,7 +1126,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_listingComplianceTrue_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_listingComplianceTrue_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(3);
         allListings.get(0).setSurveillanceCount(0L);
         allListings.get(0).setDirectReviewCount(0);
@@ -1156,7 +1152,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_listingComplianceFalse_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_listingComplianceFalse_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(3);
         allListings.get(0).setSurveillanceCount(0L);
         allListings.get(0).setDirectReviewCount(0);
@@ -1182,7 +1178,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_listingComplianceTrueAndOpenNonConformities_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_listingComplianceTrueAndOpenNonConformities_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(3);
         allListings.get(0).setSurveillanceCount(0L);
         allListings.get(0).setDirectReviewCount(0);
@@ -1210,7 +1206,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_listingComplianceTrueAndClosedNonConformities_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_listingComplianceTrueAndClosedNonConformities_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(3);
         allListings.get(0).setSurveillanceCount(0L);
         allListings.get(0).setDirectReviewCount(0);
@@ -1239,7 +1235,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_listingComplianceFalseAndClosedNonConformities_noMatchingListings() throws InvalidArgumentsException {
+    public void search_listingComplianceFalseAndClosedNonConformities_noMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(3);
         allListings.get(0).setSurveillanceCount(0L);
         allListings.get(0).setDirectReviewCount(0);
@@ -1267,7 +1263,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_listingComplianceTrueAndOpenOrClosedNonConformities_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_listingComplianceTrueAndOpenOrClosedNonConformities_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(3);
         allListings.get(0).setSurveillanceCount(0L);
         allListings.get(0).setDirectReviewCount(0);
@@ -1303,7 +1299,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_listingComplianceTrueAndOpenAndClosedNonConformities_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_listingComplianceTrueAndOpenAndClosedNonConformities_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(3);
         allListings.get(0).setSurveillanceCount(0L);
         allListings.get(0).setDirectReviewCount(0);
@@ -1340,7 +1336,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_listingComplianceFalseAndNeverNonConformities_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_listingComplianceFalseAndNeverNonConformities_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(3);
         allListings.get(0).setSurveillanceCount(0L);
         allListings.get(0).setDirectReviewCount(0);
@@ -1376,7 +1372,7 @@ public class ListingSearchServiceReviewerTest {
     }
 
     @Test
-    public void search_listingComplianceTrueAndNeverNonConformities_findsMatchingListings() throws InvalidArgumentsException {
+    public void search_listingComplianceTrueAndNeverNonConformities_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(3);
         allListings.get(0).setSurveillanceCount(1L);
         allListings.get(0).setDirectReviewCount(0);

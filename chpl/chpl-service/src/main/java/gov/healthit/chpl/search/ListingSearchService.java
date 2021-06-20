@@ -18,8 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.manager.DimensionalDataManager;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
 import gov.healthit.chpl.search.domain.NonconformitySearchOptions;
@@ -27,7 +26,6 @@ import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchResponse;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
-import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -37,24 +35,24 @@ import lombok.extern.log4j.Log4j2;
 public class ListingSearchService {
     private static final int MAX_PAGE_SIZE = 100;
 
-    private ErrorMessageUtil msgUtil;
-    private DimensionalDataManager dimensionalDataManager;
+    private SearchRequestValidator searchRequestValidator;
+    private SearchRequestNormalizer searchRequestNormalizer;
     private CertifiedProductSearchManager cpSearchManager;
     private DateTimeFormatter dateFormatter;
 
     @Autowired
-    public ListingSearchService(ErrorMessageUtil msgUtil,
-            DimensionalDataManager dimensionalDataManager,
+    public ListingSearchService(SearchRequestValidator searchRequestValidator,
+            SearchRequestNormalizer searchRequestNormalizer,
             CertifiedProductSearchManager cpSearchManager) {
-        this.msgUtil = msgUtil;
-        this.dimensionalDataManager = dimensionalDataManager;
+        this.searchRequestValidator = searchRequestValidator;
+        this.searchRequestNormalizer = searchRequestNormalizer;
         this.cpSearchManager = cpSearchManager;
         dateFormatter = DateTimeFormatter.ofPattern(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
     }
 
-    public SearchResponse search(SearchRequest searchRequest) throws InvalidArgumentsException {
-        //TODO: validate parameters - maybe this is a separate validator class?
-        //TODO: trim parameters
+    public SearchResponse search(SearchRequest searchRequest) throws ValidationException {
+        searchRequestNormalizer.normalize(searchRequest);
+        searchRequestValidator.validate(searchRequest);
 
         List<CertifiedProductBasicSearchResult> listings = cpSearchManager.getSearchListingCollection();
         LOGGER.debug("Total listings: " + listings.size());
