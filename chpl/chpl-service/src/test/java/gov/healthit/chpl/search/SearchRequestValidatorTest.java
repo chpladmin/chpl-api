@@ -1,14 +1,35 @@
 package gov.healthit.chpl.search;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.DescriptiveModel;
+import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
+import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class SearchRequestValidatorTest {
+    private static final String INVALID_CERTIFICATION_STATUS = "Could not find certification status with value '%s'.";
+    private static final String INVALID_CERTIFICATION_EDITION = "Could not find certification edition with value '%s'.";
+    private static final String INVALID_CERTIFICATION_CRITERION = "Could not find certification criterion with value '%s'.";
+    private static final String INVALID_CQM = "Could not find CQM with value '%s'.";
+    private static final String INVALID_ACB = "Could not find certification body with value '%s'.";
+    private static final String INVALID_PRACTICE_TYPE = "Could not find practice type with value '%s'.";
+    private static final String INVALID_CERTIFICATION_DATE = "Could not parse '%s' as date in the format %s.";
+    private static final String INVALID_DATE_ORDER = "The certification date range end '%s' is before the start '%s'.";
+
     private ErrorMessageUtil msgUtil;
     private DimensionalDataManager dimensionalDataManager;
     private SearchRequestValidator validator;
@@ -17,19 +38,434 @@ public class SearchRequestValidatorTest {
     public void setup() {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         dimensionalDataManager = Mockito.mock(DimensionalDataManager.class);
-        //TODO: set up mocks
+
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.certificationStatuses.invalid"), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(INVALID_CERTIFICATION_STATUS, i.getArgument(1), ""));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.certificationEdition.invalid"), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(INVALID_CERTIFICATION_EDITION, i.getArgument(1), ""));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.certificationCriteria.invalid"), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(INVALID_CERTIFICATION_CRITERION, i.getArgument(1), ""));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.cqms.invalid"), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(INVALID_CQM, i.getArgument(1), ""));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.certificationBodies.invalid"), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(INVALID_ACB, i.getArgument(1), ""));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.practiceType.invalid"), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(INVALID_PRACTICE_TYPE, i.getArgument(1), ""));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.certificationDate.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.eq(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT)))
+            .thenAnswer(i -> String.format(INVALID_CERTIFICATION_DATE, i.getArgument(1), i.getArgument(2)));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.certificationDateOrder.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(INVALID_DATE_ORDER, i.getArgument(1), i.getArgument(2)));
+
         validator = new SearchRequestValidator(dimensionalDataManager, msgUtil);
     }
 
-    @Test(expected = ValidationException.class)
-    public void validate_invalidCertificationStatus_throwsException() {
-        //TODO:
+    @Test
+    public void validate_invalidCertificationStatusNullDimensionalData_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .certificationStatuses(Stream.of("Active").collect(Collectors.toSet()))
+            .build();
+        Mockito.when(dimensionalDataManager.getCertificationStatuses())
+            .thenReturn(null);
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_CERTIFICATION_STATUS, "Active", "")));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_invalidCertificationStatusDimensionalDataExists_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .certificationStatuses(Stream.of("Active").collect(Collectors.toSet()))
+            .build();
+        Mockito.when(dimensionalDataManager.getCertificationStatuses())
+            .thenReturn(Stream.of(new KeyValueModel(1L, "Suspended"), new KeyValueModel(2L, "Withdrawn")).collect(Collectors.toSet()));
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_CERTIFICATION_STATUS, "Active", "")));
+            return;
+        }
+        fail("Should not execute.");
     }
 
     @Test
     public void validate_validCertificationStatus_noException() {
-        //TODO:
+        SearchRequest request = SearchRequest.builder()
+            .certificationStatuses(Stream.of("Active").collect(Collectors.toSet()))
+            .build();
+        Mockito.when(dimensionalDataManager.getCertificationStatuses())
+            .thenReturn(Stream.of(new KeyValueModel(1L, "Active")).collect(Collectors.toSet()));
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
     }
 
-    //TODO: more tests
+    @Test
+    public void validate_invalidCertificationEditionNullDimensionalData_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .certificationEditions(Stream.of("2021").collect(Collectors.toSet()))
+            .build();
+        Mockito.when(dimensionalDataManager.getEditionNames(ArgumentMatchers.anyBoolean()))
+            .thenReturn(null);
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_CERTIFICATION_EDITION, "2021", "")));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_invalidCertificationEditionsDimensionalDataExists_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .certificationEditions(Stream.of("2021").collect(Collectors.toSet()))
+            .build();
+        Mockito.when(dimensionalDataManager.getEditionNames(ArgumentMatchers.anyBoolean()))
+            .thenReturn(Stream.of(new KeyValueModel(1L, "2011"), new KeyValueModel(2L, "2014")).collect(Collectors.toSet()));
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_CERTIFICATION_EDITION, "2021", "")));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_validCertificationEdition_noException() {
+        SearchRequest request = SearchRequest.builder()
+            .certificationEditions(Stream.of("2014").collect(Collectors.toSet()))
+            .build();
+        Mockito.when(dimensionalDataManager.getEditionNames(ArgumentMatchers.anyBoolean()))
+            .thenReturn(Stream.of(new KeyValueModel(1L, "2014")).collect(Collectors.toSet()));
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_invalidCertificationCriteriaNullDimensionalData_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .certificationCriteriaIds(Stream.of(1L).collect(Collectors.toSet()))
+            .build();
+        Mockito.when(dimensionalDataManager.getCertificationCriterion())
+            .thenReturn(null);
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_CERTIFICATION_CRITERION, "1", "")));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_invalidCertificationCriteriaDimensionalDataExists_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .certificationCriteriaIds(Stream.of(3L).collect(Collectors.toSet()))
+            .build();
+        Mockito.when(dimensionalDataManager.getCertificationCriterion())
+            .thenReturn(Stream.of(CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").build(),
+                    CertificationCriterion.builder().id(2L).number("170.315 (a)(2)").build())
+                    .collect(Collectors.toSet()));
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_CERTIFICATION_CRITERION, "3", "")));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_validCertificationCriteria_noException() {
+        SearchRequest request = SearchRequest.builder()
+            .certificationCriteriaIds(Stream.of(1L).collect(Collectors.toSet()))
+            .build();
+        Mockito.when(dimensionalDataManager.getCertificationCriterion())
+        .thenReturn(Stream.of(CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").build(),
+                CertificationCriterion.builder().id(2L).number("170.315 (a)(2)").build())
+                .collect(Collectors.toSet()));
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_invalidCqmNullDimensionalData_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .cqms(Stream.of("CMS1").collect(Collectors.toSet()))
+            .build();
+        Mockito.when(dimensionalDataManager.getCQMCriterionNumbers(ArgumentMatchers.anyBoolean()))
+            .thenReturn(null);
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_CQM, "CMS1", "")));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_invalidCqmDimensionalDataExists_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .cqms(Stream.of("CMS3").collect(Collectors.toSet()))
+            .build();
+        Mockito.when(dimensionalDataManager.getCQMCriterionNumbers(ArgumentMatchers.anyBoolean()))
+            .thenReturn(Stream.of(new DescriptiveModel(1L, "CMS1", ""), new DescriptiveModel(2L, "CMS2", ""))
+                    .collect(Collectors.toSet()));
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_CQM, "CMS3", "")));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_validCqm_noException() {
+        SearchRequest request = SearchRequest.builder()
+                .cqms(Stream.of("CMS1").collect(Collectors.toSet()))
+            .build();
+        Mockito.when(dimensionalDataManager.getCQMCriterionNumbers(ArgumentMatchers.anyBoolean()))
+        .thenReturn(Stream.of(new DescriptiveModel(1L, "CMS1", ""), new DescriptiveModel(2L, "CMS2", ""))
+                .collect(Collectors.toSet()));
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_invalidAcbNullDimensionalData_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .certificationBodies(Stream.of("ICSA").collect(Collectors.toSet()))
+            .build();
+        Mockito.when(dimensionalDataManager.getCertBodyNames())
+            .thenReturn(null);
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_ACB, "ICSA", "")));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_invalidAcbDimensionalDataExists_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .certificationBodies(Stream.of("ICSA").collect(Collectors.toSet()))
+            .build();
+        Mockito.when(dimensionalDataManager.getCertBodyNames())
+            .thenReturn(Stream.of(CertificationBody.builder().id(1L).name("Drummond").build(),
+                    CertificationBody.builder().id(2L).name("SLI").build())
+                    .collect(Collectors.toSet()));
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_ACB, "ICSA", "")));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_validAcb_noException() {
+        SearchRequest request = SearchRequest.builder()
+            .certificationBodies(Stream.of("ICSA").collect(Collectors.toSet()))
+            .build();
+        Mockito.when(dimensionalDataManager.getCertBodyNames())
+        .thenReturn(Stream.of(CertificationBody.builder().id(1L).name("Drummond").build(),
+                CertificationBody.builder().id(2L).name("ICSA").build())
+                .collect(Collectors.toSet()));
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_invalidPracticeTypeNullDimensionalData_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .practiceType("Inpatient")
+            .build();
+        Mockito.when(dimensionalDataManager.getPracticeTypeNames())
+            .thenReturn(null);
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_PRACTICE_TYPE, "Inpatient", "")));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_invalidPracticeTypeDimensionalDataExists_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .practiceType("Bad")
+            .build();
+        Mockito.when(dimensionalDataManager.getPracticeTypeNames())
+            .thenReturn(Stream.of(new KeyValueModel(1L, "Inpatient"),
+                    new KeyValueModel(2L, "Ambulatory"))
+                    .collect(Collectors.toSet()));
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_PRACTICE_TYPE, "Bad", "")));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_validPracticeType_noException() {
+        SearchRequest request = SearchRequest.builder()
+            .practiceType("Inpatient")
+            .build();
+        Mockito.when(dimensionalDataManager.getPracticeTypeNames())
+        .thenReturn(Stream.of(new KeyValueModel(1L, "Inpatient"),
+                new KeyValueModel(2L, "Ambulatory"))
+                .collect(Collectors.toSet()));
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_invalidCertificationDateStartFormat_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .certificationDateStart("12345")
+            .build();
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_CERTIFICATION_DATE, "12345", SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT)));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_invalidCertificationDateEndFormat_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .certificationDateEnd("12345")
+            .build();
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_CERTIFICATION_DATE, "12345", SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT)));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_backwardsCertificationDateOrder_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .certificationDateStart("2015-12-31")
+            .certificationDateEnd("2015-01-01")
+            .build();
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_DATE_ORDER, "2015-01-01", "2015-12-31")));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_emptyCertificationDateStartAndEnd_noError() {
+        SearchRequest request = SearchRequest.builder()
+            .certificationDateStart("")
+            .certificationDateEnd("")
+            .build();
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_validCertificationDateStartEmptyEnd_noError() {
+        SearchRequest request = SearchRequest.builder()
+            .certificationDateStart("2015-01-01")
+            .certificationDateEnd("")
+            .build();
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_validCertificationDateEndEmptyStart_noError() {
+        SearchRequest request = SearchRequest.builder()
+            .certificationDateEnd("")
+            .certificationDateEnd("2015-12-31")
+            .build();
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_validCertificationDateStartAndEnd_noError() {
+        SearchRequest request = SearchRequest.builder()
+            .certificationDateStart("2015-01-01")
+            .certificationDateEnd("2015-12-31")
+            .build();
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
 }

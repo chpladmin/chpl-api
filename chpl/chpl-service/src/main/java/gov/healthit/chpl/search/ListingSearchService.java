@@ -33,8 +33,6 @@ import lombok.extern.log4j.Log4j2;
 @NoArgsConstructor
 @Log4j2
 public class ListingSearchService {
-    private static final int MAX_PAGE_SIZE = 100;
-
     private SearchRequestValidator searchRequestValidator;
     private SearchRequestNormalizer searchRequestNormalizer;
     private CertifiedProductSearchManager cpSearchManager;

@@ -68,7 +68,7 @@ public class SearchRequestValidator {
             return Collections.emptySet();
         }
 
-        Set<KeyValueModel> allCertificationEditions = dimensionalDataManager.getCertificationStatuses();
+        Set<KeyValueModel> allCertificationEditions = dimensionalDataManager.getEditionNames(false);
         return certificationEditions.stream()
             .filter(certificationEdition -> !isInSet(certificationEdition, allCertificationEditions))
             .map(certificationEdition -> msgUtil.getMessage("search.certificationEdition.invalid", certificationEdition))
@@ -83,7 +83,7 @@ public class SearchRequestValidator {
         Set<CertificationCriterion> allCriteria = dimensionalDataManager.getCertificationCriterion();
         return certificationCriteriaIds.stream()
             .filter(certificationCriteriaId -> !isInSet(certificationCriteriaId, allCriteria))
-            .map(certificationCriteriaId -> msgUtil.getMessage("search.certificationCriteria.invalid", certificationCriteriaId))
+            .map(certificationCriteriaId -> msgUtil.getMessage("search.certificationCriteria.invalid", certificationCriteriaId.toString()))
             .collect(Collectors.toSet());
     }
 
@@ -95,7 +95,7 @@ public class SearchRequestValidator {
         Set<DescriptiveModel> allCqms = dimensionalDataManager.getCQMCriterionNumbers(false);
         return cqmNumbers.stream()
                 .filter(cqm -> !isInSet(cqm, allCqms))
-                .map(cqm -> msgUtil.getMessage("search.cqm.invalid", cqm))
+                .map(cqm -> msgUtil.getMessage("search.cqms.invalid", cqm))
                 .collect(Collectors.toSet());
     }
 
@@ -129,18 +129,21 @@ public class SearchRequestValidator {
         }
 
         Set<String> errors = new LinkedHashSet<String>();
-        LocalDate startDate = null;
-        try {
-            startDate = LocalDate.parse(certificationDateStart, dateFormatter);
-        } catch (DateTimeParseException ex) {
-            errors.add(msgUtil.getMessage("search.certificationDate.invalid", certificationDateStart, SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT));
+        LocalDate startDate = null, endDate = null;
+        if (!StringUtils.isEmpty(certificationDateStart)) {
+            try {
+                startDate = LocalDate.parse(certificationDateStart, dateFormatter);
+            } catch (DateTimeParseException ex) {
+                errors.add(msgUtil.getMessage("search.certificationDate.invalid", certificationDateStart, SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT));
+            }
         }
 
-        LocalDate endDate = null;
-        try {
-            endDate = LocalDate.parse(certificationDateEnd, dateFormatter);
-        } catch (DateTimeParseException ex) {
-            errors.add(msgUtil.getMessage("search.certificationDate.invalid", certificationDateEnd, SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT));
+        if (!StringUtils.isEmpty(certificationDateEnd)) {
+            try {
+                endDate = LocalDate.parse(certificationDateEnd, dateFormatter);
+            } catch (DateTimeParseException ex) {
+                errors.add(msgUtil.getMessage("search.certificationDate.invalid", certificationDateEnd, SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT));
+            }
         }
 
         if (endDate != null && startDate != null && endDate.isBefore(startDate)) {
@@ -159,18 +162,27 @@ public class SearchRequestValidator {
     }
 
     private boolean isInSet(String value, Set<? extends KeyValueModel> setToSearch) {
+        if (setToSearch == null) {
+            return false;
+        }
         return setToSearch.stream()
             .filter(item -> item.getName().equalsIgnoreCase(value))
             .count() > 0;
     }
 
     private boolean isInAcbSet(String value, Set<CertificationBody> setToSearch) {
+        if (setToSearch == null) {
+            return false;
+        }
         return setToSearch.stream()
             .filter(item -> item.getName().equalsIgnoreCase(value))
             .count() > 0;
     }
 
     private boolean isInSet(Long value, Set<CertificationCriterion> setToSearch) {
+        if (setToSearch == null) {
+            return false;
+        }
         return setToSearch.stream()
             .filter(item -> item.getId().equals(value))
             .count() > 0;

@@ -25,7 +25,7 @@ import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchResponse;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 
-public class ListingSearchServiceReviewerTest {
+public class ListingSearchServiceTest {
 
     private CertifiedProductSearchManager cpSearchManager;
     private ListingSearchService listingSearchService;
