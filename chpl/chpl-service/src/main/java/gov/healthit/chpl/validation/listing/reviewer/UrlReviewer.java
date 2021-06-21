@@ -30,7 +30,7 @@ public class UrlReviewer extends PermissionBasedReviewer {
         addListingErrorIfNotValid(listing, listing.getSedReportFileLocation(),
                 "SED Report File Location '" + listing.getSedReportFileLocation() + "'");
         addListingErrorIfNotValid(listing, listing.getTransparencyAttestationUrl(),
-                "Transparency Attestation URL '" + listing.getTransparencyAttestationUrl() + "'");
+                "Mandatory Disclosures '" + listing.getTransparencyAttestationUrl() + "'");
         addListingErrorIfNotValid(listing, listing.getSvapNoticeUrl(),
                 "SVAP Notice URL '" + listing.getSvapNoticeUrl() + "'");
 
