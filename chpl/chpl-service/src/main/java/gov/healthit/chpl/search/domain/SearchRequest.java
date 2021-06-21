@@ -4,6 +4,10 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.xml.bind.annotation.XmlTransient;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,13 +29,21 @@ public class SearchRequest implements Serializable {
     @Builder.Default
     private Set<String> certificationEditions = new HashSet<String>();
     @Builder.Default
-    private Set<Long> certificationCriteriaIds = new HashSet<Long>();
+    @JsonIgnore
+    @XmlTransient
+    private Set<String> certificationCriteriaIdStrings = new HashSet<String>();
     @Builder.Default
-    private SearchSetOperator certificationCriteriaOperator = SearchSetOperator.OR;
+    private Set<Long> certificationCriteriaIds = new HashSet<Long>();
+    @JsonIgnore
+    @XmlTransient
+    private String certificationCriteriaOperatorString;
+    private SearchSetOperator certificationCriteriaOperator;
     @Builder.Default
     private Set<String> cqms = new HashSet<String>();
-    @Builder.Default
-    private SearchSetOperator cqmsOperator = SearchSetOperator.OR;
+    @JsonIgnore
+    @XmlTransient
+    private String cqmsOperatorString;
+    private SearchSetOperator cqmsOperator;
     @Builder.Default
     private Set<String> certificationBodies = new HashSet<String>();
 

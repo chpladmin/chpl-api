@@ -20,6 +20,7 @@ import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.search.domain.SearchRequest;
+import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
@@ -41,7 +42,9 @@ public class SearchRequestValidator {
         errors.addAll(getCertificationStatusErrors(request.getCertificationStatuses()));
         errors.addAll(getCertificationEditionErrors(request.getCertificationEditions()));
         errors.addAll(getCertificationCriteriaErrors(request.getCertificationCriteriaIds()));
+        errors.addAll(getCertificationCriteriaOperatorErrors(request));
         errors.addAll(getCqmErrors(request.getCqms()));
+        errors.addAll(getCqmOperatorErrors(request));
         errors.addAll(getAcbErrors(request.getCertificationBodies()));
         errors.addAll(getPracticeTypeErrors(request.getPracticeType()));
         errors.addAll(getCertificationDateErrors(request.getCertificationDateStart(), request.getCertificationDateEnd()));
@@ -87,6 +90,19 @@ public class SearchRequestValidator {
             .collect(Collectors.toSet());
     }
 
+    private Set<String> getCertificationCriteriaOperatorErrors(SearchRequest searchRequest) {
+        if (searchRequest.getCertificationCriteriaOperator() == null
+                && !StringUtils.isBlank(searchRequest.getCertificationCriteriaOperatorString())) {
+            return Stream.of(msgUtil.getMessage("search.searchOperator.invalid",
+                    searchRequest.getCertificationCriteriaOperatorString(),
+                    Stream.of(SearchSetOperator.values())
+                        .map(value -> value.name())
+                        .collect(Collectors.joining(","))))
+                    .collect(Collectors.toSet());
+        }
+        return Collections.emptySet();
+    }
+
     private Set<String> getCqmErrors(Set<String> cqmNumbers) {
         if (cqmNumbers == null || cqmNumbers.size() == 0) {
             return Collections.emptySet();
@@ -97,6 +113,19 @@ public class SearchRequestValidator {
                 .filter(cqm -> !isInSet(cqm, allCqms))
                 .map(cqm -> msgUtil.getMessage("search.cqms.invalid", cqm))
                 .collect(Collectors.toSet());
+    }
+
+    private Set<String> getCqmOperatorErrors(SearchRequest searchRequest) {
+        if (searchRequest.getCqmsOperator() == null
+                && !StringUtils.isBlank(searchRequest.getCqmsOperatorString())) {
+            return Stream.of(msgUtil.getMessage("search.searchOperator.invalid",
+                    searchRequest.getCqmsOperatorString(),
+                    Stream.of(SearchSetOperator.values())
+                        .map(value -> value.name())
+                        .collect(Collectors.joining(","))))
+                    .collect(Collectors.toSet());
+        }
+        return Collections.emptySet();
     }
 
     private Set<String> getAcbErrors(Set<String> acbs) {

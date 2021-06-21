@@ -18,12 +18,14 @@ import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.search.domain.SearchRequest;
+import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class SearchRequestValidatorTest {
     private static final String INVALID_CERTIFICATION_STATUS = "Could not find certification status with value '%s'.";
     private static final String INVALID_CERTIFICATION_EDITION = "Could not find certification edition with value '%s'.";
     private static final String INVALID_CERTIFICATION_CRITERION = "Could not find certification criterion with value '%s'.";
+    private static final String INVALID_OPERATOR = "Invalid search operator value '%s'. Value must be one of %s.";
     private static final String INVALID_CQM = "Could not find CQM with value '%s'.";
     private static final String INVALID_ACB = "Could not find certification body with value '%s'.";
     private static final String INVALID_PRACTICE_TYPE = "Could not find practice type with value '%s'.";
@@ -45,6 +47,8 @@ public class SearchRequestValidatorTest {
             .thenAnswer(i -> String.format(INVALID_CERTIFICATION_EDITION, i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.certificationCriteria.invalid"), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_CERTIFICATION_CRITERION, i.getArgument(1), ""));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.searchOperator.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(INVALID_OPERATOR, i.getArgument(1), i.getArgument(2)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.cqms.invalid"), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_CQM, i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.certificationBodies.invalid"), ArgumentMatchers.anyString()))
@@ -211,6 +215,50 @@ public class SearchRequestValidatorTest {
     }
 
     @Test
+    public void validate_invalidCriteriaOperator_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .certificationCriteriaOperator(null)
+            .certificationCriteriaOperatorString("XOR")
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_OPERATOR, "XOR",
+                    Stream.of(SearchSetOperator.values())
+                    .map(value -> value.name())
+                    .collect(Collectors.joining(",")))));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_validCriteriaOperatorParsedFromString_noException() {
+        SearchRequest request = SearchRequest.builder()
+            .certificationCriteriaOperator(SearchSetOperator.OR)
+            .certificationCriteriaOperatorString("OR")
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_validCriteriaOperatorWithoutString_noException() {
+        SearchRequest request = SearchRequest.builder()
+            .certificationCriteriaOperator(SearchSetOperator.OR)
+            .certificationCriteriaOperatorString(null)
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
     public void validate_invalidCqmNullDimensionalData_addsError() {
         SearchRequest request = SearchRequest.builder()
             .cqms(Stream.of("CMS1").collect(Collectors.toSet()))
@@ -254,6 +302,50 @@ public class SearchRequestValidatorTest {
         .thenReturn(Stream.of(new DescriptiveModel(1L, "CMS1", ""), new DescriptiveModel(2L, "CMS2", ""))
                 .collect(Collectors.toSet()));
 
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_invalidCqmsOperator_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .cqmsOperator(null)
+            .cqmsOperatorString("XOR")
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_OPERATOR, "XOR",
+                    Stream.of(SearchSetOperator.values())
+                    .map(value -> value.name())
+                    .collect(Collectors.joining(",")))));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_validCqmsOperatorParsedFromString_noException() {
+        SearchRequest request = SearchRequest.builder()
+            .cqmsOperator(SearchSetOperator.OR)
+            .cqmsOperatorString("OR")
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_validCqmsOperatorWithoutString_noException() {
+        SearchRequest request = SearchRequest.builder()
+            .cqmsOperator(SearchSetOperator.OR)
+            .cqmsOperatorString(null)
+            .build();
         try {
             validator.validate(request);
         } catch (ValidationException ex) {

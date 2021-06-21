@@ -177,10 +177,10 @@ public class SearchController {
                 .searchTerm(searchTerm.trim())
                 .certificationStatuses(convertToSetWithDelimeter(certificationStatusesDelimited, ","))
                 .certificationEditions(convertToSetWithDelimeter(certificationEditionsDelimited, ","))
-                .certificationCriteriaIds(convertToSetOfLongsWithDelimeter(certificationCriteriaIdsDelimited, ","))
-                .certificationCriteriaOperator(convertToSearchSetOperator(certificationCriteriaOperatorStr))
+                .certificationCriteriaIdStrings(convertToSetWithDelimeter(certificationCriteriaIdsDelimited, ","))
+                .certificationCriteriaOperatorString(certificationCriteriaOperatorStr)
                 .cqms(convertToSetWithDelimeter(cqmsDelimited, ","))
-                .cqmsOperator(convertToSearchSetOperator(cqmsOperatorStr))
+                .cqmsOperatorString(cqmsOperatorStr)
                 .certificationBodies(convertToSetWithDelimeter(certificationBodiesDelimited, ","))
                 .complianceActivity(ComplianceSearchFilter.builder()
                         .hasHadComplianceActivity(convertToBoolean(hasHadComplianceActivityStr))
@@ -219,18 +219,6 @@ public class SearchController {
         return Stream.of(delimitedString.split(delimeter))
                 .map(value -> value.trim())
                 .collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    private Set<Long> convertToSetOfLongsWithDelimeter(String delimitedString, String delimeter)
-            throws InvalidArgumentsException {
-        if (StringUtils.isEmpty(delimitedString)) {
-            return new LinkedHashSet<Long>();
-        }
-        String[] splitString = delimitedString.split(delimeter);
-        validateAllValuesAreParseableLongs(Stream.of(splitString).collect(Collectors.toList()));
-        return Stream.of(splitString)
-                    .map(value -> convertToLong(value))
-                    .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     private Set<NonconformitySearchOptions> convertToSetOfNonconformityOptionsWithDelimeter(String delimitedString, String delimeter)
@@ -287,20 +275,6 @@ public class SearchController {
         return result;
     }
 
-    private Long convertToLong(String numberStr) {
-        if (StringUtils.isEmpty(numberStr)) {
-            return null;
-        }
-
-        Long result = null;
-        try {
-            result = Long.parseLong(numberStr);
-        } catch (Exception ex) {
-            LOGGER.error(msgUtil.getMessage("search.certificationCriteriaId.invalid", numberStr));
-        }
-        return result;
-    }
-
     private Boolean convertToBoolean(String booleanStr) throws InvalidArgumentsException {
         if (StringUtils.isEmpty(booleanStr)) {
             return null;
@@ -313,16 +287,6 @@ public class SearchController {
             throw new InvalidArgumentsException(msgUtil.getMessage("search.hasHadComplianceActivity.invalid", booleanStr));
         }
         return result;
-    }
-
-    private void validateAllValuesAreParseableLongs(List<String> values) throws InvalidArgumentsException {
-        for (String value : values) {
-            try {
-                Long.parseLong(value);
-            } catch (Exception ex) {
-                throw new InvalidArgumentsException(msgUtil.getMessage("search.certificationCriteriaId.invalid", value));
-            }
-        }
     }
 
     private void validateAllValuesAreParseableNonconformitySearchOptions(List<String> values) throws InvalidArgumentsException {

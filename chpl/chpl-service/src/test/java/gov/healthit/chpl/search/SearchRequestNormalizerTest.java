@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import gov.healthit.chpl.search.domain.SearchRequest;
+import gov.healthit.chpl.search.domain.SearchSetOperator;
 
 public class SearchRequestNormalizerTest {
 
@@ -56,6 +57,62 @@ public class SearchRequestNormalizerTest {
     }
 
     @Test
+    public void normalize_certificationCriteriaIdStrings_trimsCorrectly() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .certificationCriteriaIdStrings(Stream.of("1 ", " 2 ", "", " ", null, "3", "notanumber").collect(Collectors.toSet()))
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(3, searchRequest.getCertificationCriteriaIds().size());
+        assertTrue(searchRequest.getCertificationCriteriaIds().contains(1L));
+        assertTrue(searchRequest.getCertificationCriteriaIds().contains(2L));
+        assertTrue(searchRequest.getCertificationCriteriaIds().contains(3L));
+    }
+
+    @Test
+    public void normalize_certificationCriteriaIdLongs_noChange() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .certificationCriteriaIds(Stream.of(1L, 2L, 3L).collect(Collectors.toSet()))
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(3, searchRequest.getCertificationCriteriaIds().size());
+        assertTrue(searchRequest.getCertificationCriteriaIds().contains(1L));
+        assertTrue(searchRequest.getCertificationCriteriaIds().contains(2L));
+        assertTrue(searchRequest.getCertificationCriteriaIds().contains(3L));
+    }
+
+    @Test
+    public void normalize_certificationCriteriaOperatorStringValid_resolvesCorrectly() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .certificationCriteriaOperatorString("AND")
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(SearchSetOperator.AND, searchRequest.getCertificationCriteriaOperator());
+    }
+
+    @Test
+    public void normalize_certificationCriteriaOperator_noChanges() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .certificationCriteriaOperator(SearchSetOperator.AND)
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(SearchSetOperator.AND, searchRequest.getCertificationCriteriaOperator());
+    }
+
+    @Test
+    public void normalize_certificationCriteriaOperatorStringInvalid_setsFieldNull() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .certificationCriteriaOperatorString("XOR")
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertNull(searchRequest.getCertificationCriteriaOperator());
+    }
+
+    @Test
     public void normalize_cqms_trimsCorrectly() {
         SearchRequest searchRequest = SearchRequest.builder()
                 .cqms(Stream.of("CMS1 ", " CMS2 ", "", " ", null, "CMS3").collect(Collectors.toSet()))
@@ -66,6 +123,36 @@ public class SearchRequestNormalizerTest {
         assertTrue(searchRequest.getCqms().contains("CMS1"));
         assertTrue(searchRequest.getCqms().contains("CMS2"));
         assertTrue(searchRequest.getCqms().contains("CMS3"));
+    }
+
+    @Test
+    public void normalize_cqmsOperatorStringValid_resolvesCorrectly() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .cqmsOperatorString("AND")
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(SearchSetOperator.AND, searchRequest.getCqmsOperator());
+    }
+
+    @Test
+    public void normalize_cqmsOperator_noChanges() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .cqmsOperator(SearchSetOperator.AND)
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(SearchSetOperator.AND, searchRequest.getCqmsOperator());
+    }
+
+    @Test
+    public void normalize_cqmsOperatorStringInvalid_setsFieldNull() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .cqmsOperatorString("XOR")
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertNull(searchRequest.getCqmsOperator());
     }
 
     @Test
