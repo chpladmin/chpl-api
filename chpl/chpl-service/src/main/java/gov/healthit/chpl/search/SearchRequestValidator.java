@@ -187,8 +187,10 @@ public class SearchRequestValidator {
     }
 
     private Set<String> getComplianceActivityErrors(ComplianceSearchFilter complianceFilter) {
-        getNonConformityOperatorErrors(complianceFilter);
-        getNonConformitySearchOptionsErrors(complianceFilter);
+        Set<String> errors = new LinkedHashSet<String>();
+        errors.addAll(getNonConformityOperatorErrors(complianceFilter));
+        errors.addAll(getNonConformitySearchOptionsErrors(complianceFilter));
+        return errors;
     }
 
     private Set<String> getNonConformityOperatorErrors(ComplianceSearchFilter complianceFilter) {
@@ -206,6 +208,7 @@ public class SearchRequestValidator {
 
     private Set<String> getNonConformitySearchOptionsErrors(ComplianceSearchFilter complianceFilter) {
         //TODO:
+        return Collections.emptySet();
     }
 
     private Set<String> getPageSizeErrors(Integer pageSize) {

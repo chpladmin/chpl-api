@@ -97,21 +97,6 @@ public class SurveillanceController  {
         this.errorMessageUtil = errorMessageUtil;
     }
 
-    @Autowired
-    public SurveillanceController(SurveillanceManager survManager,
-            ActivityManager activityManager,
-            CertifiedProductDetailsManager cpdetailsManager,
-            AuthorityReviewer survAuthorityReviewer,
-            PendingSurveillanceManager pendingSurveillanceManager,
-            ResourcePermissions resourcePermissions) {
-        this.survManager = survManager;
-        this.activityManager = activityManager;
-        this.cpdetailsManager = cpdetailsManager;
-        this.survAuthorityReviewer = survAuthorityReviewer;
-        this.pendingSurveillanceManager = pendingSurveillanceManager;
-        this.resourcePermissions = resourcePermissions;
-    }
-
     @ApiOperation(value = "Get the listing of all pending surveillance items that this user has access to.",
             notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority on the ACB associated "
                     + "with the certified product is required.")
