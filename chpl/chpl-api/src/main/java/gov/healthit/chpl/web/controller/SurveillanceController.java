@@ -151,7 +151,7 @@ public class SurveillanceController implements MessageSourceAware {
                     + "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority on the ACB associated with "
                     + "the certified product is required.")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public synchronized ResponseEntity<Surveillance> createSurveillance(
+    public ResponseEntity<Surveillance> createSurveillance(
             @RequestBody(required = true) final Surveillance survToInsert) throws ValidationException,
     EntityRetrievalException, CertificationBodyAccessException, UserPermissionRetrievalException,
     EntityCreationException, JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
@@ -229,7 +229,7 @@ public class SurveillanceController implements MessageSourceAware {
                     + "and associated with the certified product is required.")
     @RequestMapping(value = "/{surveillanceId}", method = RequestMethod.PUT,
     produces = "application/json; charset=utf-8")
-    public synchronized ResponseEntity<Surveillance> updateSurveillance(
+    public ResponseEntity<Surveillance> updateSurveillance(
             @RequestBody(required = true) final Surveillance survToUpdate) throws
     InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
     JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
@@ -259,7 +259,7 @@ public class SurveillanceController implements MessageSourceAware {
                     + "administrative authority on the specified ACB for each pending surveillance is required.")
     @RequestMapping(value = "/{surveillanceId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
-    public synchronized @ResponseBody ResponseEntity<String> deleteSurveillance(
+    public @ResponseBody ResponseEntity<String> deleteSurveillance(
             @PathVariable(value = "surveillanceId") final Long surveillanceId,
             @RequestBody(required = false) final SimpleExplainableAction requestBody) throws
     InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
@@ -395,7 +395,7 @@ public class SurveillanceController implements MessageSourceAware {
                     + "with the certified product is required.")
     @RequestMapping(value = "/pending/confirm", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
-    public synchronized ResponseEntity<Surveillance> confirmPendingSurveillance(
+    public ResponseEntity<Surveillance> confirmPendingSurveillance(
             @RequestBody(required = true) final Surveillance survToInsert)
                     throws ValidationException, EntityRetrievalException, EntityCreationException,
                     JsonProcessingException, UserPermissionRetrievalException,
