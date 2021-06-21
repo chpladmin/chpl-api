@@ -19,7 +19,7 @@ import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
-import gov.healthit.chpl.search.domain.NonconformitySearchOptions;
+import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchResponse;
@@ -1191,7 +1191,7 @@ public class ListingSearchServiceTest {
         SearchRequest searchRequest = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()
                     .hasHadComplianceActivity(true)
-                    .nonconformityOptions(Stream.of(NonconformitySearchOptions.OPEN_NONCONFORMITY).collect(Collectors.toSet()))
+                    .nonConformityOptions(Stream.of(NonConformitySearchOptions.OPEN_NONCONFORMITY).collect(Collectors.toSet()))
                     .build())
             .pageNumber(0)
             .pageSize(10)
@@ -1220,7 +1220,7 @@ public class ListingSearchServiceTest {
         SearchRequest searchRequest = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()
                     .hasHadComplianceActivity(true)
-                    .nonconformityOptions(Stream.of(NonconformitySearchOptions.CLOSED_NONCONFORMITY).collect(Collectors.toSet()))
+                    .nonConformityOptions(Stream.of(NonConformitySearchOptions.CLOSED_NONCONFORMITY).collect(Collectors.toSet()))
                     .build())
             .pageNumber(0)
             .pageSize(10)
@@ -1249,7 +1249,7 @@ public class ListingSearchServiceTest {
         SearchRequest searchRequest = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()
                     .hasHadComplianceActivity(false)
-                    .nonconformityOptions(Stream.of(NonconformitySearchOptions.CLOSED_NONCONFORMITY).collect(Collectors.toSet()))
+                    .nonConformityOptions(Stream.of(NonConformitySearchOptions.CLOSED_NONCONFORMITY).collect(Collectors.toSet()))
                     .build())
             .pageNumber(0)
             .pageSize(10)
@@ -1277,10 +1277,10 @@ public class ListingSearchServiceTest {
         SearchRequest searchRequest = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()
                     .hasHadComplianceActivity(true)
-                    .nonconformityOptions(Stream.of(
-                            NonconformitySearchOptions.OPEN_NONCONFORMITY,
-                            NonconformitySearchOptions.CLOSED_NONCONFORMITY).collect(Collectors.toSet()))
-                    .nonconformityOptionsOperator(SearchSetOperator.OR)
+                    .nonConformityOptions(Stream.of(
+                            NonConformitySearchOptions.OPEN_NONCONFORMITY,
+                            NonConformitySearchOptions.CLOSED_NONCONFORMITY).collect(Collectors.toSet()))
+                    .nonConformityOptionsOperator(SearchSetOperator.OR)
                     .build())
             .pageNumber(0)
             .pageSize(10)
@@ -1314,10 +1314,10 @@ public class ListingSearchServiceTest {
         SearchRequest searchRequest = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()
                     .hasHadComplianceActivity(true)
-                    .nonconformityOptions(Stream.of(
-                            NonconformitySearchOptions.OPEN_NONCONFORMITY,
-                            NonconformitySearchOptions.CLOSED_NONCONFORMITY).collect(Collectors.toSet()))
-                    .nonconformityOptionsOperator(SearchSetOperator.AND)
+                    .nonConformityOptions(Stream.of(
+                            NonConformitySearchOptions.OPEN_NONCONFORMITY,
+                            NonConformitySearchOptions.CLOSED_NONCONFORMITY).collect(Collectors.toSet()))
+                    .nonConformityOptionsOperator(SearchSetOperator.AND)
                     .build())
             .pageNumber(0)
             .pageSize(10)
@@ -1350,9 +1350,9 @@ public class ListingSearchServiceTest {
         SearchRequest searchRequest = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()
                     .hasHadComplianceActivity(false)
-                    .nonconformityOptions(Stream.of(
-                            NonconformitySearchOptions.NEVER_NONCONFORMITY).collect(Collectors.toSet()))
-                    .nonconformityOptionsOperator(SearchSetOperator.OR)
+                    .nonConformityOptions(Stream.of(
+                            NonConformitySearchOptions.NEVER_NONCONFORMITY).collect(Collectors.toSet()))
+                    .nonConformityOptionsOperator(SearchSetOperator.OR)
                     .build())
             .pageNumber(0)
             .pageSize(10)
@@ -1386,9 +1386,9 @@ public class ListingSearchServiceTest {
         SearchRequest searchRequest = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()
                     .hasHadComplianceActivity(true)
-                    .nonconformityOptions(Stream.of(
-                            NonconformitySearchOptions.NEVER_NONCONFORMITY).collect(Collectors.toSet()))
-                    .nonconformityOptionsOperator(SearchSetOperator.OR)
+                    .nonConformityOptions(Stream.of(
+                            NonConformitySearchOptions.NEVER_NONCONFORMITY).collect(Collectors.toSet()))
+                    .nonConformityOptionsOperator(SearchSetOperator.OR)
                     .build())
             .pageNumber(0)
             .pageSize(10)

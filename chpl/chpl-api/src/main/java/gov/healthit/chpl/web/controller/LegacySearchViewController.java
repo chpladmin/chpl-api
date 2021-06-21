@@ -29,7 +29,7 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.search.CertifiedProductSearchManager;
-import gov.healthit.chpl.search.domain.NonconformitySearchOptions;
+import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -340,29 +340,29 @@ public class LegacySearchViewController {
             String nonconformityOptionsDelimitedTrimmed = nonconformityOptionsDelimited.trim();
             String[] nonconformityOptionsArr = nonconformityOptionsDelimitedTrimmed.split(",");
             if (nonconformityOptionsArr.length > 0) {
-                Set<NonconformitySearchOptions> nonconformitySearchOptions = new HashSet<NonconformitySearchOptions>();
+                Set<NonConformitySearchOptions> nonconformitySearchOptions = new HashSet<NonConformitySearchOptions>();
                 for (int i = 0; i < nonconformityOptionsArr.length; i++) {
                     String nonconformityOptionParam = nonconformityOptionsArr[i].trim();
                     try {
-                        NonconformitySearchOptions ncOpt = NonconformitySearchOptions.valueOf(nonconformityOptionParam);
+                        NonConformitySearchOptions ncOpt = NonConformitySearchOptions.valueOf(nonconformityOptionParam);
                         if (ncOpt != null) {
                             nonconformitySearchOptions.add(ncOpt);
                         } else {
                             String err = String.format(messageSource.getMessage(
                                     new DefaultMessageSourceResolvable("search.nonconformitySearchOption.invalid"),
                                     LocaleContextHolder.getLocale()),
-                                    nonconformityOptionParam, NonconformitySearchOptions.CLOSED_NONCONFORMITY.name()
-                                    + ", " + NonconformitySearchOptions.NEVER_NONCONFORMITY.name()
-                                    + ", or " + NonconformitySearchOptions.OPEN_NONCONFORMITY.name());
+                                    nonconformityOptionParam, NonConformitySearchOptions.CLOSED_NONCONFORMITY.name()
+                                    + ", " + NonConformitySearchOptions.NEVER_NONCONFORMITY.name()
+                                    + ", or " + NonConformitySearchOptions.OPEN_NONCONFORMITY.name());
                             throw new InvalidArgumentsException(err);
                         }
                     } catch (Exception ex) {
                         String err = String.format(messageSource.getMessage(
                                 new DefaultMessageSourceResolvable("search.nonconformitySearchOption.invalid"),
                                 LocaleContextHolder.getLocale()),
-                                nonconformityOptionParam, NonconformitySearchOptions.CLOSED_NONCONFORMITY.name()
-                                + ", " + NonconformitySearchOptions.NEVER_NONCONFORMITY.name()
-                                + ", or " + NonconformitySearchOptions.OPEN_NONCONFORMITY.name());
+                                nonconformityOptionParam, NonConformitySearchOptions.CLOSED_NONCONFORMITY.name()
+                                + ", " + NonConformitySearchOptions.NEVER_NONCONFORMITY.name()
+                                + ", or " + NonConformitySearchOptions.OPEN_NONCONFORMITY.name());
                         throw new InvalidArgumentsException(err);
                     }
                 }

@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
-import gov.healthit.chpl.search.domain.NonconformitySearchOptions;
+import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
@@ -128,12 +128,12 @@ public class SearchRequestNormalizer {
     private void normalizeNonconformityOptions(SearchRequest request) {
         ComplianceSearchFilter complianceSearchFilter = request.getComplianceActivity();
         if (complianceSearchFilter != null
-                && complianceSearchFilter.getNonconformityOptionsStrings() != null
-                && complianceSearchFilter.getNonconformityOptionsStrings().size() > 0
-                && (complianceSearchFilter.getNonconformityOptions() == null || complianceSearchFilter.getNonconformityOptions().size() == 0)) {
+                && complianceSearchFilter.getNonConformityOptionsStrings() != null
+                && complianceSearchFilter.getNonConformityOptionsStrings().size() > 0
+                && (complianceSearchFilter.getNonConformityOptions() == null || complianceSearchFilter.getNonConformityOptions().size() == 0)) {
             try {
-                complianceSearchFilter.setNonconformityOptions(
-                        complianceSearchFilter.getNonconformityOptionsStrings().stream()
+                complianceSearchFilter.setNonConformityOptions(
+                        complianceSearchFilter.getNonConformityOptionsStrings().stream()
                         .filter(option -> !StringUtils.isBlank(option))
                         .map(option -> convertToNonconformitySearchOption(option))
                         .filter(option -> option != null)
@@ -143,13 +143,13 @@ public class SearchRequestNormalizer {
         }
     }
 
-    private NonconformitySearchOptions convertToNonconformitySearchOption(String option) {
+    private NonConformitySearchOptions convertToNonconformitySearchOption(String option) {
         if (StringUtils.isBlank(option)) {
             return null;
         }
-        NonconformitySearchOptions convertedOption = null;
+        NonConformitySearchOptions convertedOption = null;
         try {
-            convertedOption = NonconformitySearchOptions.valueOf(option.toUpperCase().trim());
+            convertedOption = NonConformitySearchOptions.valueOf(option.toUpperCase().trim());
         } catch (Exception ex) {
         }
         return convertedOption;
@@ -158,11 +158,11 @@ public class SearchRequestNormalizer {
     private void normalizeNonconformityOptionsOperator(SearchRequest request) {
         ComplianceSearchFilter complianceSearchFilter = request.getComplianceActivity();
         if (complianceSearchFilter != null
-                && !StringUtils.isBlank(complianceSearchFilter.getNonconformityOptionsOperatorString())
-                && complianceSearchFilter.getNonconformityOptionsOperator() == null) {
+                && !StringUtils.isBlank(complianceSearchFilter.getNonConformityOptionsOperatorString())
+                && complianceSearchFilter.getNonConformityOptionsOperator() == null) {
             try {
-                complianceSearchFilter.setNonconformityOptionsOperator(
-                        SearchSetOperator.valueOf(complianceSearchFilter.getNonconformityOptionsOperatorString().toUpperCase().trim()));
+                complianceSearchFilter.setNonConformityOptionsOperator(
+                        SearchSetOperator.valueOf(complianceSearchFilter.getNonConformityOptionsOperatorString().toUpperCase().trim()));
             } catch (Exception ignore) {
             }
         }

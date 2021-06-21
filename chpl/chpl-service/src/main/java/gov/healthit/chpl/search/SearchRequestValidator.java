@@ -194,10 +194,10 @@ public class SearchRequestValidator {
     }
 
     private Set<String> getNonConformityOperatorErrors(ComplianceSearchFilter complianceFilter) {
-        if (complianceFilter.getNonconformityOptionsOperator() == null
-                && !StringUtils.isBlank(complianceFilter.getNonconformityOptionsOperatorString())) {
+        if (complianceFilter.getNonConformityOptionsOperator() == null
+                && !StringUtils.isBlank(complianceFilter.getNonConformityOptionsOperatorString())) {
             return Stream.of(msgUtil.getMessage("search.searchOperator.invalid",
-                    complianceFilter.getNonconformityOptionsOperatorString(),
+                    complianceFilter.getNonConformityOptionsOperatorString(),
                     Stream.of(SearchSetOperator.values())
                         .map(value -> value.name())
                         .collect(Collectors.joining(","))))

@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
-import gov.healthit.chpl.search.domain.NonconformitySearchOptions;
+import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchResponse;
@@ -188,34 +188,34 @@ public class ListingSearchService {
     private boolean matchesComplianceFilter(CertifiedProductBasicSearchResult listing, ComplianceSearchFilter complianceFilter) {
         if (complianceFilter == null
                 || (complianceFilter.getHasHadComplianceActivity() == null
-                    && (complianceFilter.getNonconformityOptions() == null || complianceFilter.getNonconformityOptions().size() == 0)
-                    && complianceFilter.getNonconformityOptionsOperator() == null)) {
+                    && (complianceFilter.getNonConformityOptions() == null || complianceFilter.getNonConformityOptions().size() == 0)
+                    && complianceFilter.getNonConformityOptionsOperator() == null)) {
             return true;
         }
 
         boolean matchesHasHadComplianceActivityFilter = matchesHasHadComplianceFilter(listing, complianceFilter.getHasHadComplianceActivity());
 
         Boolean matchesNeverNonConformityFilter = null;
-        if (complianceFilter.getNonconformityOptions().contains(NonconformitySearchOptions.NEVER_NONCONFORMITY)) {
+        if (complianceFilter.getNonConformityOptions().contains(NonConformitySearchOptions.NEVER_NONCONFORMITY)) {
             matchesNeverNonConformityFilter = listing.getOpenSurveillanceNonConformityCount() == 0
                     && listing.getClosedSurveillanceNonConformityCount() == 0
                     && listing.getOpenDirectReviewNonConformityCount() == 0
                     && listing.getClosedDirectReviewNonConformityCount() == 0;
         }
         Boolean matchesOpenNonConformityFilter = null;
-        if (complianceFilter.getNonconformityOptions().contains(NonconformitySearchOptions.OPEN_NONCONFORMITY)) {
+        if (complianceFilter.getNonConformityOptions().contains(NonConformitySearchOptions.OPEN_NONCONFORMITY)) {
             matchesOpenNonConformityFilter = listing.getOpenDirectReviewNonConformityCount() > 0
                     || listing.getOpenSurveillanceNonConformityCount() > 0;
         }
         Boolean matchesClosedNonConformityFilter = null;
-        if (complianceFilter.getNonconformityOptions().contains(NonconformitySearchOptions.CLOSED_NONCONFORMITY)) {
+        if (complianceFilter.getNonConformityOptions().contains(NonConformitySearchOptions.CLOSED_NONCONFORMITY)) {
             matchesClosedNonConformityFilter = listing.getClosedDirectReviewNonConformityCount() > 0
                     || listing.getClosedSurveillanceNonConformityCount() > 0;
         }
 
         if (ObjectUtils.anyNotNull(matchesNeverNonConformityFilter, matchesOpenNonConformityFilter, matchesClosedNonConformityFilter)) {
             boolean matchesNonConformityFilter = applyOperation(matchesNeverNonConformityFilter, matchesOpenNonConformityFilter,
-                    matchesClosedNonConformityFilter, complianceFilter.getNonconformityOptionsOperator());
+                    matchesClosedNonConformityFilter, complianceFilter.getNonConformityOptionsOperator());
             return matchesHasHadComplianceActivityFilter && matchesNonConformityFilter;
         }
         return matchesHasHadComplianceActivityFilter;

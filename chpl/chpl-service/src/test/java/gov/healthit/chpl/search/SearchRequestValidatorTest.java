@@ -17,6 +17,7 @@ import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
+import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
 import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
@@ -567,6 +568,57 @@ public class SearchRequestValidatorTest {
             fail(ex.getMessage());
         }
     }
+
+    @Test
+    public void validate_invalidNonConformityOptionsOperator_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .complianceActivity(ComplianceSearchFilter.builder()
+                    .nonConformityOptionsOperator(null)
+                    .nonConformityOptionsOperatorString("BADVALUE")
+                    .build())
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_OPERATOR, "BADVALUE",
+                    Stream.of(SearchSetOperator.values())
+                    .map(value -> value.name())
+                    .collect(Collectors.joining(",")))));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_validNonConformityOptionsParsedFromString_noErrors() {
+        SearchRequest request = SearchRequest.builder()
+            .complianceActivity(ComplianceSearchFilter.builder()
+                    .nonConformityOptionsOperator(SearchSetOperator.OR)
+                    .nonConformityOptionsOperatorString("OR")
+                    .build())
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_validNonConformityOperatorWithoutString_noErrors() {
+        SearchRequest request = SearchRequest.builder()
+            .complianceActivity(ComplianceSearchFilter.builder()
+                    .nonConformityOptionsOperator(SearchSetOperator.OR)
+                    .nonConformityOptionsOperatorString(null)
+                    .build())
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
 
     @Test
     public void validate_invalidOrderBy_addsError() {

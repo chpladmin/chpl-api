@@ -28,12 +28,12 @@ public class ComplianceSearchFilter implements Serializable {
     @JsonIgnore
     @XmlTransient
     @Builder.Default
-    private Set<String> nonconformityOptionsStrings = new HashSet<String>();
+    private Set<String> nonConformityOptionsStrings = new HashSet<String>();
     @Builder.Default
-    private Set<NonconformitySearchOptions> nonconformityOptions = new HashSet<NonconformitySearchOptions>();
+    private Set<NonConformitySearchOptions> nonConformityOptions = new HashSet<NonConformitySearchOptions>();
 
     @JsonIgnore
     @XmlTransient
-    private String nonconformityOptionsOperatorString;
-    private SearchSetOperator nonconformityOptionsOperator;
+    private String nonConformityOptionsOperatorString;
+    private SearchSetOperator nonConformityOptionsOperator;
 }

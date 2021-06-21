@@ -87,14 +87,14 @@ public class SearchController {
         value = "A comma-separated list of certification body names to be 'or'ed together "
                 + "(ex: \"Drummond,ICSA\" finds listings belonging to either Drummond or ICSA).",
                 required = false, dataType = "string", paramType = "query"),
-        @ApiImplicitParam(name = "nonconformityOptions",
-        value = "A comma-separated list of nonconformity search options. Valid options are "
+        @ApiImplicitParam(name = "nonConformityOptions",
+        value = "A comma-separated list of nonConformity search options. Valid options are "
                 + "OPEN_NONCONFORMITY, CLOSED_NONCONFORMITY, and NEVER_NONCONFORMITY.",
                 required = false, dataType = "string", paramType = "query"),
-        @ApiImplicitParam(name = "nonconformityOptionsOperator",
+        @ApiImplicitParam(name = "nonConformityOptionsOperator",
         value = "Either AND or OR. Defaults to OR."
-                + "Indicates whether a listing must have met all nonconformityOptions "
-                + "specified or may have met any one or more of the nonconformityOptions",
+                + "Indicates whether a listing must have met all nonConformityOptions "
+                + "specified or may have met any one or more of the nonConformityOptions",
                 required = false, dataType = "string", paramType = "query"),
         @ApiImplicitParam(name = "hasHadComplianceActivity",
         value = "True or False if a listing has ever had compliance activity (Surveillance or Direct Review).", required = false,
@@ -151,10 +151,10 @@ public class SearchController {
             defaultValue = "") String certificationBodiesDelimited,
             @RequestParam(value = "hasHadComplianceActivity", required = false,
             defaultValue = "") Boolean hasHadComplianceActivity,
-            @RequestParam(value = "nonconformityOptions", required = false,
-            defaultValue = "") String nonconformityOptionsDelimited,
-            @RequestParam(value = "nonconformityOptionsOperator", required = false,
-            defaultValue = "OR") String nonconformityOptionsOperator,
+            @RequestParam(value = "nonConformityOptions", required = false,
+            defaultValue = "") String nonConformityOptionsDelimited,
+            @RequestParam(value = "nonConformityOptionsOperator", required = false,
+            defaultValue = "OR") String nonConformityOptionsOperator,
             @RequestParam(value = "developer", required = false, defaultValue = "") String developer,
             @RequestParam(value = "product", required = false, defaultValue = "") String product,
             @RequestParam(value = "version", required = false, defaultValue = "") String version,
@@ -180,8 +180,8 @@ public class SearchController {
                 .certificationBodies(convertToSetWithDelimeter(certificationBodiesDelimited, ","))
                 .complianceActivity(ComplianceSearchFilter.builder()
                         .hasHadComplianceActivity(hasHadComplianceActivity)
-                        .nonconformityOptionsStrings(convertToSetWithDelimeter(nonconformityOptionsDelimited, ","))
-                        .nonconformityOptionsOperatorString(nonconformityOptionsOperator)
+                        .nonConformityOptionsStrings(convertToSetWithDelimeter(nonConformityOptionsDelimited, ","))
+                        .nonConformityOptionsOperatorString(nonConformityOptionsOperator)
                         .build())
                 .developer(developer)
                 .product(product)
