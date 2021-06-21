@@ -62,10 +62,13 @@ import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.entity.FuzzyType;
+import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
+import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
+import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.dao.SvapDAO;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 
@@ -76,6 +79,7 @@ public class CertificationResultManager extends SecuredManager {
     private CertifiedProductSearchDAO cpDao;
     private CertificationCriterionDAO criteriaDao;
     private CertificationResultDAO certResultDAO;
+    private OptionalStandardDAO optionalStandardDAO;
     private TestStandardDAO testStandardDAO;
     private TestToolDAO testToolDAO;
     private TestFunctionalityDAO testFunctionalityDAO;
@@ -92,13 +96,14 @@ private SvapDAO svapDao;
     @SuppressWarnings("checkstyle:parameternumber")
     @Autowired
     public CertificationResultManager(CertifiedProductSearchDAO cpDao, CertificationCriterionDAO criteriaDao,
-            CertificationResultDAO certResultDAO, TestStandardDAO testStandardDAO, TestToolDAO testToolDAO,
-            TestFunctionalityDAO testFunctionalityDAO, TestParticipantDAO testParticipantDAO, AgeRangeDAO ageDao,
-            EducationTypeDAO educDao, TestTaskDAO testTaskDAO, UcdProcessDAO ucdDao, MeasureDAO mmDao,
+            CertificationResultDAO certResultDAO, OptionalStandardDAO optionalStandardDAO, TestStandardDAO testStandardDAO,
+            TestToolDAO testToolDAO, TestFunctionalityDAO testFunctionalityDAO, TestParticipantDAO testParticipantDAO,
+            AgeRangeDAO ageDao, EducationTypeDAO educDao, TestTaskDAO testTaskDAO, UcdProcessDAO ucdDao, MeasureDAO mmDao,
             FuzzyChoicesDAO fuzzyChoicesDao, SvapDAO svapDao) {
         this.cpDao = cpDao;
         this.criteriaDao = criteriaDao;
         this.certResultDAO = certResultDAO;
+        this.optionalStandardDAO = optionalStandardDAO;
         this.testStandardDAO = testStandardDAO;
         this.testToolDAO = testToolDAO;
         this.testFunctionalityDAO = testFunctionalityDAO;
@@ -183,6 +188,7 @@ private SvapDAO svapDao;
         if (updated.isSuccess() == null || !updated.isSuccess()) {
             // similar to delete - remove all related items
             numChanges += updateAdditionalSoftware(updated, orig.getAdditionalSoftware(), null);
+            numChanges += updateOptionalStandards(updatedListing, updated, orig.getOptionalStandards(), null);
             numChanges += updateTestStandards(updatedListing, updated, orig.getTestStandards(), null);
             numChanges += updateTestTools(updated, orig.getTestToolsUsed(), null);
             numChanges += updateTestData(updated, orig.getTestDataUsed(), null);
@@ -225,6 +231,7 @@ private SvapDAO svapDao;
         } else {
             // create/update all related items
             numChanges += updateAdditionalSoftware(updated, orig.getAdditionalSoftware(), updated.getAdditionalSoftware());
+            numChanges += updateOptionalStandards(updatedListing, updated, orig.getOptionalStandards(), updated.getOptionalStandards());
             numChanges += updateTestStandards(updatedListing, updated, orig.getTestStandards(), updated.getTestStandards());
             numChanges += updateTestTools(updated, orig.getTestToolsUsed(), updated.getTestToolsUsed());
             numChanges += updateTestData(updated, orig.getTestDataUsed(), updated.getTestDataUsed());
@@ -531,6 +538,73 @@ private SvapDAO svapDao;
 
         for (Long idToRemove : idsToRemove) {
             certResultDAO.deleteUcdProcessMapping(certResult.getId(), idToRemove);
+        }
+        return numChanges;
+    }
+
+    private int updateOptionalStandards(CertifiedProductSearchDetails listing, CertificationResult certResult,
+            List<CertificationResultOptionalStandard> existingOptionalStandards,
+            List<CertificationResultOptionalStandard> updatedOptionalStandards) throws EntityCreationException {
+
+        int numChanges = 0;
+        List<CertificationResultOptionalStandard> optionalStandardToAdd = new ArrayList<CertificationResultOptionalStandard>();
+        List<Long> idsToRemove = new ArrayList<Long>();
+
+        // figure out which data to add
+        if (updatedOptionalStandards != null && updatedOptionalStandards.size() > 0) {
+            if (existingOptionalStandards == null || existingOptionalStandards.size() == 0) {
+                // existing listing has none, add all from the update
+                for (CertificationResultOptionalStandard updatedItem : updatedOptionalStandards) {
+                    optionalStandardToAdd.add(updatedItem);
+                }
+            } else if (existingOptionalStandards.size() > 0) {
+                // existing listing has some, compare to the update to see if
+                // any need to be added
+                for (CertificationResultOptionalStandard updatedItem : updatedOptionalStandards) {
+                    boolean inExistingListing = false;
+                    for (CertificationResultOptionalStandard existingItem : existingOptionalStandards) {
+                        if (updatedItem.matches(existingItem)) {
+                            inExistingListing = true;
+                        }
+                    }
+
+                    if (!inExistingListing) {
+                        optionalStandardToAdd.add(updatedItem);
+                    }
+                }
+            }
+        }
+
+        // figure out which data to remove
+        if (existingOptionalStandards != null && existingOptionalStandards.size() > 0) {
+            // if the updated listing has none, remove them all from existing
+            if (updatedOptionalStandards == null || updatedOptionalStandards.size() == 0) {
+                for (CertificationResultOptionalStandard existingItem : existingOptionalStandards) {
+                    idsToRemove.add(existingItem.getId());
+                }
+            } else if (updatedOptionalStandards.size() > 0) {
+                for (CertificationResultOptionalStandard existingItem : existingOptionalStandards) {
+                    boolean inUpdatedListing = false;
+                    for (CertificationResultOptionalStandard updatedItem : updatedOptionalStandards) {
+                        inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
+                    }
+                    if (!inUpdatedListing) {
+                        idsToRemove.add(existingItem.getId());
+                    }
+                }
+            }
+        }
+
+        numChanges = optionalStandardToAdd.size() + idsToRemove.size();
+        for (CertificationResultOptionalStandard toAdd : optionalStandardToAdd) {
+            CertificationResultOptionalStandardEntity toAddEntity = new CertificationResultOptionalStandardEntity();
+            toAddEntity.setCertificationResultId(certResult.getId());
+            toAddEntity.setOptionalStandardId(toAdd.getOptionalStandard().getId());
+            certResultDAO.addOptionalStandardMapping(toAddEntity);
+        }
+
+        for (Long idToRemove : idsToRemove) {
+            certResultDAO.deleteOptionalStandardMapping(idToRemove);
         }
         return numChanges;
     }
