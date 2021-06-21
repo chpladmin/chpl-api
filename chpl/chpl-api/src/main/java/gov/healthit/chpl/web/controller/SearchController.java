@@ -1,7 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,10 +20,8 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
-import gov.healthit.chpl.search.domain.NonconformitySearchOptions;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchResponse;
-import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -69,7 +66,7 @@ public class SearchController {
                 + "(ex: \"2014,2015\" finds listings with either edition 2014 or 2015).",
                 required = false, dataType = "string", paramType = "query"),
         @ApiImplicitParam(name = "certificationCriteriaIds",
-        value = "A comma-separated list of certification criteria to be queried together "
+        value = "A comma-separated list of certification criteria IDs to be queried together "
                 + "(ex: \"1,2\" finds listings "
                 + "attesting to either 170.315 (a)(1) or 170.315 (a(2)).",
                 required = false, dataType = "string", paramType = "query"),
@@ -153,7 +150,7 @@ public class SearchController {
             @RequestParam(value = "certificationBodies", required = false,
             defaultValue = "") String certificationBodiesDelimited,
             @RequestParam(value = "hasHadComplianceActivity", required = false,
-            defaultValue = "") String hasHadComplianceActivityStr,
+            defaultValue = "") Boolean hasHadComplianceActivity,
             @RequestParam(value = "nonconformityOptions", required = false,
             defaultValue = "") String nonconformityOptionsDelimited,
             @RequestParam(value = "nonconformityOptionsOperator", required = false,
@@ -182,9 +179,9 @@ public class SearchController {
                 .cqmsOperatorString(cqmsOperatorStr)
                 .certificationBodies(convertToSetWithDelimeter(certificationBodiesDelimited, ","))
                 .complianceActivity(ComplianceSearchFilter.builder()
-                        .hasHadComplianceActivity(convertToBoolean(hasHadComplianceActivityStr))
-                        .nonconformityOptions(convertToSetOfNonconformityOptionsWithDelimeter(nonconformityOptionsDelimited, ","))
-                        .nonconformityOptionsOperator(convertToSearchSetOperator(nonconformityOptionsOperator))
+                        .hasHadComplianceActivity(hasHadComplianceActivity)
+                        .nonconformityOptionsStrings(convertToSetWithDelimeter(nonconformityOptionsDelimited, ","))
+                        .nonconformityOptionsOperatorString(nonconformityOptionsOperator)
                         .build())
                 .developer(developer)
                 .product(product)
@@ -218,70 +215,5 @@ public class SearchController {
         return Stream.of(delimitedString.split(delimeter))
                 .map(value -> value.trim())
                 .collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    private Set<NonconformitySearchOptions> convertToSetOfNonconformityOptionsWithDelimeter(String delimitedString, String delimeter)
-            throws InvalidArgumentsException {
-        if (StringUtils.isEmpty(delimitedString)) {
-            return new LinkedHashSet<NonconformitySearchOptions>();
-        }
-        String[] splitString = delimitedString.split(delimeter);
-        validateAllValuesAreParseableNonconformitySearchOptions(Stream.of(splitString).collect(Collectors.toList()));
-        return Stream.of(splitString)
-                    .map(value -> convertToNonconformitySearchOption(value))
-                    .collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    private SearchSetOperator convertToSearchSetOperator(String searchSetOperatorStr) throws InvalidArgumentsException {
-        if (StringUtils.isEmpty(searchSetOperatorStr)) {
-            return null;
-        }
-        SearchSetOperator result = null;
-        try {
-            result = SearchSetOperator.valueOf(searchSetOperatorStr.toUpperCase());
-        } catch (Exception ex) {
-            throw new InvalidArgumentsException(msgUtil.getMessage("search.searchOperator.invalid",
-                    searchSetOperatorStr,
-                    Stream.of(SearchSetOperator.values())
-                        .map(value -> value.name())
-                        .collect(Collectors.joining(","))));
-        }
-        return result;
-    }
-
-    private NonconformitySearchOptions convertToNonconformitySearchOption(String ncSearchOptionStr) {
-        if (StringUtils.isEmpty(ncSearchOptionStr)) {
-            return null;
-        }
-
-        return NonconformitySearchOptions.valueOf(ncSearchOptionStr.toUpperCase());
-    }
-
-    private Boolean convertToBoolean(String booleanStr) throws InvalidArgumentsException {
-        if (StringUtils.isEmpty(booleanStr)) {
-            return null;
-        }
-
-        Boolean result = null;
-        try {
-            result = Boolean.parseBoolean(booleanStr.trim());
-        } catch (Exception ex) {
-            throw new InvalidArgumentsException(msgUtil.getMessage("search.hasHadComplianceActivity.invalid", booleanStr));
-        }
-        return result;
-    }
-
-    private void validateAllValuesAreParseableNonconformitySearchOptions(List<String> values) throws InvalidArgumentsException {
-        for (String value : values) {
-            try {
-                NonconformitySearchOptions.valueOf(value);
-            } catch (Exception ex) {
-                throw new InvalidArgumentsException(msgUtil.getMessage("search.nonconformitySearchOption.invalid",
-                        value,
-                        Stream.of(NonconformitySearchOptions.values())
-                            .map(ncVal -> ncVal.name())
-                            .collect(Collectors.joining(","))));
-            }
-        }
     }
 }

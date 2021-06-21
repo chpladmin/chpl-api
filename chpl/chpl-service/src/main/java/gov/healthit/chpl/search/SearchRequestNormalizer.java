@@ -4,6 +4,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
+import gov.healthit.chpl.search.domain.NonconformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
@@ -20,6 +22,7 @@ public class SearchRequestNormalizer {
         normalizeAcbs(request);
         normalizePracticeType(request);
         normalizeCertificationDates(request);
+        normalizeComplianceFilter(request);
         normalizeOrderBy(request);
     }
 
@@ -114,6 +117,54 @@ public class SearchRequestNormalizer {
         }
         if (!StringUtils.isEmpty(request.getCertificationDateEnd())) {
             request.setCertificationDateEnd(request.getCertificationDateEnd().trim());
+        }
+    }
+
+    private void normalizeComplianceFilter(SearchRequest request) {
+        normalizeNonconformityOptions(request);
+        normalizeNonconformityOptionsOperator(request);
+    }
+
+    private void normalizeNonconformityOptions(SearchRequest request) {
+        ComplianceSearchFilter complianceSearchFilter = request.getComplianceActivity();
+        if (complianceSearchFilter != null
+                && complianceSearchFilter.getNonconformityOptionsStrings() != null
+                && complianceSearchFilter.getNonconformityOptionsStrings().size() > 0
+                && (complianceSearchFilter.getNonconformityOptions() == null || complianceSearchFilter.getNonconformityOptions().size() == 0)) {
+            try {
+                complianceSearchFilter.setNonconformityOptions(
+                        complianceSearchFilter.getNonconformityOptionsStrings().stream()
+                        .filter(option -> !StringUtils.isBlank(option))
+                        .map(option -> convertToNonconformitySearchOption(option))
+                        .filter(option -> option != null)
+                        .collect(Collectors.toSet()));
+            } catch (Exception ignore) {
+            }
+        }
+    }
+
+    private NonconformitySearchOptions convertToNonconformitySearchOption(String option) {
+        if (StringUtils.isBlank(option)) {
+            return null;
+        }
+        NonconformitySearchOptions convertedOption = null;
+        try {
+            convertedOption = NonconformitySearchOptions.valueOf(option.toUpperCase().trim());
+        } catch (Exception ex) {
+        }
+        return convertedOption;
+    }
+
+    private void normalizeNonconformityOptionsOperator(SearchRequest request) {
+        ComplianceSearchFilter complianceSearchFilter = request.getComplianceActivity();
+        if (complianceSearchFilter != null
+                && !StringUtils.isBlank(complianceSearchFilter.getNonconformityOptionsOperatorString())
+                && complianceSearchFilter.getNonconformityOptionsOperator() == null) {
+            try {
+                complianceSearchFilter.setNonconformityOptionsOperator(
+                        SearchSetOperator.valueOf(complianceSearchFilter.getNonconformityOptionsOperatorString().toUpperCase().trim()));
+            } catch (Exception ignore) {
+            }
         }
     }
 

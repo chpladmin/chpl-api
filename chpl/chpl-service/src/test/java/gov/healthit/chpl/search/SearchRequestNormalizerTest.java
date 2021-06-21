@@ -5,12 +5,15 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
+import gov.healthit.chpl.search.domain.NonconformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
@@ -147,6 +150,16 @@ public class SearchRequestNormalizerTest {
     }
 
     @Test
+    public void normalize_cqmsOperatorStringLowercase_resolvesCorrectly() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .cqmsOperatorString("and")
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(SearchSetOperator.AND, searchRequest.getCqmsOperator());
+    }
+
+    @Test
     public void normalize_cqmsOperator_noChanges() {
         SearchRequest searchRequest = SearchRequest.builder()
                 .cqmsOperator(SearchSetOperator.AND)
@@ -267,6 +280,147 @@ public class SearchRequestNormalizerTest {
         normalizer.normalize(searchRequest);
 
         assertEquals("2015-01-01", searchRequest.getCertificationDateEnd());
+    }
+
+    @Test
+    public void normalize_nonconformtiyFilterSearchOperatorNull_noChanges() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .complianceActivity(null)
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertNull(searchRequest.getComplianceActivity());
+    }
+
+    @Test
+    public void normalize_nonconformtiyFilterSearchOperatorEmpty_noChanges() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .complianceActivity(ComplianceSearchFilter.builder()
+                        .nonconformityOptionsOperatorString("")
+                        .build())
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals("", searchRequest.getComplianceActivity().getNonconformityOptionsOperatorString());
+        assertNull(searchRequest.getComplianceActivity().getNonconformityOptionsOperator());
+    }
+
+    @Test
+    public void normalize_nonconformtiyFilterSearchOperatorBlank_noChanges() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .complianceActivity(ComplianceSearchFilter.builder()
+                        .nonconformityOptionsOperatorString("  ")
+                        .build())
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals("  ", searchRequest.getComplianceActivity().getNonconformityOptionsOperatorString());
+        assertNull(searchRequest.getComplianceActivity().getNonconformityOptionsOperator());
+    }
+
+    @Test
+    public void normalize_nonconformtiyFilterSearchOperatorStringValid_resolvesCorrectly() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .complianceActivity(ComplianceSearchFilter.builder()
+                        .nonconformityOptionsOperatorString("AND")
+                        .build())
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(SearchSetOperator.AND, searchRequest.getComplianceActivity().getNonconformityOptionsOperator());
+    }
+
+    @Test
+    public void normalize_nonconformityFilterSearchOperatorStringLowercase_resolvesCorrectly() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .complianceActivity(ComplianceSearchFilter.builder()
+                        .nonconformityOptionsOperatorString("and")
+                        .build())
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(SearchSetOperator.AND, searchRequest.getComplianceActivity().getNonconformityOptionsOperator());
+    }
+
+    @Test
+    public void normalize_nonconformityFilterSearchOperator_noChanges() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .complianceActivity(ComplianceSearchFilter.builder()
+                        .nonconformityOptionsOperator(SearchSetOperator.AND)
+                        .build())
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(SearchSetOperator.AND, searchRequest.getComplianceActivity().getNonconformityOptionsOperator());
+    }
+
+    @Test
+    public void normalize_nonconformityFilterSearchOperatorStringInvalid_setsFieldNull() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .complianceActivity(ComplianceSearchFilter.builder()
+                        .nonconformityOptionsOperatorString("NOTVALID")
+                        .build())
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertNull(searchRequest.getComplianceActivity().getNonconformityOptionsOperator());
+    }
+
+    @Test
+    public void normalize_nonconformityFilterOptionsNull_noChanges() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .complianceActivity(ComplianceSearchFilter.builder()
+                        .nonconformityOptionsStrings(null)
+                        .nonconformityOptions(null)
+                        .build())
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertNull(searchRequest.getComplianceActivity().getNonconformityOptions());
+        assertNull(searchRequest.getComplianceActivity().getNonconformityOptionsStrings());
+    }
+
+    @Test
+    public void normalize_nonconformityFilterOptionsEmpty_noChanges() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .complianceActivity(ComplianceSearchFilter.builder()
+                        .nonconformityOptionsStrings(Collections.emptySet())
+                        .nonconformityOptions(Collections.emptySet())
+                        .build())
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(0, searchRequest.getComplianceActivity().getNonconformityOptions().size());
+        assertEquals(0, searchRequest.getComplianceActivity().getNonconformityOptionsStrings().size());
+    }
+
+    @Test
+    public void normalize_nonconformityFilterOptionsValid_trimsCorrectly() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .complianceActivity(ComplianceSearchFilter.builder()
+                        .nonconformityOptionsStrings(Stream.of("NEVER_noncONFORMITY ", " OPEN_NONCONFORMITY ", null, " ", "").collect(Collectors.toSet()))
+                        .build())
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(2, searchRequest.getComplianceActivity().getNonconformityOptions().size());
+        assertTrue(searchRequest.getComplianceActivity().getNonconformityOptions().contains(NonconformitySearchOptions.NEVER_NONCONFORMITY));
+        assertTrue(searchRequest.getComplianceActivity().getNonconformityOptions().contains(NonconformitySearchOptions.OPEN_NONCONFORMITY));
+        assertEquals(5, searchRequest.getComplianceActivity().getNonconformityOptionsStrings().size());
+    }
+
+    @Test
+    public void normalize_nonconformityFilterOptionsInvalid_convertsValidValues() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .complianceActivity(ComplianceSearchFilter.builder()
+                        .nonconformityOptionsStrings(Stream.of("CLOSED_NONCONFORMITY ", "BADVALUE").collect(Collectors.toSet()))
+                        .build())
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(1, searchRequest.getComplianceActivity().getNonconformityOptions().size());
+        assertTrue(searchRequest.getComplianceActivity().getNonconformityOptions().contains(NonconformitySearchOptions.CLOSED_NONCONFORMITY));
+        assertEquals(2, searchRequest.getComplianceActivity().getNonconformityOptionsStrings().size());
     }
 
     @Test

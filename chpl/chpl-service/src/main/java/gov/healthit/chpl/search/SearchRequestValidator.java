@@ -19,6 +19,7 @@ import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
+import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
 import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
@@ -49,6 +50,7 @@ public class SearchRequestValidator {
         errors.addAll(getAcbErrors(request.getCertificationBodies()));
         errors.addAll(getPracticeTypeErrors(request.getPracticeType()));
         errors.addAll(getCertificationDateErrors(request.getCertificationDateStart(), request.getCertificationDateEnd()));
+        errors.addAll(getComplianceActivityErrors(request.getComplianceActivity()));
         errors.addAll(getPageSizeErrors(request.getPageSize()));
         errors.addAll(getOrderByErrors(request));
         if (errors != null && errors.size() > 0) {
@@ -182,6 +184,28 @@ public class SearchRequestValidator {
                     msgUtil.getMessage("search.certificationDateOrder.invalid", certificationDateEnd, certificationDateStart));
         }
         return errors;
+    }
+
+    private Set<String> getComplianceActivityErrors(ComplianceSearchFilter complianceFilter) {
+        getNonConformityOperatorErrors(complianceFilter);
+        getNonConformitySearchOptionsErrors(complianceFilter);
+    }
+
+    private Set<String> getNonConformityOperatorErrors(ComplianceSearchFilter complianceFilter) {
+        if (complianceFilter.getNonconformityOptionsOperator() == null
+                && !StringUtils.isBlank(complianceFilter.getNonconformityOptionsOperatorString())) {
+            return Stream.of(msgUtil.getMessage("search.searchOperator.invalid",
+                    complianceFilter.getNonconformityOptionsOperatorString(),
+                    Stream.of(SearchSetOperator.values())
+                        .map(value -> value.name())
+                        .collect(Collectors.joining(","))))
+                    .collect(Collectors.toSet());
+        }
+        return Collections.emptySet();
+    }
+
+    private Set<String> getNonConformitySearchOptionsErrors(ComplianceSearchFilter complianceFilter) {
+        //TODO:
     }
 
     private Set<String> getPageSizeErrors(Integer pageSize) {

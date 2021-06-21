@@ -20,16 +20,20 @@ import lombok.NoArgsConstructor;
 public class ComplianceSearchFilter implements Serializable {
     private static final long serialVersionUID = 1326187628639701580L;
 
-    @JsonIgnore
-    @XmlTransient
-    private Boolean hasHadComplianceActivityString;
     //set to true to find only listings that have had compliance activities at some point
     //set to false to find only listings that have never had a compliance activity
     //default is null - don't care about compliance
     private Boolean hasHadComplianceActivity;
 
+    @JsonIgnore
+    @XmlTransient
+    @Builder.Default
+    private Set<String> nonconformityOptionsStrings = new HashSet<String>();
     @Builder.Default
     private Set<NonconformitySearchOptions> nonconformityOptions = new HashSet<NonconformitySearchOptions>();
-    @Builder.Default
-    private SearchSetOperator nonconformityOptionsOperator = null;
+
+    @JsonIgnore
+    @XmlTransient
+    private String nonconformityOptionsOperatorString;
+    private SearchSetOperator nonconformityOptionsOperator;
 }
