@@ -135,6 +135,36 @@
             </job-data-map>
         </job>
 
+        <!-- Cures statistics generator -->
+        <job>
+            <name>Cures Statistics Email</name>
+            <group>chplJobs</group>
+            <description>Send the Cures Update statistics as a CSV report.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.curesStatistics.email.CuresStatisticsEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF</value>
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+            </job-data-map>
+        </job>
+
+        <!-- Cures statistics email job -->
+        <job>
+            <name>curesStatisticsCreator</name>
+            <group>systemJobs</group>
+            <description>Generates data that is used to create cures statistics report</description>
+            <job-class>gov.healthit.chpl.scheduler.job.curesStatistics.CuresStatisticsCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+
         <!-- Job fired when developer ban notification needs to happen -->
         <job>
             <name>Trigger Developer Ban Notification</name>
@@ -757,6 +787,22 @@
                 <entry>
                     <key>authorities</key>
                     <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+            </job-data-map>
+        </job>
+
+        <!-- temporary job run once by admin to update version activity -->
+        <job>
+            <name>versionActivityUpdaterJob</name>
+            <group>systemJobs</group>
+            <description>Attempt to fill in missing product and developer data in version activity.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.versionActivity.VersionActivityUpdaterJob</job-class>
+            <durability>true</durability>
+            <recover>true</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN</value>
                 </entry>
             </job-data-map>
         </job>

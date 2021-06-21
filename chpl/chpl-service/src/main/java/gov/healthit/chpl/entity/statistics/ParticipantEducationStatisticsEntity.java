@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+    package gov.healthit.chpl.entity.statistics;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -15,14 +15,14 @@ import javax.persistence.Transient;
 import gov.healthit.chpl.util.Util;
 
 /**
- * Entity object representing the participant_experience_statistics table.
+ * Entity object representing the participant_education_statistics table.
  * @author TYoung
  *
  */
 @Entity
-@Table(name = "participant_experience_statistics")
-public class ParticipantExperienceStatisticsEntity implements Serializable {
-    private static final long serialVersionUID = 1094674270161664550L;
+@Table(name = "participant_education_statistics")
+public class ParticipantEducationStatisticsEntity implements Serializable {
+    private static final long serialVersionUID = -4258273713908999510L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,16 +31,12 @@ public class ParticipantExperienceStatisticsEntity implements Serializable {
     private Long id;
 
     @Basic(optional = false)
-    @Column(name = "experience_type_id", nullable = false)
-    private Long experienceTypeId;
+    @Column(name = "education_count", nullable = false)
+    private Long educationCount;
 
     @Basic(optional = false)
-    @Column(name = "participant_count", nullable = false)
-    private Long participantCount;
-
-    @Basic(optional = false)
-    @Column(name = "experience_months", nullable = false)
-    private Integer experienceMonths;
+    @Column(name = "education_type_id", nullable = false)
+    private Long educationTypeId;
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
@@ -61,7 +57,7 @@ public class ParticipantExperienceStatisticsEntity implements Serializable {
     /**
      * Default constructor.
      */
-    public ParticipantExperienceStatisticsEntity() {
+    public ParticipantEducationStatisticsEntity() {
         //Default Constructor
     }
 
@@ -69,13 +65,13 @@ public class ParticipantExperienceStatisticsEntity implements Serializable {
      * Sets the id field upon creation.
      * @param id The value to set object's id equal to
      */
-    public ParticipantExperienceStatisticsEntity(final Long id) {
+    public ParticipantEducationStatisticsEntity(final Long id) {
         this.id = id;
     }
 
     @Transient
     public Class<?> getClassType() {
-        return ParticipantExperienceStatisticsEntity.class;
+        return ParticipantEducationStatisticsEntity.class;
     }
 
     public Long getId() {
@@ -86,28 +82,20 @@ public class ParticipantExperienceStatisticsEntity implements Serializable {
         this.id = id;
     }
 
-    public Long getExperienceTypeId() {
-        return experienceTypeId;
+    public Long getEducationCount() {
+        return educationCount;
     }
 
-    public void setExperienceTypeId(final Long experienceTypeId) {
-        this.experienceTypeId = experienceTypeId;
+    public void setEducationCount(final Long educationCount) {
+        this.educationCount = educationCount;
     }
 
-    public Long getParticipantCount() {
-        return participantCount;
+    public Long getEducationTypeId() {
+        return educationTypeId;
     }
 
-    public void setParticipantCount(final Long participantCount) {
-        this.participantCount = participantCount;
-    }
-
-    public Integer getExperienceMonths() {
-        return experienceMonths;
-    }
-
-    public void setExperienceMonths(final Integer experienceMonths) {
-        this.experienceMonths = experienceMonths;
+    public void setEducationTypeId(final Long educationTypeId) {
+        this.educationTypeId = educationTypeId;
     }
 
     public Date getCreationDate() {

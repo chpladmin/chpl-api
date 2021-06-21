@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.statistics;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -15,6 +15,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import gov.healthit.chpl.entity.CertificationEditionEntity;
 import gov.healthit.chpl.util.Util;
 
 /**

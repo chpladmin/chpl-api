@@ -18,6 +18,14 @@
         additivity="false">
         <AppenderRef ref="summaryStatisticsCreatorJob" />
     </Logger>
+    <Logger name="curesStatisticsCreatorJobLogger" level="INFO"
+        additivity="false">
+        <AppenderRef ref="curesStatisticsCreatorJob" />
+    </Logger>
+    <Logger name="curesStatisticsEmailJobLogger" level="INFO"
+        additivity="false">
+        <AppenderRef ref="curesStatisticsEmailJob" />
+    </Logger>
     <Logger name="urlStatusDataCollectorJobLogger" level="INFO"
         additivity="false">
         <AppenderRef ref="urlStatusDataCollectorJob" />
@@ -166,5 +174,9 @@
     <Logger name="meaningfulUseUploadJobLogger" level="INFO"
         additivity="false">
         <AppenderRef ref="meaningfulUseUploadJob" />
+    </Logger>
+    <Logger name="versionActivityUpdaterJobLogger" level="INFO"
+        additivity="false">
+        <AppenderRef ref="versionActivityUpdaterJob" />
     </Logger>
 </Loggers>

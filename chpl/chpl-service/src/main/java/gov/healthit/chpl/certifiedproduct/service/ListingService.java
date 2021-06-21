@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -102,13 +103,12 @@ public class ListingService {
     public CertifiedProductSearchDetails createCertifiedSearchDetails(Long listingId) throws EntityRetrievalException {
 
         CertifiedProductDetailsDTO dto = certifiedProductSearchResultDAO.getById(listingId);
-        CertifiedProductSearchDetails searchDetails = createCertifiedProductSearchDetailsBasic(certifiedProductSearchResultDAO.getById(listingId));
+        CertifiedProductSearchDetails searchDetails = createCertifiedProductSearchDetailsWithBasicDataOnly(certifiedProductSearchResultDAO.getById(listingId));
 
         searchDetails.setCertificationResults(certificationResultService.getCertificationResults(searchDetails));
         searchDetails.setCqmResults(cqmResultsService.getCqmResultDetails(dto.getId(), dto.getYear()));
         searchDetails.setCertificationEvents(certificationStatusEventsService.getCertificationStatusEvents(dto.getId()));
         searchDetails.setMeaningfulUseUserHistory(meaningfulUseUserHistoryService.getMeaningfulUseUserHistory(dto.getId()));
-        searchDetails = populateDirectReviews(searchDetails);
 
         // get first-level parents and children
         searchDetails.getIcs().setParents(populateRelatedCertifiedProducts(getCertifiedProductParents(dto.getId())));
@@ -118,11 +118,11 @@ public class ListingService {
 
     public CertifiedProductSearchDetails createCertifiedProductSearchDetailsBasic(Long listingId) throws EntityRetrievalException {
         CertifiedProductDetailsDTO dto = certifiedProductSearchResultDAO.getById(listingId);
-        return createCertifiedProductSearchDetailsBasic(dto);
+        return createCertifiedProductSearchDetailsWithBasicDataOnly(dto);
     }
 
-    public CertifiedProductSearchDetails createCertifiedProductSearchDetailsBasic(CertifiedProductDetailsDTO dto) throws EntityRetrievalException {
-        CertifiedProductSearchDetails searchDetails = CertifiedProductSearchDetails.builder()
+    public CertifiedProductSearchDetails createCertifiedProductSearchDetailsWithBasicDataOnly(CertifiedProductDetailsDTO dto) throws EntityRetrievalException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .id(dto.getId())
                 .acbCertificationId(dto.getAcbCertificationId())
                 .certificationDate(dto.getCertificationDate() != null ? dto.getCertificationDate().getTime() : null)
@@ -170,8 +170,10 @@ public class ListingService {
 
         InheritedCertificationStatus ics = new InheritedCertificationStatus();
         ics.setInherits(dto.getIcs());
-        searchDetails.setIcs(ics);
-        return searchDetails;
+        listing.setIcs(ics);
+
+        listing = populateDirectReviews(listing);
+        return listing;
     }
 
     private List<CertifiedProductTestingLab> getTestingLabs(Long listingId) throws EntityRetrievalException {
@@ -183,7 +185,10 @@ public class ListingService {
     private CertifiedProductSearchDetails populateDirectReviews(CertifiedProductSearchDetails listing) {
         List<DirectReview> drs = new ArrayList<DirectReview>();
         if (listing.getDeveloper() != null && listing.getDeveloper().getDeveloperId() != null) {
-            drs = drService.getDirectReviewsRelatedToListing(listing);
+            drs = drService.getDirectReviewsRelatedToListing(listing.getId(),
+                    listing.getDeveloper().getDeveloperId(),
+                    MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY),
+                    listing.getCertificationEvents());
         }
         listing.setDirectReviews(drs);
         listing.setDirectReviewsAvailable(drService.getDirectReviewsAvailable());

@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.SedParticipantStatisticsCountDAO;
 import gov.healthit.chpl.dto.SedParticipantStatisticsCountDTO;
-import gov.healthit.chpl.entity.SedParticipantStatisticsCountEntity;
+import gov.healthit.chpl.entity.statistics.SedParticipantStatisticsCountEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
