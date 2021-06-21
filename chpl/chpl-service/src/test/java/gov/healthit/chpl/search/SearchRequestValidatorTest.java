@@ -17,6 +17,7 @@ import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
+import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -31,6 +32,7 @@ public class SearchRequestValidatorTest {
     private static final String INVALID_PRACTICE_TYPE = "Could not find practice type with value '%s'.";
     private static final String INVALID_CERTIFICATION_DATE = "Could not parse '%s' as date in the format %s.";
     private static final String INVALID_DATE_ORDER = "The certification date range end '%s' is before the start '%s'.";
+    private static final String INVALID_ORDER_BY = "Order by parameter '%s' is invalid. Value must be one of %s.";
 
     private ErrorMessageUtil msgUtil;
     private DimensionalDataManager dimensionalDataManager;
@@ -59,6 +61,8 @@ public class SearchRequestValidatorTest {
             .thenAnswer(i -> String.format(INVALID_CERTIFICATION_DATE, i.getArgument(1), i.getArgument(2)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.certificationDateOrder.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_DATE_ORDER, i.getArgument(1), i.getArgument(2)));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.orderBy.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(INVALID_ORDER_BY, i.getArgument(1), i.getArgument(2)));
 
         validator = new SearchRequestValidator(dimensionalDataManager, msgUtil);
     }
@@ -98,7 +102,7 @@ public class SearchRequestValidatorTest {
     }
 
     @Test
-    public void validate_validCertificationStatus_noException() {
+    public void validate_validCertificationStatus_noErrors() {
         SearchRequest request = SearchRequest.builder()
             .certificationStatuses(Stream.of("Active").collect(Collectors.toSet()))
             .build();
@@ -147,7 +151,7 @@ public class SearchRequestValidatorTest {
     }
 
     @Test
-    public void validate_validCertificationEdition_noException() {
+    public void validate_validCertificationEdition_noErrors() {
         SearchRequest request = SearchRequest.builder()
             .certificationEditions(Stream.of("2014").collect(Collectors.toSet()))
             .build();
@@ -198,7 +202,7 @@ public class SearchRequestValidatorTest {
     }
 
     @Test
-    public void validate_validCertificationCriteria_noException() {
+    public void validate_validCertificationCriteria_noErrors() {
         SearchRequest request = SearchRequest.builder()
             .certificationCriteriaIds(Stream.of(1L).collect(Collectors.toSet()))
             .build();
@@ -233,7 +237,7 @@ public class SearchRequestValidatorTest {
     }
 
     @Test
-    public void validate_validCriteriaOperatorParsedFromString_noException() {
+    public void validate_validCriteriaOperatorParsedFromString_noErrors() {
         SearchRequest request = SearchRequest.builder()
             .certificationCriteriaOperator(SearchSetOperator.OR)
             .certificationCriteriaOperatorString("OR")
@@ -246,7 +250,7 @@ public class SearchRequestValidatorTest {
     }
 
     @Test
-    public void validate_validCriteriaOperatorWithoutString_noException() {
+    public void validate_validCriteriaOperatorWithoutString_noErrors() {
         SearchRequest request = SearchRequest.builder()
             .certificationCriteriaOperator(SearchSetOperator.OR)
             .certificationCriteriaOperatorString(null)
@@ -294,7 +298,7 @@ public class SearchRequestValidatorTest {
     }
 
     @Test
-    public void validate_validCqm_noException() {
+    public void validate_validCqm_noErrors() {
         SearchRequest request = SearchRequest.builder()
                 .cqms(Stream.of("CMS1").collect(Collectors.toSet()))
             .build();
@@ -328,7 +332,7 @@ public class SearchRequestValidatorTest {
     }
 
     @Test
-    public void validate_validCqmsOperatorParsedFromString_noException() {
+    public void validate_validCqmsOperatorParsedFromString_noErrors() {
         SearchRequest request = SearchRequest.builder()
             .cqmsOperator(SearchSetOperator.OR)
             .cqmsOperatorString("OR")
@@ -341,7 +345,7 @@ public class SearchRequestValidatorTest {
     }
 
     @Test
-    public void validate_validCqmsOperatorWithoutString_noException() {
+    public void validate_validCqmsOperatorWithoutString_noErrors() {
         SearchRequest request = SearchRequest.builder()
             .cqmsOperator(SearchSetOperator.OR)
             .cqmsOperatorString(null)
@@ -390,7 +394,7 @@ public class SearchRequestValidatorTest {
     }
 
     @Test
-    public void validate_validAcb_noException() {
+    public void validate_validAcb_noErrors() {
         SearchRequest request = SearchRequest.builder()
             .certificationBodies(Stream.of("ICSA").collect(Collectors.toSet()))
             .build();
@@ -443,7 +447,7 @@ public class SearchRequestValidatorTest {
     }
 
     @Test
-    public void validate_validPracticeType_noException() {
+    public void validate_validPracticeType_noErrors() {
         SearchRequest request = SearchRequest.builder()
             .practiceType("Inpatient")
             .build();
@@ -554,6 +558,50 @@ public class SearchRequestValidatorTest {
             .certificationDateEnd("2015-12-31")
             .build();
 
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_invalidOrderBy_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .orderBy(null)
+            .orderByString("NOTVALID")
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_ORDER_BY, "NOTVALID",
+                    Stream.of(OrderByOption.values())
+                    .map(value -> value.name())
+                    .collect(Collectors.joining(",")))));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_validOrderByParsedFromString_noErrors() {
+        SearchRequest request = SearchRequest.builder()
+            .orderBy(OrderByOption.CERTIFICATION_DATE)
+            .orderByString("CERTIFICATION_DATE")
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_validOrderByWithoutString_noErrors() {
+        SearchRequest request = SearchRequest.builder()
+            .orderBy(OrderByOption.CERTIFICATION_DATE)
+            .orderByString(null)
+            .build();
         try {
             validator.validate(request);
         } catch (ValidationException ex) {

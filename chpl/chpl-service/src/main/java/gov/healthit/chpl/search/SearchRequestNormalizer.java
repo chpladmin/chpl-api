@@ -4,6 +4,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 
@@ -19,6 +20,7 @@ public class SearchRequestNormalizer {
         normalizeAcbs(request);
         normalizePracticeType(request);
         normalizeCertificationDates(request);
+        normalizeOrderBy(request);
     }
 
     private void normalizeCertificationStatuses(SearchRequest request) {
@@ -56,7 +58,7 @@ public class SearchRequestNormalizer {
                 && request.getCertificationCriteriaOperator() == null) {
             try {
                 request.setCertificationCriteriaOperator(
-                        SearchSetOperator.valueOf(request.getCertificationCriteriaOperatorString().trim()));
+                        SearchSetOperator.valueOf(request.getCertificationCriteriaOperatorString().toUpperCase().trim()));
             } catch (Exception ignore) {
             }
         }
@@ -85,7 +87,7 @@ public class SearchRequestNormalizer {
                 && request.getCqmsOperator() == null) {
             try {
                 request.setCqmsOperator(
-                        SearchSetOperator.valueOf(request.getCqmsOperatorString().trim()));
+                        SearchSetOperator.valueOf(request.getCqmsOperatorString().toUpperCase().trim()));
             } catch (Exception ignore) {
             }
         }
@@ -112,6 +114,17 @@ public class SearchRequestNormalizer {
         }
         if (!StringUtils.isEmpty(request.getCertificationDateEnd())) {
             request.setCertificationDateEnd(request.getCertificationDateEnd().trim());
+        }
+    }
+
+    private void normalizeOrderBy(SearchRequest request) {
+        if (!StringUtils.isBlank(request.getOrderByString())
+                && request.getOrderBy() == null) {
+            try {
+                request.setOrderBy(
+                        OrderByOption.valueOf(request.getOrderByString().toUpperCase().trim()));
+            } catch (Exception ignore) {
+            }
         }
     }
 }

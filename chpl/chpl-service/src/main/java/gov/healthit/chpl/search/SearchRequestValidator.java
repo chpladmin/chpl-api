@@ -19,6 +19,7 @@ import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
+import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -49,6 +50,7 @@ public class SearchRequestValidator {
         errors.addAll(getPracticeTypeErrors(request.getPracticeType()));
         errors.addAll(getCertificationDateErrors(request.getCertificationDateStart(), request.getCertificationDateEnd()));
         errors.addAll(getPageSizeErrors(request.getPageSize()));
+        errors.addAll(getOrderByErrors(request));
         if (errors != null && errors.size() > 0) {
             throw new ValidationException(errors);
         }
@@ -189,6 +191,20 @@ public class SearchRequestValidator {
         }
         return Collections.emptySet();
     }
+
+    private Set<String> getOrderByErrors(SearchRequest searchRequest) {
+        if (searchRequest.getOrderBy() == null
+                && !StringUtils.isBlank(searchRequest.getOrderByString())) {
+            return Stream.of(msgUtil.getMessage("search.orderBy.invalid",
+                    searchRequest.getOrderByString(),
+                    Stream.of(OrderByOption.values())
+                        .map(value -> value.name())
+                        .collect(Collectors.joining(","))))
+                    .collect(Collectors.toSet());
+        }
+        return Collections.emptySet();
+    }
+
 
     private boolean isInSet(String value, Set<? extends KeyValueModel> setToSearch) {
         if (setToSearch == null) {

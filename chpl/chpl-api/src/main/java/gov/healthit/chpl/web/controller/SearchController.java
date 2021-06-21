@@ -22,7 +22,6 @@ import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
 import gov.healthit.chpl.search.domain.NonconformitySearchOptions;
-import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchResponse;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
@@ -195,7 +194,7 @@ public class SearchController {
                 .certificationDateEnd(certificationDateEnd)
                 .pageSize(pageSize)
                 .pageNumber(pageNumber)
-                .orderBy(convertToOrderByOption(orderBy))
+                .orderByString(orderBy)
                 .sortDescending(sortDescending)
                 .build();
         return searchService.search(searchRequest);
@@ -256,23 +255,6 @@ public class SearchController {
         }
 
         return NonconformitySearchOptions.valueOf(ncSearchOptionStr.toUpperCase());
-    }
-
-    private OrderByOption convertToOrderByOption(String orderByStr) throws InvalidArgumentsException {
-        if (StringUtils.isEmpty(orderByStr)) {
-            return null;
-        }
-        OrderByOption result = null;
-        try {
-            result = OrderByOption.valueOf(orderByStr.toUpperCase());
-        } catch (Exception ex) {
-            throw new InvalidArgumentsException(msgUtil.getMessage("search.orderBy.invalid",
-                    orderByStr,
-                    Stream.of(OrderByOption.values())
-                        .map(value -> value.name())
-                        .collect(Collectors.joining(","))));
-        }
-        return result;
     }
 
     private Boolean convertToBoolean(String booleanStr) throws InvalidArgumentsException {

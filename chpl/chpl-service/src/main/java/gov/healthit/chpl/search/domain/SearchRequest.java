@@ -55,6 +55,9 @@ public class SearchRequest implements Serializable {
     private String certificationDateEnd;
     @Builder.Default
     private ComplianceSearchFilter complianceActivity = new ComplianceSearchFilter();
+    @JsonIgnore
+    @XmlTransient
+    private String orderByString;
     private OrderByOption orderBy;
     @Builder.Default
     private Boolean sortDescending = false;

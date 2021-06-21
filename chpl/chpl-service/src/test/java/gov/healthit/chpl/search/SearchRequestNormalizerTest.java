@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.Test;
 
+import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 
@@ -86,6 +87,16 @@ public class SearchRequestNormalizerTest {
     public void normalize_certificationCriteriaOperatorStringValid_resolvesCorrectly() {
         SearchRequest searchRequest = SearchRequest.builder()
                 .certificationCriteriaOperatorString("AND")
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(SearchSetOperator.AND, searchRequest.getCertificationCriteriaOperator());
+    }
+
+    @Test
+    public void normalize_certificationCriteriaOperatorStringLowercase_resolvesCorrectly() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .certificationCriteriaOperatorString("and")
                 .build();
         normalizer.normalize(searchRequest);
 
@@ -257,4 +268,45 @@ public class SearchRequestNormalizerTest {
 
         assertEquals("2015-01-01", searchRequest.getCertificationDateEnd());
     }
+
+    @Test
+    public void normalize_orderByStringValid_resolvesCorrectly() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .orderByString("PRODUCT")
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(OrderByOption.PRODUCT, searchRequest.getOrderBy());
+    }
+
+    @Test
+    public void normalize_orderByStringLowercase_resolvesCorrectly() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .orderByString("product")
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(OrderByOption.PRODUCT, searchRequest.getOrderBy());
+    }
+
+    @Test
+    public void normalize_orderByProduct_noChanges() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .orderBy(OrderByOption.PRODUCT)
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(OrderByOption.PRODUCT, searchRequest.getOrderBy());
+    }
+
+    @Test
+    public void normalize_orderByStringInvalid_setsFieldNull() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .orderByString("NOTVALID")
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertNull(searchRequest.getOrderBy());
+    }
+
 }
