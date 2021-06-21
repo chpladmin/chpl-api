@@ -163,6 +163,10 @@
         additivity="false">
         <AppenderRef ref="userDefinedTriggersEmailJob" />
     </Logger>
+    <Logger name="surveillanceActivityReportJobLogger" level="INFO"
+        additivity="false">
+        <AppenderRef ref="surveillanceActivityReportJob" />
+    </Logger>
     <Logger name="surveillanceUploadJobLogger" level="INFO"
         additivity="false">
         <AppenderRef ref="surveillanceUploadJob" />

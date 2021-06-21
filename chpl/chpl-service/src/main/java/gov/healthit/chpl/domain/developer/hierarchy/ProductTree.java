@@ -3,7 +3,7 @@ package gov.healthit.chpl.domain.developer.hierarchy;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.dto.ProductDTO;

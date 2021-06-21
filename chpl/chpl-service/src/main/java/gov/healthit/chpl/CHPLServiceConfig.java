@@ -22,14 +22,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -42,8 +40,6 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.oxm.Marshaller;
-import org.springframework.oxm.castor.CastorMarshaller;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -55,21 +51,19 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
 @Configuration
-@Import(ChplCacheConfig.class)
 @EnableWebMvc
 @EnableTransactionManagement(proxyTargetClass = true)
 @EnableGlobalMethodSecurity(prePostEnabled = true, proxyTargetClass = true)
 @EnableAsync
 @EnableAspectJAutoProxy
 @EnableScheduling
-@EnableCaching
 @PropertySources({
         @PropertySource("classpath:/environment.properties"),
         @PropertySource(value = "classpath:/environment-override.properties", ignoreResourceNotFound = true),
@@ -79,9 +73,9 @@ import org.springframework.web.servlet.view.JstlView;
         @PropertySource(value = "classpath:/email-override.properties", ignoreResourceNotFound = true),
 })
 @ComponentScan(basePackages = {
-        "org.springframework.security.**", "org.springframework.core.env.**", "gov.healthit.chpl.**"
+        "gov.healthit.chpl.**"
 })
-public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements EnvironmentAware {
+public class CHPLServiceConfig implements WebMvcConfigurer, EnvironmentAware {
 
     private static final Logger LOGGER = LogManager.getLogger(CHPLServiceConfig.class);
     private static final int MAX_UPLOAD_SIZE_BYTES = 5242880; // 5MB
@@ -161,12 +155,6 @@ public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements Enviro
         threadPoolTaskScheduler.setPoolSize(THREAD_POOL_TASK_THREAD);
         threadPoolTaskScheduler.setThreadNamePrefix("ThreadPoolTaskScheduler");
         return threadPoolTaskScheduler;
-    }
-
-    @Bean
-    public Marshaller marshaller() {
-        LOGGER.info("get Marshaller");
-        return new CastorMarshaller();
     }
 
     @Bean

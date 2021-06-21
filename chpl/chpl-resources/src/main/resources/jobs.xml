@@ -742,6 +742,23 @@
                 </entry>
             </job-data-map>
         </job>
+        
+        <!-- Job fired when a new surveillance activity (by date) is requested -->
+        <job>
+            <name>surveillanceReportingActivityJob</name>
+            <group>chplBackgroundJobs</group>
+            <description>Build Excel spreadsheet based on surveillances open during a time range</description>
+            <job-class>gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceReportingActivityJob</job-class>
+            <durability>true</durability>
+            <recover>true</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF</value>
+                </entry>
+            </job-data-map>
+        </job>
+                
         <!-- Job fired when a large surveillance file is uploaded -->
         <job>
             <name>surveillanceUploadJob</name>
