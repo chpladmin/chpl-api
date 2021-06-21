@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.optionalStandard.entity;
 
 import java.util.Date;
 
@@ -13,18 +13,19 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "certification_criterion_attribute")
+@Table(name = "optional_standard_criteria_map")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CertificationCriterionAttributeEntity {
+public class OptionalStandardCriteriaMapEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,19 +33,21 @@ public class CertificationCriterionAttributeEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Column(name = "criterion_id")
+    private Long certificationCriterionId;
+
     @Basic(optional = false)
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "criterion_id", insertable = false, updatable = false)
-    private CertificationCriterionEntity criterion;
+    private CertificationCriterionEntity criteria;
 
-    @Column(name = "optional_standard")
-    private Boolean optionalStandard;
+    @Column(name = "optional_standard_id")
+    private Long optionalStandardId;
 
-    @Column(name = "svap")
-    private Boolean svap;
-
-    @Column(name = "service_base_url_list")
-    private Boolean serviceBaseUrlList;
+    @Basic(optional = false)
+    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "optional_standard_id", insertable = false, updatable = false)
+    private OptionalStandardEntity optionalStandard;
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
