@@ -2485,14 +2485,14 @@
 									"raw": "{\"id\":16,\"acb\":{\"id\":4,\"acbCode\":\"05\",\"name\":\"SLI Compliance\",\"website\":\"http://www.slicompliance.com\",\"address\":{\"addressId\":380,\"line1\":\"4720 Independence Street\",\"line2\":null,\"city\":\"Wheat Ridge\",\"state\":\"CO\",\"zipcode\":\"80033\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null},\"year\":2020,\"quarter\":\"Q1\",\"startDate\":1577836800000,\"endDate\":1585699199999,\"surveillanceActivitiesAndOutcomes\":\"NA\",\"reactiveSummary\":\"NA\",\"prioritizedElementSummary\":\"NA\",\"transparencyDisclosureSummary\":\"SLI performed routine proactive surveillance of developer websites according to our schedule. Any issues related to 170.523(k) were communicated to the developer and were resolved in a timely manner.\"}"
 								},
 								"url": {
-									"raw": "{{url}}/rest/surveillance-report/quarterly ",
+									"raw": "{{url}}/rest/surveillance-report/quarterly",
 									"host": [
 										"{{url}}"
 									],
 									"path": [
 										"rest",
 										"surveillance-report",
-										"quarterly "
+										"quarterly"
 									]
 								},
 								"description": "Expect anonymous user to get error on quarterly surveillance report PUT request"

@@ -77,6 +77,9 @@ import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
+import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
+import gov.healthit.chpl.optionalStandard.entity.OptionalStandardEntity;
 import gov.healthit.chpl.surveillance.report.QuarterDAO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterDTO;
 import lombok.extern.log4j.Log4j2;
@@ -89,6 +92,7 @@ public class DimensionalDataManager {
     private CertificationCriterionDAO certificationCriterionDao;
     private EducationTypeDAO educationTypeDao;
     private AgeRangeDAO ageRangeDao;
+    private OptionalStandardDAO optionalStandardDao;
     private TestFunctionalityDAO testFuncDao;
     private TestStandardDAO testStandardDao;
     private TestToolDAO testToolDao;
@@ -120,12 +124,13 @@ public class DimensionalDataManager {
                                   SurveillanceDAO survDao, UploadTemplateVersionDAO uploadTemplateDao, QuarterDAO quarterDao,
                                   ProductDAO productDao, DeveloperDAO devDao, MeasureDAO measureDao,
                                   ListingMeasureDAO listingMeasureDao, CQMCriterionDAO cqmCriterionDao,
-                                  CertificationEditionDAO certEditionDao) {
+                                  CertificationEditionDAO certEditionDao, OptionalStandardDAO optionalStandardDao) {
         this.cacheableDimensionalDataManager = cacheableDimensionalDataManager;
         this.certificationBodyDao = certificationBodyDao;
         this.certificationCriterionDao = certificationCriterionDao;
         this.educationTypeDao = educationTypeDao;
         this.ageRangeDao = ageRangeDao;
+        this.optionalStandardDao = optionalStandardDao;
         this.testFuncDao = testFuncDao;
         this.testStandardDao = testStandardDao;
         this.testToolDao = testToolDao;
@@ -196,6 +201,20 @@ public class DimensionalDataManager {
         }
 
         return ageRanges;
+    }
+
+    @Transactional
+    public Set<OptionalStandard> getOptionalStandards() {
+        LOGGER.debug("Getting all optional standards from the database (not cached).");
+
+        List<OptionalStandardEntity> entities = this.optionalStandardDao.findAll();
+        Set<OptionalStandard> optionalStds = new HashSet<OptionalStandard>();
+
+        for (OptionalStandardEntity entity : entities) {
+            optionalStds.add(new OptionalStandard(entity));
+        }
+
+        return optionalStds;
     }
 
     @Transactional

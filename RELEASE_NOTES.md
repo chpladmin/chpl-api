@@ -1,5 +1,19 @@
 # Release Notes
 
+## Version 30.1.0
+_2 June 2021_
+
+### Features
+* Add cures statistics creation and basic email report
+* Update README documentation
+* Add developer data to version activity when creating a version
+* Incorporate listing status in certified product collection direct review counts
+
+### Bug Fixes
+* All activity metadata returned for Version and Listing activity
+
+---
+
 ## Version 30.0.0
 _17 May 2021_
 
