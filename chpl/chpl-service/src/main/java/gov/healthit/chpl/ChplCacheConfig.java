@@ -27,7 +27,6 @@ public class ChplCacheConfig {
     private static final int MAX_ENTRIES_LOCAL_HEAP_LISTING_COLLECTION = 300000;
     private static final int MAX_ENTRIES_LOCAL_DISK = 10000000;
     private static final int DISK_SPOOL_BUFFER_SIZE_MB = 20;
-    private static final int SIX_HOURS_IN_SECONDS = 6 * 60 * 60;
 
     @Bean
     public EhCacheManagerFactoryBean ehCacheCacheManager() {
@@ -87,7 +86,6 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.TEST_FUNCTIONALITY_MAPS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.UPLOAD_TEMPLATE_VERSIONS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.UPLOADED_LISTING_DETAILS));
-
         return cacheManager;
     }
 

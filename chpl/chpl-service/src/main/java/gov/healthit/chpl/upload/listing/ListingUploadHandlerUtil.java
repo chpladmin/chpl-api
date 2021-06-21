@@ -25,9 +25,8 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.csv.QuoteMode;
-import org.apache.commons.lang.math.IntRange;
-import org.apache.commons.lang.math.Range;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -86,22 +85,22 @@ public class ListingUploadHandlerUtil {
             List<CSVRecord> dataRecords) {
         CSVRecord certResultHeading = null;
         List<CSVRecord> certResultRows = new ArrayList<CSVRecord>();
-        Range certResultColumnRange = calculateCertificationResultColumnRangeFromIndex(startIndex, headingRecord);
-        if (certResultColumnRange == null) {
+        CellRangeAddress certResultRange = calculateCertificationResultColumnRangeFromIndex(startIndex, headingRecord, dataRecords);
+        if (certResultRange == null) {
             return null;
-        } else if (certResultColumnRange.getMinimumInteger() >= 0
-                && certResultColumnRange.getMaximumInteger() >= certResultColumnRange.getMinimumInteger()
-                && certResultColumnRange.getMaximumInteger() < headingRecord.size()) {
+        } else if (certResultRange.getFirstColumn() >= 0
+                && certResultRange.getLastColumn() >= certResultRange.getFirstColumn()
+                && certResultRange.getLastColumn() < headingRecord.size()) {
             //splice the heading record columns between the integer ranges
             List<String> certResultHeadingValues = new ArrayList<String>();
-            for (int i = certResultColumnRange.getMinimumInteger(); i <= certResultColumnRange.getMaximumInteger(); i++) {
+            for (int i = certResultRange.getFirstColumn(); i <= certResultRange.getLastColumn(); i++) {
                 certResultHeadingValues.add(headingRecord.get(i));
             }
             certResultHeading = convertToCsvRecord(certResultHeadingValues);
 
             for (CSVRecord dataRecord : dataRecords) {
                 List<String> certResultColumnValues = new ArrayList<String>();
-                for (int i = certResultColumnRange.getMinimumInteger(); i <= certResultColumnRange.getMaximumInteger(); i++) {
+                for (int i = certResultRange.getFirstColumn(); i <= certResultRange.getLastColumn(); i++) {
                     certResultColumnValues.add(dataRecord.get(i));
                 }
                 CSVRecord writtenDataRecord = convertToCsvRecord(certResultColumnValues);
@@ -111,7 +110,7 @@ public class ListingUploadHandlerUtil {
             }
         } else {
             throw new ValidationException(msgUtil.getMessage("certResult.upload.invalidRange",
-                    certResultColumnRange.getMinimumInteger(), certResultColumnRange.getMaximumInteger()));
+                    certResultRange.getFirstColumn(), certResultRange.getLastColumn()));
         }
 
         certResultRows.add(0, certResultHeading);
@@ -289,7 +288,8 @@ public class ListingUploadHandlerUtil {
         return getColumnIndexOfHeading(heading, headingRecord) >= 0;
     }
 
-    private Range calculateCertificationResultColumnRangeFromIndex(int startIndex, CSVRecord headingRecord) {
+    private CellRangeAddress calculateCertificationResultColumnRangeFromIndex(int startIndex, CSVRecord headingRecord,
+            List<CSVRecord> dataRecords) {
         int certResultStartIndex = -1, certResultEndIndex = -1;
         for (int i = startIndex; i < headingRecord.size() && (certResultStartIndex < 0 || certResultEndIndex < 0); i++) {
             String currHeading = headingRecord.get(i);
@@ -309,7 +309,7 @@ public class ListingUploadHandlerUtil {
             return null;
         }
 
-        return new IntRange(certResultStartIndex, certResultEndIndex);
+        return new CellRangeAddress(0, dataRecords.size() - 1, certResultStartIndex, certResultEndIndex);
     }
 
     private boolean looksLikeCriteriaStart(String headingVal) {

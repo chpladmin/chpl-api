@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.permissions.domains.surveillance.ActivityReportActionPermission;
 import gov.healthit.chpl.permissions.domains.surveillance.AddDocumentActionPermissions;
 import gov.healthit.chpl.permissions.domains.surveillance.BasicReportActionPermissions;
 import gov.healthit.chpl.permissions.domains.surveillance.CreateActionPermissions;
@@ -19,6 +20,7 @@ public class SurveillanceDomainPermissions extends DomainPermissions {
     public static final String ADD_DOCUMENT = "ADD_DOCUMENT";
     public static final String DELETE_DOCUMENT = "DELETE_DOCUMENT";
     public static final String BASIC_REPORT = "BASIC_REPORT";
+    public static final String ACTIVITY_REPORT = "ACTIVITY_REPORT";
 
     @Autowired
     public SurveillanceDomainPermissions(
@@ -27,7 +29,8 @@ public class SurveillanceDomainPermissions extends DomainPermissions {
             @Qualifier("surveillanceDeleteActionPermissions") DeleteActionPermissions deleteActionPermissions,
             @Qualifier("surveillanceAddDocumentActionPermissions") AddDocumentActionPermissions addDocumentActionPermissions,
             @Qualifier("surveillanceDeleteDocumentActionPermissions") DeleteDocumentActionPermissions deleteDocumentActionPermissions,
-            @Qualifier("surveillanceBasicReportActionPermissions") BasicReportActionPermissions basicReportActionPermissions) {
+            @Qualifier("surveillanceBasicReportActionPermissions") BasicReportActionPermissions basicReportActionPermissions,
+            @Qualifier("surveillanceActivityReportActionPermission") ActivityReportActionPermission activityReportActionPermission) {
 
         getActionPermissions().put(CREATE, createActionPermissions);
         getActionPermissions().put(UPDATE, updateActionPermissions);
@@ -35,6 +38,6 @@ public class SurveillanceDomainPermissions extends DomainPermissions {
         getActionPermissions().put(ADD_DOCUMENT, addDocumentActionPermissions);
         getActionPermissions().put(DELETE_DOCUMENT, deleteDocumentActionPermissions);
         getActionPermissions().put(BASIC_REPORT, basicReportActionPermissions);
+        getActionPermissions().put(ACTIVITY_REPORT, activityReportActionPermission);
     }
-
 }
