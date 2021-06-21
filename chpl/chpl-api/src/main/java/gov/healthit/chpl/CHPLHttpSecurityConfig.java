@@ -55,8 +55,7 @@ public class CHPLHttpSecurityConfig extends WebSecurityConfigurerAdapter {
         @Autowired
         public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
             auth.inMemoryAuthentication()
-              .withUser(ff4jUsername).password(passwordEncoder().encode(ff4jPassword))
-              .roles(FF4J_ROLE);
+            .withUser(ff4jUsername).password("{bcrypt}" + passwordEncoder().encode(ff4jPassword)).roles(FF4J_ROLE);
         }
 
         @Override
@@ -70,6 +69,7 @@ public class CHPLHttpSecurityConfig extends WebSecurityConfigurerAdapter {
         protected void configure(HttpSecurity http) throws Exception {
             LOGGER.info("configure FF4J Security for urls like " + ff4jWebConsoleUrl);
             http
+                .csrf().disable()
                 .antMatcher(ff4jWebConsoleUrl + "/**")
                 .authorizeRequests().anyRequest().hasRole(FF4J_ROLE)
                 .and().httpBasic()
