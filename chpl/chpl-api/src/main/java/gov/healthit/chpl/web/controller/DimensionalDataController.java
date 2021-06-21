@@ -1,9 +1,11 @@
 package gov.healthit.chpl.web.controller;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +19,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -46,6 +49,7 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.manager.FilterManager;
 import gov.healthit.chpl.manager.FuzzyChoicesManager;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
 import gov.healthit.chpl.svap.manager.SvapManager;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
@@ -70,6 +74,7 @@ public class DimensionalDataController {
     private SurveillanceReportManager survReportManager;
     private ChangeRequestManager changeRequestManager;
     private SvapManager svapManager;
+    private FF4j ff4j;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
@@ -80,7 +85,7 @@ public class DimensionalDataController {
             ComplaintManager complaintManager,
             SurveillanceReportManager survReportManager,
             ChangeRequestManager changeRequestManager,
-            SvapManager svapManager) {
+            SvapManager svapManager, FF4j ff4j) {
         this.dimensionalDataManager = dimensionalDataManager;
         this.fuzzyChoicesManager = fuzzyChoicesManager;
         this.developerManager = developerManager;
@@ -89,6 +94,7 @@ public class DimensionalDataController {
         this.survReportManager = survReportManager;
         this.changeRequestManager = changeRequestManager;
         this.svapManager = svapManager;
+        this.ff4j = ff4j;
     }
 
     @ApiOperation(value = "Get all fuzzy matching choices for the items that be fuzzy matched.",
@@ -238,6 +244,22 @@ public class DimensionalDataController {
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
+        return result;
+    }
+    @ApiOperation(value = "Get all possible optional standard options in the CHPL",
+            notes = "This is useful for knowing what values one might possibly search for.")
+    @RequestMapping(value = "/data/optional-standards", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody SearchOption getOptionalStandards() {
+        Set<OptionalStandard> data = dimensionalDataManager.getOptionalStandards();
+        SearchOption result = new SearchOption();
+        result.setExpandable(false);
+        if (ff4j.check(FeatureList.OPTIONAL_STANDARDS)) {
+            result.setData(data);
+        } else {
+            result.setData(new HashSet<OptionalStandard>());
+        }
         return result;
     }
 

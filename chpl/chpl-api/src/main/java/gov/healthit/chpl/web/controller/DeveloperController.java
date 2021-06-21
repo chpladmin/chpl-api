@@ -3,7 +3,7 @@ package gov.healthit.chpl.web.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.quartz.SchedulerException;
@@ -153,7 +153,7 @@ public class DeveloperController {
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB")
     @RequestMapping(value = "/{developerId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public synchronized ResponseEntity<Developer> update(@PathVariable("developerId") Long developerId,
+    public ResponseEntity<Developer> update(@PathVariable("developerId") Long developerId,
             @RequestBody(required = true) Developer developerToUpdate)
             throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException,
             JsonProcessingException, ValidationException, MissingReasonException {
@@ -243,7 +243,7 @@ public class DeveloperController {
             @PathVariable Long developerId, @PathVariable Long userId)
                     throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         if (!ff4j.check(FeatureList.ROLE_DEVELOPER)) {
-            throw new NotImplementedException();
+            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
 
         // delete all permissions on that developer
@@ -261,7 +261,7 @@ public class DeveloperController {
     public @ResponseBody UsersResponse getUsers(@PathVariable("developerId") Long developerId)
             throws InvalidArgumentsException, EntityRetrievalException {
         if (!ff4j.check(FeatureList.ROLE_DEVELOPER)) {
-            throw new NotImplementedException();
+            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
         List<UserDTO> users = developerManager.getAllUsersOnDeveloper(developerId);
         List<User> domainUsers = new ArrayList<User>(users.size());
