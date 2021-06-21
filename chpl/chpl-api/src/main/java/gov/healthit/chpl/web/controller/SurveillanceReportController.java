@@ -93,7 +93,7 @@ public class SurveillanceReportController {
             notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/annual", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public synchronized AnnualReport createAnnualReport(
+    public AnnualReport createAnnualReport(
         @RequestBody(required = true) AnnualReport createRequest)
                 throws AccessDeniedException, InvalidArgumentsException, EntityCreationException,
                 JsonProcessingException, EntityRetrievalException {
@@ -126,7 +126,7 @@ public class SurveillanceReportController {
             + "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
             + "on the ACB associated with the report.")
     @RequestMapping(value = "/annual", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
-    public synchronized AnnualReport updateAnnualReport(
+    public AnnualReport updateAnnualReport(
         @RequestBody(required = true) AnnualReport updateRequest)
     throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
     EntityCreationException {
@@ -238,7 +238,7 @@ public class SurveillanceReportController {
                     notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
                             + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/quarterly", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public synchronized QuarterlyReport createQuarterlyReport(
+    public QuarterlyReport createQuarterlyReport(
             @RequestBody(required = true) QuarterlyReport createRequest)
     throws AccessDeniedException, InvalidArgumentsException, EntityCreationException,
     JsonProcessingException, EntityRetrievalException {
@@ -267,7 +267,7 @@ public class SurveillanceReportController {
             notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/quarterly/{quarterlyReportId}/surveillance/{surveillanceId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
-    public synchronized PrivilegedSurveillance updatePrivilegedSurveillanceData(
+    public PrivilegedSurveillance updatePrivilegedSurveillanceData(
             @PathVariable Long quarterlyReportId,
             @PathVariable Long surveillanceId,
             @RequestBody(required = true) PrivilegedSurveillance updateRequest)
@@ -311,7 +311,7 @@ public class SurveillanceReportController {
             notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.")
     @RequestMapping(value = "/quarterly/{quarterlyReportId}/listings/{listingId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
-    public synchronized RelevantListing updateRelevantListing(@PathVariable Long quarterlyReportId,
+    public RelevantListing updateRelevantListing(@PathVariable Long quarterlyReportId,
             @PathVariable Long listingId,
             @RequestBody(required = true) RelevantListing updateExclusionRequest)
                 throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, EntityCreationException,
@@ -351,7 +351,7 @@ public class SurveillanceReportController {
             + "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
             + "on the ACB associated with the report.")
     @RequestMapping(value = "/quarterly", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
-    public synchronized QuarterlyReport updateQuarterlyReport(
+    public QuarterlyReport updateQuarterlyReport(
         @RequestBody(required = true) QuarterlyReport updateRequest)
     throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
     EntityCreationException {

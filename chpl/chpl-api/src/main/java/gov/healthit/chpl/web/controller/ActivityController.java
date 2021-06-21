@@ -12,7 +12,7 @@ import java.util.Set;
 
 import javax.persistence.EntityNotFoundException;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.ff4j.FF4j;
@@ -756,7 +756,7 @@ public class ActivityController {
     public List<ActivityMetadata> metadataForChangeRequests(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         if (!ff4j.check(FeatureList.CHANGE_REQUEST)) {
-            throw new NotImplementedException();
+            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
 
         Date startDate = new Date(start);
