@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
@@ -44,6 +46,52 @@ public class PendingCertifiedProductMeasureDTO implements Serializable {
             CertificationCriterionDTO criterionDto = new CertificationCriterionDTO(assocCriterionEntity.getCriterion());
             this.associatedCriteria.add(new CertificationCriterion(criterionDto));
         });
+    }
 
+    public boolean matchesCriteria(PendingCertifiedProductMeasureDTO anotherMeasure) {
+        if (this.associatedCriteria == null && anotherMeasure.associatedCriteria != null
+                || this.associatedCriteria != null && anotherMeasure.associatedCriteria == null) {
+            return false;
+        } else if (ObjectUtils.allNotNull(this.associatedCriteria, anotherMeasure.associatedCriteria)
+                && this.associatedCriteria.size() != anotherMeasure.associatedCriteria.size()) {
+            // easy check if the sizes are different
+            return false;
+        } else {
+            // associated criteria - were any removed?
+            for (CertificationCriterion thisCriterion : this.associatedCriteria) {
+                boolean foundInOtherMeasure = false;
+                for (CertificationCriterion otherCriterion : anotherMeasure.associatedCriteria) {
+                    if (thisCriterion.getId().longValue() == otherCriterion.getId().longValue()) {
+                        foundInOtherMeasure = true;
+                    }
+                }
+                if (!foundInOtherMeasure) {
+                    return false;
+                }
+            }
+            // associated criteria - were any added?
+            for (CertificationCriterion otherCriterion : anotherMeasure.associatedCriteria) {
+                boolean foundInThisMeasure = false;
+                for (CertificationCriterion thisCriterion : this.associatedCriteria) {
+                    if (thisCriterion.getId().longValue() == otherCriterion.getId().longValue()) {
+                        foundInThisMeasure = true;
+                    }
+                }
+                if (!foundInThisMeasure) {
+                    return false;
+                }
+            }
+            // associated criteria - were any changed?
+            for (CertificationCriterion otherCriterion : anotherMeasure.associatedCriteria) {
+                for (CertificationCriterion thisCriterion : this.associatedCriteria) {
+                    if (thisCriterion.getId().longValue() == otherCriterion.getId().longValue()) {
+                        if (!thisCriterion.equals(otherCriterion)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
 }
