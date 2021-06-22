@@ -29,6 +29,7 @@ public class SearchRequestValidatorTest {
     private static final String INVALID_CERTIFICATION_STATUS = "Could not find certification status with value '%s'.";
     private static final String INVALID_CERTIFICATION_EDITION = "Could not find certification edition with value '%s'.";
     private static final String INVALID_CERTIFICATION_CRITERION = "Could not find certification criterion with value '%s'.";
+    private static final String INVALID_CERTIFICATION_CRITERION_FORMAT = "Certification Criterion ID %s is invalid. It must be a positive whole number.";
     private static final String INVALID_OPERATOR = "Invalid search operator value '%s'. Value must be one of %s.";
     private static final String INVALID_CQM = "Could not find CQM with value '%s'.";
     private static final String INVALID_ACB = "Could not find certification body with value '%s'.";
@@ -53,6 +54,8 @@ public class SearchRequestValidatorTest {
             .thenAnswer(i -> String.format(INVALID_CERTIFICATION_EDITION, i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.certificationCriteria.invalid"), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_CERTIFICATION_CRITERION, i.getArgument(1), ""));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.certificationCriteriaId.invalid"), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(INVALID_CERTIFICATION_CRITERION_FORMAT, i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.searchOperator.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_OPERATOR, i.getArgument(1), i.getArgument(2)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.cqms.invalid"), ArgumentMatchers.anyString()))
@@ -84,6 +87,7 @@ public class SearchRequestValidatorTest {
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
             assertTrue(ex.getErrorMessages().contains(String.format(INVALID_CERTIFICATION_STATUS, "Active", "")));
             return;
         }
@@ -101,6 +105,7 @@ public class SearchRequestValidatorTest {
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
             assertTrue(ex.getErrorMessages().contains(String.format(INVALID_CERTIFICATION_STATUS, "Active", "")));
             return;
         }
@@ -133,6 +138,7 @@ public class SearchRequestValidatorTest {
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
             assertTrue(ex.getErrorMessages().contains(String.format(INVALID_CERTIFICATION_EDITION, "2021", "")));
             return;
         }
@@ -150,6 +156,7 @@ public class SearchRequestValidatorTest {
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
             assertTrue(ex.getErrorMessages().contains(String.format(INVALID_CERTIFICATION_EDITION, "2021", "")));
             return;
         }
@@ -182,6 +189,7 @@ public class SearchRequestValidatorTest {
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
             assertTrue(ex.getErrorMessages().contains(String.format(INVALID_CERTIFICATION_CRITERION, "1", "")));
             return;
         }
@@ -201,6 +209,7 @@ public class SearchRequestValidatorTest {
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
             assertTrue(ex.getErrorMessages().contains(String.format(INVALID_CERTIFICATION_CRITERION, "3", "")));
             return;
         }
@@ -225,6 +234,22 @@ public class SearchRequestValidatorTest {
     }
 
     @Test
+    public void validate_invalidCertificationCriteriaIdFormat_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .certificationCriteriaIdStrings(Stream.of("3 ", " 4 ", " 01", " ", "", null, "BAD").collect(Collectors.toSet()))
+            .build();
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_CERTIFICATION_CRITERION_FORMAT, "BAD", "")));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
     public void validate_invalidCriteriaOperator_addsError() {
         SearchRequest request = SearchRequest.builder()
             .certificationCriteriaOperator(null)
@@ -233,6 +258,7 @@ public class SearchRequestValidatorTest {
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
             assertTrue(ex.getErrorMessages().contains(String.format(INVALID_OPERATOR, "XOR",
                     Stream.of(SearchSetOperator.values())
                     .map(value -> value.name())
@@ -279,6 +305,7 @@ public class SearchRequestValidatorTest {
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
             assertTrue(ex.getErrorMessages().contains(String.format(INVALID_CQM, "CMS1", "")));
             return;
         }
@@ -297,6 +324,7 @@ public class SearchRequestValidatorTest {
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
             assertTrue(ex.getErrorMessages().contains(String.format(INVALID_CQM, "CMS3", "")));
             return;
         }
@@ -328,6 +356,7 @@ public class SearchRequestValidatorTest {
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
             assertTrue(ex.getErrorMessages().contains(String.format(INVALID_OPERATOR, "XOR",
                     Stream.of(SearchSetOperator.values())
                     .map(value -> value.name())
@@ -374,6 +403,7 @@ public class SearchRequestValidatorTest {
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
             assertTrue(ex.getErrorMessages().contains(String.format(INVALID_ACB, "ICSA", "")));
             return;
         }
@@ -393,6 +423,7 @@ public class SearchRequestValidatorTest {
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
             assertTrue(ex.getErrorMessages().contains(String.format(INVALID_ACB, "ICSA", "")));
             return;
         }
@@ -427,6 +458,7 @@ public class SearchRequestValidatorTest {
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
             assertTrue(ex.getErrorMessages().contains(String.format(INVALID_PRACTICE_TYPE, "Inpatient", "")));
             return;
         }
@@ -446,6 +478,7 @@ public class SearchRequestValidatorTest {
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
             assertTrue(ex.getErrorMessages().contains(String.format(INVALID_PRACTICE_TYPE, "Bad", "")));
             return;
         }
@@ -478,6 +511,7 @@ public class SearchRequestValidatorTest {
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
             assertTrue(ex.getErrorMessages().contains(String.format(INVALID_CERTIFICATION_DATE, "12345", SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT)));
             return;
         }
@@ -493,6 +527,7 @@ public class SearchRequestValidatorTest {
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
             assertTrue(ex.getErrorMessages().contains(String.format(INVALID_CERTIFICATION_DATE, "12345", SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT)));
             return;
         }
@@ -509,6 +544,7 @@ public class SearchRequestValidatorTest {
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
             assertTrue(ex.getErrorMessages().contains(String.format(INVALID_DATE_ORDER, "2015-01-01", "2015-12-31")));
             return;
         }
@@ -582,6 +618,7 @@ public class SearchRequestValidatorTest {
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
             assertTrue(ex.getErrorMessages().contains(String.format(INVALID_OPERATOR, "BADVALUE",
                     Stream.of(SearchSetOperator.values())
                     .map(value -> value.name())
@@ -632,6 +669,7 @@ public class SearchRequestValidatorTest {
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
             assertTrue(ex.getErrorMessages().contains(String.format(INVALID_NONCONFORMITY_SEARCH_OPTION,
                     "BADVALUE",
                     Stream.of(NonConformitySearchOptions.values())
@@ -698,6 +736,7 @@ public class SearchRequestValidatorTest {
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
             assertTrue(ex.getErrorMessages().contains(String.format(INVALID_ORDER_BY, "NOTVALID",
                     Stream.of(OrderByOption.values())
                     .map(value -> value.name())

@@ -44,7 +44,7 @@ public class SearchRequestValidator {
         Set<String> errors = new LinkedHashSet<String>();
         errors.addAll(getCertificationStatusErrors(request.getCertificationStatuses()));
         errors.addAll(getCertificationEditionErrors(request.getCertificationEditions()));
-        errors.addAll(getCertificationCriteriaErrors(request.getCertificationCriteriaIds()));
+        errors.addAll(getCertificationCriteriaErrors(request));
         errors.addAll(getCertificationCriteriaOperatorErrors(request));
         errors.addAll(getCqmErrors(request.getCqms()));
         errors.addAll(getCqmOperatorErrors(request));
@@ -83,7 +83,14 @@ public class SearchRequestValidator {
             .collect(Collectors.toSet());
     }
 
-    private Set<String> getCertificationCriteriaErrors(Set<Long> certificationCriteriaIds) {
+    private Set<String> getCertificationCriteriaErrors(SearchRequest request) {
+        Set<String> criteriaErrors = new LinkedHashSet<String>();
+        criteriaErrors.addAll(getCriteriaExistenceErrors(request.getCertificationCriteriaIds()));
+        criteriaErrors.addAll(getCriteriaIdFormatErrors(request.getCertificationCriteriaIdStrings()));
+        return criteriaErrors;
+    }
+
+    private Set<String> getCriteriaExistenceErrors(Set<Long> certificationCriteriaIds) {
         if (certificationCriteriaIds == null || certificationCriteriaIds.size() == 0) {
             return Collections.emptySet();
         }
@@ -93,6 +100,26 @@ public class SearchRequestValidator {
             .filter(certificationCriteriaId -> !isInSet(certificationCriteriaId, allCriteria))
             .map(certificationCriteriaId -> msgUtil.getMessage("search.certificationCriteria.invalid", certificationCriteriaId.toString()))
             .collect(Collectors.toSet());
+    }
+
+    private Set<String> getCriteriaIdFormatErrors(Set<String> criteriaIdStrings) {
+        if (criteriaIdStrings != null && criteriaIdStrings.size() > 0) {
+            return criteriaIdStrings.stream()
+                .filter(criteriaId -> !StringUtils.isBlank(criteriaId))
+                .filter(criteriaId -> !isParseableLong(criteriaId.trim()))
+                .map(criteriaId -> msgUtil.getMessage("search.certificationCriteriaId.invalid", criteriaId))
+                .collect(Collectors.toSet());
+        }
+        return Collections.emptySet();
+    }
+
+    private boolean isParseableLong(String value) {
+        try {
+            Long.parseLong(value);
+        } catch (Exception ex) {
+            return false;
+        }
+        return true;
     }
 
     private Set<String> getCertificationCriteriaOperatorErrors(SearchRequest searchRequest) {
