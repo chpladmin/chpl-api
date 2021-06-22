@@ -20,6 +20,7 @@ import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
+import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
@@ -207,8 +208,28 @@ public class SearchRequestValidator {
     }
 
     private Set<String> getNonConformitySearchOptionsErrors(ComplianceSearchFilter complianceFilter) {
-        //TODO:
+        if (complianceFilter.getNonConformityOptionsStrings() != null && complianceFilter.getNonConformityOptionsStrings().size() > 0) {
+            return complianceFilter.getNonConformityOptionsStrings().stream()
+                .filter(option -> !StringUtils.isBlank(option))
+                .filter(option -> !isNonConformitySearchOption(option))
+                .map(option -> msgUtil.getMessage("search.nonconformitySearchOption.invalid",
+                        option,
+                        Stream.of(NonConformitySearchOptions.values())
+                        .map(value -> value.name())
+                        .collect(Collectors.joining(","))))
+                .collect(Collectors.toSet());
+        }
         return Collections.emptySet();
+    }
+
+    private boolean isNonConformitySearchOption(String option) {
+        boolean result = true;
+        try {
+            NonConformitySearchOptions.valueOf(option.toUpperCase().trim());
+        } catch (Exception ex) {
+            result = false;
+        }
+        return result;
     }
 
     private Set<String> getPageSizeErrors(Integer pageSize) {

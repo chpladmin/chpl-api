@@ -2,6 +2,7 @@ package gov.healthit.chpl.search;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -18,6 +19,7 @@ import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
+import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
@@ -590,7 +592,7 @@ public class SearchRequestValidatorTest {
     }
 
     @Test
-    public void validate_validNonConformityOptionsParsedFromString_noErrors() {
+    public void validate_validNonConformityOptionsOperatorParsedFromString_noErrors() {
         SearchRequest request = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()
                     .nonConformityOptionsOperator(SearchSetOperator.OR)
@@ -619,6 +621,73 @@ public class SearchRequestValidatorTest {
         }
     }
 
+    @Test
+    public void validate_invalidNonConformitySearchOption_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .complianceActivity(ComplianceSearchFilter.builder()
+                    .nonConformityOptionsStrings(Stream.of("NEVER_NONCONFORMITY", "BADVALUE").collect(Collectors.toSet()))
+                    .nonConformityOptions(Stream.of(NonConformitySearchOptions.NEVER_NONCONFORMITY).collect(Collectors.toSet()))
+                    .build())
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_NONCONFORMITY_SEARCH_OPTION,
+                    "BADVALUE",
+                    Stream.of(NonConformitySearchOptions.values())
+                    .map(value -> value.name())
+                    .collect(Collectors.joining(",")))));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_emptyNonConformitySearchOptions_noError() {
+        SearchRequest request = SearchRequest.builder()
+            .complianceActivity(ComplianceSearchFilter.builder()
+                    .nonConformityOptionsStrings(Stream.of("NEVER_NONCONFORMITY", " ", "", null).collect(Collectors.toSet()))
+                    .nonConformityOptions(Stream.of(NonConformitySearchOptions.NEVER_NONCONFORMITY).collect(Collectors.toSet()))
+                    .build())
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_validNonConformitySearchOptionsParsedFromString_noErrors() {
+        SearchRequest request = SearchRequest.builder()
+            .complianceActivity(ComplianceSearchFilter.builder()
+                    .nonConformityOptionsStrings(Stream.of("NEVER_NONCONFORMITY", "OPEN_NONCONFORMITY", "CLOSED_NONCONFORMITY").collect(Collectors.toSet()))
+                    .nonConformityOptions(Stream.of(NonConformitySearchOptions.NEVER_NONCONFORMITY, NonConformitySearchOptions.OPEN_NONCONFORMITY, NonConformitySearchOptions.CLOSED_NONCONFORMITY).collect(Collectors.toSet()))
+                    .build())
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+        assertEquals(3, request.getComplianceActivity().getNonConformityOptions().size());
+    }
+
+    @Test
+    public void validate_validNonConformitySearchOptionsWithoutString_noErrors() {
+        SearchRequest request = SearchRequest.builder()
+            .complianceActivity(ComplianceSearchFilter.builder()
+                    .nonConformityOptionsStrings(null)
+                    .nonConformityOptions(Stream.of(NonConformitySearchOptions.NEVER_NONCONFORMITY, NonConformitySearchOptions.OPEN_NONCONFORMITY, NonConformitySearchOptions.CLOSED_NONCONFORMITY).collect(Collectors.toSet()))
+                    .build())
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+        assertEquals(3, request.getComplianceActivity().getNonConformityOptions().size());
+    }
 
     @Test
     public void validate_invalidOrderBy_addsError() {
