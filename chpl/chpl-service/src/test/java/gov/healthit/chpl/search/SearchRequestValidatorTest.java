@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,6 +24,7 @@ import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
+import gov.healthit.chpl.service.DirectReviewSearchService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class SearchRequestValidatorTest {
@@ -37,17 +39,21 @@ public class SearchRequestValidatorTest {
     private static final String INVALID_CERTIFICATION_DATE = "Could not parse '%s' as date in the format %s.";
     private static final String INVALID_DATE_ORDER = "The certification date range end '%s' is before the start '%s'.";
     private static final String INVALID_NONCONFORMITY_SEARCH_OPTION = "No non-conformity search option matches '%s'. Values must be one of %s.";
+    private static final String DIRECT_REVIEWS_UNAVAILABLE = "Compliance and non-conformity filtering is unavailable at this time.";
     private static final String INVALID_ORDER_BY = "Order by parameter '%s' is invalid. Value must be one of %s.";
 
-    private ErrorMessageUtil msgUtil;
     private DimensionalDataManager dimensionalDataManager;
+    private DirectReviewSearchService drService;
+    private ErrorMessageUtil msgUtil;
     private SearchRequestValidator validator;
 
     @Before
     public void setup() {
-        msgUtil = Mockito.mock(ErrorMessageUtil.class);
         dimensionalDataManager = Mockito.mock(DimensionalDataManager.class);
+        drService = Mockito.mock(DirectReviewSearchService.class);
+        Mockito.when(drService.getDirectReviewsAvailable()).thenReturn(true);
 
+        msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.certificationStatuses.invalid"), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_CERTIFICATION_STATUS, i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.certificationEdition.invalid"), ArgumentMatchers.anyString()))
@@ -70,10 +76,12 @@ public class SearchRequestValidatorTest {
             .thenAnswer(i -> String.format(INVALID_DATE_ORDER, i.getArgument(1), i.getArgument(2)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.nonconformitySearchOption.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_NONCONFORMITY_SEARCH_OPTION, i.getArgument(1), i.getArgument(2)));
+            Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.complianceFilter.unavailable")))
+             .thenAnswer(i -> DIRECT_REVIEWS_UNAVAILABLE);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.orderBy.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_ORDER_BY, i.getArgument(1), i.getArgument(2)));
 
-        validator = new SearchRequestValidator(dimensionalDataManager, msgUtil);
+        validator = new SearchRequestValidator(dimensionalDataManager, drService, msgUtil);
     }
 
     @Test
@@ -725,6 +733,98 @@ public class SearchRequestValidatorTest {
             fail(ex.getMessage());
         }
         assertEquals(3, request.getComplianceActivity().getNonConformityOptions().size());
+    }
+
+    @Test
+    public void validate_nullComplianceFilterDirectReviewsNotAvailable_noErrors() {
+        Mockito.when(drService.getDirectReviewsAvailable()).thenReturn(false);
+
+        SearchRequest request = SearchRequest.builder()
+            .complianceActivity(null)
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_emptyComplianceFilterDirectReviewsNotAvailable_noErrors() {
+        Mockito.when(drService.getDirectReviewsAvailable()).thenReturn(false);
+
+        SearchRequest request = SearchRequest.builder()
+            .complianceActivity(ComplianceSearchFilter.builder()
+                    .hasHadComplianceActivity(null)
+                    .nonConformityOptions(Collections.emptySet())
+                    .nonConformityOptionsOperator(null)
+                    .build())
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_hasHadComplianceFilterNotNullDirectReviewsNotAvailable_addsError() {
+        Mockito.when(drService.getDirectReviewsAvailable()).thenReturn(false);
+
+        SearchRequest request = SearchRequest.builder()
+            .complianceActivity(ComplianceSearchFilter.builder()
+                    .hasHadComplianceActivity(true)
+                    .nonConformityOptions(Collections.emptySet())
+                    .nonConformityOptionsOperator(null)
+                    .build())
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertTrue(ex.getErrorMessages().contains(DIRECT_REVIEWS_UNAVAILABLE));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_hasNonConformityOptionsDirectReviewsNotAvailable_addsError() {
+        Mockito.when(drService.getDirectReviewsAvailable()).thenReturn(false);
+
+        SearchRequest request = SearchRequest.builder()
+            .complianceActivity(ComplianceSearchFilter.builder()
+                    .hasHadComplianceActivity(null)
+                    .nonConformityOptions(Stream.of(NonConformitySearchOptions.NEVER_NONCONFORMITY).collect(Collectors.toSet()))
+                    .nonConformityOptionsOperator(null)
+                    .build())
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertTrue(ex.getErrorMessages().contains(DIRECT_REVIEWS_UNAVAILABLE));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_hasNonConformityOptionsOperatorDirectReviewsNotAvailable_addsError() {
+        Mockito.when(drService.getDirectReviewsAvailable()).thenReturn(false);
+
+        SearchRequest request = SearchRequest.builder()
+            .complianceActivity(ComplianceSearchFilter.builder()
+                    .hasHadComplianceActivity(null)
+                    .nonConformityOptions(Collections.emptySet())
+                    .nonConformityOptionsOperator(SearchSetOperator.OR)
+                    .build())
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertTrue(ex.getErrorMessages().contains(DIRECT_REVIEWS_UNAVAILABLE));
+            return;
+        }
+        fail("Should not execute.");
     }
 
     @Test

@@ -24,18 +24,22 @@ import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
+import gov.healthit.chpl.service.DirectReviewSearchService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class SearchRequestValidator {
-    private ErrorMessageUtil msgUtil;
     private DimensionalDataManager dimensionalDataManager;
+    private DirectReviewSearchService drService;
+    private ErrorMessageUtil msgUtil;
     private DateTimeFormatter dateFormatter;
 
     @Autowired
     public SearchRequestValidator(DimensionalDataManager dimensionalDataManager,
+            DirectReviewSearchService drService,
             ErrorMessageUtil msgUtil) {
         this.dimensionalDataManager = dimensionalDataManager;
+        this.drService = drService;
         this.msgUtil = msgUtil;
         dateFormatter = DateTimeFormatter.ofPattern(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
     }
@@ -216,13 +220,23 @@ public class SearchRequestValidator {
 
     private Set<String> getComplianceActivityErrors(ComplianceSearchFilter complianceFilter) {
         Set<String> errors = new LinkedHashSet<String>();
+        if (hasAnyComplianceFilters(complianceFilter) && !drService.getDirectReviewsAvailable()) {
+            errors.add(msgUtil.getMessage("search.complianceFilter.unavailable"));
+        }
         errors.addAll(getNonConformityOperatorErrors(complianceFilter));
         errors.addAll(getNonConformitySearchOptionsErrors(complianceFilter));
         return errors;
     }
 
+    private boolean hasAnyComplianceFilters(ComplianceSearchFilter complianceFilter) {
+        return complianceFilter != null
+                && (complianceFilter.getHasHadComplianceActivity() != null
+                    || (complianceFilter.getNonConformityOptions() != null && complianceFilter.getNonConformityOptions().size() > 0)
+                    || complianceFilter.getNonConformityOptionsOperator() != null);
+    }
+
     private Set<String> getNonConformityOperatorErrors(ComplianceSearchFilter complianceFilter) {
-        if (complianceFilter.getNonConformityOptionsOperator() == null
+        if (complianceFilter != null && complianceFilter.getNonConformityOptionsOperator() == null
                 && !StringUtils.isBlank(complianceFilter.getNonConformityOptionsOperatorString())) {
             return Stream.of(msgUtil.getMessage("search.searchOperator.invalid",
                     complianceFilter.getNonConformityOptionsOperatorString(),
@@ -235,7 +249,7 @@ public class SearchRequestValidator {
     }
 
     private Set<String> getNonConformitySearchOptionsErrors(ComplianceSearchFilter complianceFilter) {
-        if (complianceFilter.getNonConformityOptionsStrings() != null && complianceFilter.getNonConformityOptionsStrings().size() > 0) {
+        if (complianceFilter != null && complianceFilter.getNonConformityOptionsStrings() != null && complianceFilter.getNonConformityOptionsStrings().size() > 0) {
             return complianceFilter.getNonConformityOptionsStrings().stream()
                 .filter(option -> !StringUtils.isBlank(option))
                 .filter(option -> !isNonConformitySearchOption(option))
