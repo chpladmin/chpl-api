@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.healthit.chpl.caching.CacheInitializor;
+import gov.healthit.chpl.caching.CacheInitializer;
 import gov.healthit.chpl.domain.status.CacheStatus;
 import gov.healthit.chpl.domain.status.CacheStatusName;
 import gov.healthit.chpl.domain.status.SystemStatus;
@@ -93,7 +93,7 @@ public class StatusController {
     private CacheStatusName determineCacheStatus() {
         CacheManager manager = CacheManager.getInstance();
         boolean anyPending = false;
-        List<String> cacheNames = CacheInitializor.getPreInitializedCaches();
+        List<String> cacheNames = CacheInitializer.getPreInitializedCaches();
         for (int i = 0; i < cacheNames.size(); i++) {
             Cache currCache = manager.getCache(cacheNames.get(i));
             if (currCache == null || currCache.getKeysNoDuplicateCheck().size() == 0) {

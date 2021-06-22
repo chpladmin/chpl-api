@@ -30,6 +30,7 @@ import gov.healthit.chpl.entity.TestParticipantEntity;
 import gov.healthit.chpl.entity.TestTaskEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultAdditionalSoftwareEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultTestDataEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultTestFunctionalityEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultTestProcedureEntity;
@@ -40,6 +41,7 @@ import gov.healthit.chpl.entity.listing.CertificationResultUcdProcessEntity;
 import gov.healthit.chpl.entity.listing.TestTaskParticipantMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.svap.entity.CertificationResultSvapEntity;
 import gov.healthit.chpl.util.AuthUtil;
@@ -477,6 +479,98 @@ public class CertificationResultDAO extends BaseDAOImpl {
         query.setParameter("certifiedProductId", certifiedProductId);
         BigInteger count = (BigInteger) query.getSingleResult();
         return count.intValue() > 0;
+    }
+
+    /******************************************************
+     * Optional Standard methods.
+     *
+     *******************************************************/
+
+    public List<CertificationResultOptionalStandard> getOptionalStandardsForCertificationResult(Long certificationResultId) {
+
+        List<CertificationResultOptionalStandardEntity> entities = getOptionalStandardsForCertification(certificationResultId);
+        List<CertificationResultOptionalStandard> domains = new ArrayList<CertificationResultOptionalStandard>();
+
+        for (CertificationResultOptionalStandardEntity entity : entities) {
+            CertificationResultOptionalStandard domain = new CertificationResultOptionalStandard(entity);
+            domains.add(domain);
+        }
+        return domains;
+    }
+
+    public CertificationResultOptionalStandard addOptionalStandardMapping(CertificationResultOptionalStandardEntity entity)
+            throws EntityCreationException {
+        CertificationResultOptionalStandardEntity mapping = new CertificationResultOptionalStandardEntity();
+        mapping.setCertificationResultId(entity.getCertificationResultId());
+        mapping.setOptionalStandardId(entity.getOptionalStandardId());
+        mapping.setCreationDate(new Date());
+        mapping.setDeleted(false);
+        mapping.setLastModifiedDate(new Date());
+        mapping.setLastModifiedUser(AuthUtil.getAuditId());
+        entityManager.persist(mapping);
+        entityManager.flush();
+
+        return new CertificationResultOptionalStandard(mapping);
+    }
+
+    public void deleteOptionalStandardMapping(Long mappingId) {
+        CertificationResultOptionalStandardEntity toDelete = getCertificationResultOptionalStandardById(mappingId);
+        if (toDelete != null) {
+            toDelete.setDeleted(true);
+            toDelete.setLastModifiedDate(new Date());
+            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
+            entityManager.persist(toDelete);
+            entityManager.flush();
+        }
+    }
+
+    public CertificationResultOptionalStandard lookupOptionalStandardMapping(Long certificationResultId,
+            Long optionalStandardId) {
+        Query query = entityManager.createQuery("SELECT os " + "FROM CertificationResultOptionalStandardEntity os "
+                + "LEFT OUTER JOIN FETCH os.optionalStandard " + "where (NOT os.deleted = true) "
+                + "AND (os.certificationResultId = :certificationResultId) "
+                + "AND (os.optionalStandardId = :optionalStandardId)", CertificationResultOptionalStandardEntity.class);
+        query.setParameter("certificationResultId", certificationResultId);
+        query.setParameter("optionalStandardId", optionalStandardId);
+        List<CertificationResultOptionalStandardEntity> entities = query.getResultList();
+
+        CertificationResultOptionalStandard result = null;
+        if (entities != null && entities.size() > 0) {
+            result = new CertificationResultOptionalStandard(entities.get(0));
+        }
+
+        return result;
+    }
+
+    private CertificationResultOptionalStandardEntity getCertificationResultOptionalStandardById(Long id) {
+        CertificationResultOptionalStandardEntity entity = null;
+
+        Query query = entityManager.createQuery(
+                "SELECT os " + "FROM CertificationResultOptionalStandardEntity os "
+                        + "LEFT OUTER JOIN FETCH os.optionalStandard " + "where (NOT os.deleted = true) AND (os.id = :id) ",
+                CertificationResultOptionalStandardEntity.class);
+        query.setParameter("id", id);
+        List<CertificationResultOptionalStandardEntity> result = query.getResultList();
+
+        if (result.size() > 0) {
+            entity = result.get(0);
+        }
+        return entity;
+    }
+
+    private List<CertificationResultOptionalStandardEntity> getOptionalStandardsForCertification(Long certificationResultId) {
+        Query query = entityManager.createQuery(
+                "SELECT os " + "FROM CertificationResultOptionalStandardEntity os "
+                        + "LEFT OUTER JOIN FETCH os.optionalStandard "
+                        + "where (NOT os.deleted = true) AND (certification_result_id = :certificationResultId) ",
+                CertificationResultOptionalStandardEntity.class);
+        query.setParameter("certificationResultId", certificationResultId);
+
+        List<CertificationResultOptionalStandardEntity> result = query.getResultList();
+        if (result == null) {
+            return null;
+        }
+        return result;
     }
 
     /******************************************************

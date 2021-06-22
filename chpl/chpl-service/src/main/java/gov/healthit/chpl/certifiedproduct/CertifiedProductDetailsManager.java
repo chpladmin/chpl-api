@@ -85,14 +85,14 @@ public class CertifiedProductDetailsManager {
     @Transactional(readOnly = true)
     public List<CertificationResult> getCertifiedProductCertificationResults(Long certifiedProductId) throws EntityRetrievalException {
         CertifiedProductDetailsDTO dto = certifiedProductSearchResultDAO.getById(certifiedProductId);
-        CertifiedProductSearchDetails searchDetails = listingService.createCertifiedProductSearchDetailsBasic(dto);
+        CertifiedProductSearchDetails searchDetails = listingService.createCertifiedProductSearchDetailsWithBasicDataOnly(dto);
         return certificationResultService.getCertificationResults(searchDetails);
     }
 
     @Transactional(readOnly = true)
     public List<CertificationResult> getCertifiedProductCertificationResults(String chplProductNumber) throws EntityRetrievalException {
         CertifiedProductDetailsDTO dto = getCertifiedProductDetailsDtoByChplProductNumber(chplProductNumber);
-        CertifiedProductSearchDetails searchDetails = listingService.createCertifiedProductSearchDetailsBasic(dto);
+        CertifiedProductSearchDetails searchDetails = listingService.createCertifiedProductSearchDetailsWithBasicDataOnly(dto);
         return certificationResultService.getCertificationResults(searchDetails);
     }
 

@@ -1,5 +1,6 @@
 {
 	"info": {
+		"_postman_id": "70da47db-73bf-4d3c-880e-1ba2cb35f0f8",
 		"name": "certified-product-controller",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -367,6 +368,204 @@
 							]
 						},
 						"description": "GET /{chplPrefix-identifier}/measures return status 200"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /{certifiedProductId} - return Direct Review information",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"/{certifiedProductId} end point response should have Direct Review Information\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    if ((jsonData.directReviewsAvailable) == true){\r",
+									"        pm.expect(jsonData).to.have.property('directReviews');\r",
+									"        pm.expect(jsonData.directReviews.length).not.eql(0);\r",
+									"        pm.expect(jsonData.directReviews[0]).to.have.property('nonConformities');\r",
+									"        pm.expect(jsonData.directReviews[0].length).not.eql(0);\r",
+									"\r",
+									"    }\r",
+									"    else {\r",
+									"        pm.expect(jsonData).to.have.property('directReviews');\r",
+									"        pm.expect(jsonData.directReviews.length).eql(0);\r",
+									"    }\r",
+									"    \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var certifiedProductId= pm.iterationData.get(\"certifiedProductId\");\r",
+									"pm.environment.set(\"certifiedProductId\",\"certifiedProductId\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/certified_products/{{certifiedProductId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"certified_products",
+								"{{certifiedProductId}}"
+							]
+						},
+						"description": "Direct Review Information is available on /{certifiedProductId} end point"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode} - return Direct Review information",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var chplIdtest=  pm.iterationData.get(\"newChplProductNumber\");\r",
+									"pm.environment.set(\"year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode\",chplIdtest);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"/certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} end point response should have Direct Review Information\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    if ((jsonData.directReviewsAvailable) == true){\r",
+									"        pm.expect(jsonData).to.have.property('directReviews');\r",
+									"        pm.expect(jsonData.directReviews.length).not.eql(0);\r",
+									"        pm.expect(jsonData.directReviews[0]).to.have.property('nonConformities');\r",
+									"        pm.expect(jsonData.directReviews[0].length).not.eql(0);\r",
+									"\r",
+									"    }\r",
+									"    else {\r",
+									"        pm.expect(jsonData).to.have.property('directReviews');\r",
+									"        pm.expect(jsonData.directReviews.length).eql(0);\r",
+									"    }\r",
+									"    \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/certified_products/{{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"certified_products",
+								"{{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode}}"
+							]
+						},
+						"description": "GET /{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode} should return Direct Review Information"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /{chplPrefix-identifier} - return Direct Review information",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var chplidtest= pm.iterationData.get(\"oldChplProductNumber\");\r",
+									"pm.environment.set(\"chplPrefix-identifier\",chplidtest);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"/{chplPrefix-identifier} end point response should have Direct Review Information\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    if ((jsonData.directReviewsAvailable) == true){\r",
+									"        pm.expect(jsonData).to.have.property('directReviews');\r",
+									"        pm.expect(jsonData.directReviews.length).not.eql(0);\r",
+									"        pm.expect(jsonData.directReviews[0]).to.have.property('nonConformities');\r",
+									"        pm.expect(jsonData.directReviews[0].length).not.eql(0);\r",
+									"\r",
+									"    }\r",
+									"    else {\r",
+									"        pm.expect(jsonData).to.have.property('directReviews');\r",
+									"        pm.expect(jsonData.directReviews.length).eql(0);\r",
+									"    }\r",
+									"    \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/certified_products/{{chplPrefix-identifier}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"certified_products",
+								"{{chplPrefix-identifier}}"
+							]
+						},
+						"description": "GET /{chplPrefix-identifier} should return Direct Review information"
 					},
 					"response": []
 				}

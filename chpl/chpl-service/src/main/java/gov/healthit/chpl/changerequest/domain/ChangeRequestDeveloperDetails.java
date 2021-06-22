@@ -2,7 +2,7 @@ package gov.healthit.chpl.changerequest.domain;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.contact.PointOfContact;
