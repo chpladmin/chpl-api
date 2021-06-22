@@ -22,26 +22,20 @@ import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchResponse;
-import gov.healthit.chpl.util.ErrorMessageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import lombok.extern.log4j.Log4j2;
 
 @Api
 @RestController
 @Loggable
-@Log4j2
 public class SearchController {
     private ListingSearchService searchService;
-    private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public SearchController(ListingSearchService searchService,
-            ErrorMessageUtil msgUtil) {
+    public SearchController(ListingSearchService searchService) {
         this.searchService = searchService;
-        this.msgUtil = msgUtil;
     }
 
     @SuppressWarnings({"checkstyle:methodlength", "checkstyle:parameternumber"})
