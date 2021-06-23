@@ -26,6 +26,7 @@ import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchResponse;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
+import gov.healthit.chpl.service.DirectReviewSearchService;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -36,14 +37,17 @@ public class ListingSearchService {
     private SearchRequestValidator searchRequestValidator;
     private SearchRequestNormalizer searchRequestNormalizer;
     private CertifiedProductSearchManager cpSearchManager;
+    private DirectReviewSearchService drService;
     private DateTimeFormatter dateFormatter;
 
     @Autowired
     public ListingSearchService(SearchRequestValidator searchRequestValidator,
-            CertifiedProductSearchManager cpSearchManager) {
+            CertifiedProductSearchManager cpSearchManager,
+            DirectReviewSearchService drService) {
         this.searchRequestValidator = searchRequestValidator;
         this.cpSearchManager = cpSearchManager;
         this.searchRequestNormalizer = new SearchRequestNormalizer();
+        this.drService = drService;
         dateFormatter = DateTimeFormatter.ofPattern(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
     }
 
@@ -73,6 +77,7 @@ public class ListingSearchService {
         response.setRecordCount(filteredListings.size());
         response.setPageNumber(searchRequest.getPageNumber());
         response.setPageSize(searchRequest.getPageSize());
+        response.setDirectReviewsAvailable(drService.getDirectReviewsAvailable());
 
         sort(filteredListings, searchRequest.getOrderBy(), searchRequest.getSortDescending());
         List<CertifiedProductBasicSearchResult> pageOfListings

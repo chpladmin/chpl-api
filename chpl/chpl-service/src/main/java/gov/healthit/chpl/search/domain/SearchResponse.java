@@ -19,5 +19,6 @@ public class SearchResponse implements Serializable {
     private Integer recordCount;
     private Integer pageSize;
     private Integer pageNumber;
+    private Boolean directReviewsAvailable;
     private List<CertifiedProductBasicSearchResult> results = new ArrayList<CertifiedProductBasicSearchResult>();
 }

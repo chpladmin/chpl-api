@@ -86,7 +86,7 @@ public class SearchController {
                 + "OPEN_NONCONFORMITY, CLOSED_NONCONFORMITY, and NEVER_NONCONFORMITY.",
                 required = false, dataType = "string", paramType = "query"),
         @ApiImplicitParam(name = "nonConformityOptionsOperator",
-        value = "Either AND or OR. Defaults to OR."
+        value = "Either AND or OR. "
                 + "Indicates whether a listing must have met all nonConformityOptions "
                 + "specified or may have met any one or more of the nonConformityOptions",
                 required = false, dataType = "string", paramType = "query"),
@@ -148,7 +148,7 @@ public class SearchController {
             @RequestParam(value = "nonConformityOptions", required = false,
             defaultValue = "") String nonConformityOptionsDelimited,
             @RequestParam(value = "nonConformityOptionsOperator", required = false,
-            defaultValue = "OR") String nonConformityOptionsOperator,
+            defaultValue = "") String nonConformityOptionsOperator,
             @RequestParam(value = "developer", required = false, defaultValue = "") String developer,
             @RequestParam(value = "product", required = false, defaultValue = "") String product,
             @RequestParam(value = "version", required = false, defaultValue = "") String version,
