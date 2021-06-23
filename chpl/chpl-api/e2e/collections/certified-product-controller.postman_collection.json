@@ -394,9 +394,9 @@
 									"    \r",
 									"});",
 									"pm.test(\"expect Environment header to indicate non prod environment\", function () {\r",
-                                      "    pm.response.to.have.header(\"Environment\");\r",
-                                      "    pm.expect(pm.response.headers.get(\"Environment\")).to.eql(\"NON-PRODUCTION\");\r",
-                                    "});"
+									"    pm.response.to.have.header(\"Environment\");\r",
+									"    pm.expect(pm.response.headers.get(\"Environment\")).to.eql(\"NON-PRODUCTION\");\r",
+									"});"
 								],
 								"type": "text/javascript"
 							}
