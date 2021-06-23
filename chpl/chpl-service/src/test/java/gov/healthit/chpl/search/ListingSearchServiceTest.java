@@ -24,6 +24,7 @@ import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchResponse;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
+import gov.healthit.chpl.service.DirectReviewSearchService;
 
 public class ListingSearchServiceTest {
 
@@ -33,9 +34,11 @@ public class ListingSearchServiceTest {
     @Before
     public void setup() {
         SearchRequestValidator searchRequestValidator = Mockito.mock(SearchRequestValidator.class);
+        DirectReviewSearchService drService = Mockito.mock(DirectReviewSearchService.class);
+        Mockito.when(drService.getDirectReviewsAvailable()).thenReturn(true);
         cpSearchManager = Mockito.mock(CertifiedProductSearchManager.class);
 
-        listingSearchService = new ListingSearchService(searchRequestValidator, cpSearchManager);
+        listingSearchService = new ListingSearchService(searchRequestValidator, cpSearchManager, drService);
     }
 
     @Test
