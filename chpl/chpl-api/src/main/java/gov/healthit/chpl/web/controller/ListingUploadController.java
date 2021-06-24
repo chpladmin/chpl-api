@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.ff4j.FF4j;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +50,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.upload.listing.ListingUploadManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.EmailBuilder;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.web.controller.results.ListingUploadResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -68,13 +69,15 @@ public class ListingUploadController {
     private String uploadErrorEmailSubject;
 
     private ListingUploadManager listingUploadManager;
+    private ErrorMessageUtil msgUtil;
     private FF4j ff4j;
     private Environment env;
 
     @Autowired
     public ListingUploadController(ListingUploadManager listingUploadManager,
-            FF4j ff4j, Environment env) {
+            ErrorMessageUtil msgUtil, FF4j ff4j, Environment env) {
         this.listingUploadManager = listingUploadManager;
+        this.msgUtil = msgUtil;
         this.ff4j = ff4j;
         this.env = env;
     }
@@ -85,7 +88,7 @@ public class ListingUploadController {
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ListingUpload> getAll() {
         if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
-            throw new NotImplementedException();
+            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
         return listingUploadManager.getAll();
     }
@@ -97,7 +100,7 @@ public class ListingUploadController {
     public CertifiedProductSearchDetails geById(@PathVariable("id") Long id)
             throws ValidationException, EntityRetrievalException {
         if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
-            throw new NotImplementedException();
+            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
         return listingUploadManager.getDetailsById(id);
     }
@@ -109,7 +112,7 @@ public class ListingUploadController {
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<ListingUploadResponse> upload(@RequestParam("file") MultipartFile file) throws ValidationException, MaxUploadSizeExceededException {
         if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
-            throw new NotImplementedException();
+            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
 
         List<ListingUpload> successfulListingUploads = new ArrayList<ListingUpload>();
@@ -195,7 +198,7 @@ public class ListingUploadController {
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, ObjectMissingValidationException {
         if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
-            throw new NotImplementedException();
+            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
 
         //call the GET to return bad request if the id is not something that can be deleted
@@ -213,7 +216,7 @@ public class ListingUploadController {
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, InvalidArgumentsException, ObjectsMissingValidationException {
         if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
-            throw new NotImplementedException();
+            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
 
         if (idList == null || idList.getIds() == null || idList.getIds().size() == 0) {

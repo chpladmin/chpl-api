@@ -48,7 +48,7 @@ public class CHPLFileController {
     @RequestMapping(value = "/api_documentation",
             method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
-    public synchronized ResponseEntity<CHPLFileDTO> uploadApiDocumentation(
+    public ResponseEntity<CHPLFileDTO> uploadApiDocumentation(
             final @RequestParam("file") MultipartFile file,
             final @RequestParam("file_update_date") Long date)
             throws EntityRetrievalException, EntityCreationException, ValidationException,
@@ -73,7 +73,7 @@ public class CHPLFileController {
             notes = "Retrieves the current API Documentation file.")
     @RequestMapping(value = "/api_documentation", method = RequestMethod.GET, produces = APPLICATION_MS_EXCEL)
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public synchronized ResponseEntity<byte[]> getApiDocumentationFile() throws EntityRetrievalException {
+    public ResponseEntity<byte[]> getApiDocumentationFile() throws EntityRetrievalException {
         CHPLFileDTO fileDTO = chplFileManager.getApiDocumentation();
 
         String filename = "APIDocData-" + getDateAsYYYYMMDD(fileDTO.getAssociatedDate()) + ".xlsx";
@@ -91,7 +91,7 @@ public class CHPLFileController {
         method = RequestMethod.GET,
         produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public synchronized ResponseEntity<CHPLFileDTO> getApiDocumentationFileDetails() throws EntityRetrievalException {
+    public ResponseEntity<CHPLFileDTO> getApiDocumentationFileDetails() throws EntityRetrievalException {
         CHPLFileDTO fileDTO = chplFileManager.getApiDocumentation();
         return new ResponseEntity<CHPLFileDTO>(fileDTO, HttpStatus.OK);
     }

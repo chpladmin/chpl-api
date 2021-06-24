@@ -2,7 +2,7 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.List;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -23,6 +23,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.logging.Loggable;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.web.controller.results.ChangeRequestResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,11 +35,13 @@ import io.swagger.annotations.ApiOperation;
 public class ChangeRequestController {
 
     private ChangeRequestManager changeRequestManager;
+    private ErrorMessageUtil msgUtil;
     private FF4j ff4j;
 
     @Autowired
-    public ChangeRequestController(final ChangeRequestManager changeRequestManager, final FF4j ff4j) {
+    public ChangeRequestController(ChangeRequestManager changeRequestManager, ErrorMessageUtil msgUtil, FF4j ff4j) {
         this.changeRequestManager = changeRequestManager;
+        this.msgUtil = msgUtil;
         this.ff4j = ff4j;
     }
 
@@ -49,7 +52,7 @@ public class ChangeRequestController {
     @RequestMapping(value = "/{changeRequestId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ChangeRequest getChangeRequest(@PathVariable final Long changeRequestId) throws EntityRetrievalException {
         if (!ff4j.check(FeatureList.CHANGE_REQUEST)) {
-            throw new NotImplementedException();
+            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
 
         return changeRequestManager.getChangeRequest(changeRequestId);
@@ -62,7 +65,7 @@ public class ChangeRequestController {
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ChangeRequest> getAllChangeRequests() throws EntityRetrievalException {
         if (!ff4j.check(FeatureList.CHANGE_REQUEST)) {
-            throw new NotImplementedException();
+            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
         return changeRequestManager.getAllChangeRequestsForUser();
     }
@@ -71,11 +74,11 @@ public class ChangeRequestController {
             notes = "Security Restrictions: ROLE_DEVELOPER can create change requests where they have administrative authority based on the developer.")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public synchronized ChangeRequestResults createChangeRequest(@RequestBody final ChangeRequest cr)
+    public ChangeRequestResults createChangeRequest(@RequestBody final ChangeRequest cr)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException,
             InvalidArgumentsException {
         if (!ff4j.check(FeatureList.CHANGE_REQUEST)) {
-            throw new NotImplementedException();
+            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
 
         List<ChangeRequest> createdCrs = changeRequestManager.createChangeRequests(cr);
@@ -90,11 +93,11 @@ public class ChangeRequestController {
                     + "change requests where they have administrative authority based on the developer.")
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public synchronized ChangeRequest updateChangeRequest(@RequestBody final ChangeRequest cr)
+    public ChangeRequest updateChangeRequest(@RequestBody final ChangeRequest cr)
             throws EntityRetrievalException, ValidationException, EntityCreationException,
             JsonProcessingException, InvalidArgumentsException {
         if (!ff4j.check(FeatureList.CHANGE_REQUEST)) {
-            throw new NotImplementedException();
+            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
 
         return changeRequestManager.updateChangeRequest(cr);

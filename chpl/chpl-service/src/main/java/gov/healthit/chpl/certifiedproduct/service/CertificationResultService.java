@@ -3,9 +3,11 @@ package gov.healthit.chpl.certifiedproduct.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -19,6 +21,9 @@ import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.TestingFunctionalityManager;
+import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
 import gov.healthit.chpl.svap.dao.SvapDAO;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
@@ -31,23 +36,28 @@ public class CertificationResultService {
     private TestingFunctionalityManager testFunctionalityManager;
     private CertificationResultDetailsDAO certificationResultDetailsDAO;
     private SvapDAO svapDao;
+    private OptionalStandardDAO optionalStandardDAO;
+    private FF4j ff4j;
 
     @Autowired
     public CertificationResultService(CertificationResultRules certRules, CertificationResultManager certResultManager,
             TestingFunctionalityManager testFunctionalityManager, CertificationResultDetailsDAO certificationResultDetailsDAO,
-            SvapDAO svapDao) {
+            SvapDAO svapDAO, OptionalStandardDAO optionalStandardDAO, FF4j ff4j) {
         this.certRules = certRules;
         this.certResultManager = certResultManager;
         this.testFunctionalityManager = testFunctionalityManager;
         this.certificationResultDetailsDAO = certificationResultDetailsDAO;
-        this.svapDao = svapDao;
+        this.svapDao = svapDAO;
+        this.optionalStandardDAO = optionalStandardDAO;
+        this.ff4j = ff4j;
     }
 
     public List<CertificationResult> getCertificationResults(CertifiedProductSearchDetails searchDetails) throws EntityRetrievalException {
         List<SvapCriteriaMap> svapCriteriaMap = svapDao.getAllSvapCriteriaMap();
+        List<OptionalStandardCriteriaMap> optionalStandardCriteriaMap = optionalStandardDAO.getAllOptionalStandardCriteriaMap();
 
         return getCertificationResultDetailsDTOs(searchDetails.getId()).stream()
-                .map(dto -> getCertificationResult(dto, searchDetails, svapCriteriaMap))
+                .map(dto -> getCertificationResult(dto, searchDetails, svapCriteriaMap, optionalStandardCriteriaMap))
                 .collect(Collectors.toList());
     }
 
@@ -58,7 +68,8 @@ public class CertificationResultService {
     }
 
     private CertificationResult getCertificationResult(CertificationResultDetailsDTO certResult,
-            CertifiedProductSearchDetails searchDetails, List<SvapCriteriaMap> svapCriteriaMap) {
+            CertifiedProductSearchDetails searchDetails, List<SvapCriteriaMap> svapCriteriaMap,
+            List<OptionalStandardCriteriaMap> optionalStandardCriteriaMap) {
 
         CertificationResult result = new CertificationResult(certResult, certRules);
 
@@ -66,6 +77,7 @@ public class CertificationResultService {
         populateSed(certResult, searchDetails, result, criteria);
         populateTestTasks(certResult, searchDetails, criteria);
 
+        result.setAllowedOptionalStandards(getAvailableOptionalStandardsForCriteria(result, optionalStandardCriteriaMap));
         result.setAllowedSvaps(getAvailableSvapForCriteria(result, svapCriteriaMap));
         result.setAllowedTestFunctionalities(getAvailableTestFunctionalities(result, searchDetails));
 
@@ -112,6 +124,13 @@ public class CertificationResultService {
         } else {
             result.setSed(null);
         }
+    }
+
+    private List<OptionalStandard> getAvailableOptionalStandardsForCriteria(CertificationResult result, List<OptionalStandardCriteriaMap> optionalStandardCriteriaMap) {
+        return optionalStandardCriteriaMap.stream()
+                .filter(osm -> ff4j.check(FeatureList.OPTIONAL_STANDARDS) && osm.getCriterion().getId().equals(result.getCriterion().getId()))
+                .map(osm -> osm.getOptionalStandard())
+                .collect(Collectors.toList());
     }
 
     private List<Svap> getAvailableSvapForCriteria(CertificationResult result, List<SvapCriteriaMap> svapCriteriaMap) {

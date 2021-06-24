@@ -67,6 +67,7 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.manager.FilterManager;
 import gov.healthit.chpl.manager.FuzzyChoicesManager;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
 import gov.healthit.chpl.svap.manager.SvapManager;
 import gov.healthit.chpl.util.FileUtils;
@@ -991,6 +992,23 @@ public class SearchViewController {
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
+        return result;
+    }
+
+    @ApiOperation(value = "Get all possible optional standard options in the CHPL",
+            notes = "This is useful for knowing what values one might possibly search for.")
+    @RequestMapping(value = "/data/optional-standards", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody SearchOption getOptionalStandards() {
+        Set<OptionalStandard> data = dimensionalDataManager.getOptionalStandards();
+        SearchOption result = new SearchOption();
+        result.setExpandable(false);
+        if (ff4j.check(FeatureList.OPTIONAL_STANDARDS)) {
+            result.setData(data);
+        } else {
+            result.setData(new HashSet<OptionalStandard>());
+        }
         return result;
     }
 
