@@ -57,7 +57,10 @@ public class ListingMeasure implements Serializable {
         if (!propertiesMatch(anotherMeasure)) {
             return false;
         }
+        return matchesCriteria(anotherMeasure);
+    }
 
+    public boolean matchesCriteria(ListingMeasure anotherMeasure) {
         if (this.associatedCriteria == null && anotherMeasure.associatedCriteria != null
                 || this.associatedCriteria != null && anotherMeasure.associatedCriteria == null) {
             return false;
