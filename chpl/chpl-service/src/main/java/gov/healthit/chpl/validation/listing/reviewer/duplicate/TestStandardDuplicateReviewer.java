@@ -58,11 +58,11 @@ public class TestStandardDuplicateReviewer {
     private BiPredicate<CertificationResultTestStandard, CertificationResultTestStandard> getPredicate() {
         return new BiPredicate<CertificationResultTestStandard, CertificationResultTestStandard>() {
             @Override
-            public boolean test(CertificationResultTestStandard dto1,
-                    CertificationResultTestStandard dto2) {
-                return (ObjectUtils.allNotNull(dto1.getTestStandardId(), dto2.getTestStandardId())
-                        && Objects.equals(dto1.getTestStandardId(),  dto2.getTestStandardId()))
-                    || Objects.equals(dto1.getTestStandardName(), dto2.getTestStandardName());
+            public boolean test(CertificationResultTestStandard ts1,
+                    CertificationResultTestStandard ts2) {
+                return (ObjectUtils.allNotNull(ts1.getTestStandardId(), ts2.getTestStandardId())
+                        && Objects.equals(ts1.getTestStandardId(),  ts2.getTestStandardId()))
+                    || Objects.equals(ts1.getTestStandardName(), ts2.getTestStandardName());
             }
         };
     }
