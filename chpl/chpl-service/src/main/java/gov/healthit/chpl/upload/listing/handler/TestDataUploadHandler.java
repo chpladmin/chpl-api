@@ -69,6 +69,7 @@ public class TestDataUploadHandler {
                 .testData(tdName == null ? null : TestData.builder().name(tdName).build())
                 .version(tdVersion)
                 .alteration(tdAlteration)
+                .userEnteredName(tdName)
             .build();
         return testData;
     }

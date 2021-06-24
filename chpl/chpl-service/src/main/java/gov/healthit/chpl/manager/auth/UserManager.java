@@ -327,9 +327,6 @@ public class UserManager extends SecuredManager {
         if (StringUtils.isEmpty(user.getEmail())) {
             errors.add(errorMessageUtil.getMessage("user.email.required"));
         }
-        if (StringUtils.isEmpty(user.getPhoneNumber())) {
-            errors.add(errorMessageUtil.getMessage("user.phone.required"));
-        }
 
         if (errors.size() > 0) {
             return Optional.of(new ValidationException(errors));

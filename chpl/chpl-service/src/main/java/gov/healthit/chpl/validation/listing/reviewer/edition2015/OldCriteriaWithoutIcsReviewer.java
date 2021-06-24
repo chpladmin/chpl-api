@@ -94,8 +94,9 @@ public class OldCriteriaWithoutIcsReviewer implements Reviewer {
     }
 
     private String checkForError(CertifiedProductSearchDetails listing, String criteria, long criteriaId, long relevantDate) {
-        long certificationDate = listing.getCertificationDate();
-        if (hasRelevantCriteria(listing, criteriaId) && certificationDate >= relevantDate) {
+        Long certificationDate = listing.getCertificationDate();
+        if (hasRelevantCriteria(listing, criteriaId) && certificationDate != null
+                && certificationDate >= relevantDate) {
             return getErrorMessage("listing.criteria.hasOldVersionOfCriteria", criteria,
                     Util.getDateFormatter().format(relevantDate));
         }
