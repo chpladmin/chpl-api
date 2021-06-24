@@ -24,42 +24,81 @@ public class MeasureDuplicateReviewer {
 
     public void review(CertifiedProductSearchDetails listing) {
 
-        DuplicateReviewResult<ListingMeasure> measureDuplicateResults =
-                new DuplicateReviewResult<ListingMeasure>(getPredicate());
+        DuplicateReviewResult<ListingMeasure> measureDuplicateResultsSameCriteria =
+                new DuplicateReviewResult<ListingMeasure>(getPredicateSameCriteria());
         if (listing.getMeasures() != null) {
             for (ListingMeasure measure : listing.getMeasures()) {
-                measureDuplicateResults.addObject(measure);
+                measureDuplicateResultsSameCriteria.addObject(measure);
             }
         }
-        if (measureDuplicateResults.duplicatesExist()) {
-            listing.getWarningMessages().addAll(getWarnings(measureDuplicateResults.getDuplicateList()));
-            listing.setMeasures(measureDuplicateResults.getUniqueList());
+        if (measureDuplicateResultsSameCriteria.duplicatesExist()) {
+            listing.getWarningMessages().addAll(getMessages(measureDuplicateResultsSameCriteria.getDuplicateList(), "listing.duplicateMeasure.sameCriteria"));
+            listing.setMeasures(measureDuplicateResultsSameCriteria.getUniqueList());
+        }
+
+        DuplicateReviewResult<ListingMeasure> measureDuplicateResultsDifferentCriteria =
+                new DuplicateReviewResult<ListingMeasure>(getPredicateDifferentCriteria());
+        if (listing.getMeasures() != null) {
+            for (ListingMeasure measure : listing.getMeasures()) {
+                measureDuplicateResultsDifferentCriteria.addObject(measure);
+            }
+        }
+        if (measureDuplicateResultsDifferentCriteria.duplicatesExist()) {
+            listing.getErrorMessages().addAll(getMessages(measureDuplicateResultsDifferentCriteria.getDuplicateList(), "listing.duplicateMeasure.differentCriteria"));
         }
     }
 
-    private List<String> getWarnings(List<ListingMeasure> duplicates) {
-        List<String> warnings = new ArrayList<String>();
-        for (ListingMeasure duplicate : duplicates) {
-            String warning = errorMessageUtil.getMessage("listing.duplicateMeasure",
-                    duplicate.getMeasureType().getName(),
-                    duplicate.getMeasure().getName(),
-                    duplicate.getMeasure().getAbbreviation());
-            warnings.add(warning);
-        }
-        return warnings;
-    }
-
-    private BiPredicate<ListingMeasure, ListingMeasure> getPredicate() {
+    private BiPredicate<ListingMeasure, ListingMeasure> getPredicateSameCriteria() {
         return new BiPredicate<ListingMeasure, ListingMeasure>() {
             @Override
-            public boolean test(ListingMeasure measure1,
-                    ListingMeasure measure2) {
-                return ObjectUtils.allNotNull(measure1, measure2, measure1.getMeasure(), measure2.getMeasure(),
-                        measure2.getMeasureType(), measure2.getMeasureType())
-                        && measure1.getMeasure().matches(measure2.getMeasure())
-                        && measure1.getMeasureType().matches(measure2.getMeasureType());
+            public boolean test(ListingMeasure measure1, ListingMeasure measure2) {
+                if (!ObjectUtils.allNotNull(measure1, measure2, measure1.getMeasure(), measure2.getMeasure(), measure2.getMeasureType(), measure2.getMeasureType()) ) {
+                    return false;
+                }
+                if (!measure1.getMeasure().matches(measure2.getMeasure())) {
+                    return false;
+                }
+                if (!measure1.matchesCriteria(measure2)) {
+                    return false;
+                }
+                if (!measure1.getMeasureType().matches(measure2.getMeasureType())) {
+                    return false;
+                }
+                return true;
             }
         };
     }
 
+    private BiPredicate<ListingMeasure, ListingMeasure> getPredicateDifferentCriteria() {
+        return new BiPredicate<ListingMeasure, ListingMeasure>() {
+            @Override
+            public boolean test(ListingMeasure measure1, ListingMeasure measure2) {
+                if (!ObjectUtils.allNotNull(measure1, measure2, measure1.getMeasure(), measure2.getMeasure(), measure2.getMeasureType(), measure2.getMeasureType()) ) {
+                    return false;
+                }
+                if (!measure1.getMeasure().matches(measure2.getMeasure())) {
+                    return false;
+                }
+                if (measure1.matchesCriteria(measure2)) {
+                    return false;
+                }
+                if (!measure1.getMeasureType().matches(measure2.getMeasureType())) {
+                    return false;
+                }
+                return true;
+            }
+        };
+    }
+
+    private List<String> getMessages(List<ListingMeasure> duplicates, String msgKey) {
+        List<String> messages = new ArrayList<String>();
+        for (ListingMeasure duplicate : duplicates) {
+            String message = errorMessageUtil.getMessage(msgKey,
+                    duplicate.getMeasureType().getName(),
+                    duplicate.getMeasure().getName(),
+                    duplicate.getMeasure().getAbbreviation());
+            messages.add(message);
+        }
+        return messages;
+    }
 }

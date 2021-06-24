@@ -35,6 +35,7 @@ public class DuplicateDataReviewer implements Reviewer {
     private TargetedUserDuplicateReviewer targetedUserDuplicateReviewer;
 
     @Autowired
+    @SuppressWarnings("checkstyle:parameternumber")
     public DuplicateDataReviewer(
             @Qualifier("testFunctionalityDuplicateReviewer") TestFunctionalityDuplicateReviewer testFunctionalityDuplicateReviewer,
             @Qualifier("testDataDuplicateReviewer") TestDataDuplicateReviewer testDataDuplicateReviewer,

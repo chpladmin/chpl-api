@@ -11,6 +11,7 @@ import gov.healthit.chpl.upload.listing.validation.reviewer.AdditionalSoftwareCo
 import gov.healthit.chpl.upload.listing.validation.reviewer.CSVHeaderReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.CertificationBodyCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.CertificationBodyReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.CertificationResultReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.CertifiedDateCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.ChplNumberFormatReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.ChplNumberUniqueReviewer;
@@ -58,6 +59,7 @@ public class ListingUploadValidator {
     private UrlReviewer urlReviewer;
     private FieldLengthReviewer fieldLengthReviewer;
     private UnsupportedCharacterReviewer unsupportedCharacterReviewer;
+    private CertificationResultReviewer certResultReviewer;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
@@ -84,7 +86,8 @@ public class ListingUploadValidator {
             DuplicateDataReviewer duplicateDataReviewer,
             UrlReviewer urlReviewer,
             FieldLengthReviewer fieldLengthReviewer,
-            UnsupportedCharacterReviewer unsupportedCharacterReviewer) {
+            UnsupportedCharacterReviewer unsupportedCharacterReviewer,
+            CertificationResultReviewer certResultReviewer) {
         this.csvHeaderReviewer = csvHeaderReviewer;
         this.chplNumberFormatReviewer = chplNumberFormatReviewer;
         this.editionCodeReviewer = editionCodeReviewer;
@@ -109,6 +112,7 @@ public class ListingUploadValidator {
         this.urlReviewer = urlReviewer;
         this.fieldLengthReviewer = fieldLengthReviewer;
         this.unsupportedCharacterReviewer = unsupportedCharacterReviewer;
+        this.certResultReviewer = certResultReviewer;
     }
 
     public void review(ListingUpload uploadedMetadata, CertifiedProductSearchDetails listing) {
@@ -136,5 +140,6 @@ public class ListingUploadValidator {
         urlReviewer.review(listing);
         fieldLengthReviewer.review(listing);
         unsupportedCharacterReviewer.review(listing);
+        certResultReviewer.review(listing);
     }
 }

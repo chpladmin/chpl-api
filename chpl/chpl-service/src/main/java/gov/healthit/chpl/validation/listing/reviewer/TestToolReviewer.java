@@ -15,14 +15,6 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 
-/**
- * Makes sure a valid test tool was entered by the user - otherwise removes it and includes an error.
- * Makes sure the version is included with a test tool.
- * Checks that retired test tools are not used if not appropriate.
- *
- * @author kekey
- *
- */
 @Component("testToolReviewer")
 public class TestToolReviewer extends PermissionBasedReviewer {
     private TestToolDAO testToolDao;
@@ -34,7 +26,7 @@ public class TestToolReviewer extends PermissionBasedReviewer {
     }
 
     @Override
-    public void review(final CertifiedProductSearchDetails listing) {
+    public void review(CertifiedProductSearchDetails listing) {
         for (CertificationResult cert : listing.getCertificationResults()) {
             if (cert.isSuccess() != null && cert.isSuccess().equals(Boolean.TRUE)) {
                 if (cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {

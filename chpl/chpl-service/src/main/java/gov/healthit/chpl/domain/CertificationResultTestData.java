@@ -5,10 +5,12 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
@@ -57,6 +59,10 @@ public class CertificationResultTestData implements Serializable {
      */
     @XmlElement(required = false, nillable = true)
     private String alteration;
+
+    @XmlTransient
+    @JsonIgnore
+    private String userEnteredName;
 
     public CertificationResultTestData() {
         super();
@@ -120,5 +126,13 @@ public class CertificationResultTestData implements Serializable {
 
     public void setTestData(TestData testData) {
         this.testData = testData;
+    }
+
+    public String getUserEnteredName() {
+        return userEnteredName;
+    }
+
+    public void setUserEnteredName(String userEnteredName) {
+        this.userEnteredName = userEnteredName;
     }
 }

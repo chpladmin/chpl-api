@@ -1,8 +1,10 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 
@@ -17,6 +19,7 @@ import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
 
 public class IcsNormalizerTest {
 
@@ -26,7 +29,7 @@ public class IcsNormalizerTest {
     @Before
     public void setup() {
         cpDao = Mockito.mock(CertifiedProductSearchDAO.class);
-        normalizer = new IcsNormalizer(cpDao);
+        normalizer = new IcsNormalizer(cpDao, new ChplProductNumberUtil());
     }
 
     @Test
@@ -61,6 +64,83 @@ public class IcsNormalizerTest {
         assertNotNull(listing.getIcs());
         assertNotNull(listing.getIcs().getParents());
         assertEquals(0, listing.getIcs().getParents().size());
+    }
+
+    @Test
+    public void normalize_icsNullInListingBut0InChplProductNumber_setsIcsToFalse() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.07.07.2663.ABCD.R2.00.0.200511")
+                .ics(null)
+                .build();
+        normalizer.normalize(listing);
+        assertNotNull(listing.getIcs());
+        assertNotNull(listing.getIcs().getInherits());
+        assertFalse(listing.getIcs().getInherits());
+    }
+
+    @Test
+    public void normalize_icsBooleanNullInListingBut0InChplProductNumber_setsIcsToFalse() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.07.07.2663.ABCD.R2.00.0.200511")
+                .ics(InheritedCertificationStatus.builder()
+                        .inherits(null)
+                        .build())
+                .build();
+        normalizer.normalize(listing);
+        assertNotNull(listing.getIcs());
+        assertNotNull(listing.getIcs().getInherits());
+        assertFalse(listing.getIcs().getInherits());
+    }
+
+    @Test
+    public void normalize_icsBooleanNullInListingBut1InChplProductNumber_setsIcsToTrue() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.07.07.2663.ABCD.R2.01.0.200511")
+                .ics(InheritedCertificationStatus.builder()
+                        .inherits(null)
+                        .build())
+                .build();
+        normalizer.normalize(listing);
+        assertNotNull(listing.getIcs());
+        assertNotNull(listing.getIcs().getInherits());
+        assertTrue(listing.getIcs().getInherits());
+    }
+
+    @Test
+    public void normalize_icsBooleanNullInListingButLargeNumberInChplProductNumber_setsIcsToTrue() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.07.07.2663.ABCD.R2.98.0.200511")
+                .ics(InheritedCertificationStatus.builder()
+                        .inherits(null)
+                        .build())
+                .build();
+        normalizer.normalize(listing);
+        assertNotNull(listing.getIcs());
+        assertNotNull(listing.getIcs().getInherits());
+        assertTrue(listing.getIcs().getInherits());
+    }
+
+    @Test
+    public void normalize_icsNullInListingAndInvalidInChplProductNumber_noChanges() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.07.07.2663.ABCD.R2.YY.200511")
+                .ics(null)
+                .build();
+        normalizer.normalize(listing);
+        assertNull(listing.getIcs());
+    }
+
+    @Test
+    public void normalize_icsBooleanNullInListingAndInvalidInChplProductNumber_noChanges() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.07.07.2663.ABCD.R2.YY.200511")
+                .ics(InheritedCertificationStatus.builder()
+                        .inherits(null)
+                        .build())
+                .build();
+        normalizer.normalize(listing);
+        assertNotNull(listing.getIcs());
+        assertNull(listing.getIcs().getInherits());
     }
 
     @Test

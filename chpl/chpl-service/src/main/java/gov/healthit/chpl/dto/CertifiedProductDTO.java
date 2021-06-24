@@ -14,9 +14,15 @@ import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.Util;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CertifiedProductDTO implements Serializable {
     private static final long serialVersionUID = 7918387302717979598L;
     private Long id;
@@ -56,9 +62,6 @@ public class CertifiedProductDTO implements Serializable {
     private LocalDate rwtResultsCheckDate;
     private Integer rwtEligibilityYear;
     private String svapNoticeUrl;
-
-    public CertifiedProductDTO() {
-    }
 
     public CertifiedProductDTO(CertifiedProductEntity entity) {
         this.id = entity.getId();
