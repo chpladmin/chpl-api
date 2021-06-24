@@ -3,72 +3,63 @@
 		"name": "search-controller",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
-	"item": [
-		{
+	"item": [{
 			"name": "GET /search/beta - with Compliance filters",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"/search/beta end point should return 200 status and response should have Direct Review fields when Direct Reviews are available\", function () {\r",
-							"    var jsonData = pm.response.json();\r",
-							"    if ((jsonData.directReviewsAvailable) == true){\r",
-							"        pm.response.to.have.status(200);\r",
-							"        pm.expect(jsonData.results.length).not.eql(0);\r",
-							"        pm.expect(jsonData.results[17]).to.have.property('directReviewCount');\r",
-							"        pm.expect(jsonData.results[18]).to.have.property('openDirectReviewNonConformityCount');\r",
-							"        pm.expect(jsonData.results[19]).to.have.property('closedDirectReviewNonConformityCount'); \r",
-							"    }\r",
-							"    else {\r",
-							"         pm.response.to.have.status(400);\r",
-							"    }\r",
-							"          \r",
-							"});\r",
-							"pm.test(\"/search/beta end point response should have existing and renamed Surveillance fields\", function () {\r",
-							"    var jsonData = pm.response.json();\r",
-							"    if ((jsonData.directReviewsAvailable) == true){\r",
-							"        pm.response.to.have.status(200);\r",
-							"        pm.expect(jsonData.results[14]).to.have.property('surveillanceCount');\r",
-							"        pm.expect(jsonData.results[15]).to.have.property('openSurveillanceNonConformityCount');\r",
-							"        pm.expect(jsonData.results[16]).to.have.property('closedSurveillanceNonConformityCount');\r",
-							"        pm.expect(jsonData.results[17]).to.have.property('openSurveillanceCount');\r",
-							"        pm.expect(jsonData.results[18]).to.have.property('closedSurveillanceCount'); \r",
-							"    }\r",
-							"    else {\r",
-							"         pm.response.to.have.status(400);\r",
-							"    }\r",
-							"          \r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
+			"event": [{
+				"listen": "test",
+				"script": {
+					"exec": [
+						"pm.test(\"/search/beta end point should return 200 status and response should have Direct Review fields when Direct Reviews are available\", function () {\r",
+						"    var jsonData = pm.response.json();\r",
+						"    if ((jsonData.directReviewsAvailable) == true){\r",
+						"        pm.response.to.have.status(200);\r",
+						"        pm.expect(jsonData.results.length).not.eql(0);\r",
+						"        pm.expect(jsonData.results[17]).to.have.property('directReviewCount');\r",
+						"        pm.expect(jsonData.results[18]).to.have.property('openDirectReviewNonConformityCount');\r",
+						"        pm.expect(jsonData.results[19]).to.have.property('closedDirectReviewNonConformityCount'); \r",
+						"    }\r",
+						"    else {\r",
+						"         pm.response.to.have.status(400);\r",
+						"    }\r",
+						"          \r",
+						"});\r",
+						"pm.test(\"/search/beta end point response should have existing and renamed Surveillance fields\", function () {\r",
+						"    var jsonData = pm.response.json();\r",
+						"    if ((jsonData.directReviewsAvailable) == true){\r",
+						"        pm.response.to.have.status(200);\r",
+						"        pm.expect(jsonData.results[14]).to.have.property('surveillanceCount');\r",
+						"        pm.expect(jsonData.results[15]).to.have.property('openSurveillanceNonConformityCount');\r",
+						"        pm.expect(jsonData.results[16]).to.have.property('closedSurveillanceNonConformityCount');\r",
+						"        pm.expect(jsonData.results[17]).to.have.property('openSurveillanceCount');\r",
+						"        pm.expect(jsonData.results[18]).to.have.property('closedSurveillanceCount'); \r",
+						"    }\r",
+						"    else {\r",
+						"         pm.response.to.have.status(400);\r",
+						"    }\r",
+						"          \r",
+						"});"
+					],
+					"type": "text/javascript"
 				}
-			],
+			}],
 			"request": {
 				"method": "GET",
-				"header": [
-					{
-						"key": "API-Key",
-						"value": "{{apiKey}}",
-						"type": "text"
-					}
-				],
+				"header": [{
+					"key": "API-Key",
+					"value": "{{apiKey}}",
+					"type": "text"
+				}],
 				"url": {
-					"raw": "https://chpl.ahrqdev.org/rest/search/beta?hasHadComplianceActivity=true&nonConformityOptionsOperator=OR&nonConformityOptions=OPEN_NONCONFORMITY, CLOSED_NONCONFORMITY",
-					"protocol": "https",
+					"raw": "{{url}}/rest/search/beta?hasHadComplianceActivity=true&nonConformityOptionsOperator=OR&nonConformityOptions=OPEN_NONCONFORMITY, CLOSED_NONCONFORMITY",
 					"host": [
-						"chpl",
-						"ahrqdev",
-						"org"
+						"{{url}}"
 					],
 					"path": [
 						"rest",
 						"search",
 						"beta"
 					],
-					"query": [
-						{
+					"query": [{
 							"key": "hasHadComplianceActivity",
 							"value": "true"
 						},
@@ -88,34 +79,31 @@
 		},
 		{
 			"name": "POST /search/beta - with Compliance filters",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"/search/beta end point should return 200 status and results in response should match with compliance filters when Direct Reviews are available\", function () {\r",
-							"    var jsonData = pm.response.json();\r",
-							"    if ((jsonData.directReviewsAvailable) == true){\r",
-							"        pm.response.to.have.status(200);\r",
-							"        pm.expect(jsonData.results.length).not.eql(0);\r",
-							"        pm.expect(jsonData.results.directReviewCount).not.eql(0);\r",
-							"        pm.expect(jsonData.results.openDirectReviewNonConformityCount).not.eql(0);\r",
-							"        pm.expect(jsonData.results.closedDirectReviewNonConformityCount).not.eql(0);\r",
-							"    }\r",
-							"    else {\r",
-							"         pm.response.to.have.status(400);\r",
-							"    }\r",
-							"          \r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
+			"event": [{
+				"listen": "test",
+				"script": {
+					"exec": [
+						"pm.test(\"/search/beta end point should return 200 status and results in response should match with compliance filters when Direct Reviews are available\", function () {\r",
+						"    var jsonData = pm.response.json();\r",
+						"    if ((jsonData.directReviewsAvailable) == true){\r",
+						"        pm.response.to.have.status(200);\r",
+						"        pm.expect(jsonData.results.length).not.eql(0);\r",
+						"        pm.expect(jsonData.results.directReviewCount).not.eql(0);\r",
+						"        pm.expect(jsonData.results.openDirectReviewNonConformityCount).not.eql(0);\r",
+						"        pm.expect(jsonData.results.closedDirectReviewNonConformityCount).not.eql(0);\r",
+						"    }\r",
+						"    else {\r",
+						"         pm.response.to.have.status(400);\r",
+						"    }\r",
+						"          \r",
+						"});"
+					],
+					"type": "text/javascript"
 				}
-			],
+			}],
 			"request": {
 				"method": "POST",
-				"header": [
-					{
+				"header": [{
 						"key": "API-Key",
 						"value": "{{apiKey}}",
 						"type": "text"
@@ -131,12 +119,9 @@
 					"raw": "{\r\n    \"complianceActivity\": {\r\n    \"hasHadComplianceActivity\": true,\r\n    \"nonConformityOptions\": [\r\n      \"OPEN_NONCONFORMITY\",\r\n      \"CLOSED_NONCONFORMITY\"\r\n    ],\r\n    \"nonconformityOptionsOperator\": \"AND\"\r\n    }\r\n}"
 				},
 				"url": {
-					"raw": "https://chpl.ahrqdev.org/rest/search/beta",
-					"protocol": "https",
+					"raw": "{{url}}/rest/search/beta",
 					"host": [
-						"chpl",
-						"ahrqdev",
-						"org"
+						"{{url}}"
 					],
 					"path": [
 						"rest",
@@ -150,45 +135,37 @@
 		},
 		{
 			"name": "GET /search/beta - with filter parameters other than compliance filters",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"/search/beta end point should return 200 status when filters other than complinace filters are used\", function () {\r",
-							"    var jsonData = pm.response.json();\r",
-							"        pm.response.to.have.status(200);\r",
-							"        pm.expect(jsonData.results.length).not.eql(0);\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
+			"event": [{
+				"listen": "test",
+				"script": {
+					"exec": [
+						"pm.test(\"/search/beta end point should return 200 status when filters other than complinace filters are used\", function () {\r",
+						"    var jsonData = pm.response.json();\r",
+						"        pm.response.to.have.status(200);\r",
+						"        pm.expect(jsonData.results.length).not.eql(0);\r",
+						"});"
+					],
+					"type": "text/javascript"
 				}
-			],
+			}],
 			"request": {
 				"method": "GET",
-				"header": [
-					{
-						"key": "API-Key",
-						"value": "{{apiKey}}",
-						"type": "text"
-					}
-				],
+				"header": [{
+					"key": "API-Key",
+					"value": "{{apiKey}}",
+					"type": "text"
+				}],
 				"url": {
-					"raw": "https://chpl.ahrqdev.org/rest/search/beta?certificationStatuses=Active&certificationEditions=2015&certificationCriteriaIds=33,53,54,26,27,29,30,31&certificationCriteriaOperator=OR&cqms=CMS122,CMS166,CMS50",
-					"protocol": "https",
+					"raw": "{{url}}/rest/search/beta?certificationStatuses=Active&certificationEditions=2015&certificationCriteriaIds=33,53,54,26,27,29,30,31&certificationCriteriaOperator=OR&cqms=CMS122,CMS166,CMS50",
 					"host": [
-						"chpl",
-						"ahrqdev",
-						"org"
+						"{{url}}"
 					],
 					"path": [
 						"rest",
 						"search",
 						"beta"
 					],
-					"query": [
-						{
+					"query": [{
 							"key": "certificationStatuses",
 							"value": "Active"
 						},
@@ -216,25 +193,22 @@
 		},
 		{
 			"name": "POST /search/beta - filters other than compliance filters",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"/search/beta end point should return 200 status when filters other than compliance filters are used\", function () {\r",
-							"    var jsonData = pm.response.json();\r",
-							"        pm.response.to.have.status(200);\r",
-							"        pm.expect(jsonData.results.length).not.eql(0);\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
+			"event": [{
+				"listen": "test",
+				"script": {
+					"exec": [
+						"pm.test(\"/search/beta end point should return 200 status when filters other than compliance filters are used\", function () {\r",
+						"    var jsonData = pm.response.json();\r",
+						"        pm.response.to.have.status(200);\r",
+						"        pm.expect(jsonData.results.length).not.eql(0);\r",
+						"});"
+					],
+					"type": "text/javascript"
 				}
-			],
+			}],
 			"request": {
 				"method": "POST",
-				"header": [
-					{
+				"header": [{
 						"key": "API-Key",
 						"value": "{{apiKey}}",
 						"type": "text"
@@ -250,12 +224,9 @@
 					"raw": "{\r\n  \"certificationBodies\": [\r\n    \"Drummond Group\"\r\n  ],\r\n  \"certificationCriteriaIds\": [\r\n    1,\r\n    2,\r\n    3,\r\n    4,\r\n    5,\r\n    6,\r\n    7,\r\n    8,\r\n    9,\r\n    10,\r\n    11,\r\n    12,\r\n    13,\r\n    14,\r\n    15,\r\n    16,\r\n    17,\r\n    18,\r\n    19,\r\n    20,\r\n    21,\r\n    25,\r\n    26,\r\n    27,\r\n    29,\r\n    30,\r\n    31,\r\n    32,\r\n    33,\r\n    34,\r\n    35,\r\n    36,\r\n    37,\r\n    40,\r\n    41,\r\n    42,\r\n    43,\r\n    46,\r\n    51,\r\n    52,\r\n    53,\r\n    59\r\n  ],\r\n  \"certificationCriteriaOperator\": \"OR\",\r\n  \"certificationDateEnd\": \"2021-06-01\",\r\n  \"certificationDateStart\": \"2016-01-01\",\r\n  \"certificationEditions\": [\"2015\"],\r\n  \"certificationStatuses\": [\"Active\"],\r\n  \"complianceActivity\": {},\r\n  \"cqms\": [\r\n    \"CMS122\",\r\n    \"CMS50\",\r\n    \"CMS123\",\r\n    \"CMS134\",\r\n    \"CMS156\",\r\n    \"CMS146\",\r\n    \"CMS138\",\r\n    \"CMS69\",\r\n    \"CMS65\",\r\n    \"CMS130\",\r\n    \"CMS131\",\r\n    \"CMS164\",\r\n    \"CMS165\",\r\n    \"CMS68\"\r\n  ],\r\n  \"cqmsOperator\": \"OR\",\r\n  \"developer\": \"VIPA Health Solutions, LLC\"\r\n}"
 				},
 				"url": {
-					"raw": "https://chpl.ahrqdev.org/rest/search/beta",
-					"protocol": "https",
+					"raw": "{{url}}/rest/search/beta",
 					"host": [
-						"chpl",
-						"ahrqdev",
-						"org"
+						"{{url}}"
 					],
 					"path": [
 						"rest",
