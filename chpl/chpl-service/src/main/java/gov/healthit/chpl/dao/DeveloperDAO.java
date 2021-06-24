@@ -40,6 +40,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Repository("developerDAO")
@@ -565,7 +566,7 @@ public class DeveloperDAO extends BaseDAOImpl {
         // populate dtoList from result
         for (CertifiedProductDetailsEntity currListing : bannedListings) {
             LOGGER.debug("CertifiedProductDetailsEntity: " + currListing.getDeveloperId() + " "
-                    + currListing.getCertificationBodyId() + " " + currListing.getMeaningfulUseUsers());
+                    + currListing.getCertificationBodyId() + " " + currListing.getPromotingInteroperabilityUserCount());
             Boolean devExists = false;
             if (decertifiedDevelopers.size() > 0) {
                 for (DecertifiedDeveloperDTODeprecated currDev : decertifiedDevelopers) {
@@ -588,25 +589,26 @@ public class DeveloperDAO extends BaseDAOImpl {
                         LOGGER.debug("added acb " + currListing.getCertificationBodyId() + " to dto with dev id == "
                                 + currDev.getDeveloperId());
                         // aggregate meaningful use count for existing developer
-                        if (currListing.getMeaningfulUseUsers() != null) {
-                            currDev.incrementNumMeaningfulUse(currListing.getMeaningfulUseUsers());
+                        if (currListing.getPromotingInteroperabilityUserCount() != null) {
+                            currDev.incrementNumMeaningfulUse(currListing.getPromotingInteroperabilityUserCount());
                             LOGGER.debug(
-                                    "added numMeaningfulUse to dto with value " + currListing.getMeaningfulUseUsers());
+                                    "added numMeaningfulUse to dto with value " + currListing.getPromotingInteroperabilityUserCount());
                         }
                         // check earliest vs latest meaningful use dates for
                         // existing developer
-                        if (currListing.getMeaningfulUseUsersDate() != null) {
+                        if (currListing.getPromotingInteroperabilityUserCountDate() != null) {
+                            Date promotingInteroperabilityUserDate = new Date(DateUtil.toEpochMillis(currListing.getPromotingInteroperabilityUserCountDate()));
                             if (currDev.getEarliestNumMeaningfulUseDate() == null) {
-                                currDev.setEarliestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
-                            } else if (currListing.getMeaningfulUseUsersDate().getTime() < currDev
+                                currDev.setEarliestNumMeaningfulUseDate(promotingInteroperabilityUserDate);
+                            } else if (promotingInteroperabilityUserDate.getTime() < currDev
                                     .getEarliestNumMeaningfulUseDate().getTime()) {
-                                currDev.setEarliestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
+                                currDev.setEarliestNumMeaningfulUseDate(promotingInteroperabilityUserDate);
                             }
                             if (currDev.getLatestNumMeaningfulUseDate() == null) {
-                                currDev.setLatestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
-                            } else if (currListing.getMeaningfulUseUsersDate().getTime() > currDev
+                                currDev.setLatestNumMeaningfulUseDate(promotingInteroperabilityUserDate);
+                            } else if (promotingInteroperabilityUserDate.getTime() > currDev
                                     .getLatestNumMeaningfulUseDate().getTime()) {
-                                currDev.setLatestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
+                                currDev.setLatestNumMeaningfulUseDate(promotingInteroperabilityUserDate);
                             }
                         }
                         devExists = true;
@@ -619,9 +621,9 @@ public class DeveloperDAO extends BaseDAOImpl {
                 acbList.add(currListing.getCertificationBodyId());
                 DecertifiedDeveloperDTODeprecated decertDev = new DecertifiedDeveloperDTODeprecated(
                         currListing.getDeveloperId(), acbList, currListing.getDeveloperStatusName(),
-                        currListing.getDeveloperStatusDate(), currListing.getMeaningfulUseUsers());
-                decertDev.setEarliestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
-                decertDev.setLatestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
+                        currListing.getDeveloperStatusDate(), currListing.getPromotingInteroperabilityUserCount());
+                decertDev.setEarliestNumMeaningfulUseDate(new Date(DateUtil.toEpochMillis(currListing.getPromotingInteroperabilityUserCountDate())));
+                decertDev.setLatestNumMeaningfulUseDate(new Date(DateUtil.toEpochMillis(currListing.getPromotingInteroperabilityUserCountDate())));
                 decertifiedDevelopers.add(decertDev);
             }
         }

@@ -1,5 +1,8 @@
 package gov.healthit.chpl.util;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -19,5 +22,21 @@ public final class DateUtil {
     public static String formatInEasternTime(Date date) {
         ZonedDateTime zdt = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.of("UTC"));
         return formatInEasternTime(zdt);
+    }
+
+    public static Long toEpochMillis(LocalDateTime localDateTime) {
+        if (localDateTime == null) {
+            return null;
+        }
+        Instant instant = localDateTime.atZone(ZoneId.systemDefault()).toInstant();
+        return instant.toEpochMilli();
+    }
+
+    public static Long toEpochMillis(LocalDate localDate) {
+        if (localDate == null) {
+            return null;
+        }
+        Instant instant = localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
+        return instant.toEpochMilli();
     }
 }

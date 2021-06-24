@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.MeaningfulUseUserDAO;
 import gov.healthit.chpl.dto.MeaningfulUseUserDTO;
-import gov.healthit.chpl.entity.MeaningfulUseUserEntity;
+import gov.healthit.chpl.entity.PromotingInteroperabilityUserEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
@@ -28,7 +28,7 @@ public class MeaningfulUseUserDAOImpl extends BaseDAOImpl implements MeaningfulU
     public MeaningfulUseUserDTO create(final MeaningfulUseUserDTO dto)
             throws EntityCreationException, EntityRetrievalException {
 
-        MeaningfulUseUserEntity entity = new MeaningfulUseUserEntity();
+        PromotingInteroperabilityUserEntity entity = new PromotingInteroperabilityUserEntity();
         entity.setCertifiedProductId(dto.getCertifiedProductId());
         entity.setMuuCount(dto.getMuuCount());
         entity.setMuuDate(dto.getMuuDate());
@@ -41,7 +41,7 @@ public class MeaningfulUseUserDAOImpl extends BaseDAOImpl implements MeaningfulU
 
     @Override
     public MeaningfulUseUserDTO update(final MeaningfulUseUserDTO dto) throws EntityRetrievalException {
-        MeaningfulUseUserEntity entity = getEntityById(dto.getId());
+        PromotingInteroperabilityUserEntity entity = getEntityById(dto.getId());
 
         if (entity == null) {
             throw new EntityRetrievalException("Meaningful Use User entry with id " + dto.getId() + " does not exist");
@@ -57,7 +57,7 @@ public class MeaningfulUseUserDAOImpl extends BaseDAOImpl implements MeaningfulU
     @Override
     public void delete(final Long id) throws EntityRetrievalException {
 
-        MeaningfulUseUserEntity toDelete = getEntityById(id);
+        PromotingInteroperabilityUserEntity toDelete = getEntityById(id);
 
         if (toDelete != null) {
             toDelete.setDeleted(true);
@@ -71,7 +71,7 @@ public class MeaningfulUseUserDAOImpl extends BaseDAOImpl implements MeaningfulU
     public MeaningfulUseUserDTO getById(final Long id) throws EntityRetrievalException {
 
         MeaningfulUseUserDTO dto = null;
-        MeaningfulUseUserEntity entity = getEntityById(id);
+        PromotingInteroperabilityUserEntity entity = getEntityById(id);
 
         if (entity != null) {
             dto = new MeaningfulUseUserDTO(entity);
@@ -82,26 +82,26 @@ public class MeaningfulUseUserDAOImpl extends BaseDAOImpl implements MeaningfulU
     @Override
     public List<MeaningfulUseUserDTO> findByCertifiedProductId(final Long certifiedProductId) {
 
-        List<MeaningfulUseUserEntity> entities = getEntitiesByCertifiedProductId(certifiedProductId);
+        List<PromotingInteroperabilityUserEntity> entities = getEntitiesByCertifiedProductId(certifiedProductId);
         List<MeaningfulUseUserDTO> dtos = new ArrayList<MeaningfulUseUserDTO>();
 
-        for (MeaningfulUseUserEntity entity : entities) {
+        for (PromotingInteroperabilityUserEntity entity : entities) {
             MeaningfulUseUserDTO dto = new MeaningfulUseUserDTO(entity);
             dtos.add(dto);
         }
         return dtos;
     }
 
-    private MeaningfulUseUserEntity getEntityById(final Long id) throws EntityRetrievalException {
-        MeaningfulUseUserEntity entity = null;
+    private PromotingInteroperabilityUserEntity getEntityById(final Long id) throws EntityRetrievalException {
+        PromotingInteroperabilityUserEntity entity = null;
 
         Query query = entityManager.createQuery("SELECT muu "
                 + "FROM MeaningfulUseUserEntity muu "
                 + "WHERE muu.id = :entityid "
                 + "AND (NOT muu.deleted = true)",
-                MeaningfulUseUserEntity.class);
+                PromotingInteroperabilityUserEntity.class);
         query.setParameter("entityid", id);
-        List<MeaningfulUseUserEntity> result = query.getResultList();
+        List<PromotingInteroperabilityUserEntity> result = query.getResultList();
 
         if (result != null && result.size() > 0) {
             entity = result.get(0);
@@ -110,15 +110,15 @@ public class MeaningfulUseUserDAOImpl extends BaseDAOImpl implements MeaningfulU
         return entity;
     }
 
-    private List<MeaningfulUseUserEntity> getEntitiesByCertifiedProductId(final Long cpId) {
+    private List<PromotingInteroperabilityUserEntity> getEntitiesByCertifiedProductId(final Long cpId) {
 
         Query query = entityManager.createQuery("SELECT muu "
                 + "FROM MeaningfulUseUserEntity muu "
                 + "WHERE muu.certifiedProductId = :cpId "
                 + "AND (NOT muu.deleted = true)",
-                MeaningfulUseUserEntity.class);
+                PromotingInteroperabilityUserEntity.class);
         query.setParameter("cpId", cpId);
-        List<MeaningfulUseUserEntity> result = query.getResultList();
+        List<PromotingInteroperabilityUserEntity> result = query.getResultList();
 
         return result;
     }

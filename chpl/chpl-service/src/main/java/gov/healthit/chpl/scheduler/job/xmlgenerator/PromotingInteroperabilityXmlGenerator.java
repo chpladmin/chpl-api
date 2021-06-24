@@ -5,22 +5,22 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import gov.healthit.chpl.domain.MeaningfulUseUser;
+import gov.healthit.chpl.domain.PromotingInteroperability;
 
-public class MeaningfulUseUserXmlGenerator extends XmlGenerator {
+public class PromotingInteroperabilityXmlGenerator extends XmlGenerator {
 
-    public static void add(final List<MeaningfulUseUser> muus, final String rootNodeName,
+    public static void add(final List<PromotingInteroperability> muus, final String rootNodeName,
             final XMLStreamWriter sw) throws XMLStreamException {
        if (muus != null) {
            sw.writeStartElement(rootNodeName);
-           for (MeaningfulUseUser muu : muus) {
+           for (PromotingInteroperability muu : muus) {
                add(muu, "meaningfulUseEntry", sw);
            }
            sw.writeEndElement();
        }
     }
 
-    public static void add(final MeaningfulUseUser muu, final String rootNodeName, final XMLStreamWriter sw)
+    public static void add(final PromotingInteroperability muu, final String rootNodeName, final XMLStreamWriter sw)
             throws XMLStreamException {
         if (muu != null) {
             sw.writeStartElement(rootNodeName);

@@ -253,7 +253,9 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
      * All current and historical values of meaningful use users for this listing along with the dates each meaningful
      * use user count was valid. Dates are given in milliseconds since epoch.
      */
+    @Deprecated
     private List<MeaningfulUseUser> meaningfulUseUserHistory = new ArrayList<MeaningfulUseUser>();
+    private List<PromotingInteroperability> promotingInteroperabilityUserHistory = new ArrayList<PromotingInteroperability>();
 
     /**
      * All data related to safety-enhanced design for this listing.
@@ -399,9 +401,7 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
         return result;
     }
 
-    /**
-     * Dynamically determine the current MUU count by finding the most recent MUU entry for this listing.
-     */
+    @Deprecated
     public MeaningfulUseUser getCurrentMeaningfulUseUsers() {
         if (this.getMeaningfulUseUserHistory() == null
                 || this.getMeaningfulUseUserHistory().size() == 0) {
@@ -412,6 +412,21 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
         for (MeaningfulUseUser muuItem : this.getMeaningfulUseUserHistory()) {
             if (muuItem.getMuuDate() > newest.getMuuDate()) {
                 newest = muuItem;
+            }
+        }
+        return newest;
+    }
+
+    public PromotingInteroperability getCurrentPromotingInteroperabilityUsers() {
+        if (this.getPromotingInteroperabilityUserHistory() == null
+                || this.getPromotingInteroperabilityUserHistory().size() == 0) {
+            return null;
+        }
+
+        PromotingInteroperability newest = this.getPromotingInteroperabilityUserHistory().get(0);
+        for (PromotingInteroperability piItem : this.getPromotingInteroperabilityUserHistory()) {
+            if (piItem.getUserCountDate().isAfter(newest.getUserCountDate())) {
+                newest = piItem;
             }
         }
         return newest;

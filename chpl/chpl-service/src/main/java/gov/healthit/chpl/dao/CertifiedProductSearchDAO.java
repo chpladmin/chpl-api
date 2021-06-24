@@ -36,6 +36,7 @@ import gov.healthit.chpl.domain.search.SearchSetOperator;
 import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 import gov.healthit.chpl.entity.search.CertifiedProductListingSearchResultEntity;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 
@@ -611,9 +612,8 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
                 .developerStatus(entity.getDeveloperStatus())
                 .product(entity.getProduct())
                 .version(entity.getVersion())
-                .numMeaningfulUse(entity.getMeaningfulUseUserCount())
-                .numMeaningfulUseDate(entity.getMeaningfulUseUserDate() != null
-                    ? entity.getMeaningfulUseUserDate().getTime() : null)
+                .numMeaningfulUse(entity.getPromotingInteroperabilityUserCount())
+                .numMeaningfulUseDate(DateUtil.toEpochMillis(entity.getPromotingInteroperabilityUserCountDate()))
                 .decertificationDate(entity.getDecertificationDate() == null ? null : entity.getDecertificationDate().getTime())
                 .certificationDate(entity.getCertificationDate().getTime())
                 .certificationStatus(entity.getCertificationStatus())
@@ -639,9 +639,8 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         listing.setId(queryResult.getId());
         listing.setChplProductNumber(queryResult.getChplProductNumber());
         listing.setCertificationStatus(queryResult.getCertificationStatus());
-        listing.setNumMeaningfulUse(queryResult.getMeaningfulUseUserCount());
-        listing.setNumMeaningfulUseDate(
-                queryResult.getMeaningfulUseUsersDate() != null ? queryResult.getMeaningfulUseUsersDate().getTime() : null);
+        listing.setNumMeaningfulUse(queryResult.getPromotingInteroperabilityUserCount());
+        listing.setNumMeaningfulUseDate(DateUtil.toEpochMillis(queryResult.getPromotingInteroperabilityUserCountDate()));
         listing.setTransparencyAttestationUrl(queryResult.getTransparencyAttestationUrl());
         listing.setEdition(queryResult.getEdition());
         listing.setCuresUpdate(queryResult.getCuresUpdate());
@@ -694,9 +693,8 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
             result.setDeveloperStatus(dbResult.getDeveloperStatus());
             result.setProduct(dbResult.getProduct());
             result.setVersion(dbResult.getVersion());
-            result.setNumMeaningfulUse(dbResult.getMeaningfulUseUserCount());
-            result.setNumMeaningfulUseDate(dbResult.getMeaningfulUseUserDate() != null
-                    ? dbResult.getMeaningfulUseUserDate().getTime() : null);
+            result.setNumMeaningfulUse(dbResult.getPromotingInteroperabilityUserCount());
+            result.setNumMeaningfulUseDate(DateUtil.toEpochMillis(dbResult.getPromotingInteroperabilityUserCountDate()));
             result.setDecertificationDate(
                     dbResult.getDecertificationDate() == null ? null : dbResult.getDecertificationDate().getTime());
             result.setCertificationDate(dbResult.getCertificationDate().getTime());

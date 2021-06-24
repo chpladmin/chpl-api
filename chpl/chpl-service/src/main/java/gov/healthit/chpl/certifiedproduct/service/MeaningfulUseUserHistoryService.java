@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.MeaningfulUseUserDAO;
-import gov.healthit.chpl.domain.MeaningfulUseUser;
+import gov.healthit.chpl.domain.PromotingInteroperability;
 import gov.healthit.chpl.dto.MeaningfulUseUserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
@@ -20,13 +20,13 @@ public class MeaningfulUseUserHistoryService {
         this.muuDao = muuDao;
     }
 
-    public List<MeaningfulUseUser> getMeaningfulUseUserHistory(Long certifiedProductId) throws EntityRetrievalException {
+    public List<PromotingInteroperability> getMeaningfulUseUserHistory(Long certifiedProductId) throws EntityRetrievalException {
 
-        List<MeaningfulUseUser> muuHistory = new ArrayList<MeaningfulUseUser>();
+        List<PromotingInteroperability> muuHistory = new ArrayList<PromotingInteroperability>();
         List<MeaningfulUseUserDTO> muuDtos = muuDao.findByCertifiedProductId(certifiedProductId);
 
         for (MeaningfulUseUserDTO muuDto : muuDtos) {
-            MeaningfulUseUser muu = new MeaningfulUseUser(muuDto);
+            PromotingInteroperability muu = new PromotingInteroperability(muuDto);
             muuHistory.add(muu);
         }
         return muuHistory;
