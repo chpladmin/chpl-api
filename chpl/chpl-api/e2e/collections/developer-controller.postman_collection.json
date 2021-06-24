@@ -565,7 +565,7 @@
                                       "    pm.expect(pm.response.text()).to.not.include(\"friendlyName\");",
                                       "});",
                                       "",
-									  "pm.test(\"expect Environment header to indicate non prod environment\", function () {\r",
+									  "    pm.test(\"expect Environment header to indicate non prod environment\", function () {\r",
                                       "    pm.response.to.have.header(\"Environment\");\r",
                                       "    pm.expect(pm.response.headers.get(\"Environment\")).to.eql(\"NON-PRODUCTION\");\r",
                                       "});"
@@ -622,7 +622,7 @@
                                       "    pm.expect(pm.response.text()).to.not.include(\"friendlyName\");\r",
                                       "});\r",
                                       "",
-									  "pm.test(\"expect Environment header to indicate non prod environment\", function () {\r",
+									  "    pm.test(\"expect Environment header to indicate non prod environment\", function () {\r",
                                       "    pm.response.to.have.header(\"Environment\");\r",
                                       "    pm.expect(pm.response.headers.get(\"Environment\")).to.eql(\"NON-PRODUCTION\");\r",
                                       "});"
