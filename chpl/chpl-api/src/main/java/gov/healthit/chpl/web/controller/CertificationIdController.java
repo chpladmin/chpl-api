@@ -38,10 +38,10 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.web.controller.results.CertificationIdLookupResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdVerifyResults;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Api(value = "certification-ids")
+@Tag(name = "certification-ids", description = "All certification ID operations.")
 @RestController
 @RequestMapping("/certification_ids")
 @Loggable
@@ -70,8 +70,8 @@ public class CertificationIdController {
     // Retrieves all CMS Certification IDs and their date of creation.
     // **********************************************************************************************************
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_CMS_STAFF')")
-    @ApiOperation(value = "Retrieves a list of all CMS EHR Certification IDs along with the date they were created.",
-    notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_CMS_STAFF")
+    @Operation(summary = "Retrieves a list of all CMS EHR Certification IDs along with the date they were created.",
+    description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_CMS_STAFF")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = {
             MediaType.APPLICATION_JSON_VALUE
     })
@@ -94,8 +94,8 @@ public class CertificationIdController {
     //
     // Retrieves a CMS EHR Certification ID for a collection of products.
     // **********************************************************************************************************
-    @ApiOperation(value = "Retrieves a CMS EHR Certification ID for a collection of products.",
-            notes = "Retrieves a CMS EHR Certification ID for a collection of products. Returns a list of "
+    @Operation(summary = "Retrieves a CMS EHR Certification ID for a collection of products.",
+            description = "Retrieves a CMS EHR Certification ID for a collection of products. Returns a list of "
                     + "basic product information, Criteria and CQM calculations, and the associated CMS EHR "
                     + "Certification ID if one exists.")
     @RequestMapping(value = "/search", method = RequestMethod.GET, produces = {
@@ -107,10 +107,10 @@ public class CertificationIdController {
         return this.findCertificationByProductIds(ids, false);
     }
 
-    @ApiOperation(
-            value = "Creates a new CMS EHR Certification ID for a collection of products if one does not already "
+    @Operation(
+            summary = "Creates a new CMS EHR Certification ID for a collection of products if one does not already "
                     + "exist.",
-                    notes = "Retrieves a CMS EHR Certification ID for a collection of products or creates a new one "
+                    description = "Retrieves a CMS EHR Certification ID for a collection of products or creates a new one "
                             + "if one does not already exist. Returns a list of basic product information, Criteria "
                             + "and CQM calculations, and the associated CMS EHR Certification ID if one exists.")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = {
@@ -141,8 +141,8 @@ public class CertificationIdController {
      * @throws EntityRetrievalException if couldn't retrieve entity
      * @throws CertificationIdException if cert id fails
      */
-    @ApiOperation(value = "Get information about a specific EHR Certification ID.",
-            notes = "Retrieves detailed information about a specific EHR Certification ID including the list of "
+    @Operation(summary = "Get information about a specific EHR Certification ID.",
+            description = "Retrieves detailed information about a specific EHR Certification ID including the list of "
                     + "products that make it up.  This method can be used when verfying a small number of"
                     + "Certification Ids, where the length of the URL, plus the list of IDs, is less than the"
                     + "maximum length URL that your client can handle.")
@@ -164,8 +164,8 @@ public class CertificationIdController {
      * @throws InvalidArgumentsException if arguments are invalid
      * @throws CertificationIdException if cert id fails
      */
-    @ApiOperation(value = "Verify whether one or more specific EHR Certification IDs are valid or not.",
-            notes = "Returns a boolean value for each EHR Certification ID specified.")
+    @Operation(summary = "Verify whether one or more specific EHR Certification IDs are valid or not.",
+            description = "Returns a boolean value for each EHR Certification ID specified.")
     @RequestMapping(value = "/verify", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = {
             MediaType.APPLICATION_JSON_VALUE
@@ -183,8 +183,8 @@ public class CertificationIdController {
      * @throws InvalidArgumentsException if arguments are invalid
      * @throws CertificationIdException if cert id fails
      */
-    @ApiOperation(value = "Verify whether one or more specific EHR Certification IDs are valid or not.",
-            notes = "Returns true or false for each EHR Certification ID specified.")
+    @Operation(summary = "Verify whether one or more specific EHR Certification IDs are valid or not.",
+            description = "Returns true or false for each EHR Certification ID specified.")
     @RequestMapping(value = "/verify", method = RequestMethod.GET, produces = {
             MediaType.APPLICATION_JSON_VALUE
     })

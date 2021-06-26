@@ -37,15 +37,11 @@ import gov.healthit.chpl.service.DirectReviewSearchService;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 
-/**
- * Controller for getting collections of Listings and Developer.
- *
- */
-@Api(value = "collections")
+@Tag(name = "collections", description = "Endpoints to get collections of the CHPL listings.")
 @RestController
 @RequestMapping("/collections")
 @Log4j2
@@ -69,7 +65,7 @@ public class CollectionsController {
      * @return an array of the listings
      * @throws JsonProcessingException if processing fails
      */
-    @ApiOperation(value = "Get basic data about all certified products in the system.", notes = "")
+    @Operation(summary = "Get basic data about all certified products in the system.", description = "")
     @RequestMapping(value = "/certified-products", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.SIX_HOURS)
@@ -177,7 +173,7 @@ public class CollectionsController {
      * @throws JsonProcessingException if processing fails
      */
     @Deprecated
-    @ApiOperation(value = "Get basic data about all certified products in the system.", notes = "")
+    @Operation(summary = "Get basic data about all certified products in the system.", description = "")
     @RequestMapping(value = "/certified_products", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.SIX_HOURS)
@@ -276,8 +272,8 @@ public class CollectionsController {
     }
 
     @Deprecated
-    @ApiOperation(value = "Get a list of all developers with transparency attestation URLs and ACB attestations.",
-            notes = "DEPRECATED")
+    @Operation(summary = "Get a list of all developers with transparency attestation URLs and ACB attestations.",
+            description = "DEPRECATED")
     @RequestMapping(value = "/developers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody List<DeveloperTransparency> getDeveloperCollection() {
@@ -285,8 +281,8 @@ public class CollectionsController {
         return developerResults;
     }
 
-    @ApiOperation(value = "Get a list of all banned developers.",
-            notes = "")
+    @Operation(summary = "Get a list of all banned developers.",
+            description = "")
     @RequestMapping(value = "/decertified-developers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody List<DecertifiedDeveloper> getDecertifiedDeveloperCollection() {

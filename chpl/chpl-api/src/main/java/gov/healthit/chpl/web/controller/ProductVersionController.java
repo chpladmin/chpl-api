@@ -35,10 +35,10 @@ import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.web.controller.results.SplitVersionResponse;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Api(value = "versions")
+@Tag(name = "versions", description = "Allows management of versions.")
 @RestController
 @RequestMapping("/versions")
 @Loggable
@@ -55,8 +55,8 @@ public class ProductVersionController {
     @Autowired
     private ErrorMessageUtil msgUtil;
 
-    @ApiOperation(value = "List all versions for a specific product.",
-            notes = "List all versions associated with a specific product.")
+    @Operation(summary = "List all versions for a specific product.",
+            description = "List all versions associated with a specific product.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ProductVersion> getVersionsByProduct(@RequestParam(required = true) final Long productId)
             throws InvalidArgumentsException {
@@ -82,7 +82,7 @@ public class ProductVersionController {
         return versions;
     }
 
-    @ApiOperation(value = "Get information about a specific version.", notes = "")
+    @Operation(summary = "Get information about a specific version.", description = "")
     @RequestMapping(value = "/{versionId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ProductVersion getProductVersionById(@PathVariable("versionId") final Long versionId)
             throws EntityRetrievalException {
@@ -95,8 +95,8 @@ public class ProductVersionController {
         return result;
     }
 
-    @ApiOperation(value = "Update a version or merge versions.",
-            notes = "This method serves two purposes: to update a single version's information and to merge two "
+    @Operation(summary = "Update a version or merge versions.",
+            description = "This method serves two purposes: to update a single version's information and to merge two "
                     + "versions into one.  A user of this service should pass in a single versionId to update just "
                     + "that version.  If multiple version IDs are passed in, the service performs a merge meaning "
                     + "that a new version is created with all of the information provided and all of the certified "
@@ -163,10 +163,9 @@ public class ProductVersionController {
         return new ResponseEntity<ProductVersion>(new ProductVersion(result), responseHeaders, HttpStatus.OK);
     }
 
-    @ApiOperation(
-            value = "Split a version - some listings stay with the existing version and some listings are moved "
+    @Operation(summary = "Split a version - some listings stay with the existing version and some listings are moved "
                     + "to a new version.",
-                    notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB")
+                    description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB")
     @RequestMapping(value = "/{versionId}/split", method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public ResponseEntity<SplitVersionResponse> splitVersion(@PathVariable("versionId") final Long versionId,

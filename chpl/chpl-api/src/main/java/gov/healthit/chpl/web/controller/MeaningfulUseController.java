@@ -17,15 +17,13 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.MeaningfulUseManager;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import lombok.extern.log4j.Log4j2;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Api(value = "meaningful-use")
+@Tag(name = "meaningful-use", description = "Allows upload of meaningful use file.")
 @RestController
 @RequestMapping("/meaningful_use")
 @Loggable
-@Log4j2
 public class MeaningfulUseController {
     private MeaningfulUseManager muuManager;
 
@@ -34,8 +32,8 @@ public class MeaningfulUseController {
         this.muuManager = muuManager;
     }
 
-    @ApiOperation(value = "Upload a file to update the number of meaningful use users for each CHPL Product Number",
-            notes = "Accepts a CSV file with chpl_product_number and num_meaningful_use_users to update the number of meaningful use users for each CHPL Product Number."
+    @Operation(summary = "Upload a file to update the number of meaningful use users for each CHPL Product Number",
+            description = "Accepts a CSV file with chpl_product_number and num_meaningful_use_users to update the number of meaningful use users for each CHPL Product Number."
                     + " The user uploading the file must have ROLE_ADMIN, ROLE_ONC. ")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
 

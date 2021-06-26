@@ -30,10 +30,10 @@ import gov.healthit.chpl.web.controller.results.ChplJobsResults;
 import gov.healthit.chpl.web.controller.results.ScheduleOneTimeTriggersResults;
 import gov.healthit.chpl.web.controller.results.ScheduleTriggersResults;
 import gov.healthit.chpl.web.controller.results.SystemTriggerResults;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Api(value = "schedules")
+@Tag(name = "schedules", description = "Allows management of scheduled jobs and reports.")
 @RestController
 @RequestMapping("/schedules")
 @Loggable
@@ -44,8 +44,8 @@ public class SchedulerController {
     @Autowired
     private SchedulerManager schedulerManager;
 
-    @ApiOperation(value = "Create a new trigger and return it",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB.")
+    @Operation(summary = "Create a new trigger and return it",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB.")
     @RequestMapping(value = "/triggers", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody ScheduleTriggersResults createTrigger(@RequestBody(required = true)
     final ChplRepeatableTrigger trigger) throws SchedulerException, ValidationException, MessagingException {
@@ -55,7 +55,7 @@ public class SchedulerController {
         return results;
     }
 
-    @ApiOperation(value = "Create a new trigger and return it")
+    @Operation(summary = "Create a new trigger and return it")
     @RequestMapping(value = "/triggers/one_time", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody ScheduleOneTimeTriggersResults createOneTimeTrigger(@RequestBody(required = true)
     final ChplOneTimeTrigger trigger) throws SchedulerException, ValidationException {
@@ -65,7 +65,7 @@ public class SchedulerController {
         return results;
     }
 
-    @ApiOperation(value = "Delete an existing trigger")
+    @Operation(summary = "Delete an existing trigger")
     @RequestMapping(value = "/triggers/{triggerGroup}/{triggerName}", method = RequestMethod.DELETE)
     public void deleteTrigger(@PathVariable("triggerGroup") final String triggerGroup,
             @PathVariable("triggerName") final String triggerName)
@@ -73,9 +73,9 @@ public class SchedulerController {
         schedulerManager.deleteTrigger(triggerGroup, triggerName);
     }
 
-    @ApiOperation(value = "Get the list of all triggers of type '" + USER_JOB_TYPE + "' or '" + SYSTEM_JOB_TYPE + "' "
+    @Operation(summary = "Get the list of all triggers of type '" + USER_JOB_TYPE + "' or '" + SYSTEM_JOB_TYPE + "' "
             + "that are applicable to the currently logged in user",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB for '" + USER_JOB_TYPE + "' jobs "
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB for '" + USER_JOB_TYPE + "' jobs "
                     + "and have administrative authority on the specified ONC-ACB. "
                     + "ROLE_ADMIN, ROLE_ONC, or ROLE_ONC_STAFF for '" + SYSTEM_JOB_TYPE + "' jobs. "
                     + "Note: The default jobType query parameter is set to '" + USER_JOB_TYPE + "'.")
@@ -95,8 +95,8 @@ public class SchedulerController {
         }
     }
 
-    @ApiOperation(value = "Update an existing trigger and return it",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF or ROLE_ACB and have administrative authority on "
+    @Operation(summary = "Update an existing trigger and return it",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF or ROLE_ACB and have administrative authority on "
                     + "the specified ONC-ACB.")
     @RequestMapping(value = "/triggers", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public @ResponseBody ScheduleTriggersResults updateTrigger(@RequestBody(required = true) final ChplRepeatableTrigger trigger)
@@ -107,8 +107,8 @@ public class SchedulerController {
         return results;
     }
 
-    @ApiOperation(value = "Get the list of all jobs that are applicable to the currently logged in user",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and have administrative authority on the specified ONC-ACB")
+    @Operation(summary = "Get the list of all jobs that are applicable to the currently logged in user",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and have administrative authority on the specified ONC-ACB")
     @RequestMapping(value = "/jobs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody ChplJobsResults getAllJobs() throws SchedulerException {
@@ -118,8 +118,8 @@ public class SchedulerController {
         return results;
     }
 
-    @ApiOperation(value = "Update a given job",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF or ROLE_ACB and have administrative authority on "
+    @Operation(summary = "Update a given job",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF or ROLE_ACB and have administrative authority on "
                     + "the specified ONC-ACB.")
     @RequestMapping(value = "/jobs", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public @ResponseBody ChplJobsResults updateJob(@RequestBody(required = true)

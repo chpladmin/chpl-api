@@ -20,10 +20,10 @@ import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.ComplaintManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.web.controller.results.ComplaintResults;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Api(value = "complaints")
+@Tag(name = "complaints", description = "Allows management of complaints.")
 @RestController
 @RequestMapping("/complaints")
 @Loggable
@@ -37,8 +37,8 @@ public class ComplaintController {
         this.errorMessageUtil = errorMessageUtil;
     }
 
-    @ApiOperation(value = "List all complaints the current user can view.",
-            notes = "Security Restrictions: Only complaints owned by the current user's ACB will be returned")
+    @Operation(summary = "List all complaints the current user can view.",
+            description = "Security Restrictions: Only complaints owned by the current user's ACB will be returned")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ComplaintResults getComplaints() {
         ComplaintResults results = new ComplaintResults();
@@ -47,8 +47,8 @@ public class ComplaintController {
         return results;
     }
 
-    @ApiOperation(value = "Save complaint for use in Surveillance Quarterly Report.",
-            notes = "")
+    @Operation(summary = "Save complaint for use in Surveillance Quarterly Report.",
+            description = "")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody Complaint create(@RequestBody Complaint complaint) throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
         ValidationException error = new ValidationException();
@@ -61,8 +61,8 @@ public class ComplaintController {
         return complaintManager.create(complaint);
     }
 
-    @ApiOperation(value = "Update complaint for use in Surveillance Quarterly Report.",
-            notes = "")
+    @Operation(summary = "Update complaint for use in Surveillance Quarterly Report.",
+            description = "")
     @RequestMapping(value = "/{complaintId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public @ResponseBody Complaint update(@RequestBody Complaint complaint)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
@@ -74,8 +74,8 @@ public class ComplaintController {
         return complaintManager.update(complaint);
     }
 
-    @ApiOperation(value = "Delete complaint for use in Surveillance Quarterly Report.",
-            notes = "")
+    @Operation(summary = "Delete complaint for use in Surveillance Quarterly Report.",
+            description = "")
     @RequestMapping(value = "/{complaintId}", method = RequestMethod.DELETE, produces = "application/json; charset=utf-8")
     public void delete(@PathVariable("complaintId") Long complaintId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {

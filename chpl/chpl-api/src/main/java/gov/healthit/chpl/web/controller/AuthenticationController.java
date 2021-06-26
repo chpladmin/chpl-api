@@ -41,11 +41,11 @@ import gov.healthit.chpl.manager.auth.AuthenticationManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.EmailBuilder;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import springfox.documentation.annotations.ApiIgnore;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Api(value = "auth")
+@Tag(name = "auth", description = "User authentication operations including login.")
 @RestController
 @RequestMapping("/auth")
 @Loggable
@@ -74,8 +74,8 @@ public class AuthenticationController {
      * @throws JWTCreationException if unable to create the JWT
      * @throws UserRetrievalException if user is required to change their password
      */
-    @ApiOperation(value = "Log in.",
-            notes = "Call this method to authenticate a user. The value returned is that user's "
+    @Operation(summary = "Log in.",
+            description = "Call this method to authenticate a user. The value returned is that user's "
                     + "token which must be passed on all subsequent requests in the Authorization header. "
                     + "Specifically, the Authorization header must have a value of 'Bearer token-that-gets-returned'.")
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST,
@@ -96,7 +96,7 @@ public class AuthenticationController {
      * @throws UserRetrievalException if cannot find user to refresh
      * @throws MultipleUserAccountsException if multiple users have the same email
      */
-    @ApiIgnore
+    @Hidden
     @RequestMapping(value = "/keep_alive", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public String keepAlive() throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
@@ -115,8 +115,8 @@ public class AuthenticationController {
      * @throws UserRetrievalException if unable to retrieve the user
      * @throws MultipleUserAccountsException if user has multiple email addresses
      */
-    @ApiOperation(value = "Change password.",
-            notes = "Change the logged in user's password as long as the old password "
+    @Operation(summary = "Change password.",
+            description = "Change the logged in user's password as long as the old password "
                     + "passed in matches what is stored in the database.")
     @RequestMapping(value = "/change_password", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
@@ -165,8 +165,8 @@ public class AuthenticationController {
      * @throws JWTCreationException if cannot create a JWT
      * @throws JWTValidationException if cannot validate JWT
      */
-    @ApiOperation(value = "Change expired password.",
-            notes = "Change a user's expired password as long as the old password "
+    @Operation(summary = "Change expired password.",
+            description = "Change a user's expired password as long as the old password "
                     + "passed in matches what is stored in the database.")
     @RequestMapping(value = "/change_expired_password", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
@@ -217,7 +217,7 @@ public class AuthenticationController {
      * @param request the reset request
      * @return the results of their reset
      */
-    @ApiOperation(value = "Reset password.", notes = "Reset the users password.")
+    @Operation(summary = "Reset password.", description = "Reset the users password.")
     @RequestMapping(value = "/reset_password_request", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public UpdatePasswordResponse resetPassword(@RequestBody ResetPasswordRequest request)
@@ -248,7 +248,7 @@ public class AuthenticationController {
         return response;
     }
 
-    @ApiOperation(value = "Reset a user's password.", notes = "")
+    @Operation(summary = "Reset a user's password.", description = "")
     @RequestMapping(value = "/email_reset_password", method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public String resetPassword(@RequestBody UserResetPasswordRequest userInfo)
@@ -272,7 +272,7 @@ public class AuthenticationController {
     }
 
     @Deprecated
-    @ApiOperation(value = "DEPRECATED. Impersonate another user.", notes = "")
+    @Operation(summary = "DEPRECATED. Impersonate another user.", description = "")
     @RequestMapping(value = "/impersonate", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public String impersonateUser(@RequestHeader(value = "Authorization", required = true) String userJwt,
@@ -284,7 +284,7 @@ public class AuthenticationController {
         return jwtJSON;
     }
 
-    @ApiOperation(value = "Impersonate another user.", notes = "")
+    @Operation(summary = "Impersonate another user.", description = "")
     @RequestMapping(value = "/beta/impersonate", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public String impersonateUserById(@RequestHeader(value = "Authorization", required = true) String userJwt,
@@ -296,7 +296,7 @@ public class AuthenticationController {
         String jwtJSON = "{\"token\": \"" + jwt + "\"}";
         return jwtJSON;
     }
-    @ApiOperation(value = "Stop impersonating another user.", notes = "")
+    @Operation(summary = "Stop impersonating another user.", description = "")
     @RequestMapping(value = "/unimpersonate", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public String unimpersonateUser(@RequestHeader(value = "Authorization", required = true) String userJwt)

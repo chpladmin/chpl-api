@@ -13,14 +13,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.logging.Loggable;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-/**
- * Feature Flag Controller.
- *
- */
-@Api(value = "feature-flags")
+@Tag(name = "feature-flags", description = "Lists all feature flags currently in the system.")
 @RestController
 @RequestMapping("/feature-flags")
 @Loggable
@@ -33,7 +29,7 @@ public class FeatureFlagController {
         this.ff4j = ff4j;
     }
 
-    @ApiOperation(value = "List all feature flags.", notes = "")
+    @Operation(summary = "List all feature flags.", description = "")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<Flag> getFeatureFlags() {
         List<Flag> flags = new ArrayList<Flag>();

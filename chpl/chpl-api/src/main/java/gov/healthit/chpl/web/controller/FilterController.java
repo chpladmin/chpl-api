@@ -33,10 +33,10 @@ import gov.healthit.chpl.manager.FilterManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.web.controller.results.FilterResults;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Api(value = "filters")
+@Tag(name = "filters", description = "Allows management of user filters.")
 @RestController
 @RequestMapping("/filters")
 @Loggable
@@ -51,8 +51,8 @@ public class FilterController {
         this.userManager = userManager;
     }
 
-    @ApiOperation(value = "List all filters based on the filter type for the current user.",
-            notes = "Security Restrictions: Only filters owned by the current user will be returned")
+    @Operation(summary = "List all filters based on the filter type for the current user.",
+            description = "Security Restrictions: Only filters owned by the current user will be returned")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody FilterResults getFiltersByFilterType(@RequestParam() final Long filterTypeId) throws EntityRetrievalException {
         FilterResults results = new FilterResults();
@@ -66,8 +66,8 @@ public class FilterController {
         return results;
     }
 
-    @ApiOperation(value = "Save filter for the current user.",
-            notes = "")
+    @Operation(summary = "Save filter for the current user.",
+            description = "")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody Filter create(@RequestBody final Filter filter) throws EntityRetrievalException, UserRetrievalException, ValidationException {
         FilterDTO dto = new FilterDTO();
@@ -83,8 +83,8 @@ public class FilterController {
         return new Filter(dto);
     }
 
-    @ApiOperation(value = "Deletes a filter.",
-            notes = "")
+    @Operation(summary = "Deletes a filter.",
+            description = "")
     @RequestMapping(value = "/{filterId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public @ResponseBody String deleteFilter(@PathVariable("filterId") final Long filterId) throws EntityRetrievalException, ValidationException {

@@ -84,15 +84,15 @@ import gov.healthit.chpl.web.controller.results.CQMResultDetailResults;
 import gov.healthit.chpl.web.controller.results.CertificationResults;
 import gov.healthit.chpl.web.controller.results.MeasureResults;
 import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 
-@Loggable
-@Api(value = "certified-products")
+@Tag(name = "certified-products", description = "Management of certified products.")
 @RestController
 @RequestMapping("/certified_products")
 @Log4j2
+@Loggable
 public class CertifiedProductController {
 
     @Value("${uploadErrorEmailRecipients}")
@@ -136,8 +136,8 @@ public class CertifiedProductController {
         this.developerManager = developerManager;
     }
 
-    @ApiOperation(value = "List all certified products",
-            notes = "Default behavior is to return all certified products in the system. "
+    @Operation(summary = "List all certified products",
+            description = "Default behavior is to return all certified products in the system. "
                     + " The required 'versionId' parameter filters the certified products to those"
                     + " assigned to that version. The 'editable' parameter will return only those"
                     + " certified products that the logged in user has permission to edit as "
@@ -159,8 +159,8 @@ public class CertifiedProductController {
         return certifiedProductList;
     }
 
-    @ApiOperation(value = "Get all details for a specified certified product.",
-            notes = "Returns all information in the CHPL related to the specified certified product.")
+    @Operation(summary = "Get all details for a specified certified product.",
+            description = "Returns all information in the CHPL related to the specified certified product.")
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/details",
     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -174,8 +174,8 @@ public class CertifiedProductController {
     }
 
     @SuppressWarnings({"checkstyle:parameternumber"})
-    @ApiOperation(value = "Get all details for a specified certified product.",
-    notes = "Returns all information in the CHPL related to the specified certified product.  "
+    @Operation(summary = "Get all details for a specified certified product.",
+    description = "Returns all information in the CHPL related to the specified certified product.  "
             + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
             + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid call "
             + "to this service would look like "
@@ -210,8 +210,8 @@ public class CertifiedProductController {
         return certifiedProduct;
     }
 
-    @ApiOperation(value = "Get all details for a specified certified product.",
-            notes = "Returns all information in the CHPL related to the specified certified product.  "
+    @Operation(summary = "Get all details for a specified certified product.",
+            description = "Returns all information in the CHPL related to the specified certified product.  "
                     + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call "
                     + "to this service would look like /certified_products/CHP-999999.")
     @RequestMapping(value = "/{chplPrefix}-{identifier}/details",
@@ -230,9 +230,9 @@ public class CertifiedProductController {
         return certifiedProduct;
     }
 
-    @ApiOperation(value = "Get all basic information for a specified certified product.  Does not include "
+    @Operation(summary = "Get all basic information for a specified certified product.  Does not include "
             + "all collections that are in the 'certified_products/{identifier}/details' endpoint.",
-            notes = "Returns basic information in the CHPL related to the specified certified product.  "
+            description = "Returns basic information in the CHPL related to the specified certified product.  "
                     + "Does not include all collections that are in the 'certified_products/{identifier}/details' endpoint.")
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}",
     method = RequestMethod.GET,
@@ -247,9 +247,9 @@ public class CertifiedProductController {
     }
 
     @SuppressWarnings({"checkstyle:parameternumber"})
-    @ApiOperation(value = "Get all basic information for a specified certified product.  Does not include "
+    @Operation(summary = "Get all basic information for a specified certified product.  Does not include "
             + "all collections that are in the 'certified_products/{identifier}/details' endpoint.",
-            notes = "Returns basic information in the CHPL related to the specified certified product.  "
+            description = "Returns basic information in the CHPL related to the specified certified product.  "
                     + "Does not include all collections that are in the 'certified_products/{identifier}/details' endpoint.  "
                     + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
                     + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid "
@@ -283,9 +283,9 @@ public class CertifiedProductController {
         return mapCertifiedProductDetailsToBasic.apply(certifiedProduct);
     }
 
-    @ApiOperation(value = "Get all basic information for a specified certified product.  Does not include "
+    @Operation(summary = "Get all basic information for a specified certified product.  Does not include "
             + "all collections that are in the 'certified_products/{identifier}/details' endpoint.",
-            notes = "Returns basic information in the CHPL related to the specified certified product.  "
+            description = "Returns basic information in the CHPL related to the specified certified product.  "
                     + "Does not include all collections that are in the 'certified_products/{identifier}/details' endpoint.  "
                     + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call to "
                     + "this service would look like /certified_products/CHP-999999.")
@@ -305,8 +305,8 @@ public class CertifiedProductController {
         return mapCertifiedProductDetailsToBasic.apply(certifiedProduct);
     }
 
-    @ApiOperation(value = "Get all of the CQM results for a specified certified product.",
-            notes = "Returns all of the CQM results in the CHPL related to the specified certified product.")
+    @Operation(summary = "Get all of the CQM results for a specified certified product.",
+            description = "Returns all of the CQM results in the CHPL related to the specified certified product.")
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/cqm_results", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -320,8 +320,8 @@ public class CertifiedProductController {
     }
 
     @SuppressWarnings({"checkstyle:parameternumber"})
-    @ApiOperation(value = "Get all of the CQM results for a specified certified product.",
-            notes = "Returns all of the CQM results in the CHPL related to the specified certified product.  "
+    @Operation(summary = "Get all of the CQM results for a specified certified product.",
+            description = "Returns all of the CQM results in the CHPL related to the specified certified product.  "
                     + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
                     + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid call to "
                     + "this service would look like /certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD/"
@@ -350,9 +350,9 @@ public class CertifiedProductController {
         return results;
     }
 
-    @ApiOperation(value = "Get all of the CQM results for a specified certified product based on a legacy "
+    @Operation(summary = "Get all of the CQM results for a specified certified product based on a legacy "
             + "CHPL Product Number.",
-            notes = "\"Returns all of the CQM results in the CHPL related to the specified certified product.  "
+            description = "\"Returns all of the CQM results in the CHPL related to the specified certified product.  "
                     + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call "
                     + "to this service would look like /certified_products/CHP-999999/cqm_results.")
     @RequestMapping(value = "/{chplPrefix}-{identifier}/cqm_results", method = RequestMethod.GET,
@@ -369,8 +369,8 @@ public class CertifiedProductController {
         return results;
     }
 
-    @ApiOperation(value = "Get all of the Measures for a specified certified product.",
-            notes = "Returns all of the Measures in the CHPL related to the specified certified product.")
+    @Operation(summary = "Get all of the Measures for a specified certified product.",
+            description = "Returns all of the Measures in the CHPL related to the specified certified product.")
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/measures", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -383,8 +383,8 @@ public class CertifiedProductController {
     }
 
     @SuppressWarnings({"checkstyle:parameternumber"})
-    @ApiOperation(value = "Get all of the Measures for a specified certified product.",
-            notes = "Returns all of the Measures in the CHPL related to the specified certified product.  "
+    @Operation(summary = "Get all of the Measures for a specified certified product.",
+            description = "Returns all of the Measures in the CHPL related to the specified certified product.  "
                     + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
                     + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid call to "
                     + "this service would look like /certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD/"
@@ -410,9 +410,9 @@ public class CertifiedProductController {
         return results;
     }
 
-    @ApiOperation(value = "Get all of the Measures for a specified certified product based on a legacy "
+    @Operation(summary = "Get all of the Measures for a specified certified product based on a legacy "
             + "CHPL Product Number.",
-            notes = "\"Returns all of the Measures in the CHPL related to the specified certified product.  "
+            description = "\"Returns all of the Measures in the CHPL related to the specified certified product.  "
                     + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call "
                     + "to this service would look like /certified_products/CHP-999999/measures.")
     @RequestMapping(value = "/{chplPrefix}-{identifier}/measures", method = RequestMethod.GET,
@@ -427,8 +427,8 @@ public class CertifiedProductController {
         return results;
     }
 
-    @ApiOperation(value = "Get all of the certification results for a specified certified product.",
-            notes = "Returns all of the certifiection results in the CHPL related to the specified certified product.")
+    @Operation(summary = "Get all of the certification results for a specified certified product.",
+            description = "Returns all of the certifiection results in the CHPL related to the specified certified product.")
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/certification_results", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -442,9 +442,9 @@ public class CertifiedProductController {
     }
 
     @SuppressWarnings({"checkstyle:linelength", "checkstyle:parameternumber"})
-    @ApiOperation(value = "Get all of the certification results for a specified certified "
+    @Operation(summary = "Get all of the certification results for a specified certified "
             + "product based on a CHPL Product Number.",
-            notes = "Returns all of the certification results in the CHPL related to the specified certified product.  "
+            description = "Returns all of the certification results in the CHPL related to the specified certified product.  "
                     + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
                     + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number. "
                     + "A valid call to this service would look like "
@@ -474,9 +474,9 @@ public class CertifiedProductController {
         return results;
     }
 
-    @ApiOperation(value = "Get all of the certification results for a specified certified product based on a legacy "
+    @Operation(summary = "Get all of the certification results for a specified certified product based on a legacy "
             + "CHPL Product Number.",
-            notes = "Returns all of the certification results in the CHPL related to the specified certified product.  "
+            description = "Returns all of the certification results in the CHPL related to the specified certified product.  "
                     + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call to this "
                     + "service would look like /certified_products/CHP-999999/certification_results.")
     @RequestMapping(value = "/{chplPrefix}-{identifier}/certification_results", method = RequestMethod.GET,
@@ -494,8 +494,8 @@ public class CertifiedProductController {
         return results;
     }
 
-    @ApiOperation(value = "Download all SED details that are certified to 170.315(g)(3).",
-            notes = "Download a specific file that is generated overnight.")
+    @Operation(summary = "Download all SED details that are certified to 170.315(g)(3).",
+            description = "Download a specific file that is generated overnight.")
     @RequestMapping(value = "/sed_details", method = RequestMethod.GET)
     public void streamSEDDetailsDocumentContents(HttpServletResponse response)
             throws EntityRetrievalException, IOException {
@@ -503,8 +503,8 @@ public class CertifiedProductController {
         fileUtils.streamFileAsResponse(downloadFile, "text/csv", response);
     }
 
-    @ApiOperation(value = "Get the ICS family tree for the specified certified product.",
-            notes = "Returns all member of the family tree connected to the specified certified product.")
+    @Operation(summary = "Get the ICS family tree for the specified certified product.",
+            description = "Returns all member of the family tree connected to the specified certified product.")
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/ics_relationships", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -516,8 +516,8 @@ public class CertifiedProductController {
     }
 
     @SuppressWarnings({"checkstyle:parameternumber"})
-    @ApiOperation(value = "Get the ICS family tree for the specified certified product based on a CHPL Product Number.",
-            notes = "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
+    @Operation(summary = "Get the ICS family tree for the specified certified product based on a CHPL Product Number.",
+            description = "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
                     + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid call to this "
                     + "service would look like /certified_products/YY.99.99.9999.XXXX.99.99.9."
                     + "YYMMDD/ics_relationships.")
@@ -546,8 +546,8 @@ public class CertifiedProductController {
         return familyTree;
     }
 
-    @ApiOperation(value = "Get the ICS family tree for the specified certified product based on a legacy CHPL Product Number",
-            notes = "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call to this "
+    @Operation(summary = "Get the ICS family tree for the specified certified product based on a legacy CHPL Product Number",
+            description = "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call to this "
                     + "service would look like /certified_products/CHP-999999/ics_relationships.")
     @RequestMapping(value = "/{chplPrefix}-{identifier}/ics_relationships", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -562,8 +562,8 @@ public class CertifiedProductController {
         return familyTree;
     }
 
-    @ApiOperation(value = "Update an existing certified product.",
-            notes = "Updates the certified product after first validating the request. If a different "
+    @Operation(summary = "Update an existing certified product.",
+            description = "Updates the certified product after first validating the request. If a different "
                     + "ACB is passed in as part of the request, an ownership change will take place.  "
                     + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and have administrative "
                     + "authority on the ACB that certified the product.")
@@ -613,8 +613,8 @@ public class CertifiedProductController {
         return new ResponseEntity<CertifiedProductSearchDetails>(changedProduct, responseHeaders, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Get metadata for all pending listings the user has access to.",
-            notes = "Pending listings are created via CSV file upload and are left in the 'pending' state "
+    @Operation(summary = "Get metadata for all pending listings the user has access to.",
+            description = "Pending listings are created via CSV file upload and are left in the 'pending' state "
                     + " until validated and confirmed.  Security Restrictions: ROLE_ADMIN, ROLE_ACB and have "
                     + "administrative authority on the ACB that uploaded the product.")
     @RequestMapping(value = "/pending/metadata", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
@@ -630,8 +630,8 @@ public class CertifiedProductController {
     }
 
     @Deprecated
-    @ApiOperation(value = "DEPRECATED. List pending certified products.",
-    notes = "Pending certified products are created via CSV file upload and are left in the 'pending' state "
+    @Operation(summary = "DEPRECATED. List pending certified products.",
+    description = "Pending certified products are created via CSV file upload and are left in the 'pending' state "
             + " until validated and approved.  Security Restrictions: ROLE_ADMIN, ROLE_ACB and have "
             + "administrative authority on the ACB that uploaded the product.")
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
@@ -662,8 +662,8 @@ public class CertifiedProductController {
         return results;
     }
 
-    @ApiOperation(value = "List a specific pending certified product.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ACB and administrative authority "
+    @Operation(summary = "List a specific pending certified product.",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ACB and administrative authority "
                     + "on the ACB for each pending certified product is required.")
     @RequestMapping(value = "/pending/{pcpId}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -683,8 +683,8 @@ public class CertifiedProductController {
         return details;
     }
 
-    @ApiOperation(value = "Reject a pending certified product.",
-            notes = "Essentially deletes a pending certified product. Security Restrictions: ROLE_ADMIN or have ROLE_ACB "
+    @Operation(summary = "Reject a pending certified product.",
+            description = "Essentially deletes a pending certified product. Security Restrictions: ROLE_ADMIN or have ROLE_ACB "
                     + "and administrative authority on the ACB for each pending certified product is required.")
     @RequestMapping(value = "/pending/{pcpId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
@@ -695,8 +695,8 @@ public class CertifiedProductController {
         return "{\"success\" : true}";
     }
 
-    @ApiOperation(value = "Reject several pending certified products.",
-            notes = "Marks a list of pending certified products as deleted. ROLE_ADMIN or ROLE_ACB "
+    @Operation(summary = "Reject several pending certified products.",
+            description = "Marks a list of pending certified products as deleted. ROLE_ADMIN or ROLE_ACB "
                     + " and administrative authority on the ACB for each pending certified product is required.")
     @RequestMapping(value = "/pending", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
@@ -726,8 +726,8 @@ public class CertifiedProductController {
     //TODO - We might want to take a look at reworking this.  Maybe should be a PUT and the parameters
     //should be re-evaluated
     @Deprecated
-    @ApiOperation(value = "DEPRECATED. Confirm a pending certified product.",
-            notes = "Creates a new certified product in the system based on all of the information "
+    @Operation(summary = "DEPRECATED. Confirm a pending certified product.",
+            description = "Creates a new certified product in the system based on all of the information "
                     + "passed in on the request. This information may differ from what was previously "
                     + "entered for the pending certified product during upload. It will first be validated "
                     + "to check for errors, then a new certified product is created, and the old pending certified"
@@ -747,8 +747,8 @@ public class CertifiedProductController {
         return addPendingCertifiedProduct(request);
     }
 
-    @ApiOperation(value = "Confirm a pending certified product.",
-            notes = "Creates a new certified product in the system based on all of the information "
+    @Operation(summary = "Confirm a pending certified product.",
+            description = "Creates a new certified product in the system based on all of the information "
                     + "passed in on the request. This information may differ from what was previously "
                     + "entered for the pending certified product during upload. It will first be validated "
                     + "to check for errors, then a new certified product is created, and the old pending certified"
@@ -825,8 +825,8 @@ public class CertifiedProductController {
         }
     }
 
-    @ApiOperation(value = "Upload a file with certified products",
-            notes = "Accepts a CSV file with very specific fields to create pending certified products. "
+    @Operation(summary = "Upload a file with certified products",
+            description = "Accepts a CSV file with very specific fields to create pending certified products. "
                     + "Security Restrictions: ROLE_ADMIN or user uploading the file must have ROLE_ACB "
                     + "and administrative authority on the ACB(s) specified in the file.")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")

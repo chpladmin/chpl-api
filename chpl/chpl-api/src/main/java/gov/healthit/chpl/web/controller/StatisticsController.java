@@ -15,8 +15,8 @@ import gov.healthit.chpl.web.controller.results.ParticipantAgeStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantEducationStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantExperienceStatisticsResult;
 import gov.healthit.chpl.web.controller.results.SedParticipantStatisticsCountResults;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 
@@ -26,13 +26,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * The StatisticsController is used to return data that can be used to charting.
- *
- * @author TYoung
- *
- */
-@Api(value = "statistics")
+@Tag(name = "statistics", description = "Gets statistics.")
 @RestController
 @RequestMapping("/statistics")
 @Loggable
@@ -47,7 +41,7 @@ public class StatisticsController {
      * @return a JSON representation of an NonconformityTypeStatisticsResult
      *         object
      */
-    @ApiOperation(value = "Get count of nonconformities by criteria.", notes = "Retrieves and returns the counts.")
+    @Operation(summary = "Get count of nonconformities by criteria.", description = "Retrieves and returns the counts.")
     @RequestMapping(value = "/nonconformity_criteria_count", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public NonconformityTypeStatisticsResult getNonconformityCountByCriteria() {
@@ -61,8 +55,8 @@ public class StatisticsController {
      *
      * @return a JSON representation of an ListingCountStatisticsResult object
      */
-    @ApiOperation(value = "Get count of Developers and Products with listings.",
-            notes = "Retrieves and returns the counts.")
+    @Operation(summary = "Get count of Developers and Products with listings.",
+            description = "Retrieves and returns the counts.")
     @RequestMapping(value = "/listing_count", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public ListingCountStatisticsResult getListingCountStatistics() {
         ListingCountStatisticsResult response = new ListingCountStatisticsResult();
@@ -76,8 +70,8 @@ public class StatisticsController {
      * @return a JSON representation of a CriterionProductStatisticsResult
      *         object
      */
-    @ApiOperation(value = "Get count of Criteria certified to by unique Product.",
-            notes = "Retrieves and returns the Criterion/Product counts.")
+    @Operation(summary = "Get count of Criteria certified to by unique Product.",
+            description = "Retrieves and returns the Criterion/Product counts.")
     @RequestMapping(value = "/criterion_product", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody CriterionProductStatisticsResult getCriterionProductStatistics() {
@@ -92,8 +86,8 @@ public class StatisticsController {
      * @return a JSON representation of an IncumbentDevelopersStatisticsResult
      *         object
      */
-    @ApiOperation(value = "Get count of new vs. incumbent Developers.",
-            notes = "Retrieves and returns counts grouped by Edition.")
+    @Operation(summary = "Get count of new vs. incumbent Developers.",
+            description = "Retrieves and returns counts grouped by Edition.")
     @RequestMapping(value = "incumbent_developers", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody IncumbentDevelopersStatisticsResult getIncumbentDevelopersStatistics() {
@@ -108,8 +102,8 @@ public class StatisticsController {
      * @return a JSON representation of a SedParticipantStatisticsCountResults
      *         object
      */
-    @ApiOperation(value = "Get all Sed/Participant counts.",
-            notes = "Retrieves and returns the SED/Participant counts.")
+    @Operation(summary = "Get all Sed/Participant counts.",
+            description = "Retrieves and returns the SED/Participant counts.")
     @RequestMapping(value = "/sed_participant_count", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody SedParticipantStatisticsCountResults getSedParticipantStatisticsCounts() {
@@ -131,8 +125,8 @@ public class StatisticsController {
      *
      * @return a JSON representation of a ParticipantGenderStatistics object
      */
-    @ApiOperation(value = "Get all Sed/Participant/Gender counts.",
-            notes = "Retrieves and returns the SED/Participant/Gender counts.")
+    @Operation(summary = "Get all Sed/Participant/Gender counts.",
+            description = "Retrieves and returns the SED/Participant/Gender counts.")
     @RequestMapping(value = "/participant_gender_count", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody ParticipantGenderStatistics getParticipantGenderStatistics() {
@@ -145,8 +139,8 @@ public class StatisticsController {
      *
      * @return a JSON representation of a ParticipantAgeStatisticsResult object
      */
-    @ApiOperation(value = "Get all Sed/Participant/Age counts.",
-            notes = "Retrieves and returns the SED/Participant/Age counts.")
+    @Operation(summary = "Get all Sed/Participant/Age counts.",
+            description = "Retrieves and returns the SED/Participant/Age counts.")
     @RequestMapping(value = "/participant_age_count", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody ParticipantAgeStatisticsResult getParticipantAgeStatistics() {
@@ -161,8 +155,8 @@ public class StatisticsController {
      * @return a JSON representation of a ParticipantEducationStatisticsResult
      *         object
      */
-    @ApiOperation(value = "Get all Sed/Participant/Education counts.",
-            notes = "Retrieves and returns the SED/Participant/Education counts.")
+    @Operation(summary = "Get all Sed/Participant/Education counts.",
+            description = "Retrieves and returns the SED/Participant/Education counts.")
     @RequestMapping(value = "/participant_education_count", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody ParticipantEducationStatisticsResult getParticipantEducationStatistics() {
@@ -177,8 +171,8 @@ public class StatisticsController {
      * @return a JSON representation of a ParticipantExperienceStatisticsResult
      *         object
      */
-    @ApiOperation(value = "Get all Sed/Participant/Professional Experience counts.",
-            notes = "Retrieves and returns the SED/Participant/Preofessional Experience counts.")
+    @Operation(summary = "Get all Sed/Participant/Professional Experience counts.",
+            description = "Retrieves and returns the SED/Participant/Preofessional Experience counts.")
     @RequestMapping(value = "/participant_professional_experience_count", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody ParticipantExperienceStatisticsResult getParticipantProfessionalExperienceStatistics() {
@@ -194,8 +188,8 @@ public class StatisticsController {
      * @return a JSON representation of a ParticipantExperienceStatisticsResult
      *         object
      */
-    @ApiOperation(value = "Get all Sed/Participant/Computer Experience counts.",
-            notes = "Retrieves and returns the SED/Participant/Computer Experience counts.")
+    @Operation(summary = "Get all Sed/Participant/Computer Experience counts.",
+            description = "Retrieves and returns the SED/Participant/Computer Experience counts.")
     @RequestMapping(value = "/participant_computer_experience_count", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody ParticipantExperienceStatisticsResult getParticipantComputerExperienceStatistics() {
@@ -211,8 +205,8 @@ public class StatisticsController {
      * @return a JSON representation of a ParticipantExperienceStatisticsResult
      *         object
      */
-    @ApiOperation(value = "Get all Sed/Participant/Product Experience counts.",
-            notes = "Retrieves and returns the SED/Participant/Product Experience counts.")
+    @Operation(summary = "Get all Sed/Participant/Product Experience counts.",
+            description = "Retrieves and returns the SED/Participant/Product Experience counts.")
     @RequestMapping(value = "/participant_product_experience_count", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody ParticipantExperienceStatisticsResult getParticipantProductExperienceStatistics() {

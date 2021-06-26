@@ -40,10 +40,10 @@ import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Api(value = "acbs")
+@Tag(name = "acbs", description = "Allows CRUD operations on certification bodies (ONC-ACBs).")
 @RestController
 @RequestMapping("/acbs")
 @Loggable
@@ -61,8 +61,8 @@ public class CertificationBodyController {
     @Autowired
     private UserManager userManager;
 
-    @ApiOperation(value = "List all certification bodies (ACBs).",
-            notes = "Setting the 'editable' parameter to true will return all ACBs that the logged in user has "
+    @Operation(summary = "List all certification bodies (ACBs).",
+            description = "Setting the 'editable' parameter to true will return all ACBs that the logged in user has "
                     + "edit permissions on. Security Restrictions:  All users can see all active ACBs.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -85,8 +85,8 @@ public class CertificationBodyController {
         return results;
     }
 
-    @ApiOperation(value = "Get details about a specific certification body (ACB).",
-            notes = "")
+    @Operation(summary = "Get details about a specific certification body (ACB).",
+            description = "")
     @RequestMapping(value = "/{acbId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody CertificationBody getAcbById(@PathVariable("acbId") final Long acbId)
             throws EntityRetrievalException {
@@ -95,8 +95,8 @@ public class CertificationBodyController {
         return new CertificationBody(acb);
     }
 
-    @ApiOperation(value = "Create a new ACB.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
+    @Operation(summary = "Create a new ACB.",
+            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public CertificationBody createAcb(@RequestBody final CertificationBody acbInfo)
@@ -135,8 +135,8 @@ public class CertificationBodyController {
     }
 
 
-    @ApiOperation(value = "Update an existing ACB.",
-            notes = "Security Restriction:  ROLE_ADMIN, ROLE_ONC, or ROLE_ACB with administrative authority")
+    @Operation(summary = "Update an existing ACB.",
+            description = "Security Restriction:  ROLE_ADMIN, ROLE_ONC, or ROLE_ACB with administrative authority")
     @RequestMapping(value = "/{acbId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public CertificationBody updateAcb(@RequestBody final CertificationBody acbInfo) throws InvalidArgumentsException,
@@ -194,8 +194,8 @@ public class CertificationBodyController {
         return new CertificationBody(result);
     }
 
-    @ApiOperation(value = "Remove user permissions from an ACB.",
-            notes = "The logged in user must have ROLE_ADMIN or ROLE_ACB and have administrative authority on the "
+    @Operation(summary = "Remove user permissions from an ACB.",
+            description = "The logged in user must have ROLE_ADMIN or ROLE_ACB and have administrative authority on the "
                     + " specified ACB. The user specified in the request will have all authorities "
                     + " removed that are associated with the specified ACB.")
     @RequestMapping(value = "{acbId}/users/{userId}", method = RequestMethod.DELETE,
@@ -215,8 +215,8 @@ public class CertificationBodyController {
         return "{\"userDeleted\" : true}";
     }
 
-    @ApiOperation(value = "List users with permissions on a specified ACB.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or have administrative "
+    @Operation(summary = "List users with permissions on a specified ACB.",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or have administrative "
                     + "or read authority on the specified ACB")
     @RequestMapping(value = "/{acbId}/users", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")

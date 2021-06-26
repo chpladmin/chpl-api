@@ -32,11 +32,11 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.web.controller.results.BooleanResult;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 
-@Api(value = "api-key")
+@Tag(name = "api-key", description = "Allows CRUD operations on API Keys.")
 @RestController
 @RequestMapping("/key")
 @Loggable
@@ -49,8 +49,8 @@ public class ApiKeyController {
     @Autowired
     private Environment env;
 
-    @ApiOperation(value = "Sign up for a new API key.",
-            notes = "Anyone wishing to access the methods listed in this API must have an API key. This service "
+    @Operation(summary = "Sign up for a new API key.",
+            description = "Anyone wishing to access the methods listed in this API must have an API key. This service "
                     + " will auto-generate a key and send it to the supplied email address. It must be included "
                     + " in subsequent API calls via either a header with the name 'API-Key' or as a URL parameter"
                     + " named 'api_key'.")
@@ -87,8 +87,8 @@ public class ApiKeyController {
         return new KeyRegistered(apiKey);
     }
 
-    @ApiOperation(value = "Sends an email validation to user requesting a new API key.",
-            notes = "Anyone wishing to access the methods listed in this API must have an API key. This request "
+    @Operation(summary = "Sends an email validation to user requesting a new API key.",
+            description = "Anyone wishing to access the methods listed in this API must have an API key. This request "
                       + "will create an email invitation and send it to the supplied email address. The "
                       + "purpose of the invitation is to validate the email address of the potential API user.")
     @RequestMapping(value = "/request", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
@@ -96,8 +96,8 @@ public class ApiKeyController {
         return new BooleanResult(apiKeyManager.createRequest(registration));
     }
 
-    @ApiOperation(value = "Confirms a user's email address and provides the new API key.",
-            notes = "Anyone wishing to access the methods listed in this API must have an API key. This service "
+    @Operation(summary = "Confirms a user's email address and provides the new API key.",
+            description = "Anyone wishing to access the methods listed in this API must have an API key. This service "
                     + "will validate that the user has provided a valid email address and provide them with a new "
                     + "API key. It must be included in subsequent API calls via either a header with the name "
                     + "'API-Key' or as a URL parameter named 'api_key'.")
@@ -106,8 +106,8 @@ public class ApiKeyController {
         return apiKeyManager.confirmRequest(apiKeyRequestToken);
     }
 
-    @ApiOperation(value = "Remove an API key.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC")
+    @Operation(summary = "Remove an API key.",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC")
     @RequestMapping(value = "/{key}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public KeyRevoked revoke(@PathVariable("key") final String key,
@@ -127,8 +127,8 @@ public class ApiKeyController {
 
     }
 
-    @ApiOperation(value = "List all API keys that have been created.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
+    @Operation(summary = "List all API keys that have been created.",
+            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ApiKey> listKeys(@RequestParam(required = false, defaultValue = "false") boolean includeDeleted) {
 

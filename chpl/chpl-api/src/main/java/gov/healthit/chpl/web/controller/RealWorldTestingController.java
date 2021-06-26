@@ -17,11 +17,11 @@ import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUploadResponse;
 import gov.healthit.chpl.realworldtesting.manager.RealWorldTestingManager;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 
-@Api(value = "real-world-testing")
+@Tag(name = "real-world-testing", description = "Allows upload of RWT file.")
 @RestController
 @RequestMapping("/real-world-testing")
 @Loggable
@@ -34,8 +34,8 @@ public class RealWorldTestingController {
         this.realWorldTestingManager = realWorldTestingManager;
     }
 
-    @ApiOperation(value = "Upload a file with real world testing data for certified products.",
-            notes = "Accepts a CSV file with very specific fields to update listings with real world testing data. "
+    @Operation(summary = "Upload a file with real world testing data for certified products.",
+            description = "Accepts a CSV file with very specific fields to update listings with real world testing data. "
                     + "The file will be processed in the background and the user who submitted the file will be "
                     + "notified via email with the results"
                     + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "

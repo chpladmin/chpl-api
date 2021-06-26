@@ -77,13 +77,13 @@ import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.results.CertificationCriterionResults;
 import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 import gov.healthit.chpl.web.controller.results.SvapResults;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 
-@Api
+@Tag(name = "search", description = "Allows searching of the CHPL.")
 @RestController
 @Loggable
 @Log4j2
@@ -145,8 +145,8 @@ public class SearchViewController {
      * @param response http response, used to stream back the file
      * @throws IOException if the file cannot be read
      */
-    @ApiOperation(value = "Download the entire CHPL as XML.",
-            notes = "Once per day, the entire certified product listing is "
+    @Operation(summary = "Download the entire CHPL as XML.",
+            description = "Once per day, the entire certified product listing is "
                     + "written out to XML files on the CHPL servers, one for each "
                     + "certification edition. This method allows any user to download "
                     + "that XML file. It is formatted in such a way that users may import "
@@ -226,158 +226,105 @@ public class SearchViewController {
         }
     }
 
-    /**
-     * Search listings on the CHPL with a generic search term and/or filters.
-     * @param searchTerm CHPL ID, Developer (or previous developer) Name, Product Name, ONC-ACB Certification ID
-     * @param certificationStatusesDelimited statuses to filter by
-     * @param certificationEditionsDelimited editions to filter by
-     * @param certificationCriteriaDelimited criteria to filter by
-     * @param certificationCriteriaOperatorStr and vs or for criteria filter
-     * @param cqmsDelimited cqms to filter by
-     * @param cqmsOperatorStr and vs or for cqm filter
-     * @param certificationBodiesDelimited acbs to filter by
-     * @param hasHadSurveillanceStr filter by whether listings have had surveillance
-     * @param nonconformityOptionsDelimited filter by whether listings have open/closed/no nonconformities
-     * @param nonconformityOptionsOperator and vs or for nonconformity filter
-     * @param developer filter by developer name
-     * @param product filter by product name
-     * @param version filter by version name
-     * @param practiceType filter by practice type name
-     * @param certificationDateStart filter by when listing was certified to the CHPL
-     * @param certificationDateEnd filter by when listing was certified to the CHPL
-     * @param pageNumber which page of data to return
-     * @param pageSize how many records to return per page
-     * @param orderBy field to order data by
-     * @param sortDescending sort order
-     * @return listings matching the given parameters
-     * @throws InvalidArgumentsException if one or more parameters is not specified properly or has an invalid value
-     * @throws EntityRetrievalException if there was an error retrieving a listing
-     */
     @SuppressWarnings({"checkstyle:methodlength", "checkstyle:parameternumber"})
-    @ApiOperation(value = "Search the CHPL",
-    notes = "If paging parameters are not specified, the first 20 records are returned by default. "
+    @Operation(summary = "Search the CHPL",
+    description = "If paging parameters are not specified, the first 20 records are returned by default. "
             + "All parameters are optional. "
             + "Any parameter that can accept multiple things (i.e. certificationStatuses) expects "
             + "a comma-delimited list of those things (i.e. certificationStatuses = Active,Suspended). "
             + "Date parameters are required to be in the format "
             + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + ". ")
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = "searchTerm",
-                value = "CHPL ID, Developer (or previous developer) Name, Product Name, ONC-ACB Certification ID",
-                required = false,
-                dataType = "string", paramType = "query"),
-        @ApiImplicitParam(name = "certificationStatuses",
-        value = "A comma-separated list of certification statuses "
-                + "(ex: \"Active,Retired,Withdrawn by Developer\")).",
-                required = false, dataType = "string", paramType = "query"),
-        @ApiImplicitParam(name = "certificationEditions",
-        value = "A comma-separated list of certification editions to be 'or'ed together "
-                + "(ex: \"2014,2015\" finds listings with either edition 2014 or 2015).",
-                required = false, dataType = "string", paramType = "query"),
-        @ApiImplicitParam(name = "certificationCriteria",
-        value = "A comma-separated list of certification criteria to be queried together "
-                + "(ex: \"170.314 (a)(1),170.314 (a)(2)\" finds listings "
-                + "attesting to either 170.314 (a)(1) or 170.314 (a(2)).",
-                required = false, dataType = "string", paramType = "query"),
-        @ApiImplicitParam(name = "certificationCriteriaOperator",
-        value = "Either AND or OR. Defaults to OR. "
-                + "Indicates whether a listing must have all certificationCriteria or "
-                + "may have any one or more of the certificationCriteria.",
-                required = false, dataType = "string", paramType = "query"),
-        @ApiImplicitParam(name = "cqms",
-        value = "A comma-separated list of cqms to be queried together (ex: \"CMS2,CMS9\" "
-                + "finds listings with either CMS2 or CMS9).",
-                required = false, dataType = "string", paramType = "query"),
-        @ApiImplicitParam(name = "cqmsCriteriaOperator",
-        value = "Either AND or OR. Defaults to OR. "
-                + "Indicates whether a listing must have all cqms or may have any one or more of the cqms.",
-                required = false, dataType = "string", paramType = "query"),
-        @ApiImplicitParam(name = "certificationBodies",
-        value = "A comma-separated list of certification body names to be 'or'ed together "
-                + "(ex: \"Drummond,ICSA\" finds listings belonging to either Drummond or ICSA).",
-                required = false, dataType = "string", paramType = "query"),
-        @ApiImplicitParam(name = "nonconformityOptions",
-        value = "A comma-separated list of nonconformity search options. Valid options are "
-                + "OPEN_NONCONFORMITY, CLOSED_NONCONFORMITY, and NEVER_NONCONFORMITY.",
-                required = false, dataType = "string", paramType = "query"),
-        @ApiImplicitParam(name = "nonconformityOptionsOperator",
-        value = "Either AND or OR. Defaults to OR."
-                + "Indicates whether a listing must have met all nonconformityOptions "
-                + "specified or may have met any one or more of the nonconformityOptions",
-                required = false, dataType = "string", paramType = "query"),
-        @ApiImplicitParam(name = "hasHadSurveillance",
-        value = "True or False if a listing has ever had surveillance.", required = false,
-        dataType = "boolean", paramType = "query"),
-        @ApiImplicitParam(name = "developer", value = "The full name of a developer.", required = false,
-        dataType = "string", paramType = "query"),
-        @ApiImplicitParam(name = "product", value = "The full name of a product.", required = false,
-        dataType = "string", paramType = "query"),
-        @ApiImplicitParam(name = "version", value = "The full name of a version.", required = false,
-        dataType = "string", paramType = "query"),
-        @ApiImplicitParam(name = "practiceType",
-        value = "A practice type (either Ambulatory or Inpatient). Valid only for 2014 listings.",
-        required = false, dataType = "string", paramType = "query"),
-        @ApiImplicitParam(name = "certificationDateStart",
-        value = "To return only listings certified after this date. Required format is "
-                + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT,
-                required = false, dataType = "string", paramType = "query"),
-        @ApiImplicitParam(name = "certificationDateEnd",
-        value = "To return only listings certified before this date. Required format is "
-                + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT,
-                required = false, dataType = "string", paramType = "query"),
-        @ApiImplicitParam(name = "pageNumber",
-        value = "Zero-based page number used in concert with pageSize. Defaults to 0.", required = false,
-        dataType = "string", paramType = "query"),
-        @ApiImplicitParam(name = "pageSize",
-        value = "Number of results to return used in concert with pageNumber. "
-                + "Defaults to 20. Maximum allowed page size is 100.",
-                required = false, dataType = "string", paramType = "query"),
-        @ApiImplicitParam(name = "orderBy",
-        value = "What to order by. Options are one of the following: "
-                + SearchRequest.ORDER_BY_DEVELOPER + ", " + SearchRequest.ORDER_BY_PRODUCT + ", "
-                + SearchRequest.ORDER_BY_VERSION + ", " + SearchRequest.ORDER_BY_CERTIFICATION_EDITION + ", "
-                + ", or " + SearchRequest.ORDER_BY_CERTIFICATION_BODY + ", "
-                + ". Defaults to " + SearchRequest.ORDER_BY_PRODUCT + ".",
-                required = false, dataType = "string", paramType = "query"),
-        @ApiImplicitParam(name = "sortDescending",
-        value = "Use to specify the direction of the sort. Defaults to false (ascending sort).",
-        required = false, dataType = "boolean", paramType = "query")
-    })
     @RequestMapping(value = "/search", method = RequestMethod.GET, produces = {
             "application/json; charset=utf-8", "application/xml"
     })
     public @ResponseBody SearchResponse searchGet(
+            @Parameter(description = "CHPL ID, Developer (or previous developer) Name, Product Name, ONC-ACB Certification ID",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "searchTerm")
             @RequestParam(value = "searchTerm", required = false, defaultValue = "") String searchTerm,
+            @Parameter(description = "A comma-separated list of certification statuses (ex: \"Active,Retired,Withdrawn by Developer\"). Results may match any of the provided statuses.",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationStatuses")
             @RequestParam(value = "certificationStatuses", required = false,
             defaultValue = "") String certificationStatusesDelimited,
+            @Parameter(description = "A comma-separated list of certification edition years (ex: \"2014,2015\" finds listings with either edition 2014 or 2015). Results may match any of the provided edition years.",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationEditions")
             @RequestParam(value = "certificationEditions", required = false,
             defaultValue = "") String certificationEditionsDelimited,
+            @Parameter(description = "A comma-separated list of certification criteria to be queried together (ex: \"170.314 (a)(1),170.314 (a)(2)\" finds listings attesting to either 170.314 (a)(1) or 170.314 (a(2)).",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationCriteria")
             @RequestParam(value = "certificationCriteria", required = false,
             defaultValue = "") String certificationCriteriaDelimited,
+            @Parameter(description = "Either AND or OR. Defaults to OR. "
+                    + "Indicates whether a listing must have all certificationCriteria or "
+                    + "may have any one or more of the certificationCriteria.",
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationCriteriaOperator")
             @RequestParam(value = "certificationCriteriaOperator", required = false,
             defaultValue = "OR") String certificationCriteriaOperatorStr,
+            @Parameter(description = "A comma-separated list of cqms to be queried together (ex: \"CMS2,CMS9\" "
+                    + "finds listings with either CMS2 or CMS9).",
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "cqms")
             @RequestParam(value = "cqms", required = false, defaultValue = "") String cqmsDelimited,
+            @Parameter(description = "Either AND or OR. Defaults to OR. "
+                    + "Indicates whether a listing must have all cqms or may have any one or more of the cqms.",
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "cqmsOperator")
             @RequestParam(value = "cqmsOperator", required = false,
             defaultValue = "OR") String cqmsOperatorStr,
+            @Parameter(description = "A comma-separated list of certification body names to be 'or'ed together "
+                    + "(ex: \"Drummond,ICSA\" finds listings belonging to either Drummond or ICSA).",
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationBodies")
             @RequestParam(value = "certificationBodies", required = false,
             defaultValue = "") String certificationBodiesDelimited,
+            @Parameter(description = "True or False if a listing has ever had surveillance.",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "hasHadSurveillance")
             @RequestParam(value = "hasHadSurveillance", required = false,
             defaultValue = "") String hasHadSurveillanceStr,
+            @Parameter(description = "A comma-separated list of nonconformity search options. Valid options are "
+                    + "OPEN_NONCONFORMITY, CLOSED_NONCONFORMITY, and NEVER_NONCONFORMITY.",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "nonconformityOptions")
             @RequestParam(value = "nonconformityOptions", required = false,
             defaultValue = "") String nonconformityOptionsDelimited,
+            @Parameter(description = "Either AND or OR. Defaults to OR."
+                    + "Indicates whether a listing must have met all nonconformityOptions "
+                    + "specified or may have met any one or more of the nonconformityOptions",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "nonconformityOptionsOperator")
             @RequestParam(value = "nonconformityOptionsOperator", required = false,
             defaultValue = "OR") String nonconformityOptionsOperator,
+            @Parameter(description = "The full name of a developer.",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "developer")
             @RequestParam(value = "developer", required = false, defaultValue = "") String developer,
+            @Parameter(description = "The full name of a product.",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "product")
             @RequestParam(value = "product", required = false, defaultValue = "") String product,
+            @Parameter(description = "The full name of a version.",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "version")
             @RequestParam(value = "version", required = false, defaultValue = "") String version,
+            @Parameter(description = "A practice type (either Ambulatory or Inpatient). Valid only for 2014 listings.",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "practiceType")
             @RequestParam(value = "practiceType", required = false, defaultValue = "") String practiceType,
+            @Parameter(description = "To return only listings certified after this date. Required format is "
+                    + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT,
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationDateStart")
             @RequestParam(value = "certificationDateStart", required = false,
             defaultValue = "") String certificationDateStart,
-            @RequestParam(value = "certificationDateEnd", required = false,
-            defaultValue = "") String certificationDateEnd,
+            @Parameter(description = "To return only listings certified before this date. Required format is "
+                    + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT,
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationDateEnd")
+            @RequestParam(value = "certificationDateEnd", required = false, defaultValue = "") String certificationDateEnd,
+            @Parameter(description = "Zero-based page number used in concert with pageSize. Defaults to 0.",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "pageNumber")
             @RequestParam(value = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
+            @Parameter(description = "Number of results to return used in concert with pageNumber. "
+                    + "Defaults to 20. Maximum allowed page size is 100.",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "pageSize")
             @RequestParam(value = "pageSize", required = false, defaultValue = "20") Integer pageSize,
+            @Parameter(description = "What to order by. Options are one of the following: "
+                    + SearchRequest.ORDER_BY_DEVELOPER + ", " + SearchRequest.ORDER_BY_PRODUCT + ", "
+                    + SearchRequest.ORDER_BY_VERSION + ", " + SearchRequest.ORDER_BY_CERTIFICATION_EDITION + ", "
+                    + ", or " + SearchRequest.ORDER_BY_CERTIFICATION_BODY + ", "
+                    + ". Defaults to " + SearchRequest.ORDER_BY_PRODUCT + ".",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "orderBy")
             @RequestParam(value = "orderBy", required = false, defaultValue = "product") String orderBy,
+            @Parameter(description = "Use to specify the direction of the sort. Defaults to false (ascending sort).",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "sortDescending")
             @RequestParam(value = "sortDescending", required = false, defaultValue = "false") Boolean sortDescending)
                     throws InvalidArgumentsException, EntityRetrievalException {
 
@@ -609,8 +556,8 @@ public class SearchViewController {
      * @throws InvalidArgumentsException if a search parameter has an invalid value
      * @throws EntityRetrievalException if there is an error retrieving a listing
      */
-    @ApiOperation(value = "Search the CHPL with an HTTP POST Request.",
-            notes = "Search the CHPL by specifycing multiple fields of the data to search. "
+    @Operation(summary = "Search the CHPL with an HTTP POST Request.",
+            description = "Search the CHPL by specifycing multiple fields of the data to search. "
                     + "If paging fields are not specified, the first 20 records are returned by default.")
     @RequestMapping(value = "/search", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
@@ -845,8 +792,8 @@ public class SearchViewController {
         }
     }
 
-    @ApiOperation(value = "Get all fuzzy matching choices for the items that be fuzzy matched.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
+    @Operation(summary = "Get all fuzzy matching choices for the items that be fuzzy matched.",
+            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/data/fuzzy_choices", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -855,8 +802,8 @@ public class SearchViewController {
         return fuzzyChoicesManager.getFuzzyChoices();
     }
 
-    @ApiOperation(value = "Change existing fuzzy matching choices.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
+    @Operation(summary = "Change existing fuzzy matching choices.",
+            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/data/fuzzy_choices/{fuzzyChoiceId}", method = RequestMethod.PUT,
     consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public FuzzyChoices updateFuzzyChoicesForSearching(@RequestBody FuzzyChoices fuzzyChoices)
@@ -880,7 +827,7 @@ public class SearchViewController {
         //return new FuzzyChoices(result);
     }
 
-    @ApiOperation(value = "Get a list of quarters for which a surveillance report can be created.")
+    @Operation(summary = "Get a list of quarters for which a surveillance report can be created.")
     @RequestMapping(value = "/data/quarters", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -888,8 +835,8 @@ public class SearchViewController {
         return dimensionalDataManager.getQuarters();
     }
 
-    @ApiOperation(value = "Get a list of surveillance process types.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB.")
+    @Operation(summary = "Get a list of surveillance process types.",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB.")
     @RequestMapping(value = "/data/surveillance-process-types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -897,8 +844,8 @@ public class SearchViewController {
         return survReportManager.getSurveillanceProcessTypes();
     }
 
-    @ApiOperation(value = "Get a list of surveillance outcomes.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB.")
+    @Operation(summary = "Get a list of surveillance outcomes.",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB.")
     @RequestMapping(value = "/data/surveillance-outcomes", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -906,8 +853,8 @@ public class SearchViewController {
         return survReportManager.getSurveillanceOutcomes();
     }
 
-    @ApiOperation(value = "Get all possible classifications in the CHPL",
-            notes = "This is useful for knowing what values one might possibly search for.")
+    @Operation(summary = "Get all possible classifications in the CHPL",
+            description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/classification_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -915,8 +862,8 @@ public class SearchViewController {
         return dimensionalDataManager.getClassificationNames();
     }
 
-    @ApiOperation(value = "Get all possible certificaiton editions in the CHPL",
-            notes = "This is useful for knowing what values one might possibly search for.")
+    @Operation(summary = "Get all possible certificaiton editions in the CHPL",
+            description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/certification_editions", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -924,8 +871,8 @@ public class SearchViewController {
         return dimensionalDataManager.getEditionNames(false);
     }
 
-    @ApiOperation(value = "Get all possible certification statuses in the CHPL",
-            notes = "This is useful for knowing what values one might possibly search for.")
+    @Operation(summary = "Get all possible certification statuses in the CHPL",
+            description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/certification_statuses", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -933,8 +880,8 @@ public class SearchViewController {
         return dimensionalDataManager.getCertificationStatuses();
     }
 
-    @ApiOperation(value = "Get all possible practice types in the CHPL",
-            notes = "This is useful for knowing what values one might possibly search for.")
+    @Operation(summary = "Get all possible practice types in the CHPL",
+            description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/practice_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -942,8 +889,8 @@ public class SearchViewController {
         return dimensionalDataManager.getPracticeTypeNames();
     }
 
-    @ApiOperation(value = "Get all possible product names in the CHPL",
-            notes = "This is useful for knowing what values one might possibly search for.")
+    @Operation(summary = "Get all possible product names in the CHPL",
+            description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/products", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -951,8 +898,8 @@ public class SearchViewController {
         return dimensionalDataManager.getProducts();
     }
 
-    @ApiOperation(value = "Get all possible developer names in the CHPL",
-            notes = "This is useful for knowing what values one might possibly search for.")
+    @Operation(summary = "Get all possible developer names in the CHPL",
+            description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/developers", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -960,8 +907,8 @@ public class SearchViewController {
         return dimensionalDataManager.getDevelopers();
     }
 
-    @ApiOperation(value = "Get all possible ACBs in the CHPL",
-            notes = "This is useful for knowing what values one might possibly search for.")
+    @Operation(summary = "Get all possible ACBs in the CHPL",
+            description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/certification_bodies", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -969,8 +916,8 @@ public class SearchViewController {
         return dimensionalDataManager.getCertBodyNames();
     }
 
-    @ApiOperation(value = "Get all possible education types in the CHPL",
-            notes = "This is useful for knowing what values one might possibly search for.")
+    @Operation(summary = "Get all possible education types in the CHPL",
+            description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/education_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -982,8 +929,8 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible test participant age ranges in the CHPL",
-            notes = "This is useful for knowing what values one might possibly search for.")
+    @Operation(summary = "Get all possible test participant age ranges in the CHPL",
+            description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/age_ranges", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -995,8 +942,8 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible optional standard options in the CHPL",
-            notes = "This is useful for knowing what values one might possibly search for.")
+    @Operation(summary = "Get all possible optional standard options in the CHPL",
+            description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/optional-standards", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1012,8 +959,8 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible test functionality options in the CHPL",
-            notes = "This is useful for knowing what values one might possibly search for.")
+    @Operation(summary = "Get all possible test functionality options in the CHPL",
+            description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_functionality", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1025,8 +972,8 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible test tool options in the CHPL",
-            notes = "This is useful for knowing what values one might possibly search for.")
+    @Operation(summary = "Get all possible test tool options in the CHPL",
+            description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_tools", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1038,8 +985,8 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible test procedure options in the CHPL",
-            notes = "This is useful for knowing what values one might possibly search for.")
+    @Operation(summary = "Get all possible test procedure options in the CHPL",
+            description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_procedures", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1051,8 +998,8 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible test data options in the CHPL",
-            notes = "This is useful for knowing what values one might possibly search for.")
+    @Operation(summary = "Get all possible test data options in the CHPL",
+            description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_data", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1064,8 +1011,8 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible test standard options in the CHPL",
-            notes = "This is useful for knowing what values one might possibly search for.")
+    @Operation(summary = "Get all possible test standard options in the CHPL",
+            description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_standards", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1077,8 +1024,8 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible qms standard options in the CHPL",
-            notes = "This is useful for knowing what values one might possibly search for.")
+    @Operation(summary = "Get all possible qms standard options in the CHPL",
+            description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/qms_standards", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1090,8 +1037,8 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible targeted user options in the CHPL",
-            notes = "This is useful for knowing what values one might possibly search for.")
+    @Operation(summary = "Get all possible targeted user options in the CHPL",
+            description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/targeted_users", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1103,8 +1050,8 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible UCD process options in the CHPL",
-            notes = "This is useful for knowing what values one might possibly search for.")
+    @Operation(summary = "Get all possible UCD process options in the CHPL",
+            description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/ucd_processes", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1116,8 +1063,8 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible accessibility standard options in the CHPL",
-            notes = "This is useful for knowing what values one might possibly search for.")
+    @Operation(summary = "Get all possible accessibility standard options in the CHPL",
+            description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/accessibility_standards", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1129,8 +1076,8 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible measure options in the CHPL",
-            notes = "This is useful for knowing what values one might possibly search for.")
+    @Operation(summary = "Get all possible measure options in the CHPL",
+            description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/measures", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1142,8 +1089,8 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible types of measures in the CHPL, currently this is G1 and G2.",
-            notes = "This is useful for knowing what values one might possibly search for.")
+    @Operation(summary = "Get all possible types of measures in the CHPL, currently this is G1 and G2.",
+            description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/measure-types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1155,7 +1102,7 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible developer status options in the CHPL")
+    @Operation(summary = "Get all possible developer status options in the CHPL")
     @RequestMapping(value = "/data/developer_statuses", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1167,7 +1114,7 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible surveillance type options in the CHPL")
+    @Operation(summary = "Get all possible surveillance type options in the CHPL")
     @RequestMapping(value = "/data/surveillance_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1179,7 +1126,7 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible surveillance result type options in the CHPL")
+    @Operation(summary = "Get all possible surveillance result type options in the CHPL")
     @RequestMapping(value = "/data/surveillance_result_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1191,7 +1138,7 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible surveillance requirement type options in the CHPL")
+    @Operation(summary = "Get all possible surveillance requirement type options in the CHPL")
     @RequestMapping(value = "/data/surveillance_requirement_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1204,7 +1151,7 @@ public class SearchViewController {
     }
 
     @Deprecated
-    @ApiOperation(value = "DEPRECATED. Get all possible surveillance requirement options in the CHPL")
+    @Operation(summary = "DEPRECATED. Get all possible surveillance requirement options in the CHPL")
     @RequestMapping(value = "/data/surveillance_requirements", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1214,7 +1161,7 @@ public class SearchViewController {
         return data;
     }
 
-    @ApiOperation(value = "Get all possible surveillance requirement options in the CHPL")
+    @Operation(summary = "Get all possible surveillance requirement options in the CHPL")
     @RequestMapping(value = "/data/surveillance-requirements", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1224,7 +1171,7 @@ public class SearchViewController {
         return data;
     }
 
-    @ApiOperation(value = "Get all possible nonconformity status type options in the CHPL")
+    @Operation(summary = "Get all possible nonconformity status type options in the CHPL")
     @RequestMapping(value = "/data/nonconformity_status_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1237,7 +1184,7 @@ public class SearchViewController {
     }
 
     @Deprecated
-    @ApiOperation(value = "DEPRECATED. Get all possible nonconformity type options in the CHPL")
+    @Operation(summary = "DEPRECATED. Get all possible nonconformity type options in the CHPL")
     @RequestMapping(value = "/data/nonconformity_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1249,7 +1196,7 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible nonconformity type options in the CHPL")
+    @Operation(summary = "Get all possible nonconformity type options in the CHPL")
     @RequestMapping(value = "/data/nonconformity-types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1261,7 +1208,7 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all available pending listing upload template versions.")
+    @Operation(summary = "Get all available pending listing upload template versions.")
     @RequestMapping(value = "/data/upload_template_versions", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1281,8 +1228,8 @@ public class SearchViewController {
      * @throws EntityRetrievalException if an item cannot be retrieved from the db
      */
     @Deprecated
-    @ApiOperation(value = "DEPRECATED. Use /data/search-options instead. Get all search options in the CHPL",
-    notes = "This returns all of the other /data/{something} results in one single response.")
+    @Operation(summary = "DEPRECATED. Use /data/search-options instead. Get all search options in the CHPL",
+    description = "This returns all of the other /data/{something} results in one single response.")
     @RequestMapping(value = "/data/search_options", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1300,8 +1247,8 @@ public class SearchViewController {
      * @return a map of all filterable values
      * @throws EntityRetrievalException if an item cannot be retrieved from the db
      */
-    @ApiOperation(value = "Get all search options in the CHPL",
-            notes = "This returns all of the other /data/{something} results in one single response.")
+    @Operation(summary = "Get all search options in the CHPL",
+            description = "This returns all of the other /data/{something} results in one single response.")
     @RequestMapping(value = "/data/search-options", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1312,9 +1259,9 @@ public class SearchViewController {
     }
 
     @Deprecated
-    @ApiOperation(value = "DEPRECATED. Use /collections/decertified-developers instead. "
+    @Operation(summary = "DEPRECATED. Use /collections/decertified-developers instead. "
             + "Get all developer decertifications in the CHPL",
-            notes = "This returns all decertified developers.")
+            description = "This returns all decertified developers.")
     @RequestMapping(value = "/decertifications/developers", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1325,7 +1272,7 @@ public class SearchViewController {
         return ddr;
     }
 
-    @ApiOperation(value = "Get all available filter type.")
+    @Operation(summary = "Get all available filter type.")
     @RequestMapping(value = "/data/filter_types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1337,7 +1284,7 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible complainant types in the CHPL")
+    @Operation(summary = "Get all possible complainant types in the CHPL")
     @RequestMapping(value = "/data/complainant-types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1349,7 +1296,7 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible certification criteria in the CHPL")
+    @Operation(summary = "Get all possible certification criteria in the CHPL")
     @RequestMapping(value = "/data/certification-criteria", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1362,7 +1309,7 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible change request types in the CHPL")
+    @Operation(summary = "Get all possible change request types in the CHPL")
     @RequestMapping(value = "/data/change-request-types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1374,7 +1321,7 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible change request status types in the CHPL")
+    @Operation(summary = "Get all possible change request status types in the CHPL")
     @RequestMapping(value = "/data/change-request-status-types", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -1386,7 +1333,7 @@ public class SearchViewController {
         return result;
     }
 
-    @ApiOperation(value = "Get all possible SVAP and associated criteria in the CHPL")
+    @Operation(summary = "Get all possible SVAP and associated criteria in the CHPL")
     @RequestMapping(value = "/data/svap", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)

@@ -28,10 +28,10 @@ import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.results.AnnouncementResults;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Api(value = "announcements")
+@Tag(name = "announcements", description = "Allows CRUD operations on announcements.")
 @RestController
 @RequestMapping("/announcements")
 @Loggable
@@ -40,8 +40,8 @@ public class AnnouncementController {
     @Autowired
     private AnnouncementManager announcementManager;
 
-    @ApiOperation(value = "Get all announcements.",
-            notes = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can retrieve future scheduled announcements "
+    @Operation(summary = "Get all announcements.",
+            description = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can retrieve future scheduled announcements "
                     + "and private announcements.  ROLE_ACB, ROLE_ATL, and ROLE_CMS_STAFF can retrieve private "
                     + "announcements.  All users can retrieve public announcements.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
@@ -63,8 +63,8 @@ public class AnnouncementController {
         return results;
     }
 
-    @ApiOperation(value = "Get a specific announcement.",
-            notes = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can retrieve future scheduled "
+    @Operation(summary = "Get a specific announcement.",
+            description = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can retrieve future scheduled "
                     + "announcements and private announcements.  ROLE_ACB, ROLE_ATL, and ROLE_CMS_STAFF "
                     + "can retrieve private announcements.  All users can retrieve public announcements.")
     @RequestMapping(value = "/{announcementId}", method = RequestMethod.GET,
@@ -77,8 +77,8 @@ public class AnnouncementController {
         return new Announcement(announcement);
     }
 
-    @ApiOperation(value = "Create a new announcement.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
+    @Operation(summary = "Create a new announcement.",
+            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public Announcement create(@RequestBody final Announcement announcementInfo) throws InvalidArgumentsException,
@@ -112,8 +112,8 @@ public class AnnouncementController {
         return new Announcement(toCreate);
     }
 
-    @ApiOperation(value = "Change an existing announcement.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
+    @Operation(summary = "Change an existing announcement.",
+            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/{announcementId}", method = RequestMethod.PUT,
     consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
@@ -138,8 +138,8 @@ public class AnnouncementController {
         return new Announcement(result);
     }
 
-    @ApiOperation(value = "Delete an existing announcement.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
+    @Operation(summary = "Delete an existing announcement.",
+            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/{announcementId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public String deleteAnnouncement(@PathVariable("announcementId") final Long announcementId)
