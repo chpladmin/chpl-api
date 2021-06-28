@@ -17,9 +17,11 @@ import gov.healthit.chpl.validation.listing.reviewer.DeveloperStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DuplicateDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ListingStatusAndUserRoleReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.OptionalStandardReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.RealWorldTestingReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.SvapReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.TestStandardRemovalReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestToolReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestingLabReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnattestedCriteriaWithDataReviewer;
@@ -85,6 +87,10 @@ public abstract class Edition2014ListingValidator extends Validator {
     private UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
 
     @Autowired
+    @Qualifier("testStandardRemovalReviewer")
+    private TestStandardRemovalReviewer tsrReviewer;
+
+    @Autowired
     private TestStandardComparisonReviewer tsReviewer;
 
     @Autowired
@@ -127,6 +133,10 @@ public abstract class Edition2014ListingValidator extends Validator {
     @Qualifier("svapReviewer")
     private SvapReviewer svapReviewer;
 
+    @Autowired
+    @Qualifier("optionalStandardReviewer")
+    private OptionalStandardReviewer optionalStandardReviewer;
+
     private List<Reviewer> reviewers;
     private List<ComparisonReviewer> comparisonReviewers;
 
@@ -145,6 +155,8 @@ public abstract class Edition2014ListingValidator extends Validator {
             reviewers.add(certStatusReviewer);
             reviewers.add(certDateReviewer);
             reviewers.add(unattestedCriteriaWithDataReviewer);
+            reviewers.add(optionalStandardReviewer);
+            reviewers.add(tsrReviewer);
             reviewers.add(ttReviewer);
             reviewers.add(tt2014Reviewer);
             reviewers.add(tfReviewer);

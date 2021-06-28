@@ -15,7 +15,7 @@ import java.util.Map.Entry;
 
 import javax.persistence.EntityNotFoundException;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;

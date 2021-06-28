@@ -12,12 +12,14 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
+import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.util.CertificationResultRules;
@@ -76,6 +78,14 @@ public class CertificationResult implements Serializable {
     @XmlTransient
     @JsonIgnore
     private String gapStr;
+
+    @XmlTransient
+    @JsonIgnore
+    private Boolean hasAdditionalSoftware;
+
+    @XmlTransient
+    @JsonIgnore
+    private String hasAdditionalSoftwareStr;
 
     /**
      * This variable indicates if the corresponding certification criteria was submitted for safety-enhanced design
@@ -160,6 +170,9 @@ public class CertificationResult implements Serializable {
     @XmlTransient
     private List<Svap> allowedSvaps;
 
+    @XmlTransient
+    private List<OptionalStandard> allowedOptionalStandards;
+
     /**
      * Any optional, alternative, ambulatory (2015 only), or inpatient (2015 only) capabilities within a certification
      * criterion to which the Health IT module was tested and certified. For example, within the 2015 certification
@@ -169,7 +182,7 @@ public class CertificationResult implements Serializable {
      */
     @XmlElementWrapper(name = "testFunctionalityList", nillable = true, required = false)
     @XmlElement(name = "testFunctionality")
-    @Singular("testFunctionalitySingle")
+    @Builder.Default
     private List<CertificationResultTestFunctionality> testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
 
     /**
@@ -195,13 +208,23 @@ public class CertificationResult implements Serializable {
     private List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
 
     /**
+     * An optional standard used to meet a certification criterion for 2015 Edition. You can find a list of potential
+     * values in the 2015 Functionality and Standards Reference Tables. Allowed values are the corresponding
+     * paragraph number for the standard within the regulation.
+     */
+    @XmlElementWrapper(name = "optionalStandards", nillable = true, required = false)
+    @XmlElement(name = "optionalStandard")
+    @Singular
+    private List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
+
+    /**
      * A standard used to meet a certification criterion for 2014 and 2015 Edition. You can find a list of potential
      * values in the 2014 or 2015 Functionality and Standards Reference Tables. Allowed values are the corresponding
      * paragraph number for the standard within the regulation.
      */
     @XmlElementWrapper(name = "testStandards", nillable = true, required = false)
     @XmlElement(name = "testStandard")
-    @Singular
+    @Builder.Default
     private List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();
 
     /**
@@ -216,6 +239,7 @@ public class CertificationResult implements Serializable {
      */
     @XmlElementWrapper(name = "testTools", nillable = true, required = false)
     @XmlElement(name = "testTool")
+    @Builder.Default
     private List<CertificationResultTestTool> testToolsUsed = new ArrayList<CertificationResultTestTool>();
 
     /**
@@ -236,6 +260,14 @@ public class CertificationResult implements Serializable {
     private CertificationCriterion criterion;
 
     public CertificationResult() {
+        this.testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
+        this.testToolsUsed = new ArrayList<CertificationResultTestTool>();
+        this.testStandards = new ArrayList<CertificationResultTestStandard>();
+        this.additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
+        this.testDataUsed = new ArrayList<CertificationResultTestData>();
+        this.testProcedures = new ArrayList<CertificationResultTestProcedure>();
+        this.testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
+        this.svaps = new ArrayList<CertificationResultSvap>();
     }
 
     public CertificationResult(CertificationResultDetailsDTO certResult) {
@@ -343,6 +375,7 @@ public class CertificationResult implements Serializable {
             this.criterion = new CertificationCriterion(certResult.getCriterion());
         }
 
+        this.setOptionalStandards(getOptionalStandards(certResult, certRules));
         this.setTestFunctionality(getTestFunctionalities(certResult, certRules));
         this.setTestProcedures(getTestProcedures(certResult, certRules));
         this.setTestDataUsed(getTestData(certResult, certRules));
@@ -355,6 +388,15 @@ public class CertificationResult implements Serializable {
     private List<CertificationResultSvap> getSvaps(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.SVAP)) {
             return certResult.getSvaps();
+        } else {
+            return null;
+        }
+    }
+
+    private List<CertificationResultOptionalStandard> getOptionalStandards(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
+        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.OPTIONAL_STANDARD)) {
+            return certResult.getOptionalStandards().stream()
+                    .collect(Collectors.toList());
         } else {
             return null;
         }
@@ -498,6 +540,14 @@ public class CertificationResult implements Serializable {
 
     public void setG2Success(Boolean g2Success) {
         this.g2Success = g2Success;
+    }
+
+    public List<CertificationResultOptionalStandard> getOptionalStandards() {
+        return optionalStandards;
+    }
+
+    public void setOptionalStandards(List<CertificationResultOptionalStandard> optionalStandards) {
+        this.optionalStandards = optionalStandards;
     }
 
     public List<CertificationResultTestTool> getTestToolsUsed() {
@@ -645,6 +695,14 @@ public class CertificationResult implements Serializable {
         this.successStr = successStr;
     }
 
+    public List<OptionalStandard> getAllowedOptionalStandards() {
+        return allowedOptionalStandards;
+    }
+
+    public void setAllowedOptionalStandards(List<OptionalStandard> allowedOptionalStandards) {
+        this.allowedOptionalStandards = allowedOptionalStandards;
+    }
+
     public List<Svap> getAllowedSvaps() {
         return allowedSvaps;
     }
@@ -659,5 +717,21 @@ public class CertificationResult implements Serializable {
 
     public void setSvaps(List<CertificationResultSvap> svaps) {
         this.svaps = svaps;
+    }
+
+    public Boolean getHasAdditionalSoftware() {
+        return hasAdditionalSoftware;
+    }
+
+    public void setHasAdditionalSoftware(Boolean hasAdditionalSoftware) {
+        this.hasAdditionalSoftware = hasAdditionalSoftware;
+    }
+
+    public String getHasAdditionalSoftwareStr() {
+        return hasAdditionalSoftwareStr;
+    }
+
+    public void setHasAdditionalSoftwareStr(String hasAdditionalSoftwareStr) {
+        this.hasAdditionalSoftwareStr = hasAdditionalSoftwareStr;
     }
 }

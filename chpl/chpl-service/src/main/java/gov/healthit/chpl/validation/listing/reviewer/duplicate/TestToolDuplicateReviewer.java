@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.BiPredicate;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -78,10 +79,11 @@ public class TestToolDuplicateReviewer {
     private BiPredicate<CertificationResultTestTool, CertificationResultTestTool> duplicatePredicate() {
         return new BiPredicate<CertificationResultTestTool, CertificationResultTestTool>() {
             @Override
-            public boolean test(CertificationResultTestTool dto1,
-                    CertificationResultTestTool dto2) {
-                return Objects.equals(dto1.getTestToolId(), dto2.getTestToolId())
-                        && Objects.equals(dto1.getTestToolVersion(), dto2.getTestToolVersion());
+            public boolean test(CertificationResultTestTool tt1,
+                    CertificationResultTestTool tt2) {
+                return ObjectUtils.allNotNull(tt1.getTestToolId(), tt2.getTestToolId())
+                        && Objects.equals(tt1.getTestToolId(), tt2.getTestToolId())
+                        && Objects.equals(tt1.getTestToolVersion(), tt2.getTestToolVersion());
             }
         };
     }
@@ -89,10 +91,11 @@ public class TestToolDuplicateReviewer {
     private BiPredicate<CertificationResultTestTool, CertificationResultTestTool> duplicateIdPredicate() {
         return new BiPredicate<CertificationResultTestTool, CertificationResultTestTool>() {
             @Override
-            public boolean test(CertificationResultTestTool dto1,
-                    CertificationResultTestTool dto2) {
-                return Objects.equals(dto1.getTestToolId(), dto2.getTestToolId())
-                        && !Objects.equals(dto1.getTestToolVersion(), dto2.getTestToolVersion());
+            public boolean test(CertificationResultTestTool tt1,
+                    CertificationResultTestTool tt2) {
+                return ObjectUtils.allNotNull(tt1.getTestToolId(), tt2.getTestToolId())
+                        && Objects.equals(tt1.getTestToolId(), tt2.getTestToolId())
+                        && !Objects.equals(tt1.getTestToolVersion(), tt2.getTestToolVersion());
             }
         };
     }

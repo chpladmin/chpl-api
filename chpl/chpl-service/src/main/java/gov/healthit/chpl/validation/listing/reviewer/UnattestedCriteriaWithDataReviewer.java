@@ -16,7 +16,12 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 @Component("unattestedCriteriaWithDataReviewer")
 public class UnattestedCriteriaWithDataReviewer implements Reviewer {
 
-    @Autowired ErrorMessageUtil msgUtil;
+    private ErrorMessageUtil msgUtil;
+
+    @Autowired
+    public UnattestedCriteriaWithDataReviewer(ErrorMessageUtil msgUtil) {
+        this.msgUtil = msgUtil;
+    }
 
     public void review(CertifiedProductSearchDetails listing) {
         for (CertificationResult cert : listing.getCertificationResults()) {

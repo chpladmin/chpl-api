@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.BiPredicate;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -60,9 +61,10 @@ public class TestFunctionalityDuplicateReviewer {
                 new BiPredicate<
                 CertificationResultTestFunctionality, CertificationResultTestFunctionality>() {
             @Override
-            public boolean test(CertificationResultTestFunctionality dto1,
-                    CertificationResultTestFunctionality dto2) {
-                return Objects.equals(dto1.getTestFunctionalityId(), dto2.getTestFunctionalityId());
+            public boolean test(CertificationResultTestFunctionality tf1, CertificationResultTestFunctionality tf2) {
+                return (ObjectUtils.allNotNull(tf1.getTestFunctionalityId(), tf2.getTestFunctionalityId())
+                        && Objects.equals(tf1.getTestFunctionalityId(),  tf2.getTestFunctionalityId()))
+                    || Objects.equals(tf1.getName(), tf2.getName());
             }
         };
     }

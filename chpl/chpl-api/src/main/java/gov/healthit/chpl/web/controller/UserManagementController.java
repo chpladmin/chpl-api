@@ -10,7 +10,7 @@ import java.util.Set;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -77,7 +77,7 @@ public class UserManagementController {
     private ActivityManager activityManager;
     private FF4j ff4j;
     private Environment env;
-    private ErrorMessageUtil errorMessageUtil;
+    private ErrorMessageUtil msgUtil;
 
 
     @Autowired
@@ -90,7 +90,7 @@ public class UserManagementController {
         this.activityManager = activityManager;
         this.ff4j = ff4j;
         this.env = env;
-        this.errorMessageUtil = errorMessageUtil;
+        this.msgUtil = errorMessageUtil;
     }
 
     @ApiOperation(value = "Create a new user account from an invitation.",
@@ -107,7 +107,7 @@ public class UserManagementController {
             MessagingException, JsonProcessingException, EntityCreationException {
 
         if (userInfo.getUser() == null || userInfo.getUser().getEmail() == null) {
-            throw new ValidationException(errorMessageUtil.getMessage("user.email.required"));
+            throw new ValidationException(msgUtil.getMessage("user.email.required"));
         }
 
         Set<String> errors = validateCreateUserFromInvitationRequest(userInfo);
@@ -117,7 +117,7 @@ public class UserManagementController {
 
         InvitationDTO invitation = invitationManager.getByInvitationHash(userInfo.getHash());
         if (invitation == null || invitation.isOlderThan(VALID_INVITATION_LENGTH)) {
-            throw new ValidationException(errorMessageUtil.getMessage("user.providerKey.invalid"));
+            throw new ValidationException(msgUtil.getMessage("user.providerKey.invalid"));
         }
 
         UserDTO createdUser = invitationManager.createUserFromInvitation(invitation, userInfo.getUser());
@@ -154,27 +154,28 @@ public class UserManagementController {
     private Set<String> validateCreateUserFromInvitationRequest(CreateUserFromInvitationRequest request) {
         Set<String> validationErrors = new HashSet<String>();
 
-        if (request.getUser().getFullName().length() > errorMessageUtil.getMessageAsInteger("maxLength.fullName")) {
-            validationErrors.add(errorMessageUtil.getMessage("user.fullName.maxlength",
-                    errorMessageUtil.getMessageAsInteger("maxLength.fullName")));
+        if (request.getUser().getFullName().length() > msgUtil.getMessageAsInteger("maxLength.fullName")) {
+            validationErrors.add(msgUtil.getMessage("user.fullName.maxlength",
+                    msgUtil.getMessageAsInteger("maxLength.fullName")));
         }
         if (!StringUtils.isEmpty(request.getUser().getFriendlyName())
-                && request.getUser().getFriendlyName().length() > errorMessageUtil.getMessageAsInteger("maxLength.friendlyName")) {
-            validationErrors.add(errorMessageUtil.getMessage("user.friendlyName.maxlength",
-                    errorMessageUtil.getMessageAsInteger("maxLength.friendlyName")));
+                && request.getUser().getFriendlyName().length() > msgUtil.getMessageAsInteger("maxLength.friendlyName")) {
+            validationErrors.add(msgUtil.getMessage("user.friendlyName.maxlength",
+                    msgUtil.getMessageAsInteger("maxLength.friendlyName")));
         }
         if (!StringUtils.isEmpty(request.getUser().getTitle())
-                && request.getUser().getTitle().length() > errorMessageUtil.getMessageAsInteger("maxLength.title")) {
-            validationErrors.add(errorMessageUtil.getMessage("user.title.maxlength",
-                    errorMessageUtil.getMessageAsInteger("maxLength.title")));
+                && request.getUser().getTitle().length() > msgUtil.getMessageAsInteger("maxLength.title")) {
+            validationErrors.add(msgUtil.getMessage("user.title.maxlength",
+                    msgUtil.getMessageAsInteger("maxLength.title")));
         }
-        if (request.getUser().getEmail().length() > errorMessageUtil.getMessageAsInteger("maxLength.email")) {
-            validationErrors.add(errorMessageUtil.getMessage("user.email.maxlength",
-                    errorMessageUtil.getMessageAsInteger("maxLength.email")));
+        if (request.getUser().getEmail().length() > msgUtil.getMessageAsInteger("maxLength.email")) {
+            validationErrors.add(msgUtil.getMessage("user.email.maxlength",
+                    msgUtil.getMessageAsInteger("maxLength.email")));
         }
-        if (request.getUser().getPhoneNumber().length() > errorMessageUtil.getMessageAsInteger("maxLength.phoneNumber")) {
-            validationErrors.add(errorMessageUtil.getMessage("user.phoneNumber.maxlength",
-                    errorMessageUtil.getMessageAsInteger("maxLength.phoneNumber")));
+        if (!StringUtils.isEmpty(request.getUser().getPhoneNumber())
+                && request.getUser().getPhoneNumber().length() > msgUtil.getMessageAsInteger("maxLength.phoneNumber")) {
+           validationErrors.add(msgUtil.getMessage("user.phoneNumber.maxlength",
+                   msgUtil.getMessageAsInteger("maxLength.phoneNumber")));
         }
         return validationErrors;
     }
@@ -266,7 +267,7 @@ public class UserManagementController {
             UserPermissionRetrievalException, AddressException, MessagingException {
 
         if (!ff4j.check(FeatureList.ROLE_DEVELOPER) && invitation.getRole().equals(Authority.ROLE_DEVELOPER)) {
-            throw new NotImplementedException();
+            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
 
         InvitationDTO createdInvite = null;
