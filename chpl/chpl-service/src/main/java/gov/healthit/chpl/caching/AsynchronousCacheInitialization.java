@@ -9,8 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertificationIdManager;
-import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
+import gov.healthit.chpl.search.CertifiedProductSearchManager;
 import gov.healthit.chpl.service.DirectReviewCachingService;
 import lombok.extern.log4j.Log4j2;
 
@@ -50,8 +50,11 @@ public class AsynchronousCacheInitialization {
         LOGGER.info("Starting cache initialization for Direct Reviews");
         drService.populateDirectReviewsCache();
         LOGGER.info("Finished cache initialization for Direct Reviews");
+        LOGGER.info("Starting cache initialization for CertifiedProductSearchManager.searchBasic()");
+        certifiedProductSearchManager.getSearchListingCollection();
+        LOGGER.info("Finishing cache initialization for CertifiedProductSearchManager.searchBasic()");
         LOGGER.info("Starting cache initialization for CertifiedProductSearchManager.search()");
-        certifiedProductSearchManager.search();
+        certifiedProductSearchManager.getFlatListingCollection();
         LOGGER.info("Finished cache initialization for CertifiedProductSearchManager.search()");
         LOGGER.info("Starting cache initialization for CertifiedProductSearchManager.searchLegacy()");
         certifiedProductSearchManager.searchLegacy();

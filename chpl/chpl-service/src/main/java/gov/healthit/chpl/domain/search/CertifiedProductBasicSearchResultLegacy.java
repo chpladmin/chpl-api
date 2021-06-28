@@ -5,7 +5,10 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-public class CertifiedProductBasicSearchResult extends CertifiedProductSearchResultLegacy {
+import gov.healthit.chpl.search.domain.SearchViews;
+
+@Deprecated
+public class CertifiedProductBasicSearchResultLegacy extends CertifiedProductSearchResultLegacy {
     private static final long serialVersionUID = -2547390525592841038L;
 
     @JsonView({
@@ -27,7 +30,7 @@ public class CertifiedProductBasicSearchResult extends CertifiedProductSearchRes
     //list of start and end dates for surveillance, each entry will be start&end or just start&
     private Set<String> surveillanceDates;
 
-    public CertifiedProductBasicSearchResult() {
+    public CertifiedProductBasicSearchResultLegacy() {
         previousDevelopers = new HashSet<String>();
         criteriaMet = new HashSet<String>();
         cqmsMet = new HashSet<String>();
