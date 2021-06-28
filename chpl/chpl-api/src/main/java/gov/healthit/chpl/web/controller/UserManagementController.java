@@ -172,9 +172,10 @@ public class UserManagementController {
             validationErrors.add(msgUtil.getMessage("user.email.maxlength",
                     msgUtil.getMessageAsInteger("maxLength.email")));
         }
-        if (request.getUser().getPhoneNumber().length() > msgUtil.getMessageAsInteger("maxLength.phoneNumber")) {
-            validationErrors.add(msgUtil.getMessage("user.phoneNumber.maxlength",
-                    msgUtil.getMessageAsInteger("maxLength.phoneNumber")));
+        if (!StringUtils.isEmpty(request.getUser().getPhoneNumber())
+                && request.getUser().getPhoneNumber().length() > msgUtil.getMessageAsInteger("maxLength.phoneNumber")) {
+           validationErrors.add(msgUtil.getMessage("user.phoneNumber.maxlength",
+                   msgUtil.getMessageAsInteger("maxLength.phoneNumber")));
         }
         return validationErrors;
     }

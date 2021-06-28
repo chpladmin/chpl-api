@@ -173,20 +173,6 @@ public class UserManagerTest {
         fail();
     }
 
-    @Test(expected = ValidationException.class)
-    public void update_MissingPhoneNumber_ValidationExceptionThrown()
-            throws JsonProcessingException, UserRetrievalException, EntityCreationException, EntityRetrievalException,
-            ValidationException, MultipleUserAccountsException, UserAccountExistsException {
-
-        UserManager userManager = new UserManager(null, null, null, null, errorMessageUtil, null);
-
-        UserDTO user = getUserDTO(1L);
-        user.setPhoneNumber("");
-        userManager.update(user);
-
-        fail();
-    }
-
     @Test()
     public void update_MissingEmailAndPhoneNumber_ValidationExceptionThrown()
             throws JsonProcessingException, UserRetrievalException, EntityCreationException,
@@ -200,7 +186,7 @@ public class UserManagerTest {
         try {
             userManager.update(user);
         } catch (ValidationException e) {
-            assertEquals(2, e.getErrorMessages().size());
+            assertEquals(1, e.getErrorMessages().size());
             return;
         }
         fail();

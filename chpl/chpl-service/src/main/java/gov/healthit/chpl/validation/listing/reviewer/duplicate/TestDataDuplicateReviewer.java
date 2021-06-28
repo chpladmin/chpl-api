@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.BiPredicate;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -78,10 +79,12 @@ public class TestDataDuplicateReviewer {
     private BiPredicate<CertificationResultTestData, CertificationResultTestData> duplicatePredicate() {
         return new BiPredicate<CertificationResultTestData, CertificationResultTestData>() {
             @Override
-            public boolean test(CertificationResultTestData dto1,
-                    CertificationResultTestData dto2) {
-                return Objects.equals(dto1.getTestData().getId(), dto2.getTestData().getId())
-                        && Objects.equals(dto1.getVersion(), dto2.getVersion());
+            public boolean test(CertificationResultTestData td1,
+                    CertificationResultTestData td2) {
+                return ObjectUtils.allNotNull(td1.getTestData(), td1.getTestData().getId(),
+                        td2.getTestData(), td2.getTestData().getId())
+                        && Objects.equals(td1.getTestData().getId(), td2.getTestData().getId())
+                        && Objects.equals(td1.getVersion(), td2.getVersion());
             }
         };
     }
@@ -89,10 +92,12 @@ public class TestDataDuplicateReviewer {
     private BiPredicate<CertificationResultTestData, CertificationResultTestData> duplicateIdPredicate() {
         return new BiPredicate<CertificationResultTestData, CertificationResultTestData>() {
             @Override
-            public boolean test(CertificationResultTestData dto1,
-                    CertificationResultTestData dto2) {
-                return Objects.equals(dto1.getTestData().getId(), dto2.getTestData().getId())
-                        && !Objects.equals(dto1.getVersion(), dto2.getVersion());
+            public boolean test(CertificationResultTestData td1,
+                    CertificationResultTestData td2) {
+                return ObjectUtils.allNotNull(td1.getTestData(), td1.getTestData().getId(),
+                        td2.getTestData(), td2.getTestData().getId())
+                        && Objects.equals(td1.getTestData().getId(), td2.getTestData().getId())
+                        && !Objects.equals(td1.getVersion(), td2.getVersion());
             }
         };
     }
