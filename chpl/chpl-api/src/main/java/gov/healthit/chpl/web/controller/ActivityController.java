@@ -147,7 +147,8 @@ public class ActivityController {
 
     @Deprecated
     @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for listings.",
-            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
+            deprecated = true)
     @RequestMapping(value = "/metadata/listings", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForListings(@RequestParam Long start,
@@ -294,7 +295,8 @@ public class ActivityController {
 
     @Deprecated
     @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for developers.",
-            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
+            deprecated = true)
     @RequestMapping(value = "/metadata/developers", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForDevelopers(@RequestParam final Long start,
@@ -348,7 +350,8 @@ public class ActivityController {
 
     @Deprecated
     @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for products.",
-            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
+            deprecated = true)
     @RequestMapping(value = "/metadata/products", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForProducts(@RequestParam final Long start,
@@ -402,7 +405,8 @@ public class ActivityController {
 
     @Deprecated
     @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for version.",
-            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
+            deprecated = true)
     @RequestMapping(value = "/metadata/versions", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForVersions(@RequestParam final Long start,
@@ -456,7 +460,8 @@ public class ActivityController {
     @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for certification bodies.",
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all certification bodies.  "
-                    + "ROLE_ACB can see activity for their own ACBs.")
+                    + "ROLE_ACB can see activity for their own ACBs.",
+                    deprecated = true)
     @Deprecated
     @RequestMapping(value = "/metadata/acbs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForAcbs(@RequestParam(required = false) final Long start,
@@ -517,7 +522,8 @@ public class ActivityController {
     @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for testing labs.",
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all testing labs.  "
-                    + "ROLE_ATL can see activity for their own ATLs.")
+                    + "ROLE_ATL can see activity for their own ATLs.",
+                    deprecated = true)
     @Deprecated
     @RequestMapping(value = "/metadata/atls", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForAtls(@RequestParam(required = false) final Long start,
@@ -576,7 +582,8 @@ public class ActivityController {
     }
 
     @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for users.",
-            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
+            deprecated = true)
     @Deprecated
     @RequestMapping(value = "/metadata/users", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -605,7 +612,8 @@ public class ActivityController {
     @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for announcements.",
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
                     + "Security Restrictions: Anonymous users are only allowed to see activity for public "
-                    + "announcements.  All other roles can see private and public announcements. ")
+                    + "announcements.  All other roles can see private and public announcements.",
+                    deprecated = true)
     @Deprecated
     @RequestMapping(value = "/metadata/announcements", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -683,7 +691,8 @@ public class ActivityController {
     }
 
     @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for pending listings.",
-            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
+            deprecated = true)
     @Deprecated
     @RequestMapping(value = "/metadata/pending_listings", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -709,7 +718,8 @@ public class ActivityController {
     }
 
     @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for corrective action plans.",
-            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
+            deprecated = true)
     @Deprecated
     @RequestMapping(value = "/metadata/corrective_action_plans", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -735,7 +745,8 @@ public class ActivityController {
     }
 
     @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for pending surveillances.",
-            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
+            deprecated = true)
     @Deprecated
     @RequestMapping(value = "/metadata/pending_surveillances", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -768,8 +779,9 @@ public class ActivityController {
     @Deprecated
     @Operation(summary = "DEPRECATED. Get auditable data for certification bodies.",
     description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
-            + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all certification bodies.  "
-            + "ROLE_ACB can see their own information.")
+            + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all certification bodies. "
+            + "ROLE_ACB can see their own information.",
+            deprecated = true)
     @RequestMapping(value = "/acbs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForACBs(@RequestParam final Long start,
             @RequestParam final Long end)
@@ -789,7 +801,8 @@ public class ActivityController {
     @Operation(summary = "DEPRECATED. Get auditable data for a specific certification body.",
     description = "A start and end date may optionally be provided to limit activity results.  "
             + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all certification bodies.  "
-            + "ROLE_ACB can see their own information.")
+            + "ROLE_ACB can see their own information.",
+            deprecated = true)
     @RequestMapping(value = "/acbs/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
 
     public List<ActivityDetails> activityForACBById(@PathVariable("id") final Long id,
@@ -836,7 +849,8 @@ public class ActivityController {
     @Operation(summary = "DEPRECATED - Get auditable data for all announcements",
     description = "Users must specify 'start' and 'end' parameters to restrict the date "
             + "range of the results. Anonymous users will only receive activity for public "
-            + "announcements.")
+            + "announcements.",
+            deprecated = true)
     @RequestMapping(value = "/announcements", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForAnnoucements(@RequestParam final Long start,
@@ -851,7 +865,8 @@ public class ActivityController {
     @Operation(summary = "DEPRECATED - Get auditable data for a specific announcement",
     description = "A start and end date may optionally be provided to limit activity results.  "
             + "Security Restrictions: Anonymous users are only allowed to see activity for public "
-            + "announcements.  All other roles can see private and public announcements.")
+            + "announcements.  All other roles can see private and public announcements.",
+            deprecated = true)
     @RequestMapping(value = "/announcements/{id}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForAnnouncementById(@PathVariable("id") final Long id,
@@ -880,7 +895,8 @@ public class ActivityController {
     @Operation(summary = "DEPRECATED. Get auditable data for testing labs.",
     description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
             + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all testing labs.  "
-            + "ROLE_ATL can see their own information.")
+            + "ROLE_ATL can see their own information.",
+            deprecated = true)
     @RequestMapping(value = "/atls", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityforATLs(@RequestParam final Long start, @RequestParam final Long end)
             throws JsonParseException, IOException, ValidationException {
@@ -898,7 +914,8 @@ public class ActivityController {
     @Operation(summary = "DEPRECATED. Get auditable data for a specific testing lab.",
     description = "A start and end date may optionally be provided to limit activity results.  "
             + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all testing labs.  "
-            + "ROLE_ATL can see their own information.")
+            + "ROLE_ATL can see their own information.",
+            deprecated = true)
     @RequestMapping(value = "/atls/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForATLById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
@@ -943,7 +960,8 @@ public class ActivityController {
     @Deprecated
     @Operation(summary = "DEPRECATED. Get auditable data for all API keys",
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
-                    + "Security Restrictions: Only ROLE_ADMIN or ROLE_ONC")
+                    + "Security Restrictions: Only ROLE_ADMIN or ROLE_ONC",
+                    deprecated = true)
     @RequestMapping(value = "/api_keys", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForApiKeys(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
@@ -956,7 +974,8 @@ public class ActivityController {
     @Deprecated
     @Operation(summary = "DEPRECATED. Get auditable data for all API keys",
         description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
-            + "Security Restrictions: Only ROLE_ADMIN or ROLE_ONC")
+            + "Security Restrictions: Only ROLE_ADMIN or ROLE_ONC",
+            deprecated = true)
     @RequestMapping(value = "/metadata/api-keys", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForApiKeys(@RequestParam final Long start,
         @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
@@ -980,7 +999,8 @@ public class ActivityController {
 
     @Deprecated
     @Operation(summary = "DEPRECATED. Get auditable data for certified products",
-    description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+    description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
+    deprecated = true)
     @RequestMapping(value = "/certified_products", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForCertifiedProducts(@RequestParam final Long start,
@@ -993,7 +1013,8 @@ public class ActivityController {
 
     @Deprecated
     @Operation(summary = "DEPRECATED. Get auditable data for a specific certified product.",
-            description = "A start and end date may optionally be provided to limit activity results.")
+            description = "A start and end date may optionally be provided to limit activity results.",
+            deprecated = true)
     @RequestMapping(value = "/certified_products/{id:^-?\\d+$}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForCertifiedProductById(@PathVariable("id") final Long id,
@@ -1024,7 +1045,8 @@ public class ActivityController {
     description = "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} "
             + "represents a valid CHPL Product Number.  A valid call to this service would look like "
             + "activity/certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD. "
-            + "A start and end date may optionally be provided to limit activity results.")
+            + "A start and end date may optionally be provided to limit activity results.",
+            deprecated = true)
     @RequestMapping(value = "/certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}",
     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -1074,7 +1096,8 @@ public class ActivityController {
     description = "{chplPrefix}-{identifier} represents a valid CHPL Product Number.  "
             + "A valid call to this service "
             + "would look like activity/certified_products/CHP-999999. "
-            + "A start and end date may optionally be provided to limit activity results.")
+            + "A start and end date may optionally be provided to limit activity results.",
+            deprecated = true)
     @RequestMapping(value = "/certified_products/{chplPrefix}-{identifier}",
     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -1113,7 +1136,8 @@ public class ActivityController {
     @Deprecated
     @Operation(summary = "DEPRECATED. Get auditable data for all pending certified products",
     description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.  "
-            + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB (specific to own ACB).")
+            + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB (specific to own ACB).",
+            deprecated = true)
     @RequestMapping(value = "/pending_certified_products", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForPendingCertifiedProducts(@RequestParam final Long start,
@@ -1131,7 +1155,8 @@ public class ActivityController {
     @Deprecated
     @Operation(summary = "DEPRECATED. Get auditable data for a specific pending certified product.",
     description = "A start and end date may optionally be provided to limit activity results.  "
-            + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB (specific to own ACB).")
+            + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB (specific to own ACB).",
+            deprecated = true)
     @RequestMapping(value = "/pending_certified_products/{id}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForPendingCertifiedProductById(@PathVariable("id") final Long id,
@@ -1175,7 +1200,8 @@ public class ActivityController {
 
     @Deprecated
     @Operation(summary = "DEPRECATED. Get auditable data for all products",
-    description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+    description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
+    deprecated = true)
     @RequestMapping(value = "/products", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForProducts(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
@@ -1187,7 +1213,8 @@ public class ActivityController {
 
     @Deprecated
     @Operation(summary = "DEPRECATED. Get auditable data for a specific product.",
-    description = "A start and end date may optionally be provided to limit activity results.")
+    description = "A start and end date may optionally be provided to limit activity results.",
+    deprecated = true)
     @RequestMapping(value = "/products/{id}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForProducts(@PathVariable("id") final Long id,
@@ -1214,7 +1241,8 @@ public class ActivityController {
 
     @Deprecated
     @Operation(summary = "DEPRECATED. Get auditable data for all versions",
-    description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+    description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
+    deprecated = true)
     @RequestMapping(value = "/versions", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForVersions(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
@@ -1226,7 +1254,8 @@ public class ActivityController {
 
     @Deprecated
     @Operation(summary = "DEPRECATED. Get auditable data for a specific version.",
-    description = "A start and end date may optionally be provided to limit activity results.")
+    description = "A start and end date may optionally be provided to limit activity results.",
+    deprecated = true)
     @RequestMapping(value = "/versions/{id}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForVersions(@PathVariable("id") final Long id,
@@ -1255,7 +1284,8 @@ public class ActivityController {
     @Operation(summary = "DEPRECATED. Get auditable data about all CHPL user accounts",
     description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.  "
             + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_CMS_STAFF "
-            + "(of ROLE_CMS_STAFF Users), ROLE_ACB (of their own), or ROLE_ATL (of their own).")
+            + "(of ROLE_CMS_STAFF Users), ROLE_ACB (of their own), or ROLE_ATL (of their own).",
+            deprecated = true)
     @RequestMapping(value = "/users", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @PreAuthorize("isAuthenticated()")
     public List<ActivityDetails> activityForUsers(@RequestParam final Long start,
@@ -1311,7 +1341,8 @@ public class ActivityController {
 
     @Deprecated
     @Operation(summary = "DEPRECATED. Get auditable data about all developers",
-    description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+    description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
+    deprecated = true)
     @RequestMapping(value = "/developers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForDevelopers(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
@@ -1324,7 +1355,8 @@ public class ActivityController {
 
     @Deprecated
     @Operation(summary = "DEPRECATED. Get auditable data for a specific developer.",
-    description = "A start and end date may optionally be provided to limit activity results.")
+    description = "A start and end date may optionally be provided to limit activity results.",
+    deprecated = true)
     @RequestMapping(value = "/developers/{id}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForDeveloperById(@PathVariable("id") final Long id,
@@ -1352,7 +1384,8 @@ public class ActivityController {
     @Deprecated
     @Operation(summary = "DEPRECATED. Track the actions of all users in the system",
     description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
-            + "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
+            + "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
+            deprecated = true)
     @RequestMapping(value = "/user_activities", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<UserActivity> activityByUser(@RequestParam final Long start,

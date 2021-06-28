@@ -16,7 +16,11 @@
         <Logger name="org.hibernate" level="ERROR" additivity="false">
             <AppenderRef ref="STDOUT" />
         </Logger>
-        <Logger name="org.springframework" level="ERROR"
+        <Logger name="org.springframework" level="WARN"
+            additivity="false">
+            <AppenderRef ref="STDOUT" />
+        </Logger>
+        <Logger name="org.springdoc" level="DEBUG"
             additivity="false">
             <AppenderRef ref="STDOUT" />
         </Logger>

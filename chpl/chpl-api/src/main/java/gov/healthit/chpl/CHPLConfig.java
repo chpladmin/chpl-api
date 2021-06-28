@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -19,8 +17,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -29,7 +25,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
-import gov.healthit.chpl.api.ApiKeyManager;
 import gov.healthit.chpl.filter.APIKeyAuthenticationFilter;
 import gov.healthit.chpl.registration.RateLimitingInterceptor;
 import gov.healthit.chpl.web.controller.annotation.CacheControlHandlerInterceptor;
@@ -37,8 +32,6 @@ import lombok.extern.log4j.Log4j2;
 
 @Configuration
 @EnableWebMvc
-@EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableAsync
 @EnableAspectJAutoProxy
 @EnableScheduling
@@ -58,9 +51,6 @@ public class CHPLConfig implements WebMvcConfigurer {
     private static final long MAX_UPLOAD_FILE_SIZE = 5242880;
     private static final int MAX_COOKIE_AGE_SECONDS = 3600;
 
-    @Autowired
-    private ObjectFactory<ApiKeyManager> apiKeyManagerObjectFactory;
-
     @Bean
     public MappingJackson2HttpMessageConverter jsonConverter() {
         MappingJackson2HttpMessageConverter bean = new MappingJackson2HttpMessageConverter();
@@ -79,13 +69,6 @@ public class CHPLConfig implements WebMvcConfigurer {
         // Set the maximum allowed size (in bytes) for each individual file: 5MB
         resolver.setMaxUploadSize(MAX_UPLOAD_FILE_SIZE);
         return resolver;
-    }
-
-    @Bean
-    public APIKeyAuthenticationFilter apiKeyAuthenticationFilter() {
-        LOGGER.info("get APIKeyAuthenticationFilter");
-        ApiKeyManager apiKeyManager = this.apiKeyManagerObjectFactory.getObject();
-        return new APIKeyAuthenticationFilter(apiKeyManager);
     }
 
     @Bean
@@ -143,4 +126,13 @@ public class CHPLConfig implements WebMvcConfigurer {
         LOGGER.info("Get BCryptPasswordEncoder");
         return new BCryptPasswordEncoder();
     }
+
+//    @Bean
+//    public OpenAPI chplOpenAPI() {
+//        return new OpenAPI()
+//                .info(new Info().title("SpringShop API")
+//                .description("Spring shop sample application")
+//                .version("v0.0.1")
+//                .license(new License().name("Apache 2.0").url("http://springdoc.org")));
+//    }
 }

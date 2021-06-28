@@ -1,11 +1,10 @@
 package gov.healthit.chpl;
 
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.annotation.Order;
@@ -18,8 +17,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
+import gov.healthit.chpl.api.ApiKeyManager;
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
+import gov.healthit.chpl.filter.APIKeyAuthenticationFilter;
 import gov.healthit.chpl.filter.JWTAuthenticationFilter;
 import lombok.extern.log4j.Log4j2;
 
@@ -34,8 +34,6 @@ import lombok.extern.log4j.Log4j2;
     @PropertySource("classpath:/email.properties"),
     @PropertySource(value = "classpath:/email-override.properties", ignoreResourceNotFound = true),
 })
-@ComponentScan(basePackages = { "gov.healthit.chpl.auth.**" }, excludeFilters = {
-        @ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class) })
 @Log4j2
 public class CHPLHttpSecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String FF4J_ROLE = "ff4jUser";
@@ -94,6 +92,16 @@ public class CHPLHttpSecurityConfig extends WebSecurityConfigurerAdapter {
         @Autowired
         private JWTUserConverter userConverter;
 
+        @Autowired
+        private ObjectFactory<ApiKeyManager> apiKeyManagerObjectFactory;
+
+        @Bean
+        public APIKeyAuthenticationFilter apiKeyAuthenticationFilter() {
+            LOGGER.info("get APIKeyAuthenticationFilter");
+            ApiKeyManager apiKeyManager = this.apiKeyManagerObjectFactory.getObject();
+            return new APIKeyAuthenticationFilter(apiKeyManager);
+        }
+
         @Bean
         @Override
         public AuthenticationManager authenticationManagerBean() throws Exception {
@@ -119,8 +127,8 @@ public class CHPLHttpSecurityConfig extends WebSecurityConfigurerAdapter {
 
             // allow anonymous resource requests
             .antMatchers("/").permitAll().and()
-            // custom Token based authentication based on the header
-            // previously given to the client
+            .addFilterBefore(apiKeyAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+            // custom Token based authentication based on the header previously given to the client
             .addFilterBefore(new JWTAuthenticationFilter(userConverter), UsernamePasswordAuthenticationFilter.class)
             .headers().cacheControl();
         }

@@ -16,7 +16,7 @@ public class ChplWebappInitializer implements WebApplicationInitializer {
     @Override
     public void onStartup(ServletContext container) {
         AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-        context.setConfigLocation("gov.healthit.chpl");
+        context.register(CHPLConfig.class, CHPLHttpSecurityConfig.class);
 
         container.addListener(new ContextLoaderListener(context));
         container.setSessionTrackingModes(EnumSet.of(SessionTrackingMode.COOKIE));
