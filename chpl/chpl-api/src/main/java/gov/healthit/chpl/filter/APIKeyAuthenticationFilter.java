@@ -24,7 +24,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class APIKeyAuthenticationFilter extends GenericFilterBean {
     public static final String[] ALLOWED_REQUEST_PATHS = {
-            "/api-docs", "/system-status", "/status", "/cache_status", "/monitoring", "/ff4j-console"
+            "/v3/api-docs", "/api-docs", "/system-status", "/status", "/cache_status", "/monitoring", "/ff4j-console"
     };
 
     private ApiKeyManager apiKeyManager;

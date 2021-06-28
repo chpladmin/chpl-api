@@ -15,14 +15,25 @@ public class ChplWebappInitializer implements WebApplicationInitializer {
 
     @Override
     public void onStartup(ServletContext container) {
-        AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-        context.register(CHPLConfig.class, CHPLHttpSecurityConfig.class);
-
+        AnnotationConfigWebApplicationContext context = getContext();
         container.addListener(new ContextLoaderListener(context));
         container.setSessionTrackingModes(EnumSet.of(SessionTrackingMode.COOKIE));
-
         ServletRegistration.Dynamic dispatcher = container.addServlet("rest", new DispatcherServlet(context));
         dispatcher.setLoadOnStartup(1);
         dispatcher.addMapping("/");
     }
+
+    private AnnotationConfigWebApplicationContext getContext() {
+        AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+        context.register(CHPLConfig.class, CHPLHttpSecurityConfig.class);
+        //the below classes are needed for OpenAPI to work outside of a spring-boot environment
+        context.register(org.springdoc.core.SwaggerUiConfigProperties.class,
+              org.springdoc.core.SwaggerUiOAuthProperties.class,
+              org.springdoc.webmvc.core.SpringDocWebMvcConfiguration.class,
+              org.springdoc.webmvc.core.MultipleOpenApiSupportConfiguration.class,
+              org.springdoc.core.SpringDocConfiguration.class, org.springdoc.core.SpringDocConfigProperties.class,
+              org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration.class);
+
+        return context;
+     }
 }

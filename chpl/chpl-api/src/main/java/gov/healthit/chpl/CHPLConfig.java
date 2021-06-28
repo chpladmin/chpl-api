@@ -28,6 +28,9 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import gov.healthit.chpl.filter.APIKeyAuthenticationFilter;
 import gov.healthit.chpl.registration.RateLimitingInterceptor;
 import gov.healthit.chpl.web.controller.annotation.CacheControlHandlerInterceptor;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
 import lombok.extern.log4j.Log4j2;
 
 @Configuration
@@ -127,12 +130,14 @@ public class CHPLConfig implements WebMvcConfigurer {
         return new BCryptPasswordEncoder();
     }
 
-//    @Bean
-//    public OpenAPI chplOpenAPI() {
-//        return new OpenAPI()
-//                .info(new Info().title("SpringShop API")
-//                .description("Spring shop sample application")
-//                .version("v0.0.1")
-//                .license(new License().name("Apache 2.0").url("http://springdoc.org")));
-//    }
+    @Bean
+    public OpenAPI chplOpenAPI() {
+        return new OpenAPI()
+                .info(new Info().title("Certified Health IT Product Listing API")
+                .version("30.1.0")
+                .description("Created by CHPL Development Team. Please submit any questions using the Health IT "
+                        + "Feedback Form and select the \"Certified Health IT Products List (CHPL)\" category.\n"
+                        + "See more at https://www.healthit.gov/form/healthit-feedback-form")
+                .license(new License().name("BSD License").url("https://github.com/chpladmin/chpl-api/blob/staging/LICENSE")));
+    }
 }
