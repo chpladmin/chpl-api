@@ -8,23 +8,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
 public class EnvironmentHeaderFilter extends OncePerRequestFilter {
 
-    private Environment env;
+    private String serverEnvironment;
 
     @Autowired
-    public EnvironmentHeaderFilter(Environment env) {
-        this.env = env;
+    public EnvironmentHeaderFilter(@Value("${werver.environment}") String serverEnvironment) {
+        this.serverEnvironment = serverEnvironment != null ? serverEnvironment : "";
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String serverEnvironment = env.getProperty("server.environment") != null ? env.getProperty("server.environment") : "";
         if (serverEnvironment.equalsIgnoreCase("production")) {
             response.addHeader("Environment", "PRODUCTION");
         } else {
