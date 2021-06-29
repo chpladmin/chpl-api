@@ -424,13 +424,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 
-                if (!gapEligibleAndTrue
-                        && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
-                        && (cert.getTestToolsUsed() == null || cert.getTestToolsUsed().size() == 0)) {
-                    addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestTool",
-                            Util.formatCriteriaNumber(cert.getCriterion()));
-                }
-
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)
                         && cert.getTestFunctionality() != null && cert.getTestFunctionality().size() > 0) {
                     for (CertificationResultTestFunctionality funcMap : cert.getTestFunctionality()) {

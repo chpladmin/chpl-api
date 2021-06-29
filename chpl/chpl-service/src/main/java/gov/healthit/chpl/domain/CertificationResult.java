@@ -79,6 +79,14 @@ public class CertificationResult implements Serializable {
     @JsonIgnore
     private String gapStr;
 
+    @XmlTransient
+    @JsonIgnore
+    private Boolean hasAdditionalSoftware;
+
+    @XmlTransient
+    @JsonIgnore
+    private String hasAdditionalSoftwareStr;
+
     /**
      * This variable indicates if the corresponding certification criteria was submitted for safety-enhanced design
      * attestation during certification testing. It is a binary variable that takes either true or false value, and is
@@ -174,7 +182,7 @@ public class CertificationResult implements Serializable {
      */
     @XmlElementWrapper(name = "testFunctionalityList", nillable = true, required = false)
     @XmlElement(name = "testFunctionality")
-    @Singular("testFunctionalitySingle")
+    @Builder.Default
     private List<CertificationResultTestFunctionality> testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
 
     /**
@@ -216,7 +224,7 @@ public class CertificationResult implements Serializable {
      */
     @XmlElementWrapper(name = "testStandards", nillable = true, required = false)
     @XmlElement(name = "testStandard")
-    @Singular
+    @Builder.Default
     private List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();
 
     /**
@@ -231,6 +239,7 @@ public class CertificationResult implements Serializable {
      */
     @XmlElementWrapper(name = "testTools", nillable = true, required = false)
     @XmlElement(name = "testTool")
+    @Builder.Default
     private List<CertificationResultTestTool> testToolsUsed = new ArrayList<CertificationResultTestTool>();
 
     /**
@@ -251,6 +260,14 @@ public class CertificationResult implements Serializable {
     private CertificationCriterion criterion;
 
     public CertificationResult() {
+        this.testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
+        this.testToolsUsed = new ArrayList<CertificationResultTestTool>();
+        this.testStandards = new ArrayList<CertificationResultTestStandard>();
+        this.additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
+        this.testDataUsed = new ArrayList<CertificationResultTestData>();
+        this.testProcedures = new ArrayList<CertificationResultTestProcedure>();
+        this.testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
+        this.svaps = new ArrayList<CertificationResultSvap>();
     }
 
     public CertificationResult(CertificationResultDetailsDTO certResult) {
@@ -700,5 +717,21 @@ public class CertificationResult implements Serializable {
 
     public void setSvaps(List<CertificationResultSvap> svaps) {
         this.svaps = svaps;
+    }
+
+    public Boolean getHasAdditionalSoftware() {
+        return hasAdditionalSoftware;
+    }
+
+    public void setHasAdditionalSoftware(Boolean hasAdditionalSoftware) {
+        this.hasAdditionalSoftware = hasAdditionalSoftware;
+    }
+
+    public String getHasAdditionalSoftwareStr() {
+        return hasAdditionalSoftwareStr;
+    }
+
+    public void setHasAdditionalSoftwareStr(String hasAdditionalSoftwareStr) {
+        this.hasAdditionalSoftwareStr = hasAdditionalSoftwareStr;
     }
 }
