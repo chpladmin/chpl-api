@@ -255,7 +255,7 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
      */
     @Deprecated
     private List<MeaningfulUseUser> meaningfulUseUserHistory = new ArrayList<MeaningfulUseUser>();
-    private List<PromotingInteroperability> promotingInteroperabilityUserHistory = new ArrayList<PromotingInteroperability>();
+    private List<PromotingInteroperabilityUser> promotingInteroperabilityUserHistory = new ArrayList<PromotingInteroperabilityUser>();
 
     /**
      * All data related to safety-enhanced design for this listing.
@@ -417,14 +417,14 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
         return newest;
     }
 
-    public PromotingInteroperability getCurrentPromotingInteroperabilityUsers() {
+    public PromotingInteroperabilityUser getCurrentPromotingInteroperabilityUsers() {
         if (this.getPromotingInteroperabilityUserHistory() == null
                 || this.getPromotingInteroperabilityUserHistory().size() == 0) {
             return null;
         }
 
-        PromotingInteroperability newest = this.getPromotingInteroperabilityUserHistory().get(0);
-        for (PromotingInteroperability piItem : this.getPromotingInteroperabilityUserHistory()) {
+        PromotingInteroperabilityUser newest = this.getPromotingInteroperabilityUserHistory().get(0);
+        for (PromotingInteroperabilityUser piItem : this.getPromotingInteroperabilityUserHistory()) {
             if (piItem.getUserCountDate().isAfter(newest.getUserCountDate())) {
                 newest = piItem;
             }

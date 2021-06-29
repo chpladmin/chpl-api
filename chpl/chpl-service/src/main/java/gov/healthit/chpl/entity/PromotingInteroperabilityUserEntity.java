@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
 import lombok.Data;
 
 @Entity
@@ -28,7 +29,7 @@ public class PromotingInteroperabilityUserEntity implements Serializable {
 
     @Basic(optional = false)
     @Column(name = "certified_product_id")
-    private Long certifiedProductId;
+    private Long listingId;
 
     @Basic(optional = false)
     @Column(name = "user_count")
@@ -49,4 +50,12 @@ public class PromotingInteroperabilityUserEntity implements Serializable {
 
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
+
+    public PromotingInteroperabilityUser toDomain() {
+        return PromotingInteroperabilityUser.builder()
+                .id(this.getId())
+                .userCount(this.getUserCount())
+                .userCountDate(this.getUserCountDate())
+        .build();
+    }
 }

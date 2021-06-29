@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PromotingInteroperability implements Serializable {
+public class PromotingInteroperabilityUser implements Serializable {
     private static final long serialVersionUID = -4803363243075068608L;
 
     @XmlElement(name = "id", nillable = true, required = false)
@@ -66,7 +66,7 @@ public class PromotingInteroperability implements Serializable {
         this.userCountDate = userCountDate;
     }
 
-    public boolean matches(PromotingInteroperability other) {
+    public boolean matches(PromotingInteroperabilityUser other) {
         boolean result = false;
 
         if (this.getId() != null && other.getId() != null

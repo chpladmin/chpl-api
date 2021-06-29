@@ -82,7 +82,7 @@ import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
-import gov.healthit.chpl.domain.PromotingInteroperability;
+import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AddressDTO;
@@ -1984,12 +1984,12 @@ public class CertifiedProductManager extends SecuredManager {
         return numChanges;
     }
 
-    private int updateMeaningfulUseUserHistory(Long listingId, List<PromotingInteroperability> existingMuuHistory,
-            List<PromotingInteroperability> updatedMuuHistory)
+    private int updateMeaningfulUseUserHistory(Long listingId, List<PromotingInteroperabilityUser> existingMuuHistory,
+            List<PromotingInteroperabilityUser> updatedMuuHistory)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         int numChanges = 0;
-        List<PromotingInteroperability> itemsToAdd = new ArrayList<PromotingInteroperability>();
+        List<PromotingInteroperabilityUser> itemsToAdd = new ArrayList<PromotingInteroperabilityUser>();
         List<MeaningfulUseUserPair> itemsToUpdate = new ArrayList<MeaningfulUseUserPair>();
         List<Long> idsToRemove = new ArrayList<Long>();
 
@@ -1997,15 +1997,15 @@ public class CertifiedProductManager extends SecuredManager {
         if (updatedMuuHistory != null && updatedMuuHistory.size() > 0) {
             if (existingMuuHistory == null || existingMuuHistory.size() == 0) {
                 // existing listing has none, add all from the update
-                for (PromotingInteroperability updatedItem : updatedMuuHistory) {
+                for (PromotingInteroperabilityUser updatedItem : updatedMuuHistory) {
                     itemsToAdd.add(updatedItem);
                 }
             } else if (existingMuuHistory.size() > 0) {
                 // existing listing has some, compare to the update to see if
                 // any are different
-                for (PromotingInteroperability updatedItem : updatedMuuHistory) {
+                for (PromotingInteroperabilityUser updatedItem : updatedMuuHistory) {
                     boolean inExistingListing = false;
-                    for (PromotingInteroperability existingItem : existingMuuHistory) {
+                    for (PromotingInteroperabilityUser existingItem : existingMuuHistory) {
                         if (updatedItem.matches(existingItem)) {
                             inExistingListing = true;
                             itemsToUpdate.add(new MeaningfulUseUserPair(existingItem, updatedItem));
@@ -2023,13 +2023,13 @@ public class CertifiedProductManager extends SecuredManager {
         if (existingMuuHistory != null && existingMuuHistory.size() > 0) {
             // if the updated listing has none, remove them all from existing
             if (updatedMuuHistory == null || updatedMuuHistory.size() == 0) {
-                for (PromotingInteroperability existingItem : existingMuuHistory) {
+                for (PromotingInteroperabilityUser existingItem : existingMuuHistory) {
                     idsToRemove.add(existingItem.getId());
                 }
             } else if (updatedMuuHistory.size() > 0) {
-                for (PromotingInteroperability existingItem : existingMuuHistory) {
+                for (PromotingInteroperabilityUser existingItem : existingMuuHistory) {
                     boolean inUpdatedListing = false;
-                    for (PromotingInteroperability updatedItem : updatedMuuHistory) {
+                    for (PromotingInteroperabilityUser updatedItem : updatedMuuHistory) {
                         inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
                     }
                     if (!inUpdatedListing) {
@@ -2040,7 +2040,7 @@ public class CertifiedProductManager extends SecuredManager {
         }
 
         numChanges = itemsToAdd.size() + idsToRemove.size();
-        for (PromotingInteroperability toAdd : itemsToAdd) {
+        for (PromotingInteroperabilityUser toAdd : itemsToAdd) {
             MeaningfulUseUserDTO muuDto = new MeaningfulUseUserDTO();
             muuDto.setCertifiedProductId(listingId);
             muuDto.setMuuCount(toAdd.getMuuCount());
@@ -2056,7 +2056,7 @@ public class CertifiedProductManager extends SecuredManager {
             }
 
             if (hasChanged) {
-                PromotingInteroperability muuToUpdate = toUpdate.getUpdated();
+                PromotingInteroperabilityUser muuToUpdate = toUpdate.getUpdated();
                 MeaningfulUseUserDTO muuDto = new MeaningfulUseUserDTO();
                 muuDto.setId(muuToUpdate.getId());
                 muuDto.setCertifiedProductId(listingId);
@@ -2418,13 +2418,13 @@ public class CertifiedProductManager extends SecuredManager {
 
     @Data
     private static class MeaningfulUseUserPair {
-        private PromotingInteroperability orig;
-        private PromotingInteroperability updated;
+        private PromotingInteroperabilityUser orig;
+        private PromotingInteroperabilityUser updated;
 
         MeaningfulUseUserPair() {
         }
 
-        MeaningfulUseUserPair(PromotingInteroperability orig, PromotingInteroperability updated) {
+        MeaningfulUseUserPair(PromotingInteroperabilityUser orig, PromotingInteroperabilityUser updated) {
 
             this.orig = orig;
             this.updated = updated;

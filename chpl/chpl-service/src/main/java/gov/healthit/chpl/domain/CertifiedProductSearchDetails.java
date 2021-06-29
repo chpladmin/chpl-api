@@ -379,9 +379,9 @@ public class CertifiedProductSearchDetails implements Serializable {
      * user count was valid.
      */
     @XmlElementWrapper(name = "promotingInteroperabilityUserHistory", nillable = true, required = false)
-    @XmlElement(name = "promotingInteroperabilityEntry")
+    @XmlElement(name = "promotingInteroperabilityUser")
     @Builder.Default
-    private List<PromotingInteroperability> promotingInteroperabilityUserHistory = new ArrayList<PromotingInteroperability>();
+    private List<PromotingInteroperabilityUser> promotingInteroperabilityUserHistory = new ArrayList<PromotingInteroperabilityUser>();
 
     /**
      * All data related to safety-enhanced design for this listing.
@@ -778,11 +778,11 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.meaningfulUseUserHistory = meaningfulUseUserHistory;
     }
 
-    public List<PromotingInteroperability> getPromotingInteroperabilityUserHistory() {
+    public List<PromotingInteroperabilityUser> getPromotingInteroperabilityUserHistory() {
         return promotingInteroperabilityUserHistory;
     }
 
-    public void setPromotingInteroperabilityUserHistory(List<PromotingInteroperability> promotingInteroperabilityUserHistory) {
+    public void setPromotingInteroperabilityUserHistory(List<PromotingInteroperabilityUser> promotingInteroperabilityUserHistory) {
         this.promotingInteroperabilityUserHistory = promotingInteroperabilityUserHistory;
     }
 
@@ -927,14 +927,14 @@ public class CertifiedProductSearchDetails implements Serializable {
         return newest;
     }
 
-    public PromotingInteroperability getCurrentPromotingInteroperabilityUsers() {
+    public PromotingInteroperabilityUser getCurrentPromotingInteroperabilityUsers() {
         if (this.getPromotingInteroperabilityUserHistory() == null
                 || this.getPromotingInteroperabilityUserHistory().size() == 0) {
             return null;
         }
 
-        PromotingInteroperability newest = this.getPromotingInteroperabilityUserHistory().get(0);
-        for (PromotingInteroperability piItem : this.getPromotingInteroperabilityUserHistory()) {
+        PromotingInteroperabilityUser newest = this.getPromotingInteroperabilityUserHistory().get(0);
+        for (PromotingInteroperabilityUser piItem : this.getPromotingInteroperabilityUserHistory()) {
             if (piItem.getUserCountDate().isAfter(newest.getUserCountDate())) {
                 newest = piItem;
             }
