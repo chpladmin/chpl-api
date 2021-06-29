@@ -18,7 +18,7 @@ public class EnvironmentHeaderFilter extends OncePerRequestFilter {
     private String serverEnvironment;
 
     @Autowired
-    public EnvironmentHeaderFilter(@Value("${werver.environment}") String serverEnvironment) {
+    public EnvironmentHeaderFilter(@Value("${server.environment}") String serverEnvironment) {
         this.serverEnvironment = serverEnvironment != null ? serverEnvironment : "";
     }
 
