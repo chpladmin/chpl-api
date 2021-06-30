@@ -9,7 +9,7 @@
 				"listen": "test",
 				"script": {
 					"exec": [
-						"pm.test(\"/search/beta end point should return 200 status and response should have Direct Review fields when Direct Reviews are available\", function () {\r",
+						"pm.test(\"/search/beta end point should return 200 status and response should have Direct Review fields when Direct Reviews are available otherwise response status should be 400\", function () {\r",
 						"    var jsonData = pm.response.json();\r",
 						"    if ((jsonData.directReviewsAvailable) == true){\r",
 						"        pm.response.to.have.status(200);\r",
@@ -83,7 +83,7 @@
 				"listen": "test",
 				"script": {
 					"exec": [
-						"pm.test(\"/search/beta end point should return 200 status and results in response should match with compliance filters when Direct Reviews are available\", function () {\r",
+						"pm.test(\"/search/beta end point should return 200 status and results in response should match with compliance filters when Direct Reviews are available otherwise response status should be 400\", function () {\r",
 						"    var jsonData = pm.response.json();\r",
 						"    if ((jsonData.directReviewsAvailable) == true){\r",
 						"        pm.response.to.have.status(200);\r",
