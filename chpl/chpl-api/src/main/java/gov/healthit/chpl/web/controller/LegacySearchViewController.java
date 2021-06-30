@@ -87,8 +87,8 @@ public class LegacySearchViewController {
      */
     @Deprecated
     @SuppressWarnings({"checkstyle:methodlength", "checkstyle:parameternumber"})
-    @ApiOperation(value = "Search the CHPL",
-    notes = "DEPRECATED. If paging parameters are not specified, the first 20 records are returned by default. "
+    @ApiOperation(value = "DEPRECATED. Search the CHPL",
+    notes = "If paging parameters are not specified, the first 20 records are returned by default. "
             + "All parameters are optional. "
             + "Any parameter that can accept multiple things (i.e. certificationStatuses) expects "
             + "a comma-delimited list of those things (i.e. certificationStatuses = Active,Suspended). "
@@ -436,14 +436,14 @@ public class LegacySearchViewController {
     }
 
     /**
-     * DEPRECATED. Search listings in the CHPL based on a set of filters.
+     * Search listings in the CHPL based on a set of filters.
      * @param searchRequest object containing all possible search parameters; not all are required.
      * @return listings matching the passed in search parameters
      * @throws InvalidArgumentsException if a search parameter has an invalid value
      * @throws EntityRetrievalException if there is an error retrieving a listing
      */
     @Deprecated
-    @ApiOperation(value = "Search the CHPL with an HTTP POST Request.",
+    @ApiOperation(value = "DEPRECATED. Search the CHPL with an HTTP POST Request.",
             notes = "Search the CHPL by specifycing multiple fields of the data to search. "
                     + "If paging fields are not specified, the first 20 records are returned by default.")
     @RequestMapping(value = "/search", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
