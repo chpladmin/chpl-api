@@ -927,21 +927,6 @@ public class CertifiedProductSearchDetails implements Serializable {
         return newest;
     }
 
-    public PromotingInteroperabilityUser getCurrentPromotingInteroperabilityUsers() {
-        if (this.getPromotingInteroperabilityUserHistory() == null
-                || this.getPromotingInteroperabilityUserHistory().size() == 0) {
-            return null;
-        }
-
-        PromotingInteroperabilityUser newest = this.getPromotingInteroperabilityUserHistory().get(0);
-        for (PromotingInteroperabilityUser piItem : this.getPromotingInteroperabilityUserHistory()) {
-            if (piItem.getUserCountDate().isAfter(newest.getUserCountDate())) {
-                newest = piItem;
-            }
-        }
-        return newest;
-    }
-
     public LegacyCertificationStatus getCertificationStatus() {
         return certificationStatus;
     }
