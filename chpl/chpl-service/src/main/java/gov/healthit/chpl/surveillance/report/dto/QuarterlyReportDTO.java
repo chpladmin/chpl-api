@@ -53,7 +53,7 @@ public class QuarterlyReportDTO {
         if (getYear() == null || getQuarter() == null) {
             return null;
         }
-        return LocalDate.of(getYear(), getQuarter().getStartMonth() - 1, getQuarter().getStartDay());
+        return LocalDate.of(getYear(), getQuarter().getStartMonth(), getQuarter().getStartDay());
     }
 
     public Date getStartDateTime() {
@@ -68,7 +68,7 @@ public class QuarterlyReportDTO {
         if (getYear() == null || getQuarter() == null) {
             return null;
         }
-        return LocalDate.of(getYear(), getQuarter().getEndMonth() - 1, getQuarter().getEndDay());
+        return LocalDate.of(getYear(), getQuarter().getEndMonth(), getQuarter().getEndDay());
     }
 
     public Date getEndDateTime() {
