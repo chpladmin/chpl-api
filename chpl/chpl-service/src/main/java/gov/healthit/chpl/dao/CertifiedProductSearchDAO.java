@@ -612,6 +612,8 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
                 .developerStatus(entity.getDeveloperStatus())
                 .product(entity.getProduct())
                 .version(entity.getVersion())
+                .promotingInteroperabilityUserCount(entity.getPromotingInteroperabilityUserCount())
+                .promotingInteroperabilityUserDate(entity.getPromotingInteroperabilityUserCountDate())
                 .numMeaningfulUse(entity.getPromotingInteroperabilityUserCount())
                 .numMeaningfulUseDate(DateUtil.toEpochMillis(entity.getPromotingInteroperabilityUserCountDate()))
                 .decertificationDate(entity.getDecertificationDate() == null ? null : entity.getDecertificationDate().getTime())

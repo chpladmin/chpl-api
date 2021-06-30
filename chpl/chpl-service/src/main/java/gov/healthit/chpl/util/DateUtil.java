@@ -39,4 +39,8 @@ public final class DateUtil {
         Instant instant = localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
         return instant.toEpochMilli();
     }
+
+    public static LocalDate toLocalDate(long epochMillis) {
+        return Instant.ofEpochMilli(epochMillis).atZone(ZoneId.systemDefault()).toLocalDate();
+    }
 }

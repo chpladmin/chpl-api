@@ -9,24 +9,24 @@ import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
 
 public class PromotingInteroperabilityXmlGenerator extends XmlGenerator {
 
-    public static void add(final List<PromotingInteroperabilityUser> muus, final String rootNodeName,
+    public static void add(List<PromotingInteroperabilityUser> pius, String rootNodeName,
             final XMLStreamWriter sw) throws XMLStreamException {
-       if (muus != null) {
+       if (pius != null) {
            sw.writeStartElement(rootNodeName);
-           for (PromotingInteroperabilityUser muu : muus) {
-               add(muu, "meaningfulUseEntry", sw);
+           for (PromotingInteroperabilityUser piu : pius) {
+               add(piu, "promotingInteroperabilityUserEntry", sw);
            }
            sw.writeEndElement();
        }
     }
 
-    public static void add(final PromotingInteroperabilityUser muu, final String rootNodeName, final XMLStreamWriter sw)
+    public static void add(PromotingInteroperabilityUser piu, String rootNodeName, XMLStreamWriter sw)
             throws XMLStreamException {
-        if (muu != null) {
+        if (piu != null) {
             sw.writeStartElement(rootNodeName);
-            createSimpleElement(muu.getId(), "id", sw);
-            createSimpleElement(muu.getMuuCount(), "muuCount", sw);
-            createSimpleElement(muu.getMuuDate(), "muuDate", sw);
+            createSimpleElement(piu.getId(), "id", sw);
+            createSimpleElement(piu.getUserCount(), "userCount", sw);
+            createSimpleElement(piu.getUserCountDate().toString(), "userCountDate", sw);
             sw.writeEndElement();
         }
     }

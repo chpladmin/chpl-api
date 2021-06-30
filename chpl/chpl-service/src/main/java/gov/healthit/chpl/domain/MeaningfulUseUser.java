@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Deprecated
 public class MeaningfulUseUser implements Serializable {
     private static final long serialVersionUID = -4803363243075068608L;
 

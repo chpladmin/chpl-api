@@ -20,9 +20,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-/**
- * Certified Product Search Basic Details entity.
- */
 @Data
 @Builder
 @AllArgsConstructor
@@ -255,6 +252,11 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
      */
     @Deprecated
     private List<MeaningfulUseUser> meaningfulUseUserHistory = new ArrayList<MeaningfulUseUser>();
+
+    /**
+     * All current and historical values of promoting interoperability user counts for this listing along with the dates each meaningful
+     * use user count was valid. Dates are given in milliseconds since epoch.
+     */
     private List<PromotingInteroperabilityUser> promotingInteroperabilityUserHistory = new ArrayList<PromotingInteroperabilityUser>();
 
     /**

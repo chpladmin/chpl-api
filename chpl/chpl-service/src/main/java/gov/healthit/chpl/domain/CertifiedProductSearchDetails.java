@@ -379,7 +379,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      * user count was valid.
      */
     @XmlElementWrapper(name = "promotingInteroperabilityUserHistory", nillable = true, required = false)
-    @XmlElement(name = "promotingInteroperabilityUser")
+    @XmlElement(name = "promotingInteroperabilityUserEntry")
     @Builder.Default
     private List<PromotingInteroperabilityUser> promotingInteroperabilityUserHistory = new ArrayList<PromotingInteroperabilityUser>();
 
