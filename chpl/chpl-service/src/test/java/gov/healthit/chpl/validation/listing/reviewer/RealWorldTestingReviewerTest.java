@@ -10,7 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -29,29 +28,9 @@ public class RealWorldTestingReviewerTest {
         validationUtils = Mockito.mock(ValidationUtils.class);
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
         reviewer = new RealWorldTestingReviewer(validationUtils, errorMessageUtil);
-        ReflectionTestUtils.setField(reviewer, "rwtPlanStartDayOfYear", "09/01");
-        ReflectionTestUtils.setField(reviewer, "rwtResultsStartDayOfYear", "01/01");
+        //ReflectionTestUtils.setField(reviewer, "rwtPlanStartDayOfYear", "09/01");
+        //ReflectionTestUtils.setField(reviewer, "rwtResultsStartDayOfYear", "01/01");
 
-    }
-
-    @Test
-    public void review_noRwtEligibilityYear_errorMessage() throws ParseException {
-        Mockito.when(errorMessageUtil.getMessage("listing.realWorldTesting.notEligible"))
-                .thenReturn("Listing is not eligible for Real World Testing.");
-
-        CertifiedProductSearchDetails existing = new CertifiedProductSearchDetails();
-        existing.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
-        existing.setRwtEligibilityYear(null);
-
-        CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
-        updated.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
-        updated.setRwtPlansUrl("http://www.test.com");
-        updated.setRwtPlansCheckDate(LocalDate.parse("2020-08-08"));
-
-        reviewer.review(existing, updated);
-
-        assertEquals(1, updated.getErrorMessages().size());
-        assertTrue(updated.getErrorMessages().contains("Listing is not eligible for Real World Testing."));
     }
 
     @Test
@@ -190,29 +169,6 @@ public class RealWorldTestingReviewerTest {
 
         assertEquals(1, updated.getErrorMessages().size());
         assertTrue(updated.getErrorMessages().contains("Real World Testing Results Check Date is required."));
-    }
-
-    @Test
-    public void review_resultsSubmissionDateBeforeResultsEligibleDate_errorMessage() throws ParseException {
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.<String>any()))
-                .thenReturn("Real World Testing Results Check Date must be after %s.");
-        Mockito.when(validationUtils.isWellFormedUrl(ArgumentMatchers.anyString()))
-                .thenReturn(true);
-
-        CertifiedProductSearchDetails existing = new CertifiedProductSearchDetails();
-        existing.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
-        existing.setRwtEligibilityYear(ELIG_YEAR_FOR_RESULTS_TESTING);
-
-        CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
-        updated.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
-        updated.setRwtEligibilityYear(ELIG_YEAR_FOR_RESULTS_TESTING);
-        updated.setRwtResultsUrl("http://www.abc.com");
-        updated.setRwtResultsCheckDate(LocalDate.parse("2018-08-08"));
-
-        reviewer.review(existing, updated);
-
-        assertEquals(1, updated.getErrorMessages().size());
-        assertTrue(updated.getErrorMessages().contains("Real World Testing Results Check Date must be after %s."));
     }
 
     @Test
