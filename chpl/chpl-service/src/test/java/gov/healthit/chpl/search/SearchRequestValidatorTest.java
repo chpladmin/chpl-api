@@ -32,12 +32,15 @@ public class SearchRequestValidatorTest {
     private static final String INVALID_CERTIFICATION_EDITION = "Could not find certification edition with value '%s'.";
     private static final String INVALID_CERTIFICATION_CRITERION = "Could not find certification criterion with value '%s'.";
     private static final String INVALID_CERTIFICATION_CRITERION_FORMAT = "Certification Criterion ID %s is invalid. It must be a positive whole number.";
+    private static final String MISSING_CRITERIA_SEARCH_OPERATOR = "Multiple certification criteria were found without a search operator (AND/OR). A search operator is required.";
     private static final String INVALID_OPERATOR = "Invalid search operator value '%s'. Value must be one of %s.";
     private static final String INVALID_CQM = "Could not find CQM with value '%s'.";
+    private static final String MISSING_CQM_SEARCH_OPERATOR = "Multiple CQMs were found without a search operator (AND/OR). A search operator is required.";
     private static final String INVALID_ACB = "Could not find certification body with value '%s'.";
     private static final String INVALID_PRACTICE_TYPE = "Could not find practice type with value '%s'.";
     private static final String INVALID_CERTIFICATION_DATE = "Could not parse '%s' as date in the format %s.";
     private static final String INVALID_DATE_ORDER = "The certification date range end '%s' is before the start '%s'.";
+    private static final String MISSING_NC_SEARCH_OPERATOR = "Multiple non-conformity search options were found without a search operator (AND/OR). A search operator is required.";
     private static final String INVALID_NONCONFORMITY_SEARCH_OPTION = "No non-conformity search option matches '%s'. Values must be one of %s.";
     private static final String DIRECT_REVIEWS_UNAVAILABLE = "Compliance and non-conformity filtering is unavailable at this time.";
     private static final String INVALID_ORDER_BY = "Order by parameter '%s' is invalid. Value must be one of %s.";
@@ -62,10 +65,14 @@ public class SearchRequestValidatorTest {
             .thenAnswer(i -> String.format(INVALID_CERTIFICATION_CRITERION, i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.certificationCriteriaId.invalid"), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_CERTIFICATION_CRITERION_FORMAT, i.getArgument(1), ""));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.certificationCriteria.missingSearchOperator")))
+            .thenAnswer(i -> MISSING_CRITERIA_SEARCH_OPERATOR);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.searchOperator.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_OPERATOR, i.getArgument(1), i.getArgument(2)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.cqms.invalid"), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_CQM, i.getArgument(1), ""));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.cqms.missingSearchOperator")))
+            .thenAnswer(i -> MISSING_CQM_SEARCH_OPERATOR);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.certificationBodies.invalid"), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_ACB, i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.practiceType.invalid"), ArgumentMatchers.anyString()))
@@ -74,6 +81,8 @@ public class SearchRequestValidatorTest {
             .thenAnswer(i -> String.format(INVALID_CERTIFICATION_DATE, i.getArgument(1), i.getArgument(2)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.certificationDateOrder.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_DATE_ORDER, i.getArgument(1), i.getArgument(2)));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.compliance.missingSearchOperator")))
+            .thenAnswer(i -> MISSING_NC_SEARCH_OPERATOR);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.nonconformitySearchOption.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_NONCONFORMITY_SEARCH_OPTION, i.getArgument(1), i.getArgument(2)));
             Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.complianceFilter.unavailable")))
@@ -303,6 +312,26 @@ public class SearchRequestValidatorTest {
     }
 
     @Test
+    public void validate_hasMultipleCriteriaIdsAndMissingCriteriaOperator_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .certificationCriteriaIds(Stream.of(1L, 2L).collect(Collectors.toSet()))
+            .build();
+        Mockito.when(dimensionalDataManager.getCertificationCriterion())
+            .thenReturn(Stream.of(
+                    CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").build(),
+                    CertificationCriterion.builder().id(2L).number("170.315 (a)(2)").build())
+                .collect(Collectors.toSet()));
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
+            assertTrue(ex.getErrorMessages().contains(MISSING_CRITERIA_SEARCH_OPERATOR));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
     public void validate_invalidCqmNullDimensionalData_addsError() {
         SearchRequest request = SearchRequest.builder()
             .cqms(Stream.of("CMS1").collect(Collectors.toSet()))
@@ -398,6 +427,27 @@ public class SearchRequestValidatorTest {
         } catch (ValidationException ex) {
             fail(ex.getMessage());
         }
+    }
+
+    @Test
+    public void validate_hasMultipleCqmsAndMissingCqmOperator_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .cqms(Stream.of("CMS1", "CMS2").collect(Collectors.toSet()))
+            .build();
+        Mockito.when(dimensionalDataManager.getCQMCriterionNumbers(ArgumentMatchers.anyBoolean()))
+        .thenReturn(Stream.of(
+                new DescriptiveModel(1L, "CMS1", ""),
+                new DescriptiveModel(2L, "CMS2", ""))
+                .collect(Collectors.toSet()));
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
+            assertTrue(ex.getErrorMessages().contains(MISSING_CQM_SEARCH_OPERATOR));
+            return;
+        }
+        fail("Should not execute.");
     }
 
     @Test
@@ -667,6 +717,24 @@ public class SearchRequestValidatorTest {
     }
 
     @Test
+    public void validate_hasNonConformityOptionObjectsAndMissingNonConformitySearchOperator_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .complianceActivity(ComplianceSearchFilter.builder()
+                    .nonConformityOptionsStrings(null)
+                    .nonConformityOptions(Stream.of(NonConformitySearchOptions.NEVER_NONCONFORMITY, NonConformitySearchOptions.OPEN_NONCONFORMITY).collect(Collectors.toSet()))
+                    .build())
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
+            assertTrue(ex.getErrorMessages().contains(MISSING_NC_SEARCH_OPERATOR));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
     public void validate_invalidNonConformitySearchOption_addsError() {
         SearchRequest request = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()
@@ -694,6 +762,7 @@ public class SearchRequestValidatorTest {
             .complianceActivity(ComplianceSearchFilter.builder()
                     .nonConformityOptionsStrings(Stream.of("NEVER_NONCONFORMITY", " ", "", null).collect(Collectors.toSet()))
                     .nonConformityOptions(Stream.of(NonConformitySearchOptions.NEVER_NONCONFORMITY).collect(Collectors.toSet()))
+                    .nonConformityOptionsOperator(SearchSetOperator.OR)
                     .build())
             .build();
         try {
@@ -709,22 +778,7 @@ public class SearchRequestValidatorTest {
             .complianceActivity(ComplianceSearchFilter.builder()
                     .nonConformityOptionsStrings(Stream.of("NEVER_NONCONFORMITY", "OPEN_NONCONFORMITY", "CLOSED_NONCONFORMITY").collect(Collectors.toSet()))
                     .nonConformityOptions(Stream.of(NonConformitySearchOptions.NEVER_NONCONFORMITY, NonConformitySearchOptions.OPEN_NONCONFORMITY, NonConformitySearchOptions.CLOSED_NONCONFORMITY).collect(Collectors.toSet()))
-                    .build())
-            .build();
-        try {
-            validator.validate(request);
-        } catch (ValidationException ex) {
-            fail(ex.getMessage());
-        }
-        assertEquals(3, request.getComplianceActivity().getNonConformityOptions().size());
-    }
-
-    @Test
-    public void validate_validNonConformitySearchOptionsWithoutString_noErrors() {
-        SearchRequest request = SearchRequest.builder()
-            .complianceActivity(ComplianceSearchFilter.builder()
-                    .nonConformityOptionsStrings(null)
-                    .nonConformityOptions(Stream.of(NonConformitySearchOptions.NEVER_NONCONFORMITY, NonConformitySearchOptions.OPEN_NONCONFORMITY, NonConformitySearchOptions.CLOSED_NONCONFORMITY).collect(Collectors.toSet()))
+                    .nonConformityOptionsOperator(SearchSetOperator.OR)
                     .build())
             .build();
         try {
