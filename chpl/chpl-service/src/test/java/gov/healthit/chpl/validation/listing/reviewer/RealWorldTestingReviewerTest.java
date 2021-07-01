@@ -28,9 +28,6 @@ public class RealWorldTestingReviewerTest {
         validationUtils = Mockito.mock(ValidationUtils.class);
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
         reviewer = new RealWorldTestingReviewer(validationUtils, errorMessageUtil);
-        //ReflectionTestUtils.setField(reviewer, "rwtPlanStartDayOfYear", "09/01");
-        //ReflectionTestUtils.setField(reviewer, "rwtResultsStartDayOfYear", "01/01");
-
     }
 
     @Test
