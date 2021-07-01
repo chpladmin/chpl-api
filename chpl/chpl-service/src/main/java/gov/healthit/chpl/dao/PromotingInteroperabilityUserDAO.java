@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -16,6 +17,7 @@ import gov.healthit.chpl.util.AuthUtil;
 @Repository("promotingInteroperabilityUserDao")
 public class PromotingInteroperabilityUserDAO extends BaseDAOImpl {
 
+    @Transactional
     public void create(Long listingId, PromotingInteroperabilityUser toCreate)
             throws EntityCreationException {
         PromotingInteroperabilityUserEntity entity = new PromotingInteroperabilityUserEntity();
