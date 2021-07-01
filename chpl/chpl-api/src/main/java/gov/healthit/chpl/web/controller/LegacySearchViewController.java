@@ -22,6 +22,7 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
+import gov.healthit.chpl.domain.search.LegacyNonConformitySearchOptions;
 import gov.healthit.chpl.domain.search.SearchRequestLegacy;
 import gov.healthit.chpl.domain.search.SearchResponseLegacy;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -29,7 +30,6 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.search.CertifiedProductSearchManager;
-import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -340,29 +340,29 @@ public class LegacySearchViewController {
             String nonconformityOptionsDelimitedTrimmed = nonconformityOptionsDelimited.trim();
             String[] nonconformityOptionsArr = nonconformityOptionsDelimitedTrimmed.split(",");
             if (nonconformityOptionsArr.length > 0) {
-                Set<NonConformitySearchOptions> nonconformitySearchOptions = new HashSet<NonConformitySearchOptions>();
+                Set<LegacyNonConformitySearchOptions> nonconformitySearchOptions = new HashSet<LegacyNonConformitySearchOptions>();
                 for (int i = 0; i < nonconformityOptionsArr.length; i++) {
                     String nonconformityOptionParam = nonconformityOptionsArr[i].trim();
                     try {
-                        NonConformitySearchOptions ncOpt = NonConformitySearchOptions.valueOf(nonconformityOptionParam);
+                        LegacyNonConformitySearchOptions ncOpt = LegacyNonConformitySearchOptions.valueOf(nonconformityOptionParam);
                         if (ncOpt != null) {
                             nonconformitySearchOptions.add(ncOpt);
                         } else {
                             String err = String.format(messageSource.getMessage(
                                     new DefaultMessageSourceResolvable("search.nonconformitySearchOption.invalid"),
                                     LocaleContextHolder.getLocale()),
-                                    nonconformityOptionParam, NonConformitySearchOptions.CLOSED_NONCONFORMITY.name()
-                                    + ", " + NonConformitySearchOptions.NEVER_NONCONFORMITY.name()
-                                    + ", or " + NonConformitySearchOptions.OPEN_NONCONFORMITY.name());
+                                    nonconformityOptionParam, LegacyNonConformitySearchOptions.CLOSED_NONCONFORMITY.name()
+                                    + ", " + LegacyNonConformitySearchOptions.NEVER_NONCONFORMITY.name()
+                                    + ", or " + LegacyNonConformitySearchOptions.OPEN_NONCONFORMITY.name());
                             throw new InvalidArgumentsException(err);
                         }
                     } catch (Exception ex) {
                         String err = String.format(messageSource.getMessage(
                                 new DefaultMessageSourceResolvable("search.nonconformitySearchOption.invalid"),
                                 LocaleContextHolder.getLocale()),
-                                nonconformityOptionParam, NonConformitySearchOptions.CLOSED_NONCONFORMITY.name()
-                                + ", " + NonConformitySearchOptions.NEVER_NONCONFORMITY.name()
-                                + ", or " + NonConformitySearchOptions.OPEN_NONCONFORMITY.name());
+                                nonconformityOptionParam, LegacyNonConformitySearchOptions.CLOSED_NONCONFORMITY.name()
+                                + ", " + LegacyNonConformitySearchOptions.NEVER_NONCONFORMITY.name()
+                                + ", or " + LegacyNonConformitySearchOptions.OPEN_NONCONFORMITY.name());
                         throw new InvalidArgumentsException(err);
                     }
                 }

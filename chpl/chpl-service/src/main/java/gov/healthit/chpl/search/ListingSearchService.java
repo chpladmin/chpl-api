@@ -217,10 +217,29 @@ public class ListingSearchService {
             matchesClosedNonConformityFilter = listing.getClosedDirectReviewNonConformityCount() > 0
                     || listing.getClosedSurveillanceNonConformityCount() > 0;
         }
+        Boolean matchesNotNeverNonConformityFilter = null;
+        if (complianceFilter.getNonConformityOptions().contains(NonConformitySearchOptions.NOT_NEVER_NONCONFORMITY)) {
+            matchesNotNeverNonConformityFilter = listing.getOpenSurveillanceNonConformityCount() > 0
+                    || listing.getClosedSurveillanceNonConformityCount() > 0
+                    || listing.getOpenDirectReviewNonConformityCount() > 0
+                    || listing.getClosedDirectReviewNonConformityCount() > 0;
+        }
+        Boolean matchesNotOpenNonConformityFilter = null;
+        if (complianceFilter.getNonConformityOptions().contains(NonConformitySearchOptions.NOT_OPEN_NONCONFORMITY)) {
+            matchesNotOpenNonConformityFilter = listing.getOpenDirectReviewNonConformityCount() == 0
+                    && listing.getOpenSurveillanceNonConformityCount() == 0;
+        }
+        Boolean matchesNotClosedNonConformityFilter = null;
+        if (complianceFilter.getNonConformityOptions().contains(NonConformitySearchOptions.NOT_CLOSED_NONCONFORMITY)) {
+            matchesNotClosedNonConformityFilter = listing.getClosedDirectReviewNonConformityCount() == 0
+                    && listing.getClosedSurveillanceNonConformityCount() == 0;
+        }
 
-        if (ObjectUtils.anyNotNull(matchesNeverNonConformityFilter, matchesOpenNonConformityFilter, matchesClosedNonConformityFilter)) {
+        if (ObjectUtils.anyNotNull(matchesNeverNonConformityFilter, matchesOpenNonConformityFilter, matchesClosedNonConformityFilter,
+                matchesNotNeverNonConformityFilter, matchesNotOpenNonConformityFilter, matchesNotClosedNonConformityFilter)) {
             boolean matchesNonConformityFilter = applyOperation(matchesNeverNonConformityFilter, matchesOpenNonConformityFilter,
-                    matchesClosedNonConformityFilter, complianceFilter.getNonConformityOptionsOperator());
+                    matchesClosedNonConformityFilter, matchesNotNeverNonConformityFilter, matchesNotOpenNonConformityFilter,
+                    matchesNotClosedNonConformityFilter, complianceFilter.getNonConformityOptionsOperator());
             return matchesHasHadComplianceActivityFilter && matchesNonConformityFilter;
         }
         return matchesHasHadComplianceActivityFilter;
@@ -237,9 +256,14 @@ public class ListingSearchService {
         }
     }
 
-    private boolean applyOperation(Boolean matchesNeverNonConformityFilter, Boolean matchesOpenNonConformityFilter,
-            Boolean matchesClosedNonConformityFilter, SearchSetOperator operation) {
-        List<Boolean> nonNullFilters = Stream.of(matchesNeverNonConformityFilter, matchesOpenNonConformityFilter, matchesClosedNonConformityFilter)
+    private boolean applyOperation(Boolean matchesNeverNonConformityFilter,
+            Boolean matchesOpenNonConformityFilter, Boolean matchesClosedNonConformityFilter,
+            Boolean matchesNotNeverNonConformityFilter,
+            Boolean matchesNotOpenNonConformityFilter, Boolean matchesNotClosedNonConformityFilter,
+            SearchSetOperator operation) {
+        List<Boolean> nonNullFilters = Stream.of(matchesNeverNonConformityFilter, matchesOpenNonConformityFilter,
+                matchesClosedNonConformityFilter, matchesNotNeverNonConformityFilter, matchesNotOpenNonConformityFilter,
+                matchesNotClosedNonConformityFilter)
                 .filter(booleanElement -> booleanElement != null)
                 .collect(Collectors.toList());
         if (operation == null || operation.equals(SearchSetOperator.AND)) {

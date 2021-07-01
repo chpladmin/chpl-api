@@ -31,13 +31,13 @@ import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResultLegacy;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResultLegacy;
+import gov.healthit.chpl.domain.search.LegacyNonConformitySearchOptions;
 import gov.healthit.chpl.domain.search.SearchRequestLegacy;
 import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 import gov.healthit.chpl.entity.search.CertifiedProductListingSearchResultEntity;
 import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.search.domain.CertifiedProductSearchResult;
-import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
@@ -472,12 +472,12 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
                     &&  searchRequest.getSurveillance().getNonconformityOptions().size() > 0) {
                 sql += " AND (";
                 int i = 0;
-                for (NonConformitySearchOptions ncSearchOpt : searchRequest.getSurveillance().getNonconformityOptions()) {
-                    if (ncSearchOpt == NonConformitySearchOptions.CLOSED_NONCONFORMITY) {
+                for (LegacyNonConformitySearchOptions ncSearchOpt : searchRequest.getSurveillance().getNonconformityOptions()) {
+                    if (ncSearchOpt == LegacyNonConformitySearchOptions.CLOSED_NONCONFORMITY) {
                         sql += " count_closed_nonconformities > 0 ";
-                    } else if (ncSearchOpt == NonConformitySearchOptions.NEVER_NONCONFORMITY) {
+                    } else if (ncSearchOpt == LegacyNonConformitySearchOptions.NEVER_NONCONFORMITY) {
                         sql += " (count_open_nonconformities IS NULL AND count_closed_nonconformities IS NULL) ";
-                    } else if (ncSearchOpt == NonConformitySearchOptions.OPEN_NONCONFORMITY) {
+                    } else if (ncSearchOpt == LegacyNonConformitySearchOptions.OPEN_NONCONFORMITY) {
                         sql += " count_open_nonconformities > 0 ";
                     }
 

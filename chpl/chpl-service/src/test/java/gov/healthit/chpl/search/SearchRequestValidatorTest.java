@@ -17,6 +17,7 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
+import gov.healthit.chpl.domain.search.LegacyNonConformitySearchOptions;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
@@ -748,7 +749,7 @@ public class SearchRequestValidatorTest {
             assertEquals(1, ex.getErrorMessages().size());
             assertTrue(ex.getErrorMessages().contains(String.format(INVALID_NONCONFORMITY_SEARCH_OPTION,
                     "BADVALUE",
-                    Stream.of(NonConformitySearchOptions.values())
+                    Stream.of(LegacyNonConformitySearchOptions.values())
                     .map(value -> value.name())
                     .collect(Collectors.joining(",")))));
             return;

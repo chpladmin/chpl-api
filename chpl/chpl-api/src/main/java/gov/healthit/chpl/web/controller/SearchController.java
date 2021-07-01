@@ -83,7 +83,8 @@ public class SearchController {
                 required = false, dataType = "string", paramType = "query"),
         @ApiImplicitParam(name = "nonConformityOptions",
         value = "A comma-separated list of nonConformity search options. Valid options are "
-                + "OPEN_NONCONFORMITY, CLOSED_NONCONFORMITY, and NEVER_NONCONFORMITY.",
+                + "OPEN_NONCONFORMITY, CLOSED_NONCONFORMITY, NEVER_NONCONFORMITY,"
+                + "NOT_OPEN_NONCONFORMITY, NOT_CLOSED_NONCONFORMITY, and NOT_NEVER_NONCONFORMITY.",
                 required = false, dataType = "string", paramType = "query"),
         @ApiImplicitParam(name = "nonConformityOptionsOperator",
         value = "Either AND or OR. "
