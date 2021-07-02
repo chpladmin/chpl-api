@@ -165,12 +165,13 @@ public class ListingService {
                 .svapNoticeUrl(dto.getSvapNoticeUrl())
                 .sed(new CertifiedProductSed())
                 .testingLabs(getTestingLabs(dto.getId()))
-                .certificationEvents(certificationStatusEventsService.getCertificationStatusEvents(dto.getId()))
                 .build();
 
         InheritedCertificationStatus ics = new InheritedCertificationStatus();
         ics.setInherits(dto.getIcs());
         listing.setIcs(ics);
+        //cannot put this in the builder method because it's immutable meaning we can't sort it later
+        listing.setCertificationEvents(certificationStatusEventsService.getCertificationStatusEvents(dto.getId()));
         populateDirectReviews(listing);
         return listing;
     }
