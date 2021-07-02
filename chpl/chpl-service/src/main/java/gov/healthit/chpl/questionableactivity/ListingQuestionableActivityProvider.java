@@ -472,7 +472,7 @@ public class ListingQuestionableActivityProvider {
         QuestionableActivityListingDTO activity = null;
         if (StringUtils.isEmpty(origListing.getRwtPlansUrl()) && !StringUtils.isEmpty(newListing.getRwtPlansUrl())) {
             activity = new QuestionableActivityListingDTO();
-            activity.setAfter("Added Real World Testing Plans URL for Listing not Real World Testing Eligible: " + origListing.getRwtPlansUrl());
+            activity.setAfter("Added Plans URL " + newListing.getRwtPlansUrl());
         }
         return activity;
     }
@@ -481,7 +481,7 @@ public class ListingQuestionableActivityProvider {
         QuestionableActivityListingDTO activity = null;
         if (StringUtils.isEmpty(origListing.getRwtResultsUrl()) && !StringUtils.isEmpty(newListing.getRwtResultsUrl())) {
             activity = new QuestionableActivityListingDTO();
-            activity.setAfter("Added Real World Testing Results URL for Listing not Real World Testing Eligible: " + origListing.getRwtResultsUrl());
+            activity.setAfter("Added Results URL " + newListing.getRwtResultsUrl());
         }
         return activity;
     }
