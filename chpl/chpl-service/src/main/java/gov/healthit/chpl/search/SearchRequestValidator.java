@@ -17,10 +17,10 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
-import gov.healthit.chpl.domain.search.LegacyNonConformitySearchOptions;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
+import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
@@ -282,7 +282,7 @@ public class SearchRequestValidator {
                 .filter(option -> !isNonConformitySearchOption(option))
                 .map(option -> msgUtil.getMessage("search.nonconformitySearchOption.invalid",
                         option,
-                        Stream.of(LegacyNonConformitySearchOptions.values())
+                        Stream.of(NonConformitySearchOptions.values())
                         .map(value -> value.name())
                         .collect(Collectors.joining(","))))
                 .collect(Collectors.toSet());
@@ -293,7 +293,7 @@ public class SearchRequestValidator {
     private boolean isNonConformitySearchOption(String option) {
         boolean result = true;
         try {
-            LegacyNonConformitySearchOptions.valueOf(option.toUpperCase().trim());
+            NonConformitySearchOptions.valueOf(option.toUpperCase().trim());
         } catch (Exception ex) {
             result = false;
         }

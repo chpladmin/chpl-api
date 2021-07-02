@@ -777,8 +777,15 @@ public class SearchRequestValidatorTest {
     public void validate_validNonConformitySearchOptionsParsedFromString_noErrors() {
         SearchRequest request = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()
-                    .nonConformityOptionsStrings(Stream.of("NEVER_NONCONFORMITY", "OPEN_NONCONFORMITY", "CLOSED_NONCONFORMITY").collect(Collectors.toSet()))
-                    .nonConformityOptions(Stream.of(NonConformitySearchOptions.NEVER_NONCONFORMITY, NonConformitySearchOptions.OPEN_NONCONFORMITY, NonConformitySearchOptions.CLOSED_NONCONFORMITY).collect(Collectors.toSet()))
+                    .nonConformityOptionsStrings(Stream.of("NEVER_NONCONFORMITY", "NOT_NEVER_NONCONFORMITY",
+                            "OPEN_NONCONFORMITY", "NOT_OPEN_NONCONFORMITY",
+                            "CLOSED_NONCONFORMITY", "NOT_CLOSED_NONCONFORMITY").collect(Collectors.toSet()))
+                    .nonConformityOptions(Stream.of(NonConformitySearchOptions.NEVER_NONCONFORMITY,
+                            NonConformitySearchOptions.NOT_NEVER_NONCONFORMITY,
+                            NonConformitySearchOptions.OPEN_NONCONFORMITY,
+                            NonConformitySearchOptions.NOT_OPEN_NONCONFORMITY,
+                            NonConformitySearchOptions.CLOSED_NONCONFORMITY,
+                            NonConformitySearchOptions.NOT_CLOSED_NONCONFORMITY).collect(Collectors.toSet()))
                     .nonConformityOptionsOperator(SearchSetOperator.OR)
                     .build())
             .build();
@@ -787,7 +794,7 @@ public class SearchRequestValidatorTest {
         } catch (ValidationException ex) {
             fail(ex.getMessage());
         }
-        assertEquals(3, request.getComplianceActivity().getNonConformityOptions().size());
+        assertEquals(6, request.getComplianceActivity().getNonConformityOptions().size());
     }
 
     @Test
