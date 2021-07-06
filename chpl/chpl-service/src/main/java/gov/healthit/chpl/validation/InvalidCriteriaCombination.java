@@ -34,6 +34,12 @@ public class InvalidCriteriaCombination {
             @Value("${criterion.170_315_b_10}") Integer criteriaB10Id,
             @Value("${criterion.170_315_c_3_old}") Integer criteriaC3Id,
             @Value("${criterion.170_315_c_3_cures}") Integer criteriaC3RevisedId,
+            @Value("${criterion.170_315_d_2_old}") Integer criteriaD2Id,
+            @Value("${criterion.170_315_d_2_cures}") Integer criteriaD2RevisedId,
+            @Value("${criterion.170_315_d_3_old}") Integer criteriaD3Id,
+            @Value("${criterion.170_315_d_3_cures}") Integer criteriaD3RevisedId,
+            @Value("${criterion.170_315_d_10_old}") Integer criteriaD10Id,
+            @Value("${criterion.170_315_d_10_cures}") Integer criteriaD10RevisedId,
             @Value("${criterion.170_315_e_1_old}") Integer criteriaE1Id,
             @Value("${criterion.170_315_e_1_cures}") Integer criteriaE1RevisedId,
             @Value("${criterion.170_315_f_5_old}") Integer criteriaF5Id,
@@ -43,13 +49,7 @@ public class InvalidCriteriaCombination {
             @Value("${criterion.170_315_g_8}") Integer criteriaG8Id,
             @Value("${criterion.170_315_g_9_old}") Integer criteriaG9Id,
             @Value("${criterion.170_315_g_9_cures}") Integer criteriaG9RevisedId,
-            @Value("${criterion.170_315_g_10}") Integer criteriaG10Id,
-            @Value("${criterion.170_315_d_2_old}") Integer criteriaD2Id,
-            @Value("${criterion.170_315_d_2_cures}") Integer criteriaD2RevisedId,
-            @Value("${criterion.170_315_d_3_old}") Integer criteriaD3Id,
-            @Value("${criterion.170_315_d_3_cures}") Integer criteriaD3RevisedId,
-            @Value("${criterion.170_315_d_10_old}") Integer criteriaD10Id,
-            @Value("${criterion.170_315_d_10_cures}") Integer criteriaD10RevisedId) {
+            @Value("${criterion.170_315_g_10}") Integer criteriaG10Id) {
         final Pair<Integer, Integer> b1Pair = Pair.of(criteriaB1Id, criteriaB1RevisedId);
         final Pair<Integer, Integer> b2Pair = Pair.of(criteriaB2Id, criteriaB2RevisedId);
         final Pair<Integer, Integer> b3Pair = Pair.of(criteriaB3Id, criteriaB3RevisedId);

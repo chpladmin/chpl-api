@@ -52,6 +52,15 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
     }
 
     @Test
+    public void review_noCertificationResultsAfterCuresEffectiveDate_noErrorMessages() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(System.currentTimeMillis())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
     public void review_missingPAndSCriteriaAfterCuresEffectiveDate_hasErrorMessages() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationDate(System.currentTimeMillis())
