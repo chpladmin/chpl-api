@@ -1,45 +1,31 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.permissions.ResourcePermissions;
-import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.util.Util;
-import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.InvalidCriteriaCombinationReviewer;
 
 @Component("listingUploadCriteriaReviewer")
-public class CriteriaReviewer extends PermissionBasedReviewer {
+public class CriteriaReviewer {
+
+    private RemovedCriteriaReviewer removedCriteriaReviewer;
+    private PrivacyAndSecurityCriteriaReviewer privacyAndSecurityCriteriaReviewer;
+    private InvalidCriteriaCombinationReviewer invalidCriteriaCombinationReviewer;
 
     @Autowired
-    public CriteriaReviewer(ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
-        super(msgUtil, resourcePermissions);
+    public CriteriaReviewer(@Qualifier("listingUploadRemovedCriteriaReviewer") RemovedCriteriaReviewer removedCriteriaReviewer,
+            @Qualifier("listingUploadPrivacyAndSecurityCriteriaReviewer") PrivacyAndSecurityCriteriaReviewer privacyAndSecurityCriteriaReviewer,
+            @Qualifier("invalidCriteriaCombinationReviewer") InvalidCriteriaCombinationReviewer invalidCriteriaCombinationReviewer) {
+        this.removedCriteriaReviewer = removedCriteriaReviewer;
+        this.privacyAndSecurityCriteriaReviewer = privacyAndSecurityCriteriaReviewer;
+        this.invalidCriteriaCombinationReviewer = invalidCriteriaCombinationReviewer;
     }
 
-    @Override
     public void review(CertifiedProductSearchDetails listing) {
-        listing.getCertificationResults().stream()
-            .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess())
-            .forEach(certResult -> review(listing, certResult));
+        removedCriteriaReviewer.review(listing);
+        privacyAndSecurityCriteriaReviewer.review(listing);
+        invalidCriteriaCombinationReviewer.review(listing);
     }
-
-    public void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        reviewRemovedCriteriaAllowedForRole(listing, certResult);
-    }
-
-    private void reviewRemovedCriteriaAllowedForRole(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
-            return;
-        } else if (resourcePermissions.isUserRoleAcbAdmin()) {
-            if ((listing.getIcs() == null || listing.getIcs().getInherits() == null
-                    || !listing.getIcs().getInherits()) && certResult.getCriterion().getRemoved()) {
-                listing.getErrorMessages().add(
-                        msgUtil.getMessage("listing.removedCriteriaAddNotAllowed",
-                                Util.formatCriteriaNumber(certResult.getCriterion())));
-            }
-        }
-    }
-
 }
