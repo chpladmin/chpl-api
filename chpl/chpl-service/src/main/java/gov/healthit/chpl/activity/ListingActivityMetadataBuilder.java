@@ -23,6 +23,7 @@ public class ListingActivityMetadataBuilder extends ActivityMetadataBuilder {
         jsonMapper = new ObjectMapper();
     }
 
+    @Override
     protected void addConceptSpecificMetadata(final ActivityDTO dto, final ActivityMetadata metadata) {
         if (!(metadata instanceof ListingActivityMetadata)) {
             return;
@@ -67,9 +68,12 @@ public class ListingActivityMetadataBuilder extends ActivityMetadataBuilder {
             final ListingActivityMetadata listingMetadata, final CertifiedProductSearchDetails listing) {
         listingMetadata.setChplProductNumber(listing.getChplProductNumber());
         if (listing.getCertifyingBody() != null
-                && listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY) != null) {
+                && listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY) != null
+                && listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY) != null) {
             listingMetadata.setAcbName(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
+            listingMetadata.setAcbId(Long.valueOf(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()));
         }
+
         //there is at least one activity record that has a null certification date field
         //due to a bug in the system at the time of the activity
         listingMetadata.setCertificationDate(listing.getCertificationDate());
