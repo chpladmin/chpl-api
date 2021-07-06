@@ -4,6 +4,9 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -54,6 +57,7 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -61,6 +65,7 @@ import gov.healthit.chpl.manager.PendingSurveillanceManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.reviewer.AuthorityReviewer;
 import gov.healthit.chpl.web.controller.results.SurveillanceResults;
@@ -75,24 +80,40 @@ public class SurveillanceController implements MessageSourceAware {
 
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceController.class);
 
-    @Autowired
     private Environment env;
-    @Autowired
     private FileUtils fileUtils;
-    @Autowired
     private MessageSource messageSource;
-    @Autowired
     private SurveillanceManager survManager;
-    @Autowired
     private ActivityManager activityManager;
-    @Autowired
     private CertifiedProductDetailsManager cpdetailsManager;
-    @Autowired
     private AuthorityReviewer survAuthorityReviewer;
-    @Autowired
     private PendingSurveillanceManager pendingSurveillanceManager;
-    @Autowired
     private ResourcePermissions resourcePermissions;
+    private ErrorMessageUtil errorMessageUtil;
+
+    @SuppressWarnings("checkstyle:parameterNumber")
+    @Autowired
+    public SurveillanceController(Environment env,
+            FileUtils fileUtils,
+            MessageSource messageSource,
+            SurveillanceManager survManager,
+            ActivityManager activityManager,
+            CertifiedProductDetailsManager cpdetailsManager,
+            AuthorityReviewer survAuthorityReviewer,
+            PendingSurveillanceManager pendingSurveillanceManager,
+            ResourcePermissions resourcePermissions,
+            ErrorMessageUtil errorMessageUtil) {
+        this.env = env;
+        this.fileUtils = fileUtils;
+        this.messageSource = messageSource;
+        this.survManager = survManager;
+        this.activityManager = activityManager;
+        this.cpdetailsManager = cpdetailsManager;
+        this.survAuthorityReviewer = survAuthorityReviewer;
+        this.pendingSurveillanceManager = pendingSurveillanceManager;
+        this.resourcePermissions = resourcePermissions;
+        this.errorMessageUtil = errorMessageUtil;
+    }
 
     @ApiOperation(value = "Get the listing of all pending surveillance items that this user has access to.",
             notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority on the ACB associated "
@@ -151,7 +172,7 @@ public class SurveillanceController implements MessageSourceAware {
                     + "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority on the ACB associated with "
                     + "the certified product is required.")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public synchronized ResponseEntity<Surveillance> createSurveillance(
+    public ResponseEntity<Surveillance> createSurveillance(
             @RequestBody(required = true) final Surveillance survToInsert) throws ValidationException,
     EntityRetrievalException, CertificationBodyAccessException, UserPermissionRetrievalException,
     EntityCreationException, JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
@@ -229,7 +250,7 @@ public class SurveillanceController implements MessageSourceAware {
                     + "and associated with the certified product is required.")
     @RequestMapping(value = "/{surveillanceId}", method = RequestMethod.PUT,
     produces = "application/json; charset=utf-8")
-    public synchronized ResponseEntity<Surveillance> updateSurveillance(
+    public ResponseEntity<Surveillance> updateSurveillance(
             @RequestBody(required = true) final Surveillance survToUpdate) throws
     InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
     JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
@@ -259,7 +280,7 @@ public class SurveillanceController implements MessageSourceAware {
                     + "administrative authority on the specified ACB for each pending surveillance is required.")
     @RequestMapping(value = "/{surveillanceId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
-    public synchronized @ResponseBody ResponseEntity<String> deleteSurveillance(
+    public @ResponseBody ResponseEntity<String> deleteSurveillance(
             @PathVariable(value = "surveillanceId") final Long surveillanceId,
             @RequestBody(required = false) final SimpleExplainableAction requestBody) throws
     InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
@@ -395,7 +416,7 @@ public class SurveillanceController implements MessageSourceAware {
                     + "with the certified product is required.")
     @RequestMapping(value = "/pending/confirm", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
-    public synchronized ResponseEntity<Surveillance> confirmPendingSurveillance(
+    public ResponseEntity<Surveillance> confirmPendingSurveillance(
             @RequestBody(required = true) final Surveillance survToInsert)
                     throws ValidationException, EntityRetrievalException, EntityCreationException,
                     JsonProcessingException, UserPermissionRetrievalException,
@@ -478,6 +499,22 @@ public class SurveillanceController implements MessageSourceAware {
             results.getPendingSurveillance().addAll(uploadResult.getSurveillances());
             return new ResponseEntity<SurveillanceResults>(results, HttpStatus.OK);
         }
+    }
+
+    @ApiOperation(value = "",
+            notes = "")
+    @RequestMapping(value = "/reports/activity", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody ChplOneTimeTrigger getActivityReport(@RequestParam("start") String start, @RequestParam("end") String end) throws ValidationException, UserRetrievalException {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate startDate;
+        LocalDate endDate;
+        try {
+            startDate = LocalDate.parse(start, formatter);
+            endDate = LocalDate.parse(end, formatter);
+            return survManager.submitActivityReportRequest(startDate, endDate);
+       } catch (DateTimeException e) {
+            throw new ValidationException(errorMessageUtil.getMessage("surveillance.activity.report.invalidDate"));
+       }
     }
 
     @Override

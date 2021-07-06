@@ -177,7 +177,7 @@ public class UnsupportedCharacterReviewer implements Reviewer {
                     "Transparency Attestation '" + listing.getTransparencyAttestation().getTransparencyAttestation() + "'");
         }
         addListingWarningIfNotValid(listing, listing.getTransparencyAttestationUrl(),
-                "Transparency Attestation URL '" + listing.getTransparencyAttestationUrl() + "'");
+                "Mandatory Disclosures '" + listing.getTransparencyAttestationUrl() + "'");
     }
 
     private void reviewDeveloperFields(CertifiedProductSearchDetails listing) {

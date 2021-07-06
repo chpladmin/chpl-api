@@ -12,12 +12,14 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
+import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.util.CertificationResultRules;
@@ -160,6 +162,9 @@ public class CertificationResult implements Serializable {
     @XmlTransient
     private List<Svap> allowedSvaps;
 
+    @XmlTransient
+    private List<OptionalStandard> allowedOptionalStandards;
+
     /**
      * Any optional, alternative, ambulatory (2015 only), or inpatient (2015 only) capabilities within a certification
      * criterion to which the Health IT module was tested and certified. For example, within the 2015 certification
@@ -193,6 +198,16 @@ public class CertificationResult implements Serializable {
     @XmlElementWrapper(name = "additionalSoftwareList", nillable = true, required = false)
     @XmlElement(name = "additionalSoftware")
     private List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
+
+    /**
+     * An optional standard used to meet a certification criterion for 2015 Edition. You can find a list of potential
+     * values in the 2015 Functionality and Standards Reference Tables. Allowed values are the corresponding
+     * paragraph number for the standard within the regulation.
+     */
+    @XmlElementWrapper(name = "optionalStandards", nillable = true, required = false)
+    @XmlElement(name = "optionalStandard")
+    @Singular
+    private List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
 
     /**
      * A standard used to meet a certification criterion for 2014 and 2015 Edition. You can find a list of potential
@@ -343,6 +358,7 @@ public class CertificationResult implements Serializable {
             this.criterion = new CertificationCriterion(certResult.getCriterion());
         }
 
+        this.setOptionalStandards(getOptionalStandards(certResult, certRules));
         this.setTestFunctionality(getTestFunctionalities(certResult, certRules));
         this.setTestProcedures(getTestProcedures(certResult, certRules));
         this.setTestDataUsed(getTestData(certResult, certRules));
@@ -355,6 +371,15 @@ public class CertificationResult implements Serializable {
     private List<CertificationResultSvap> getSvaps(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.SVAP)) {
             return certResult.getSvaps();
+        } else {
+            return null;
+        }
+    }
+
+    private List<CertificationResultOptionalStandard> getOptionalStandards(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
+        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.OPTIONAL_STANDARD)) {
+            return certResult.getOptionalStandards().stream()
+                    .collect(Collectors.toList());
         } else {
             return null;
         }
@@ -500,6 +525,14 @@ public class CertificationResult implements Serializable {
         this.g2Success = g2Success;
     }
 
+    public List<CertificationResultOptionalStandard> getOptionalStandards() {
+        return optionalStandards;
+    }
+
+    public void setOptionalStandards(List<CertificationResultOptionalStandard> optionalStandards) {
+        this.optionalStandards = optionalStandards;
+    }
+
     public List<CertificationResultTestTool> getTestToolsUsed() {
         return testToolsUsed;
     }
@@ -643,6 +676,14 @@ public class CertificationResult implements Serializable {
 
     public void setSuccessStr(String successStr) {
         this.successStr = successStr;
+    }
+
+    public List<OptionalStandard> getAllowedOptionalStandards() {
+        return allowedOptionalStandards;
+    }
+
+    public void setAllowedOptionalStandards(List<OptionalStandard> allowedOptionalStandards) {
+        this.allowedOptionalStandards = allowedOptionalStandards;
     }
 
     public List<Svap> getAllowedSvaps() {

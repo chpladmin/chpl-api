@@ -1,6 +1,6 @@
 package gov.healthit.chpl.domain.developer.hierarchy;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertifiedProduct;
