@@ -1,6 +1,6 @@
 {
 	"info": {
-		"name": "testing-lab-controller Copy",
+		"name": "testing-lab-controller",
 		"description": "This is CHPL test collection for ATL controller",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},

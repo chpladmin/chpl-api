@@ -55,10 +55,10 @@ public class UploadActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Onc() throws Exception {
         setupForOncUser(resourcePermissions);
 
-        assertTrue(permissions.hasAccess());
+        assertFalse(permissions.hasAccess());
 
         Surveillance surv = new Surveillance();
-        assertTrue(permissions.hasAccess(surv));
+        assertFalse(permissions.hasAccess(surv));
     }
 
     @Override
