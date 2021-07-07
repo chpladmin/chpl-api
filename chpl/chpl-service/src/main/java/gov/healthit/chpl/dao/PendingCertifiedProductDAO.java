@@ -15,6 +15,7 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMetadataDTO;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultAdditionalSoftwareEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultOptionalStandardEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestDataEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestFunctionalityEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestProcedureEntity;
@@ -213,6 +214,22 @@ public class PendingCertifiedProductDAO extends BaseDAOImpl {
             }
         }
 
+        if (pendingCertResult.getOptionalStandards() != null && pendingCertResult.getOptionalStandards().size() > 0) {
+            for (PendingCertificationResultOptionalStandardEntity osEntity : pendingCertResult.getOptionalStandards()) {
+                osEntity.setPendingCertificationResultId(pendingCertResult.getId());
+                osEntity.setLastModifiedDate(new Date());
+                osEntity.setLastModifiedUser(AuthUtil.getAuditId());
+                osEntity.setCreationDate(new Date());
+                osEntity.setDeleted(false);
+                try {
+                    entityManager.persist(osEntity);
+                } catch (Exception ex) {
+                    String msg = msgUtil.getMessage("listing.criteria.badTestStandard", osEntity.getOptionalStandardCitation());
+                    LOGGER.error(msg, ex);
+                    throw new EntityCreationException(msg);
+                }
+            }
+        }
         if (pendingCertResult.getTestStandards() != null && pendingCertResult.getTestStandards().size() > 0) {
             for (PendingCertificationResultTestStandardEntity tsEntity : pendingCertResult.getTestStandards()) {
                 tsEntity.setPendingCertificationResultId(pendingCertResult.getId());

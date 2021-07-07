@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
@@ -35,6 +36,7 @@ import gov.healthit.chpl.entity.CQMCriterionEntity;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultAdditionalSoftwareEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultOptionalStandardEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestDataEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestFunctionalityEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestProcedureEntity;
@@ -58,6 +60,7 @@ import gov.healthit.chpl.listing.measure.MeasureCriterionMapEntity;
 import gov.healthit.chpl.listing.measure.MeasureEntity;
 import gov.healthit.chpl.listing.measure.PendingListingMeasureCriterionMapEntity;
 import gov.healthit.chpl.listing.measure.PendingListingMeasureEntity;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap2015Version1;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -529,16 +532,41 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
         for (CSVRecord row : getRecord()) {
             String tsValue = row.get(tsColumn).trim();
             if (!StringUtils.isEmpty(tsValue)) {
-                PendingCertificationResultTestStandardEntity tsEntity = new PendingCertificationResultTestStandardEntity();
-                tsEntity.setTestStandardName(tsValue);
-                TestStandardDTO ts = testStandardDao.getByNumberAndEdition(tsValue,
-                        listing.getCertificationEditionId());
-                if (ts != null) {
-                    tsEntity.setTestStandardId(ts.getId());
+                if (!ff4j.check(FeatureList.OPTIONAL_STANDARDS)) {
+                    parseTestStandardAsTestStandard(listing, cert, tsValue);
+                } else {
+                    boolean parsed = false;
+                    parsed = parseTestStandardAsOptionalStandard(cert, tsValue);
+                    if (!parsed) {
+                        parseTestStandardAsTestStandard(listing, cert, tsValue);
+                    }
                 }
-                cert.getTestStandards().add(tsEntity);
             }
         }
+    }
+
+    private void parseTestStandardAsTestStandard(PendingCertifiedProductEntity listing, PendingCertificationResultEntity cert, String name) {
+        PendingCertificationResultTestStandardEntity tsEntity = new PendingCertificationResultTestStandardEntity();
+        tsEntity.setTestStandardName(name);
+        TestStandardDTO ts = testStandardDao.getByNumberAndEdition(name, listing.getCertificationEditionId());
+        if (ts != null) {
+            tsEntity.setTestStandardId(ts.getId());
+        }
+        cert.getTestStandards().add(tsEntity);
+    }
+
+    private boolean parseTestStandardAsOptionalStandard(PendingCertificationResultEntity cert, String name) {
+        PendingCertificationResultOptionalStandardEntity osEntity = new PendingCertificationResultOptionalStandardEntity();
+        osEntity.setOptionalStandardCitation(name);
+        OptionalStandard os = optionalStandardDao.getByCitation(name);
+        if (os != null) {
+            osEntity.setOptionalStandardId(os.getId());
+        }
+        if (ff4j.check(FeatureList.OPTIONAL_STANDARDS_ERROR) || os != null) {
+            cert.getOptionalStandards().add(osEntity);
+            return true;
+        }
+        return false;
     }
 
     protected void parseTestFunctionality(final PendingCertifiedProductEntity listing,
