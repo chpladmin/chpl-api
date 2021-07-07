@@ -9,7 +9,7 @@
 				"listen": "test",
 				"script": {
 					"exec": [
-						"pm.test(\"/search/beta end point should return 200 status and response should have Direct Review fields when Direct Reviews are available otherwise response status should be 400\", function () {\r",
+						"pm.test(\"/search/beta end point should return 200 status with Direct Review fields if connected JIRA is running else response status should be 400\", function () {\r",
 						"    var jsonData = pm.response.json();\r",
 						"    if ((jsonData.directReviewsAvailable) == true){\r",
 						"        pm.response.to.have.status(200);\r",
@@ -73,7 +73,7 @@
 						}
 					]
 				},
-				"description": "GET /search/beta response should return status 200 and Direct Review fields  and existing and updated Surveillance fields in response when DR is available"
+				"description": "GET /search/beta response should return status 200 and Direct Review fields and existing and updated Surveillance fields in response when DR is available"
 			},
 			"response": []
 		},
@@ -83,7 +83,7 @@
 				"listen": "test",
 				"script": {
 					"exec": [
-						"pm.test(\"/search/beta end point should return 200 status and results in response should match with compliance filters when Direct Reviews are available otherwise response status should be 400\", function () {\r",
+						"pm.test(\"/search/beta end point should return 200 status with Direct Review fields if connected JIRA Is running else response status should be 400\", function () {\r",
 						"    var jsonData = pm.response.json();\r",
 						"    if ((jsonData.directReviewsAvailable) == true){\r",
 						"        pm.response.to.have.status(200);\r",
