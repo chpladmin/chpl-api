@@ -21,6 +21,10 @@
 									"",
 									"pm.test(\"expect anonymous user to receive access denied error on request to get list of ACB users that are not associated to their own\", () => {",
 									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
+									"});",
+									"pm.test(\"expect Environment header to indicate non prod environment\", function () {\r",
+									"    pm.response.to.have.header(\"Environment\");\r",
+									"    pm.expect(pm.response.headers.get(\"Environment\")).to.eql(\"NON-PRODUCTION\");\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -79,6 +83,10 @@
 									"",
 									"pm.test(\"expect ACB user to receive access denied error on create new ACB request\", () => {",
 									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
+									"});",
+									"pm.test(\"expect Environment header to indicate non prod environment\", function () {\r",
+									"    pm.response.to.have.header(\"Environment\");\r",
+									"    pm.expect(pm.response.headers.get(\"Environment\")).to.eql(\"NON-PRODUCTION\");\r",
 									"});"
 								],
 								"type": "text/javascript"
