@@ -58,11 +58,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
             "170.315 (d)(4)"
     };
 
-    private static final String[] B_RELATED_CERTS = {
-            "170.315 (d)(1)", "170.315 (d)(2)", "170.315 (d)(3)", "170.315 (d)(5)", "170.315 (d)(6)", "170.315 (d)(7)",
-            "170.315 (d)(8)"
-    };
-
     private static final String[] C_RELATED_CERTS = {
             "170.315 (d)(1)", "170.315 (d)(2)", "170.315 (d)(3)", "170.315 (d)(5)"
     };
@@ -98,8 +93,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     };
 
     private static final String B1_CRITERIA_NUMBER = "170.315 (b)(1)";
-    private static final String G1_CRITERIA_NUMBER = "170.315 (g)(1)";
-    private static final String G2_CRITERIA_NUMBER = "170.315 (g)(2)";
     private static final String G3_CRITERIA_NUMBER = "170.315 (g)(3)";
     private static final String G6_CRITERIA_NUMBER = "170.315 (g)(6)";
     private static final String H1_CRITERIA_NUMBER = "170.315 (h)(1)";

@@ -102,7 +102,6 @@ public class RequiredAndRelatedCriteriaReviewerTest {
 
         reviewer = new RequiredAndRelatedCriteriaReviewer(certificationCriterionService, errorMessageUtil,
                 validationUtil, resourcePermissions);
-        reviewer.postConstruct();
     }
 
     @Test

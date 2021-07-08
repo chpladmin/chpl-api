@@ -1,11 +1,8 @@
 package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,21 +19,12 @@ import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 
 @Component("requiredAndRelatedCriteriaReviewer")
 public class RequiredAndRelatedCriteriaReviewer  extends PermissionBasedReviewer {
+    private static final String A_CRITERIA_NUMBERS_START = "170.315 (a)";
     private static final String B_CRITERIA_NUMBERS_START = "170.315 (b)";
-    private static final String B_10 = "170.315 (b)(10)";
 
     private ErrorMessageUtil msgUtil;
     private CertificationCriterionService criterionService;
     private ValidationUtils validationUtils;
-
-    private CertificationCriterion g4;
-    private CertificationCriterion g5;
-    private CertificationCriterion g10;
-    private CertificationCriterion d1;
-    private CertificationCriterion d9;
-    private List<CertificationCriterion> d2Ord10 = new ArrayList<CertificationCriterion>();
-
-    private List<CertificationCriterion> requiredByBCriteria = new ArrayList<CertificationCriterion>();
 
     @Autowired
     public RequiredAndRelatedCriteriaReviewer(CertificationCriterionService criterionService,
@@ -48,30 +36,6 @@ public class RequiredAndRelatedCriteriaReviewer  extends PermissionBasedReviewer
         this.validationUtils = validationUtils;
     }
 
-    @PostConstruct
-    public void postConstruct() {
-        g4 = criterionService.get(Criteria2015.G_4);
-        g5 = criterionService.get(Criteria2015.G_5);
-
-        requiredByBCriteria.add(criterionService.get(Criteria2015.D_1));
-        requiredByBCriteria.add(criterionService.get(Criteria2015.D_2_OLD));
-        requiredByBCriteria.add(criterionService.get(Criteria2015.D_2_CURES));
-        requiredByBCriteria.add(criterionService.get(Criteria2015.D_3_OLD));
-        requiredByBCriteria.add(criterionService.get(Criteria2015.D_3_CURES));
-        requiredByBCriteria.add(criterionService.get(Criteria2015.D_5));
-        requiredByBCriteria.add(criterionService.get(Criteria2015.D_6));
-        requiredByBCriteria.add(criterionService.get(Criteria2015.D_7));
-        requiredByBCriteria.add(criterionService.get(Criteria2015.D_8));
-
-        g10 = criterionService.get(Criteria2015.G_10);
-        d1 = criterionService.get(Criteria2015.D_1);
-        d9 = criterionService.get(Criteria2015.D_9);
-        d2Ord10.add(criterionService.get(Criteria2015.D_2_OLD));
-        d2Ord10.add(criterionService.get(Criteria2015.D_2_CURES));
-        d2Ord10.add(criterionService.get(Criteria2015.D_10_OLD));
-        d2Ord10.add(criterionService.get(Criteria2015.D_10_CURES));
-    }
-
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
@@ -81,8 +45,9 @@ public class RequiredAndRelatedCriteriaReviewer  extends PermissionBasedReviewer
         checkG10RequiredDependencies(listing, attestedCriteria);
     }
 
-    private void checkAlwaysRequiredCriteria(CertifiedProductSearchDetails listing,
-            List<CertificationCriterion> attestedCriteria) {
+    private void checkAlwaysRequiredCriteria(CertifiedProductSearchDetails listing, List<CertificationCriterion> attestedCriteria) {
+        CertificationCriterion g4 = criterionService.get(Criteria2015.G_4);
+        CertificationCriterion g5 = criterionService.get(Criteria2015.G_5);
         if (!validationUtils.hasCriterion(g4, attestedCriteria)) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteriaRequired", Util.formatCriteriaNumber(g4)));
         }
@@ -91,9 +56,21 @@ public class RequiredAndRelatedCriteriaReviewer  extends PermissionBasedReviewer
         }
     }
 
-    private void checkBCriteriaHaveRequiredDependencies(CertifiedProductSearchDetails listing,
-            List<CertificationCriterion> attestedCriteria) {
-        List<String> excludedCertNumbers = Stream.of(B_10).collect(Collectors.toList());
+    private void checkBCriteriaHaveRequiredDependencies(CertifiedProductSearchDetails listing, List<CertificationCriterion> attestedCriteria) {
+        List<CertificationCriterion> requiredByBCriteria = Stream.of(
+                criterionService.get(Criteria2015.D_1),
+                criterionService.get(Criteria2015.D_2_OLD),
+                criterionService.get(Criteria2015.D_2_CURES),
+                criterionService.get(Criteria2015.D_3_OLD),
+                criterionService.get(Criteria2015.D_3_CURES),
+                criterionService.get(Criteria2015.D_5),
+                criterionService.get(Criteria2015.D_6),
+                criterionService.get(Criteria2015.D_7),
+                criterionService.get(Criteria2015.D_8))
+                .collect(Collectors.toList());
+        CertificationCriterion b10 = criterionService.get(Criteria2015.B_10);
+
+        List<String> excludedCertNumbers = Stream.of(b10.getNumber()).collect(Collectors.toList());
         List<String> requiredByBCriteriaCertNumbers
             = requiredByBCriteria.stream().map(criterion -> criterion.getNumber()).distinct().collect(Collectors.toList());
 
@@ -111,8 +88,17 @@ public class RequiredAndRelatedCriteriaReviewer  extends PermissionBasedReviewer
         addListingWarningsByPermission(listing, warnings);
     }
 
-    private void checkG10RequiredDependencies(CertifiedProductSearchDetails listing,
-            List<CertificationCriterion> attestedCriteria) {
+    private void checkG10RequiredDependencies(CertifiedProductSearchDetails listing, List<CertificationCriterion> attestedCriteria) {
+        CertificationCriterion g10 = criterionService.get(Criteria2015.G_10);
+        CertificationCriterion d1 = criterionService.get(Criteria2015.D_1);
+        CertificationCriterion d9 = criterionService.get(Criteria2015.D_9);
+        List<CertificationCriterion> d2Ord10 = Stream.of(
+                criterionService.get(Criteria2015.D_2_OLD),
+                criterionService.get(Criteria2015.D_2_CURES),
+                criterionService.get(Criteria2015.D_10_OLD),
+                criterionService.get(Criteria2015.D_10_CURES))
+            .collect(Collectors.toList());
+
         if (!validationUtils.hasCriterion(g10, attestedCriteria)) {
             return;
         }

@@ -17,18 +17,21 @@ public class CriteriaReviewer {
     private InvalidCriteriaCombinationReviewer invalidCriteriaCombinationReviewer;
     private RequiredAndRelatedCriteriaReviewer requiredAndRelatedCriteriaReviewer;
     private SedG32015Reviewer sedG3Reviewer;
+    private SedRelatedCriteriaReviewer sedRelatedCriteriaReviewer;
 
     @Autowired
     public CriteriaReviewer(@Qualifier("listingUploadRemovedCriteriaReviewer") RemovedCriteriaReviewer removedCriteriaReviewer,
             @Qualifier("listingUploadPrivacyAndSecurityCriteriaReviewer") PrivacyAndSecurityCriteriaReviewer privacyAndSecurityCriteriaReviewer,
             @Qualifier("invalidCriteriaCombinationReviewer") InvalidCriteriaCombinationReviewer invalidCriteriaCombinationReviewer,
             @Qualifier("requiredAndRelatedCriteriaReviewer") RequiredAndRelatedCriteriaReviewer requiredAndRelatedCriteriaReviewer,
-            @Qualifier("sedG32015Reviewer") SedG32015Reviewer sedG3Reviewer) {
+            @Qualifier("sedG32015Reviewer") SedG32015Reviewer sedG3Reviewer,
+            SedRelatedCriteriaReviewer sedRelatedCriteriaReviewer) {
         this.removedCriteriaReviewer = removedCriteriaReviewer;
         this.privacyAndSecurityCriteriaReviewer = privacyAndSecurityCriteriaReviewer;
         this.invalidCriteriaCombinationReviewer = invalidCriteriaCombinationReviewer;
         this.requiredAndRelatedCriteriaReviewer = requiredAndRelatedCriteriaReviewer;
         this.sedG3Reviewer = sedG3Reviewer;
+        this.sedRelatedCriteriaReviewer = sedRelatedCriteriaReviewer;
     }
 
     public void review(CertifiedProductSearchDetails listing) {
@@ -37,5 +40,6 @@ public class CriteriaReviewer {
         invalidCriteriaCombinationReviewer.review(listing);
         requiredAndRelatedCriteriaReviewer.review(listing);
         sedG3Reviewer.review(listing);
+        sedRelatedCriteriaReviewer.review(listing);
     }
 }
