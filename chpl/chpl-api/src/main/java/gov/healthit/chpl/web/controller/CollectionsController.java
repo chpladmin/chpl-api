@@ -173,7 +173,7 @@ public class CollectionsController {
      * @throws JsonProcessingException if processing fails
      */
     @Deprecated
-    @Operation(summary = "Get basic data about all certified products in the system.", description = "")
+    @Operation(summary = "Get basic data about all certified products in the system.", description = "", deprecated = true)
     @RequestMapping(value = "/certified_products", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.SIX_HOURS)
@@ -272,8 +272,8 @@ public class CollectionsController {
     }
 
     @Deprecated
-    @Operation(summary = "Get a list of all developers with transparency attestation URLs and ACB attestations.",
-            description = "DEPRECATED")
+    @Operation(summary = "DEPRECATED. Get a list of all developers with transparency attestation URLs and ACB attestations.",
+            deprecated = true)
     @RequestMapping(value = "/developers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody List<DeveloperTransparency> getDeveloperCollection() {

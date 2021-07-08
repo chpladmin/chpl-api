@@ -621,9 +621,10 @@ public class CertifiedProductController {
 
     @Deprecated
     @Operation(summary = "DEPRECATED. List pending certified products.",
-    description = "Pending certified products are created via CSV file upload and are left in the 'pending' state "
+        description = "Pending certified products are created via CSV file upload and are left in the 'pending' state "
             + " until validated and approved.  Security Restrictions: ROLE_ADMIN, ROLE_ACB and have "
-            + "administrative authority on the ACB that uploaded the product.")
+            + "administrative authority on the ACB that uploaded the product.",
+            deprecated = true)
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts()
             throws EntityRetrievalException, AccessDeniedException {
@@ -717,12 +718,13 @@ public class CertifiedProductController {
     //should be re-evaluated
     @Deprecated
     @Operation(summary = "DEPRECATED. Confirm a pending certified product.",
-            description = "Creates a new certified product in the system based on all of the information "
-                    + "passed in on the request. This information may differ from what was previously "
-                    + "entered for the pending certified product during upload. It will first be validated "
-                    + "to check for errors, then a new certified product is created, and the old pending certified"
-                    + "product will be removed. Security Restrictions:  ROLE_ADMIN or have ROLE_ACB and "
-                    + "administrative authority on the ACB for each pending certified product is required.")
+        description = "Creates a new certified product in the system based on all of the information "
+                + "passed in on the request. This information may differ from what was previously "
+                + "entered for the pending certified product during upload. It will first be validated "
+                + "to check for errors, then a new certified product is created, and the old pending certified"
+                + "product will be removed. Security Restrictions:  ROLE_ADMIN or have ROLE_ACB and "
+                + "administrative authority on the ACB for each pending certified product is required.",
+                deprecated = true)
     @RequestMapping(value = "/pending/{pcpId}/confirm", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProduct(

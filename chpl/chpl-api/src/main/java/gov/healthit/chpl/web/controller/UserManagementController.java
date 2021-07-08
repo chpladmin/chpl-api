@@ -383,7 +383,8 @@ public class UserManagementController {
     @Deprecated
     @Operation(summary = "DEPRECATED. View a specific user's details.",
             description = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
-                    + "have ROLE_ACB.")
+                    + "have ROLE_ACB.",
+                    deprecated = true)
     @RequestMapping(value = "/{userName}/details", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody User getUserByUsername(@PathVariable("userName") String userName)
