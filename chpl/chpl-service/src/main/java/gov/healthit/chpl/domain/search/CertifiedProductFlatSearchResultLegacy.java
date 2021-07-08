@@ -2,6 +2,7 @@ package gov.healthit.chpl.domain.search;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import gov.healthit.chpl.search.domain.SearchViews;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

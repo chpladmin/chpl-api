@@ -12,10 +12,10 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.IncumbentDevelopersStatisticsDAO;
-import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
 
 /**
  * Populates the criterion_product_statistics table with summarized count

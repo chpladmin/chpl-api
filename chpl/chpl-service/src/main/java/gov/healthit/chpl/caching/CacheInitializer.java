@@ -27,6 +27,7 @@ public class CacheInitializer {
     public static List<String> getPreInitializedCaches() {
         List<String> caches = new ArrayList<String>();
         caches.add(CacheNames.COLLECTIONS_LISTINGS);
+        caches.add(CacheNames.COLLECTIONS_SEARCH);
         caches.add(CacheNames.ALL_CERT_IDS);
         caches.add(CacheNames.ALL_CERT_IDS_WITH_PRODUCTS);
         // all below caches make up the search options

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.manager;
+package gov.healthit.chpl.search;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -20,11 +20,13 @@ import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
-import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
-import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResultLegacy;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResultLegacy;
-import gov.healthit.chpl.domain.search.SearchRequest;
-import gov.healthit.chpl.domain.search.SearchResponse;
+import gov.healthit.chpl.domain.search.SearchRequestLegacy;
+import gov.healthit.chpl.domain.search.SearchResponseLegacy;
+import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
+import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.search.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.service.DirectReviewSearchService;
 import lombok.extern.log4j.Log4j2;
 
@@ -45,24 +47,36 @@ public class CertifiedProductSearchManager {
 
     @Transactional(readOnly = true)
     @Cacheable(value = CacheNames.COLLECTIONS_LISTINGS, key = "'listings'")
-    public List<CertifiedProductFlatSearchResult> search() {
-        List<CertifiedProductFlatSearchResult> results = searchDao.getAllCertifiedProducts();
+    public List<CertifiedProductFlatSearchResult> getFlatListingCollection() {
+        List<CertifiedProductFlatSearchResult> results = searchDao.getFlatCertifiedProducts();
         results.stream()
             .forEach(searchResult -> populateDirectReviewFields(searchResult));
         return results;
     }
 
+    @Transactional(readOnly = true)
+    @Cacheable(value = CacheNames.COLLECTIONS_SEARCH)
+    public List<CertifiedProductBasicSearchResult> getSearchListingCollection() {
+        List<CertifiedProductBasicSearchResult> results = searchDao.getCertifiedProducts();
+        results.stream()
+            .forEach(searchResult -> populateDirectReviewFields(searchResult));
+        return results;
+    }
+
+    private void populateDirectReviewFields(CertifiedProductBasicSearchResult searchResult) {
+        List<CertificationStatusEvent> statusEvents = createStatusEventsFromBasicSearchResult(searchResult);
+        populateDirectReviewFields(searchResult, statusEvents);
+    }
+
     private void populateDirectReviewFields(CertifiedProductFlatSearchResult searchResult) {
         List<CertificationStatusEvent> statusEvents = createStatusEventsFromFlatSearchResult(searchResult);
-        List<DirectReview> listingDrs = drService.getDirectReviewsRelatedToListing(searchResult.getId(),
-                searchResult.getDeveloperId(),
-                searchResult.getEdition(),
-                statusEvents);
-        searchResult.setDirectReviewCount(listingDrs.size());
-        searchResult.setOpenDirectReviewNonConformityCount(
-                calculateNonConformitiesWithStatusForListing(listingDrs, searchResult.getId(), DirectReviewNonConformity.STATUS_OPEN));
-        searchResult.setClosedDirectReviewNonConformityCount(
-                calculateNonConformitiesWithStatusForListing(listingDrs, searchResult.getId(), DirectReviewNonConformity.STATUS_CLOSED));
+        populateDirectReviewFields(searchResult, statusEvents);
+    }
+
+    private List<CertificationStatusEvent> createStatusEventsFromBasicSearchResult(CertifiedProductBasicSearchResult listing) {
+        return listing.getStatusEvents().stream()
+            .map(dateAndStatusStr -> convertToCertificationStatusEvent(dateAndStatusStr))
+            .collect(Collectors.toList());
     }
 
     private List<CertificationStatusEvent> createStatusEventsFromFlatSearchResult(CertifiedProductFlatSearchResult listing) {
@@ -97,6 +111,18 @@ public class CertifiedProductSearchManager {
             .build();
     }
 
+    private void populateDirectReviewFields(CertifiedProductSearchResult searchResult, List<CertificationStatusEvent> statusEvents) {
+        List<DirectReview> listingDrs = drService.getDirectReviewsRelatedToListing(searchResult.getId(),
+                searchResult.getDeveloperId(),
+                searchResult.getEdition(),
+                statusEvents);
+        searchResult.setDirectReviewCount(listingDrs.size());
+        searchResult.setOpenDirectReviewNonConformityCount(
+                calculateNonConformitiesWithStatusForListing(listingDrs, searchResult.getId(), DirectReviewNonConformity.STATUS_OPEN));
+        searchResult.setClosedDirectReviewNonConformityCount(
+                calculateNonConformitiesWithStatusForListing(listingDrs, searchResult.getId(), DirectReviewNonConformity.STATUS_CLOSED));
+    }
+
     private int calculateNonConformitiesWithStatusForListing(List<DirectReview> listingDrs, Long listingId,
             String nonConformityStatus) {
         return (int) listingDrs.stream()
@@ -122,17 +148,17 @@ public class CertifiedProductSearchManager {
     @Cacheable(value = CacheNames.COLLECTIONS_LISTINGS, key = "'legacyListings'")
     @Deprecated
     public List<CertifiedProductFlatSearchResultLegacy> searchLegacy() {
-        List<CertifiedProductFlatSearchResultLegacy> results = searchDao.getAllCertifiedProductsLegacy();
+        List<CertifiedProductFlatSearchResultLegacy> results = searchDao.getFlatCertifiedProductsLegacy();
         return results;
     }
 
     @Transactional
-    public SearchResponse search(SearchRequest searchRequest) {
+    public SearchResponseLegacy search(SearchRequestLegacy searchRequest) {
 
-        Collection<CertifiedProductBasicSearchResult> searchResults = searchDao.search(searchRequest);
+        Collection<CertifiedProductBasicSearchResultLegacy> searchResults = searchDao.search(searchRequest);
         int totalCountSearchResults = searchDao.getTotalResultCount(searchRequest);
 
-        SearchResponse response = new SearchResponse(Integer.valueOf(totalCountSearchResults),
+        SearchResponseLegacy response = new SearchResponseLegacy(Integer.valueOf(totalCountSearchResults),
                 searchResults, searchRequest.getPageSize(), searchRequest.getPageNumber());
         return response;
     }

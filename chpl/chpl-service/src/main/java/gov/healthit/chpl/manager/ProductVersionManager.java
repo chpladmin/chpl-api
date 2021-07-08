@@ -111,7 +111,7 @@ public class ProductVersionManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
             + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).CREATE)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
     public ProductVersionDTO create(ProductVersionDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
@@ -146,7 +146,7 @@ public class ProductVersionManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
             + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).UPDATE, #dto)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
     public ProductVersionDTO update(ProductVersionDTO dto)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
@@ -180,7 +180,7 @@ public class ProductVersionManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
             + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).MERGE, #versionIdsToMerge)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
     public ProductVersionDTO merge(List<Long> versionIdsToMerge, ProductVersionDTO toCreate)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
@@ -222,7 +222,7 @@ public class ProductVersionManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
             + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).SPLIT, #oldVersion)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
     public ProductVersionDTO split(ProductVersionDTO oldVersion, ProductVersionDTO newVersion,
             String newVersionCode, List<Long> newVersionListingIds)

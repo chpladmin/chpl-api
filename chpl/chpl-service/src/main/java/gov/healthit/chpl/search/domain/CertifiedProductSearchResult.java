@@ -1,6 +1,9 @@
-package gov.healthit.chpl.domain.search;
+package gov.healthit.chpl.search.domain;
 
 import java.io.Serializable;
+import java.util.Objects;
+
+import org.apache.commons.lang3.ObjectUtils;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -16,6 +19,8 @@ import lombok.experimental.SuperBuilder;
 @Data
 public class CertifiedProductSearchResult implements Serializable {
     private static final long serialVersionUID = -2547390525592841123L;
+    public static final String SMILEY_SPLIT_CHAR = "\u263A";
+    public static final String FROWNEY_SPLIT_CHAR = "\u2639";
 
     @JsonView({
             SearchViews.Default.class
@@ -154,5 +159,28 @@ public class CertifiedProductSearchResult implements Serializable {
         this.numMeaningfulUse = other.getNumMeaningfulUse();
         this.numMeaningfulUseDate = other.getNumMeaningfulUseDate();
         this.transparencyAttestationUrl = other.getTransparencyAttestationUrl();
+    }
+
+    @Override
+    public boolean equals(Object another) {
+        if (another == null) {
+            return false;
+        }
+        if (!(another instanceof CertifiedProductSearchResult)) {
+            return false;
+        }
+        CertifiedProductSearchResult anotherSearchResult = (CertifiedProductSearchResult) another;
+        if (ObjectUtils.allNotNull(this, anotherSearchResult, this.getId(), anotherSearchResult.getId())) {
+            return Objects.equals(this.getId(), anotherSearchResult.getId());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        if (this.getId() == null) {
+            return -1;
+        }
+        return this.getId().hashCode();
     }
 }
