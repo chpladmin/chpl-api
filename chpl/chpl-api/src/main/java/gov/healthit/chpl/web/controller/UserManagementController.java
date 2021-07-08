@@ -386,7 +386,7 @@ public class UserManagementController {
                     + "have ROLE_ACB.",
                     deprecated = true)
     @RequestMapping(value = "/{userName}/details", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     public @ResponseBody User getUserByUsername(@PathVariable("userName") String userName)
             throws UserRetrievalException, MultipleUserAccountsException {
         UserDTO user = userManager.getByNameOrEmail(userName);
