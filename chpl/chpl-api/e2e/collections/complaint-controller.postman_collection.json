@@ -136,7 +136,11 @@
 									"});\r",
 									"pm.test(\"expect ONC STAFF user to get access denied error on delete complaint request\", () => {\r",
 									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
-									"});"
+									"});\r",
+									"pm.test(\"expect Environment header to indicate non prod environment\", function () {\r",
+									"    pm.response.to.have.header(\"Environment\");\r",
+									"    pm.expect(pm.response.headers.get(\"Environment\")).to.eql(\"NON-PRODUCTION\");\r",
+									"});\r"
 								],
 								"type": "text/javascript"
 							}

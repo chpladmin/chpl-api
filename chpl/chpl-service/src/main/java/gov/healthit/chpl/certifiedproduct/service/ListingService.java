@@ -110,7 +110,6 @@ public class ListingService {
 
         searchDetails.setCertificationResults(certificationResultService.getCertificationResults(searchDetails));
         searchDetails.setCqmResults(cqmResultsService.getCqmResultDetails(dto.getId(), dto.getYear()));
-        searchDetails.setCertificationEvents(certificationStatusEventsService.getCertificationStatusEvents(dto.getId()));
         List<PromotingInteroperabilityUser> promotingInteroperabilityUserHistory = piuService.getPromotingInteroperabilityUserHistory(dto.getId());
         searchDetails.setMeaningfulUseUserHistory(convertToMeaningfulUse(promotingInteroperabilityUserHistory));
         searchDetails.setPromotingInteroperabilityUserHistory(promotingInteroperabilityUserHistory);
@@ -176,8 +175,9 @@ public class ListingService {
         InheritedCertificationStatus ics = new InheritedCertificationStatus();
         ics.setInherits(dto.getIcs());
         listing.setIcs(ics);
-
-        listing = populateDirectReviews(listing);
+        //cannot put this in the builder method because it's immutable meaning we can't sort it later
+        listing.setCertificationEvents(certificationStatusEventsService.getCertificationStatusEvents(dto.getId()));
+        populateDirectReviews(listing);
         return listing;
     }
 
@@ -187,7 +187,7 @@ public class ListingService {
                 .collect(Collectors.toList());
     }
 
-    private CertifiedProductSearchDetails populateDirectReviews(CertifiedProductSearchDetails listing) {
+    private void populateDirectReviews(CertifiedProductSearchDetails listing) {
         List<DirectReview> drs = new ArrayList<DirectReview>();
         if (listing.getDeveloper() != null && listing.getDeveloper().getDeveloperId() != null) {
             drs = drService.getDirectReviewsRelatedToListing(listing.getId(),
@@ -197,7 +197,6 @@ public class ListingService {
         }
         listing.setDirectReviews(drs);
         listing.setDirectReviewsAvailable(drService.getDirectReviewsAvailable());
-        return listing;
     }
 
     private List<CertifiedProductDTO> getCertifiedProductChildren(Long id) {

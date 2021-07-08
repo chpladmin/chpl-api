@@ -23,16 +23,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.DeveloperTransparency;
-import gov.healthit.chpl.domain.search.BasicSearchResponse;
 import gov.healthit.chpl.domain.search.BasicSearchResponseLegacy;
-import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResultLegacy;
-import gov.healthit.chpl.domain.search.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.search.CertifiedProductSearchResultLegacy;
-import gov.healthit.chpl.domain.search.SearchViews;
 import gov.healthit.chpl.logging.Loggable;
-import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.search.CertifiedProductSearchManager;
+import gov.healthit.chpl.search.domain.BasicSearchResponse;
+import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.search.domain.CertifiedProductSearchResult;
+import gov.healthit.chpl.search.domain.SearchViews;
 import gov.healthit.chpl.service.DirectReviewSearchService;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
@@ -76,7 +76,7 @@ public class CollectionsController {
     public @ResponseBody String getAllCertifiedProducts(
             @RequestParam(value = "fields", required = false) final String delimitedFieldNames)
             throws JsonProcessingException {
-        List<CertifiedProductFlatSearchResult> cachedSearchResults = certifiedProductSearchManager.search();
+        List<CertifiedProductFlatSearchResult> cachedSearchResults = certifiedProductSearchManager.getFlatListingCollection();
 
         String result = "";
         if (!StringUtils.isEmpty(delimitedFieldNames)) {

@@ -3,9 +3,9 @@
     <Logger name="net.sf.ehcache" level="INFO" additivity="false">
         <AppenderRef ref="cacheListenerActivity" />
     </Logger>
-    <logger name="org.springframework.cache" level="INFO">
+    <Logger name="org.springframework.cache" level="INFO">
         <AppenderRef ref="cacheListenerActivity" />
-    </logger>
+    </Logger>
     <Logger name="loggableLogger" level="INFO"
         additivity="false">
         <AppenderRef ref="loggable" />

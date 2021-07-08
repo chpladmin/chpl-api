@@ -345,7 +345,7 @@
             </job-data-map>
         </job>
 
-        <!-- Job used to trigger mass required password change of almost 
+        <!-- Job used to trigger mass required password change of almost
            all users -->
         <job>
             <name>massRequirePasswordChangeJob</name>
@@ -424,7 +424,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF;ROLE_ACB</value>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
                 </entry>
                 <entry>
                     <key>email</key>
