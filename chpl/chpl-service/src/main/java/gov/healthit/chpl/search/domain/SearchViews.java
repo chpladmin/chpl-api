@@ -1,4 +1,4 @@
-package gov.healthit.chpl.domain.search;
+package gov.healthit.chpl.search.domain;
 
 public class SearchViews {
     public static class Default {

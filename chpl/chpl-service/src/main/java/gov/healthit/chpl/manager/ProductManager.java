@@ -120,7 +120,7 @@ public class ProductManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).CREATE)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.PRODUCT_NAMES
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
     public ProductDTO create(ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
@@ -137,7 +137,7 @@ public class ProductManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE_OWNERSHIP, #updatedProductDto)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
     public ProductDTO updateProductOwnership(ProductDTO updatedProductDto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
@@ -180,7 +180,7 @@ public class ProductManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE, #dto)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.PRODUCT_NAMES
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
     public ProductDTO update(ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
@@ -192,7 +192,7 @@ public class ProductManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).MERGE, #productIdsToMerge)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.PRODUCT_NAMES
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
     public ProductDTO merge(List<Long> productIdsToMerge, ProductDTO toCreate)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
@@ -233,7 +233,7 @@ public class ProductManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).SPLIT, #oldProduct)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.PRODUCT_NAMES
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
     public ProductDTO split(ProductDTO oldProduct, ProductDTO productToCreate, String newProductCode,
             List<ProductVersionDTO> newProductVersions)

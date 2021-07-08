@@ -7,7 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
 
 public class CriterionProductDataFilter {
     private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
