@@ -135,8 +135,16 @@ public class SearchRequestValidator {
                         .map(value -> value.name())
                         .collect(Collectors.joining(","))))
                     .collect(Collectors.toSet());
+        } else if (searchRequest.getCertificationCriteriaOperator() == null
+                && StringUtils.isBlank(searchRequest.getCertificationCriteriaOperatorString())
+                && hasMultipleCriteriaToSearch(searchRequest)) {
+            return Stream.of(msgUtil.getMessage("search.certificationCriteria.missingSearchOperator")).collect(Collectors.toSet());
         }
         return Collections.emptySet();
+    }
+
+    private boolean hasMultipleCriteriaToSearch(SearchRequest searchRequest) {
+        return searchRequest.getCertificationCriteriaIds() != null && searchRequest.getCertificationCriteriaIds().size() > 1;
     }
 
     private Set<String> getCqmErrors(Set<String> cqmNumbers) {
@@ -160,8 +168,16 @@ public class SearchRequestValidator {
                         .map(value -> value.name())
                         .collect(Collectors.joining(","))))
                     .collect(Collectors.toSet());
+        } else if (searchRequest.getCqmsOperator() == null
+                && StringUtils.isBlank(searchRequest.getCqmsOperatorString())
+                && hasMultipleCqmsToSearch(searchRequest)) {
+            return Stream.of(msgUtil.getMessage("search.cqms.missingSearchOperator")).collect(Collectors.toSet());
         }
         return Collections.emptySet();
+    }
+
+    private boolean hasMultipleCqmsToSearch(SearchRequest searchRequest) {
+        return searchRequest.getCqms() != null && searchRequest.getCqms().size() > 1;
     }
 
     private Set<String> getAcbErrors(Set<String> acbs) {
@@ -244,8 +260,19 @@ public class SearchRequestValidator {
                         .map(value -> value.name())
                         .collect(Collectors.joining(","))))
                     .collect(Collectors.toSet());
+        } else if (complianceFilter != null && isMissingOptionsOperator(complianceFilter)
+                && hasMultipleOptions(complianceFilter)) {
+            return Stream.of(msgUtil.getMessage("search.compliance.missingSearchOperator")).collect(Collectors.toSet());
         }
         return Collections.emptySet();
+    }
+
+    private boolean isMissingOptionsOperator(ComplianceSearchFilter complianceFilter) {
+        return complianceFilter.getNonConformityOptionsOperator() == null;
+    }
+
+    private boolean hasMultipleOptions(ComplianceSearchFilter complianceFilter) {
+        return complianceFilter.getNonConformityOptions() != null && complianceFilter.getNonConformityOptions().size() > 1;
     }
 
     private Set<String> getNonConformitySearchOptionsErrors(ComplianceSearchFilter complianceFilter) {

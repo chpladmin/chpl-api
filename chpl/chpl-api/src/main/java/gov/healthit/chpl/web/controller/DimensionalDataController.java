@@ -100,7 +100,7 @@ public class DimensionalDataController {
     @Operation(summary = "Get all fuzzy matching choices for the items that be fuzzy matched.",
             description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/data/fuzzy_choices", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<FuzzyChoices> getFuzzyChoices()
             throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException {
@@ -110,7 +110,7 @@ public class DimensionalDataController {
     @Operation(summary = "Change existing fuzzy matching choices.",
             description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "/data/fuzzy_choices/{fuzzyChoiceId}", method = RequestMethod.PUT,
-    consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+        consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public FuzzyChoices updateFuzzyChoicesForSearching(@RequestBody FuzzyChoices fuzzyChoices)
             throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
             EntityCreationException, IOException {
@@ -134,7 +134,7 @@ public class DimensionalDataController {
 
     @Operation(summary = "Get a list of quarters for which a surveillance report can be created.")
     @RequestMapping(value = "/data/quarters", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModel> getQuarters() {
         return dimensionalDataManager.getQuarters();
@@ -143,7 +143,7 @@ public class DimensionalDataController {
     @Operation(summary = "Get a list of surveillance process types.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB.")
     @RequestMapping(value = "/data/surveillance-process-types", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModel> getSurveillanceProcessTypes() {
         return survReportManager.getSurveillanceProcessTypes();
@@ -152,7 +152,7 @@ public class DimensionalDataController {
     @Operation(summary = "Get a list of surveillance outcomes.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB.")
     @RequestMapping(value = "/data/surveillance-outcomes", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModel> getSurveillanceOutcomes() {
         return survReportManager.getSurveillanceOutcomes();
@@ -161,7 +161,7 @@ public class DimensionalDataController {
     @Operation(summary = "Get all possible classifications in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/classification_types", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModel> getClassificationNames() {
         return dimensionalDataManager.getClassificationNames();
@@ -170,7 +170,7 @@ public class DimensionalDataController {
     @Operation(summary = "Get all possible certificaiton editions in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/certification_editions", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModel> getEditionNames() {
         return dimensionalDataManager.getEditionNames(false);
@@ -179,7 +179,7 @@ public class DimensionalDataController {
     @Operation(summary = "Get all possible certification statuses in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/certification_statuses", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModel> getCertificationStatuses() {
         return dimensionalDataManager.getCertificationStatuses();
@@ -188,7 +188,7 @@ public class DimensionalDataController {
     @Operation(summary = "Get all possible practice types in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/practice_types", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModel> getPracticeTypeNames() {
         return dimensionalDataManager.getPracticeTypeNames();
@@ -197,7 +197,7 @@ public class DimensionalDataController {
     @Operation(summary = "Get all possible product names in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/products", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModelStatuses> getProductNames() {
         return dimensionalDataManager.getProducts();
@@ -206,7 +206,7 @@ public class DimensionalDataController {
     @Operation(summary = "Get all possible developer names in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/developers", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModelStatuses> getDeveloperNames() {
         return dimensionalDataManager.getDevelopers();
@@ -215,7 +215,7 @@ public class DimensionalDataController {
     @Operation(summary = "Get all possible ACBs in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/certification_bodies", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<CertificationBody> getCertBodyNames() {
         return dimensionalDataManager.getCertBodyNames();
@@ -224,7 +224,7 @@ public class DimensionalDataController {
     @Operation(summary = "Get all possible education types in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/education_types", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getEducationTypes() {
         Set<KeyValueModel> data = dimensionalDataManager.getEducationTypes();
@@ -237,7 +237,7 @@ public class DimensionalDataController {
     @Operation(summary = "Get all possible test participant age ranges in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/age_ranges", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getAgeRanges() {
         Set<KeyValueModel> data = dimensionalDataManager.getAgeRanges();
@@ -250,7 +250,7 @@ public class DimensionalDataController {
     @Operation(summary = "Get all possible optional standard options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/optional-standards", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getOptionalStandards() {
         Set<OptionalStandard> data = dimensionalDataManager.getOptionalStandards();
@@ -267,7 +267,7 @@ public class DimensionalDataController {
     @Operation(summary = "Get all possible test functionality options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_functionality", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getTestFunctionality() {
         Set<TestFunctionality> data = dimensionalDataManager.getTestFunctionality();
@@ -280,7 +280,7 @@ public class DimensionalDataController {
     @Operation(summary = "Get all possible test tool options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_tools", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getTestTools() {
         Set<KeyValueModel> data = dimensionalDataManager.getTestTools();
@@ -293,7 +293,7 @@ public class DimensionalDataController {
     @Operation(summary = "Get all possible test procedure options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_procedures", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getTestProcedures() {
         Set<CriteriaSpecificDescriptiveModel> data = dimensionalDataManager.getTestProcedures();
@@ -306,7 +306,7 @@ public class DimensionalDataController {
     @Operation(summary = "Get all possible test data options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_data", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getTestData() {
         Set<CriteriaSpecificDescriptiveModel> data = dimensionalDataManager.getTestData();
@@ -319,7 +319,7 @@ public class DimensionalDataController {
     @Operation(summary = "Get all possible test standard options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_standards", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getTestStandards() {
         Set<TestStandard> data = dimensionalDataManager.getTestStandards();
@@ -332,7 +332,7 @@ public class DimensionalDataController {
     @Operation(summary = "Get all possible qms standard options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/qms_standards", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getQmsStandards() {
         Set<KeyValueModel> data = dimensionalDataManager.getQmsStandards();
@@ -345,7 +345,7 @@ public class DimensionalDataController {
     @Operation(summary = "Get all possible targeted user options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/targeted_users", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getTargetedUsers() {
         Set<KeyValueModel> data = dimensionalDataManager.getTargetedUesrs();
@@ -358,7 +358,7 @@ public class DimensionalDataController {
     @Operation(summary = "Get all possible UCD process options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/ucd_processes", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getUcdProcesses() {
         Set<KeyValueModel> data = dimensionalDataManager.getUcdProcesses();
@@ -371,7 +371,7 @@ public class DimensionalDataController {
     @Operation(summary = "Get all possible accessibility standard options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/accessibility_standards", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getAccessibilityStandards() {
         Set<KeyValueModel> data = dimensionalDataManager.getAccessibilityStandards();
@@ -384,7 +384,7 @@ public class DimensionalDataController {
     @Operation(summary = "Get all possible measure options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/measures", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getMeasures() {
         Set<Measure> data = dimensionalDataManager.getMeasures();
@@ -397,7 +397,7 @@ public class DimensionalDataController {
     @Operation(summary = "Get all possible types of measures in the CHPL, currently this is G1 and G2.",
             description = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/measure-types", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getMeasureTypes() {
         Set<MeasureType> data = dimensionalDataManager.getMeasureTypes();
@@ -409,7 +409,7 @@ public class DimensionalDataController {
 
     @Operation(summary = "Get all possible developer status options in the CHPL")
     @RequestMapping(value = "/data/developer_statuses", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getDeveloperStatuses() {
         Set<KeyValueModel> data = dimensionalDataManager.getDeveloperStatuses();
@@ -421,7 +421,7 @@ public class DimensionalDataController {
 
     @Operation(summary = "Get all possible surveillance type options in the CHPL")
     @RequestMapping(value = "/data/surveillance_types", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getSurveillanceTypes() {
         Set<KeyValueModel> data = dimensionalDataManager.getSurveillanceTypes();
@@ -433,7 +433,7 @@ public class DimensionalDataController {
 
     @Operation(summary = "Get all possible surveillance result type options in the CHPL")
     @RequestMapping(value = "/data/surveillance_result_types", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getSurveillanceResultTypes() {
         Set<KeyValueModel> data = dimensionalDataManager.getSurveillanceResultTypes();
@@ -445,7 +445,7 @@ public class DimensionalDataController {
 
     @Operation(summary = "Get all possible surveillance requirement type options in the CHPL")
     @RequestMapping(value = "/data/surveillance_requirement_types", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getSurveillanceRequirementTypes() {
         Set<KeyValueModel> data = dimensionalDataManager.getSurveillanceRequirementTypes();
@@ -458,7 +458,7 @@ public class DimensionalDataController {
     @Deprecated
     @Operation(summary = "DEPRECATED. Get all possible surveillance requirement options in the CHPL")
     @RequestMapping(value = "/data/surveillance_requirements", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SurveillanceRequirementOptionsDeprecated getSurveillanceRequirementOptionsDeprecated() {
         SurveillanceRequirementOptionsDeprecated data =
@@ -468,7 +468,7 @@ public class DimensionalDataController {
 
     @Operation(summary = "Get all possible surveillance requirement options in the CHPL")
     @RequestMapping(value = "/data/surveillance-requirements", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SurveillanceRequirementOptions getSurveillanceRequirementOptions() {
         SurveillanceRequirementOptions data =
@@ -478,7 +478,7 @@ public class DimensionalDataController {
 
     @Operation(summary = "Get all possible nonconformity status type options in the CHPL")
     @RequestMapping(value = "/data/nonconformity_status_types", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getNonconformityStatusTypes() {
         Set<KeyValueModel> data = dimensionalDataManager.getNonconformityStatusTypes();
@@ -491,7 +491,7 @@ public class DimensionalDataController {
     @Deprecated
     @Operation(summary = "DEPRECATED. Get all possible nonconformity type options in the CHPL")
     @RequestMapping(value = "/data/nonconformity_types", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getNonconformityTypeOptionsDeprecated() {
         Set<KeyValueModel> data = dimensionalDataManager.getNonconformityTypeOptionsDeprecated();
@@ -503,7 +503,7 @@ public class DimensionalDataController {
 
     @Operation(summary = "Get all possible nonconformity type options in the CHPL")
     @RequestMapping(value = "/data/nonconformity-types", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getNonconformityTypeOptions() {
         Set<CertificationCriterion> data = dimensionalDataManager.getNonconformityTypeOptions();
@@ -515,7 +515,7 @@ public class DimensionalDataController {
 
     @Operation(summary = "Get all available pending listing upload template versions.")
     @RequestMapping(value = "/data/upload_template_versions", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getUploadTemplateVersions() {
         Set<UploadTemplateVersion> data = dimensionalDataManager.getUploadTemplateVersions();
@@ -536,7 +536,7 @@ public class DimensionalDataController {
     @Operation(summary = "DEPRECATED. Use /data/search-options instead. Get all search options in the CHPL",
     description = "This returns all of the other /data/{something} results in one single response.")
     @RequestMapping(value = "/data/search_options", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchableDimensionalData getSearchOptionsDeprecated(
             @RequestParam(value = "simple", required = false, defaultValue = "false") Boolean simple)
@@ -555,7 +555,7 @@ public class DimensionalDataController {
     @Operation(summary = "Get all search options in the CHPL",
             description = "This returns all of the other /data/{something} results in one single response.")
     @RequestMapping(value = "/data/search-options", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody DimensionalData getSearchOptions(
             @RequestParam(value = "simple", required = false, defaultValue = "false") Boolean simple)
@@ -568,7 +568,7 @@ public class DimensionalDataController {
             + "Get all developer decertifications in the CHPL",
             description = "This returns all decertified developers.")
     @RequestMapping(value = "/decertifications/developers", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException {
         DecertifiedDeveloperResults ddr = new DecertifiedDeveloperResults();
@@ -579,7 +579,7 @@ public class DimensionalDataController {
 
     @Operation(summary = "Get all available filter type.")
     @RequestMapping(value = "/data/filter_types", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getFilterTypes() {
         Set<KeyValueModel> data = filterManager.getFilterTypes();
@@ -591,7 +591,7 @@ public class DimensionalDataController {
 
     @Operation(summary = "Get all possible complainant types in the CHPL")
     @RequestMapping(value = "/data/complainant-types", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getComplainantTypes() {
         Set<KeyValueModel> data = complaintManager.getComplainantTypes();
@@ -603,7 +603,7 @@ public class DimensionalDataController {
 
     @Operation(summary = "Get all possible certification criteria in the CHPL")
     @RequestMapping(value = "/data/certification-criteria", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertificationCriterionResults getCertificationCriteria() {
         Set<CertificationCriterion> criteria = dimensionalDataManager.getCertificationCriterion();
@@ -616,7 +616,7 @@ public class DimensionalDataController {
 
     @Operation(summary = "Get all possible change request types in the CHPL")
     @RequestMapping(value = "/data/change-request-types", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getChangeRequestTypes() {
         Set<KeyValueModel> data = changeRequestManager.getChangeRequestTypes();
@@ -628,7 +628,7 @@ public class DimensionalDataController {
 
     @Operation(summary = "Get all possible change request status types in the CHPL")
     @RequestMapping(value = "/data/change-request-status-types", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getChangeRequestStatusTypes() {
         Set<KeyValueModel> data = changeRequestManager.getChangeRequestStatusTypes();
@@ -640,7 +640,7 @@ public class DimensionalDataController {
 
     @Operation(summary = "Get all possible SVAP and associated criteria in the CHPL")
     @RequestMapping(value = "/data/svap", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SvapResults getSvapCriteriaMaps() throws EntityRetrievalException {
         return new SvapResults(svapManager.getAllSvapCriteriaMaps());

@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 
 @Deprecated
@@ -12,8 +11,8 @@ public class SurveillanceSearchFilter implements Serializable {
     private static final long serialVersionUID = 1329207628639701580L;
 
     //search for one or more states of nonconformities
-    Set<NonConformitySearchOptions> nonconformityOptions =
-            new HashSet<NonConformitySearchOptions>();
+    Set<LegacyNonConformitySearchOptions> nonconformityOptions =
+            new HashSet<LegacyNonConformitySearchOptions>();
 
     SearchSetOperator nonconformityOptionsOperator = SearchSetOperator.OR;
 
@@ -22,11 +21,11 @@ public class SurveillanceSearchFilter implements Serializable {
     //default is null - don't care about surveillance
     Boolean hasHadSurveillance = null;
 
-    public Set<NonConformitySearchOptions> getNonconformityOptions() {
+    public Set<LegacyNonConformitySearchOptions> getNonconformityOptions() {
         return nonconformityOptions;
     }
 
-    public void setNonconformityOptions(final Set<NonConformitySearchOptions> nonconformityOptions) {
+    public void setNonconformityOptions(final Set<LegacyNonConformitySearchOptions> nonconformityOptions) {
         this.nonconformityOptions = nonconformityOptions;
     }
 

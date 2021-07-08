@@ -494,7 +494,7 @@ public class CertifiedProductController {
     }
 
     @Operation(summary = "Get the ICS family tree for the specified certified product.",
-            description = "Returns all member of the family tree connected to the specified certified product.")
+            description = "Returns all members of the family tree connected to the specified certified product.")
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/ics_relationships", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)

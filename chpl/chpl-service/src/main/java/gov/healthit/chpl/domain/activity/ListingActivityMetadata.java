@@ -14,6 +14,7 @@ public class ListingActivityMetadata extends ActivityMetadata {
 
     private String chplProductNumber;
     private String acbName;
+    private Long acbId;
     private String developerName;
     private String productName;
     private String edition;
