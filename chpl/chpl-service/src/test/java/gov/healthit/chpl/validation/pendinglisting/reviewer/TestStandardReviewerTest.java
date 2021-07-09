@@ -55,6 +55,8 @@ public class TestStandardReviewerTest {
         ff4j = Mockito.mock(FF4j.class);
         Mockito.when(ff4j.check(FeatureList.OPTIONAL_STANDARDS))
         .thenReturn(false);
+        Mockito.when(ff4j.check(FeatureList.OPTIONAL_STANDARDS_ERROR))
+        .thenReturn(false);
 
         reviewer = new TestStandardReviewer(testStandardDao, errorMessageUtil, ff4j);
     }
