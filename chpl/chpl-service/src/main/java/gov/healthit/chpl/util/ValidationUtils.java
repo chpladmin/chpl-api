@@ -11,27 +11,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
+import gov.healthit.chpl.service.CertificationCriterionService;
 
 @Component
 public class ValidationUtils {
     private UrlValidator urlValidator;
-    private CertificationCriterionDAO criteriaDao;
+    private CertificationCriterionService criteriaService;
 
     public ValidationUtils() {
         urlValidator = new UrlValidator();
     }
 
     @Autowired
-    public ValidationUtils(CertificationCriterionDAO criteriaDao) {
+    public ValidationUtils(CertificationCriterionService criteriaService) {
         this();
-        this.criteriaDao = criteriaDao;
+        this.criteriaService = criteriaService;
     }
 
     public boolean hasNewline(String input) {
@@ -282,14 +281,29 @@ public class ValidationUtils {
         return hasCert;
     }
 
-    public List<String> checkClassOfCriteriaForErrors(String criterionNumberStart,
-            List<CertificationCriterion> allCriteriaMet, List<String> complimentaryCertNumbers) {
-        return checkClassSubsetOfCriteriaForErrors(criterionNumberStart, allCriteriaMet, complimentaryCertNumbers,
-                new ArrayList<String>());
+    public List<String> checkClassOfCriteriaForMissingComplementaryCriteriaErrors(String criterionNumberStart,
+            List<CertificationCriterion> allCriteriaMet, List<CertificationCriterion> complementaryCriteria) {
+        return checkClassSubsetOfCriteriaForMissingComplementaryCriteriaErrors(criterionNumberStart, allCriteriaMet,
+                complementaryCriteria, new ArrayList<CertificationCriterion>());
     }
 
-    public List<String> checkClassSubsetOfCriteriaForErrors(String criterionNumberStart,
-            List<CertificationCriterion> allCriteriaMet, List<String> complimentaryCertNumbers,
+    public List<String> checkClassOfCriteriaForMissingComplementaryCriteriaNumberErrors(String criterionNumberStart,
+            List<CertificationCriterion> allCriteriaMet, List<String> complementaryCertNumbers) {
+        return checkClassSubsetOfCriteriaForMissingComplementaryCriteriaNumberErrors(criterionNumberStart, allCriteriaMet,
+                complementaryCertNumbers, new ArrayList<String>());
+    }
+
+    public List<String> checkClassSubsetOfCriteriaForMissingComplementaryCriteriaErrors(String criterionNumberStart,
+            List<CertificationCriterion> allCriteriaMet, List<CertificationCriterion> complementaryCriteria,
+            List<CertificationCriterion> excludedCriteria) {
+        return checkClassSubsetOfCriteriaForMissingComplementaryCriteriaNumberErrors(criterionNumberStart,
+                allCriteriaMet,
+                complementaryCriteria.stream().map(criterion -> criterion.getNumber()).distinct().collect(Collectors.toList()),
+                excludedCriteria.stream().map(criterion -> criterion.getNumber()).distinct().collect(Collectors.toList()));
+    }
+
+    public List<String> checkClassSubsetOfCriteriaForMissingComplementaryCriteriaNumberErrors(String criterionNumberStart,
+            List<CertificationCriterion> allCriteriaMet, List<String> complimentaryCriteriaNumbers,
             List<String> excludedCertNumbers) {
         List<String> errors = new ArrayList<String>();
         List<CertificationCriterion> presentAttestedCriteriaInClass = allCriteriaMet.stream()
@@ -299,31 +313,46 @@ public class ValidationUtils {
                 .collect(Collectors.<CertificationCriterion>toList());
 
         if (presentAttestedCriteriaInClass != null && presentAttestedCriteriaInClass.size() > 0) {
-            for (String currRequiredCriteria : complimentaryCertNumbers) {
-                boolean hasComplimentaryCert = false;
-                for (CertificationCriterion certResult : allCriteriaMet) {
-                    if (certResult.getNumber().equals(currRequiredCriteria)) {
-                        hasComplimentaryCert = true;
+            for (String requiredCriterionNumber : complimentaryCriteriaNumbers) {
+                boolean hasComplimentaryCriterion = false;
+                for (CertificationCriterion attestedCriterion : allCriteriaMet) {
+                    if (attestedCriterion.getNumber().equals(requiredCriterionNumber)) {
+                        hasComplimentaryCriterion = true;
                     }
                 }
 
-                if (!hasComplimentaryCert) {
+                if (!hasComplimentaryCriterion) {
                     errors.add("Certification criterion " + criterionNumberStart + "(*) was found " + "so "
-                            + getAllCriteriaWithNumber(currRequiredCriteria) + " is required but was not found.");
+                            + getAllCriteriaWithNumber(requiredCriterionNumber) + " is required but was not found.");
                 }
             }
         }
         return errors;
     }
 
-    public List<String> checkClassOfCriteriaForWarnings(String criterionNumberStart,
-            List<CertificationCriterion> allCriteriaMet, List<String> complimentaryCertNumbers) {
-        return checkClassSubsetOfCriteriaForWarnings(criterionNumberStart, allCriteriaMet, complimentaryCertNumbers,
+    public List<String> checkClassOfCriteriaForMissingComplementaryCriteriaWarnings(String criterionNumberStart,
+            List<CertificationCriterion> allCriteriaMet, List<CertificationCriterion> complementaryCriteria) {
+        return checkClassSubsetOfCriteriaForMissingComplementaryCriteriaWarnings(criterionNumberStart, allCriteriaMet,
+                complementaryCriteria, new ArrayList<CertificationCriterion>());
+    }
+
+    public List<String> checkClassOfCriteriaForMissingComplementaryCriteriaNumberWarnings(String criterionNumberStart,
+            List<CertificationCriterion> allCriteriaMet, List<String> complementaryCriteriaNumbers) {
+        return checkClassSubsetOfCriteriaForMissingComplementaryCriteriaNumberWarnings(criterionNumberStart, allCriteriaMet, complementaryCriteriaNumbers,
                 new ArrayList<String>());
     }
 
-    public List<String> checkClassSubsetOfCriteriaForWarnings(String criterionNumberStart,
-            List<CertificationCriterion> allCriteriaMet, List<String> complimentaryCertNumbers,
+    public List<String> checkClassSubsetOfCriteriaForMissingComplementaryCriteriaWarnings(String criterionNumberStart,
+            List<CertificationCriterion> allCriteriaMet, List<CertificationCriterion> complementaryCriteria,
+            List<CertificationCriterion> excludedCriteria) {
+        return checkClassSubsetOfCriteriaForMissingComplementaryCriteriaNumberWarnings(criterionNumberStart,
+                allCriteriaMet,
+                complementaryCriteria.stream().map(criterion -> criterion.getNumber()).distinct().collect(Collectors.toList()),
+                excludedCriteria.stream().map(criterion -> criterion.getNumber()).distinct().collect(Collectors.toList()));
+    }
+
+    public List<String> checkClassSubsetOfCriteriaForMissingComplementaryCriteriaNumberWarnings(String criterionNumberStart,
+            List<CertificationCriterion> allCriteriaMet, List<String> complementaryCriteriaNumbers,
             List<String> excludedCertNumbers) {
         List<String> warnings = new ArrayList<String>();
         List<CertificationCriterion> removedAttestedCriteriaInClass = allCriteriaMet.stream()
@@ -342,17 +371,17 @@ public class ValidationUtils {
         // then the lack of a complimentary criteria is only a warning
         if (removedAttestedCriteriaInClass != null && removedAttestedCriteriaInClass.size() > 0
                 && (presentAttestedCriteriaInClass == null || presentAttestedCriteriaInClass.size() == 0)) {
-            for (String currRequiredCriteria : complimentaryCertNumbers) {
-                boolean hasComplimentaryCert = false;
-                for (CertificationCriterion certResult : allCriteriaMet) {
-                    if (certResult.getNumber().equals(currRequiredCriteria)) {
-                        hasComplimentaryCert = true;
+            for (String requiredCriterionNumber : complementaryCriteriaNumbers) {
+                boolean hasComplimentaryCriterion = false;
+                for (CertificationCriterion attestedCriterion : allCriteriaMet) {
+                    if (attestedCriterion.getNumber().equals(requiredCriterionNumber)) {
+                        hasComplimentaryCriterion = true;
                     }
                 }
 
-                if (!hasComplimentaryCert) {
+                if (!hasComplimentaryCriterion) {
                     warnings.add("Certification criterion " + criterionNumberStart + "(*) was found " + "so "
-                            + getAllCriteriaWithNumber(currRequiredCriteria) + " is required but was not found.");
+                            + getAllCriteriaWithNumber(requiredCriterionNumber) + " is required but was not found.");
                 }
             }
         }
@@ -387,7 +416,7 @@ public class ValidationUtils {
     }
 
     public String getAllCriteriaWithNumber(String criterionNumber) {
-        List<CertificationCriterionDTO> allCriteriaWithNumber = criteriaDao.getAllByNumber(criterionNumber);
+        List<CertificationCriterion> allCriteriaWithNumber = criteriaService.getByNumber(criterionNumber);
         List<String> allCriteriaNumbers = allCriteriaWithNumber.stream()
                 .map(criterion -> Util.formatCriteriaNumber(criterion)).collect(Collectors.toList());
         return allCriteriaNumbers.stream().collect(Collectors.joining(" or "));

@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -54,7 +53,7 @@ public class SedRelatedCriteriaReviewerTest {
         g3 = getCriterion(52L, "170.315 (g)(3)", "g3 original", false);
         Mockito.when(criteriaService.get(ArgumentMatchers.eq("criterion.170_315_g_3"))).thenReturn(g3);
 
-        ValidationUtils validationUtils = new ValidationUtils(Mockito.mock(CertificationCriterionDAO.class));
+        ValidationUtils validationUtils = new ValidationUtils(criteriaService);
         reviewer = new SedRelatedCriteriaReviewer(validationUtils, criteriaService, msgUtil, resourcePermissions);
     }
 

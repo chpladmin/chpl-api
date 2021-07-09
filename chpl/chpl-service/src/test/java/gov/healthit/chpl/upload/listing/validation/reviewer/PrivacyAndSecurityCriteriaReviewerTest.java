@@ -10,7 +10,6 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import gov.healthit.chpl.SpecialProperties;
-import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -46,7 +45,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
         Mockito.when(specialProperties.getEffectiveRuleDate())
                 .thenReturn(new GregorianCalendar(2020, Calendar.MARCH, 01).getTime());
 
-        validationUtil = new ValidationUtils(Mockito.mock(CertificationCriterionDAO.class));
+        validationUtil = new ValidationUtils(certificationCriterionService);
 
         reviewer = new PrivacyAndSecurityCriteriaReviewer(certificationCriterionService, msgUtil, specialProperties, validationUtil, "1,2", "166,167");
     }

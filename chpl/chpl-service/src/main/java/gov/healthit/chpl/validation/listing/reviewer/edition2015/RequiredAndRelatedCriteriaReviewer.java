@@ -1,6 +1,5 @@
 package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -22,6 +21,7 @@ import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 public class RequiredAndRelatedCriteriaReviewer  extends PermissionBasedReviewer {
     private static final String A_CRITERIA_NUMBERS_START = "170.315 (a)";
     private static final String B_CRITERIA_NUMBERS_START = "170.315 (b)";
+    private static final String C_CRITERIA_NUMBERS_START = "170.315 (c)";
 
     private ErrorMessageUtil msgUtil;
     private CertificationCriterionService criterionService;
@@ -44,6 +44,7 @@ public class RequiredAndRelatedCriteriaReviewer  extends PermissionBasedReviewer
         checkAlwaysRequiredCriteria(listing, attestedCriteria);
         checkACriteriaHaveRequiredDependencies(listing, attestedCriteria);
         checkBCriteriaHaveRequiredDependencies(listing, attestedCriteria);
+        checkCCriteriaHaveRequiredDependencies(listing, attestedCriteria);
         checkG10RequiredDependencies(listing, attestedCriteria);
     }
 
@@ -79,20 +80,18 @@ public class RequiredAndRelatedCriteriaReviewer  extends PermissionBasedReviewer
                 criterionService.get(Criteria2015.D_4))
                 .collect(Collectors.toList());
 
-        List<String> errors = validationUtils.checkClassOfCriteriaForErrors("170.315 (a)", attestedCriteria,
-                requiredByACriteria.stream().map(criterion -> criterion.getNumber()).distinct().collect(Collectors.toList()));
+        List<String> errors = validationUtils.checkClassOfCriteriaForMissingComplementaryCriteriaErrors(A_CRITERIA_NUMBERS_START,
+                attestedCriteria, requiredByACriteria);
         listing.getErrorMessages().addAll(errors);
-        List<String> warnings = validationUtils.checkClassOfCriteriaForWarnings("170.315 (a)", attestedCriteria,
-                requiredByACriteria.stream().map(criterion -> criterion.getNumber()).distinct().collect(Collectors.toList()));
+        List<String> warnings = validationUtils.checkClassOfCriteriaForMissingComplementaryCriteriaWarnings(A_CRITERIA_NUMBERS_START,
+                attestedCriteria, requiredByACriteria);
         addListingWarningsByPermission(listing, warnings);
 
-        errors = validationUtils.checkClassSubsetOfCriteriaForErrors("170.315 (a)", attestedCriteria,
-                Arrays.asList(A_RELATED_CERTS_EXCEPTION),
-                Arrays.asList(A_CERT_EXCEPTIONS));
+        errors = validationUtils.checkClassSubsetOfCriteriaForMissingComplementaryCriteriaErrors(A_CRITERIA_NUMBERS_START,
+                attestedCriteria, exceptionsToRequiredByACriteria, exceptionsToACriteria);
         listing.getErrorMessages().addAll(errors);
-        warnings = validationUtils.checkClassSubsetOfCriteriaForWarnings("170.315 (a)", attestedCriteria,
-                Arrays.asList(A_RELATED_CERTS_EXCEPTION),
-                Arrays.asList(A_CERT_EXCEPTIONS));
+        warnings = validationUtils.checkClassSubsetOfCriteriaForMissingComplementaryCriteriaWarnings(A_CRITERIA_NUMBERS_START,
+                attestedCriteria, exceptionsToRequiredByACriteria, exceptionsToACriteria);
         addListingWarningsByPermission(listing, warnings);
     }
 
@@ -108,23 +107,43 @@ public class RequiredAndRelatedCriteriaReviewer  extends PermissionBasedReviewer
                 criterionService.get(Criteria2015.D_7),
                 criterionService.get(Criteria2015.D_8))
                 .collect(Collectors.toList());
-        CertificationCriterion b10 = criterionService.get(Criteria2015.B_10);
+        List<CertificationCriterion> excludedBCriteria = Stream.of(
+                criterionService.get(Criteria2015.B_10))
+                .collect(Collectors.toList());
 
-        List<String> excludedCertNumbers = Stream.of(b10.getNumber()).collect(Collectors.toList());
-        List<String> requiredByBCriteriaCertNumbers
-            = requiredByBCriteria.stream().map(criterion -> criterion.getNumber()).distinct().collect(Collectors.toList());
-
-        List<String> errors = validationUtils.checkClassSubsetOfCriteriaForErrors(B_CRITERIA_NUMBERS_START,
+        List<String> errors = validationUtils.checkClassSubsetOfCriteriaForMissingComplementaryCriteriaErrors(B_CRITERIA_NUMBERS_START,
                 attestedCriteria,
-                requiredByBCriteriaCertNumbers,
-                excludedCertNumbers);
+                requiredByBCriteria,
+                excludedBCriteria);
         listing.getErrorMessages().addAll(errors);
 
-        List<String> warnings = validationUtils.checkClassSubsetOfCriteriaForWarnings(
+        List<String> warnings = validationUtils.checkClassSubsetOfCriteriaForMissingComplementaryCriteriaWarnings(
                 B_CRITERIA_NUMBERS_START,
                 attestedCriteria,
-                requiredByBCriteriaCertNumbers,
-                excludedCertNumbers);
+                requiredByBCriteria,
+                excludedBCriteria);
+        addListingWarningsByPermission(listing, warnings);
+    }
+
+    private void checkCCriteriaHaveRequiredDependencies(CertifiedProductSearchDetails listing, List<CertificationCriterion> attestedCriteria) {
+        List<CertificationCriterion> requiredByCCriteria = Stream.of(
+                criterionService.get(Criteria2015.D_1),
+                criterionService.get(Criteria2015.D_2_OLD),
+                criterionService.get(Criteria2015.D_2_CURES),
+                criterionService.get(Criteria2015.D_3_OLD),
+                criterionService.get(Criteria2015.D_3_CURES),
+                criterionService.get(Criteria2015.D_5))
+                .collect(Collectors.toList());
+
+        List<String> errors = validationUtils.checkClassOfCriteriaForMissingComplementaryCriteriaErrors(C_CRITERIA_NUMBERS_START,
+                attestedCriteria,
+                requiredByCCriteria);
+        listing.getErrorMessages().addAll(errors);
+
+        List<String> warnings = validationUtils.checkClassOfCriteriaForMissingComplementaryCriteriaWarnings(
+                C_CRITERIA_NUMBERS_START,
+                attestedCriteria,
+                requiredByCCriteria);
         addListingWarningsByPermission(listing, warnings);
     }
 

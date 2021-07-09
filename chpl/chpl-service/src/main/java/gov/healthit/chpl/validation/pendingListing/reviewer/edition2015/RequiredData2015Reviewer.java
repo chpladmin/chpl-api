@@ -147,38 +147,38 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         List<String> errors;
         List<String> warnings;
 
-        errors = validationUtils.checkClassOfCriteriaForErrors("170.315 (a)", attestedCriteria,
+        errors = validationUtils.checkClassOfCriteriaForMissingComplementaryCriteriaNumberErrors("170.315 (a)", attestedCriteria,
                 Arrays.asList(A_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
-        warnings = validationUtils.checkClassOfCriteriaForWarnings("170.315 (a)", attestedCriteria,
+        warnings = validationUtils.checkClassOfCriteriaForMissingComplementaryCriteriaNumberWarnings("170.315 (a)", attestedCriteria,
                 Arrays.asList(A_RELATED_CERTS));
         addListingWarningsByPermission(listing, warnings);
 
-        errors = validationUtils.checkClassSubsetOfCriteriaForErrors("170.315 (a)", attestedCriteria,
+        errors = validationUtils.checkClassSubsetOfCriteriaForMissingComplementaryCriteriaNumberErrors("170.315 (a)", attestedCriteria,
                 Arrays.asList(A_RELATED_CERTS_EXCEPTION), Arrays.asList(A_CERT_EXCEPTIONS));
         listing.getErrorMessages().addAll(errors);
-        warnings = validationUtils.checkClassSubsetOfCriteriaForWarnings("170.315 (a)", attestedCriteria,
+        warnings = validationUtils.checkClassSubsetOfCriteriaForMissingComplementaryCriteriaNumberWarnings("170.315 (a)", attestedCriteria,
                 Arrays.asList(A_RELATED_CERTS_EXCEPTION), Arrays.asList(A_CERT_EXCEPTIONS));
         addListingWarningsByPermission(listing, warnings);
 
-        errors = validationUtils.checkClassOfCriteriaForErrors("170.315 (c)", attestedCriteria,
+        errors = validationUtils.checkClassOfCriteriaForMissingComplementaryCriteriaNumberErrors("170.315 (c)", attestedCriteria,
                 Arrays.asList(C_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
-        warnings = validationUtils.checkClassOfCriteriaForWarnings("170.315 (c)", attestedCriteria,
+        warnings = validationUtils.checkClassOfCriteriaForMissingComplementaryCriteriaNumberWarnings("170.315 (c)", attestedCriteria,
                 Arrays.asList(C_RELATED_CERTS));
         addListingWarningsByPermission(listing, warnings);
 
-        errors = validationUtils.checkClassOfCriteriaForErrors("170.315 (f)", attestedCriteria,
+        errors = validationUtils.checkClassOfCriteriaForMissingComplementaryCriteriaNumberErrors("170.315 (f)", attestedCriteria,
                 Arrays.asList(F_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
-        warnings = validationUtils.checkClassOfCriteriaForWarnings("170.315 (f)", attestedCriteria,
+        warnings = validationUtils.checkClassOfCriteriaForMissingComplementaryCriteriaNumberWarnings("170.315 (f)", attestedCriteria,
                 Arrays.asList(F_RELATED_CERTS));
         addListingWarningsByPermission(listing, warnings);
 
-        errors = validationUtils.checkClassOfCriteriaForErrors("170.315 (h)", attestedCriteria,
+        errors = validationUtils.checkClassOfCriteriaForMissingComplementaryCriteriaNumberErrors("170.315 (h)", attestedCriteria,
                 Arrays.asList(H_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
-        warnings = validationUtils.checkClassOfCriteriaForWarnings("170.315 (h)", attestedCriteria,
+        warnings = validationUtils.checkClassOfCriteriaForMissingComplementaryCriteriaNumberWarnings("170.315 (h)", attestedCriteria,
                 Arrays.asList(H_RELATED_CERTS));
         addListingWarningsByPermission(listing, warnings);
 
