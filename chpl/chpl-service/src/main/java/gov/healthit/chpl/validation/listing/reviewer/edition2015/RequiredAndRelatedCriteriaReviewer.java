@@ -1,5 +1,6 @@
 package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -41,6 +42,7 @@ public class RequiredAndRelatedCriteriaReviewer  extends PermissionBasedReviewer
         List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
 
         checkAlwaysRequiredCriteria(listing, attestedCriteria);
+        checkACriteriaHaveRequiredDependencies(listing, attestedCriteria);
         checkBCriteriaHaveRequiredDependencies(listing, attestedCriteria);
         checkG10RequiredDependencies(listing, attestedCriteria);
     }
@@ -54,6 +56,44 @@ public class RequiredAndRelatedCriteriaReviewer  extends PermissionBasedReviewer
         if (!validationUtils.hasCriterion(g5, attestedCriteria)) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteriaRequired", Util.formatCriteriaNumber(g5)));
         }
+    }
+
+    private void checkACriteriaHaveRequiredDependencies(CertifiedProductSearchDetails listing, List<CertificationCriterion> attestedCriteria) {
+        List<CertificationCriterion> requiredByACriteria = Stream.of(
+                criterionService.get(Criteria2015.D_1),
+                criterionService.get(Criteria2015.D_2_OLD),
+                criterionService.get(Criteria2015.D_2_CURES),
+                criterionService.get(Criteria2015.D_3_OLD),
+                criterionService.get(Criteria2015.D_3_CURES),
+                criterionService.get(Criteria2015.D_5),
+                criterionService.get(Criteria2015.D_6),
+                criterionService.get(Criteria2015.D_7))
+                .collect(Collectors.toList());
+        List<CertificationCriterion> exceptionsToACriteria = Stream.of(
+                criterionService.get(Criteria2015.A_4),
+                criterionService.get(Criteria2015.A_9),
+                criterionService.get(Criteria2015.A_10),
+                criterionService.get(Criteria2015.A_13))
+                .collect(Collectors.toList());
+        List<CertificationCriterion> exceptionsToRequiredByACriteria = Stream.of(
+                criterionService.get(Criteria2015.D_4))
+                .collect(Collectors.toList());
+
+        List<String> errors = validationUtils.checkClassOfCriteriaForErrors("170.315 (a)", attestedCriteria,
+                requiredByACriteria.stream().map(criterion -> criterion.getNumber()).distinct().collect(Collectors.toList()));
+        listing.getErrorMessages().addAll(errors);
+        List<String> warnings = validationUtils.checkClassOfCriteriaForWarnings("170.315 (a)", attestedCriteria,
+                requiredByACriteria.stream().map(criterion -> criterion.getNumber()).distinct().collect(Collectors.toList()));
+        addListingWarningsByPermission(listing, warnings);
+
+        errors = validationUtils.checkClassSubsetOfCriteriaForErrors("170.315 (a)", attestedCriteria,
+                Arrays.asList(A_RELATED_CERTS_EXCEPTION),
+                Arrays.asList(A_CERT_EXCEPTIONS));
+        listing.getErrorMessages().addAll(errors);
+        warnings = validationUtils.checkClassSubsetOfCriteriaForWarnings("170.315 (a)", attestedCriteria,
+                Arrays.asList(A_RELATED_CERTS_EXCEPTION),
+                Arrays.asList(A_CERT_EXCEPTIONS));
+        addListingWarningsByPermission(listing, warnings);
     }
 
     private void checkBCriteriaHaveRequiredDependencies(CertifiedProductSearchDetails listing, List<CertificationCriterion> attestedCriteria) {
