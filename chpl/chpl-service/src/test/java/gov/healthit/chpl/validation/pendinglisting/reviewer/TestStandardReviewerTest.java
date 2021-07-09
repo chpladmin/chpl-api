@@ -5,11 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Date;
 import java.util.HashSet;
 
+import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
@@ -25,6 +27,7 @@ public class TestStandardReviewerTest {
     private TestStandardDAO testStandardDao;
     private ErrorMessageUtil errorMessageUtil;
     private TestStandardReviewer reviewer;
+    private FF4j ff4j;
 
     @Before
     public void before() throws EntityRetrievalException {
@@ -49,7 +52,11 @@ public class TestStandardReviewerTest {
                         + "currently exist for edition %s.",
                         i.getArgument(1), i.getArgument(2), i.getArgument(3)));
 
-        reviewer = new TestStandardReviewer(testStandardDao, errorMessageUtil);
+        ff4j = Mockito.mock(FF4j.class);
+        Mockito.when(ff4j.check(FeatureList.OPTIONAL_STANDARDS))
+        .thenReturn(false);
+
+        reviewer = new TestStandardReviewer(testStandardDao, errorMessageUtil, ff4j);
     }
 
     @Test
