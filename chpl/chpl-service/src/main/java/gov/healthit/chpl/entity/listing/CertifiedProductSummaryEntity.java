@@ -115,9 +115,6 @@ public class CertifiedProductSummaryEntity implements Serializable {
     @Column(name = "promoting_interoperability_user_count")
     private Long promotingInteroperabilityUserCount;
 
-    @Column(name = "promoting_interoperability_user_count_date")
-    private LocalDate promotingInteroperabilityUserCountDate;
-
     @Column(name = "pending_certified_product_id")
     private Long pendingCertifiedProductId;
 
