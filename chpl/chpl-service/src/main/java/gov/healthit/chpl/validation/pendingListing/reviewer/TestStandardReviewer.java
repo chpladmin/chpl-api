@@ -49,15 +49,20 @@ public class TestStandardReviewer implements Reviewer {
                         Util.formatCriteriaNumber(certResult.getCriterion()),
                         testStandard.getName()));
             } else {
-            TestStandardDTO foundTestStandard =
-                    testStandardDao.getByNumberAndEdition(testStandard.getName(), listing.getCertificationEditionId());
-            if (foundTestStandard == null) {
-                listing.getErrorMessages().add(
-                        msgUtil.getMessage("listing.criteria.testStandardNotFound",
-                        Util.formatCriteriaNumber(certResult.getCriterion()),
-                        testStandard.getName(),
-                        listing.getCertificationEdition()));
-            }
+                TestStandardDTO foundTestStandard =
+                        testStandardDao.getByNumberAndEdition(testStandard.getName(), listing.getCertificationEditionId());
+                if (foundTestStandard == null) {
+                    listing.getErrorMessages().add(
+                            msgUtil.getMessage("listing.criteria.testStandardNotFound",
+                                    Util.formatCriteriaNumber(certResult.getCriterion()),
+                                    testStandard.getName(),
+                                    listing.getCertificationEdition()));
+                } else if (ff4j.check(FeatureList.OPTIONAL_STANDARDS)) {
+                    listing.getWarningMessages().add(
+                            msgUtil.getMessage("listing.criteria.disallowedTestStandard",
+                                    Util.formatCriteriaNumber(certResult.getCriterion()),
+                                    testStandard.getName()));
+                }
             }
         }
     }
