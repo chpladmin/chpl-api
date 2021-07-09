@@ -1,9 +1,11 @@
 package gov.healthit.chpl.validation.pendingListing.reviewer;
 
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
@@ -16,11 +18,13 @@ import gov.healthit.chpl.util.Util;
 public class TestStandardReviewer implements Reviewer {
     private ErrorMessageUtil msgUtil;
     private TestStandardDAO testStandardDao;
+    private FF4j ff4j;
 
     @Autowired
-    public TestStandardReviewer(TestStandardDAO testStandardDao, ErrorMessageUtil msgUtil) {
-        this.msgUtil = msgUtil;
+    public TestStandardReviewer(TestStandardDAO testStandardDao, ErrorMessageUtil msgUtil, FF4j ff4j) {
         this.testStandardDao = testStandardDao;
+        this.msgUtil = msgUtil;
+        this.ff4j = ff4j;
     }
 
     @Override
@@ -39,6 +43,12 @@ public class TestStandardReviewer implements Reviewer {
                     msgUtil.getMessage("listing.criteria.missingTestStandardName",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         } else {
+            if (ff4j.check(FeatureList.OPTIONAL_STANDARDS_ERROR)) {
+                listing.getErrorMessages().add(
+                        msgUtil.getMessage("listing.criteria.disallowedTestStandard",
+                        Util.formatCriteriaNumber(certResult.getCriterion()),
+                        testStandard.getName()));
+            } else {
             TestStandardDTO foundTestStandard =
                     testStandardDao.getByNumberAndEdition(testStandard.getName(), listing.getCertificationEditionId());
             if (foundTestStandard == null) {
@@ -47,6 +57,7 @@ public class TestStandardReviewer implements Reviewer {
                         Util.formatCriteriaNumber(certResult.getCriterion()),
                         testStandard.getName(),
                         listing.getCertificationEdition()));
+            }
             }
         }
     }
