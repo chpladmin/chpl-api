@@ -37,8 +37,7 @@ public class NonconformityCsvPresenter extends SurveillanceCsvPresenter {
                         boolean hasNc = false;
                         if (currSurveillance.getRequirements() != null
                                 && currSurveillance.getRequirements().size() > 0) {
-                            // marks requirements for removal if they have no
-                            // nonconformities
+                            // marks requirements for removal if they have no non-conformities
                             List<SurveillanceRequirement> reqsToRemove = new ArrayList<SurveillanceRequirement>();
                             for (SurveillanceRequirement req : currSurveillance.getRequirements()) {
                                 if (req.getNonconformities() != null && req.getNonconformities().size() > 0) {
@@ -55,7 +54,7 @@ public class NonconformityCsvPresenter extends SurveillanceCsvPresenter {
                         }
 
                         if (hasNc) {
-                            // write out surveillance with nonconformities only
+                            // write out surveillance with non-conformities only
                             List<List<String>> rowValues = generateMultiRowValue(cp, currSurveillance);
                             for (List<String> rowValue : rowValues) {
                                 csvPrinter.printRecord(rowValue);
