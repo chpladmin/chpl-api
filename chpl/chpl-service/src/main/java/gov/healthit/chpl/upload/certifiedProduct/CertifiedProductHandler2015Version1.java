@@ -557,7 +557,6 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
 
     private boolean parseTestStandardAsOptionalStandard(PendingCertificationResultEntity cert, String name) {
         PendingCertificationResultOptionalStandardEntity osEntity = new PendingCertificationResultOptionalStandardEntity();
-        osEntity.setOptionalStandardCitation(name);
         OptionalStandard os = optionalStandardDao.getByCitation(name);
         if (os != null) {
             osEntity.setOptionalStandardId(os.getId());

@@ -224,7 +224,7 @@ public class PendingCertifiedProductDAO extends BaseDAOImpl {
                 try {
                     entityManager.persist(osEntity);
                 } catch (Exception ex) {
-                    String msg = msgUtil.getMessage("listing.criteria.badTestStandard", osEntity.getOptionalStandardCitation());
+                    String msg = msgUtil.getMessage("listing.criteria.badTestStandard", osEntity.getOptionalStandard().getCitation());
                     LOGGER.error(msg, ex);
                     throw new EntityCreationException(msg);
                 }
