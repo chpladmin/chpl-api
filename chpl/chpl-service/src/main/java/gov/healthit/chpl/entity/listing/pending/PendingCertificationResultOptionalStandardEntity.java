@@ -33,6 +33,9 @@ public class PendingCertificationResultOptionalStandardEntity {
     @Column(name = "optional_standard_id")
     private Long optionalStandardId;
 
+    @Column(name = "citation")
+    private String citation;
+
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "optional_standard_id", unique = true, nullable = true, insertable = false, updatable = false)

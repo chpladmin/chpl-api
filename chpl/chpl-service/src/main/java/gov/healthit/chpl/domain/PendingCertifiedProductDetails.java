@@ -360,6 +360,8 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
                     CertificationResultOptionalStandard optionalStd = new CertificationResultOptionalStandard();
                     optionalStd.setId(os.getId());
                     optionalStd.setCitation(os.getCitation());
+                    optionalStd.setOptionalStandardId(os.getOptionalStandardId());
+                    optionalStd.setOptionalStandard(os.getOptionalStandard());
                     cert.getOptionalStandards().add(optionalStd);
                 }
             } else {

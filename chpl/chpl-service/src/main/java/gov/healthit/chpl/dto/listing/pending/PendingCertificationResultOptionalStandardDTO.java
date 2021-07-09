@@ -19,11 +19,12 @@ public class PendingCertificationResultOptionalStandardDTO implements Serializab
     private Long pendingCertificationResultId;
     private Long optionalStandardId;
     private String citation;
-    private String description;
     private OptionalStandard optionalStandard;
 
     public PendingCertificationResultOptionalStandardDTO(PendingCertificationResultOptionalStandardEntity entity) {
         this.id = entity.getId();
+        this.citation = entity.getCitation();
+        this.optionalStandardId = entity.getOptionalStandardId();
         OptionalStandard os = new OptionalStandard();
         if (entity.getOptionalStandard() != null) {
             os.setId(entity.getOptionalStandard().getId());
@@ -31,8 +32,5 @@ public class PendingCertificationResultOptionalStandardDTO implements Serializab
             os.setDescription(entity.getOptionalStandard().getDescription());
         }
         this.optionalStandard = os;
-        this.citation = os.getCitation();
-        this.description = os.getDescription();
-        this.optionalStandardId = os.getId();
     }
 }

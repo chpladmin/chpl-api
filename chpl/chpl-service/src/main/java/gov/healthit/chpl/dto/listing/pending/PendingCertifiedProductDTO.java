@@ -49,6 +49,7 @@ import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTargetedU
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTestingLabMapEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCqmCriterionEntity;
 import gov.healthit.chpl.listing.measure.PendingListingMeasureEntity;
+import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -347,6 +348,15 @@ public class PendingCertifiedProductDTO implements Serializable {
                     as.setVersion(software.getVersion());
                     as.setGrouping(software.getGrouping());
                     certDto.getAdditionalSoftware().add(as);
+                }
+            }
+
+            if (crResult.getOptionalStandards() != null && crResult.getOptionalStandards().size() > 0) {
+                for (CertificationResultOptionalStandard std : crResult.getOptionalStandards()) {
+                    PendingCertificationResultOptionalStandardDTO stdDto = new PendingCertificationResultOptionalStandardDTO();
+                    stdDto.setCitation(std.getCitation());
+                    stdDto.setOptionalStandardId(std.getOptionalStandardId());
+                    certDto.getOptionalStandards().add(stdDto);
                 }
             }
 
