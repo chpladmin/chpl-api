@@ -1,19 +1,13 @@
 package gov.healthit.chpl.web.controller;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -64,7 +58,6 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.service.DirectReviewCachingService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -81,14 +74,7 @@ public class DeveloperController {
     private ErrorMessageUtil msgUtil;
     private UserPermissionsManager userPermissionsManager;
     private DirectReviewCachingService directReviewService;
-    private FileUtils fileUtils;
     private FF4j ff4j;
-
-    @Value("${directReviewsReportName}")
-    private String directReviewsReportName;
-
-    @Value("${schemaDirectReviewsName}")
-    private String directReviewsSchemaName;
 
     @Autowired
     public DeveloperController(DeveloperManager developerManager,
@@ -96,13 +82,11 @@ public class DeveloperController {
             UserPermissionsManager userPermissionsManager,
             ErrorMessageUtil msgUtil,
             DirectReviewCachingService directReviewService,
-            FileUtils fileUtils,
             FF4j ff4j) {
         this.developerManager = developerManager;
         this.userPermissionsManager = userPermissionsManager;
         this.msgUtil = msgUtil;
         this.directReviewService = directReviewService;
-        this.fileUtils = fileUtils;
         this.ff4j = ff4j;
     }
 
@@ -165,48 +149,11 @@ public class DeveloperController {
                 directReviewService.getDirectReviews(developerId), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Download all direct reviews as a CSV.",
-            notes = "Once per day, all direct reviews are written out to a CSV "
-                    + "file on the CHPL servers. This method allows any user to download that file.")
-    @RequestMapping(value = "/direct-reviews/download", method = RequestMethod.GET, produces = "text/csv")
-    public void downloadDirectReviews(
-            @RequestParam(value = "definition", defaultValue = "false", required = false) Boolean isDefinition,
-            HttpServletRequest request, HttpServletResponse response) throws IOException {
-        File downloadFile = null;
-        if (isDefinition != null && isDefinition.booleanValue()) {
-            try {
-                downloadFile = fileUtils.getDownloadFile(directReviewsSchemaName);
-            } catch (IOException ex) {
-                response.getWriter().append(ex.getMessage());
-                return;
-            }
-        } else {
-            try {
-                downloadFile = fileUtils.getNewestFileMatchingName("^" + directReviewsReportName + "-.+\\.csv$");
-            } catch (IOException ex) {
-                response.getWriter().append(ex.getMessage());
-                return;
-            }
-        }
-
-        if (downloadFile == null) {
-            response.getWriter().append(msgUtil.getMessage("resources.schemaFileGeneralError"));
-            return;
-        }
-        if (!downloadFile.exists()) {
-            response.getWriter().append(msgUtil.getMessage("resources.schemaFileNotFound", downloadFile.getAbsolutePath()));
-            return;
-        }
-
-        LOGGER.info("Streaming " + downloadFile.getName());
-        fileUtils.streamFileAsResponse(downloadFile, "text/csv", response);
-    }
-
     @ApiOperation(value = "Update a developer.",
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB")
     @RequestMapping(value = "/{developerId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
-    public synchronized ResponseEntity<Developer> update(@PathVariable("developerId") Long developerId,
+    public ResponseEntity<Developer> update(@PathVariable("developerId") Long developerId,
             @RequestBody(required = true) Developer developerToUpdate)
             throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException,
             JsonProcessingException, ValidationException, MissingReasonException {
@@ -296,7 +243,7 @@ public class DeveloperController {
             @PathVariable Long developerId, @PathVariable Long userId)
                     throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         if (!ff4j.check(FeatureList.ROLE_DEVELOPER)) {
-            throw new NotImplementedException();
+            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
 
         // delete all permissions on that developer
@@ -314,7 +261,7 @@ public class DeveloperController {
     public @ResponseBody UsersResponse getUsers(@PathVariable("developerId") Long developerId)
             throws InvalidArgumentsException, EntityRetrievalException {
         if (!ff4j.check(FeatureList.ROLE_DEVELOPER)) {
-            throw new NotImplementedException();
+            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
         List<UserDTO> users = developerManager.getAllUsersOnDeveloper(developerId);
         List<User> domainUsers = new ArrayList<User>(users.size());

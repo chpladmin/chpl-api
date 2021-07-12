@@ -21,7 +21,6 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.upload.listing.ListingUploadDao;
 import gov.healthit.chpl.upload.listing.ListingUploadManager;
 import lombok.extern.log4j.Log4j2;
@@ -62,7 +61,13 @@ public class ListingUploadValidationJob implements Job {
                     LOGGER.error("Missing parameter for listing upload IDs.");
                 } else {
                     for (Long listingUploadId : listingUploadIds) {
-                        calculateErrorAndWarningCounts(listingUploadId);
+                        try {
+                            calculateErrorAndWarningCounts(listingUploadId);
+                        } catch (Exception ex) {
+                            LOGGER.error("Unexpected exception calculating error/warning counts for listing upload with ID " + listingUploadId);
+                            LOGGER.catching(ex);
+                            setFailedValidationErrorAndWarningCounts(listingUploadId);
+                        }
                     }
                 }
             } catch (Exception ex) {
@@ -78,41 +83,43 @@ public class ListingUploadValidationJob implements Job {
         txTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
+                ListingUpload listingUpload = null;
                 try {
-                    ListingUpload listingUpload = null;
-                    try {
-                        listingUpload = listingUploadDao.getById(listingUploadId);
-                    } catch (EntityRetrievalException ex) {
-                        LOGGER.error("Unable to get listing upload with id "
-                                + listingUploadId + ". Error and warning counts will be set to -1.", ex);
-                    }
-                    CertifiedProductSearchDetails validatedListingUpload = null;
-                    try {
-                        validatedListingUpload = listingUploadManager.getDetailsById(listingUpload.getId());
-                    } catch (ValidationException | EntityRetrievalException ex) {
-                        LOGGER.error("Unable to get listing upload details with id "
-                                + listingUpload.getId() + ". Error and warning counts will be set to -1.", ex);
-                    }
-
-                    LOGGER.info("Calculating error and warning counts for listing upload ID " + listingUploadId
-                            + "; CHPL Product Number " + listingUpload.getChplProductNumber());
-
-                    if (listingUpload != null && validatedListingUpload != null) {
-                        listingUpload.setErrorCount(validatedListingUpload.getErrorMessages() == null ? 0 : validatedListingUpload.getErrorMessages().size());
-                        listingUpload.setWarningCount(validatedListingUpload.getWarningMessages() == null ? 0 : validatedListingUpload.getWarningMessages().size());
-                        LOGGER.info("Listing upload with ID " + listingUpload.getId() + " had "
-                                + listingUpload.getErrorCount() + " errors and " + listingUpload.getWarningCount()
-                                + " warnings.");
-                        listingUploadDao.updateErrorAndWarningCounts(listingUpload);
-                    } else {
-                        listingUpload.setErrorCount(-1);
-                        listingUpload.setWarningCount(-1);
-                        listingUploadDao.updateErrorAndWarningCounts(listingUpload);
-                    }
-                } catch (Exception ex) {
-                    LOGGER.error("Unexpected exception calculating error/warning counts for listing upload with ID " + listingUploadId);
-                    LOGGER.catching(ex);
+                    listingUpload = listingUploadDao.getById(listingUploadId);
+                } catch (EntityRetrievalException ex) {
+                    LOGGER.error("Unable to get listing upload with id "
+                            + listingUploadId + ". Error and warning counts will be set to -1.", ex);
                 }
+
+                LOGGER.info("Calculating error and warning counts for listing upload ID " + listingUploadId
+                        + "; CHPL Product Number " + listingUpload.getChplProductNumber());
+                CertifiedProductSearchDetails validatedListingUpload = null;
+                try {
+                    validatedListingUpload = listingUploadManager.getDetailsById(listingUpload.getId());
+                } catch (Exception ex) {
+                    LOGGER.error("Unable to get listing upload details with id "
+                            + listingUpload.getId() + ". Error and warning counts will be set to -1.", ex);
+                }
+
+                if (listingUpload != null && validatedListingUpload != null) {
+                    listingUpload.setErrorCount(validatedListingUpload.getErrorMessages() == null ? 0 : validatedListingUpload.getErrorMessages().size());
+                    listingUpload.setWarningCount(validatedListingUpload.getWarningMessages() == null ? 0 : validatedListingUpload.getWarningMessages().size());
+                    LOGGER.info("Listing upload with ID " + listingUpload.getId() + " had "
+                            + listingUpload.getErrorCount() + " errors and " + listingUpload.getWarningCount()
+                            + " warnings.");
+                    listingUploadDao.updateErrorAndWarningCounts(listingUpload);
+                }
+            }
+        });
+    }
+
+    private void setFailedValidationErrorAndWarningCounts(Long listingUploadId) {
+        TransactionTemplate txTemplate = new TransactionTemplate(txManager);
+        txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        txTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                listingUploadDao.updateErrorAndWarningCounts(listingUploadId, -1, -1);
             }
         });
     }

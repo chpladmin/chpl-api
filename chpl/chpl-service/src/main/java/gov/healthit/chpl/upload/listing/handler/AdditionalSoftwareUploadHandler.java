@@ -27,13 +27,16 @@ public class AdditionalSoftwareUploadHandler {
 
     public List<CertificationResultAdditionalSoftware> handle(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
         List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
+        String hasAdditionalSoftwareString = parseHasAdditionalSoftwareStr(certHeadingRecord, certResultRecords);
+        Boolean hasAdditionalSoftware = parseHasAdditionalSoftware(certHeadingRecord, certResultRecords);
         List<String> listingSources = parseListingSources(certHeadingRecord, certResultRecords);
         List<String> listingGroupings = parseListingGroupings(certHeadingRecord, certResultRecords);
         List<String> nonlistingSources = parseNonListingSources(certHeadingRecord, certResultRecords);
         List<String> nonlistingVersions = parseNonListingVersions(certHeadingRecord, certResultRecords);
         List<String> nonlistingGroupings = parseNonListingGroupings(certHeadingRecord, certResultRecords);
 
-        if (uploadUtil.areCollectionsEmpty(listingSources, listingGroupings, nonlistingSources,
+        if (StringUtils.isEmpty(hasAdditionalSoftwareString)
+                && uploadUtil.areCollectionsEmpty(listingSources, listingGroupings, nonlistingSources,
                 nonlistingVersions, nonlistingGroupings)) {
             return additionalSoftware;
         }
@@ -105,6 +108,18 @@ public class AdditionalSoftwareUploadHandler {
         return parsedAdditionalSoftware;
     }
 
+    private Boolean parseHasAdditionalSoftware(CSVRecord certResultHeading, List<CSVRecord> certResultRecords) {
+        Boolean result = null;
+        try {
+            result = uploadUtil.parseSingleRowFieldAsBoolean(Headings.HAS_ADDITIONAL_SOFTWARE, certResultHeading, certResultRecords);
+        } catch (Exception e) {
+        }
+        return result;
+    }
+
+    private String parseHasAdditionalSoftwareStr(CSVRecord certResultHeading, List<CSVRecord> certResultRecords) {
+        return uploadUtil.parseSingleRowField(Headings.HAS_ADDITIONAL_SOFTWARE, certResultHeading, certResultRecords);
+    }
 
     private List<String> parseListingSources(CSVRecord certResultHeading, List<CSVRecord> certResultRecords) {
         List<String> values = uploadUtil.parseMultiRowField(

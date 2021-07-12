@@ -103,13 +103,11 @@ public class ListingService {
     public CertifiedProductSearchDetails createCertifiedSearchDetails(Long listingId) throws EntityRetrievalException {
 
         CertifiedProductDetailsDTO dto = certifiedProductSearchResultDAO.getById(listingId);
-        CertifiedProductSearchDetails searchDetails = createCertifiedProductSearchDetailsBasic(certifiedProductSearchResultDAO.getById(listingId));
+        CertifiedProductSearchDetails searchDetails = createCertifiedProductSearchDetailsWithBasicDataOnly(certifiedProductSearchResultDAO.getById(listingId));
 
         searchDetails.setCertificationResults(certificationResultService.getCertificationResults(searchDetails));
         searchDetails.setCqmResults(cqmResultsService.getCqmResultDetails(dto.getId(), dto.getYear()));
-        searchDetails.setCertificationEvents(certificationStatusEventsService.getCertificationStatusEvents(dto.getId()));
         searchDetails.setMeaningfulUseUserHistory(meaningfulUseUserHistoryService.getMeaningfulUseUserHistory(dto.getId()));
-        searchDetails = populateDirectReviews(searchDetails);
 
         // get first-level parents and children
         searchDetails.getIcs().setParents(populateRelatedCertifiedProducts(getCertifiedProductParents(dto.getId())));
@@ -119,11 +117,11 @@ public class ListingService {
 
     public CertifiedProductSearchDetails createCertifiedProductSearchDetailsBasic(Long listingId) throws EntityRetrievalException {
         CertifiedProductDetailsDTO dto = certifiedProductSearchResultDAO.getById(listingId);
-        return createCertifiedProductSearchDetailsBasic(dto);
+        return createCertifiedProductSearchDetailsWithBasicDataOnly(dto);
     }
 
-    public CertifiedProductSearchDetails createCertifiedProductSearchDetailsBasic(CertifiedProductDetailsDTO dto) throws EntityRetrievalException {
-        CertifiedProductSearchDetails searchDetails = CertifiedProductSearchDetails.builder()
+    public CertifiedProductSearchDetails createCertifiedProductSearchDetailsWithBasicDataOnly(CertifiedProductDetailsDTO dto) throws EntityRetrievalException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .id(dto.getId())
                 .acbCertificationId(dto.getAcbCertificationId())
                 .certificationDate(dto.getCertificationDate() != null ? dto.getCertificationDate().getTime() : null)
@@ -171,8 +169,11 @@ public class ListingService {
 
         InheritedCertificationStatus ics = new InheritedCertificationStatus();
         ics.setInherits(dto.getIcs());
-        searchDetails.setIcs(ics);
-        return searchDetails;
+        listing.setIcs(ics);
+        //cannot put this in the builder method because it's immutable meaning we can't sort it later
+        listing.setCertificationEvents(certificationStatusEventsService.getCertificationStatusEvents(dto.getId()));
+        populateDirectReviews(listing);
+        return listing;
     }
 
     private List<CertifiedProductTestingLab> getTestingLabs(Long listingId) throws EntityRetrievalException {
@@ -181,7 +182,7 @@ public class ListingService {
                 .collect(Collectors.toList());
     }
 
-    private CertifiedProductSearchDetails populateDirectReviews(CertifiedProductSearchDetails listing) {
+    private void populateDirectReviews(CertifiedProductSearchDetails listing) {
         List<DirectReview> drs = new ArrayList<DirectReview>();
         if (listing.getDeveloper() != null && listing.getDeveloper().getDeveloperId() != null) {
             drs = drService.getDirectReviewsRelatedToListing(listing.getId(),
@@ -191,7 +192,6 @@ public class ListingService {
         }
         listing.setDirectReviews(drs);
         listing.setDirectReviewsAvailable(drService.getDirectReviewsAvailable());
-        return listing;
     }
 
     private List<CertifiedProductDTO> getCertifiedProductChildren(Long id) {

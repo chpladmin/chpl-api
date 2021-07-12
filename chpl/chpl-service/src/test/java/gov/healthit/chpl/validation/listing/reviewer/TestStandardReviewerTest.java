@@ -2,8 +2,10 @@ package gov.healthit.chpl.validation.listing.reviewer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -80,12 +82,15 @@ public class TestStandardReviewerTest {
 
     @Test
     public void review_UnattestedCriterionWithExistingTestStandard_NoError() {
+        List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();
+        testStandards.add(getCertResultTestStandard(1L, "mock"));
+
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationEdition(buildEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId(), "2015"))
                 .certificationResult(CertificationResult.builder()
                         .success(false)
                         .criterion(buildCriterion(1L, "170.315 (a)(1)"))
-                        .testStandard(getCertResultTestStandard(1L, "mock"))
+                        .testStandards(testStandards)
                         .build())
                 .build();
 
@@ -95,12 +100,15 @@ public class TestStandardReviewerTest {
 
     @Test
     public void review_AttestedCriterionWithExistingTestStandard_NoError() {
+        List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();
+        testStandards.add(getCertResultTestStandard(1L, "mock"));
+
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationEdition(buildEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId(), "2015"))
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(buildCriterion(1L, "170.315 (a)(1)"))
-                        .testStandard(getCertResultTestStandard(1L, "mock"))
+                        .testStandards(testStandards)
                         .build())
                 .build();
 
@@ -110,12 +118,15 @@ public class TestStandardReviewerTest {
 
     @Test
     public void review_UnattestedCriterionExistingTestStandardWithoutId_NoError() {
+        List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();
+        testStandards.add(getCertResultTestStandard(null, "mock"));
+
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationEdition(buildEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId(), "2015"))
                 .certificationResult(CertificationResult.builder()
                         .success(false)
                         .criterion(buildCriterion(1L, "170.315 (a)(1)"))
-                        .testStandard(getCertResultTestStandard(null, "mock"))
+                        .testStandards(testStandards)
                         .build())
                 .build();
 
@@ -125,12 +136,15 @@ public class TestStandardReviewerTest {
 
     @Test
     public void review_AttestedCriterionExistingTestStandardWithoutId_NoError() {
+        List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();
+        testStandards.add(getCertResultTestStandard(null, "mock"));
+
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationEdition(buildEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId(), "2015"))
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(buildCriterion(1L, "170.315 (a)(1)"))
-                        .testStandard(getCertResultTestStandard(null, "mock"))
+                        .testStandards(testStandards)
                         .build())
                 .build();
 
@@ -140,12 +154,15 @@ public class TestStandardReviewerTest {
 
     @Test
     public void review_UnattestedCriterionNonexistentTestStandard_HasError() {
+        List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();
+        testStandards.add(getCertResultTestStandard(2L, "does not exist"));
+
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationEdition(buildEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId(), "2015"))
                 .certificationResult(CertificationResult.builder()
                         .success(false)
                         .criterion(buildCriterion(1L, "170.315 (a)(1)"))
-                        .testStandard(getCertResultTestStandard(2L, "does not exist"))
+                        .testStandards(testStandards)
                         .build())
                 .build();
 
@@ -155,12 +172,15 @@ public class TestStandardReviewerTest {
 
     @Test
     public void review_AttestedCriterionNonexistentTestStandard_HasError() {
+        List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();
+        testStandards.add(getCertResultTestStandard(2L, "does not exist"));
+
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationEdition(buildEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId(), "2015"))
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(buildCriterion(1L, "170.315 (a)(1)"))
-                        .testStandard(getCertResultTestStandard(2L, "does not exist"))
+                        .testStandards(testStandards)
                         .build())
                 .build();
         listing.setErrorMessages(new HashSet<String>());
@@ -171,12 +191,15 @@ public class TestStandardReviewerTest {
 
     @Test
     public void review_UnattestedCriterionNonexistentTestStandardNoId_HasError() {
+        List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();
+        testStandards.add(getCertResultTestStandard(null, "does not exist"));
+
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationEdition(buildEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId(), "2015"))
                 .certificationResult(CertificationResult.builder()
                         .success(false)
                         .criterion(buildCriterion(1L, "170.315 (a)(1)"))
-                        .testStandard(getCertResultTestStandard(null, "does not exist"))
+                        .testStandards(testStandards)
                         .build())
                 .build();
 
@@ -186,12 +209,15 @@ public class TestStandardReviewerTest {
 
     @Test
     public void review_AttestedCriterionNonexistentTestStandardNoId_HasError() {
+        List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();
+        testStandards.add(getCertResultTestStandard(null, "does not exist"));
+
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationEdition(buildEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId(), "2015"))
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(buildCriterion(1L, "170.315 (a)(1)"))
-                        .testStandard(getCertResultTestStandard(null, "does not exist"))
+                        .testStandards(testStandards)
                         .build())
                 .build();
         listing.setErrorMessages(new HashSet<String>());
@@ -202,12 +228,15 @@ public class TestStandardReviewerTest {
 
     @Test
     public void review_UnattestedCriterionNoTestStandardName_HasError() {
+        List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();
+        testStandards.add(getCertResultTestStandard(1L, null));
+
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationEdition(buildEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId(), "2015"))
                 .certificationResult(CertificationResult.builder()
                         .success(false)
                         .criterion(buildCriterion(1L, "170.315 (a)(1)"))
-                        .testStandard(getCertResultTestStandard(1L, null))
+                        .testStandards(testStandards)
                         .build())
                 .build();
         listing.setErrorMessages(new HashSet<String>());
@@ -218,12 +247,15 @@ public class TestStandardReviewerTest {
 
     @Test
     public void review_AttestedCriterionNoTestStandardName_HasError() {
+        List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();
+        testStandards.add(getCertResultTestStandard(1L, null));
+
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationEdition(buildEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId(), "2015"))
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(buildCriterion(1L, "170.315 (a)(1)"))
-                        .testStandard(getCertResultTestStandard(1L, null))
+                        .testStandards(testStandards)
                         .build())
                 .build();
         listing.setErrorMessages(new HashSet<String>());

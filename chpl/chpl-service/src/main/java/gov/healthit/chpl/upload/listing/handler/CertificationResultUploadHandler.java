@@ -47,6 +47,8 @@ public class CertificationResultUploadHandler {
                 .success(parseSuccess(certHeadingRecord, certResultRecords))
                 .gap(parseGap(certHeadingRecord, certResultRecords))
                 .gapStr(parseGapStr(certHeadingRecord, certResultRecords))
+                .hasAdditionalSoftware(parseHasAdditionalSoftware(certHeadingRecord, certResultRecords))
+                .hasAdditionalSoftwareStr(parseHasAdditionalSoftwareStr(certHeadingRecord, certResultRecords))
                 .privacySecurityFramework(parsePrivacyAndSecurityFramework(certHeadingRecord, certResultRecords))
                 .testFunctionality(parseTestFunctionalities(certHeadingRecord, certResultRecords))
                 .testStandards(parseTestStandards(certHeadingRecord, certResultRecords))
@@ -97,6 +99,19 @@ public class CertificationResultUploadHandler {
 
     private String parseGapStr(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
         return uploadUtil.parseSingleRowField(Headings.GAP, certHeadingRecord, certResultRecords);
+    }
+
+    private Boolean parseHasAdditionalSoftware(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
+        Boolean result = null;
+        try {
+            result = uploadUtil.parseSingleRowFieldAsBoolean(Headings.HAS_ADDITIONAL_SOFTWARE, certHeadingRecord, certResultRecords);
+        } catch (Exception e) {
+        }
+        return result;
+    }
+
+    private String parseHasAdditionalSoftwareStr(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
+        return uploadUtil.parseSingleRowField(Headings.HAS_ADDITIONAL_SOFTWARE, certHeadingRecord, certResultRecords);
     }
 
     private String parsePrivacyAndSecurityFramework(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {

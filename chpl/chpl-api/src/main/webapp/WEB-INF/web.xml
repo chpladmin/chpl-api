@@ -1,107 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" 
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-  xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee 
+<web-app version="3.1"
+    xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee 
   http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
-	<display-name>CCDA Validation Web Services</display-name>
-
-	<context-param>
-		<param-name>contextConfigLocation</param-name>
-		<param-value>
-            gov.healthit.chpl.CHPLServiceConfig,
-            gov.healthit.chpl.CHPLConfig
-        </param-value>
-	</context-param>
-
-	<listener>
-		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-	</listener>
-
-	<servlet>
-		<servlet-name>rest</servlet-name>
-		<servlet-class>
-			org.springframework.web.servlet.DispatcherServlet
-		</servlet-class>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-
-	<servlet>
-    	<servlet-name>FileUploadPage</servlet-name>
-    	<jsp-file>/WEB-INF/jsp/fileUpload.jsp</jsp-file>
-	</servlet>
-	
-	<servlet-mapping>
-		<servlet-name>rest</servlet-name>
-		<url-pattern>/</url-pattern>
-	</servlet-mapping>
-	
-	<servlet-mapping>
-    	<servlet-name>FileUploadPage</servlet-name>
-    	<url-pattern>/FileUpload</url-pattern>
-	</servlet-mapping>
-	
-	<servlet>
- 		<servlet-name>ff4j-console</servlet-name>
- 		<servlet-class>org.ff4j.web.FF4jDispatcherServlet</servlet-class>
- 		<init-param>
-  			<param-name>ff4jProvider</param-name>
-  			<param-value>gov.healthit.chpl.ChplFF4JProvider</param-value>
- 		</init-param>
- 		<load-on-startup>1</load-on-startup>
-	</servlet>
-	
-	<security-constraint>
-        <web-resource-collection>
-            <web-resource-name>ApplicationContent</web-resource-name>
-            <url-pattern>/ff4j-console/*</url-pattern>
-        </web-resource-collection>
-        <auth-constraint>
-            <role-name>ff4jUser</role-name>
-        </auth-constraint>
-    </security-constraint>
-    <security-role>
-        <description>
-            The role that is required to access the application
-        </description>
-        <role-name>ff4jUser</role-name>
-     </security-role>
-     <login-config>
-        <auth-method>BASIC</auth-method>
-        <realm-name>SecuredApp</realm-name>
-     </login-config>
-  
-	<servlet-mapping>
- 		<servlet-name>ff4j-console</servlet-name>
- 		<url-pattern>/ff4j-console/*</url-pattern>
- 		<url-pattern>/static/*</url-pattern>
-	</servlet-mapping>
-
-	<context-param>
-	    <param-name>contextClass</param-name>
-	    <param-value>
-	        org.springframework.web.context.support.AnnotationConfigWebApplicationContext
-	    </param-value>
-	</context-param>
-	 
-	<filter>
-	    <filter-name>springSecurityFilterChain</filter-name>
-	    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-	</filter>
-	 
-	<filter-mapping>
-	    <filter-name>springSecurityFilterChain</filter-name>
-	    <url-pattern>/*</url-pattern>
-	    <dispatcher>REQUEST</dispatcher>
-	</filter-mapping>
+    <display-name>CHPL Web Services</display-name>
 
     <filter>
-  		<filter-name>apiKeyAuthenticationFilter</filter-name>
-  		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-	</filter>
-	<filter-mapping>
-  		<filter-name>apiKeyAuthenticationFilter</filter-name>
-  		<url-pattern>/*</url-pattern>
-	</filter-mapping>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>apiKeyAuthenticationFilter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>apiKeyAuthenticationFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>environmentHeaderFilter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>environmentHeaderFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <!-- FF4J config  -->
+    <servlet>
+        <servlet-name>ff4j-console</servlet-name>
+        <servlet-class>org.ff4j.web.FF4jDispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>ff4jProvider</param-name>
+            <param-value>gov.healthit.chpl.ChplFF4JProvider</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ff4j-console</servlet-name>
+        <url-pattern>/ff4j-console/*</url-pattern>
+        <url-pattern>/static/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- JavaMelody config -->
     <filter>
         <filter-name>javamelody</filter-name>
         <filter-class>net.bull.javamelody.MonitoringFilter</filter-class>
@@ -110,25 +59,26 @@
             <param-value>${javaMelodyUser}:${javaMelodyPwd}</param-value>
         </init-param>
     </filter>
-    
+
+    <!-- Quartz config -->
     <context-param>
-         <param-name>quartz:config-file</param-name>
-         <param-value>quartz.properties</param-value>
-     </context-param>
-     <context-param>
-         <param-name>quartz:shutdown-on-unload</param-name>
-         <param-value>true</param-value>
-     </context-param>
-     <context-param>
-         <param-name>quartz:wait-on-shutdown</param-name>
-         <param-value>true</param-value>
-     </context-param>
-     <context-param>
-         <param-name>quartz:start-on-load</param-name>
-         <param-value>true</param-value>
-     </context-param>
-     <listener>
-         <listener-class>org.quartz.ee.servlet.QuartzInitializerListener</listener-class>
-     </listener>
-    
+        <param-name>quartz:config-file</param-name>
+        <param-value>quartz.properties</param-value>
+    </context-param>
+    <context-param>
+        <param-name>quartz:shutdown-on-unload</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>quartz:wait-on-shutdown</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>quartz:start-on-load</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <listener>
+        <listener-class>org.quartz.ee.servlet.QuartzInitializerListener</listener-class>
+    </listener>
+
 </web-app>

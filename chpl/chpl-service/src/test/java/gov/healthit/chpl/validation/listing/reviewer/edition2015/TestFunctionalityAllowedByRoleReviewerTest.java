@@ -2,6 +2,9 @@ package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -42,6 +45,12 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
     @Test
     public void review_TestFunctionalityDidNotChange_NoErrorMessages() {
         // Setup
+        List<CertificationResultTestFunctionality> testFunctionalities = new ArrayList<CertificationResultTestFunctionality>();
+        testFunctionalities.add(CertificationResultTestFunctionality.builder()
+                .name("(b)(2)(i)(E)")
+                .testFunctionalityId(TEST_FUNCTIONALITY_ID_RANDOM)
+                .build());
+
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .id(CERTIFICATION_RESULT_ID)
@@ -52,10 +61,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
                                 .certificationEditionId(CERTIFICATION_EDITION_ID)
                                 .number("170.315 (b)(2)")
                                 .build())
-                        .testFunctionalitySingle(CertificationResultTestFunctionality.builder()
-                                .name("(b)(2)(i)(E)")
-                                .testFunctionalityId(TEST_FUNCTIONALITY_ID_RANDOM)
-                                .build())
+                        .testFunctionality(testFunctionalities)
                         .build())
                 .build();
 
@@ -69,10 +75,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
                                 .certificationEditionId(CERTIFICATION_EDITION_ID)
                                 .number("170.315 (b)(2)")
                                 .build())
-                        .testFunctionalitySingle(CertificationResultTestFunctionality.builder()
-                                .name("(b)(2)(i)(E)")
-                                .testFunctionalityId(TEST_FUNCTIONALITY_ID_RANDOM)
-                                .build())
+                        .testFunctionality(testFunctionalities)
                         .build())
                 .build();
 
@@ -86,6 +89,11 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
     @Test
     public void review_UserIsAdminAndAddNonRestrictedTestFunctionality_NoErrorMessages() {
         // Setup
+        List<CertificationResultTestFunctionality> testFunctionalities = new ArrayList<CertificationResultTestFunctionality>();
+        testFunctionalities.add(CertificationResultTestFunctionality.builder()
+                .name("(b)(2)(i)(E)")
+                .testFunctionalityId(TEST_FUNCTIONALITY_ID_RANDOM)
+                .build());
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder().build();
 
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
@@ -97,10 +105,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
                                 .certificationEditionId(CERTIFICATION_EDITION_ID)
                                 .number("170.315 (b)(2)")
                                 .build())
-                        .testFunctionalitySingle(CertificationResultTestFunctionality.builder()
-                                .name("(b)(2)(i)(E)")
-                                .testFunctionalityId(TEST_FUNCTIONALITY_ID_RANDOM)
-                                .build())
+                        .testFunctionality(testFunctionalities)
                         .build())
                 .build();
 
@@ -114,6 +119,12 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
     @Test
     public void review_UserIsAdminAndRemoveNonRestrictedTestFunctionality_NoErrorMessages() {
         // Setup
+        List<CertificationResultTestFunctionality> testFunctionalities = new ArrayList<CertificationResultTestFunctionality>();
+        testFunctionalities.add(CertificationResultTestFunctionality.builder()
+                .name("(b)(2)(i)(E)")
+                .testFunctionalityId(TEST_FUNCTIONALITY_ID_RANDOM)
+                .build());
+
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .id(CERTIFICATION_RESULT_ID)
@@ -123,10 +134,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
                                 .certificationEditionId(CERTIFICATION_EDITION_ID)
                                 .number("170.315 (b)(2)")
                                 .build())
-                        .testFunctionalitySingle(CertificationResultTestFunctionality.builder()
-                                .name("(b)(2)(i)(E)")
-                                .testFunctionalityId(TEST_FUNCTIONALITY_ID_RANDOM)
-                                .build())
+                        .testFunctionality(testFunctionalities)
                         .build())
                 .build();
 
@@ -142,6 +150,12 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
     @Test
     public void review_UserIsAdminAndAddRestrictedTestFunctionality_NoErrorMessages() {
         // Setup
+        List<CertificationResultTestFunctionality> testFunctionalities = new ArrayList<CertificationResultTestFunctionality>();
+        testFunctionalities.add(CertificationResultTestFunctionality.builder()
+                .name("(c)(3)(ii)")
+                .testFunctionalityId(TEST_FUNCTIONALITY_CIII)
+                .build());
+
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .id(CERTIFICATION_RESULT_ID)
@@ -165,10 +179,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
                                 .certificationEditionId(CERTIFICATION_EDITION_ID)
                                 .number("170.315 (c)(3)")
                                 .build())
-                        .testFunctionalitySingle(CertificationResultTestFunctionality.builder()
-                                .name("(c)(3)(ii)")
-                                .testFunctionalityId(TEST_FUNCTIONALITY_CIII)
-                                .build())
+                        .testFunctionality(testFunctionalities)
                         .build())
                 .build();
 
@@ -182,6 +193,12 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
     @Test
     public void review_UserIsAdminAndRemoveRestrictedTestFunctionality_NoErrorMessages() {
         // Setup
+        List<CertificationResultTestFunctionality> testFunctionalities = new ArrayList<CertificationResultTestFunctionality>();
+        testFunctionalities.add(CertificationResultTestFunctionality.builder()
+                .name("(c)(3)(ii)")
+                .testFunctionalityId(TEST_FUNCTIONALITY_CIII)
+                .build());
+
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .id(CERTIFICATION_RESULT_ID)
@@ -192,10 +209,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
                                 .certificationEditionId(CERTIFICATION_EDITION_ID)
                                 .number("170.315 (c)(3)")
                                 .build())
-                        .testFunctionalitySingle(CertificationResultTestFunctionality.builder()
-                                .name("(c)(3)(ii)")
-                                .testFunctionalityId(TEST_FUNCTIONALITY_CIII)
-                                .build())
+                        .testFunctionality(testFunctionalities)
                         .build())
                 .build();
 
@@ -223,6 +237,11 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
     public void review_UserIsAcbAndAddNonRestrictedTestFunctionality_NoErrorMessages() {
         // Setup
         Mockito.when(permissions.doesUserHaveRole(ArgumentMatchers.anyList())).thenReturn(false);
+        List<CertificationResultTestFunctionality> testFunctionalities = new ArrayList<CertificationResultTestFunctionality>();
+        testFunctionalities.add(CertificationResultTestFunctionality.builder()
+                .name("(b)(2)(i)(E)")
+                .testFunctionalityId(TEST_FUNCTIONALITY_ID_RANDOM)
+                .build());
 
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder().build();
 
@@ -235,10 +254,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
                                 .certificationEditionId(CERTIFICATION_EDITION_ID)
                                 .number("170.315 (b)(2)")
                                 .build())
-                        .testFunctionalitySingle(CertificationResultTestFunctionality.builder()
-                                .name("(b)(2)(i)(E)")
-                                .testFunctionalityId(TEST_FUNCTIONALITY_ID_RANDOM)
-                                .build())
+                        .testFunctionality(testFunctionalities)
                         .build())
                 .build();
 
@@ -253,6 +269,11 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
     public void review_UserIsAcbAndRemoveNonRestrictedTestFunctionality_NoErrorMessages() {
         // Setup
         Mockito.when(permissions.doesUserHaveRole(ArgumentMatchers.anyList())).thenReturn(false);
+        List<CertificationResultTestFunctionality> testFunctionalities = new ArrayList<CertificationResultTestFunctionality>();
+        testFunctionalities.add(CertificationResultTestFunctionality.builder()
+                .name("(b)(2)(i)(E)")
+                .testFunctionalityId(TEST_FUNCTIONALITY_ID_RANDOM)
+                .build());
 
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -263,10 +284,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
                                 .certificationEditionId(CERTIFICATION_EDITION_ID)
                                 .number("170.315 (b)(2)")
                                 .build())
-                        .testFunctionalitySingle(CertificationResultTestFunctionality.builder()
-                                .name("(b)(2)(i)(E)")
-                                .testFunctionalityId(TEST_FUNCTIONALITY_ID_RANDOM)
-                                .build())
+                        .testFunctionality(testFunctionalities)
                         .build())
                 .build();
 
@@ -283,6 +301,11 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
     public void review_UserIsAcbAndAddRestrictedTestFunctionality_ErrorMessageAdded() {
         // Setup
         Mockito.when(permissions.doesUserHaveRole(ArgumentMatchers.anyList())).thenReturn(false);
+        List<CertificationResultTestFunctionality> testFunctionalities = new ArrayList<CertificationResultTestFunctionality>();
+        testFunctionalities.add(CertificationResultTestFunctionality.builder()
+                .name("(c)(3)(ii)")
+                .testFunctionalityId(TEST_FUNCTIONALITY_CIII)
+                .build());
 
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -307,10 +330,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
                                 .certificationEditionId(CERTIFICATION_EDITION_ID)
                                 .number("170.315 (c)(3)")
                                 .build())
-                        .testFunctionalitySingle(CertificationResultTestFunctionality.builder()
-                                .name("(c)(3)(ii)")
-                                .testFunctionalityId(TEST_FUNCTIONALITY_CIII)
-                                .build())
+                        .testFunctionality(testFunctionalities)
                         .build())
                 .build();
 
@@ -325,6 +345,11 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
     public void review_UserIsAcbAndRemoveRestrictedTestFunctionality_ErrorMessageCreated() {
         // Setup
         Mockito.when(permissions.doesUserHaveRole(ArgumentMatchers.anyList())).thenReturn(false);
+        List<CertificationResultTestFunctionality> testFunctionalities = new ArrayList<CertificationResultTestFunctionality>();
+        testFunctionalities.add(CertificationResultTestFunctionality.builder()
+                .name("(c)(3)(ii)")
+                .testFunctionalityId(TEST_FUNCTIONALITY_CIII)
+                .build());
 
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -336,10 +361,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
                                 .certificationEditionId(CERTIFICATION_EDITION_ID)
                                 .number("170.315 (c)(3)")
                                 .build())
-                        .testFunctionalitySingle(CertificationResultTestFunctionality.builder()
-                                .name("(c)(3)(ii)")
-                                .testFunctionalityId(TEST_FUNCTIONALITY_CIII)
-                                .build())
+                        .testFunctionality(testFunctionalities)
                         .build())
                 .build();
 
@@ -367,6 +389,11 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
     public void review_UserIsAcbAndRemoveRestrictedTestFunctionalityAndUpdateCriteriaIsAttestedTo_ErrorMessageCreated() {
         // Setup
         Mockito.when(permissions.doesUserHaveRole(ArgumentMatchers.anyList())).thenReturn(false);
+        List<CertificationResultTestFunctionality> testFunctionalities = new ArrayList<CertificationResultTestFunctionality>();
+        testFunctionalities.add(CertificationResultTestFunctionality.builder()
+                .name("(c)(3)(ii)")
+                .testFunctionalityId(TEST_FUNCTIONALITY_CIII)
+                .build());
 
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -378,10 +405,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
                                 .certificationEditionId(CERTIFICATION_EDITION_ID)
                                 .number("170.315 (c)(3)")
                                 .build())
-                        .testFunctionalitySingle(CertificationResultTestFunctionality.builder()
-                                .name("(c)(3)(ii)")
-                                .testFunctionalityId(TEST_FUNCTIONALITY_CIII)
-                                .build())
+                        .testFunctionality(testFunctionalities)
                         .build())
                 .build();
 

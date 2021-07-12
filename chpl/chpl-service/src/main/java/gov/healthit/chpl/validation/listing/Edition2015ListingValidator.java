@@ -19,9 +19,11 @@ import gov.healthit.chpl.validation.listing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.InheritanceComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.InheritanceReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ListingStatusAndUserRoleReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.OptionalStandardReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.RealWorldTestingReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.SvapReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.TestStandardRemovalReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestStandardReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestToolReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestingLabReviewer;
@@ -43,7 +45,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteria
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionality2015Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionalityAllowedByCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionalityAllowedByRoleReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestTool2015Reviewer;
 
@@ -98,6 +100,10 @@ public class Edition2015ListingValidator extends Validator {
     private UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
 
     @Autowired
+    @Qualifier("testStandardRemovalReviewer")
+    private TestStandardRemovalReviewer tsrReviewer;
+
+    @Autowired
     @Qualifier("testStandardReviewer")
     private TestStandardReviewer tsReviewer;
 
@@ -122,8 +128,8 @@ public class Edition2015ListingValidator extends Validator {
     private UrlReviewer urlReviewer;
 
     @Autowired
-    @Qualifier("testFunctionality2015Reviewer")
-    private TestFunctionality2015Reviewer testFunctionalityReviewer;
+    @Qualifier("testFunctionalityAllowedByCriteriaReviewer")
+    private TestFunctionalityAllowedByCriteriaReviewer testFunctionalityReviewer;
 
     @Autowired
     @Qualifier("duplicateDataReviewer")
@@ -197,6 +203,10 @@ public class Edition2015ListingValidator extends Validator {
     @Qualifier("measureValidityReviewer")
     private MeasureValidityReviewer measureReviewer;
 
+    @Autowired
+    @Qualifier("optionalStandardReviewer")
+    private OptionalStandardReviewer optionalStandardReviewer;
+
     private List<Reviewer> reviewers;
     private List<ComparisonReviewer> comparisonReviewers;
 
@@ -217,6 +227,8 @@ public class Edition2015ListingValidator extends Validator {
             reviewers.add(certStatusReviewer);
             reviewers.add(certDateReviewer);
             reviewers.add(unattestedCriteriaWithDataReviewer);
+            reviewers.add(optionalStandardReviewer);
+            reviewers.add(tsrReviewer);
             reviewers.add(tsReviewer);
             reviewers.add(inheritanceReviewer);
             reviewers.add(ttReviewer);

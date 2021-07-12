@@ -94,6 +94,12 @@ public class CertificationResultDetailsEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
     @Column(name = "certification_result_id")
     @Where(clause = "deleted <> 'true'")
+    private Set<CertificationResultOptionalStandardEntity> certificationResultOptionalStandards;
+
+    @Basic(optional = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
+    @Column(name = "certification_result_id")
+    @Where(clause = "deleted <> 'true'")
     private Set<CertificationResultTestDataEntity> certificationResultTestData;
 
     @Basic(optional = true)

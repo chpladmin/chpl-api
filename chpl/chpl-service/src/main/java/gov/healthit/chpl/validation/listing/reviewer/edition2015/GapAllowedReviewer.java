@@ -57,7 +57,7 @@ public class GapAllowedReviewer implements Reviewer {
     }
 
     private boolean isCertificationDateAfterCuresEffictiveRuleDate(CertifiedProductSearchDetails listing) {
-        return listing.getCertificationDate() > curesEffectiveRuleDateTimestamp;
+        return listing.getCertificationDate() != null && listing.getCertificationDate() > curesEffectiveRuleDateTimestamp;
     }
 
     private Optional<CertificationResult> getF3Criterion(CertifiedProductSearchDetails listing) {
