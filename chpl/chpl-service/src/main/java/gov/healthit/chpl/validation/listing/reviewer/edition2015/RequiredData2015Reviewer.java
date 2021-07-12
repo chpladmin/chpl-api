@@ -1,7 +1,5 @@
 package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -30,7 +28,6 @@ import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
-import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
@@ -39,26 +36,6 @@ import gov.healthit.chpl.validation.listing.reviewer.RequiredDataReviewer;
 
 @Component("requiredData2015Reviewer")
 public class RequiredData2015Reviewer extends RequiredDataReviewer {
-    private static final String[] E1_RELATED_CERTS = {
-            "170.315 (d)(1)", "170.315 (d)(2)", "170.315 (d)(3)", "170.315 (d)(5)", "170.315 (d)(7)", "170.315 (d)(9)"
-    };
-
-    private static final String[] E2E3_RELATED_CERTS = {
-            "170.315 (d)(1)", "170.315 (d)(2)", "170.315 (d)(3)", "170.315 (d)(5)", "170.315 (d)(9)"
-    };
-
-    private static final String[] F_RELATED_CERTS = {
-            "170.315 (d)(1)", "170.315 (d)(2)", "170.315 (d)(3)", "170.315 (d)(7)"
-    };
-
-    private static final String[] G7G8G9_RELATED_CERTS = {
-            "170.315 (d)(1)", "170.315 (d)(9)"
-    };
-
-    private static final String[] H_RELATED_CERTS = {
-            "170.315 (d)(1)", "170.315 (d)(2)", "170.315 (d)(3)"
-    };
-
     private static final String[] UCD_RELATED_CERTS = {
             "170.315 (a)(1)", "170.315 (a)(2)", "170.315 (a)(3)", "170.315 (a)(4)", "170.315 (a)(5)", "170.315 (a)(6)",
             "170.315 (a)(7)", "170.315 (a)(8)", "170.315 (a)(9)", "170.315 (a)(14)", "170.315 (b)(2)", "170.315 (b)(3)"
@@ -77,43 +54,24 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     private static final String H1_CRITERIA_NUMBER = "170.315 (h)(1)";
     private static final int MINIMUM_TEST_PARTICIPANT_COUNT = 10;
 
-    private List<String> e2e3Criterion = new ArrayList<String>();
-    private List<String> g7g8g9Criterion = new ArrayList<String>();
-    private List<String> d2d10Criterion = new ArrayList<String>();
-    private List<CertificationCriterion> e1Criteria;
-
     private TestFunctionalityDAO testFuncDao;
     private TestProcedureDAO testProcDao;
     private TestDataDAO testDataDao;
     private CertificationCriterionDAO criteriaDao;
-    private CertificationCriterionService criterionService;
     private ValidationUtils validationUtils;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
     public RequiredData2015Reviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil,
             TestFunctionalityDAO testFuncDao, TestProcedureDAO testProcDao,
-            TestDataDAO testDataDao, CertificationCriterionDAO criteriaDao, CertificationCriterionService criterionService,
+            TestDataDAO testDataDao, CertificationCriterionDAO criteriaDao,
             ValidationUtils validationUtils, ResourcePermissions resourcePermissions) {
         super(certRules, msgUtil, resourcePermissions);
         this.testFuncDao = testFuncDao;
         this.testProcDao = testProcDao;
         this.testDataDao = testDataDao;
         this.criteriaDao = criteriaDao;
-        this.criterionService = criterionService;
         this.validationUtils = validationUtils;
-
-        e2e3Criterion.add("170.315 (e)(2)");
-        e2e3Criterion.add("170.315 (e)(3)");
-
-        g7g8g9Criterion.add("170.315 (g)(7)");
-        g7g8g9Criterion.add("170.315 (g)(8)");
-        g7g8g9Criterion.add("170.315 (g)(9)");
-
-        d2d10Criterion.add("170.315 (d)(2)");
-        d2d10Criterion.add("170.315 (d)(10)");
-
-        e1Criteria = this.criterionService.getByNumber("170.315 (e)(1)");
     }
 
     @Override
@@ -125,43 +83,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         }
 
         List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
-        List<String> errors;
-        List<String> warnings;
-
-        errors = validationUtils.checkClassOfCriteriaForMissingComplementaryCriteriaNumberErrors("170.315 (f)", attestedCriteria,
-                Arrays.asList(F_RELATED_CERTS));
-        listing.getErrorMessages().addAll(errors);
-        warnings = validationUtils.checkClassOfCriteriaForMissingComplementaryCriteriaNumberWarnings("170.315 (f)", attestedCriteria,
-                Arrays.asList(F_RELATED_CERTS));
-        addListingWarningsByPermission(listing, warnings);
-
-        errors = validationUtils.checkClassOfCriteriaForMissingComplementaryCriteriaNumberErrors("170.315 (h)", attestedCriteria,
-                Arrays.asList(H_RELATED_CERTS));
-        listing.getErrorMessages().addAll(errors);
-        warnings = validationUtils.checkClassOfCriteriaForMissingComplementaryCriteriaNumberWarnings("170.315 (h)", attestedCriteria,
-                Arrays.asList(H_RELATED_CERTS));
-        addListingWarningsByPermission(listing, warnings);
-
-        e1Criteria.stream().forEach(e1Criterion -> {
-            List<String> e1Errors = validationUtils.checkSpecificCriteriaForErrors(e1Criterion, attestedCriteria,
-                    Arrays.asList(E1_RELATED_CERTS));
-            listing.getErrorMessages().addAll(e1Errors);
-        });
-
-        // check for (e)(2) or (e)(3) certs
-        List<String> e2e3ComplimentaryErrors = validationUtils.checkComplimentaryCriteriaAllRequired(e2e3Criterion,
-                Arrays.asList(E2E3_RELATED_CERTS), attestedCriteria);
-        listing.getErrorMessages().addAll(e2e3ComplimentaryErrors);
-
-        // check for (g)(7) or (g)(8) or (g)(9) required complimentary certs
-        List<String> g7g8g9ComplimentaryErrors = validationUtils.checkComplimentaryCriteriaAllRequired(g7g8g9Criterion,
-                Arrays.asList(G7G8G9_RELATED_CERTS), attestedCriteria);
-        listing.getErrorMessages().addAll(g7g8g9ComplimentaryErrors);
-
-        // if g7, g8, or g9 is found then one of d2 or d10 is required
-        g7g8g9ComplimentaryErrors = validationUtils.checkComplimentaryCriteriaAnyRequired(g7g8g9Criterion,
-                d2d10Criterion, attestedCriteria);
-        listing.getErrorMessages().addAll(g7g8g9ComplimentaryErrors);
 
         for (int i = 0; i < UCD_RELATED_CERTS.length; i++) {
             if (validationUtils.hasCert(UCD_RELATED_CERTS[i], attestedCriteria)) {

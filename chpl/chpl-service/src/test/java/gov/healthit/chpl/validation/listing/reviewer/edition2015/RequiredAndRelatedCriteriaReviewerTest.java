@@ -39,7 +39,9 @@ public class RequiredAndRelatedCriteriaReviewerTest {
     private ResourcePermissions resourcePermissions;
     private RequiredAndRelatedCriteriaReviewer reviewer;
 
-    private CertificationCriterion a1, a4, a6, a9, a10, a13, b1, b2, b10, c1, g4, g5, d1, d2, d2Cures, d3, d3Cures, d4, d5, d6, d7, d8, d9, d10, d10Cures, g10;
+    private CertificationCriterion a1, a4, a6, a9, a10, a13, b1, b2, b10, c1, c2, g4, g5, d1, d2,
+        d2Cures, d3, d3Cures, d4, d5, d6, d7, d8, d9, d10, d10Cures, e1, e1Cures, e2, e3,
+        g7, g8, g9, g9Cures, g10, f1, f2, h1, h2;
 
     @Before
     @SuppressWarnings("checkstyle:magicnumber")
@@ -54,6 +56,7 @@ public class RequiredAndRelatedCriteriaReviewerTest {
         b2 = getCriterion(17L, "170.315 (b)(2)", "b2 title", false);
         b10 = getCriterion(171L, "170.315 (b)(10)", "b10 title", false);
         c1 = getCriterion(25L, "170.315 (c)(1)", "c1 title", false);
+        c2 = getCriterion(26L, "170.315 (c)(2)", "c2 title", true);
         d1 = getCriterion(29L, "170.315 (d)(1)", "d1 title", false);
         d2 = getCriterion(30L, "170.315 (d)(2)", "d2 old title", false);
         d2Cures = getCriterion(173L, "170.315 (d)(2)", "d2 title (Cures Update)", false);
@@ -67,9 +70,21 @@ public class RequiredAndRelatedCriteriaReviewerTest {
         d9 = getCriterion(37L, "170.315 (d)(9)", "d9 title", false);
         d10 = getCriterion(38L, "170.315 (d)(10)", "d10 old title", false);
         d10Cures = getCriterion(175L, "170.315 (d)(10)", "d10 title (Cures Update)", false);
+        e1 = getCriterion(40L, "170.315 (e)(1)", "e1 title", false);
+        e1Cures = getCriterion(178L, "170.315 (e)(1)", "e1 title (Cures Update)", false);
+        e2 = getCriterion(41L, "170.315 (e)(2)", "e2 title", false);
+        e3 = getCriterion(42L, "170.315 (e)(3)", "e3 title", false);
         g4 = getCriterion(53L, "170.315 (g)(4)", "g4 title", false);
         g5 = getCriterion(54L, "170.315 (g)(5)", "g5 title", false);
+        g7 = getCriterion(56L, "170.315 (g)(7)", "g7 title", false);
+        g8 = getCriterion(57L, "170.315 (g)(8)", "g8 title", false);
+        g9 = getCriterion(58L, "170.315 (g)(9)", "g9 title", false);
+        g9Cures = getCriterion(181L, "170.315 (g)(9)", "g9 title (Cures Update)", false);
         g10 = getCriterion(182L, "170.315 (g)(10)", "g10 title", false);
+        f1 = getCriterion(43L, "170.315 (f)(1)", "f1 title", false);
+        f2 = getCriterion(44L, "170.315 (f)(2)", "f2 title", true);
+        h1 = getCriterion(59L, "170.315 (h)(a)", "h1 title", false);
+        h2 = getCriterion(60L, "170.315 (h)(2)", "h2 title", true);
 
         certificationCriterionService = Mockito.mock(CertificationCriterionService.class);
 
@@ -82,6 +97,8 @@ public class RequiredAndRelatedCriteriaReviewerTest {
         Mockito.when(certificationCriterionService.get(Criteria2015.B_1_OLD)).thenReturn(b1);
         Mockito.when(certificationCriterionService.get(Criteria2015.B_2_OLD)).thenReturn(b2);
         Mockito.when(certificationCriterionService.get(Criteria2015.B_10)).thenReturn(b10);
+        Mockito.when(certificationCriterionService.get(Criteria2015.C_1)).thenReturn(c1);
+        Mockito.when(certificationCriterionService.get(Criteria2015.C_2)).thenReturn(c2);
         Mockito.when(certificationCriterionService.get(Criteria2015.D_1)).thenReturn(d1);
         Mockito.when(certificationCriterionService.get(Criteria2015.D_2_OLD)).thenReturn(d2);
         Mockito.when(certificationCriterionService.get(Criteria2015.D_2_CURES)).thenReturn(d2Cures);
@@ -95,9 +112,19 @@ public class RequiredAndRelatedCriteriaReviewerTest {
         Mockito.when(certificationCriterionService.get(Criteria2015.D_9)).thenReturn(d9);
         Mockito.when(certificationCriterionService.get(Criteria2015.D_10_OLD)).thenReturn(d10);
         Mockito.when(certificationCriterionService.get(Criteria2015.D_10_CURES)).thenReturn(d10Cures);
+        Mockito.when(certificationCriterionService.get(Criteria2015.E_1_OLD)).thenReturn(e1);
+        Mockito.when(certificationCriterionService.get(Criteria2015.E_1_CURES)).thenReturn(e1Cures);
+        Mockito.when(certificationCriterionService.get(Criteria2015.E_2)).thenReturn(e2);
+        Mockito.when(certificationCriterionService.get(Criteria2015.E_3)).thenReturn(e3);
         Mockito.when(certificationCriterionService.get(Criteria2015.G_4)).thenReturn(g4);
         Mockito.when(certificationCriterionService.get(Criteria2015.G_5)).thenReturn(g5);
+        Mockito.when(certificationCriterionService.get(Criteria2015.G_7)).thenReturn(g7);
+        Mockito.when(certificationCriterionService.get(Criteria2015.G_8)).thenReturn(g8);
+        Mockito.when(certificationCriterionService.get(Criteria2015.G_9_OLD)).thenReturn(g9);
+        Mockito.when(certificationCriterionService.get(Criteria2015.G_9_CURES)).thenReturn(g9Cures);
         Mockito.when(certificationCriterionService.get(Criteria2015.G_10)).thenReturn(g10);
+        Mockito.when(certificationCriterionService.get(Criteria2015.F_1)).thenReturn(f1);
+        Mockito.when(certificationCriterionService.get(Criteria2015.F_2)).thenReturn(f2);
 
         resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.doesUserHaveRole(ArgumentMatchers.any(List.class))).thenReturn(true);
@@ -674,6 +701,725 @@ public class RequiredAndRelatedCriteriaReviewerTest {
     }
 
     @Test
+    public void review_c2RemovedCriteriaAttestedWithoutDependencies_adminUser_hasWarnings() {
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(c2)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(4, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d1))));
+        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d2))));
+        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d3))));
+        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d5))));
+    }
+
+    @Test
+    public void review_c2RemovedCriteriaAttestedWithoutDependencies_oncUser_hasWarnings() {
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(true);
+        Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(c2)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(4, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d1))));
+        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d2))));
+        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d3))));
+        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d5))));
+    }
+
+    @Test
+    public void review_c2RemovedCriteriaAttestedWithoutDependencies_acbUser_noWarnings() {
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(c2)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getWarningMessages().size());
+    }
+
+    @Test
+    public void review_c2RemovedCriteriaAttestedWithDependencies_adminUser_noErrorsNoWarnings() {
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(c2)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d2Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d3)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_e1CriteriaNotPresent_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_e1CriteriaAttestedWithoutDependencies_hasErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(e1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(6, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(1)", Util.formatCriteriaNumber(d1))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(1)", Util.formatCriteriaNumber(d2))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(1)", Util.formatCriteriaNumber(d3))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(1)", Util.formatCriteriaNumber(d5))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(1)", Util.formatCriteriaNumber(d7))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(1)", Util.formatCriteriaNumber(d9))));
+    }
+
+    @Test
+    public void review_e1CriteriaAttestedWithDependencies_noErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(e1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d2Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d3)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d7)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d9)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_e2E3CriteriaNotPresent_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_e2CriteriaAttestedWithoutDependencies_hasErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(e2)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(5, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(2) or 170.315 (e)(3)", Util.formatCriteriaNumber(d1))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(2) or 170.315 (e)(3)", Util.formatCriteriaNumber(d2) + " or " + Util.formatCriteriaNumber(d2Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(2) or 170.315 (e)(3)", Util.formatCriteriaNumber(d3) + " or " + Util.formatCriteriaNumber(d3Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(2) or 170.315 (e)(3)", Util.formatCriteriaNumber(d5))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(2) or 170.315 (e)(3)", Util.formatCriteriaNumber(d9))));
+    }
+
+    @Test
+    public void review_e3CriteriaAttestedWithoutDependencies_hasErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(e3)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(5, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(2) or 170.315 (e)(3)", Util.formatCriteriaNumber(d1))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(2) or 170.315 (e)(3)", Util.formatCriteriaNumber(d2) + " or " + Util.formatCriteriaNumber(d2Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(2) or 170.315 (e)(3)", Util.formatCriteriaNumber(d3) + " or " + Util.formatCriteriaNumber(d3Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(2) or 170.315 (e)(3)", Util.formatCriteriaNumber(d5))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(2) or 170.315 (e)(3)", Util.formatCriteriaNumber(d9))));
+    }
+
+    @Test
+    public void review_e2Ande3CriteriaAttestedWithoutDependencies_hasErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(e2)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(e3)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(5, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(2) or 170.315 (e)(3)", Util.formatCriteriaNumber(d1))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(2) or 170.315 (e)(3)", Util.formatCriteriaNumber(d2) + " or " + Util.formatCriteriaNumber(d2Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(2) or 170.315 (e)(3)", Util.formatCriteriaNumber(d3) + " or " + Util.formatCriteriaNumber(d3Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(2) or 170.315 (e)(3)", Util.formatCriteriaNumber(d5))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(2) or 170.315 (e)(3)", Util.formatCriteriaNumber(d9))));
+    }
+
+    @Test
+    public void review_e2AndD1CriteriaAttestedWithoutDependencies_hasErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(e2)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(4, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(2) or 170.315 (e)(3)", Util.formatCriteriaNumber(d2) + " or " + Util.formatCriteriaNumber(d2Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(2) or 170.315 (e)(3)", Util.formatCriteriaNumber(d3) + " or " + Util.formatCriteriaNumber(d3Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(2) or 170.315 (e)(3)", Util.formatCriteriaNumber(d5))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(2) or 170.315 (e)(3)", Util.formatCriteriaNumber(d9))));
+    }
+
+    @Test
+    public void review_e3AndD2CuresCriteriaAttestedWithoutDependencies_hasErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(e3)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d2Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(4, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(2) or 170.315 (e)(3)", Util.formatCriteriaNumber(d1))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(2) or 170.315 (e)(3)", Util.formatCriteriaNumber(d3) + " or " + Util.formatCriteriaNumber(d3Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(2) or 170.315 (e)(3)", Util.formatCriteriaNumber(d5))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(2) or 170.315 (e)(3)", Util.formatCriteriaNumber(d9))));
+    }
+
+
+    @Test
+    public void review_e2AndE3AndSomeCriteriaAttestedWithoutDependencies_hasErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(e2)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(e3)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d2)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d3Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d9)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (e)(2) or 170.315 (e)(3)", Util.formatCriteriaNumber(d5))));
+    }
+
+    @Test
+    public void review_e2CriteriaAttestedWithDependencies_noErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(e2)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d2Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d3)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d9)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_e3CriteriaAttestedWithDependencies_noErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(e3)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d2Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d3)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d9)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_e2AndE3CriteriaAttestedWithDependencies_noErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(e2)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(e3)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d2Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d3)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d9)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_fCriteriaNotPresent_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_f1CriteriaAttestedWithoutDependencies_hasErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(f1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(4, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(*)", Util.formatCriteriaNumber(d1))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(*)", Util.formatCriteriaNumber(d2))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(*)", Util.formatCriteriaNumber(d3))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(*)", Util.formatCriteriaNumber(d7))));
+    }
+
+    @Test
+    public void review_f1CriteriaAttestedWithDependencies_noErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(f1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d2Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d3)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d7)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_f2RemovedCriteriaAttestedWithoutDependencies_adminUser_hasWarnings() {
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(f2)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(4, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(*)", Util.formatCriteriaNumber(d1))));
+        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(*)", Util.formatCriteriaNumber(d2))));
+        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(*)", Util.formatCriteriaNumber(d3))));
+        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(*)", Util.formatCriteriaNumber(d7))));
+    }
+
+    @Test
+    public void review_f2RemovedCriteriaAttestedWithoutDependencies_oncUser_hasWarnings() {
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(true);
+        Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(f2)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(4, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(*)", Util.formatCriteriaNumber(d1))));
+        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(*)", Util.formatCriteriaNumber(d2))));
+        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(*)", Util.formatCriteriaNumber(d3))));
+        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(*)", Util.formatCriteriaNumber(d7))));
+    }
+
+    @Test
+    public void review_f2RemovedCriteriaAttestedWithoutDependencies_acbUser_noWarnings() {
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(f2)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getWarningMessages().size());
+    }
+
+    @Test
+    public void review_f2RemovedCriteriaAttestedWithDependencies_adminUser_noErrorsNoWarnings() {
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(f2)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d2Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d3)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d7)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
     public void review_g4g5NotPresent_hasErrors() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -727,6 +1473,217 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                         .build())
                 .certificationResult(CertificationResult.builder()
                         .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_g7g8g9CriteriaNotPresent_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_g7CriteriaAttestedWithoutDependencies_hasErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g7)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        listing.getErrorMessages().stream().forEach(msg -> System.out.println(msg));
+        assertEquals(3, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND,
+                Util.formatCriteriaNumber(g7) + " or " + Util.formatCriteriaNumber(g8) + " or " + Util.formatCriteriaNumber(g9) + " or " + Util.formatCriteriaNumber(g9Cures),
+                Util.formatCriteriaNumber(d1))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND,
+                Util.formatCriteriaNumber(g7) + " or " + Util.formatCriteriaNumber(g8) + " or " + Util.formatCriteriaNumber(g9) + " or " + Util.formatCriteriaNumber(g9Cures),
+                Util.formatCriteriaNumber(d9))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND,
+                Util.formatCriteriaNumber(g7) + " or " + Util.formatCriteriaNumber(g8) + " or " + Util.formatCriteriaNumber(g9) + " or " + Util.formatCriteriaNumber(g9Cures),
+                Util.formatCriteriaNumber(d2) + " or " + Util.formatCriteriaNumber(d2Cures) + " or " + Util.formatCriteriaNumber(d10) + " or " + Util.formatCriteriaNumber(d10Cures))));
+    }
+
+    @Test
+    public void review_g7AndG8CriteriaAttestedWithoutDependencies_hasErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g7)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g8)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        listing.getErrorMessages().stream().forEach(msg -> System.out.println(msg));
+        assertEquals(3, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND,
+                Util.formatCriteriaNumber(g7) + " or " + Util.formatCriteriaNumber(g8) + " or " + Util.formatCriteriaNumber(g9) + " or " + Util.formatCriteriaNumber(g9Cures),
+                Util.formatCriteriaNumber(d1))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND,
+                Util.formatCriteriaNumber(g7) + " or " + Util.formatCriteriaNumber(g8) + " or " + Util.formatCriteriaNumber(g9) + " or " + Util.formatCriteriaNumber(g9Cures),
+                Util.formatCriteriaNumber(d9))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND,
+                Util.formatCriteriaNumber(g7) + " or " + Util.formatCriteriaNumber(g8) + " or " + Util.formatCriteriaNumber(g9) + " or " + Util.formatCriteriaNumber(g9Cures),
+                Util.formatCriteriaNumber(d2) + " or " + Util.formatCriteriaNumber(d2Cures) + " or " + Util.formatCriteriaNumber(d10) + " or " + Util.formatCriteriaNumber(d10Cures))));
+    }
+
+    @Test
+    public void review_g7AndG8AndG9CriteriaAttestedWithoutDependencies_hasErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g7)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g8)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g9)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        listing.getErrorMessages().stream().forEach(msg -> System.out.println(msg));
+        assertEquals(3, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND,
+                Util.formatCriteriaNumber(g7) + " or " + Util.formatCriteriaNumber(g8) + " or " + Util.formatCriteriaNumber(g9) + " or " + Util.formatCriteriaNumber(g9Cures),
+                Util.formatCriteriaNumber(d1))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND,
+                Util.formatCriteriaNumber(g7) + " or " + Util.formatCriteriaNumber(g8) + " or " + Util.formatCriteriaNumber(g9) + " or " + Util.formatCriteriaNumber(g9Cures),
+                Util.formatCriteriaNumber(d9))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND,
+                Util.formatCriteriaNumber(g7) + " or " + Util.formatCriteriaNumber(g8) + " or " + Util.formatCriteriaNumber(g9) + " or " + Util.formatCriteriaNumber(g9Cures),
+                Util.formatCriteriaNumber(d2) + " or " + Util.formatCriteriaNumber(d2Cures) + " or " + Util.formatCriteriaNumber(d10) + " or " + Util.formatCriteriaNumber(d10Cures))));
+    }
+
+    @Test
+    public void review_g9CriteriaAttestedWithoutDependencies_hasErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g9)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        listing.getErrorMessages().stream().forEach(msg -> System.out.println(msg));
+        assertEquals(3, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND,
+                Util.formatCriteriaNumber(g7) + " or " + Util.formatCriteriaNumber(g8) + " or " + Util.formatCriteriaNumber(g9) + " or " + Util.formatCriteriaNumber(g9Cures),
+                Util.formatCriteriaNumber(d1))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND,
+                Util.formatCriteriaNumber(g7) + " or " + Util.formatCriteriaNumber(g8) + " or " + Util.formatCriteriaNumber(g9) + " or " + Util.formatCriteriaNumber(g9Cures),
+                Util.formatCriteriaNumber(d9))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND,
+                Util.formatCriteriaNumber(g7) + " or " + Util.formatCriteriaNumber(g8) + " or " + Util.formatCriteriaNumber(g9) + " or " + Util.formatCriteriaNumber(g9Cures),
+                Util.formatCriteriaNumber(d2) + " or " + Util.formatCriteriaNumber(d2Cures) + " or " + Util.formatCriteriaNumber(d10) + " or " + Util.formatCriteriaNumber(d10Cures))));
+    }
+
+    @Test
+    public void review_g9CriteriaAttestedWithSomeDependencies_hasErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g9)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d10Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        listing.getErrorMessages().stream().forEach(msg -> System.out.println(msg));
+        assertEquals(2, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND,
+                Util.formatCriteriaNumber(g7) + " or " + Util.formatCriteriaNumber(g8) + " or " + Util.formatCriteriaNumber(g9) + " or " + Util.formatCriteriaNumber(g9Cures),
+                Util.formatCriteriaNumber(d1))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND,
+                Util.formatCriteriaNumber(g7) + " or " + Util.formatCriteriaNumber(g8) + " or " + Util.formatCriteriaNumber(g9) + " or " + Util.formatCriteriaNumber(g9Cures),
+                Util.formatCriteriaNumber(d9))));
+    }
+
+    @Test
+    public void review_g7CriteriaAttestedWithDependencies_noErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g7)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d2Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d9)
                         .success(Boolean.TRUE)
                         .build())
                 .build();
@@ -947,6 +1904,191 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                         .build())
                 .certificationResult(CertificationResult.builder()
                         .criterion(d10Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_hCriteriaNotPresent_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_h1CriteriaAttestedWithoutDependencies_hasErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(h1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(3, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (h)(*)", Util.formatCriteriaNumber(d1))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (h)(*)", Util.formatCriteriaNumber(d2))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (h)(*)", Util.formatCriteriaNumber(d3))));
+    }
+
+    @Test
+    public void review_h1CriteriaAttestedWithDependencies_noErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(h1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d2Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d3)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_h2RemovedCriteriaAttestedWithoutDependencies_adminUser_hasWarnings() {
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(h2)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(3, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (h)(*)", Util.formatCriteriaNumber(d1))));
+        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (h)(*)", Util.formatCriteriaNumber(d2))));
+        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (h)(*)", Util.formatCriteriaNumber(d3))));
+    }
+
+    @Test
+    public void review_h2RemovedCriteriaAttestedWithoutDependencies_oncUser_hasWarnings() {
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(true);
+        Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(h2)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(3, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (h)(*)", Util.formatCriteriaNumber(d1))));
+        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (h)(*)", Util.formatCriteriaNumber(d2))));
+        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (h)(*)", Util.formatCriteriaNumber(d3))));
+    }
+
+    @Test
+    public void review_h2RemovedCriteriaAttestedWithoutDependencies_acbUser_noWarnings() {
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(h2)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getWarningMessages().size());
+    }
+
+    @Test
+    public void review_h2RemovedCriteriaAttestedWithDependencies_adminUser_noErrorsNoWarnings() {
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(h2)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d2Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d3)
                         .success(Boolean.TRUE)
                         .build())
                 .build();

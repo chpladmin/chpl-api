@@ -183,26 +183,26 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         addListingWarningsByPermission(listing, warnings);
 
         e1Criteria.stream().forEach(e1Criterion -> {
-            List<String> e1Errors = validationUtils.checkSpecificCriteriaForErrors(e1Criterion, attestedCriteria,
+            List<String> e1Errors = validationUtils.checkSpecificCriterionForMissingComplementaryCriteriaNumberErrors(e1Criterion, attestedCriteria,
                     Arrays.asList(E1_RELATED_CERTS));
             listing.getErrorMessages().addAll(e1Errors);
         });
 
         // check for (e)(2) or (e)(3) required complimentary certs
         List<String> e2e3ComplimentaryErrors =
-                validationUtils.checkComplimentaryCriteriaAllRequired(e2e3Criterion,
+                validationUtils.checkComplementaryCriteriaNumbersAllRequired(e2e3Criterion,
                         Arrays.asList(E2E3_RELATED_CERTS), attestedCriteria);
         listing.getErrorMessages().addAll(e2e3ComplimentaryErrors);
 
         // check for (g)(7) or (g)(8) or (g)(9) required complimentary certs
         List<String> g7g8g9ComplimentaryErrors =
-                validationUtils.checkComplimentaryCriteriaAllRequired(g7g8g9Criterion,
+                validationUtils.checkComplementaryCriteriaNumbersAllRequired(g7g8g9Criterion,
                         Arrays.asList(G7G8G9_RELATED_CERTS), attestedCriteria);
         listing.getErrorMessages().addAll(g7g8g9ComplimentaryErrors);
 
         //if g7, g8, or g9 is found then one of d2 or d10 is required
         g7g8g9ComplimentaryErrors =
-                validationUtils.checkComplimentaryCriteriaAnyRequired(g7g8g9Criterion, d2d10Criterion, attestedCriteria);
+                validationUtils.checkComplementaryCriteriaNumbersAnyRequired(g7g8g9Criterion, d2d10Criterion, attestedCriteria);
         listing.getErrorMessages().addAll(g7g8g9ComplimentaryErrors);
 
         // g3 checks

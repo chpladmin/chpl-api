@@ -156,12 +156,38 @@ public class ValidationUtils {
         return cert;
     }
 
+    public List<String> checkComplementaryCriteriaAllRequired(
+            List<CertificationCriterion> criterionToCheck,
+            List<CertificationCriterion> complementaryCriteria,
+            List<CertificationCriterion> allCriteriaMet) {
+        List<String> errors = new ArrayList<String>();
+        boolean hasApplicableCriterion = hasAnyCriteria(criterionToCheck, allCriteriaMet);
+        if (hasApplicableCriterion) {
+            for (CertificationCriterion complementaryCriterion : complementaryCriteria) {
+                boolean hasComplementaryCriterion = hasCriterion(complementaryCriterion, allCriteriaMet);
+                if (!hasComplementaryCriterion) {
+                    StringBuffer criteriaBuffer = new StringBuffer();
+                    for (int i = 0; i < criterionToCheck.size(); i++) {
+                        CertificationCriterion checkedCriterion = criterionToCheck.get(i);
+                        if (i > 0) {
+                            criteriaBuffer.append(" or ");
+                        }
+                        criteriaBuffer.append(Util.formatCriteriaNumber(checkedCriterion));
+                    }
+                    errors.add("Certification criterion " + criteriaBuffer.toString() + " was found so "
+                            + Util.formatCriteriaNumber(complementaryCriterion) + " is required but was not found.");
+                }
+            }
+        }
+        return errors;
+    }
+
     /**
      * This method will not handle differentiating between criteria with the same
      * criteria number, as is the case with some new Cures criteria.
      */
     @Deprecated
-    public List<String> checkComplimentaryCriteriaAllRequired(List<String> criterionToCheck,
+    public List<String> checkComplementaryCriteriaNumbersAllRequired(List<String> criterionToCheck,
             List<String> complimentaryCertNumbers, List<CertificationCriterion> allCriteriaMet) {
         List<String> errors = new ArrayList<String>();
         boolean hasAnyCert = hasAnyCert(criterionToCheck, allCriteriaMet);
@@ -220,7 +246,38 @@ public class ValidationUtils {
         return criteria.stream().filter(c -> c.getId().equals(criteriaId)).findFirst().orElse(null);
     }
 
-    public List<String> checkComplimentaryCriteriaAnyRequired(List<String> criterionToCheck,
+    public List<String> checkComplementaryCriteriaAnyRequired(List<CertificationCriterion> criteriaToCheck,
+            List<CertificationCriterion> complementaryCriteria, List<CertificationCriterion> allCriteriaMet) {
+        List<String> errors = new ArrayList<String>();
+        boolean hasAnyCriteria = hasAnyCriteria(criteriaToCheck, allCriteriaMet);
+        if (hasAnyCriteria) {
+            boolean hasAnyComplementaryCriteria = hasAnyCriteria(complementaryCriteria, allCriteriaMet);
+            if (!hasAnyComplementaryCriteria) {
+                StringBuffer criteriaBuffer = new StringBuffer();
+                for (int i = 0; i < criteriaToCheck.size(); i++) {
+                    CertificationCriterion checkedCriterion = criteriaToCheck.get(i);
+                    if (i > 0) {
+                        criteriaBuffer.append(" or ");
+                    }
+                    criteriaBuffer.append(Util.formatCriteriaNumber(checkedCriterion));
+                }
+
+                StringBuffer complementaryBuffer = new StringBuffer();
+                for (int i = 0; i < complementaryCriteria.size(); i++) {
+                    CertificationCriterion complementaryCriterion = complementaryCriteria.get(i);
+                    if (i > 0) {
+                        complementaryBuffer.append(" or ");
+                    }
+                    complementaryBuffer.append(Util.formatCriteriaNumber(complementaryCriterion));
+                }
+                errors.add("Certification criterion " + criteriaBuffer.toString() + " was found so "
+                        + complementaryBuffer.toString() + " is required but was not found.");
+            }
+        }
+        return errors;
+    }
+
+    public List<String> checkComplementaryCriteriaNumbersAnyRequired(List<String> criterionToCheck,
             List<String> complimentaryCertNumbers, List<CertificationCriterion> allCriteriaMet) {
         List<String> errors = new ArrayList<String>();
         boolean hasAnyCert = hasAnyCert(criterionToCheck, allCriteriaMet);
@@ -388,8 +445,15 @@ public class ValidationUtils {
         return warnings;
     }
 
-    public List<String> checkSpecificCriteriaForErrors(CertificationCriterion criterion,
-            List<CertificationCriterion> allCriteriaMet, List<String> complimentaryCertNumbers) {
+    public List<String> checkSpecificCriterionForMissingComplementaryCriteriaErrors(CertificationCriterion criterion,
+            List<CertificationCriterion> allCriteriaMet, List<CertificationCriterion> complementaryCriteria) {
+        return checkSpecificCriterionForMissingComplementaryCriteriaNumberErrors(criterion,
+                allCriteriaMet,
+                complementaryCriteria.stream().map(crit -> crit.getNumber()).distinct().collect(Collectors.toList()));
+    }
+
+    public List<String> checkSpecificCriterionForMissingComplementaryCriteriaNumberErrors(CertificationCriterion criterion,
+            List<CertificationCriterion> allCriteriaMet, List<String> complementaryCertNumbers) {
         List<String> errors = new ArrayList<String>();
         boolean hasCriterion = false;
         for (CertificationCriterion currCriteria : allCriteriaMet) {
@@ -398,15 +462,15 @@ public class ValidationUtils {
             }
         }
         if (hasCriterion) {
-            for (String currRequiredCriteria : complimentaryCertNumbers) {
-                boolean hasComplimentaryCert = false;
+            for (String currRequiredCriteria : complementaryCertNumbers) {
+                boolean hasComplementaryCert = false;
                 for (CertificationCriterion certCriteria : allCriteriaMet) {
                     if (certCriteria.getNumber().equals(currRequiredCriteria)) {
-                        hasComplimentaryCert = true;
+                        hasComplementaryCert = true;
                     }
                 }
 
-                if (!hasComplimentaryCert) {
+                if (!hasComplementaryCert) {
                     errors.add("Certification criterion " + Util.formatCriteriaNumber(criterion) + " was found so "
                             + getAllCriteriaWithNumber(currRequiredCriteria) + " is required but was not found.");
                 }
