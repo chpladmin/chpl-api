@@ -1,5 +1,6 @@
 {
 	"info": {
+		"_postman_id": "93ba65a0-634d-4090-8836-588ae95974cd",
 		"name": "promoting-interoperability-controller",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -34,7 +35,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"ONC users should get 200 response status when uploading promoting-interoperability using new end point\", function () {\r",
+							"pm.test(\"ONC users should get 200 response status when uploading promoting-interoperability using /promoting-interoperability/upload end point\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
 							"});"
 						],
@@ -72,12 +73,12 @@
 						{
 							"key": "file",
 							"type": "file",
-							"src": "chpl/chpl-api/e2e/data/interoperabilty_upload.csv"
+							"src": "/C:/CHPL_Test/interoperabilty_upload.csv"
 						}
 					]
 				},
 				"url": {
-					"raw": "{{url}}/rest/promoting-interoperability/upload?accurate_as_of=1609506653",
+					"raw": "{{url}}/rest/promoting-interoperability/upload?accurate_as_of=1555200000",
 					"host": [
 						"{{url}}"
 					],
@@ -89,7 +90,7 @@
 					"query": [
 						{
 							"key": "accurate_as_of",
-							"value": "1609506653"
+							"value": "1555200000"
 						}
 					]
 				},
@@ -127,7 +128,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"ACB users should get 401 response status when uploading promoting-interoperability using new end point\", function () {\r",
+							"pm.test(\"ACB users should get 401 response status when uploading promoting-interoperability using /promoting-interoperability/upload end point\", function () {\r",
 							"    pm.response.to.have.status(401);\r",
 							"});"
 						],
@@ -165,12 +166,12 @@
 						{
 							"key": "file",
 							"type": "file",
-							"src": "chpl/chpl-api/e2e/data/interoperabilty_upload.csv"
+							"src": "/C:/Users/AThomas.INTRANET/Downloads/interoperability_upload (1).csv"
 						}
 					]
 				},
 				"url": {
-					"raw": "{{url}}/rest/promoting-interoperability/upload?accurate_as_of=1609506653",
+					"raw": "{{url}}/rest/promoting-interoperability/upload?accurate_as_of=1609506",
 					"host": [
 						"{{url}}"
 					],
@@ -182,11 +183,11 @@
 					"query": [
 						{
 							"key": "accurate_as_of",
-							"value": "1609506653"
+							"value": "1609506"
 						}
 					]
 				},
-				"description": "POST /promoting-interoperability/upload should give response status-401 for ACB users"
+				"description": "POST /promoting-interoperability/upload should give 401 status for ACB users"
 			},
 			"response": []
 		}
