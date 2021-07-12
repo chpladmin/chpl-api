@@ -110,9 +110,6 @@ public class ListingService {
 
         searchDetails.setCertificationResults(certificationResultService.getCertificationResults(searchDetails));
         searchDetails.setCqmResults(cqmResultsService.getCqmResultDetails(dto.getId(), dto.getYear()));
-        List<PromotingInteroperabilityUser> promotingInteroperabilityUserHistory = piuService.getPromotingInteroperabilityUserHistory(dto.getId());
-        searchDetails.setMeaningfulUseUserHistory(convertToMeaningfulUse(promotingInteroperabilityUserHistory));
-        searchDetails.setPromotingInteroperabilityUserHistory(promotingInteroperabilityUserHistory);
 
         // get first-level parents and children
         searchDetails.getIcs().setParents(populateRelatedCertifiedProducts(getCertifiedProductParents(dto.getId())));
@@ -171,6 +168,10 @@ public class ListingService {
                 .sed(new CertifiedProductSed())
                 .testingLabs(getTestingLabs(dto.getId()))
                 .build();
+
+        List<PromotingInteroperabilityUser> promotingInteroperabilityUserHistory = piuService.getPromotingInteroperabilityUserHistory(dto.getId());
+        listing.setMeaningfulUseUserHistory(convertToMeaningfulUse(promotingInteroperabilityUserHistory));
+        listing.setPromotingInteroperabilityUserHistory(promotingInteroperabilityUserHistory);
 
         InheritedCertificationStatus ics = new InheritedCertificationStatus();
         ics.setInherits(dto.getIcs());
