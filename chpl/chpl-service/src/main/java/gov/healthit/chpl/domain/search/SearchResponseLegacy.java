@@ -7,23 +7,24 @@ import java.util.Collection;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "searchResults")
-public class SearchResponse implements Serializable {
+@Deprecated
+public class SearchResponseLegacy implements Serializable {
     private static final long serialVersionUID = 5130424471766571329L;
     private Integer recordCount;
     private Integer pageSize;
     private Integer pageNumber;
-    private Collection<CertifiedProductBasicSearchResult> results;
+    private Collection<CertifiedProductBasicSearchResultLegacy> results;
 
-    public SearchResponse() {
-        results = new ArrayList<CertifiedProductBasicSearchResult>();
+    public SearchResponseLegacy() {
+        results = new ArrayList<CertifiedProductBasicSearchResultLegacy>();
     }
 
-    public SearchResponse(Integer recordCount, Collection<CertifiedProductBasicSearchResult> results) {
+    public SearchResponseLegacy(Integer recordCount, Collection<CertifiedProductBasicSearchResultLegacy> results) {
         this.recordCount = recordCount;
         this.results = results;
     }
 
-    public SearchResponse(Integer recordCount, Collection<CertifiedProductBasicSearchResult> results, Integer pageSize,
+    public SearchResponseLegacy(Integer recordCount, Collection<CertifiedProductBasicSearchResultLegacy> results, Integer pageSize,
             Integer pageNumber) {
         this.recordCount = recordCount;
         this.results = results;
@@ -39,11 +40,11 @@ public class SearchResponse implements Serializable {
         this.recordCount = recordCount;
     }
 
-    public Collection<CertifiedProductBasicSearchResult> getResults() {
+    public Collection<CertifiedProductBasicSearchResultLegacy> getResults() {
         return results;
     }
 
-    public void setResults(final Collection<CertifiedProductBasicSearchResult> results) {
+    public void setResults(final Collection<CertifiedProductBasicSearchResultLegacy> results) {
         this.results = results;
     }
 

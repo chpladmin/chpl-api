@@ -1,5 +1,6 @@
 package gov.healthit.chpl.certifiedproduct.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,7 @@ public class CertificationStatusEventsService {
     public List<CertificationStatusEvent> getCertificationStatusEvents(Long certifiedProductId) throws EntityRetrievalException {
         return certStatusEventDao.findByCertifiedProductId(certifiedProductId).stream()
                 .map(dto -> createCertificationStatusEventBasedOnDto(dto))
-                .collect(Collectors.toList());
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public CertificationStatusEventDTO getInitialCertificationEvent(Long listingId) {
