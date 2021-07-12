@@ -39,8 +39,6 @@ public class RequiredAndRelatedCriteriaReviewer  extends PermissionBasedReviewer
         this.validationUtils = validationUtils;
     }
 
-    //TODO: break up the reviewers and tests into multiple classes
-
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
@@ -409,7 +407,6 @@ public class RequiredAndRelatedCriteriaReviewer  extends PermissionBasedReviewer
                         + b1Criteria.stream().map(criterion -> Util.formatCriteriaNumber(criterion)).collect(Collectors.joining(" or "))
                         + " is required but was not found.");
             }
-            //TODO: add tests
         }
     }
 }
