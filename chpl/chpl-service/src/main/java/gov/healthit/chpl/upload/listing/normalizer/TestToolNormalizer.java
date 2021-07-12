@@ -30,7 +30,7 @@ public class TestToolNormalizer {
     private void populateTestToolIds(List<CertificationResultTestTool> testTools) {
         if (testTools != null && testTools.size() > 0) {
             testTools.stream()
-                .forEach(testStandard -> populateTestToolId(testStandard));
+                .forEach(testTool -> populateTestToolId(testTool));
         }
     }
 

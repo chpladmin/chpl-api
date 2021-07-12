@@ -193,6 +193,101 @@ public class CertificationResultUploadHandlerTest {
     }
 
     @Test
+    public void buildCertResult_AdditionalSoftwareNoColumn_ReturnsNull() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1");
+        assertNotNull(certResultRecords);
+
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNotNull(certResult);
+        assertNull(certResult.getHasAdditionalSoftware());
+    }
+
+    @Test
+    public void buildCertResult_AdditionalSoftwareBooleanValue0_ReturnsFalse() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
+                HEADER_ROW_BEGIN + ",Additional Software").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,0");
+        assertNotNull(certResultRecords);
+
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNotNull(certResult);
+        assertNotNull(certResult.getHasAdditionalSoftware());
+        assertFalse(certResult.getHasAdditionalSoftware());
+    }
+
+    @Test
+    public void buildCertResult_AdditionalSoftwareBooleanValue1_ReturnsTrue() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
+                HEADER_ROW_BEGIN + ",Additional Software").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,1");
+        assertNotNull(certResultRecords);
+
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNotNull(certResult);
+        assertNotNull(certResult.getHasAdditionalSoftware());
+        assertTrue(certResult.getHasAdditionalSoftware());
+    }
+
+    @Test
+    public void buildCertResult_AdditionalSoftwareBooleanValueNo_ReturnsFalse() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
+                HEADER_ROW_BEGIN + ",Additional Software").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,No");
+        assertNotNull(certResultRecords);
+
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNotNull(certResult);
+        assertNotNull(certResult.getHasAdditionalSoftware());
+        assertFalse(certResult.getHasAdditionalSoftware());
+    }
+
+    @Test
+    public void buildCertResult_AdditionalSoftwareBooleanValueYes_ReturnsTrue() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
+                HEADER_ROW_BEGIN + ",Additional Software").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Yes");
+        assertNotNull(certResultRecords);
+
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNotNull(certResult);
+        assertNotNull(certResult.getHasAdditionalSoftware());
+        assertTrue(certResult.getHasAdditionalSoftware());
+    }
+
+    @Test
+    public void buildCertResult_AdditionalSoftwareEmptyString_ReturnsFalse() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
+                HEADER_ROW_BEGIN + ",Additional Software").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,");
+        assertNotNull(certResultRecords);
+
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNotNull(certResult);
+        assertNotNull(certResult.getHasAdditionalSoftware());
+        assertFalse(certResult.getHasAdditionalSoftware());
+    }
+
+    @Test
+    public void buildCertResult_AdditionalSoftwareInvalidBoolean_ReturnsNull() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
+                HEADER_ROW_BEGIN + ",Additional Software").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,JUNK");
+        assertNotNull(certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNull(certResult.getHasAdditionalSoftware());
+        assertNotNull(certResult.getHasAdditionalSoftwareStr());
+        assertEquals("JUNK", certResult.getHasAdditionalSoftwareStr());
+    }
+
+    @Test
     public void buildCertResult_TestFunctionalityNoColumn_ReturnsEmptyList() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
         assertNotNull(headingRecord);

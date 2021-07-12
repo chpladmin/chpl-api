@@ -34,7 +34,6 @@ import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.dao.scheduler.BrokenSurveillanceRulesDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.OversightRuleResult;
-import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
@@ -43,6 +42,7 @@ import gov.healthit.chpl.dto.scheduler.BrokenSurveillanceRulesDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.surveillance.rules.RuleComplianceCalculator;
+import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.service.CertificationCriterionService;
 
 @DisallowConcurrentExecution
@@ -116,7 +116,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
     }
 
     private List<CertifiedProductFlatSearchResult> getListingsForReport() {
-        return certifiedProductSearchDAO.getAllCertifiedProducts().stream()
+        return certifiedProductSearchDAO.getFlatCertifiedProducts().stream()
                 .filter(listing -> !isEdition2011(listing)
                         && (isCertificationStatusSuspendedByAcb(listing)
                                 || hasSurveillances(listing)))

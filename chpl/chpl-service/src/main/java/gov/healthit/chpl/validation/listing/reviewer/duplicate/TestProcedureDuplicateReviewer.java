@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.BiPredicate;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -86,10 +87,12 @@ public class TestProcedureDuplicateReviewer {
     private BiPredicate<CertificationResultTestProcedure, CertificationResultTestProcedure> duplicatePredicate() {
         return new BiPredicate<CertificationResultTestProcedure, CertificationResultTestProcedure>() {
             @Override
-            public boolean test(CertificationResultTestProcedure dto1,
-                    CertificationResultTestProcedure dto2) {
-                return Objects.equals(dto1.getTestProcedure().getId(), dto2.getTestProcedure().getId())
-                        && Objects.equals(dto1.getTestProcedureVersion(), dto2.getTestProcedureVersion());
+            public boolean test(CertificationResultTestProcedure tp1,
+                    CertificationResultTestProcedure tp2) {
+                return ObjectUtils.allNotNull(tp1.getTestProcedure(), tp1.getTestProcedure().getId(),
+                        tp2.getTestProcedure(), tp2.getTestProcedure().getId())
+                        && Objects.equals(tp1.getTestProcedure().getId(), tp2.getTestProcedure().getId())
+                        && Objects.equals(tp1.getTestProcedureVersion(), tp2.getTestProcedureVersion());
             }
         };
     }
@@ -97,10 +100,12 @@ public class TestProcedureDuplicateReviewer {
     private BiPredicate<CertificationResultTestProcedure, CertificationResultTestProcedure> duplicateIdPredicate() {
         return new BiPredicate<CertificationResultTestProcedure, CertificationResultTestProcedure>() {
             @Override
-            public boolean test(CertificationResultTestProcedure dto1,
-                    CertificationResultTestProcedure dto2) {
-                return Objects.equals(dto1.getTestProcedure().getId(), dto2.getTestProcedure().getId())
-                        && !Objects.equals(dto1.getTestProcedureVersion(), dto2.getTestProcedureVersion());
+            public boolean test(CertificationResultTestProcedure tp1,
+                    CertificationResultTestProcedure tp2) {
+                return ObjectUtils.allNotNull(tp1.getTestProcedure(), tp1.getTestProcedure().getId(),
+                        tp2.getTestProcedure(), tp2.getTestProcedure().getId())
+                        && Objects.equals(tp1.getTestProcedure().getId(), tp2.getTestProcedure().getId())
+                        && !Objects.equals(tp1.getTestProcedureVersion(), tp2.getTestProcedureVersion());
             }
         };
     }

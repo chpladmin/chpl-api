@@ -1,5 +1,22 @@
 # Release Notes
 
+## Version 30.2.0
+_28 June 2021_
+
+### Features
+* Generate Surveillance Activity Report as Excel spreadsheet
+* Add Direct Reviews to Listing basic endpoints
+* Require Measures with multiple criteria to be entered as a single Measure
+* Allow Users without phone number
+
+### Flagged Features
+* Support add/edit/view of Optional Standards
+
+### Bug Fixes
+* Display Mandatory Disclosures URL in some error messages instead of Transparency Attestation URL
+
+---
+
 ## Version 30.1.0
 _2 June 2021_
 

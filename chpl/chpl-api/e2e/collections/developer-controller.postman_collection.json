@@ -564,7 +564,11 @@
                                       "pm.test(\"developer contact details should not include friendly name\", function () {",
                                       "    pm.expect(pm.response.text()).to.not.include(\"friendlyName\");",
                                       "});",
-                                      ""
+                                      "",
+                                      "    pm.test(\"expect Environment header to indicate non prod environment\", function () {\r",
+                                      "    pm.response.to.have.header(\"Environment\");\r",
+                                      "    pm.expect(pm.response.headers.get(\"Environment\")).to.eql(\"NON-PRODUCTION\");\r",
+                                      "});"
                                   ],
                                   "type": "text/javascript"
                               }
@@ -617,7 +621,11 @@
                                       "pm.test(\"developer contact details should not include friendly name\", function () {\r",
                                       "    pm.expect(pm.response.text()).to.not.include(\"friendlyName\");\r",
                                       "});\r",
-                                      ""
+                                      "",
+                                      "    pm.test(\"expect Environment header to indicate non prod environment\", function () {\r",
+                                      "    pm.response.to.have.header(\"Environment\");\r",
+                                      "    pm.expect(pm.response.headers.get(\"Environment\")).to.eql(\"NON-PRODUCTION\");\r",
+                                      "});"
                                   ],
                                   "type": "text/javascript"
                               }

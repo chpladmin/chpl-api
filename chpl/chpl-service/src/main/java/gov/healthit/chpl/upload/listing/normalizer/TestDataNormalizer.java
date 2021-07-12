@@ -69,6 +69,18 @@ public class TestDataNormalizer {
                     }
                 }
             }
+
+            if (testData.getTestData().getId() == null) {
+                replaceInvalidTestDataWithDefault(criterion, testData);
+            }
+        }
+    }
+
+    private void replaceInvalidTestDataWithDefault(CertificationCriterion criterion, CertificationResultTestData testData) {
+        TestDataDTO defaultTestData = testDataDao.getByCriterionAndValue(criterion.getId(), TestDataDTO.DEFALUT_TEST_DATA);
+        if (defaultTestData != null) {
+            testData.getTestData().setId(defaultTestData.getId());
+            testData.getTestData().setName(defaultTestData.getName());
         }
     }
 }

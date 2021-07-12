@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -11,6 +12,10 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.context.MessageSource;
 
+import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationResultTestData;
+import gov.healthit.chpl.domain.CertificationResultTestProcedure;
+import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -18,6 +23,8 @@ import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
+import gov.healthit.chpl.domain.TestData;
+import gov.healthit.chpl.domain.TestProcedure;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class FieldLengthReviewerTest {
@@ -71,7 +78,47 @@ public class FieldLengthReviewerTest {
             .thenReturn("1024");
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.170523k1Url.maxlength"),
             ArgumentMatchers.any(), ArgumentMatchers.any()))
-            .thenReturn(String.format(FIELD_TOO_LONG, "20", "transparency attestation url", "placeholder"));
+            .thenReturn(String.format(FIELD_TOO_LONG, "20", "Mandatory Disclosures", "placeholder"));
+        Mockito.when(messageSource.getMessage(ArgumentMatchers.eq("maxLength.apiDocumentationLink"), ArgumentMatchers.isNull(), ArgumentMatchers.any()))
+            .thenReturn("1024");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.apiDocumentationLink.maxlength"),
+                ArgumentMatchers.any(), ArgumentMatchers.any()))
+                .thenReturn(String.format(FIELD_TOO_LONG, "1024", "api documentation link", "placeholder"));
+        Mockito.when(messageSource.getMessage(ArgumentMatchers.eq("maxLength.exportDocumentationLink"), ArgumentMatchers.isNull(), ArgumentMatchers.any()))
+            .thenReturn("1024");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.exportDocumentationLink.maxlength"),
+                ArgumentMatchers.any(), ArgumentMatchers.any()))
+                .thenReturn(String.format(FIELD_TOO_LONG, "1024", "export documentation link", "placeholder"));
+        Mockito.when(messageSource.getMessage(ArgumentMatchers.eq("maxLength.documentationUrlLink"), ArgumentMatchers.isNull(), ArgumentMatchers.any()))
+            .thenReturn("1024");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.documentationUrlLink.maxlength"),
+                ArgumentMatchers.any(), ArgumentMatchers.any()))
+                .thenReturn(String.format(FIELD_TOO_LONG, "1024", "documentation URL link", "placeholder"));
+        Mockito.when(messageSource.getMessage(ArgumentMatchers.eq("maxLength.useCasesLink"), ArgumentMatchers.isNull(), ArgumentMatchers.any()))
+            .thenReturn("1024");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.useCasesLink.maxlength"),
+                ArgumentMatchers.any(), ArgumentMatchers.any()))
+                .thenReturn(String.format(FIELD_TOO_LONG, "1024", "use cases link", "placeholder"));
+        Mockito.when(messageSource.getMessage(ArgumentMatchers.eq("maxLength.serviceBaseUrlListLink"), ArgumentMatchers.isNull(), ArgumentMatchers.any()))
+            .thenReturn("1024");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.serviceBaseUrlListLink.maxlength"),
+                ArgumentMatchers.any(), ArgumentMatchers.any()))
+                .thenReturn(String.format(FIELD_TOO_LONG, "1024", "service base url list link", "placeholder"));
+        Mockito.when(messageSource.getMessage(ArgumentMatchers.eq("maxLength.testToolVersion"), ArgumentMatchers.isNull(), ArgumentMatchers.any()))
+            .thenReturn("20");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.testToolVersion.maxlength"),
+                ArgumentMatchers.any(), ArgumentMatchers.any()))
+                .thenReturn(String.format(FIELD_TOO_LONG, "20", "test tool version", "placeholder"));
+        Mockito.when(messageSource.getMessage(ArgumentMatchers.eq("maxLength.testDataVersion"), ArgumentMatchers.isNull(), ArgumentMatchers.any()))
+            .thenReturn("20");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.testDataVersion.maxlength"),
+                ArgumentMatchers.any(), ArgumentMatchers.any()))
+                .thenReturn(String.format(FIELD_TOO_LONG, "20", "test data version", "placeholder"));
+        Mockito.when(messageSource.getMessage(ArgumentMatchers.eq("maxLength.testProcedureVersion"), ArgumentMatchers.isNull(), ArgumentMatchers.any()))
+            .thenReturn("20");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.testProcedureVersion.maxlength"),
+                ArgumentMatchers.any(), ArgumentMatchers.any()))
+                .thenReturn(String.format(FIELD_TOO_LONG, "20", "test procedure version", "placeholder"));
         reviewer = new FieldLengthReviewer(errorMessageUtil, messageSource);
     }
 
@@ -484,7 +531,195 @@ public class FieldLengthReviewerTest {
 
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "transparency attestation url", "placeholder")));
+        assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "Mandatory Disclosures", "placeholder")));
+    }
+
+    @Test
+    public void review_nullTestTools_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .build())
+                .build();
+        listing.getCertificationResults().get(0).setTestToolsUsed(null);
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_emptyTestTools_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .testToolsUsed(new ArrayList<CertificationResultTestTool>())
+                        .build())
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_shortTestToolVersion_noError() {
+        List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolName("a name")
+                .testToolId(1L)
+                .testToolVersion("1.1")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .testToolsUsed(testTools)
+                        .build())
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_longTestToolVersion_hasError() {
+        List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolName("a name")
+                .testToolId(1L)
+                .testToolVersion(createStringLongerThan(20, "1"))
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .testToolsUsed(testTools)
+                        .build())
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "test tool version", "placeholder")));
+    }
+
+    @Test
+    public void review_nullTestData_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .build())
+                .build();
+        listing.getCertificationResults().get(0).setTestDataUsed(null);
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_emptyTestData_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .testDataUsed(new ArrayList<CertificationResultTestData>())
+                        .build())
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_shortTestDataVersion_noError() {
+        List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
+        testData.add(CertificationResultTestData.builder()
+                .testData(TestData.builder()
+                        .id(1L)
+                        .name("a name")
+                        .build())
+                .version("1.1")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .testDataUsed(testData)
+                        .build())
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_longTestDataVersion_hasError() {
+        List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
+        testData.add(CertificationResultTestData.builder()
+                .testData(TestData.builder()
+                        .id(1L)
+                        .name("a name")
+                        .build())
+                .version(createStringLongerThan(20, "A"))
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .testDataUsed(testData)
+                        .build())
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "test data version", "placeholder")));
+    }
+
+    @Test
+    public void review_nullTestProcedure_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .build())
+                .build();
+        listing.getCertificationResults().get(0).setTestProcedures(null);
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_emptyTestProcedures_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .testProcedures(new ArrayList<CertificationResultTestProcedure>())
+                        .build())
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_shortTestProcedureVersion_noError() {
+        List<CertificationResultTestProcedure> testProcedures = new ArrayList<CertificationResultTestProcedure>();
+        testProcedures.add(CertificationResultTestProcedure.builder()
+                .testProcedure(TestProcedure.builder()
+                        .id(1L)
+                        .name("a name")
+                        .build())
+                .testProcedureVersion("1.1")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .testProcedures(testProcedures)
+                        .build())
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_longTestProcedureVersion_hasError() {
+        List<CertificationResultTestProcedure> testProcedures = new ArrayList<CertificationResultTestProcedure>();
+        testProcedures.add(CertificationResultTestProcedure.builder()
+                .testProcedure(TestProcedure.builder()
+                        .id(1L)
+                        .name("a name")
+                        .build())
+                .testProcedureVersion(createStringLongerThan(20, "A"))
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .testProcedures(testProcedures)
+                        .build())
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "test procedure version", "placeholder")));
     }
 
     private String createStringLongerThan(int minLength, String charToUse) {
