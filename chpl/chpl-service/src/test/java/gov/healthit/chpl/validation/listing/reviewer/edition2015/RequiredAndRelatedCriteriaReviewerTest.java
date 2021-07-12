@@ -93,7 +93,7 @@ public class RequiredAndRelatedCriteriaReviewerTest {
         g10 = getCriterion(182L, "170.315 (g)(10)", "g10 title", false);
         f1 = getCriterion(43L, "170.315 (f)(1)", "f1 title", false);
         f2 = getCriterion(44L, "170.315 (f)(2)", "f2 title", true);
-        h1 = getCriterion(59L, "170.315 (h)(a)", "h1 title", false);
+        h1 = getCriterion(59L, "170.315 (h)(1)", "h1 title", false);
         h2 = getCriterion(60L, "170.315 (h)(2)", "h2 title", true);
 
         certificationCriterionService = Mockito.mock(CertificationCriterionService.class);
@@ -134,6 +134,8 @@ public class RequiredAndRelatedCriteriaReviewerTest {
         Mockito.when(certificationCriterionService.get(Criteria2015.E_1_CURES)).thenReturn(e1Cures);
         Mockito.when(certificationCriterionService.get(Criteria2015.E_2)).thenReturn(e2);
         Mockito.when(certificationCriterionService.get(Criteria2015.E_3)).thenReturn(e3);
+        Mockito.when(certificationCriterionService.get(Criteria2015.F_1)).thenReturn(f1);
+        Mockito.when(certificationCriterionService.get(Criteria2015.F_2)).thenReturn(f2);
         Mockito.when(certificationCriterionService.get(Criteria2015.G_4)).thenReturn(g4);
         Mockito.when(certificationCriterionService.get(Criteria2015.G_5)).thenReturn(g5);
         Mockito.when(certificationCriterionService.get(Criteria2015.G_6_OLD)).thenReturn(g6);
@@ -143,8 +145,7 @@ public class RequiredAndRelatedCriteriaReviewerTest {
         Mockito.when(certificationCriterionService.get(Criteria2015.G_9_OLD)).thenReturn(g9);
         Mockito.when(certificationCriterionService.get(Criteria2015.G_9_CURES)).thenReturn(g9Cures);
         Mockito.when(certificationCriterionService.get(Criteria2015.G_10)).thenReturn(g10);
-        Mockito.when(certificationCriterionService.get(Criteria2015.F_1)).thenReturn(f1);
-        Mockito.when(certificationCriterionService.get(Criteria2015.F_2)).thenReturn(f2);
+        Mockito.when(certificationCriterionService.get(Criteria2015.H_1)).thenReturn(h1);
 
         resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.doesUserHaveRole(ArgumentMatchers.any(List.class))).thenReturn(true);
@@ -2021,7 +2022,6 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                         .build())
                 .build();
         reviewer.review(listing);
-        listing.getErrorMessages().stream().forEach(msg -> System.out.println(msg));
         assertEquals(3, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND,
                 Util.formatCriteriaNumber(g7) + " or " + Util.formatCriteriaNumber(g8) + " or " + Util.formatCriteriaNumber(g9) + " or " + Util.formatCriteriaNumber(g9Cures),
@@ -2055,7 +2055,6 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                         .build())
                 .build();
         reviewer.review(listing);
-        listing.getErrorMessages().stream().forEach(msg -> System.out.println(msg));
         assertEquals(3, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND,
                 Util.formatCriteriaNumber(g7) + " or " + Util.formatCriteriaNumber(g8) + " or " + Util.formatCriteriaNumber(g9) + " or " + Util.formatCriteriaNumber(g9Cures),
@@ -2130,7 +2129,6 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                         .build())
                 .build();
         reviewer.review(listing);
-        listing.getErrorMessages().stream().forEach(msg -> System.out.println(msg));
         assertEquals(3, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND,
                 Util.formatCriteriaNumber(g7) + " or " + Util.formatCriteriaNumber(g8) + " or " + Util.formatCriteriaNumber(g9) + " or " + Util.formatCriteriaNumber(g9Cures),
@@ -2168,7 +2166,6 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                         .build())
                 .build();
         reviewer.review(listing);
-        listing.getErrorMessages().stream().forEach(msg -> System.out.println(msg));
         assertEquals(2, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND,
                 Util.formatCriteriaNumber(g7) + " or " + Util.formatCriteriaNumber(g8) + " or " + Util.formatCriteriaNumber(g9) + " or " + Util.formatCriteriaNumber(g9Cures),
@@ -2458,7 +2455,43 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                         .success(Boolean.TRUE)
                         .build())
                 .certificationResult(CertificationResult.builder()
+                        .criterion(g6)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(b1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
                         .criterion(h1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d2)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d3)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d6)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d7)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d8)
                         .success(Boolean.TRUE)
                         .build())
                 .build();
@@ -2471,6 +2504,62 @@ public class RequiredAndRelatedCriteriaReviewerTest {
 
     @Test
     public void review_h1CriteriaAttestedWithDependencies_noErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g6)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(b1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(h1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d2Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d3)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d6)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d7)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d8)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_h1CriteriaAttestedWithoutB1_hasError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .criterion(g4)
@@ -2498,7 +2587,10 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                         .build())
                 .build();
         reviewer.review(listing);
-        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND,
+                Util.formatCriteriaNumber(h1),
+                Util.formatCriteriaNumber(b1) + " or " + Util.formatCriteriaNumber(b1Cures))));
     }
 
     @Test

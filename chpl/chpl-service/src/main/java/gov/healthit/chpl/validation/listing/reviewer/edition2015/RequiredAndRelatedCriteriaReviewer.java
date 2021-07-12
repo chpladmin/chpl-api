@@ -39,6 +39,8 @@ public class RequiredAndRelatedCriteriaReviewer  extends PermissionBasedReviewer
         this.validationUtils = validationUtils;
     }
 
+    //TODO: break up the reviewers and tests into multiple classes
+
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
@@ -54,6 +56,7 @@ public class RequiredAndRelatedCriteriaReviewer  extends PermissionBasedReviewer
         checkG7G8G9RequiredDependencies(listing, attestedCriteria);
         checkG10RequiredDependencies(listing, attestedCriteria);
         checkHCriteriaHaveRequiredDependencies(listing, attestedCriteria);
+        checkH1PlusB1Criteria(listing, attestedCriteria);
     }
 
     private void checkAlwaysRequiredCriteria(CertifiedProductSearchDetails listing, List<CertificationCriterion> attestedCriteria) {
@@ -387,5 +390,26 @@ public class RequiredAndRelatedCriteriaReviewer  extends PermissionBasedReviewer
                 attestedCriteria,
                 requiredByHCriteria);
         addListingWarningsByPermission(listing, warnings);
+    }
+
+    private void checkH1PlusB1Criteria(CertifiedProductSearchDetails listing, List<CertificationCriterion> attestedCriteria) {
+        CertificationCriterion h1 = criterionService.get(Criteria2015.H_1);
+        boolean hasH1 = validationUtils.hasCriterion(h1, attestedCriteria);
+        if (hasH1) {
+            List<CertificationCriterion> b1Criteria = Stream.of(criterionService.get(Criteria2015.B_1_OLD),
+                    criterionService.get(Criteria2015.B_1_CURES))
+                    .collect(Collectors.toList());
+            boolean hasAttestedB1Criterion = b1Criteria.stream()
+                .filter(b1Criterion -> validationUtils.hasCriterion(b1Criterion, attestedCriteria))
+                .findFirst().isPresent();
+            if (!hasAttestedB1Criterion) {
+                listing.getErrorMessages().add("Certification criterion "
+                        + Util.formatCriteriaNumber(h1)
+                        + " was found so "
+                        + b1Criteria.stream().map(criterion -> Util.formatCriteriaNumber(criterion)).collect(Collectors.joining(" or "))
+                        + " is required but was not found.");
+            }
+            //TODO: add tests
+        }
     }
 }
