@@ -39,9 +39,9 @@ public class RequiredAndRelatedCriteriaReviewerTest {
     private ResourcePermissions resourcePermissions;
     private RequiredAndRelatedCriteriaReviewer reviewer;
 
-    private CertificationCriterion a1, a4, a6, a9, a10, a13, b1, b2, b10, c1, c2, g4, g5, d1, d2,
-        d2Cures, d3, d3Cures, d4, d5, d6, d7, d8, d9, d10, d10Cures, e1, e1Cures, e2, e3,
-        g7, g8, g9, g9Cures, g10, f1, f2, h1, h2;
+    private CertificationCriterion a1, a4, a6, a9, a10, a13, b1, b1Cures, b2, b2Cures, b4, b6, b7, b8, b9, b9Cures, b10,
+        c1, c2, g4, g5, d1, d2, d2Cures, d3, d3Cures, d4, d5, d6, d7, d8, d9, d10, d10Cures,
+        e1, e1Cures, e2, e3, g6, g6Cures, g7, g8, g9, g9Cures, g10, f1, f2, h1, h2;
 
     @Before
     @SuppressWarnings("checkstyle:magicnumber")
@@ -53,7 +53,15 @@ public class RequiredAndRelatedCriteriaReviewerTest {
         a10 = getCriterion(10L, "170.315 (a)(10)", "a10 title", false);
         a13 = getCriterion(13L, "170.315 (a)(13)", "a13 title", false);
         b1 = getCriterion(16L, "170.315 (b)(1)", "b1 title", false);
+        b1Cures = getCriterion(165L, "170.315 (b)(1)", "b1 title (Cures Update)", false);
         b2 = getCriterion(17L, "170.315 (b)(2)", "b2 title", false);
+        b2Cures = getCriterion(166L, "170.315 (b)(2)", "b2 title (Cures Update)", false);
+        b4 = getCriterion(19L, "170.315 (b)(4)", "b4 title", true);
+        b6 = getCriterion(21L, "170.315 (b)(6)", "b6 title", false);
+        b7 = getCriterion(22L, "170.315 (b)(7)", "b7 title", false);
+        b8 = getCriterion(23L, "170.315 (b)(8)", "b8 title", false);
+        b9 = getCriterion(24L, "170.315 (b)(9)", "b9 title", false);
+        b9Cures = getCriterion(170L, "170.315 (b)(9)", "b9 title (Cures Update)", false);
         b10 = getCriterion(171L, "170.315 (b)(10)", "b10 title", false);
         c1 = getCriterion(25L, "170.315 (c)(1)", "c1 title", false);
         c2 = getCriterion(26L, "170.315 (c)(2)", "c2 title", true);
@@ -76,6 +84,8 @@ public class RequiredAndRelatedCriteriaReviewerTest {
         e3 = getCriterion(42L, "170.315 (e)(3)", "e3 title", false);
         g4 = getCriterion(53L, "170.315 (g)(4)", "g4 title", false);
         g5 = getCriterion(54L, "170.315 (g)(5)", "g5 title", false);
+        g6 = getCriterion(55L, "170.315 (g)(6)", "g6 title", false);
+        g6Cures = getCriterion(180L, "170.315 (g)(6)", "g6 title (Cures Update)", false);
         g7 = getCriterion(56L, "170.315 (g)(7)", "g7 title", false);
         g8 = getCriterion(57L, "170.315 (g)(8)", "g8 title", false);
         g9 = getCriterion(58L, "170.315 (g)(9)", "g9 title", false);
@@ -95,7 +105,15 @@ public class RequiredAndRelatedCriteriaReviewerTest {
         Mockito.when(certificationCriterionService.get(Criteria2015.A_10)).thenReturn(a10);
         Mockito.when(certificationCriterionService.get(Criteria2015.A_13)).thenReturn(a13);
         Mockito.when(certificationCriterionService.get(Criteria2015.B_1_OLD)).thenReturn(b1);
+        Mockito.when(certificationCriterionService.get(Criteria2015.B_1_CURES)).thenReturn(b1Cures);
         Mockito.when(certificationCriterionService.get(Criteria2015.B_2_OLD)).thenReturn(b2);
+        Mockito.when(certificationCriterionService.get(Criteria2015.B_2_CURES)).thenReturn(b2Cures);
+        Mockito.when(certificationCriterionService.get(Criteria2015.B_4)).thenReturn(b4);
+        Mockito.when(certificationCriterionService.get(Criteria2015.B_6)).thenReturn(b6);
+        Mockito.when(certificationCriterionService.get(Criteria2015.B_7_OLD)).thenReturn(b7);
+        Mockito.when(certificationCriterionService.get(Criteria2015.B_8_OLD)).thenReturn(b8);
+        Mockito.when(certificationCriterionService.get(Criteria2015.B_9_OLD)).thenReturn(b9);
+        Mockito.when(certificationCriterionService.get(Criteria2015.B_9_CURES)).thenReturn(b9Cures);
         Mockito.when(certificationCriterionService.get(Criteria2015.B_10)).thenReturn(b10);
         Mockito.when(certificationCriterionService.get(Criteria2015.C_1)).thenReturn(c1);
         Mockito.when(certificationCriterionService.get(Criteria2015.C_2)).thenReturn(c2);
@@ -118,6 +136,8 @@ public class RequiredAndRelatedCriteriaReviewerTest {
         Mockito.when(certificationCriterionService.get(Criteria2015.E_3)).thenReturn(e3);
         Mockito.when(certificationCriterionService.get(Criteria2015.G_4)).thenReturn(g4);
         Mockito.when(certificationCriterionService.get(Criteria2015.G_5)).thenReturn(g5);
+        Mockito.when(certificationCriterionService.get(Criteria2015.G_6_OLD)).thenReturn(g6);
+        Mockito.when(certificationCriterionService.get(Criteria2015.G_6_CURES)).thenReturn(g6Cures);
         Mockito.when(certificationCriterionService.get(Criteria2015.G_7)).thenReturn(g7);
         Mockito.when(certificationCriterionService.get(Criteria2015.G_8)).thenReturn(g8);
         Mockito.when(certificationCriterionService.get(Criteria2015.G_9_OLD)).thenReturn(g9);
@@ -487,7 +507,7 @@ public class RequiredAndRelatedCriteriaReviewerTest {
     }
 
     @Test
-    public void review_b1CriteriaAttestedWithoutDependencies_hasErrors() {
+    public void review_b7CriteriaAttestedWithoutBCriteriaDependencies_hasErrors() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .criterion(g4)
@@ -498,7 +518,7 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                         .success(Boolean.TRUE)
                         .build())
                 .certificationResult(CertificationResult.builder()
-                        .criterion(b1)
+                        .criterion(b7)
                         .success(Boolean.TRUE)
                         .build())
                 .build();
@@ -514,7 +534,7 @@ public class RequiredAndRelatedCriteriaReviewerTest {
     }
 
     @Test
-    public void review_b1b2CriteriaAttestedWithoutDependencies_hasAllErrorsNoDuplicates() {
+    public void review_b7b8CriteriaAttestedWithoutDependencies_hasAllErrorsNoDuplicates() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .criterion(g4)
@@ -525,11 +545,11 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                         .success(Boolean.TRUE)
                         .build())
                 .certificationResult(CertificationResult.builder()
-                        .criterion(b1)
+                        .criterion(b7)
                         .success(Boolean.TRUE)
                         .build())
                 .certificationResult(CertificationResult.builder()
-                        .criterion(b2)
+                        .criterion(b8)
                         .success(Boolean.TRUE)
                         .build())
                 .build();
@@ -545,7 +565,7 @@ public class RequiredAndRelatedCriteriaReviewerTest {
     }
 
     @Test
-    public void review_b1CriteriaAttestedWithD1AndD5Dependencies_hasCorrectErrors() {
+    public void review_b7CriteriaAttestedWithD1AndD5Dependencies_hasCorrectErrors() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .criterion(g4)
@@ -556,7 +576,7 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                         .success(Boolean.TRUE)
                         .build())
                 .certificationResult(CertificationResult.builder()
-                        .criterion(b1)
+                        .criterion(b7)
                         .success(Boolean.TRUE)
                         .build())
                 .certificationResult(CertificationResult.builder()
@@ -577,7 +597,7 @@ public class RequiredAndRelatedCriteriaReviewerTest {
         assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(*)", Util.formatCriteriaNumber(d8))));    }
 
     @Test
-    public void review_b1CriteriaAttestedWithAllDependencies_hasNoErrors() {
+    public void review_b7CriteriaAttestedWithAllDependencies_hasNoErrors() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .criterion(g4)
@@ -588,7 +608,7 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                         .success(Boolean.TRUE)
                         .build())
                 .certificationResult(CertificationResult.builder()
-                        .criterion(b1)
+                        .criterion(b7)
                         .success(Boolean.TRUE)
                         .build())
                 .certificationResult(CertificationResult.builder()
@@ -848,6 +868,10 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                         .success(Boolean.TRUE)
                         .build())
                 .certificationResult(CertificationResult.builder()
+                        .criterion(g6)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
                         .criterion(e1)
                         .success(Boolean.TRUE)
                         .build())
@@ -871,6 +895,10 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                         .build())
                 .certificationResult(CertificationResult.builder()
                         .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g6)
                         .success(Boolean.TRUE)
                         .build())
                 .certificationResult(CertificationResult.builder()
@@ -1481,6 +1509,486 @@ public class RequiredAndRelatedCriteriaReviewerTest {
     }
 
     @Test
+    public void review_criteriaRequiringG6NotPresent_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_criterionB1RequiringG6AttestedWithoutG6_hasErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d2Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d3)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d6)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d7)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d8)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(b1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_REQUIRED_ERROR,
+                Util.formatCriteriaNumber(g6) + " or " + Util.formatCriteriaNumber(g6Cures))));
+    }
+
+    @Test
+    public void review_criterionB1CuresRequiringG6AttestedWithoutG6_hasErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d2Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d3)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d6)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d7)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d8)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(b1Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_REQUIRED_ERROR,
+                Util.formatCriteriaNumber(g6) + " or " + Util.formatCriteriaNumber(g6Cures))));
+    }
+
+    @Test
+    public void review_criterionB2RequiringG6AttestedWithoutG6_hasErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d2Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d3)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d6)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d7)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d8)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(b2)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_REQUIRED_ERROR,
+                Util.formatCriteriaNumber(g6) + " or " + Util.formatCriteriaNumber(g6Cures))));
+    }
+
+    @Test
+    public void review_criterionB2CuresRequiringG6AttestedWithoutG6_hasErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d2Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d3)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d6)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d7)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d8)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(b2Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_REQUIRED_ERROR,
+                Util.formatCriteriaNumber(g6) + " or " + Util.formatCriteriaNumber(g6Cures))));
+    }
+
+    @Test
+    public void review_criterionB4RemovedRequiringG6AttestedWithoutG6_adminUser_hasWarnings() {
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d2Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d3)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d6)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d7)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d8)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(b4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_REQUIRED_ERROR,
+                Util.formatCriteriaNumber(g6) + " or " + Util.formatCriteriaNumber(g6Cures))));
+    }
+
+    @Test
+    public void review_criterionB4RemovedRequiringG6AttestedWithoutG6_oncUser_hasWarnings() {
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(true);
+        Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d2Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d3)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d6)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d7)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d8)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(b4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_REQUIRED_ERROR,
+                Util.formatCriteriaNumber(g6) + " or " + Util.formatCriteriaNumber(g6Cures))));
+    }
+
+    @Test
+    public void review_criterionB4RemovedRequiringG6AttestedWithoutG6_acbUser_noWarnings() {
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d2Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d3)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d6)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d7)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d8)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(b4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getWarningMessages().size());
+    }
+
+    @Test
+    public void review_b1CriteriaRequiringG6AttestedWithG6_noErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d2Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d3)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d6)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d7)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d8)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(b1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g6)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_b1CriteriaRequiringG6AttestedWithG6Cures_noErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d2Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d3)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d6)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d7)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d8)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(b1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g6Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
     public void review_g7g8g9CriteriaNotPresent_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -1572,6 +2080,10 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                         .success(Boolean.TRUE)
                         .build())
                 .certificationResult(CertificationResult.builder()
+                        .criterion(g6)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
                         .criterion(g7)
                         .success(Boolean.TRUE)
                         .build())
@@ -1585,7 +2097,6 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                         .build())
                 .build();
         reviewer.review(listing);
-        listing.getErrorMessages().stream().forEach(msg -> System.out.println(msg));
         assertEquals(3, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND,
                 Util.formatCriteriaNumber(g7) + " or " + Util.formatCriteriaNumber(g8) + " or " + Util.formatCriteriaNumber(g9) + " or " + Util.formatCriteriaNumber(g9Cures),
@@ -1607,6 +2118,10 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                         .build())
                 .certificationResult(CertificationResult.builder()
                         .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g6)
                         .success(Boolean.TRUE)
                         .build())
                 .certificationResult(CertificationResult.builder()
@@ -1637,6 +2152,10 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                         .build())
                 .certificationResult(CertificationResult.builder()
                         .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g6)
                         .success(Boolean.TRUE)
                         .build())
                 .certificationResult(CertificationResult.builder()

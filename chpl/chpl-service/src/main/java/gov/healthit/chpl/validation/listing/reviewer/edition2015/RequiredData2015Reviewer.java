@@ -41,16 +41,9 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
             "170.315 (a)(7)", "170.315 (a)(8)", "170.315 (a)(9)", "170.315 (a)(14)", "170.315 (b)(2)", "170.315 (b)(3)"
     };
 
-    private static final String[] CERTS_REQUIRING_G6 = {
-            "170.315 (b)(1)", "170.315 (b)(2)", "170.315 (b)(4)", "170.315 (b)(6)", "170.315 (b)(9)", "170.315 (e)(1)",
-            "170.315 (g)(9)"
-    };
-
     private static final String B1_CRITERIA_NUMBER = "170.315 (b)(1)";
     private static final String G1_CRITERIA_NUMBER = "170.315 (g)(1)";
     private static final String G2_CRITERIA_NUMBER = "170.315 (g)(2)";
-    private static final String G3_CRITERIA_NUMBER = "170.315 (g)(3)";
-    private static final String G6_CRITERIA_NUMBER = "170.315 (g)(6)";
     private static final String H1_CRITERIA_NUMBER = "170.315 (h)(1)";
     private static final int MINIMUM_TEST_PARTICIPANT_COUNT = 10;
 
@@ -239,9 +232,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
             }
         }
 
-        validateG3(listing);
-        validateG3Inverse(listing);
-        validateG6(listing);
         validateH1PlusB1(listing);
 
         if (listing.getQmsStandards() == null || listing.getQmsStandards().size() == 0) {
@@ -426,76 +416,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                         + " is required but was not found.");
             }
         }
-    }
-
-    private void validateG3(CertifiedProductSearchDetails listing) {
-        List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
-        List<CertificationCriterion> presentAttestedUcdCriteria = attestedCriteria.stream()
-                .filter(cert -> cert.getRemoved() == null || cert.getRemoved().equals(Boolean.FALSE))
-                .filter(cert -> certNumberIsInCertList(cert, UCD_RELATED_CERTS))
-                .collect(Collectors.<CertificationCriterion>toList());
-        List<CertificationCriterion> removedAttestedUcdCriteria = attestedCriteria.stream()
-                .filter(cert -> cert.getRemoved() != null && cert.getRemoved().equals(Boolean.TRUE))
-                .filter(cert -> certNumberIsInCertList(cert, UCD_RELATED_CERTS))
-                .collect(Collectors.<CertificationCriterion>toList());
-        boolean hasG3 = validationUtils.hasCert(G3_CRITERIA_NUMBER, attestedCriteria);
-
-        if (presentAttestedUcdCriteria != null && presentAttestedUcdCriteria.size() > 0 && !hasG3) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteriaRequired", G3_CRITERIA_NUMBER));
-        }
-        if (removedAttestedUcdCriteria != null && removedAttestedUcdCriteria.size() > 0
-                && (presentAttestedUcdCriteria == null || presentAttestedUcdCriteria.size() == 0)
-                && !hasG3) {
-            addListingWarningByPermission(listing, msgUtil.getMessage("listing.criteriaRequired", G3_CRITERIA_NUMBER));
-        }
-    }
-
-    private void validateG3Inverse(CertifiedProductSearchDetails listing) {
-        List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
-        List<CertificationCriterion> presentAttestedUcdCriteria = attestedCriteria.stream()
-                .filter(cert -> cert.getRemoved() == null || cert.getRemoved().equals(Boolean.FALSE))
-                .filter(cert -> certNumberIsInCertList(cert, UCD_RELATED_CERTS))
-                .collect(Collectors.<CertificationCriterion>toList());
-        boolean hasG3 = validationUtils.hasCert(G3_CRITERIA_NUMBER, attestedCriteria);
-
-        if ((presentAttestedUcdCriteria == null || presentAttestedUcdCriteria.size() == 0)
-                && hasG3) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.g3NotAllowed"));
-        }
-    }
-
-    private void validateG6(CertifiedProductSearchDetails listing) {
-        List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
-        List<CertificationCriterion> presentAttestedG6Criteria = attestedCriteria.stream()
-                .filter(cert -> cert.getRemoved() == null || cert.getRemoved().equals(Boolean.FALSE))
-                .filter(cert -> certNumberIsInCertList(cert, CERTS_REQUIRING_G6))
-                .collect(Collectors.<CertificationCriterion>toList());
-        List<CertificationCriterion> removedAttestedG6Criteria = attestedCriteria.stream()
-                .filter(cert -> cert.getRemoved() != null && cert.getRemoved().equals(Boolean.TRUE))
-                .filter(cert -> certNumberIsInCertList(cert, CERTS_REQUIRING_G6))
-                .collect(Collectors.<CertificationCriterion>toList());
-        boolean hasG6 = validationUtils.hasCert(G6_CRITERIA_NUMBER, attestedCriteria);
-
-       String g6Numbers = validationUtils.getAllCriteriaWithNumber(G6_CRITERIA_NUMBER);
-
-        if (presentAttestedG6Criteria != null && presentAttestedG6Criteria.size() > 0 && !hasG6) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteriaRequired", g6Numbers));
-        }
-        if (removedAttestedG6Criteria != null && removedAttestedG6Criteria.size() > 0
-                && (presentAttestedG6Criteria == null || presentAttestedG6Criteria.size() == 0)
-                && !hasG6) {
-            addListingWarningByPermission(listing, msgUtil.getMessage("listing.criteriaRequired", g6Numbers));
-        }
-    }
-
-    private boolean certNumberIsInCertList(CertificationCriterion cert, String[] certNumberList) {
-        boolean result = false;
-        for (String currCertNumber : certNumberList) {
-            if (currCertNumber.equals(cert.getNumber())) {
-                result = true;
-            }
-        }
-        return result;
     }
 
     private boolean certIdIsInCertList(CertificationCriterion cert, List<Long> certIdList) {

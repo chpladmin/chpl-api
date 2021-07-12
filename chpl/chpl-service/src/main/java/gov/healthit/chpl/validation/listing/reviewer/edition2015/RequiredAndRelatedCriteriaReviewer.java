@@ -50,6 +50,7 @@ public class RequiredAndRelatedCriteriaReviewer  extends PermissionBasedReviewer
         checkE1CriterionHasRequiredDependencies(listing, attestedCriteria);
         checkE2E3CriteriaHaveRequiredDependencies(listing, attestedCriteria);
         checkFCriteriaHaveRequiredDependencies(listing, attestedCriteria);
+        checkG6RequiredDependencies(listing, attestedCriteria);
         checkG7G8G9RequiredDependencies(listing, attestedCriteria);
         checkG10RequiredDependencies(listing, attestedCriteria);
         checkHCriteriaHaveRequiredDependencies(listing, attestedCriteria);
@@ -261,6 +262,49 @@ public class RequiredAndRelatedCriteriaReviewer  extends PermissionBasedReviewer
                 requiredByFCriteria);
         addListingWarningsByPermission(listing, warnings);
     }
+
+    private void checkG6RequiredDependencies(CertifiedProductSearchDetails listing, List<CertificationCriterion> attestedCriteria) {
+        List<CertificationCriterion> g6Criteria = Stream.of(
+                criterionService.get(Criteria2015.G_6_OLD),
+                criterionService.get(Criteria2015.G_6_CURES))
+                .collect(Collectors.toList());
+        List<CertificationCriterion> criteriaRequiringG6 = Stream.of(
+                criterionService.get(Criteria2015.B_1_OLD),
+                criterionService.get(Criteria2015.B_1_CURES),
+                criterionService.get(Criteria2015.B_2_OLD),
+                criterionService.get(Criteria2015.B_2_CURES),
+                criterionService.get(Criteria2015.B_4),
+                criterionService.get(Criteria2015.B_6),
+                criterionService.get(Criteria2015.B_9_OLD),
+                criterionService.get(Criteria2015.B_9_CURES),
+                criterionService.get(Criteria2015.E_1_OLD),
+                criterionService.get(Criteria2015.E_1_CURES),
+                criterionService.get(Criteria2015.G_9_OLD),
+                criterionService.get(Criteria2015.G_9_CURES))
+            .collect(Collectors.toList());
+
+        List<CertificationCriterion> presentAttestedG6Criteria = attestedCriteria.stream()
+                .filter(cert -> cert.getRemoved() == null || cert.getRemoved().equals(Boolean.FALSE))
+                .filter(cert -> validationUtils.hasCriterion(cert, criteriaRequiringG6))
+                .collect(Collectors.<CertificationCriterion>toList());
+        List<CertificationCriterion> removedAttestedG6Criteria = attestedCriteria.stream()
+                .filter(cert -> cert.getRemoved() != null && cert.getRemoved().equals(Boolean.TRUE))
+                .filter(cert -> validationUtils.hasCriterion(cert, criteriaRequiringG6))
+                .collect(Collectors.<CertificationCriterion>toList());
+        boolean hasG6 = validationUtils.hasAnyCriteria(g6Criteria, attestedCriteria);
+
+        if (presentAttestedG6Criteria != null && presentAttestedG6Criteria.size() > 0 && !hasG6) {
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteriaRequired",
+                    g6Criteria.stream().map(criterion -> Util.formatCriteriaNumber(criterion)).collect(Collectors.joining(" or "))));
+        }
+        if (removedAttestedG6Criteria != null && removedAttestedG6Criteria.size() > 0
+                && (presentAttestedG6Criteria == null || presentAttestedG6Criteria.size() == 0)
+                && !hasG6) {
+            addListingWarningByPermission(listing, msgUtil.getMessage("listing.criteriaRequired",
+                    g6Criteria.stream().map(criterion -> Util.formatCriteriaNumber(criterion)).collect(Collectors.joining(" or "))));
+        }
+    }
+
 
     private void checkG7G8G9RequiredDependencies(CertifiedProductSearchDetails listing, List<CertificationCriterion> attestedCriteria) {
         CertificationCriterion d1 = criterionService.get(Criteria2015.D_1);
