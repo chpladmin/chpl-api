@@ -353,9 +353,10 @@ public class PendingCertifiedProductDTO implements Serializable {
 
             if (crResult.getOptionalStandards() != null && crResult.getOptionalStandards().size() > 0) {
                 for (CertificationResultOptionalStandard std : crResult.getOptionalStandards()) {
-                    PendingCertificationResultOptionalStandardDTO stdDto = new PendingCertificationResultOptionalStandardDTO();
-                    stdDto.setCitation(std.getCitation());
-                    stdDto.setOptionalStandardId(std.getOptionalStandardId());
+                    PendingCertificationResultOptionalStandardDTO stdDto = PendingCertificationResultOptionalStandardDTO.builder()
+                            .citation(std.getCitation())
+                            .optionalStandardId(std.getOptionalStandardId())
+                            .build();
                     certDto.getOptionalStandards().add(stdDto);
                 }
             }

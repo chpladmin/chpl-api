@@ -357,11 +357,12 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 
             if (certCriterion.getOptionalStandards() != null) {
                 for (PendingCertificationResultOptionalStandardDTO os : certCriterion.getOptionalStandards()) {
-                    CertificationResultOptionalStandard optionalStd = new CertificationResultOptionalStandard();
-                    optionalStd.setId(os.getId());
-                    optionalStd.setCitation(os.getCitation());
-                    optionalStd.setOptionalStandardId(os.getOptionalStandardId());
-                    optionalStd.setOptionalStandard(os.getOptionalStandard());
+                    CertificationResultOptionalStandard optionalStd = CertificationResultOptionalStandard.builder()
+                            .id(os.getId())
+                            .citation(os.getCitation())
+                            .optionalStandardId(os.getOptionalStandardId())
+                            .optionalStandard(os.getOptionalStandard())
+                            .build();
                     cert.getOptionalStandards().add(optionalStd);
                 }
             } else {
