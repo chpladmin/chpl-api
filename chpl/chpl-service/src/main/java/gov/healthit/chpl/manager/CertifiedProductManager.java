@@ -714,7 +714,6 @@ public class CertifiedProductManager extends SecuredManager {
                         for (PendingCertificationResultOptionalStandardDTO std : certResult.getOptionalStandards()) {
                             CertificationResultOptionalStandardEntity standard = new CertificationResultOptionalStandardEntity();
                             if (std.getOptionalStandardId() == null) {
-                                // try to look up by name and edition
                                 OptionalStandard foundOptionalStandard = optionalStandardDao.getByCitation(std.getCitation());
                                 if (foundOptionalStandard != null) {
                                     standard.setOptionalStandardId(foundOptionalStandard.getId());
@@ -725,8 +724,6 @@ public class CertifiedProductManager extends SecuredManager {
                                 standard.setOptionalStandardId(std.getOptionalStandardId());
                             }
                             standard.setCertificationResultId(createdCert.getId());
-                            // make sure this isn't a duplicate test standard
-                            // for this criteria
                             CertificationResultOptionalStandard existingMapping = certDao.lookupOptionalStandardMapping(
                                     standard.getCertificationResultId(), standard.getOptionalStandardId());
                             if (existingMapping == null) {
