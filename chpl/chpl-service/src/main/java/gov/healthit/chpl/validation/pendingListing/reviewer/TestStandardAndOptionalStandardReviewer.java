@@ -20,10 +20,17 @@ public class TestStandardAndOptionalStandardReviewer implements Reviewer {
     @Override
     public void review(PendingCertifiedProductDTO listing) {
         listing.getCertificationCriterion().stream()
-            .filter(cert -> (cert.getMeetsCriteria() != null && cert.getMeetsCriteria().equals(Boolean.TRUE)))
-            .filter(cert -> (cert.getTestStandards() != null && cert.getTestStandards().size() > 0))
-            .filter(cert -> (cert.getOptionalStandards() != null && cert.getOptionalStandards().size() > 0))
-            .forEach(certResult -> addErrors(listing, certResult));
+            .filter(cert -> meetsCriteriaAndHasBothTestStandardsAndOptionalStandards(cert))
+            .forEach(cert -> addErrors(listing, cert));
+    }
+
+    private boolean meetsCriteriaAndHasBothTestStandardsAndOptionalStandards(PendingCertificationResultDTO cert) {
+        return cert.getMeetsCriteria() != null
+                && cert.getMeetsCriteria().equals(Boolean.TRUE)
+                && cert.getTestStandards() != null
+                && cert.getTestStandards().size() > 0
+                && cert.getOptionalStandards() != null
+                && cert.getOptionalStandards().size() > 0;
     }
 
     private void addErrors(PendingCertifiedProductDTO listing, PendingCertificationResultDTO certResult) {
