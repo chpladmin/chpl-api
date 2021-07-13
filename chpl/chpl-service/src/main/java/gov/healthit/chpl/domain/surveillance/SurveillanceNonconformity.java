@@ -90,7 +90,7 @@ public class SurveillanceNonconformity implements Serializable {
      * Date non-conformity was closed
      */
     @XmlElement(required = false, nillable = true)
-    private Date nonConformityCloseDate;
+    private Date nonconformityCloseDate;
 
     /**
      * Nonconformity summary
@@ -257,11 +257,11 @@ public class SurveillanceNonconformity implements Serializable {
                 && this.capMustCompleteDate.getTime() != anotherNonconformity.capMustCompleteDate.getTime()) {
             return false;
         }
-        if (this.nonConformityCloseDate == null && anotherNonconformity.nonConformityCloseDate != null
-                || this.nonConformityCloseDate != null && anotherNonconformity.nonConformityCloseDate == null) {
+        if (this.nonconformityCloseDate == null && anotherNonconformity.nonconformityCloseDate != null
+                || this.nonconformityCloseDate != null && anotherNonconformity.nonconformityCloseDate == null) {
             return false;
-        } else if (this.nonConformityCloseDate != null && anotherNonconformity.nonConformityCloseDate != null
-                && this.nonConformityCloseDate.getTime() != anotherNonconformity.nonConformityCloseDate.getTime()) {
+        } else if (this.nonconformityCloseDate != null && anotherNonconformity.nonconformityCloseDate != null
+                && this.nonconformityCloseDate.getTime() != anotherNonconformity.nonconformityCloseDate.getTime()) {
             return false;
         }
         if (StringUtils.isEmpty(this.summary) && !StringUtils.isEmpty(anotherNonconformity.summary)
@@ -391,11 +391,11 @@ public class SurveillanceNonconformity implements Serializable {
     }
 
     public Date getNonConformityCloseDate() {
-        return nonConformityCloseDate;
+        return nonconformityCloseDate;
     }
 
     public void setNonConformityCloseDate(Date nonConformityCloseDate) {
-        this.nonConformityCloseDate = nonConformityCloseDate;
+        this.nonconformityCloseDate = nonConformityCloseDate;
     }
 
     public String getSummary() {
