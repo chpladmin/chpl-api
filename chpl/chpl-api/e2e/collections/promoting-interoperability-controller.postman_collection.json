@@ -73,7 +73,7 @@
 						{
 							"key": "file",
 							"type": "file",
-							"src": "/C:/CHPL_Test/interoperabilty_upload.csv"
+							"src": "chpl/chpl-api/e2e/data/interoperabilty_upload.csv"
 						}
 					]
 				},
@@ -166,7 +166,7 @@
 						{
 							"key": "file",
 							"type": "file",
-							"src": "/C:/Users/AThomas.INTRANET/Downloads/interoperability_upload (1).csv"
+							"src": "chpl/chpl-api/e2e/data/interoperabilty_upload.csv"
 						}
 					]
 				},
