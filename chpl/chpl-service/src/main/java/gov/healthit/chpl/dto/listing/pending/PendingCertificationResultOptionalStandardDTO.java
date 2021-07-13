@@ -23,8 +23,9 @@ public class PendingCertificationResultOptionalStandardDTO implements Serializab
 
     public PendingCertificationResultOptionalStandardDTO(PendingCertificationResultOptionalStandardEntity entity) {
         this.id = entity.getId();
-        this.citation = entity.getCitation();
+        this.pendingCertificationResultId = entity.getPendingCertificationResultId();
         this.optionalStandardId = entity.getOptionalStandardId();
+        this.citation = entity.getCitation();
         OptionalStandard os = new OptionalStandard();
         if (entity.getOptionalStandard() != null) {
             os.setId(entity.getOptionalStandard().getId());
