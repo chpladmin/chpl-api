@@ -47,7 +47,8 @@ public class PrivacyAndSecurityCriteriaReviewer {
     }
 
     public void review(CertifiedProductSearchDetails listing) {
-        if (isDateAfterCuresEffectiveRuleDate(listing.getCertificationDate())) {
+        if (listing.getCertificationDate() != null
+                && isDateAfterCuresEffectiveRuleDate(listing.getCertificationDate())) {
             List<CertificationCriterion> attestedToCriteria = listing.getCertificationResults().stream()
                     .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess())
                     .map(certResult -> certResult.getCriterion())
