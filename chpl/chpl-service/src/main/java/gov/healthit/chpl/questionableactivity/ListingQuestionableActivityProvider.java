@@ -470,7 +470,7 @@ public class ListingQuestionableActivityProvider {
 
     public QuestionableActivityListingDTO checkRealWorldTestingPlanAddedForNotEligibleListing(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         QuestionableActivityListingDTO activity = null;
-        if (StringUtils.isEmpty(origListing.getRwtPlansUrl()) && !StringUtils.isEmpty(newListing.getRwtPlansUrl())) {
+        if (origListing.getRwtEligibilityYear() == null && StringUtils.isEmpty(origListing.getRwtPlansUrl()) && !StringUtils.isEmpty(newListing.getRwtPlansUrl())) {
             activity = new QuestionableActivityListingDTO();
             activity.setAfter("Added Plans URL " + newListing.getRwtPlansUrl());
         }
@@ -479,7 +479,7 @@ public class ListingQuestionableActivityProvider {
 
     public QuestionableActivityListingDTO checkRealWorldTestingResultsAddedForNotEligibleListing(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         QuestionableActivityListingDTO activity = null;
-        if (StringUtils.isEmpty(origListing.getRwtResultsUrl()) && !StringUtils.isEmpty(newListing.getRwtResultsUrl())) {
+        if (origListing.getRwtEligibilityYear() == null && StringUtils.isEmpty(origListing.getRwtResultsUrl()) && !StringUtils.isEmpty(newListing.getRwtResultsUrl())) {
             activity = new QuestionableActivityListingDTO();
             activity.setAfter("Added Results URL " + newListing.getRwtResultsUrl());
         }
