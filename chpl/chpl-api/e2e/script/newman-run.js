@@ -138,12 +138,12 @@ const testinglabControllerTests = {
   },
 };
 
-const searchviewControllerTests = {
+const dimensionaldataControllerTests = {
   ...commonOptions,
-  collection: collection_path + '/search-view-controller.postman_collection.json',
+  collection: collection_path + '/dimensional-data-controller.postman_collection.json',
   reporter: {
     junit: {
-      export: reports_path + '/search-view-controller-tests.xml',
+      export: reports_path + '/dimensional-data-controller-tests.xml',
     },
   },
 };
@@ -154,6 +154,16 @@ const surveillanceReportControllerTests = {
   reporter: {
     junit: {
       export: reports_path + '/surveillance-report-controller-tests.xml',
+    },
+  },
+};
+
+const searchControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/search-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/search-controller-tests.xml',
     },
   },
 };
@@ -171,8 +181,9 @@ const jobs = [
   cb => newman.run(statusControllerTests,cb),
   cb => newman.run(testinglabControllerTests,cb),
   cb => newman.run(schedulerControllerTests,cb),
-  cb => newman.run(searchviewControllerTests,cb),
-  cb => newman.run(surveillanceReportControllerTests,cb)
+  cb => newman.run(dimensionaldataControllerTests,cb),
+  cb => newman.run(surveillanceReportControllerTests,cb),
+  cb => newman.run(searchControllerTests,cb)
 ];
 
 const responseCallback = (err) => {
