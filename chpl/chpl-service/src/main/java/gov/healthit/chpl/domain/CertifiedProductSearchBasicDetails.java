@@ -253,6 +253,7 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
      * All current and historical values of meaningful use users for this listing along with the dates each meaningful
      * use user count was valid. Dates are given in milliseconds since epoch.
      */
+    @Deprecated
     private List<MeaningfulUseUser> meaningfulUseUserHistory = new ArrayList<MeaningfulUseUser>();
 
     /**

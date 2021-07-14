@@ -73,7 +73,7 @@ public class LegacySearchViewController {
     })
     public @ResponseBody SearchResponseLegacy searchGet(
             @Parameter(description = "CHPL ID, Developer (or previous developer) Name, Product Name, ONC-ACB Certification ID",
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "searchTerm")
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "searchTerm", deprecated = true)
             @RequestParam(value = "searchTerm", required = false, defaultValue = "") String searchTerm,
             @Parameter(description = "A comma-separated list of certification statuses (ex: \"Active,Retired,Withdrawn by Developer\"). Results may match any of the provided statuses.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationStatuses")

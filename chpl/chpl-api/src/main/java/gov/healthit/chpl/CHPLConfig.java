@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -28,9 +30,13 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import gov.healthit.chpl.filter.APIKeyAuthenticationFilter;
 import gov.healthit.chpl.registration.RateLimitingInterceptor;
 import gov.healthit.chpl.web.controller.annotation.CacheControlHandlerInterceptor;
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.security.SecurityScheme.In;
+import io.swagger.v3.oas.models.servers.Server;
 import lombok.extern.log4j.Log4j2;
 
 @Configuration
@@ -50,9 +56,15 @@ import lombok.extern.log4j.Log4j2;
         "gov.healthit.chpl.**"
 })
 @Log4j2
-public class CHPLConfig implements WebMvcConfigurer {
+public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
     private static final long MAX_UPLOAD_FILE_SIZE = 5242880;
     private static final int MAX_COOKIE_AGE_SECONDS = 3600;
+    private String chplServiceUrl;
+
+    @Override
+    public void setEnvironment(Environment env) {
+        this.chplServiceUrl = env.getProperty("chplUrlBegin") + env.getProperty("basePath");
+    }
 
     @Bean
     public MappingJackson2HttpMessageConverter jsonConverter() {
@@ -138,6 +150,10 @@ public class CHPLConfig implements WebMvcConfigurer {
                 .description("Created by CHPL Development Team. Please submit any questions using the Health IT "
                         + "Feedback Form and select the \"Certified Health IT Products List (CHPL)\" category.\n"
                         + "See more at https://www.healthit.gov/form/healthit-feedback-form")
-                .license(new License().name("BSD License").url("https://github.com/chpladmin/chpl-api/blob/staging/LICENSE")));
+                .license(new License().name("BSD License").url("https://github.com/chpladmin/chpl-api/blob/staging/LICENSE")))
+                .addServersItem(new Server().url(chplServiceUrl))
+                .components(new Components()
+                        .addSecuritySchemes("api-key", new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(In.HEADER).name("API-Key").scheme("API-Key"))
+                        .addSecuritySchemes("bearer-token", new SecurityScheme().type(SecurityScheme.Type.HTTP).in(In.HEADER).name("Bearer").scheme("Bearer").bearerFormat("JWT")));
     }
 }

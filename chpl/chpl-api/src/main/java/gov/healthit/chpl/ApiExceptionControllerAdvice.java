@@ -13,9 +13,8 @@ import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
@@ -40,14 +39,10 @@ import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
 import lombok.extern.log4j.Log4j2;
 
-/**
- * Catch thrown exceptions to return the proper response code and message back to the client.
- * @author kekey
- *
- */
-@ControllerAdvice
+@RestControllerAdvice
 @Log4j2
 public class ApiExceptionControllerAdvice {
+
     @ExceptionHandler(NotImplementedException.class)
     public ResponseEntity<ErrorResponse> exception(NotImplementedException e) {
         return new ResponseEntity<ErrorResponse>(new ErrorResponse(e.getMessage()), HttpStatus.NOT_IMPLEMENTED);
@@ -227,11 +222,9 @@ public class ApiExceptionControllerAdvice {
     }
 
     @ExceptionHandler(IOException.class)
-    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     public ResponseEntity<ErrorResponse> exceptionHandler(IOException e, HttpServletRequest request) {
         if (StringUtils.containsIgnoreCase(ExceptionUtils.getRootCauseMessage(e), "Broken pipe")) {
-            LOGGER.info("Broke Pipe IOException occurred: " + request.getMethod() + " " + request.getRequestURL());
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.warn("Broke Pipe IOException occurred: " + request.getMethod() + " " + request.getRequestURL());
             return null; //socket is closed, cannot return any response
         } else {
             return new ResponseEntity<ErrorResponse>(

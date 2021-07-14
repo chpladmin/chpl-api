@@ -41,6 +41,11 @@ import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "acbs", description = "Allows CRUD operations on certification bodies (ONC-ACBs).")
@@ -136,9 +141,23 @@ public class CertificationBodyController {
 
 
     @Operation(summary = "Update an existing ACB.",
-            description = "Security Restriction:  ROLE_ADMIN, ROLE_ONC, or ROLE_ACB with administrative authority")
+            description = "Security Restriction:  ROLE_ADMIN, ROLE_ONC, or ROLE_ACB with administrative authority.",
+            security = { @SecurityRequirement(name = "api-key"),
+                    @SecurityRequirement(name = "bearer-token")
+            })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The ONC-ACB data was updated.",
+              content = { @Content(mediaType = "application/json",
+                schema = @Schema(implementation = CertificationBody.class)) }),
+            @ApiResponse(responseCode = "401", description = "The user making the request does not have permission to update the ONC-ACB.",
+                content = @Content),
+            @ApiResponse(responseCode = "404", description = "The ONC-ACB was not found in the CHPL database.",
+              content = @Content),
+            @ApiResponse(responseCode = "500", description = "There was an unexpected error when updating the ONC-ACB.",
+                content = @Content)
+    })
     @RequestMapping(value = "/{acbId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     public CertificationBody updateAcb(@RequestBody final CertificationBody acbInfo) throws InvalidArgumentsException,
             EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException,
             SchedulerException, ValidationException, MessagingException {

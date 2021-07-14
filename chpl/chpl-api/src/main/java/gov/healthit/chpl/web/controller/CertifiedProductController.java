@@ -84,6 +84,11 @@ import gov.healthit.chpl.web.controller.results.CertificationResults;
 import gov.healthit.chpl.web.controller.results.MeasureResults;
 import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 
@@ -233,9 +238,17 @@ public class CertifiedProductController {
             + "all collections that are in the 'certified_products/{identifier}/details' endpoint.",
             description = "Returns basic information in the CHPL related to the specified certified product.  "
                     + "Does not include all collections that are in the 'certified_products/{identifier}/details' endpoint.")
-    @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}",
-    method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The certified product ID was valid.",
+              content = { @Content(mediaType = "application/json",
+                schema = @Schema(implementation = CertifiedProductSearchBasicDetails.class)) }),
+            @ApiResponse(responseCode = "404", description = "The certified product ID was not found in the CHPL database.",
+              content = @Content),
+            @ApiResponse(responseCode = "500", description = "The certified product ID is valid but there was an unexpected error retrieving its data.",
+                content = @Content)
+    })
+    @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}", method = RequestMethod.GET,
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchBasicDetails getCertifiedProductByIdBasic(
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
@@ -253,7 +266,17 @@ public class CertifiedProductController {
                     + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
                     + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid "
                     + "call to this service would look like /certified_products/YY.99.99.9999.XXXX.99.99.9."
-                    + "YYMMDD.")
+                    + "YYMMDD.",
+            security = { @SecurityRequirement(name = "api-key") })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The certified product ID was valid.",
+              content = { @Content(mediaType = "application/json",
+                schema = @Schema(implementation = CertifiedProductSearchBasicDetails.class)) }),
+            @ApiResponse(responseCode = "404", description = "The certified product ID was not found in the CHPL database.",
+              content = @Content),
+            @ApiResponse(responseCode = "500", description = "The certified product ID is valid but there was an unexpected error retrieving its data.",
+                content = @Content)
+    })
     @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
             + "{addlSoftwareCode}.{certDateCode}",
             method = RequestMethod.GET,
@@ -287,10 +310,19 @@ public class CertifiedProductController {
             description = "Returns basic information in the CHPL related to the specified certified product.  "
                     + "Does not include all collections that are in the 'certified_products/{identifier}/details' endpoint.  "
                     + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call to "
-                    + "this service would look like /certified_products/CHP-999999.")
-    @RequestMapping(value = "/{chplPrefix}-{identifier}",
-    method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+                    + "this service would look like /certified_products/CHP-999999.",
+            security = { @SecurityRequirement(name = "api-key") })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The certified product ID was valid.",
+              content = { @Content(mediaType = "application/json",
+                schema = @Schema(implementation = CertifiedProductSearchBasicDetails.class)) }),
+            @ApiResponse(responseCode = "404", description = "The certified product ID was not found in the CHPL database.",
+              content = @Content),
+            @ApiResponse(responseCode = "500", description = "The certified product ID is valid but there was an unexpected error retrieving its data.",
+                content = @Content)
+    })
+    @RequestMapping(value = "/{chplPrefix}-{identifier}", method = RequestMethod.GET,
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchBasicDetails getCertifiedProductByChplProductNumberBasic2(
             @PathVariable("chplPrefix") String chplPrefix,
@@ -305,9 +337,19 @@ public class CertifiedProductController {
     }
 
     @Operation(summary = "Get all of the CQM results for a specified certified product.",
-            description = "Returns all of the CQM results in the CHPL related to the specified certified product.")
+            description = "Returns all of the CQM results in the CHPL related to the specified certified product.",
+            security = { @SecurityRequirement(name = "api-key") })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The certified product ID was valid.",
+              content = { @Content(mediaType = "application/json",
+                schema = @Schema(implementation = CQMResultDetailResults.class)) }),
+            @ApiResponse(responseCode = "404", description = "The certified product ID was not found in the CHPL database.",
+              content = @Content),
+            @ApiResponse(responseCode = "500", description = "The certified product ID is valid but there was an unexpected error retrieving its CQMs.",
+                content = @Content)
+    })
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/cqm_results", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CQMResultDetailResults getCqmsByCertifiedProductId(
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
@@ -323,8 +365,17 @@ public class CertifiedProductController {
             description = "Returns all of the CQM results in the CHPL related to the specified certified product.  "
                     + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
                     + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid call to "
-                    + "this service would look like /certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD/"
-                    + "cqm_results.")
+                    + "this service would look like /certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD/cqm_results.",
+                    security = { @SecurityRequirement(name = "api-key") })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The certified product ID was valid.",
+              content = { @Content(mediaType = "application/json",
+                schema = @Schema(implementation = CQMResultDetailResults.class)) }),
+            @ApiResponse(responseCode = "404", description = "The certified product ID was not found in the CHPL database.",
+              content = @Content),
+            @ApiResponse(responseCode = "500", description = "The certified product ID is valid but there was an unexpected error retrieving its CQMs.",
+                content = @Content)
+    })
     @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
             + "{addlSoftwareCode}.{certDateCode}/cqm_results", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
@@ -353,9 +404,19 @@ public class CertifiedProductController {
             + "CHPL Product Number.",
             description = "\"Returns all of the CQM results in the CHPL related to the specified certified product.  "
                     + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call "
-                    + "to this service would look like /certified_products/CHP-999999/cqm_results.")
+                    + "to this service would look like /certified_products/CHP-999999/cqm_results.",
+            security = { @SecurityRequirement(name = "api-key") })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The certified product ID was valid.",
+              content = { @Content(mediaType = "application/json",
+                schema = @Schema(implementation = CQMResultDetailResults.class)) }),
+            @ApiResponse(responseCode = "404", description = "The certified product ID was not found in the CHPL database.",
+              content = @Content),
+            @ApiResponse(responseCode = "500", description = "The certified product ID is valid but there was an unexpected error retrieving its CQMs.",
+                content = @Content)
+    })
     @RequestMapping(value = "/{chplPrefix}-{identifier}/cqm_results", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CQMResultDetailResults getCqmsByCertifiedProductId(
             @PathVariable("chplPrefix") String chplPrefix,
@@ -369,9 +430,19 @@ public class CertifiedProductController {
     }
 
     @Operation(summary = "Get all of the Measures for a specified certified product.",
-            description = "Returns all of the Measures in the CHPL related to the specified certified product.")
+            description = "Returns all of the Measures in the CHPL related to the specified certified product.",
+            security = { @SecurityRequirement(name = "api-key") })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The certified product ID was valid.",
+              content = { @Content(mediaType = "application/json",
+                schema = @Schema(implementation = MeasureResults.class)) }),
+            @ApiResponse(responseCode = "404", description = "The certified product ID was not found in the CHPL database.",
+              content = @Content),
+            @ApiResponse(responseCode = "500", description = "The certified product ID is valid but there was an unexpected error retrieving its measures.",
+                content = @Content)
+    })
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/measures", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody MeasureResults getMeasuresByCertifiedProductId(
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
@@ -386,8 +457,17 @@ public class CertifiedProductController {
             description = "Returns all of the Measures in the CHPL related to the specified certified product.  "
                     + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
                     + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid call to "
-                    + "this service would look like /certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD/"
-                    + "measures.")
+                    + "this service would look like /certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD/measures.",
+            security = { @SecurityRequirement(name = "api-key") })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The certified product ID was valid.",
+              content = { @Content(mediaType = "application/json",
+                schema = @Schema(implementation = MeasureResults.class)) }),
+            @ApiResponse(responseCode = "404", description = "The certified product ID was not found in the CHPL database.",
+              content = @Content),
+            @ApiResponse(responseCode = "500", description = "The certified product ID is valid but there was an unexpected error retrieving its measures.",
+                content = @Content)
+    })
     @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/measures", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -413,9 +493,19 @@ public class CertifiedProductController {
             + "CHPL Product Number.",
             description = "\"Returns all of the Measures in the CHPL related to the specified certified product.  "
                     + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call "
-                    + "to this service would look like /certified_products/CHP-999999/measures.")
+                    + "to this service would look like /certified_products/CHP-999999/measures.",
+            security = { @SecurityRequirement(name = "api-key") })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The certified product ID was valid.",
+              content = { @Content(mediaType = "application/json",
+                schema = @Schema(implementation = MeasureResults.class)) }),
+            @ApiResponse(responseCode = "404", description = "The certified product ID was not found in the CHPL database.",
+              content = @Content),
+            @ApiResponse(responseCode = "500", description = "The certified product ID is valid but there was an unexpected error retrieving its measures.",
+                content = @Content)
+    })
     @RequestMapping(value = "/{chplPrefix}-{identifier}/measures", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody MeasureResults getMeasuresByCertifiedProductId(
             @PathVariable("chplPrefix") String chplPrefix,
@@ -427,9 +517,20 @@ public class CertifiedProductController {
     }
 
     @Operation(summary = "Get all of the certification results for a specified certified product.",
-            description = "Returns all of the certifiection results in the CHPL related to the specified certified product.")
+            description = "Returns all of the certification results in the CHPL related to the specified certified product."
+                    + " This includes both attested and unattested criteria and any data associated with each.",
+            security = { @SecurityRequirement(name = "api-key") })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The certified product ID was valid.",
+              content = { @Content(mediaType = "application/json",
+                schema = @Schema(implementation = CertificationResults.class)) }),
+            @ApiResponse(responseCode = "404", description = "The certified product ID was not found in the CHPL database.",
+              content = @Content),
+            @ApiResponse(responseCode = "500", description = "The certified product ID is valid but there was an unexpected error retrieving its certification results.",
+                content = @Content)
+    })
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/certification_results", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertificationResults getCertificationResultsByCertifiedProductId(
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
@@ -442,12 +543,23 @@ public class CertifiedProductController {
 
     @SuppressWarnings({"checkstyle:linelength", "checkstyle:parameternumber"})
     @Operation(summary = "Get all of the certification results for a specified certified "
-            + "product based on a CHPL Product Number.",
+            + "product based on a CHPL Product Number. This includes both attested an unattested criteria "
+            + "and associated data for each.",
             description = "Returns all of the certification results in the CHPL related to the specified certified product.  "
                     + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
                     + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number. "
                     + "A valid call to this service would look like "
-                    + "/certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD/certification_results.")
+                    + "/certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD/certification_results.",
+            security = { @SecurityRequirement(name = "api-key") })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The certified product ID was valid.",
+              content = { @Content(mediaType = "application/json",
+                schema = @Schema(implementation = CertificationResults.class)) }),
+            @ApiResponse(responseCode = "404", description = "The certified product ID was not found in the CHPL database.",
+              content = @Content),
+            @ApiResponse(responseCode = "500", description = "The certified product ID is valid but there was an unexpected error retrieving its certification results.",
+                content = @Content)
+    })
     @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}"
             + ".{certDateCode}/certification_results", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
@@ -474,12 +586,22 @@ public class CertifiedProductController {
     }
 
     @Operation(summary = "Get all of the certification results for a specified certified product based on a legacy "
-            + "CHPL Product Number.",
+            + "CHPL Product Number. This includes both attested and unattested criteria and any associated data for each.",
             description = "Returns all of the certification results in the CHPL related to the specified certified product.  "
                     + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call to this "
-                    + "service would look like /certified_products/CHP-999999/certification_results.")
+                    + "service would look like /certified_products/CHP-999999/certification_results.",
+            security = { @SecurityRequirement(name = "api-key") })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The certified product ID was valid.",
+              content = { @Content(mediaType = "application/json",
+                schema = @Schema(implementation = CertificationResults.class)) }),
+            @ApiResponse(responseCode = "404", description = "The certified product ID was not found in the CHPL database.",
+              content = @Content),
+            @ApiResponse(responseCode = "500", description = "The certified product ID is valid but there was an unexpected error retrieving its certification results.",
+                content = @Content)
+    })
     @RequestMapping(value = "/{chplPrefix}-{identifier}/certification_results", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertificationResults getCertificationResultsByCertifiedProductId(
             @PathVariable("chplPrefix") String chplPrefix,
