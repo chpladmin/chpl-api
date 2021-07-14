@@ -212,11 +212,8 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
         } else {
             ncFields.add("");
         }
-        LocalDateTime nonConformityCloseDate = null;
         if (nc.getNonConformityCloseDate() != null) {
-            nonConformityCloseDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getNonConformityCloseDate().getTime()),
-                    ZoneId.systemDefault());
-            ncFields.add(getDateFormatter().format(nonConformityCloseDate));
+            ncFields.add(getDateFormatter().format(nc.getNonConformityCloseDate()));
         } else {
             ncFields.add("");
         }

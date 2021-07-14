@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity.surveillance;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -62,7 +63,7 @@ public class SurveillanceNonconformityEntity {
     private Date capEndDate;
 
     @Column(name = "non_conformity_close_date")
-    private Date nonConformityCloseDate;
+    private LocalDate nonConformityCloseDate;
 
     @Column(name = "summary")
     private String summary;

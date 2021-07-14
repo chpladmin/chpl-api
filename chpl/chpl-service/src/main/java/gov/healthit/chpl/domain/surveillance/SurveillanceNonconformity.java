@@ -1,6 +1,7 @@
 package gov.healthit.chpl.domain.surveillance;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -90,7 +91,7 @@ public class SurveillanceNonconformity implements Serializable {
      * Date non-conformity was closed
      */
     @XmlElement(required = false, nillable = true)
-    private Date nonconformityCloseDate;
+    private LocalDate nonconformityCloseDate;
 
     /**
      * Nonconformity summary
@@ -261,7 +262,7 @@ public class SurveillanceNonconformity implements Serializable {
                 || this.nonconformityCloseDate != null && anotherNonconformity.nonconformityCloseDate == null) {
             return false;
         } else if (this.nonconformityCloseDate != null && anotherNonconformity.nonconformityCloseDate != null
-                && this.nonconformityCloseDate.getTime() != anotherNonconformity.nonconformityCloseDate.getTime()) {
+                && this.nonconformityCloseDate != anotherNonconformity.nonconformityCloseDate) {
             return false;
         }
         if (StringUtils.isEmpty(this.summary) && !StringUtils.isEmpty(anotherNonconformity.summary)
@@ -390,11 +391,11 @@ public class SurveillanceNonconformity implements Serializable {
         this.capMustCompleteDate = Util.getNewDate(capMustCompleteDate);
     }
 
-    public Date getNonConformityCloseDate() {
+    public LocalDate getNonConformityCloseDate() {
         return nonconformityCloseDate;
     }
 
-    public void setNonConformityCloseDate(Date nonConformityCloseDate) {
+    public void setNonConformityCloseDate(LocalDate nonConformityCloseDate) {
         this.nonconformityCloseDate = nonConformityCloseDate;
     }
 

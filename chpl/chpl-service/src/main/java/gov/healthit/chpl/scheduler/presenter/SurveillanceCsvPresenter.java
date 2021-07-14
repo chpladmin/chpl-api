@@ -223,8 +223,7 @@ public class SurveillanceCsvPresenter {
             ncRow.add("Closed");
         }
         if (nc.getNonConformityCloseDate() != null) {
-            LocalDateTime ncCloseDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getNonConformityCloseDate().getTime()), ZoneId.systemDefault());
-            ncRow.add(dateFormatter.format(ncCloseDate));
+            ncRow.add(dateFormatter.format(nc.getNonConformityCloseDate()));
         } else {
             ncRow.add("");
         }

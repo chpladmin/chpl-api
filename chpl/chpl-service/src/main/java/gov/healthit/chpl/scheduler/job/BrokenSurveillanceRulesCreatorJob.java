@@ -288,10 +288,8 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         } else {
             rule.setNonconformityCriteria(nc.getNonconformityType());
         }
-        LocalDateTime ncCloseDate = null;
         if (nc.getNonConformityCloseDate() != null) {
-            ncCloseDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getNonConformityCloseDate().getTime()), ZoneId.systemDefault());
-            rule.setDateOfDeterminationOfNonconformity(dateFormatter.format(ncCloseDate));
+            rule.setNonConformityCloseDate(nc.getNonConformityCloseDate());
         }
         LocalDateTime ncDeterminationDate = null;
         if (nc.getDateOfDetermination() != null) {

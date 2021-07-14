@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity.surveillance;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -43,7 +44,7 @@ public class PendingSurveillanceNonconformityEntity {
     private CertificationCriterionEntity certificationCriterionEntity;
 
     @Column(name = "non_conformity_close_date")
-    private Date nonConformityCloseDate;
+    private LocalDate nonConformityCloseDate;
 
     @Column(name = "date_of_determination")
     private Date dateOfDetermination;

@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dto.scheduler;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.entity.scheduler.BrokenSurveillanceRulesEntity;
@@ -39,7 +40,7 @@ public class BrokenSurveillanceRulesDTO implements Serializable {
     private String dateCorrectiveActionBegan;
     private String dateCorrectiveActionMustBeCompleted;
     private String dateCorrectiveActionWasCompleted;
-    private String nonConformityCloseDate;
+    private LocalDate nonConformityCloseDate;
     private long numberOfDaysFromDeterminationToCapApproval;
     private long numberOfDaysFromDeterminationToPresent;
     private long numberOfDaysFromCapApprovalToCapBegan;
