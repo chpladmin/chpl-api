@@ -4,8 +4,8 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
-@Component("certifiedProductUploadMuuActionPermissions")
-public class UploadMuuActionPermissions extends ActionPermissions {
+@Component("certifiedProductUploadPiuActionPermissions")
+public class UploadPiuActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess() {

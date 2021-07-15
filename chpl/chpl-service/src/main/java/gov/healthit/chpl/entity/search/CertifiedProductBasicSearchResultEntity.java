@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity.search;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -7,12 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.util.Util;
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Data
 @NoArgsConstructor
@@ -61,16 +58,12 @@ public class CertifiedProductBasicSearchResultEntity {
     @Column(name = "owner_history")
     private String previousDevelopers;
 
-    @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.NONE)
     @Column(name = "certification_date")
     private Date certificationDate;
 
     @Column(name = "certification_status_name")
     private String certificationStatus;
 
-    @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.NONE)
     @Column(name = "decertification_date")
     private Date decertificationDate;
 
@@ -104,49 +97,21 @@ public class CertifiedProductBasicSearchResultEntity {
     @Column(name = "status_events")
     private String statusEvents;
 
-    @Column(name = "meaningful_use_users")
-    private Long meaningfulUseUserCount;
+    @Column(name = "promoting_interoperability_user_count")
+    private Long promotingInteroperabilityUserCount;
 
-    @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.NONE)
-    @Column(name = "meaningful_use_users_date")
-    private Date meaningfulUseUserDate;
+    @Column(name = "promoting_interoperability_user_count_date")
+    private LocalDate promotingInteroperabilityUserCountDate;
 
     @Column(name = "certs")
-    private String certs; // comma-separated list of all certification criteria
-    // met by the certified product
+    private String certs; // comma-separated list of all certification criteria met by the certified product
 
     @Column(name = "cqms")
-    private String cqms; // comma-separated list of all cqms met by the
-    // certified product
+    private String cqms; // comma-separated list of all cqms met by the certified product
 
     @Column(name = "parent")
     private String parent; // comma-separated list of all parents
 
     @Column(name = "child")
     private String child; // comma-separated list of all children
-
-    public Date getMeaningfulUseUserDate() {
-        return Util.getNewDate(meaningfulUseUserDate);
-    }
-
-    public void setMeaningfulUseUserDate(Date meaningfulUseUserDate) {
-        this.meaningfulUseUserDate = Util.getNewDate(meaningfulUseUserDate);
-    }
-
-    public Date getCertificationDate() {
-        return Util.getNewDate(certificationDate);
-    }
-
-    public void setCertificationDate(Date certificationDate) {
-        this.certificationDate = Util.getNewDate(certificationDate);
-    }
-
-    public Date getDecertificationDate() {
-        return Util.getNewDate(decertificationDate);
-    }
-
-    public void setDecertificationDate(Date decertificationDate) {
-        this.decertificationDate = Util.getNewDate(decertificationDate);
-    }
 }
