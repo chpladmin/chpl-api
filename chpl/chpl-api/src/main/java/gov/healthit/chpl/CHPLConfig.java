@@ -2,9 +2,13 @@ package gov.healthit.chpl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springdoc.core.customizers.OpenApiCustomiser;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -155,5 +159,13 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
                 .components(new Components()
                         .addSecuritySchemes("api-key", new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(In.HEADER).name("API-Key").scheme("API-Key"))
                         .addSecuritySchemes("bearer-token", new SecurityScheme().type(SecurityScheme.Type.HTTP).in(In.HEADER).name("Bearer").scheme("Bearer").bearerFormat("JWT")));
+    }
+
+    @Bean
+    public OpenApiCustomiser sortTagsAlphabetically() {
+        return openApi -> openApi.setTags(openApi.getTags()
+                .stream()
+                .sorted(Comparator.comparing(tag -> StringUtils.stripAccents(tag.getName())))
+                .collect(Collectors.toList()));
     }
 }

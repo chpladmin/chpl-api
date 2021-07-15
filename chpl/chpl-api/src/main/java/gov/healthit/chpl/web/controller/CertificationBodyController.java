@@ -170,7 +170,7 @@ public class CertificationBodyController {
     }
 
 
-    @Operation(summary = "Update an existing -ONCACB.",
+    @Operation(summary = "Update an existing ONC-ACB.",
             description = "Security Restriction: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB with administrative authority.",
             security = { @SecurityRequirement(name = "api-key"),
                     @SecurityRequirement(name = "bearer-token")
