@@ -37,7 +37,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 
-@Tag(name = "search", description = "Allows searching of the CHPL.")
+@Tag(name = "search")
 @RestController
 @Loggable
 @Log4j2
