@@ -44,7 +44,7 @@ public class PendingSurveillanceNonconformityEntity {
     private CertificationCriterionEntity certificationCriterionEntity;
 
     @Column(name = "non_conformity_close_date")
-    private LocalDate nonConformityCloseDate;
+    private LocalDate nonconformityCloseDate;
 
     @Column(name = "date_of_determination")
     private Date dateOfDetermination;

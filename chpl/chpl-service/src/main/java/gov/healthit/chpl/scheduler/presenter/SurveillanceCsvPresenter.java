@@ -217,13 +217,13 @@ public class SurveillanceCsvPresenter {
             ncRow.add("");
         }
         // Derive the status
-        if (nc.getNonConformityCloseDate() == null) {
+        if (nc.getNonconformityCloseDate() == null) {
             ncRow.add("Open");
         } else {
             ncRow.add("Closed");
         }
-        if (nc.getNonConformityCloseDate() != null) {
-            ncRow.add(dateFormatter.format(nc.getNonConformityCloseDate()));
+        if (nc.getNonconformityCloseDate() != null) {
+            ncRow.add(dateFormatter.format(nc.getNonconformityCloseDate()));
         } else {
             ncRow.add("");
         }

@@ -388,7 +388,7 @@ public class SurveillanceManager extends SecuredManager {
                         nc.setCapMustCompleteDate(ncEntity.getCapMustCompleteDate());
                         nc.setCapStartDate(ncEntity.getCapStart());
                         nc.setDateOfDetermination(ncEntity.getDateOfDetermination());
-                        nc.setNonConformityCloseDate(ncEntity.getNonConformityCloseDate());
+                        nc.setNonconformityCloseDate(ncEntity.getNonConformityCloseDate());
                         nc.setDeveloperExplanation(ncEntity.getDeveloperExplanation());
                         nc.setFindings(ncEntity.getFindings());
                         nc.setId(ncEntity.getId());

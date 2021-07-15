@@ -140,6 +140,6 @@ public class SurveillanceDetailsReviewer implements Reviewer {
     }
 
     private boolean doesNonconformityRequireCloseDate(SurveillanceNonconformity nc) {
-        return nc.getNonConformityCloseDate() != null;
+        return nc.getNonconformityCloseDate() != null;
     }
 }

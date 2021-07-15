@@ -225,7 +225,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
     }
 
     private Boolean isNonConformityOpen(SurveillanceNonconformity nonConformity) {
-        return nonConformity.getNonConformityCloseDate() == null;
+        return nonConformity.getNonconformityCloseDate() == null;
     }
 
     private BrokenSurveillanceRulesDTO getDefaultBrokenRule(CertifiedProductSearchDetails listing)
@@ -288,8 +288,8 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         } else {
             rule.setNonconformityCriteria(nc.getNonconformityType());
         }
-        if (nc.getNonConformityCloseDate() != null) {
-            rule.setNonConformityCloseDate(nc.getNonConformityCloseDate());
+        if (nc.getNonconformityCloseDate() != null) {
+            rule.setNonConformityCloseDate(nc.getNonconformityCloseDate());
         }
         LocalDateTime ncDeterminationDate = null;
         if (nc.getDateOfDetermination() != null) {

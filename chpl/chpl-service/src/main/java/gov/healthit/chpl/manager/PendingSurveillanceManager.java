@@ -401,7 +401,7 @@ public class PendingSurveillanceManager extends SecuredManager {
                         nc.setSitesPassed(pnc.getSitesPassed());
                         nc.setSummary(pnc.getSummary());
                         nc.setTotalSites(pnc.getTotalSites());
-                        nc.setNonConformityCloseDate(pnc.getNonConformityCloseDate());
+                        nc.setNonconformityCloseDate(pnc.getNonconformityCloseDate());
                         req.getNonconformities().add(nc);
                     }
                 }
@@ -589,7 +589,7 @@ public class PendingSurveillanceManager extends SecuredManager {
                         nc.setSummary(ncEntity.getSummary());
                         nc.setTotalSites(ncEntity.getTotalSites());
                         nc.setLastModifiedDate(ncEntity.getLastModifiedDate());
-                        nc.setNonConformityCloseDate(ncEntity.getNonConformityCloseDate());
+                        nc.setNonconformityCloseDate(ncEntity.getNonConformityCloseDate());
                         req.getNonconformities().add(nc);
 
                         if (ncEntity.getDocuments() != null && ncEntity.getDocuments().size() > 0) {

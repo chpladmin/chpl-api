@@ -269,7 +269,7 @@ public class SurveillanceUploadManager extends SecuredManager {
                 if (nc.getStatus() != null
                         && nc.getStatus().getName().equalsIgnoreCase(SurveillanceNonconformityStatus.CLOSED)
                         && nc.getCapEndDate() != null) {
-                    nc.setNonConformityCloseDate(nc.getCapEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                    nc.setNonconformityCloseDate(nc.getCapEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
                 }
             }
         }

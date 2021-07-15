@@ -212,8 +212,8 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
         } else {
             ncFields.add("");
         }
-        if (nc.getNonConformityCloseDate() != null) {
-            ncFields.add(getDateFormatter().format(nc.getNonConformityCloseDate()));
+        if (nc.getNonconformityCloseDate() != null) {
+            ncFields.add(getDateFormatter().format(nc.getNonconformityCloseDate()));
         } else {
             ncFields.add("");
         }

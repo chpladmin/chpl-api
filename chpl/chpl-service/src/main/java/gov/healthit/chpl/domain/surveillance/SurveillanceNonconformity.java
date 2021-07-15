@@ -16,8 +16,12 @@ import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.util.LocalDateDeserializer;
+import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.Util;
 
 /**
@@ -90,6 +94,8 @@ public class SurveillanceNonconformity implements Serializable {
     /**
      * Date non-conformity was closed
      */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     @XmlElement(required = false, nillable = true)
     private LocalDate nonconformityCloseDate;
 
@@ -391,12 +397,12 @@ public class SurveillanceNonconformity implements Serializable {
         this.capMustCompleteDate = Util.getNewDate(capMustCompleteDate);
     }
 
-    public LocalDate getNonConformityCloseDate() {
+    public LocalDate getNonconformityCloseDate() {
         return nonconformityCloseDate;
     }
 
-    public void setNonConformityCloseDate(LocalDate nonConformityCloseDate) {
-        this.nonconformityCloseDate = nonConformityCloseDate;
+    public void setNonconformityCloseDate(LocalDate nonconformityCloseDate) {
+        this.nonconformityCloseDate = nonconformityCloseDate;
     }
 
     public String getSummary() {
