@@ -50,6 +50,8 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
                 validateRwtResultsUrl(updatedListing);
                 validateRwtResultsCheckDate(updatedListing);
             }
+        } else {
+            updatedListing.getErrorMessages().add(errorMessageUtil.getMessage("listing.realWorldTesting.notEligible"));
         }
     }
 
