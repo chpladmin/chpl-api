@@ -22,6 +22,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
@@ -46,7 +47,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
 
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
 
-        validationUtils = new ValidationUtils(certificationCriterionDao);
+        validationUtils = new ValidationUtils(Mockito.mock(CertificationCriterionService.class));
     }
 
     @Test

@@ -23,6 +23,7 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.upload.listing.ListingUploadDao;
 import gov.healthit.chpl.upload.listing.ListingUploadManager;
+import gov.healthit.chpl.upload.listing.ListingUploadStatus;
 import lombok.extern.log4j.Log4j2;
 
 @DisallowConcurrentExecution
@@ -102,6 +103,7 @@ public class ListingUploadValidationJob implements Job {
                 }
 
                 if (listingUpload != null && validatedListingUpload != null) {
+                    listingUpload.setStatus(ListingUploadStatus.SUCCESSFUL);
                     listingUpload.setErrorCount(validatedListingUpload.getErrorMessages() == null ? 0 : validatedListingUpload.getErrorMessages().size());
                     listingUpload.setWarningCount(validatedListingUpload.getWarningMessages() == null ? 0 : validatedListingUpload.getWarningMessages().size());
                     LOGGER.info("Listing upload with ID " + listingUpload.getId() + " had "
@@ -119,7 +121,7 @@ public class ListingUploadValidationJob implements Job {
         txTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                listingUploadDao.updateErrorAndWarningCounts(listingUploadId, -1, -1);
+                listingUploadDao.updateStatus(listingUploadId, ListingUploadStatus.FAILED);
             }
         });
     }

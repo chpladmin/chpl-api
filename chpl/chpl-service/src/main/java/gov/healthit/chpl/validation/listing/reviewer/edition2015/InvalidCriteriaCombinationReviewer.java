@@ -15,20 +15,20 @@ import gov.healthit.chpl.validation.InvalidCriteriaCombination;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
 @Component("invalidCriteriaCombinationReviewer")
-public class InvalidCriteriaCombinationReviewer extends InvalidCriteriaCombination implements Reviewer {
+public class InvalidCriteriaCombinationReviewer implements Reviewer {
+    private InvalidCriteriaCombination invalidCriteriaCombination;
+    private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public InvalidCriteriaCombinationReviewer(ErrorMessageUtil msgUtil) {
-        super(msgUtil);
+    public InvalidCriteriaCombinationReviewer(InvalidCriteriaCombination invalidCriteriaCombination,
+            ErrorMessageUtil msgUtil) {
+        this.invalidCriteriaCombination = invalidCriteriaCombination;
+        this.msgUtil = msgUtil;
     }
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
-        checkForInvalidCriteriaCombination(listing, getCriteriaB6Id(), getCriteriaB10Id());
-        checkForInvalidCriteriaCombination(listing, getCriteriaG8Id(), getCriteriaG10Id());
-
-        initializeOldAndNewCriteriaPairs();
-        for (Pair<Integer, Integer> pair : getOldAndNewcriteriaIdPairs()) {
+        for (Pair<Integer, Integer> pair : invalidCriteriaCombination.getOldAndNewcriteriaIdPairs()) {
             final Integer oldCriteriaId = pair.getLeft();
             final Integer newCriteriaId = pair.getRight();
             checkForInvalidCriteriaCombination(listing, oldCriteriaId, newCriteriaId);
@@ -43,8 +43,8 @@ public class InvalidCriteriaCombinationReviewer extends InvalidCriteriaCombinati
         if (certResultA.isPresent() && certResultB.isPresent()) {
             final CertificationCriterion critA = certResultA.get().getCriterion();
             final CertificationCriterion critB = certResultB.get().getCriterion();
-            listing.getErrorMessages()
-                    .add(getMsgUtil().getMessage("listing.criteria.invalidCombination",
+            listing.getErrorMessages().add(
+                    msgUtil.getMessage("listing.criteria.invalidCombination",
                             CertificationCriterionService.formatCriteriaNumber(critA),
                             CertificationCriterionService.formatCriteriaNumber(critB)));
         }
@@ -53,7 +53,8 @@ public class InvalidCriteriaCombinationReviewer extends InvalidCriteriaCombinati
     private Optional<CertificationResult> findCertificationResult(CertifiedProductSearchDetails listing,
             Integer criteriaId) {
         return listing.getCertificationResults().stream()
-                .filter(cr -> cr.getCriterion().getId().equals(Long.valueOf(criteriaId)) && cr.isSuccess())
+                .filter(cr -> cr.isSuccess() != null & cr.isSuccess()
+                                && cr.getCriterion().getId().equals(Long.valueOf(criteriaId)))
                 .findFirst();
     }
 }
