@@ -1,6 +1,7 @@
 package gov.healthit.chpl.scheduler.job.xmlgenerator;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 
 import javax.xml.stream.XMLStreamException;
@@ -14,8 +15,7 @@ public class XmlGenerator {
 
     protected XmlGenerator() {}
 
-    public static void createSimpleElement(final Long value, final String nodeName,
-            final XMLStreamWriter sw) throws XMLStreamException {
+    public static void createSimpleElement(Long value, String nodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (value != null) {
             sw.writeStartElement(nodeName);
             sw.writeCharacters(value.toString());
@@ -24,8 +24,7 @@ public class XmlGenerator {
 
     }
 
-    public static void createSimpleElement(final String value, final String nodeName,
-            final XMLStreamWriter sw) throws XMLStreamException {
+    public static void createSimpleElement(String value, String nodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (value != null) {
             sw.writeStartElement(nodeName);
             sw.writeCharacters(value);
@@ -33,8 +32,7 @@ public class XmlGenerator {
         }
     }
 
-    public static void createSimpleElement(final Integer value, final String nodeName,
-            final XMLStreamWriter sw) throws XMLStreamException {
+    public static void createSimpleElement(Integer value, String nodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (value != null) {
             sw.writeStartElement(nodeName);
             sw.writeCharacters(value.toString());
@@ -42,8 +40,7 @@ public class XmlGenerator {
         }
     }
 
-    public static void createSimpleElement(final Boolean value, final String nodeName,
-            final XMLStreamWriter sw) throws XMLStreamException {
+    public static void createSimpleElement(Boolean value, String nodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (value != null) {
             sw.writeStartElement(nodeName);
             sw.writeCharacters(value.toString());
@@ -52,8 +49,7 @@ public class XmlGenerator {
 
     }
 
-    public static void createSimpleElement(final Date value, final String format,
-            final String nodeName, final XMLStreamWriter sw) throws XMLStreamException {
+    public static void createSimpleElement(Date value, String format, String nodeName, final XMLStreamWriter sw) throws XMLStreamException {
         if (value != null) {
             SimpleDateFormat sdf = new SimpleDateFormat(format);
             sw.writeStartElement(nodeName);
@@ -62,8 +58,7 @@ public class XmlGenerator {
         }
     }
 
-    public static void createSimpleElement(final Date value, final String nodeName,
-            final XMLStreamWriter sw) throws XMLStreamException {
+    public static void createSimpleElement(Date value, String nodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (value != null) {
             SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
             sw.writeStartElement(nodeName);
@@ -73,8 +68,16 @@ public class XmlGenerator {
 
     }
 
-    public static void createSimpleElement(final Float value, final String nodeName,
-            final XMLStreamWriter sw) throws XMLStreamException {
+    public static void createSimpleElement(LocalDate value, String nodeName, XMLStreamWriter sw) throws XMLStreamException {
+        if (value != null) {
+            sw.writeStartElement(nodeName);
+            sw.writeCharacters(value.toString());
+            sw.writeEndElement();
+        }
+
+    }
+
+    public static void createSimpleElement(Float value, String nodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (value != null) {
             sw.writeStartElement(nodeName);
             sw.writeCharacters(Float.toString(value));

@@ -25,6 +25,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
         this.criterionService = criterionService;
     }
 
+    @Override
     protected List<String> generateHeaderValues() {
         List<String> result = new ArrayList<String>();
         result.add("Developer");
@@ -47,6 +48,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
         result.add("Date Corrective Action Began");
         result.add("Date Corrective Action Must Be Completed");
         result.add("Date Corrective Action Was Completed");
+        result.add("Date Non-conformity Was Closed");
         result.add("Number of Days from Determination to CAP Approval");
         result.add("Number of Days from Determination to Present");
         result.add("Number of Days from CAP Approval to CAP Began");
@@ -58,6 +60,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
         return result;
     }
 
+    @Override
     protected List<List<String>> generateMultiRowValue(final CertifiedProductSearchDetails data,
             final Surveillance surv) {
         List<List<String>> result = new ArrayList<List<String>>();
@@ -206,6 +209,11 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
             capEndDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getCapEndDate().getTime()),
                     ZoneId.systemDefault());
             ncFields.add(getDateFormatter().format(capEndDate));
+        } else {
+            ncFields.add("");
+        }
+        if (nc.getNonconformityCloseDate() != null) {
+            ncFields.add(getDateFormatter().format(nc.getNonconformityCloseDate()));
         } else {
             ncFields.add("");
         }

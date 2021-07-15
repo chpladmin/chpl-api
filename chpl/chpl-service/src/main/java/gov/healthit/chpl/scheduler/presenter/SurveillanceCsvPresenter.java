@@ -78,6 +78,7 @@ public class SurveillanceCsvPresenter {
         result.add("SURVEILLANCE_RESULT");
         result.add("NON_CONFORMITY_TYPE");
         result.add("NON_CONFORMITY_STATUS");
+        result.add("NON_CONFORMITY_CLOSE_DATE");
         result.add("DATE_OF_DETERMINATION");
         result.add("CAP_APPROVAL_DATE");
         result.add("ACTION_BEGAN_DATE");
@@ -215,8 +216,14 @@ public class SurveillanceCsvPresenter {
         } else {
             ncRow.add("");
         }
-        if (nc.getStatus() != null) {
-            ncRow.add(nc.getStatus().getName());
+        // Derive the status
+        if (nc.getNonconformityCloseDate() == null) {
+            ncRow.add("Open");
+        } else {
+            ncRow.add("Closed");
+        }
+        if (nc.getNonconformityCloseDate() != null) {
+            ncRow.add(dateFormatter.format(nc.getNonconformityCloseDate()));
         } else {
             ncRow.add("");
         }

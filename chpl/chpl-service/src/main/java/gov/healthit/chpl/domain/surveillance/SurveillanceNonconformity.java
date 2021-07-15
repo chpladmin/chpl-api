@@ -1,6 +1,7 @@
 package gov.healthit.chpl.domain.surveillance;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,8 +16,12 @@ import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.util.LocalDateDeserializer;
+import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.Util;
 
 /**
@@ -26,7 +31,7 @@ import gov.healthit.chpl.util.Util;
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SurveillanceNonconformity implements Serializable {
-    private static long serialVersionUID = -1116153210791576784L;
+    private static final long serialVersionUID = -1116153210791576784L;
 
     /**
      * Nonconformity internal ID
@@ -52,7 +57,8 @@ public class SurveillanceNonconformity implements Serializable {
      * The status of a non-conformity found as a result of a surveillance
      * activity. Allowable values are "Open" or "Closed".
      */
-    @XmlElement(required = true)
+    @XmlTransient
+    @Deprecated
     private SurveillanceNonconformityStatus status;
 
     /**
@@ -84,6 +90,14 @@ public class SurveillanceNonconformity implements Serializable {
      */
     @XmlElement(required = false, nillable = true)
     private Date capMustCompleteDate;
+
+    /**
+     * Date non-conformity was closed
+     */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlElement(required = false, nillable = true)
+    private LocalDate nonconformityCloseDate;
 
     /**
      * Nonconformity summary
@@ -215,13 +229,6 @@ public class SurveillanceNonconformity implements Serializable {
                 && !this.criterion.getId().equals(anotherNonconformity.criterion.getId())) {
             return false;
         }
-        if (this.status == null && anotherNonconformity.status != null
-                || this.status != null && anotherNonconformity.status == null) {
-            return false;
-        } else if (this.status != null && anotherNonconformity.status != null
-                && !this.status.matches(anotherNonconformity.status)) {
-            return false;
-        }
         if (this.dateOfDetermination == null && anotherNonconformity.dateOfDetermination != null
                 || this.dateOfDetermination != null && anotherNonconformity.dateOfDetermination == null) {
             return false;
@@ -255,6 +262,13 @@ public class SurveillanceNonconformity implements Serializable {
             return false;
         } else if (this.capMustCompleteDate != null && anotherNonconformity.capMustCompleteDate != null
                 && this.capMustCompleteDate.getTime() != anotherNonconformity.capMustCompleteDate.getTime()) {
+            return false;
+        }
+        if (this.nonconformityCloseDate == null && anotherNonconformity.nonconformityCloseDate != null
+                || this.nonconformityCloseDate != null && anotherNonconformity.nonconformityCloseDate == null) {
+            return false;
+        } else if (this.nonconformityCloseDate != null && anotherNonconformity.nonconformityCloseDate != null
+                && this.nonconformityCloseDate != anotherNonconformity.nonconformityCloseDate) {
             return false;
         }
         if (StringUtils.isEmpty(this.summary) && !StringUtils.isEmpty(anotherNonconformity.summary)
@@ -333,10 +347,12 @@ public class SurveillanceNonconformity implements Serializable {
         this.criterion = criterion;
     }
 
+    @Deprecated
     public SurveillanceNonconformityStatus getStatus() {
         return status;
     }
 
+    @Deprecated
     public void setStatus(SurveillanceNonconformityStatus status) {
         this.status = status;
     }
@@ -379,6 +395,14 @@ public class SurveillanceNonconformity implements Serializable {
 
     public void setCapMustCompleteDate(Date capMustCompleteDate) {
         this.capMustCompleteDate = Util.getNewDate(capMustCompleteDate);
+    }
+
+    public LocalDate getNonconformityCloseDate() {
+        return nonconformityCloseDate;
+    }
+
+    public void setNonconformityCloseDate(LocalDate nonconformityCloseDate) {
+        this.nonconformityCloseDate = nonconformityCloseDate;
     }
 
     public String getSummary() {

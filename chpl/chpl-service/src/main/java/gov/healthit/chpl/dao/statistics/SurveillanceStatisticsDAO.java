@@ -99,7 +99,8 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
      * Open NCs.
      */
     public Long getTotalOpenNonconformities(Date endDate) {
-        String hql = "SELECT count(*) " + "FROM SurveillanceNonconformityEntity " + "WHERE nonconformityStatusId = 1 ";
+        String hql = "SELECT count(*) " + "FROM SurveillanceNonconformityEntity "
+                + "WHERE nonConformityCloseDate IS NULL ";
         if (endDate == null) {
             hql += " AND deleted = false";
         } else {
@@ -124,7 +125,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
                 + "SurveillanceEntity s, "
                 + "SurveillanceRequirementEntity sr, "
                 + "SurveillanceNonconformityEntity sn "
-                + "WHERE sn.nonconformityStatusId = 1 "
+                + "WHERE sn.nonConformityCloseDate IS NULL "
                 + "AND cp.certificationBodyId = cb.id "
                 + "AND cp.id = s.certifiedProductId "
                 + "AND s.id = sr.surveillanceId "
@@ -163,12 +164,12 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
     public Long getTotalClosedNonconformities(Date endDate) {
         String hql = "SELECT count(*) "
                 + "FROM SurveillanceNonconformityEntity "
-                + "WHERE nonconformityStatusId = 2 ";
+                + "WHERE nonConformityCloseDate IS NOT NULL ";
         if (endDate == null) {
             hql += " AND deleted = false";
         } else {
-            hql += " AND ((deleted = false AND capEndDate <= :endDate) "
-                    + " OR " + "(deleted = true AND capEndDate <= :endDate AND lastModifiedDate > :endDate)) ";
+            hql += " AND ((deleted = false AND nonConformityCloseDate <= :endDate) "
+                    + " OR " + "(deleted = true AND nonConformityCloseDate <= :endDate AND lastModifiedDate > :endDate)) ";
         }
 
         Query query = entityManager.createQuery(hql);
@@ -253,7 +254,6 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         String hql = "FROM SurveillanceEntity se "
                 + "JOIN FETCH se.surveilledRequirements sre "
                 + "JOIN FETCH sre.nonconformities nc "
-                + "JOIN FETCH nc.nonconformityStatus ncs "
                 + "JOIN FETCH se.certifiedProduct cp "
                 + "WHERE se.deleted = false "
                 + "AND sre.deleted = false "
