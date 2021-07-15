@@ -865,7 +865,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
         to.setFindings(from.getFindings());
         to.setResolution(from.getResolution());
         to.setSitesPassed(from.getSitesPassed());
-        to.setNonConformityCloseDate(from.getNonconformityCloseDate());
+        to.setNonconformityCloseDate(from.getNonconformityCloseDate());
         to.setSummary(from.getSummary());
         to.setTotalSites(from.getTotalSites());
         to.setType(from.getNonconformityType());
