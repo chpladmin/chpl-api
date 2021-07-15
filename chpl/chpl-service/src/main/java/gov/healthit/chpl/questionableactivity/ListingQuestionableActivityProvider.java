@@ -468,6 +468,24 @@ public class ListingQuestionableActivityProvider {
         return activity;
     }
 
+    public QuestionableActivityListingDTO checkRealWorldTestingPlanAddedForNotEligibleListing(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+        QuestionableActivityListingDTO activity = null;
+        if (origListing.getRwtEligibilityYear() == null && StringUtils.isEmpty(origListing.getRwtPlansUrl()) && !StringUtils.isEmpty(newListing.getRwtPlansUrl())) {
+            activity = new QuestionableActivityListingDTO();
+            activity.setAfter("Added Plans URL " + newListing.getRwtPlansUrl());
+        }
+        return activity;
+    }
+
+    public QuestionableActivityListingDTO checkRealWorldTestingResultsAddedForNotEligibleListing(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+        QuestionableActivityListingDTO activity = null;
+        if (origListing.getRwtEligibilityYear() == null && StringUtils.isEmpty(origListing.getRwtResultsUrl()) && !StringUtils.isEmpty(newListing.getRwtResultsUrl())) {
+            activity = new QuestionableActivityListingDTO();
+            activity.setAfter("Added Results URL " + newListing.getRwtResultsUrl());
+        }
+        return activity;
+    }
+
     public List<QuestionableActivityListingDTO> checkMeasuresAdded(
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
