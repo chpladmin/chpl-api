@@ -102,6 +102,11 @@ public class PendingCertificationResultEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertificationResultId")
     @Basic(optional = false)
     @Column(name = "pending_certification_result_id", nullable = false)
+    private Set<PendingCertificationResultOptionalStandardEntity> optionalStandards;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertificationResultId")
+    @Basic(optional = false)
+    @Column(name = "pending_certification_result_id", nullable = false)
     private Set<PendingCertificationResultTestStandardEntity> testStandards;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertificationResultId")
@@ -136,6 +141,7 @@ public class PendingCertificationResultEntity {
 
     public PendingCertificationResultEntity() {
         ucdProcesses = new HashSet<PendingCertificationResultUcdProcessEntity>();
+        optionalStandards = new HashSet<PendingCertificationResultOptionalStandardEntity>();
         testStandards = new HashSet<PendingCertificationResultTestStandardEntity>();
         testFunctionality = new HashSet<PendingCertificationResultTestFunctionalityEntity>();
         additionalSoftware = new HashSet<PendingCertificationResultAdditionalSoftwareEntity>();
