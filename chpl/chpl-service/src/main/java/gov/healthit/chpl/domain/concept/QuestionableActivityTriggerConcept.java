@@ -36,6 +36,7 @@ public enum QuestionableActivityTriggerConcept implements Serializable {
     TESTING_LAB_CHANGED("Testing Lab Changed"),
     VERSION_NAME_EDITED("Version Name Edited"),
     REAL_WORLD_TESTING_REMOVED("Real World Testing Removed"),
+    REAL_WORLD_TESTING_ADDED("Real World Testing Added To Ineligible Listing"),
     REPLACED_SVAP_ADDED("Replaced SVAP Added");
 
     private final String name;
