@@ -2,8 +2,6 @@ package gov.healthit.chpl.scheduler.job;
 
 import java.util.List;
 
-import javax.persistence.PersistenceException;
-
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -112,7 +110,7 @@ public class ListingUploadValidationJob implements Job {
                                 + " warnings.");
                         try {
                             listingUploadDao.updateErrorAndWarningCounts(listingUpload);
-                        } catch (PersistenceException ex) {
+                        } catch (Exception ex) {
                             LOGGER.error("The pending listing " + listingUpload.getChplProductNumber() + " could not be updated. No updates were made to the error/warning counts.");
                         }
                     }
@@ -129,7 +127,7 @@ public class ListingUploadValidationJob implements Job {
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
                     listingUploadDao.updateStatus(listingUploadId, ListingUploadStatus.FAILED);
-                } catch (PersistenceException ex) {
+                } catch (Exception ex) {
                     LOGGER.error("The pending listing with ID " + listingUploadId + " could not be updated. No updates were made to its status.");
                 }
             }
