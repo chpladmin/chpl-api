@@ -67,7 +67,7 @@ public class ListingUploadValidationJob implements Job {
                         } catch (Exception ex) {
                             LOGGER.error("Unexpected exception calculating error/warning counts for listing upload with ID " + listingUploadId);
                             LOGGER.catching(ex);
-                            setFailedValidationErrorAndWarningCounts(listingUploadId);
+                            saveValidationFailed(listingUploadId);
                         }
                     }
                 }
@@ -88,34 +88,34 @@ public class ListingUploadValidationJob implements Job {
                 try {
                     listingUpload = listingUploadDao.getById(listingUploadId);
                 } catch (EntityRetrievalException ex) {
-                    LOGGER.error("Unable to get listing upload with id "
-                            + listingUploadId + ". Error and warning counts will be set to -1.", ex);
+                    LOGGER.error("Unable to get listing upload with id " + listingUploadId + ".");
                 }
 
-                LOGGER.info("Calculating error and warning counts for listing upload ID " + listingUploadId
-                        + "; CHPL Product Number " + listingUpload.getChplProductNumber());
-                CertifiedProductSearchDetails validatedListingUpload = null;
-                try {
-                    validatedListingUpload = listingUploadManager.getDetailsById(listingUpload.getId());
-                } catch (Exception ex) {
-                    LOGGER.error("Unable to get listing upload details with id "
-                            + listingUpload.getId() + ". Error and warning counts will be set to -1.", ex);
-                }
+                if (listingUpload != null) {
+                    LOGGER.info("Calculating error and warning counts for listing upload ID " + listingUploadId
+                            + "; CHPL Product Number " + listingUpload.getChplProductNumber());
+                    CertifiedProductSearchDetails listingDetails = null;
+                    try {
+                        listingDetails = listingUploadManager.getDetailsById(listingUpload.getId());
+                    } catch (Exception ex) {
+                        LOGGER.error("Unable to get listing upload details with id " + listingUpload.getId());
+                    }
 
-                if (listingUpload != null && validatedListingUpload != null) {
-                    listingUpload.setStatus(ListingUploadStatus.SUCCESSFUL);
-                    listingUpload.setErrorCount(validatedListingUpload.getErrorMessages() == null ? 0 : validatedListingUpload.getErrorMessages().size());
-                    listingUpload.setWarningCount(validatedListingUpload.getWarningMessages() == null ? 0 : validatedListingUpload.getWarningMessages().size());
-                    LOGGER.info("Listing upload with ID " + listingUpload.getId() + " had "
-                            + listingUpload.getErrorCount() + " errors and " + listingUpload.getWarningCount()
-                            + " warnings.");
-                    listingUploadDao.updateErrorAndWarningCounts(listingUpload);
+                    if (listingDetails != null) {
+                        listingUpload.setStatus(ListingUploadStatus.SUCCESSFUL);
+                        listingUpload.setErrorCount(listingDetails.getErrorMessages() == null ? 0 : listingDetails.getErrorMessages().size());
+                        listingUpload.setWarningCount(listingDetails.getWarningMessages() == null ? 0 : listingDetails.getWarningMessages().size());
+                        LOGGER.info("Listing upload with ID " + listingUpload.getId() + " had "
+                                + listingUpload.getErrorCount() + " errors and " + listingUpload.getWarningCount()
+                                + " warnings.");
+                        listingUploadDao.updateErrorAndWarningCounts(listingUpload);
+                    }
                 }
             }
         });
     }
 
-    private void setFailedValidationErrorAndWarningCounts(Long listingUploadId) {
+    private void saveValidationFailed(Long listingUploadId) {
         TransactionTemplate txTemplate = new TransactionTemplate(txManager);
         txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
         txTemplate.execute(new TransactionCallbackWithoutResult() {
