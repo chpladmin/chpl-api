@@ -27,7 +27,7 @@ import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.Util;
 
 /**
- * Domain object for Nonconformities related to surveillance.
+ * Domain object for Non-conformities related to surveillance.
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -36,20 +36,20 @@ public class SurveillanceNonconformity implements Serializable {
     private static final long serialVersionUID = -1116153210791576784L;
 
     /**
-     * Nonconformity internal ID
+     * Non-conformity internal ID
      */
     @XmlElement(required = true)
     private Long id;
 
     /**
-     * Type of nonconformity; this is either a certification criteria number or
+     * Type of non-conformity; this is either a certification criteria number or
      * a textual description
      */
     @XmlElement(required = true)
     private String nonconformityType;
 
     /**
-     * If the nonconformity type is a certified capability
+     * If the non-conformity type is a certified capability
      * then this field will have the criterion details (number, title, etc).
      */
     @XmlElement(required = false)
@@ -64,7 +64,7 @@ public class SurveillanceNonconformity implements Serializable {
     private SurveillanceNonconformityStatus status;
 
     /**
-     * Date of determination of nonconformity
+     * Date of determination of non-conformity
      */
     @XmlElement(required = true)
     private Date dateOfDetermination;
@@ -103,13 +103,13 @@ public class SurveillanceNonconformity implements Serializable {
     private LocalDate nonconformityCloseDate;
 
     /**
-     * Nonconformity summary
+     * Non-conformity summary
      */
     @XmlElement(required = false, nillable = true)
     private String summary;
 
     /**
-     * Nonconformity findings.
+     * Non-conformity findings.
      */
     @XmlElement(required = false, nillable = true)
     private String findings;
@@ -127,19 +127,19 @@ public class SurveillanceNonconformity implements Serializable {
     private Integer totalSites;
 
     /**
-     * Developer explanation for the nonconformity
+     * Developer explanation for the non-conformity
      */
     @XmlElement(required = false, nillable = true)
     private String developerExplanation;
 
     /**
-     * Resolution description of the nonconformity
+     * Resolution description of the non-conformity
      */
     @XmlElement(required = false, nillable = true)
     private String resolution;
 
     /**
-     * Any documents associated with the nonconformity
+     * Any documents associated with the non-conformity
      */
     @XmlElementWrapper(name = "documents", nillable = true, required = false)
     @XmlElement(name = "document")
@@ -152,9 +152,9 @@ public class SurveillanceNonconformity implements Serializable {
     private Date lastModifiedDate;
 
     /**
-     * Determines if this nonconformity matches another nonconformity.
+     * Determines if this non-conformity matches another non-conformity.
      * @param anotherNonconformity
-     * @return whether the two nonconformity objects are the same
+     * @return whether the two non-conformity objects are the same
      */
     public boolean matches(SurveillanceNonconformity anotherNonconformity) {
         if (!propertiesMatch(anotherNonconformity)) {
@@ -206,7 +206,7 @@ public class SurveillanceNonconformity implements Serializable {
             }
         }
         //all checks passed and turned out to be matching
-        //so the two nonconformities must be identical
+        //so the two non-conformities must be identical
         return true;
     }
 

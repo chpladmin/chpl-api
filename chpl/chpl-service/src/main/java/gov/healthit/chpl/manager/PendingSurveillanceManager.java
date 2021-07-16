@@ -589,7 +589,7 @@ public class PendingSurveillanceManager extends SecuredManager {
                         nc.setSummary(ncEntity.getSummary());
                         nc.setTotalSites(ncEntity.getTotalSites());
                         nc.setLastModifiedDate(ncEntity.getLastModifiedDate());
-                        nc.setNonconformityCloseDate(ncEntity.getNonConformityCloseDate());
+                        nc.setNonconformityCloseDate(ncEntity.getNonconformityCloseDate());
                         req.getNonconformities().add(nc);
 
                         if (ncEntity.getDocuments() != null && ncEntity.getDocuments().size() > 0) {

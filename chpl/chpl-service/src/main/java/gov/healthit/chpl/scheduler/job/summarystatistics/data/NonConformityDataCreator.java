@@ -129,7 +129,7 @@ public class NonConformityDataCreator {
                 .flatMap(surv -> surv.getSurveilledRequirements().stream())
                 .flatMap(req -> req.getNonconformities().stream())
                 .filter(nc -> nc.getCapEndDate() != null
-                        && nc.getNonConformityCloseDate() != null)
+                        && nc.getNonconformityCloseDate() != null)
                 .distinct()
                 .collect(Collectors.toList());
 
