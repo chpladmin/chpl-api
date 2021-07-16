@@ -130,7 +130,8 @@ public class SedUploadHandler {
 
     private boolean listingContainsTask(List<TestTask> listingTestTasks, TestTask certResultTask) {
         return listingTestTasks.stream()
-            .filter(listingTestTask -> listingTestTask.getUniqueId().equals(certResultTask.getUniqueId()))
+            .filter(listingTestTask -> !StringUtils.isEmpty(listingTestTask.getUniqueId())
+                    && listingTestTask.getUniqueId().equals(certResultTask.getUniqueId()))
             .filter(listingTestTask ->
                 participantsUniqueIdsMatch(listingTestTask.getTestParticipants(), certResultTask.getTestParticipants()))
             .findAny().isPresent();

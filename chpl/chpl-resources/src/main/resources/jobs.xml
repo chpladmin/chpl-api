@@ -746,7 +746,7 @@
                 </entry>
             </job-data-map>
         </job>
-        
+
         <!-- Job fired when a new surveillance activity (by date) is requested -->
         <job>
             <name>surveillanceReportingActivityJob</name>
