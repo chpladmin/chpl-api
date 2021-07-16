@@ -108,7 +108,11 @@ public class ListingUploadValidationJob implements Job {
                         LOGGER.info("Listing upload with ID " + listingUpload.getId() + " had "
                                 + listingUpload.getErrorCount() + " errors and " + listingUpload.getWarningCount()
                                 + " warnings.");
-                        listingUploadDao.updateErrorAndWarningCounts(listingUpload);
+                        try {
+                            listingUploadDao.updateErrorAndWarningCounts(listingUpload);
+                        } catch (Exception ex) {
+                            LOGGER.error("The pending listing " + listingUpload.getChplProductNumber() + " could not be updated. No updates were made to the error/warning counts.");
+                        }
                     }
                 }
             }
@@ -121,7 +125,11 @@ public class ListingUploadValidationJob implements Job {
         txTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                listingUploadDao.updateStatus(listingUploadId, ListingUploadStatus.FAILED);
+                try {
+                    listingUploadDao.updateStatus(listingUploadId, ListingUploadStatus.FAILED);
+                } catch (Exception ex) {
+                    LOGGER.error("The pending listing with ID " + listingUploadId + " could not be updated. No updates were made to its status.");
+                }
             }
         });
     }
