@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -20,6 +21,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.Util;
@@ -96,6 +98,7 @@ public class SurveillanceNonconformity implements Serializable {
      */
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     @XmlElement(required = false, nillable = true)
     private LocalDate nonconformityCloseDate;
 
