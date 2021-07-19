@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -60,7 +61,7 @@ public class ComplaintEntity {
     private String acbComplaintId;
 
     @Column(name = "received_date", nullable = false)
-    private Date receivedDate;
+    private LocalDate receivedDate;
 
     @Column(name = "summary", nullable = false)
     private String summary;
@@ -81,7 +82,7 @@ public class ComplaintEntity {
     private boolean flagForOncReview;
 
     @Column(name = "closed_date", nullable = true)
-    private Date closedDate;
+    private LocalDate closedDate;
 
     @Column(name = "creation_date", nullable = false)
     private Date creationDate;

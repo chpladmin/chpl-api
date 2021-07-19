@@ -38,7 +38,7 @@ public class QuarterlyReport implements Serializable {
         if (dto.getAcb() != null) {
             this.acb = new CertificationBody(dto.getAcb());
         }
-        this.startDate = dto.getStartDate().getTime();
-        this.endDate = dto.getEndDate().getTime();
+        this.startDate = dto.getStartDateTime().getTime();
+        this.endDate = dto.getEndDateTime().getTime();
     }
 }

@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dao;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,7 +57,7 @@ public class ComplaintDAO extends BaseDAOImpl {
         return convertToComplaints(results);
     }
 
-    public List<Complaint> getAllComplaintsBetweenDates(Long acbId, Date startDate, Date endDate) {
+    public List<Complaint> getAllComplaintsBetweenDates(Long acbId, LocalDate startDate, LocalDate endDate) {
         Query query = entityManager.createQuery(GET_COMPLAINTS_HQL
                 + " AND c.certificationBodyId = :acbId "
                 + "AND c.receivedDate <= :endDate "

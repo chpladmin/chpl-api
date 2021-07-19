@@ -263,14 +263,7 @@ public class ComplaintsWorksheetBuilder {
         uniqueComplaints.sort(new Comparator<Complaint>() {
             @Override
             public int compare(final Complaint o1, final Complaint o2) {
-                if (o1.getReceivedDate().getTime() < o2.getReceivedDate().getTime()) {
-                    return -1;
-                } else if (o1.getReceivedDate().getTime() == o2.getReceivedDate().getTime()) {
-                    return 0;
-                } else {
-                    return 1;
-                }
-            }
+                return o1.getReceivedDate().compareTo(o2.getReceivedDate());            }
         });
 
         for (Complaint complaint : uniqueComplaints) {

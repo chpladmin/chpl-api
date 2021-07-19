@@ -62,13 +62,7 @@ public class AnnualReportBuilder2019 implements AnnualReportBuilderXlsx {
                     if (o1.getStartDate() == null || o2.getStartDate() == null) {
                         return 0;
                     }
-                    if (o1.getStartDate().getTime() < o2.getStartDate().getTime()) {
-                        return -1;
-                    }
-                    if (o1.getStartDate().getTime() > o2.getStartDate().getTime()) {
-                        return 1;
-                    }
-                    return 0;
+                    return o1.getStartDate().compareTo(o2.getStartDate());
                 }
             });
             reportInfoWorksheetBuilder.buildWorksheet(workbook, quarterlyReports);

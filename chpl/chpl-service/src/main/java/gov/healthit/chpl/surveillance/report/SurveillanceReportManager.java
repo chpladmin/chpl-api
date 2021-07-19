@@ -1,7 +1,7 @@
 package gov.healthit.chpl.surveillance.report;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -637,17 +637,15 @@ public class SurveillanceReportManager extends SecuredManager {
     }
 
     private QuarterlyReportDTO getPreviousReport(QuarterlyReportDTO report) {
-        Calendar createdReportStartCal = Calendar.getInstance();
-        createdReportStartCal.setTime(report.getStartDate());
-        createdReportStartCal.add(Calendar.DATE, -1);
+        LocalDate previousReportDate = report.getStartDate().minusDays(2);
         //now the calendar points to the last day of the previous quarter
         //so just find the report that contains that date
         QuarterlyReportDTO prevReport = null;
         List<QuarterlyReportDTO> allReports = quarterlyDao.getAll();
         for (QuarterlyReportDTO currReport : allReports) {
             if (currReport.getAcb().getId().equals(report.getAcb().getId())
-                    && currReport.getStartDate().getTime() <= createdReportStartCal.getTimeInMillis()
-                    && currReport.getEndDate().getTime() >= createdReportStartCal.getTimeInMillis()) {
+                    && currReport.getStartDate().isBefore(previousReportDate)
+                    && currReport.getEndDate().isAfter(previousReportDate)) {
                 prevReport = currReport;
             }
         }

@@ -559,9 +559,9 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         for (Surveillance currSurv : allSurveillances) {
             boolean isRelevantToAtLeastOneQuarter = false;
             for (QuarterlyReportDTO quarterlyReport : quarterlyReports) {
-                if (currSurv.getStartDate().getTime() <= quarterlyReport.getEndDate().getTime()
+                if (currSurv.getStartDate().getTime() <= quarterlyReport.getEndDateTime().getTime()
                         && (currSurv.getEndDate() == null
-                        || currSurv.getEndDate().getTime() >= quarterlyReport.getStartDate().getTime())) {
+                        || currSurv.getEndDate().getTime() >= quarterlyReport.getStartDateTime().getTime())) {
                     isRelevantToAtLeastOneQuarter = true;
                 }
             }
@@ -582,11 +582,11 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         }
         boolean result = false;
         if (quarterlyReport != null) {
-            if (surv.getStartDate().getTime() <= quarterlyReport.getEndDate().getTime()
+            if (surv.getStartDate().getTime() <= quarterlyReport.getEndDateTime().getTime()
                     && surv.getEndDate() == null) {
                 result = true;
-            } else if (surv.getStartDate().getTime() <= quarterlyReport.getEndDate().getTime()
-                    && surv.getEndDate() != null && surv.getEndDate().getTime() >= quarterlyReport.getStartDate().getTime()) {
+            } else if (surv.getStartDate().getTime() <= quarterlyReport.getEndDateTime().getTime()
+                    && surv.getEndDate() != null && surv.getEndDate().getTime() >= quarterlyReport.getStartDateTime().getTime()) {
                 result = true;
             }
         }
