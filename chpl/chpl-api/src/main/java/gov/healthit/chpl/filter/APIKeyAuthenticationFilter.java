@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 import gov.healthit.chpl.api.ApiKeyManager;
-import gov.healthit.chpl.api.domain.ApiKeyDTO;
+import gov.healthit.chpl.api.domain.ApiKey;
 import gov.healthit.chpl.domain.error.ErrorResponse;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -85,8 +85,7 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
             return;
         } else {
             try {
-                ApiKeyDTO retrievedKey = apiKeyManager.findKey(key);
-
+                ApiKey retrievedKey = apiKeyManager.findKey(key);
                 if (retrievedKey == null) {
                     // Invalid key. Don't continue.
                     ErrorResponse errorObj = new ErrorResponse("Invalid API Key");

@@ -17,10 +17,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.api.dao.ApiKeyDAO;
 import gov.healthit.chpl.api.dao.ApiKeyRequestDAO;
-import gov.healthit.chpl.api.domain.ApiKeyDTO;
+import gov.healthit.chpl.api.domain.ApiKey;
 import gov.healthit.chpl.api.domain.ApiKeyRegistration;
 import gov.healthit.chpl.api.domain.ApiKeyRequest;
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.ApiKeyActivityDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ApiKeyActivityDTO;
@@ -92,7 +91,7 @@ public class ApiKeyManager {
     }
 
     @Transactional
-    public ApiKeyDTO confirmRequest(String token) throws ValidationException, JsonProcessingException, EntityCreationException, EntityRetrievalException, MessagingException {
+    public ApiKey confirmRequest(String token) throws ValidationException, JsonProcessingException, EntityCreationException, EntityRetrievalException, MessagingException {
         Optional<ApiKeyRequest> request = apiKeyRequestDAO.getByApiRequestToken(token);
         if (!request.isPresent()) {
             throw new ValidationException(errorMessages.getMessage("apiKeyRequest.notFound"));
@@ -104,15 +103,12 @@ public class ApiKeyManager {
             throw new ValidationException(errorMessages.getMessage("apiKeyRequest.notFound"));
         }
 
-        ApiKeyDTO apiKey = ApiKeyDTO.builder()
-                .apiKey(generateApiKey(request.get().getNameOrganization(), request.get().getEmail()))
+        ApiKey apiKey = ApiKey.builder()
+                .key(generateApiKey(request.get().getNameOrganization(), request.get().getEmail()))
                 .email(request.get().getEmail())
-                .nameOrganization(request.get().getNameOrganization())
-                .creationDate(new Date())
+                .name(request.get().getNameOrganization())
                 .lastUsedDate(new Date())
-                .lastModifiedDate(new Date())
-                .lastModifiedUser(User.SYSTEM_USER_ID)
-                .deleted(false)
+                .deleteWarningSentDate(null)
                 .build();
 
         apiKey = createKey(apiKey);
@@ -120,19 +116,18 @@ public class ApiKeyManager {
         (new EmailBuilder(env))
             .recipient(apiKey.getEmail())
             .subject(confirmEmailSubject)
-            .htmlMessage(String.format(confirmEmailBody, apiKey.getNameOrganization(), apiKey.getApiKey(), chplUrl))
+            .htmlMessage(String.format(confirmEmailBody, apiKey.getName(), apiKey.getKey(), chplUrl))
             .sendEmail();
 
         return apiKey;
     }
 
     @Transactional
-    public ApiKeyDTO createKey(ApiKeyDTO toCreate)
+    public ApiKey createKey(ApiKey toCreate)
             throws EntityCreationException, JsonProcessingException, EntityRetrievalException {
 
-        ApiKeyDTO created = apiKeyDAO.create(toCreate);
-
-        String activityMsg = "API Key " + created.getApiKey() + " was created.";
+        ApiKey created = apiKeyDAO.create(toCreate);
+        String activityMsg = "API Key " + created.getKey() + " was created.";
         activityManager.addActivity(ActivityConcept.API_KEY, created.getId(), activityMsg, null,
                 created);
         return created;
@@ -140,17 +135,15 @@ public class ApiKeyManager {
     }
 
     @Transactional
-    public ApiKeyDTO updateApiKey(ApiKeyDTO dto) throws EntityRetrievalException {
-        return apiKeyDAO.update(dto);
+    public ApiKey updateApiKey(ApiKey toUpdate) throws EntityRetrievalException {
+        return apiKeyDAO.update(toUpdate);
     }
 
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     public void deleteKey(Long keyId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-        ApiKeyDTO toDelete = apiKeyDAO.getById(keyId);
-
-        String activityMsg = "API Key " + toDelete.getApiKey() + " was revoked.";
-
+        ApiKey toDelete = apiKeyDAO.getById(keyId);
+        String activityMsg = "API Key " + toDelete.getKey() + " was revoked.";
         apiKeyDAO.delete(keyId);
         activityManager.addActivity(ActivityConcept.API_KEY, toDelete.getId(), activityMsg, toDelete,
                 null);
@@ -159,22 +152,20 @@ public class ApiKeyManager {
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     public void deleteKey(String keyString) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
-        ApiKeyDTO toDelete = apiKeyDAO.getByKey(keyString);
-
-        String activityMsg = "API Key " + toDelete.getApiKey() + " was revoked.";
-
+        ApiKey toDelete = apiKeyDAO.getByKey(keyString);
+        String activityMsg = "API Key " + toDelete.getKey() + " was revoked.";
         apiKeyDAO.delete(toDelete.getId());
         activityManager.addActivity(ActivityConcept.API_KEY, toDelete.getId(), activityMsg, toDelete,
                 null);
     }
 
     @Transactional
-    public ApiKeyDTO findKey(Long keyId) throws EntityRetrievalException {
+    public ApiKey findKey(Long keyId) throws EntityRetrievalException {
         return apiKeyDAO.getById(keyId);
     }
 
     @Transactional
-    public ApiKeyDTO findKey(String keyString) throws EntityRetrievalException {
+    public ApiKey findKey(String keyString) throws EntityRetrievalException {
         return apiKeyDAO.getByKey(keyString);
     }
 
@@ -182,7 +173,7 @@ public class ApiKeyManager {
     public void logApiKeyActivity(String keyString, String apiCallPath, String apiCallMethod)
             throws EntityRetrievalException, EntityCreationException {
 
-        ApiKeyDTO apiKey = findKey(keyString);
+        ApiKey apiKey = findKey(keyString);
         ApiKeyActivityDTO apiKeyActivityDto = new ApiKeyActivityDTO();
         apiKeyActivityDto.setApiCallPath(apiCallPath);
         apiKeyActivityDto.setApiCallMethod(apiCallMethod);
@@ -196,7 +187,7 @@ public class ApiKeyManager {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public List<ApiKeyDTO> findAll(Boolean includeDeleted) {
+    public List<ApiKey> findAll(Boolean includeDeleted) {
         return apiKeyDAO.findAll(includeDeleted);
     }
 

@@ -20,7 +20,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.api.ApiKeyManager;
 import gov.healthit.chpl.api.dao.ApiKeyDAO;
-import gov.healthit.chpl.api.domain.ApiKeyDTO;
+import gov.healthit.chpl.api.domain.ApiKey;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.EmailBuilder;
 
@@ -42,48 +42,48 @@ public class ApiKeyWarningEmailJob implements Job {
         LOGGER.info("********* Starting the API Key Warning Email job. *********");
         LOGGER.info("Looking for API keys that have not been used in " + getNumberOfDaysForWarning() + " days.");
 
-        List<ApiKeyDTO> apiKeyDTOs = apiKeyDAO.findAllNotUsedInXDays(getNumberOfDaysForWarning());
+        List<ApiKey> apiKeys = apiKeyDAO.findAllNotUsedInXDays(getNumberOfDaysForWarning());
 
-        LOGGER.info("Found " + apiKeyDTOs.size() + " API keys to send warnings for.");
+        LOGGER.info("Found " + apiKeys.size() + " API keys to send warnings for.");
 
-        for (ApiKeyDTO dto : apiKeyDTOs) {
+        for (ApiKey apiKey : apiKeys) {
             try {
-                updateDeleteWarningSentDate(dto);
-                sendEmail(dto);
+                updateDeleteWarningSentDate(apiKey);
+                sendEmail(apiKey);
             } catch (EntityRetrievalException e) {
-                LOGGER.error("Error updating api_key.delete_warning_sent_date for id: " + dto.getId(), e);
+                LOGGER.error("Error updating api_key.delete_warning_sent_date for id: " + apiKey.getId(), e);
             } catch (MessagingException e) {
-                LOGGER.error("Error sending email to: " + dto.getEmail(), e);
+                LOGGER.error("Error sending email to: " + apiKey.getEmail(), e);
             }
         }
 
         LOGGER.info("********* Completed the API Key Warning Email job. *********");
     }
 
-    private void updateDeleteWarningSentDate(ApiKeyDTO dto) throws EntityRetrievalException {
-        dto.setDeleteWarningSentDate(new Date());
-        apiKeyManager.updateApiKey(dto);
+    private void updateDeleteWarningSentDate(ApiKey apiKey) throws EntityRetrievalException {
+        apiKey.setDeleteWarningSentDate(new Date());
+        apiKeyManager.updateApiKey(apiKey);
     }
 
-    private void sendEmail(ApiKeyDTO dto) throws AddressException, MessagingException {
+    private void sendEmail(ApiKey apiKey) throws AddressException, MessagingException {
         List<String> recipients = new ArrayList<String>();
-        recipients.add(dto.getEmail());
+        recipients.add(apiKey.getEmail());
 
         EmailBuilder emailBuilder = new EmailBuilder(env);
         emailBuilder.recipients(recipients)
                         .subject(getSubject())
-                        .htmlMessage(getHtmlMessage(dto))
+                        .htmlMessage(getHtmlMessage(apiKey))
                         .sendEmail();
-        LOGGER.info("Email sent to: " + dto.getEmail());
+        LOGGER.info("Email sent to: " + apiKey.getEmail());
     }
 
-    private String getHtmlMessage(ApiKeyDTO dto) {
+    private String getHtmlMessage(ApiKey apiKey) {
         String message = String.format(
                 env.getProperty("job.apiKeyWarningEmailJob.config.message"),
-                dto.getNameOrganization(),
+                apiKey.getName(),
                 getTotalDaysUnusedBeforeDelete().toString(),
-                dto.getApiKey(),
-                getDateFormatter().format(dto.getLastUsedDate()),
+                apiKey.getKey(),
+                getDateFormatter().format(apiKey.getLastUsedDate()),
                 getNumberOfDaysUntilDelete().toString());
         return message;
     }
