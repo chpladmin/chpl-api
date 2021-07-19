@@ -3,6 +3,7 @@ package gov.healthit.chpl.filter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -18,6 +19,8 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.util.ApiKeyUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -49,10 +52,21 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
         if (requestMapping != null) {
             HandlerMethod handlerMethod = requestMappingHandlerMapping.getHandlerMethods().get(requestMapping);
             if (isHandlerMethodDeprecated(handlerMethod)) {
-                LOGGER.warn(request.getRequestURI() + " maps to deprecated handler: " + handlerMethod);
-                //TODO: log to db
+                Set<String> matchingUrlPatterns = requestMapping.getPatternsCondition().getPatterns();
+                if (matchingUrlPatterns != null && matchingUrlPatterns.size() > 0) {
+                    String matchingUrlPattern = matchingUrlPatterns.iterator().next();
+                    LOGGER.warn(request.getRequestURI() + " maps to deprecated endpoint " + matchingUrlPattern + ", handler: " + handlerMethod);
+                    String apiKey = getApiKey(request);
+                    //TODO: insert or update into table
+                } else {
+                    LOGGER.error("Could not determine unique matching URL Pattern for " + request.getMethod()
+                        + " Request: " + request.getRequestURI());
+                }
             }
         }
+
+        //TODO: something about deprecated parameters
+
         chain.doFilter(req, res);
     }
 
@@ -76,5 +90,14 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
 
     private boolean isHandlerMethodDeprecated(HandlerMethod handlerMethod) {
         return handlerMethod != null && handlerMethod.getMethodAnnotation(Deprecated.class) != null;
+    }
+
+    private String getApiKey(HttpServletRequest request) {
+        String key = null;
+        try {
+            key = ApiKeyUtil.getApiKeyFromRequest(request);
+        } catch (InvalidArgumentsException ex) {
+        }
+        return key;
     }
 }

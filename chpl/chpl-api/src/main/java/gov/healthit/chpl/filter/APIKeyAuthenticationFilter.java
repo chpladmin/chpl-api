@@ -9,6 +9,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,6 +20,8 @@ import gov.healthit.chpl.api.domain.ApiKeyDTO;
 import gov.healthit.chpl.domain.error.ErrorResponse;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.util.ApiKeyUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -61,28 +64,19 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
 
         String requestMethod = request.getMethod();
         String key = null;
-        String keyFromHeader = request.getHeader("API-Key");
-        String keyFromParam = request.getParameter("api_key");
-
-        if (keyFromHeader != null && keyFromHeader.equals(keyFromParam)) {
-            key = keyFromHeader;
-        } else {
-            if (keyFromHeader == null) {
-                key = keyFromParam;
-            } else if (keyFromParam == null) {
-                key = keyFromHeader;
-            } else {
-                // Keys don't match. Don't continue.
-                ErrorResponse errorObj = new ErrorResponse(
-                        "API key presented in Header does not match API key presented as URL Parameter.");
-                ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-                String json = ow.writeValueAsString(errorObj);
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, json);
-                return;
-            }
+        try {
+            key = ApiKeyUtil.getApiKeyFromRequest(request);
+        } catch (InvalidArgumentsException ex) {
+            // Keys don't match. Don't continue.
+            ErrorResponse errorObj = new ErrorResponse(
+                    "API key presented in Header does not match API key presented as URL Parameter.");
+            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+            String json = ow.writeValueAsString(errorObj);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, json);
+            return;
         }
 
-        if (key == null) {
+        if (StringUtils.isEmpty(key)) {
             // No Key. Don't continue.
             ErrorResponse errorObj = new ErrorResponse("API key must be presented in order to use this API");
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
