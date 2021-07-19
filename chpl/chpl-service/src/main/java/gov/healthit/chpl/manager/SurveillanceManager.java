@@ -406,11 +406,11 @@ public class SurveillanceManager extends SecuredManager {
 
                         SurveillanceNonconformityStatus status = new SurveillanceNonconformityStatus();
                         if (ncEntity.getNonconformityCloseDate() == null) {
-                            status.setId(SurveillanceNonconformityStatus.OPEN_ID);
                             status.setName(SurveillanceNonconformityStatus.OPEN);
+                            nc.setNonconformityStatus(SurveillanceNonconformityStatus.OPEN);
                         } else {
-                            status.setId(SurveillanceNonconformityStatus.CLOSED_ID);
                             status.setName(SurveillanceNonconformityStatus.CLOSED);
+                            nc.setNonconformityStatus(SurveillanceNonconformityStatus.CLOSED);
                         }
                         nc.setStatus(status);
 
