@@ -2,6 +2,8 @@ package gov.healthit.chpl.manager.rules.complaints;
 
 import java.time.LocalDate;
 
+import org.apache.commons.lang3.StringUtils;
+
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
 public class ClosedDateValidation extends ValidationRule<ComplaintValidationContext> {
@@ -17,6 +19,11 @@ public class ClosedDateValidation extends ValidationRule<ComplaintValidationCont
             // Closed Date must be on or after the Received Date
             if (context.getComplaint().getReceivedDate() != null && context.getComplaint().getClosedDate().isBefore(context.getComplaint().getReceivedDate())) {
                 getMessages().add(getErrorMessage("complaints.closedDate.mustBeAfterReceivedDate"));
+                return false;
+            }
+            // Actions/Responses must be provided if a Closed Date is provided
+            if (StringUtils.isEmpty(context.getComplaint().getActions())) {
+                getMessages().add(getErrorMessage("complaints.closedDate.actionsRequired"));
                 return false;
             }
         }
