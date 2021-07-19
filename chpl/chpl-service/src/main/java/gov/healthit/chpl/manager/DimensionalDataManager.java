@@ -49,7 +49,6 @@ import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.TestTool;
 import gov.healthit.chpl.domain.UploadTemplateVersion;
 import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
-import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptionsDeprecated;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
@@ -448,18 +447,6 @@ public class DimensionalDataManager {
         Set<KeyValueModel> results = new HashSet<KeyValueModel>();
 
         for (SurveillanceResultType result : daoResults) {
-            results.add(new KeyValueModel(result.getId(), result.getName()));
-        }
-        return results;
-    }
-
-    public Set<KeyValueModel> getNonconformityStatusTypes() {
-        LOGGER.debug("Getting all nonconformity status types from the database (not cached).");
-
-        List<SurveillanceNonconformityStatus> daoResults = survDao.getAllSurveillanceNonconformityStatusTypes();
-        Set<KeyValueModel> results = new HashSet<KeyValueModel>();
-
-        for (SurveillanceNonconformityStatus result : daoResults) {
             results.add(new KeyValueModel(result.getId(), result.getName()));
         }
         return results;

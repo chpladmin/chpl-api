@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
-import gov.healthit.chpl.domain.concept.NonconformityStatusConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
@@ -130,7 +129,7 @@ public class NonConformityDataCreator {
                 .flatMap(surv -> surv.getSurveilledRequirements().stream())
                 .flatMap(req -> req.getNonconformities().stream())
                 .filter(nc -> nc.getCapEndDate() != null
-                && nc.getNonconformityStatus().getName().equals(NonconformityStatusConcept.CLOSED.getName()))
+                        && nc.getNonconformityCloseDate() != null)
                 .distinct()
                 .collect(Collectors.toList());
 

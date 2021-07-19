@@ -64,7 +64,7 @@ public class BrokenSurveillanceRulesDAO extends BaseDAOImpl {
             entity.setCapNotClosedRule(dto.getCapNotClosedRule());
             entity.setClosedCapWithOpenNonconformityRule(dto.getClosedCapWithOpenNonconformityRule());
             entity.setNonconformity(dto.getNonconformity());
-            entity.setNonconformityStatus(dto.getNonconformityStatus());
+            entity.setNonConformityCloseDate(dto.getNonConformityCloseDate());
             entity.setNonconformityCriteria(dto.getNonconformityCriteria());
             entity.setDateOfDeterminationOfNonconformity(dto.getDateOfDeterminationOfNonconformity());
             entity.setCorrectiveActionPlanApprovedDate(dto.getCorrectiveActionPlanApprovedDate());

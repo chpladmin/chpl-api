@@ -20,12 +20,10 @@ import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityDocument;
-import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
-import gov.healthit.chpl.entity.NonconformityStatusEntity;
 import gov.healthit.chpl.entity.ValidationMessageType;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceNonconformityEntity;
@@ -57,7 +55,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
             + "LEFT OUTER JOIN FETCH reqs.nonconformities ncs "
             + "LEFT OUTER JOIN FETCH ncs.certificationCriterionEntity cce2 "
             + "LEFT JOIN FETCH cce2.certificationEdition "
-            + "LEFT OUTER JOIN FETCH ncs.nonconformityStatus "
             + "LEFT OUTER JOIN FETCH ncs.documents docs "
             + "WHERE surv.deleted <> true ";
     private static String PENDING_SURVEILLANCE_FULL_HQL = "SELECT DISTINCT surv "
@@ -424,9 +421,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
                 toInsertNc.setPendingSurveillanceRequirementId(toInsertReq.getId());
                 toInsertNc.setResolution(nc.getResolution());
                 toInsertNc.setSitesPassed(nc.getSitesPassed());
-                if (nc.getStatus() != null) {
-                    toInsertNc.setStatus(nc.getStatus().getName());
-                }
+                toInsertNc.setNonconformityCloseDate(nc.getNonconformityCloseDate());
                 toInsertNc.setSummary(nc.getSummary());
                 toInsertNc.setTotalSites(nc.getTotalSites());
                 toInsertNc.setType(nc.getNonconformityType());
@@ -731,61 +726,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
 
-    public List<SurveillanceNonconformityStatus> getAllSurveillanceNonconformityStatusTypes() {
-        Query query = entityManager.createQuery("from NonconformityStatusEntity where deleted <> true",
-                NonconformityStatusEntity.class);
-        List<NonconformityStatusEntity> resultEntities = query.getResultList();
-        List<SurveillanceNonconformityStatus> results = new ArrayList<SurveillanceNonconformityStatus>();
-        for (NonconformityStatusEntity resultEntity : resultEntities) {
-            SurveillanceNonconformityStatus result = convert(resultEntity);
-            results.add(result);
-        }
-        return results;
-    }
-
-
-    @Cacheable(CacheNames.FIND_SURVEILLANCE_NONCONFORMITY_STATUS_TYPE)
-    public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(String type) {
-        LOGGER.debug("Searching for nonconformity status type '" + type + "'.");
-        if (StringUtils.isEmpty(type)) {
-            return null;
-        }
-        Query query = entityManager.createQuery(
-                "from NonconformityStatusEntity where UPPER(name) LIKE :name and deleted <> true",
-                NonconformityStatusEntity.class);
-        query.setParameter("name", type.toUpperCase());
-        List<NonconformityStatusEntity> matches = query.getResultList();
-
-        NonconformityStatusEntity resultEntity = null;
-        if (matches != null && matches.size() > 0) {
-            resultEntity = matches.get(0);
-            LOGGER.debug("Found nonconformity status type '" + type + "' having id '" + resultEntity.getId() + "'.");
-        }
-
-        SurveillanceNonconformityStatus result = convert(resultEntity);
-        return result;
-    }
-
-
-    public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(Long id) {
-        LOGGER.debug("Searching for nonconformity status type by id '" + id + "'.");
-        if (id == null) {
-            return null;
-        }
-        Query query = entityManager.createQuery("from NonconformityStatusEntity where id = :id and deleted <> true",
-                NonconformityStatusEntity.class);
-        query.setParameter("id", id);
-        List<NonconformityStatusEntity> matches = query.getResultList();
-
-        NonconformityStatusEntity resultEntity = null;
-        if (matches != null && matches.size() > 0) {
-            resultEntity = matches.get(0);
-        }
-
-        SurveillanceNonconformityStatus result = convert(resultEntity);
-        return result;
-    }
-
 
     @Transactional(readOnly = true)
     public List<PendingSurveillanceEntity> getAllPendingSurveillance() {
@@ -876,16 +816,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
         return result;
     }
 
-    private SurveillanceNonconformityStatus convert(NonconformityStatusEntity entity) {
-        SurveillanceNonconformityStatus result = null;
-        if (entity != null) {
-            result = new SurveillanceNonconformityStatus();
-            result.setId(entity.getId());
-            result.setName(entity.getName());
-        }
-        return result;
-    }
-
     private void populateSurveillanceEntity(SurveillanceEntity to, Surveillance from)
             throws UserPermissionRetrievalException {
         if (from.getCertifiedProduct() != null) {
@@ -935,9 +865,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
         to.setFindings(from.getFindings());
         to.setResolution(from.getResolution());
         to.setSitesPassed(from.getSitesPassed());
-        if (from.getStatus() != null) {
-            to.setNonconformityStatusId(from.getStatus().getId());
-        }
+        to.setNonconformityCloseDate(from.getNonconformityCloseDate());
         to.setSummary(from.getSummary());
         to.setTotalSites(from.getTotalSites());
         to.setType(from.getNonconformityType());

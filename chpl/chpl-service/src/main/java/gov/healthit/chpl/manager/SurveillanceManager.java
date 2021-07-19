@@ -388,6 +388,7 @@ public class SurveillanceManager extends SecuredManager {
                         nc.setCapMustCompleteDate(ncEntity.getCapMustCompleteDate());
                         nc.setCapStartDate(ncEntity.getCapStart());
                         nc.setDateOfDetermination(ncEntity.getDateOfDetermination());
+                        nc.setNonconformityCloseDate(ncEntity.getNonconformityCloseDate());
                         nc.setDeveloperExplanation(ncEntity.getDeveloperExplanation());
                         nc.setFindings(ncEntity.getFindings());
                         nc.setId(ncEntity.getId());
@@ -402,16 +403,17 @@ public class SurveillanceManager extends SecuredManager {
                         nc.setSummary(ncEntity.getSummary());
                         nc.setTotalSites(ncEntity.getTotalSites());
                         nc.setLastModifiedDate(ncEntity.getLastModifiedDate());
-                        if (ncEntity.getNonconformityStatus() != null) {
-                            SurveillanceNonconformityStatus status = new SurveillanceNonconformityStatus();
-                            status.setId(ncEntity.getNonconformityStatus().getId());
-                            status.setName(ncEntity.getNonconformityStatus().getName());
-                            nc.setStatus(status);
+
+                        SurveillanceNonconformityStatus status = new SurveillanceNonconformityStatus();
+                        if (ncEntity.getNonconformityCloseDate() == null) {
+                            status.setName(SurveillanceNonconformityStatus.OPEN);
+                            nc.setNonconformityStatus(SurveillanceNonconformityStatus.OPEN);
                         } else {
-                            SurveillanceNonconformityStatus status = new SurveillanceNonconformityStatus();
-                            status.setId(ncEntity.getNonconformityStatusId());
-                            nc.setStatus(status);
+                            status.setName(SurveillanceNonconformityStatus.CLOSED);
+                            nc.setNonconformityStatus(SurveillanceNonconformityStatus.CLOSED);
                         }
+                        nc.setStatus(status);
+
                         req.getNonconformities().add(nc);
 
                         if (ncEntity.getDocuments() != null && ncEntity.getDocuments().size() > 0) {

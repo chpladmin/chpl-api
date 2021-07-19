@@ -72,7 +72,6 @@ public class ChplCacheConfig {
 
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.EDITIONS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.EDITION_NAMES));
-        backingManager.addCacheIfAbsent(createEternalCache(CacheNames.FIND_SURVEILLANCE_NONCONFORMITY_STATUS_TYPE));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.FIND_SURVEILLANCE_REQ_TYPE));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.FIND_SURVEILLANCE_RESULT_TYPE));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.GET_ALL_UNRESTRICTED_APIKEYS));
