@@ -64,6 +64,13 @@ public class SurveillanceNonconformity implements Serializable {
     private SurveillanceNonconformityStatus status;
 
     /**
+     * The status of a non-conformity found as a result of a surveillance
+     * activity. Allowable values are "Open" or "Closed".
+     */
+    @XmlElement(required = true)
+    private String nonconformityStatus;
+
+    /**
      * Date of determination of non-conformity
      */
     @XmlElement(required = true)
@@ -358,6 +365,14 @@ public class SurveillanceNonconformity implements Serializable {
     @Deprecated
     public void setStatus(SurveillanceNonconformityStatus status) {
         this.status = status;
+    }
+
+    public String getNonconformityStatus() {
+        return nonconformityStatus;
+    }
+
+    public void setNonconformityStatus(String nonconformityStatus) {
+        this.nonconformityStatus = nonconformityStatus;
     }
 
     public Date getDateOfDetermination() {
