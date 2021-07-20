@@ -37,11 +37,8 @@ import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.HtmlEmailTemplate;
 
-public class RealWorldTestingUploadJob implements Job {
-    private static final Logger LOGGER = LogManager.getLogger("realWorldTestingUploadJobLogger");
-    public static final String JOB_NAME = "realWorldTestingUploadJob";
-    public static final String RWT_UPLOAD_ITEMS = "realWorldTestingUploadItems";
-    public static final String USER_KEY = "user";
+public class DeprecatedApiUsageEmailJob implements Job {
+    private static final Logger LOGGER = LogManager.getLogger("deprecatedApiUsageEmailJobLogger");
 
     @Autowired
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
@@ -62,37 +59,7 @@ public class RealWorldTestingUploadJob implements Job {
         LOGGER.info("********* Starting the Real World Testing Upload job. *********");
 
         try {
-            UserDTO user = (UserDTO) context.getMergedJobDataMap().get(USER_KEY);
-            setSecurityContext(user);
-
-            List<RealWorldTestingUpload> rwts = (List<RealWorldTestingUpload>) context.getMergedJobDataMap().get(RWT_UPLOAD_ITEMS);
-
-            // Run some basic validation on upload records that do not have any errors
-            // yet...
-            rwts.stream().filter(rwt -> rwt.getValidationErrors().size() == 0)
-                    .forEach(rwt -> rwt.getValidationErrors().addAll(validateRwtUpload(rwt)));
-
-            // Determine if there multiple Plans or Results for the same listing. These will
-            // not get
-            // get processed, and will have an error added to the upload record.
-            rwts = markMultipleChangesForSamePlanTypeAndListing(rwts);
-
-            // Process the plans
-            List<RealWorldTestingUpload> rwtPlans = rwts.stream().filter(
-                    rwt -> rwt.getValidationErrors().size() == 0 && rwt.getType().equals(RealWorldTestingType.PLANS))
-                    .collect(Collectors.toList());
-            saveRealWorldTestingUploads(rwtPlans);
-
-            // Process the results
-            List<RealWorldTestingUpload> rwtResults = rwts.stream().filter(
-                    rwt -> rwt.getValidationErrors().size() == 0 && rwt.getType().equals(RealWorldTestingType.RESULTS))
-                    .collect(Collectors.toList());
-            saveRealWorldTestingUploads(rwtResults);
-
-            rwts.sort((rwt1, rwt2) -> rwt1.getOrder().compareTo(rwt2.getOrder()));
-
-            sendResults(rwts, user.getEmail());
-
+            //TODO:
         } catch (Exception e) {
             LOGGER.catching(e);
         }
