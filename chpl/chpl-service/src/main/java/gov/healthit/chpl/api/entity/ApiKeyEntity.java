@@ -97,6 +97,7 @@ public class ApiKeyEntity {
 
     public ApiKey toDomain() {
         return ApiKey.builder()
+                .id(this.getId())
                 .email(this.getEmail())
                 .key(this.getApiKey())
                 .name(this.getNameOrganization())

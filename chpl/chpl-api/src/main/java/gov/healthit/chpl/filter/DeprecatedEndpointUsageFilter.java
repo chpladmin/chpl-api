@@ -12,13 +12,22 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import gov.healthit.chpl.api.ApiKeyManager;
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedApi;
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedApiUsage;
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedApiUsageDao;
+import gov.healthit.chpl.api.domain.ApiKey;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.util.ApiKeyUtil;
 import lombok.extern.log4j.Log4j2;
@@ -30,10 +39,16 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
             "/api-docs", "/monitoring", "/ff4j-console"
     };
 
+    private ApiKeyManager apiKeyManager;
+    private DeprecatedApiUsageDao deprecatedApiUsageDao;
     private RequestMappingHandlerMapping requestMappingHandlerMapping;
 
     @Autowired
-    public DeprecatedEndpointUsageFilter(RequestMappingHandlerMapping requestMappingHandlerMapping) {
+    public DeprecatedEndpointUsageFilter(ApiKeyManager apiKeyManager,
+            DeprecatedApiUsageDao deprecatedApiUsageDao,
+            RequestMappingHandlerMapping requestMappingHandlerMapping) {
+        this.apiKeyManager = apiKeyManager;
+        this.deprecatedApiUsageDao = deprecatedApiUsageDao;
         this.requestMappingHandlerMapping = requestMappingHandlerMapping;
     }
 
@@ -56,8 +71,15 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
                 if (matchingUrlPatterns != null && matchingUrlPatterns.size() > 0) {
                     String matchingUrlPattern = matchingUrlPatterns.iterator().next();
                     LOGGER.warn(request.getRequestURI() + " maps to deprecated endpoint " + matchingUrlPattern + ", handler: " + handlerMethod);
-                    String apiKey = getApiKey(request);
-                    //TODO: insert or update into table
+                    ApiKey apiKey = getApiKey(request);
+                    DeprecatedApi deprecatedApi = getApi(request, matchingUrlPattern);
+                    if (apiKey != null && deprecatedApi != null) {
+                        DeprecatedApiUsage deprecatedApiUsage = DeprecatedApiUsage.builder()
+                                .apiKey(apiKey)
+                                .api(deprecatedApi)
+                                .build();
+                        deprecatedApiUsageDao.createOrUpdateDeprecatedApiUsage(deprecatedApiUsage);
+                    }
                 } else {
                     LOGGER.error("Could not determine unique matching URL Pattern for " + request.getMethod()
                         + " Request: " + request.getRequestURI());
@@ -92,12 +114,37 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
         return handlerMethod != null && handlerMethod.getMethodAnnotation(Deprecated.class) != null;
     }
 
-    private String getApiKey(HttpServletRequest request) {
+    private ApiKey getApiKey(HttpServletRequest request) {
         String key = null;
         try {
             key = ApiKeyUtil.getApiKeyFromRequest(request);
         } catch (InvalidArgumentsException ex) {
         }
-        return key;
+
+        ApiKey apiKey = null;
+        if (!StringUtils.isEmpty(key)) {
+            try {
+                apiKey = apiKeyManager.findKey(key);
+            } catch (EntityRetrievalException ex) {
+                LOGGER.error("Could not find API Key with value '" + key + "'.");
+            }
+        }
+        return apiKey;
+    }
+
+    private DeprecatedApi getApi(HttpServletRequest request, String matchingUrlPattern) {
+        HttpMethod method = null;
+        try {
+            method = HttpMethod.valueOf(request.getMethod());
+        } catch (Exception ex) {
+            LOGGER.error("No HttpMethod found with value '" + request.getMethod() + "'.");
+            return null;
+        }
+
+        DeprecatedApi deprecatedApi = deprecatedApiUsageDao.getDeprecatedApi(method, matchingUrlPattern, null);
+        if (deprecatedApi == null) {
+            LOGGER.error("No deprecated API was found matching request method '" + method.name() + "', url pattern '" + matchingUrlPattern + "'.");
+        }
+        return deprecatedApi;
     }
 }

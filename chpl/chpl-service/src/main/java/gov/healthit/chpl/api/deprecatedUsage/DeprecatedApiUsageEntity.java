@@ -71,6 +71,8 @@ public class DeprecatedApiUsageEntity {
                 .id(this.getId())
                 .api(this.getDeprecatedApi() != null ? this.getDeprecatedApi().toDomain() : null)
                 .apiKey(this.getApiKey() != null ? this.getApiKey().toDomain() : null)
+                .callCount(this.getApiCallCount())
+                .lastAccessedDate(this.getLastAccessedDate())
                 .build();
     }
 }

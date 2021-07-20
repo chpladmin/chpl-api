@@ -13,8 +13,8 @@ public class ApiKeyUtil {
 
     public static String getApiKeyFromRequest(HttpServletRequest request) throws InvalidArgumentsException {
         String key = null;
-        String keyFromHeader = request.getHeader(API_KEY_HEADER);
-        String keyFromParam = request.getParameter(API_KEY_PARAMETER);
+        String keyFromHeader = StringUtils.trim(request.getHeader(API_KEY_HEADER));
+        String keyFromParam = StringUtils.trim(request.getParameter(API_KEY_PARAMETER));
 
         if (!StringUtils.isAnyEmpty(keyFromHeader, keyFromParam) && StringUtils.equals(keyFromHeader, keyFromParam)) {
             key = keyFromHeader;
