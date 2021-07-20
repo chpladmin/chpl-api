@@ -181,6 +181,7 @@ const promotinginteroperabilityControllerTests = {
 const jobs = [
   cb => newman.run(acbControllerTests,cb),
   cb => newman.run(apiKeyControllerTests,cb),
+  cb => newman.run(promotinginteroperabilityControllerTests,cb),
   cb => newman.run(certifiedProductControllerDataTests,cb),
   cb => newman.run(certifiedProductControllerNoDataTests,cb),
   cb => newman.run(complaintControllerTests,cb),
@@ -193,8 +194,7 @@ const jobs = [
   cb => newman.run(schedulerControllerTests,cb),
   cb => newman.run(dimensionaldataControllerTests,cb),
   cb => newman.run(surveillanceReportControllerTests,cb),
-  cb => newman.run(searchControllerTests,cb),
-  cb => newman.run(promotinginteroperabilityControllerTests,cb)
+  cb => newman.run(searchControllerTests,cb)
 ];
 
 const responseCallback = (err) => {
