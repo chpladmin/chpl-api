@@ -16,12 +16,12 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-public class CriteriaReviewerTest {
+public class RemovedCriteriaReviewerTest {
     private static final String REMOVED_CRITERIA_NOT_ALLOWED = "The criterion %s has been removed and may not be added to the listing.";
 
     private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil msgUtil;
-    private CriteriaReviewer reviewer;
+    private RemovedCriteriaReviewer reviewer;
 
     @Before
     public void before() throws EntityRetrievalException {
@@ -30,7 +30,7 @@ public class CriteriaReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.removedCriteriaAddNotAllowed"),
                 ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(REMOVED_CRITERIA_NOT_ALLOWED, i.getArgument(1), ""));
-        reviewer = new CriteriaReviewer(msgUtil, resourcePermissions);
+        reviewer = new RemovedCriteriaReviewer(resourcePermissions, msgUtil);
     }
 
     @Test

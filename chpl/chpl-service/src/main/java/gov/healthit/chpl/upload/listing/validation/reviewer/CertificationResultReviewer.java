@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -92,7 +93,7 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
 
     private boolean hasNoAttestedCriteria(CertifiedProductSearchDetails listing) {
         return listing.getCertificationResults().stream()
-                .filter(certResult -> certResult.isSuccess())
+                .filter(certResult -> certResult != null && BooleanUtils.isTrue(certResult.isSuccess()))
                 .count() == 0;
     }
 
