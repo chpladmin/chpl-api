@@ -22,7 +22,7 @@ public class ApiKeyUtil {
             key = keyFromParam;
         } else if (!StringUtils.isEmpty(keyFromHeader) && StringUtils.isEmpty(keyFromParam)) {
             key = keyFromHeader;
-        } else {
+        } else if (!StringUtils.isAnyEmpty(keyFromHeader, keyFromParam) && !StringUtils.equals(keyFromHeader, keyFromParam)) {
             LOGGER.error("API Key presented in the header (" + keyFromHeader + ") does not match API Key presented in URL parameter (" + keyFromParam + ").");
             throw new InvalidArgumentsException();
         }

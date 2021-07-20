@@ -105,6 +105,7 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
         } else if (matchingHandlers != null && matchingHandlers.size() > 1) {
             LOGGER.error("Ambiguous request mapping (" + matchingHandlers.size() + " found) for "
                     + request.getMethod() + " Request: " + request.getRequestURI());
+            matchingHandlers.stream().forEach(handler -> LOGGER.debug(handler));
             return null;
         }
         return matchingHandlers.get(0);
