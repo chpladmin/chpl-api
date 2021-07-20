@@ -168,9 +168,20 @@ const searchControllerTests = {
   },
 };
 
+const promotinginteroperabilityControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/promoting-interoperability-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/promoting-interoperability-controller-tests.xml',
+    },
+  },
+};
+
 const jobs = [
   cb => newman.run(acbControllerTests,cb),
   cb => newman.run(apiKeyControllerTests,cb),
+  cb => newman.run(promotinginteroperabilityControllerTests,cb),
   cb => newman.run(certifiedProductControllerDataTests,cb),
   cb => newman.run(certifiedProductControllerNoDataTests,cb),
   cb => newman.run(complaintControllerTests,cb),

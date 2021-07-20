@@ -1,6 +1,5 @@
 {
 	"info": {
-		"_postman_id": "70da47db-73bf-4d3c-880e-1ba2cb35f0f8",
 		"name": "certified-product-controller",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -126,6 +125,70 @@
 					"response": []
 				},
 				{
+					"name": "GET /details end point returns 200 status and response should have meaningfulUseUser and promotingInteroperability fields ",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var certifiedProductId= pm.iterationData.get(\"certifiedProductId\");\r",
+									"pm.environment.set(\"certifiedProductId\",\"certifiedProductId\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"/details end point response should have meaningfulUseUserHistory and promotingInteroperabilityUserHistory fields and returns 200 status\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(jsonData).to.have.property(\"meaningfulUseUserHistory\");\r",
+									"    pm.expect(jsonData).to.have.property(\"promotingInteroperabilityUserHistory\");\r",
+									"    pm.expect(jsonData.meaningfulUseUserHistory[0]).to.have.property('id');\r",
+									"    pm.expect(jsonData.meaningfulUseUserHistory[0]).to.have.property('muuCount');\r",
+									"    pm.expect(jsonData.meaningfulUseUserHistory[0]).to.have.property('muuDate');\r",
+									"    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('id');\r",
+									"    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('userCount');\r",
+									"    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('userCountDate');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/certified_products/{{certifiedProductId}}/details",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"certified_products",
+								"{{certifiedProductId}}",
+								"details"
+							]
+						},
+						"description": "GET /details end point returns 200 status and response should have meaningful use user and promoting Interoperability fields "
+					},
+					"response": []
+				},
+				{
 					"name": "GET /{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} - return all RWT fields",
 					"event": [
 						{
@@ -184,6 +247,244 @@
 							]
 						},
 						"description": "GET /{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} - return all RWT fields"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /certified_products/{{certifiedProductId}} response should have meaningfuluseuser and promotinginteroperability fields",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var certidtest= pm.iterationData.get(\"certifiedProductId\");\r",
+									"pm.environment.set(\"certifiedProductId\",certidtest);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"/certified_products/{{certifiedProductId}} end point response should have meaningfulUseUserHistory and promotingInteroperabilityUserHistory fields\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(jsonData).to.have.property(\"meaningfulUseUserHistory\");\r",
+									"    pm.expect(jsonData).to.have.property(\"promotingInteroperabilityUserHistory\");\r",
+									"    pm.expect(jsonData.meaningfulUseUserHistory[0]).to.have.property('id');\r",
+									"    pm.expect(jsonData.meaningfulUseUserHistory[0]).to.have.property('muuCount');\r",
+									"    pm.expect(jsonData.meaningfulUseUserHistory[0]).to.have.property('muuDate');\r",
+									"    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('id');\r",
+									"    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('userCount');\r",
+									"    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('userCountDate');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/certified_products/{{certifiedProductId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"certified_products",
+								"{{certifiedProductId}}"
+							]
+						},
+						"description": "GET /certified_products/{{certifiedProductId}} response should have meaningfuluseuser and promotinginteroperability fields"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /certified_products/{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode} end point response should have meaningfulUseUserHistory and promotingInteroperabilityUserHistory fields",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var chplidnewtest= pm.iterationData.get(\"newChplProductNumber\");\r",
+									"pm.environment.set(\"newChplProductNumber\",chplidnewtest);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"/certified_products/{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode} end point response should have meaningfulUseUserHistory and promotingInteroperabilityUserHistory fields\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(jsonData).to.have.property(\"meaningfulUseUserHistory\");\r",
+									"    pm.expect(jsonData).to.have.property(\"promotingInteroperabilityUserHistory\");\r",
+									"    pm.expect(jsonData.meaningfulUseUserHistory[0]).to.have.property('id');\r",
+									"    pm.expect(jsonData.meaningfulUseUserHistory[0]).to.have.property('muuCount');\r",
+									"    pm.expect(jsonData.meaningfulUseUserHistory[0]).to.have.property('muuDate');\r",
+									"    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('id');\r",
+									"    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('userCount');\r",
+									"    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('userCountDate');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/certified_products/{{newChplProductNumber}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"certified_products",
+								"{{newChplProductNumber}}"
+							]
+						},
+						"description": "GET /certified_products/{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode} end point response should have meaningfulUseUserHistory and promotingInteroperabilityUserHistory fields"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /search/beta end point response should have meaningfulUseUserHistory and promotingInteroperabilityUserHistory fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"/search/beta end point response should have meaningfulUseUserHistory and promotingInteroperabilityUserHistory fields\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(jsonData.results[0]).to.have.property('numMeaningfulUse');\r",
+									"    pm.expect(jsonData.results[0]).to.have.property('numMeaningfulUseDate');\r",
+									"    pm.expect(jsonData.results[0]).to.have.property('promotingInteroperabilityUserCount');\r",
+									"    pm.expect(jsonData.results[0]).to.have.property('promotingInteroperabilityUserDate');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/search/beta",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"search",
+								"beta"
+							]
+						},
+						"description": "GET /search/beta end point response should have meaningfulUseUserHistory and promotingInteroperabilityUserHistory fields"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /certified_products/{chplPrefix-identifier} end point response should have meaningfulUseUserHistory and promotingInteroperabilityUserHistory fields",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var chplidoldtest= pm.iterationData.get(\"oldChplProductNumber\");\r",
+									"pm.environment.set(\"oldChplProductNumber\",chplidoldtest);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"/certified_products/{chplPrefix-identifier} end point response should have meaningfulUseUserHistory and promotingInteroperabilityUserHistory fields\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(jsonData).to.have.property(\"meaningfulUseUserHistory\");\r",
+									"    pm.expect(jsonData).to.have.property(\"promotingInteroperabilityUserHistory\");\r",
+									"    pm.expect(jsonData.meaningfulUseUserHistory[0]).to.have.property('id');\r",
+									"    pm.expect(jsonData.meaningfulUseUserHistory[0]).to.have.property('muuCount');\r",
+									"    pm.expect(jsonData.meaningfulUseUserHistory[0]).to.have.property('muuDate');\r",
+									"    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('id');\r",
+									"    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('userCount');\r",
+									"    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('userCountDate');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/certified_products/{{oldChplProductNumber}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"certified_products",
+								"{{oldChplProductNumber}}"
+							]
+						},
+						"description": "GET /certified_products/{chplPrefix-identifier} end point response should have meaningfulUseUserHistory and promotingInteroperabilityUserHistory fields"
 					},
 					"response": []
 				},
