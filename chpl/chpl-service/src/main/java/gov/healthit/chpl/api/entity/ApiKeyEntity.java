@@ -100,6 +100,7 @@ public class ApiKeyEntity {
                 .id(this.getId())
                 .email(this.getEmail())
                 .key(this.getApiKey())
+                .apiKey(this.getApiKey())
                 .name(this.getNameOrganization())
                 .unrestricted(this.getUnrestricted())
                 .lastUsedDate(this.getLastUsedDate())

@@ -40,6 +40,7 @@ public class ApiKeyDAO extends BaseDAOImpl {
             entity.setNameOrganization(apiKey.getName());
             entity.setUnrestricted(apiKey.isUnrestricted());
             entity.setLastModifiedUser(AuthUtil.getAuditId());
+            entity.setDeleted(false);
             create(entity);
         }
         return entity.toDomain();
