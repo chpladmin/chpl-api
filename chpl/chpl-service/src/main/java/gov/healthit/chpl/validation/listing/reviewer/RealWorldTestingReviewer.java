@@ -44,13 +44,12 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
             if (isRwtPlansDataSubmitted(updatedListing)) {
                 validateRwtPlansUrl(updatedListing);
                 validateRwtPlansCheckDate(updatedListing);
-
             }
             if (isRwtResultsDataSubmitted(updatedListing)) {
                 validateRwtResultsUrl(updatedListing);
                 validateRwtResultsCheckDate(updatedListing);
             }
-        } else {
+        } else if (isRwtPlansDataSubmitted(updatedListing) || isRwtResultsDataSubmitted(updatedListing)) {
             updatedListing.getErrorMessages().add(errorMessageUtil.getMessage("listing.realWorldTesting.notEligible"));
         }
     }
@@ -59,7 +58,6 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
         return isListing2015Edition(listing);
     }
 
-    @SuppressWarnings("checkstyle:linelength")
     private boolean isListing2015Edition(CertifiedProductSearchDetails listing) {
         if (listing.getCertificationEdition().containsKey(CertifiedProductSearchDetails.EDITION_NAME_KEY)) {
             return listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString().equals(EDITION_2015);
