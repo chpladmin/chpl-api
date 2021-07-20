@@ -68,13 +68,13 @@ public class DeprecatedApiUsageDao extends BaseDAOImpl {
     }
 
     @Transactional
-    public void deleteAllDeprecatedApiUsage() {
-        String hql = "UPDATE DeprecatedApiUsageEntity apiUsage "
-                + "SET deleted = true, lastModifiedUser = :lastModifiedUser "
-                + "WHERE deleted = false";
-        Query query = entityManager.createQuery(hql);
-        query.setParameter("lastModifiedUser", User.SYSTEM_USER_ID);
-        query.executeUpdate();
+    public void delete(Long id) {
+        DeprecatedApiUsageEntity entity = entityManager.find(DeprecatedApiUsageEntity.class, id);
+        if (entity != null) {
+            entity.setDeleted(true);
+            entity.setLastModifiedUser(User.SYSTEM_USER_ID);
+            update(entity);
+        }
     }
 
     private void create(DeprecatedApiUsage apiUsage) {

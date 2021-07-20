@@ -2,6 +2,7 @@ package gov.healthit.chpl.api.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -30,4 +31,21 @@ public class ApiKey implements Serializable {
     @JsonIgnore
     @XmlTransient
     private boolean unrestricted;
+
+    @Override
+    public boolean equals(Object another) {
+        if (another == null || !(another instanceof ApiKey)) {
+            return false;
+        }
+        ApiKey anotherApiKey = (ApiKey) another;
+        return Objects.equals(this.getId(), anotherApiKey.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        if (this.getId() == null) {
+            return -1;
+        }
+        return this.getId().hashCode();
+    }
 }
