@@ -17,9 +17,9 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedApiUsage;
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedApiUsageDao;
 import gov.healthit.chpl.api.domain.ApiKey;
+import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.HtmlEmailTemplate;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUpload;
-import gov.healthit.chpl.util.EmailBuilder;
-import gov.healthit.chpl.util.HtmlEmailTemplate;
 
 public class DeprecatedApiUsageEmailJob implements Job {
     private static final Logger LOGGER = LogManager.getLogger("deprecatedApiUsageEmailJobLogger");

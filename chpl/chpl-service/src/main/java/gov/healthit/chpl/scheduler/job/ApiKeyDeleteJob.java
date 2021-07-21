@@ -22,9 +22,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.api.ApiKeyManager;
 import gov.healthit.chpl.api.dao.ApiKeyDAO;
 import gov.healthit.chpl.api.domain.ApiKey;
+import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.EmailBuilder;
 
 public class ApiKeyDeleteJob implements Job {
 private static final Logger LOGGER = LogManager.getLogger("apiKeyDeleteJobLogger");

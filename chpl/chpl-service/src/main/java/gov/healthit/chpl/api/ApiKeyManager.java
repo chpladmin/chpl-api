@@ -23,11 +23,11 @@ import gov.healthit.chpl.api.domain.ApiKeyRequest;
 import gov.healthit.chpl.dao.ApiKeyActivityDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ApiKeyActivityDTO;
+import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 

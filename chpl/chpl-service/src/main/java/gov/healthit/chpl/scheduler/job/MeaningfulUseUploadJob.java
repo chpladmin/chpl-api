@@ -33,10 +33,10 @@ import gov.healthit.chpl.domain.MeaningfulUseUserRecord;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.MeaningfulUseUserDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.util.AuthUtil;
-import gov.healthit.chpl.util.EmailBuilder;
 import lombok.extern.log4j.Log4j2;
 
 @DisallowConcurrentExecution
