@@ -1,8 +1,11 @@
 package gov.healthit.chpl.scheduler.job.deprecatedApiUsage;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,9 +20,8 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedApiUsage;
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedApiUsageDao;
 import gov.healthit.chpl.api.domain.ApiKey;
+import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.EmailBuilder;
-import gov.healthit.chpl.email.HtmlEmailTemplate;
-import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUpload;
 
 public class DeprecatedApiUsageEmailJob implements Job {
     private static final Logger LOGGER = LogManager.getLogger("deprecatedApiUsageEmailJobLogger");
@@ -30,8 +32,11 @@ public class DeprecatedApiUsageEmailJob implements Job {
     @Autowired
     private Environment env;
 
-    @Value("{deprecatedApiUsage.email.subject}")
+    @Value("${deprecatedApiUsage.email.subject}")
     private String deprecatedApiUsageEmailSubject;
+
+    @Value("${deprecatedApiUsage.email.body}")
+    private String deprecatedApiUsageEmailBody;
 
     @SuppressWarnings("checkstyle:linelength")
     @Override
@@ -41,8 +46,10 @@ public class DeprecatedApiUsageEmailJob implements Job {
 
         try {
             List<DeprecatedApiUsage> allDeprecatedApiUsage = deprecatedApiUsageDao.getAllDeprecatedApiUsage();
+            LOGGER.info(allDeprecatedApiUsage.size() + " records of deprecated API usage were retrieved.");
             Map<ApiKey, List<DeprecatedApiUsage>> deprecatedApiUsageByApiKey
                 = allDeprecatedApiUsage.stream().collect(Collectors.groupingBy(DeprecatedApiUsage::getApiKey));
+            LOGGER.info(deprecatedApiUsageByApiKey.keySet().size() + " API Keys accessed deprecated APIs.");
 
             deprecatedApiUsageByApiKey.keySet()
                 .forEach(key -> sendEmailAndDeleteUsageRecords(key, deprecatedApiUsageByApiKey.get(key)));
@@ -59,7 +66,7 @@ public class DeprecatedApiUsageEmailJob implements Job {
         try {
             emailBuilder.recipient(apiKey.getEmail())
                 .subject(deprecatedApiUsageEmailSubject)
-                .htmlMessage("")
+                .htmlMessage(createHtmlMessage(apiKey, deprecatedApiUsage))
                 .publicHtmlFooter()
                 .sendEmail();
             LOGGER.info("Sent email to " + apiKey.getEmail() + ".");
@@ -70,93 +77,34 @@ public class DeprecatedApiUsageEmailJob implements Job {
         }
     }
 
+    private String createHtmlMessage(ApiKey apiKey, List<DeprecatedApiUsage> deprecatedApiUsage) throws IOException {
+        List<String> apiUsageHeading  = Stream.of("HTTP Method", "API Endpoint", "Usage Count", "Last Accessed", "Message").collect(Collectors.toList());
+        List<List<String>> apiUsageData = new ArrayList<List<String>>();
+        deprecatedApiUsage.stream().forEach(api -> apiUsageData.add(createUsageData(api)));
+        ChplHtmlEmailBuilder emailBuilder = new ChplHtmlEmailBuilder();
+        String htmlMessage = emailBuilder.addHeading("Deprecated API Usage Notification", null)
+            .addParagraph("", String.format(deprecatedApiUsageEmailBody, apiKey.getKey()))
+            .addTable(apiUsageHeading, apiUsageData)
+            .addFooter()
+            .build();
+        LOGGER.debug("HTML Email being sent to " + apiKey.getEmail() + ": \n" + htmlMessage);
+        return htmlMessage;
+    }
+
+    private List<String> createUsageData(DeprecatedApiUsage deprecatedApiUsage) {
+        return Stream.of(deprecatedApiUsage.getApi().getHttpMethod().name(),
+                deprecatedApiUsage.getApi().getApiOperation(),
+                deprecatedApiUsage.getCallCount().toString(),
+                deprecatedApiUsage.getLastAccessedDate().toString(),
+                deprecatedApiUsage.getApi().getChangeDescription()).collect(Collectors.toList());
+    }
+
     private void deleteDeprecatedApiUsage(DeprecatedApiUsage deprecatedApiUsage) {
         try {
             deprecatedApiUsageDao.delete(deprecatedApiUsage.getId());
             LOGGER.info("Deleted deprecated API usage with ID " + deprecatedApiUsage.getId());
         } catch (Exception ex) {
             LOGGER.error("Error deleting deprecated API usage with ID " + deprecatedApiUsage.getId(), ex);
-        }
-    }
-
-    private class RwtEmail {
-        private Environment env;
-
-        RwtEmail(Environment env) {
-            this.env = env;
-        }
-
-        public String getEmail(List<RealWorldTestingUpload> rwts) {
-            HtmlEmailTemplate email = new HtmlEmailTemplate();
-            email.setStyles(getStyles());
-            email.setBody(getBody(rwts));
-            return email.build();
-        }
-
-        private String getBody(List<RealWorldTestingUpload> rwts) {
-            StringBuilder table = new StringBuilder();
-
-            table.append("<table class='blueTable'>\n");
-            table.append("    <thead>\n");
-            table.append("        <tr>\n");
-            table.append("            <th>\n");
-            table.append("                CHPL Product Number\n");
-            table.append("            </th>\n");
-            table.append("            <th>\n");
-            table.append("                Type\n");
-            table.append("            </th>\n");
-            table.append("            <th>\n");
-            table.append("                Last Checked Date\n");
-            table.append("            </th>\n");
-            table.append("            <th>\n");
-            table.append("                URL\n");
-            table.append("            </th>\n");
-            table.append("            <th>\n");
-            table.append("                Result or Errors\n");
-            table.append("            </th>\n");
-            table.append("        </tr>\n");
-            table.append("    </thead>\n");
-            table.append("    <tbody>\n");
-            int i = 1;
-            for (RealWorldTestingUpload rwt : rwts) {
-                String trClass = i % 2 == 0 ? "even" : "odd";
-
-                table.append("        <tr class=\"" + trClass + "\">\n");
-                table.append("            <td>");
-                table.append(rwt.getOriginalData().getChplProductNumber());
-                table.append("            </td>\n");
-                table.append("            <td>");
-                table.append(rwt.getOriginalData().getType());
-                table.append("            </td>\n");
-                table.append("            <td>");
-                table.append(rwt.getOriginalData().getLastChecked());
-                table.append("            </td>\n");
-                table.append("            <td>");
-                table.append(rwt.getOriginalData().getUrl());
-                table.append("            </td>\n");
-                table.append("            <td>");
-                table.append(getErrorsAsString(rwt));
-                table.append("            </td>\n");
-                table.append("        </tr>\n");
-                ++i;
-            }
-            table.append("    </tbody>\n");
-            table.append("</table>\n");
-
-            return table.toString();
-        }
-
-        private String getErrorsAsString(RealWorldTestingUpload rwt) {
-            if (rwt.getValidationErrors().size() > 0) {
-                return rwt.getValidationErrors().stream().map(err -> !err.startsWith("WARNING") ? "ERROR: " + err : err)
-                        .collect(Collectors.joining("<br/>"));
-            } else {
-                return "SUCCESS";
-            }
-        }
-
-        private String getStyles() {
-            return env.getProperty("email_styles");
         }
     }
 }

@@ -175,7 +175,7 @@
         additivity="false">
         <AppenderRef ref="meaningfulUseUploadJob" />
     </Logger>
-    <Logger name="deprecatedApiUsageEmailJobLogger" level="INFO"
+    <Logger name="deprecatedApiUsageEmailJobLogger" level="DEBUG"
         additivity="false">
         <AppenderRef ref="deprecatedApiUsageEmailJob" />
     </Logger>
