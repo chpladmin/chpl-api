@@ -14,6 +14,7 @@ import javax.mail.MessagingException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.ff4j.FF4j;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -25,6 +26,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.PromotingInteroperabilityUserDAO;
@@ -55,6 +57,8 @@ public class PromotingInteroperabilityUploadJob implements Job {
     private PromotingInteroperabilityUserDAO piuDao;
     @Autowired
     private ActivityManager activityManager;
+    @Autowired
+    private FF4j ff4j;
 
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
@@ -98,7 +102,7 @@ public class PromotingInteroperabilityUploadJob implements Job {
                 if (heading == null && i == 1 && !StringUtils.isEmpty(currRecord.get(0).trim())
                         && currRecord.get(0).trim().contains("product")
                         && !StringUtils.isEmpty(currRecord.get(1).trim())
-                        && currRecord.get(1).trim().contains("count")) {
+                        && headingContainsUserCount(currRecord.get(1).trim())) {
                     heading = currRecord;
                 } else if (heading != null) {
                     String chplProductNumber = currRecord.get(0).trim();
@@ -117,10 +121,7 @@ public class PromotingInteroperabilityUploadJob implements Job {
                     } catch (NumberFormatException e) {
                         piu.setChplProductNumber(chplProductNumber);
                         piu.setCsvLineNumber(i);
-                        String error = "Line " + piu.getCsvLineNumber()
-                                + ": Field \"user_count\" with value \"" + currRecord.get(1).trim()
-                                + "\" is invalid. " + "Value in field \"user_count\" must be an integer.";
-                        piu.setError(error);
+                        piu.setError(getInvalidUserCountError(piu, currRecord.get(1).trim()));
                         piusToUpdate.add(piu);
                         uniquePiusFromFile.add(piu.getChplProductNumber());
                     } catch (IOException e) {
@@ -148,6 +149,26 @@ public class PromotingInteroperabilityUploadJob implements Job {
         return piusToUpdate;
     }
 
+    private boolean headingContainsUserCount(String columnHeading) {
+        if (ff4j.check(FeatureList.PROMOTING_INTEROPERABILITY)) {
+            return columnHeading.contains("count");
+        } else {
+            return columnHeading.contains("meaning");
+        }
+    }
+
+    private String getInvalidUserCountError(PromotingInteroperabilityUserRecord piu, String userCountValue) {
+        if (ff4j.check(FeatureList.PROMOTING_INTEROPERABILITY)) {
+            return "Line " + piu.getCsvLineNumber()
+                + ": Field \"user_count\" with value \"" + userCountValue
+                    + "\" is invalid. " + "Value in field \"user_count\" must be an integer.";
+        } else {
+            return "Line " + piu.getCsvLineNumber()
+            + ": Field \"num_meaningful_use\" with value \"" + userCountValue
+                + "\" is invalid. " + "Value in field \"user_count\" must be an integer.";
+        }
+    }
+
     private void processPromotingInteroperabilityUpdates(Set<PromotingInteroperabilityUserRecord> piuRecords, LocalDate accurateAsOfDate) {
         for (PromotingInteroperabilityUserRecord piu : piuRecords) {
             if (StringUtils.isEmpty(piu.getError())) {
@@ -157,8 +178,7 @@ public class PromotingInteroperabilityUploadJob implements Job {
                         piu.setError("Line " + piu.getCsvLineNumber()
                                 + ": Field \"chpl_product_number\" is missing.");
                     } else if (piu.getUserCount() == null) {
-                        piu.setError("Line " + piu.getCsvLineNumber()
-                            + ": Field \"user_count\" is missing.");
+                        piu.setError(getMissingUserCountError(piu));
                     } else {
                         //make sure the listing is valid and get the details
                         //object so that it can be updated
@@ -198,6 +218,14 @@ public class PromotingInteroperabilityUploadJob implements Job {
                     piu.setError(msg);
                 }
             }
+        }
+    }
+
+    private String getMissingUserCountError(PromotingInteroperabilityUserRecord piu) {
+        if (ff4j.check(FeatureList.PROMOTING_INTEROPERABILITY)) {
+            return "Line " + piu.getCsvLineNumber() + ": Field \"user_count\" is missing.";
+        } else {
+            return "Line " + piu.getCsvLineNumber() + ": Field \"num_meaningful_use\" is missing.";
         }
     }
 
