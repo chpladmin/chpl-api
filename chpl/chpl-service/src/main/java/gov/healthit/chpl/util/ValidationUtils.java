@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -488,7 +489,7 @@ public class ValidationUtils {
 
     public List<CertificationCriterion> getAttestedCriteria(CertifiedProductSearchDetails listing) {
         return listing.getCertificationResults().stream()
-                .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess().equals(Boolean.TRUE))
+                .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
                 .map(attestedCertResult -> attestedCertResult.getCriterion())
                 .collect(Collectors.<CertificationCriterion>toList());
     }

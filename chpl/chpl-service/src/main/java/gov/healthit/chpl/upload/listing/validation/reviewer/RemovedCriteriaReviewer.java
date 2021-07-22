@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +38,7 @@ public class RemovedCriteriaReviewer {
     }
 
     private boolean certificationResultIsRemovedAndAttested(CertificationResult certResult) {
-        return certResult.isSuccess() != null && certResult.isSuccess()
+        return BooleanUtils.isTrue(certResult.isSuccess())
                 && certResult.getCriterion() != null && certResult.getCriterion().getRemoved() != null
                 && certResult.getCriterion().getRemoved();
     }

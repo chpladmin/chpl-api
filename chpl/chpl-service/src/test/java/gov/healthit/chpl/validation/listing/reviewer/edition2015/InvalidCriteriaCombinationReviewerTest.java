@@ -67,6 +67,30 @@ public class InvalidCriteriaCombinationReviewerTest {
     }
 
     @Test
+    public void review_nullAttestedCertificationResults_noErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(null)
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (b)(1)")
+                                .title("Criteria B1 Original")
+                                .build())
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .id(2L)
+                                .number("170.315 (b)(1)")
+                                .title("Criteria B1 (Cures Update)")
+                                .build())
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
     public void review_oneAttestedOriginalAndNoAttestedCuresCertificationResults_noErrors() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
