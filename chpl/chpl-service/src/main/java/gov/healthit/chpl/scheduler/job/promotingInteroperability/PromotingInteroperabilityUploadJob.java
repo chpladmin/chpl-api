@@ -29,14 +29,13 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
-import gov.healthit.chpl.dao.PromotingInteroperabilityUserDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
-import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.EmailBuilder;
 import lombok.extern.log4j.Log4j2;
@@ -54,9 +53,7 @@ public class PromotingInteroperabilityUploadJob implements Job {
     @Autowired
     private CertifiedProductDetailsManager cpdManager;
     @Autowired
-    private PromotingInteroperabilityUserDAO piuDao;
-    @Autowired
-    private ActivityManager activityManager;
+    private CertifiedProductManager cpManager;
     @Autowired
     private FF4j ff4j;
 
@@ -200,17 +197,19 @@ public class PromotingInteroperabilityUploadJob implements Job {
                                     .userCount(piu.getUserCount())
                                     .userCountDate(accurateAsOfDate)
                                     .build();
-                            piuDao.create(existingListing.getId(), toCreate);
-
-                            //write activity for the listing update
-                            CertifiedProductSearchDetails updatedListing =
-                                    cpdManager.getCertifiedProductDetails(existingListing.getId());
-                            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
-                                    "Updated certified product " + updatedListing.getChplProductNumber() + ".", existingListing,
-                                    updatedListing,
-                                    "User " + AuthUtil.getUsername() + " updated Promoting Interoperability user count via upload file.");
+                            existingListing.getPromotingInteroperabilityUserHistory().add(toCreate);
+                            ListingUpdateRequest updateRequest = ListingUpdateRequest.builder()
+                                    .acknowledgeWarnings(true)
+                                    .listing(existingListing)
+                                    .reason("Updating Promoting Interoperability User count.")
+                                    .build();
+                            cpManager.update(updateRequest);
                         }
                     }
+                } catch (ValidationException ex) {
+                    String msg = "Line " + piu.getCsvLineNumber() + ": " + piu.getChplProductNumber() + " has " + ex.getErrorMessages().size() + " errors and cannot be validated or updated.";
+                    LOGGER.error(msg, ex);
+                    piu.setError(msg);
                 } catch (Exception ex) {
                     String msg = "Line " + piu.getCsvLineNumber() + ": An unexpected error occurred. "
                             + ex.getMessage();
