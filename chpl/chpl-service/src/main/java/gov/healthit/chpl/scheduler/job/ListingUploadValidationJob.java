@@ -88,7 +88,7 @@ public class ListingUploadValidationJob implements Job {
                 try {
                     listingUpload = listingUploadDao.getById(listingUploadId);
                 } catch (EntityRetrievalException ex) {
-                    LOGGER.error("Unable to get listing upload with id " + listingUploadId + ".");
+                    LOGGER.error("Unable to get listing upload with id " + listingUploadId + ".", ex);
                 }
 
                 if (listingUpload != null) {
@@ -98,7 +98,7 @@ public class ListingUploadValidationJob implements Job {
                     try {
                         listingDetails = listingUploadManager.getDetailsById(listingUpload.getId());
                     } catch (Exception ex) {
-                        LOGGER.error("Unable to get listing upload details with id " + listingUpload.getId());
+                        LOGGER.error("Unable to get listing upload details with id " + listingUpload.getId(), ex);
                     }
 
                     if (listingDetails != null) {
@@ -111,7 +111,7 @@ public class ListingUploadValidationJob implements Job {
                         try {
                             listingUploadDao.updateErrorAndWarningCounts(listingUpload);
                         } catch (Exception ex) {
-                            LOGGER.error("The pending listing " + listingUpload.getChplProductNumber() + " could not be updated. No updates were made to the error/warning counts.");
+                            LOGGER.error("The pending listing " + listingUpload.getChplProductNumber() + " could not be updated. No updates were made to the error/warning counts.", ex);
                         }
                     }
                 }

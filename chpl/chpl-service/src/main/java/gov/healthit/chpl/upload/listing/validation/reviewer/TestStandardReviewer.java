@@ -1,6 +1,7 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -28,7 +29,7 @@ public class TestStandardReviewer implements Reviewer {
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess())
+            .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
             .forEach(certResult -> review(listing, certResult));
     }
 

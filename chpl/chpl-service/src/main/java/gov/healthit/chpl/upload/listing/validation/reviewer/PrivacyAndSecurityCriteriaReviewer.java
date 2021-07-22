@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -50,7 +51,7 @@ public class PrivacyAndSecurityCriteriaReviewer {
         if (listing.getCertificationDate() != null
                 && isDateAfterCuresEffectiveRuleDate(listing.getCertificationDate())) {
             List<CertificationCriterion> attestedToCriteria = listing.getCertificationResults().stream()
-                    .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess())
+                    .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
                     .map(certResult -> certResult.getCriterion())
                     .collect(Collectors.toList());
 

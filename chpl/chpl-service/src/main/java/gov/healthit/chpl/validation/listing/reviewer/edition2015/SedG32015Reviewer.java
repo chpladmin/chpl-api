@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,14 +31,14 @@ public class SedG32015Reviewer extends PermissionBasedReviewer {
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         List<CertificationResult> presentCriteriaWithSed = listing.getCertificationResults().stream()
-                .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess().equals(Boolean.TRUE)
+                .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess())
                         && certResult.isSed() != null && certResult.isSed().equals(Boolean.TRUE)
                         && certResult.getCriterion().getRemoved() != null
                         && certResult.getCriterion().getRemoved().equals(Boolean.FALSE))
                 .collect(Collectors.<CertificationResult>toList());
 
         List<CertificationResult> removedCriteriaWithSed = listing.getCertificationResults().stream()
-                .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess().equals(Boolean.TRUE)
+                .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess())
                         && certResult.isSed() != null && certResult.isSed().equals(Boolean.TRUE)
                         && certResult.getCriterion().getRemoved() != null
                         && certResult.getCriterion().getRemoved().equals(Boolean.TRUE))
@@ -46,7 +47,7 @@ public class SedG32015Reviewer extends PermissionBasedReviewer {
         Optional<CertificationResult> g3CertificationResult = listing.getCertificationResults().stream()
                 .filter(certResult -> certResult.getCriterion() != null
                     && certResult.getCriterion().getId().equals(g3.getId())
-                    && certResult.isSuccess() != null && certResult.isSuccess().equals(Boolean.TRUE))
+                    && BooleanUtils.isTrue(certResult.isSuccess()))
                 .findFirst();
 
 
