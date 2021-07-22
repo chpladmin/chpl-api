@@ -560,7 +560,7 @@ public class DeveloperDAO extends BaseDAOImpl {
 
     public List<DecertifiedDeveloperResult> getDecertifiedDevelopers() {
         Query bannedListingsQuery = entityManager.createQuery("SELECT entity "
-                + "FROM CertifiedProductDetailsEntity "
+                + "FROM CertifiedProductDetailsEntity entity "
                 + "WHERE developerStatusName IN (:banned) "
                 + "AND deleted = false AND acbIsRetired = false",
                 CertifiedProductDetailsEntity.class);
@@ -591,12 +591,12 @@ public class DeveloperDAO extends BaseDAOImpl {
                             if (currDev.getEarliestPromotingInteroperabilityUserCountDate() == null
                                     || promotingInteroperabilityUserDate.isBefore(currDev.getEarliestPromotingInteroperabilityUserCountDate())) {
                                 currDev.setEarliestPromotingInteroperabilityUserCountDate(promotingInteroperabilityUserDate);
-                                currDev.setEarliestMeaningfulUseDate(DateUtil.toEpochMillis(promotingInteroperabilityUserDate));
+                                currDev.setEarliestMeaningfulUseDate(promotingInteroperabilityUserDate != null ? DateUtil.toEpochMillis(promotingInteroperabilityUserDate) : null);
                             }
                             if (currDev.getLatestPromotingInteroperabilityUserCountDate() == null
                                     || promotingInteroperabilityUserDate.isAfter(promotingInteroperabilityUserDate)) {
                                 currDev.setLatestPromotingInteroperabilityUserCountDate(promotingInteroperabilityUserDate);
-                                currDev.setLatestMeaningfulUseDate(DateUtil.toEpochMillis(promotingInteroperabilityUserDate));
+                                currDev.setLatestMeaningfulUseDate(promotingInteroperabilityUserDate != null ? DateUtil.toEpochMillis(promotingInteroperabilityUserDate) : null);
                             }
                         }
                         devExists = true;
@@ -621,8 +621,8 @@ public class DeveloperDAO extends BaseDAOImpl {
                 DecertifiedDeveloperResult decertifiedDeveloper = new DecertifiedDeveloperResult(
                         developer, acbList, currListing.getDeveloperStatusDate(),
                         currListing.getPromotingInteroperabilityUserCount(),
-                        new Date(DateUtil.toEpochMillis(currListing.getPromotingInteroperabilityUserCountDate())),
-                        new Date(DateUtil.toEpochMillis(currListing.getPromotingInteroperabilityUserCountDate())));
+                        currListing.getPromotingInteroperabilityUserCountDate() != null ? new Date(DateUtil.toEpochMillis(currListing.getPromotingInteroperabilityUserCountDate())) : null,
+                        currListing.getPromotingInteroperabilityUserCountDate() != null ? new Date(DateUtil.toEpochMillis(currListing.getPromotingInteroperabilityUserCountDate())) : null);
                 decertifiedDevelopers.add(decertifiedDeveloper);
             }
         }
