@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity.search;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -8,19 +9,9 @@ import javax.persistence.Id;
 
 import org.hibernate.annotations.Immutable;
 
-import gov.healthit.chpl.util.Util;
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-/**
- * Represents one row of one listing's search result data.
- * Will need to be combined with multiple other rows to make a complete listing.
- * @author kekey
- *
- */
 @Data
 @NoArgsConstructor
 @Entity
@@ -41,13 +32,11 @@ public class CertifiedProductListingSearchResultEntity {
     @Column(name = "certification_status_name")
     private String certificationStatus;
 
-    @Column(name = "meaningful_use_users")
-    private Long meaningfulUseUserCount;
+    @Column(name = "promoting_interoperability_user_count")
+    private Long promotingInteroperabilityUserCount;
 
-    @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.NONE)
-    @Column(name = "meaningful_use_users_date")
-    private Date meaningfulUseUsersDate;
+    @Column(name = "promoting_interoperability_user_count_date")
+    private LocalDate promotingInteroperabilityUserCountDate;
 
     @Column(name = "transparency_attestation_url")
     private String transparencyAttestationUrl;
@@ -79,13 +68,9 @@ public class CertifiedProductListingSearchResultEntity {
     @Column(name = "prev_vendor")
     private String previousDeveloperOwner;
 
-    @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.NONE)
     @Column(name = "certification_date")
     private Date certificationDate;
 
-    @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.NONE)
     @Column(name = "decertification_date")
     private Date decertificationDate;
 
@@ -103,28 +88,4 @@ public class CertifiedProductListingSearchResultEntity {
 
     @Column(name = "cqm_number")
     private String cqm;
-
-    public Date getCertificationDate() {
-        return Util.getNewDate(certificationDate);
-    }
-
-    public void setCertificationDate(final Date certificationDate) {
-        this.certificationDate = Util.getNewDate(certificationDate);
-    }
-
-    public Date getDecertificationDate() {
-        return Util.getNewDate(decertificationDate);
-    }
-
-    public void setDecertificationDate(final Date decertificationDate) {
-        this.decertificationDate = Util.getNewDate(decertificationDate);
-    }
-
-    public Date getMeaningfulUseUsersDate() {
-        return Util.getNewDate(meaningfulUseUsersDate);
-    }
-
-    public void setMeaningfulUseUsersDate(Date meaningfulUseUsersDate) {
-        this.meaningfulUseUsersDate = Util.getNewDate(meaningfulUseUsersDate);
-    }
 }

@@ -51,12 +51,11 @@ public class CertifiedProductDetailsEntitySimple {
     @Column(name = "sed_intended_user_description")
     private String sedIntendedUserDescription;
 
-    @Basic(optional = true)
-    @Column(name = "meaningful_use_users")
-    private Long meaningfulUseUsers;
+    @Column(name = "promoting_interoperability_user_count")
+    private Long promotingInteroperabilityUserCount;
 
-    @Column(name = "meaningful_use_users_date")
-    private Date meaningfulUseUsersDate;
+    @Column(name = "promoting_interoperability_user_count_date")
+    private LocalDate promotingInteroperabilityUserCountDate;
 
     @Basic(optional = true)
     @Column(name = "sed_testing_end")

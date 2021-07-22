@@ -41,7 +41,6 @@ import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
-import gov.healthit.chpl.dto.DecertifiedDeveloperDTODeprecated;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
@@ -566,25 +565,7 @@ public class DeveloperManager extends SecuredManager {
     @Deprecated
     @Transactional(readOnly = true)
     public List<DecertifiedDeveloperResult> getDecertifiedDevelopers() throws EntityRetrievalException {
-        List<DecertifiedDeveloperDTODeprecated> dtoList = new ArrayList<DecertifiedDeveloperDTODeprecated>();
-        List<DecertifiedDeveloperResult> decertifiedDeveloperResults = new ArrayList<DecertifiedDeveloperResult>();
-
-        dtoList = developerDao.getDecertifiedDevelopers();
-
-        for (DecertifiedDeveloperDTODeprecated dto : dtoList) {
-            List<CertificationBody> certifyingBody = new ArrayList<CertificationBody>();
-            for (Long oncacbId : dto.getAcbIdList()) {
-                CertificationBody cb = new CertificationBody(certificationBodyDao.getById(oncacbId));
-                certifyingBody.add(cb);
-            }
-
-            DecertifiedDeveloperResult decertifiedDeveloper = new DecertifiedDeveloperResult(
-                    developerDao.getById(dto.getDeveloperId()), certifyingBody, dto.getDecertificationDate(),
-                    dto.getNumMeaningfulUse(), dto.getEarliestNumMeaningfulUseDate(),
-                    dto.getLatestNumMeaningfulUseDate());
-            decertifiedDeveloperResults.add(decertifiedDeveloper);
-        }
-        return decertifiedDeveloperResults;
+        return developerDao.getDecertifiedDevelopers();
     }
 
     @Transactional(readOnly = true)

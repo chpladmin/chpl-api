@@ -370,13 +370,18 @@ public class CertifiedProductSearchDetails implements Serializable {
     @XmlElement(required = false, nillable = true)
     private Boolean curesUpdate;
 
-    /**
-     * All current and historical values of meaningful use users for this listing along with the dates each meaningful
-     * use user count was valid. Dates are given in milliseconds since epoch.
-     */
-    @XmlElementWrapper(name = "meaningfulUseUserHistory", nillable = true, required = false)
-    @XmlElement(name = "meaningfulUseEntry")
+    @XmlTransient
+    @Deprecated
     private List<MeaningfulUseUser> meaningfulUseUserHistory = new ArrayList<MeaningfulUseUser>();
+
+    /**
+     * All current and historical values of promoting interoperability for this listing along with the dates each
+     * user count was valid.
+     */
+    @XmlElementWrapper(name = "promotingInteroperabilityUserHistory", nillable = true, required = false)
+    @XmlElement(name = "promotingInteroperabilityUserEntry")
+    @Builder.Default
+    private List<PromotingInteroperabilityUser> promotingInteroperabilityUserHistory = new ArrayList<PromotingInteroperabilityUser>();
 
     /**
      * All data related to safety-enhanced design for this listing.
@@ -763,12 +768,22 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.directReviewsAvailable = directReviewsAvailable;
     }
 
+    @Deprecated
     public List<MeaningfulUseUser> getMeaningfulUseUserHistory() {
         return meaningfulUseUserHistory;
     }
 
+    @Deprecated
     public void setMeaningfulUseUserHistory(List<MeaningfulUseUser> meaningfulUseUserHistory) {
         this.meaningfulUseUserHistory = meaningfulUseUserHistory;
+    }
+
+    public List<PromotingInteroperabilityUser> getPromotingInteroperabilityUserHistory() {
+        return promotingInteroperabilityUserHistory;
+    }
+
+    public void setPromotingInteroperabilityUserHistory(List<PromotingInteroperabilityUser> promotingInteroperabilityUserHistory) {
+        this.promotingInteroperabilityUserHistory = promotingInteroperabilityUserHistory;
     }
 
     public Integer getCountSurveillance() {
@@ -896,9 +911,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return result;
     }
 
-    /**
-     * Dynamically determine the current MUU count by finding the most recent MUU entry for this listing.
-     */
+    @Deprecated
     public MeaningfulUseUser getCurrentMeaningfulUseUsers() {
         if (this.getMeaningfulUseUserHistory() == null
                 || this.getMeaningfulUseUserHistory().size() == 0) {
