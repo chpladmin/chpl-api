@@ -58,11 +58,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
             "170.315 (d)(4)"
     };
 
-    private static final String[] B_RELATED_CERTS = {
-            "170.315 (d)(1)", "170.315 (d)(2)", "170.315 (d)(3)", "170.315 (d)(5)", "170.315 (d)(6)", "170.315 (d)(7)",
-            "170.315 (d)(8)"
-    };
-
     private static final String[] C_RELATED_CERTS = {
             "170.315 (d)(1)", "170.315 (d)(2)", "170.315 (d)(3)", "170.315 (d)(5)"
     };
@@ -98,8 +93,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     };
 
     private static final String B1_CRITERIA_NUMBER = "170.315 (b)(1)";
-    private static final String G1_CRITERIA_NUMBER = "170.315 (g)(1)";
-    private static final String G2_CRITERIA_NUMBER = "170.315 (g)(2)";
     private static final String G3_CRITERIA_NUMBER = "170.315 (g)(3)";
     private static final String G6_CRITERIA_NUMBER = "170.315 (g)(6)";
     private static final String H1_CRITERIA_NUMBER = "170.315 (h)(1)";
@@ -154,62 +147,62 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         List<String> errors;
         List<String> warnings;
 
-        errors = validationUtils.checkClassOfCriteriaForErrors("170.315 (a)", attestedCriteria,
+        errors = validationUtils.checkClassOfCriteriaForMissingComplementaryCriteriaNumberErrors("170.315 (a)", attestedCriteria,
                 Arrays.asList(A_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
-        warnings = validationUtils.checkClassOfCriteriaForWarnings("170.315 (a)", attestedCriteria,
+        warnings = validationUtils.checkClassOfCriteriaForMissingComplementaryCriteriaNumberWarnings("170.315 (a)", attestedCriteria,
                 Arrays.asList(A_RELATED_CERTS));
         addListingWarningsByPermission(listing, warnings);
 
-        errors = validationUtils.checkClassSubsetOfCriteriaForErrors("170.315 (a)", attestedCriteria,
+        errors = validationUtils.checkClassSubsetOfCriteriaForMissingComplementaryCriteriaNumberErrors("170.315 (a)", attestedCriteria,
                 Arrays.asList(A_RELATED_CERTS_EXCEPTION), Arrays.asList(A_CERT_EXCEPTIONS));
         listing.getErrorMessages().addAll(errors);
-        warnings = validationUtils.checkClassSubsetOfCriteriaForWarnings("170.315 (a)", attestedCriteria,
+        warnings = validationUtils.checkClassSubsetOfCriteriaForMissingComplementaryCriteriaNumberWarnings("170.315 (a)", attestedCriteria,
                 Arrays.asList(A_RELATED_CERTS_EXCEPTION), Arrays.asList(A_CERT_EXCEPTIONS));
         addListingWarningsByPermission(listing, warnings);
 
-        errors = validationUtils.checkClassOfCriteriaForErrors("170.315 (c)", attestedCriteria,
+        errors = validationUtils.checkClassOfCriteriaForMissingComplementaryCriteriaNumberErrors("170.315 (c)", attestedCriteria,
                 Arrays.asList(C_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
-        warnings = validationUtils.checkClassOfCriteriaForWarnings("170.315 (c)", attestedCriteria,
+        warnings = validationUtils.checkClassOfCriteriaForMissingComplementaryCriteriaNumberWarnings("170.315 (c)", attestedCriteria,
                 Arrays.asList(C_RELATED_CERTS));
         addListingWarningsByPermission(listing, warnings);
 
-        errors = validationUtils.checkClassOfCriteriaForErrors("170.315 (f)", attestedCriteria,
+        errors = validationUtils.checkClassOfCriteriaForMissingComplementaryCriteriaNumberErrors("170.315 (f)", attestedCriteria,
                 Arrays.asList(F_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
-        warnings = validationUtils.checkClassOfCriteriaForWarnings("170.315 (f)", attestedCriteria,
+        warnings = validationUtils.checkClassOfCriteriaForMissingComplementaryCriteriaNumberWarnings("170.315 (f)", attestedCriteria,
                 Arrays.asList(F_RELATED_CERTS));
         addListingWarningsByPermission(listing, warnings);
 
-        errors = validationUtils.checkClassOfCriteriaForErrors("170.315 (h)", attestedCriteria,
+        errors = validationUtils.checkClassOfCriteriaForMissingComplementaryCriteriaNumberErrors("170.315 (h)", attestedCriteria,
                 Arrays.asList(H_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
-        warnings = validationUtils.checkClassOfCriteriaForWarnings("170.315 (h)", attestedCriteria,
+        warnings = validationUtils.checkClassOfCriteriaForMissingComplementaryCriteriaNumberWarnings("170.315 (h)", attestedCriteria,
                 Arrays.asList(H_RELATED_CERTS));
         addListingWarningsByPermission(listing, warnings);
 
         e1Criteria.stream().forEach(e1Criterion -> {
-            List<String> e1Errors = validationUtils.checkSpecificCriteriaForErrors(e1Criterion, attestedCriteria,
+            List<String> e1Errors = validationUtils.checkSpecificCriterionForMissingComplementaryCriteriaNumberErrors(e1Criterion, attestedCriteria,
                     Arrays.asList(E1_RELATED_CERTS));
             listing.getErrorMessages().addAll(e1Errors);
         });
 
         // check for (e)(2) or (e)(3) required complimentary certs
         List<String> e2e3ComplimentaryErrors =
-                validationUtils.checkComplimentaryCriteriaAllRequired(e2e3Criterion,
+                validationUtils.checkComplementaryCriteriaNumbersAllRequired(e2e3Criterion,
                         Arrays.asList(E2E3_RELATED_CERTS), attestedCriteria);
         listing.getErrorMessages().addAll(e2e3ComplimentaryErrors);
 
         // check for (g)(7) or (g)(8) or (g)(9) required complimentary certs
         List<String> g7g8g9ComplimentaryErrors =
-                validationUtils.checkComplimentaryCriteriaAllRequired(g7g8g9Criterion,
+                validationUtils.checkComplementaryCriteriaNumbersAllRequired(g7g8g9Criterion,
                         Arrays.asList(G7G8G9_RELATED_CERTS), attestedCriteria);
         listing.getErrorMessages().addAll(g7g8g9ComplimentaryErrors);
 
         //if g7, g8, or g9 is found then one of d2 or d10 is required
         g7g8g9ComplimentaryErrors =
-                validationUtils.checkComplimentaryCriteriaAnyRequired(g7g8g9Criterion, d2d10Criterion, attestedCriteria);
+                validationUtils.checkComplementaryCriteriaNumbersAnyRequired(g7g8g9Criterion, d2d10Criterion, attestedCriteria);
         listing.getErrorMessages().addAll(g7g8g9ComplimentaryErrors);
 
         // g3 checks
