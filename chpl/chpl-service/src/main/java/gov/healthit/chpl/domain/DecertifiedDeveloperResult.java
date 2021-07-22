@@ -6,8 +6,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.util.DateUtil;
+import gov.healthit.chpl.util.LocalDateDeserializer;
+import gov.healthit.chpl.util.LocalDateSerializer;
 import lombok.Data;
 
 @Data
@@ -17,7 +22,11 @@ public class DecertifiedDeveloperResult implements Serializable {
     private List<CertificationBody> certifyingBody;
     private Date decertificationDate;
     private Long promotingInteroperabilityUsers;
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate earliestPromotingInteroperabilityUserCountDate;
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate latestPromotingInteroperabilityUserCountDate;
 
     @Deprecated
