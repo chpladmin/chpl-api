@@ -7,6 +7,7 @@ import java.util.List;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultAdditionalSoftwareEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultOptionalStandardEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestDataEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestFunctionalityEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestProcedureEntity;
@@ -47,6 +48,9 @@ public class PendingCertificationResultDTO implements Serializable {
     @Singular("additionalSoftwareSingle")
     private List<PendingCertificationResultAdditionalSoftwareDTO> additionalSoftware;
 
+    @Singular
+    private List<PendingCertificationResultOptionalStandardDTO> optionalStandards;
+
     @Singular("testDataSingle")
     private List<PendingCertificationResultTestDataDTO> testData;
 
@@ -69,6 +73,7 @@ public class PendingCertificationResultDTO implements Serializable {
         criterion = new CertificationCriterionDTO();
         ucdProcesses = new ArrayList<PendingCertificationResultUcdProcessDTO>();
         additionalSoftware = new ArrayList<PendingCertificationResultAdditionalSoftwareDTO>();
+        optionalStandards = new ArrayList<PendingCertificationResultOptionalStandardDTO>();
         testData = new ArrayList<PendingCertificationResultTestDataDTO>();
         testFunctionality = new ArrayList<PendingCertificationResultTestFunctionalityDTO>();
         testProcedures = new ArrayList<PendingCertificationResultTestProcedureDTO>();
@@ -105,6 +110,11 @@ public class PendingCertificationResultDTO implements Serializable {
             }
         }
 
+        if (entity.getOptionalStandards() != null) {
+            for (PendingCertificationResultOptionalStandardEntity e : entity.getOptionalStandards()) {
+                this.getOptionalStandards().add(new PendingCertificationResultOptionalStandardDTO(e));
+            }
+        }
         if (entity.getTestStandards() != null) {
             for (PendingCertificationResultTestStandardEntity e : entity.getTestStandards()) {
                 this.getTestStandards().add(new PendingCertificationResultTestStandardDTO(e));
