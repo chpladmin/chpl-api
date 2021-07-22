@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -38,7 +39,7 @@ public class UnattestedCriteriaWithDataReviewer {
     }
 
     private void reviewCertificationResult(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if ((certResult.isSuccess() == null || !certResult.isSuccess())) {
+        if (!isCriterionAttestedTo(listing, certResult.getCriterion())) {
             if (certResult.isGap() != null && certResult.isGap()) {
                 listing.getWarningMessages().add(
                         msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
@@ -135,7 +136,7 @@ public class UnattestedCriteriaWithDataReviewer {
 
     private boolean isCriterionAttestedTo(CertifiedProductSearchDetails listing, CertificationCriterion criterion) {
         return listing.getCertificationResults().stream()
-            .filter(certResult -> certResult.isSuccess())
+            .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
             .filter(certResult -> certResult.getCriterion().getId().equals(criterion.getId()))
             .findAny().isPresent();
     }

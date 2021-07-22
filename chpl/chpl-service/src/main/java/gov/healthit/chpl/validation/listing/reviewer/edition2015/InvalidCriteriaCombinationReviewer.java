@@ -2,6 +2,7 @@ package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
 import java.util.Optional;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -53,7 +54,8 @@ public class InvalidCriteriaCombinationReviewer implements Reviewer {
     private Optional<CertificationResult> findCertificationResult(CertifiedProductSearchDetails listing,
             Integer criteriaId) {
         return listing.getCertificationResults().stream()
-                .filter(cr -> cr.isSuccess() != null & cr.isSuccess()
+                .filter(cr -> BooleanUtils.isTrue(cr.isSuccess())
+                                && cr.getCriterion() != null && cr.getCriterion().getId() != null
                                 && cr.getCriterion().getId().equals(Long.valueOf(criteriaId)))
                 .findFirst();
     }
