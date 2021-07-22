@@ -10,20 +10,25 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
-import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 
+@Component
+@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ChplHtmlEmailBuilder {
-    private static final String EMAIL_CONTENT_TAG = "{email-content}";
-    private static final String TITLE_TAG = "{title}";
-    private static final String SUBTITLE_TAG = "{subtitle}";
-    private static final String PARAGRAPH_HEADING_TAG = "{paragraph-heading}";
-    private static final String PARAGRAPH_TEXT_TAG = "{paragraph-text}";
-    private static final String TABLE_HEADER_TAG = "{table-header}";
-    private static final String TABLE_DATA_TAG = "{table-data}";
-    private static final String BUTTON_BAR_TAG = "{buttons}";
+    private static final String EMAIL_CONTENT_TAG = "email-content";
+    private static final String TITLE_TAG = "title";
+    private static final String SUBTITLE_TAG = "subtitle";
+    private static final String PARAGRAPH_HEADING_TAG = "paragraph-heading";
+    private static final String PARAGRAPH_TEXT_TAG = "paragraph-text";
+    private static final String TABLE_HEADER_TAG = "table-header";
+    private static final String TABLE_DATA_TAG = "table-data";
+    private static final String BUTTON_BAR_TAG = "buttons";
 
     private String htmlSkeleton;
     private String htmlHeading;
@@ -34,25 +39,24 @@ public class ChplHtmlEmailBuilder {
 
     private StringBuilder emailContents;
 
-    public ChplHtmlEmailBuilder() throws IOException {
-        ResourceLoader resourceLoader = new DefaultResourceLoader();
-        Resource htmlSkeletonResource = resourceLoader.getResource("classpath:email/chpl-email-skeleton.html");
+    @Autowired
+    public ChplHtmlEmailBuilder(@Value("classpath:email/chpl-email-skeleton.html") Resource htmlSkeletonResource,
+            @Value("classpath:email/chpl-email-heading.html") Resource htmlHeadingResource,
+            @Value("classpath:email/chpl-email-paragraph.html") Resource htmlParagraphResource,
+            @Value("classpath:email/chpl-email-table.html") Resource htmlTableResource,
+            @Value("classpath:email/chpl-email-button-bar.html") Resource htmlButtonBarResource,
+            @Value("classpath:email/chpl-email-footer.html") Resource htmlFooterResource) throws IOException {
         htmlSkeleton = StreamUtils.copyToString(htmlSkeletonResource.getInputStream(), StandardCharsets.UTF_8);
-        Resource htmlHeadingResource = resourceLoader.getResource("classpath:email/chpl-email-heading.html");
         htmlHeading = StreamUtils.copyToString(htmlHeadingResource.getInputStream(), StandardCharsets.UTF_8);
-        Resource htmlParagraphResource = resourceLoader.getResource("classpath:email/chpl-email-paragraph.html");
         htmlParagraph = StreamUtils.copyToString(htmlParagraphResource.getInputStream(), StandardCharsets.UTF_8);
-        Resource htmlTableResource = resourceLoader.getResource("classpath:email/chpl-email-table.html");
         htmlTable = StreamUtils.copyToString(htmlTableResource.getInputStream(), StandardCharsets.UTF_8);
-        Resource htmlButtonBarResource = resourceLoader.getResource("classpath:email/chpl-email-button-bar.html");
         htmlButtonBar = StreamUtils.copyToString(htmlButtonBarResource.getInputStream(), StandardCharsets.UTF_8);
-        Resource htmlFooterResource = resourceLoader.getResource("classpath:email/chpl-email-footer.html");
         htmlFooter = StreamUtils.copyToString(htmlFooterResource.getInputStream(), StandardCharsets.UTF_8);
 
         emailContents = new StringBuilder(htmlSkeleton);
     }
 
-    public ChplHtmlEmailBuilder addHeading(String title, String subtitle) {
+    public ChplHtmlEmailBuilder heading(String title, String subtitle) {
         if (StringUtils.isAllBlank(title, subtitle)) {
             return this;
         }
@@ -76,12 +80,12 @@ public class ChplHtmlEmailBuilder {
             values.put(SUBTITLE_TAG, "");
         }
 
-        String modifiedHtmlHeading = StringSubstitutor.replace(htmlHeading, values, "{", "}");
+        String modifiedHtmlHeading = StringSubstitutor.replace(htmlHeading, values);
         addItemToEmailContents(modifiedHtmlHeading);
         return this;
     }
 
-    public ChplHtmlEmailBuilder addParagraph(String heading, String text) {
+    public ChplHtmlEmailBuilder paragraph(String heading, String text) {
         if (StringUtils.isAllBlank(heading, text)) {
             return this;
         }
@@ -98,12 +102,12 @@ public class ChplHtmlEmailBuilder {
             values.put(PARAGRAPH_TEXT_TAG, "");
         }
 
-        String modifiedHtmlParagraph = StringSubstitutor.replace(htmlParagraph, values, "{", "}");
+        String modifiedHtmlParagraph = StringSubstitutor.replace(htmlParagraph, values);
         addItemToEmailContents(modifiedHtmlParagraph);
         return this;
     }
 
-    public ChplHtmlEmailBuilder addTable(List<String> tableHeadings, List<List<String>> tableData) {
+    public ChplHtmlEmailBuilder table(List<String> tableHeadings, List<List<String>> tableData) {
         if (CollectionUtils.isEmpty(tableHeadings) && CollectionUtils.isEmpty(tableData)) {
             return this;
         }
@@ -120,41 +124,41 @@ public class ChplHtmlEmailBuilder {
         }
         if (!CollectionUtils.isEmpty(tableData)) {
             StringBuffer tableDataHtml = new StringBuffer();
-            tableData.stream().forEach(row -> tableDataHtml.append("<tr>" + createRowHtml(row) + "</tr>"));
+            tableData.stream().forEach(row -> tableDataHtml.append("<tr>" + tableRow(row) + "</tr>"));
             values.put(TABLE_DATA_TAG, tableDataHtml.toString());
         } else {
             values.put(TABLE_DATA_TAG, "");
         }
 
-        String modifiedHtmlTable = StringSubstitutor.replace(htmlTable, values, "{", "}");
+        String modifiedHtmlTable = StringSubstitutor.replace(htmlTable, values);
         addItemToEmailContents(modifiedHtmlTable);
         return this;
     }
 
-    private String createRowHtml(List<String> row) {
+    private String tableRow(List<String> row) {
         StringBuffer rowHtml = new StringBuffer();
         row.stream()
             .forEach(cell -> rowHtml.append("<td>" + row + "</td>"));
         return rowHtml.toString();
     }
 
-    public ChplHtmlEmailBuilder addButtonBar(Map<String, String> buttonLabelToHrefMap) {
+    public ChplHtmlEmailBuilder buttonBar(Map<String, String> buttonLabelToHrefMap) {
         if (MapUtils.isEmpty(buttonLabelToHrefMap)) {
             return this;
         }
 
         StringBuilder buttonsHtml = new StringBuilder();
         buttonLabelToHrefMap.keySet().stream()
-            .forEach(buttonLabel -> buttonsHtml.append(createButton(buttonLabel, buttonLabelToHrefMap.get(buttonLabel))));
+            .forEach(buttonLabel -> buttonsHtml.append(button(buttonLabel, buttonLabelToHrefMap.get(buttonLabel))));
         Map<String, String> values = new HashMap<String, String>();
         values.put(BUTTON_BAR_TAG, buttonsHtml.toString());
 
-        String modifiedHtmlButtonBar = StringSubstitutor.replace(htmlButtonBar, values, "{", "}");
+        String modifiedHtmlButtonBar = StringSubstitutor.replace(htmlButtonBar, values);
         addItemToEmailContents(modifiedHtmlButtonBar);
         return this;
     }
 
-    private String createButton(String label, String href) {
+    private String button(String label, String href) {
         return "<td align=\"center\" "
                 + "valign=\"top\" "
                 + "style=\"padding: 10px;\"> "
@@ -178,20 +182,20 @@ public class ChplHtmlEmailBuilder {
                 + "</td>";
     }
 
-    public ChplHtmlEmailBuilder addFooter() {
+    public ChplHtmlEmailBuilder footer() {
         addItemToEmailContents(htmlFooter);
         return this;
+    }
+
+    private void addItemToEmailContents(String htmlToAdd) {
+        Map<String, String> values = new HashMap<String, String>();
+        values.put(EMAIL_CONTENT_TAG, htmlToAdd + "\n" + "${" + EMAIL_CONTENT_TAG + "}");
+        StringSubstitutor.replace(emailContents, values);
     }
 
     public String build() {
         Map<String, String> values = new HashMap<String, String>();
         values.put(EMAIL_CONTENT_TAG, "");
-        return StringSubstitutor.replace(emailContents, values, "{", "}");
-    }
-
-    private void addItemToEmailContents(String htmlToAdd) {
-        Map<String, String> values = new HashMap<String, String>();
-        values.put(EMAIL_CONTENT_TAG, htmlToAdd + "\n" + EMAIL_CONTENT_TAG);
-        StringSubstitutor.replace(emailContents, values, "{", "}");
+        return StringSubstitutor.replace(emailContents, values);
     }
 }

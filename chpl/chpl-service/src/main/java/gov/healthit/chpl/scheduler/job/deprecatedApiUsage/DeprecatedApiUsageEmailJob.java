@@ -30,6 +30,9 @@ public class DeprecatedApiUsageEmailJob implements Job {
     private DeprecatedApiUsageDao deprecatedApiUsageDao;
 
     @Autowired
+    private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
+
+    @Autowired
     private Environment env;
 
     @Value("${deprecatedApiUsage.email.subject}")
@@ -81,11 +84,10 @@ public class DeprecatedApiUsageEmailJob implements Job {
         List<String> apiUsageHeading  = Stream.of("HTTP Method", "API Endpoint", "Usage Count", "Last Accessed", "Message").collect(Collectors.toList());
         List<List<String>> apiUsageData = new ArrayList<List<String>>();
         deprecatedApiUsage.stream().forEach(api -> apiUsageData.add(createUsageData(api)));
-        ChplHtmlEmailBuilder emailBuilder = new ChplHtmlEmailBuilder();
-        String htmlMessage = emailBuilder.addHeading("Deprecated API Usage Notification", null)
-            .addParagraph("", String.format(deprecatedApiUsageEmailBody, apiKey.getKey()))
-            .addTable(apiUsageHeading, apiUsageData)
-            .addFooter()
+        String htmlMessage = chplHtmlEmailBuilder.heading("Deprecated API Usage Notification", null)
+            .paragraph("", String.format(deprecatedApiUsageEmailBody, apiKey.getKey()))
+            .table(apiUsageHeading, apiUsageData)
+            .footer()
             .build();
         LOGGER.debug("HTML Email being sent to " + apiKey.getEmail() + ": \n" + htmlMessage);
         return htmlMessage;
