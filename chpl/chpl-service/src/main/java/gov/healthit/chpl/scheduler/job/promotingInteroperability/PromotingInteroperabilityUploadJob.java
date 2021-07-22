@@ -34,6 +34,7 @@ import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.EmailBuilder;
@@ -205,6 +206,10 @@ public class PromotingInteroperabilityUploadJob implements Job {
                             cpManager.update(updateRequest);
                         }
                     }
+                } catch (ValidationException ex) {
+                    String msg = "Line " + piu.getCsvLineNumber() + ": " + piu.getChplProductNumber() + " has " + ex.getErrorMessages().size() + " errors and cannot be validated or updated.";
+                    LOGGER.error(msg, ex);
+                    piu.setError(msg);
                 } catch (Exception ex) {
                     String msg = "Line " + piu.getCsvLineNumber() + ": An unexpected error occurred. "
                             + ex.getMessage();
