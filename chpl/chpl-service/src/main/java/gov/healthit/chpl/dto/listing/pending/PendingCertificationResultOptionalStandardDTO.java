@@ -3,7 +3,6 @@ package gov.healthit.chpl.dto.listing.pending;
 import java.io.Serializable;
 
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultOptionalStandardEntity;
-import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,19 +18,11 @@ public class PendingCertificationResultOptionalStandardDTO implements Serializab
     private Long pendingCertificationResultId;
     private Long optionalStandardId;
     private String citation;
-    private OptionalStandard optionalStandard;
 
     public PendingCertificationResultOptionalStandardDTO(PendingCertificationResultOptionalStandardEntity entity) {
         this.id = entity.getId();
         this.pendingCertificationResultId = entity.getPendingCertificationResultId();
         this.optionalStandardId = entity.getOptionalStandardId();
         this.citation = entity.getCitation();
-        OptionalStandard os = new OptionalStandard();
-        if (entity.getOptionalStandard() != null) {
-            os.setId(entity.getOptionalStandard().getId());
-            os.setCitation(entity.getOptionalStandard().getCitation());
-            os.setDescription(entity.getOptionalStandard().getDescription());
-        }
-        this.optionalStandard = os;
     }
 }

@@ -361,7 +361,6 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
                             .id(os.getId())
                             .citation(os.getCitation())
                             .optionalStandardId(os.getOptionalStandardId())
-                            .optionalStandard(os.getOptionalStandard())
                             .build();
                     cert.getOptionalStandards().add(optionalStd);
                 }

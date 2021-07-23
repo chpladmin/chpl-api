@@ -718,7 +718,7 @@ public class CertifiedProductManager extends SecuredManager {
                                 if (foundOptionalStandard != null) {
                                     standard.setOptionalStandardId(foundOptionalStandard.getId());
                                 } else {
-                                    LOGGER.error("Will not insert optional standard with null id. Name was " + std.getCitation());
+                                    LOGGER.error("Will not insert optional standard with null id. Citation was " + std.getCitation());
                                 }
                             } else {
                                 standard.setOptionalStandardId(std.getOptionalStandardId());

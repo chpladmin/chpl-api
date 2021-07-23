@@ -49,9 +49,9 @@ public class OptionalStandardReviewer implements Reviewer {
 
             for (CertificationResult cr : certificationResultsWithOptionalStandards) {
                 for (CertificationResultOptionalStandard cros : cr.getOptionalStandards()) {
-                    if (!isOptionalStandardValidForCriteria(cros.getOptionalStandard().getId(), cr.getCriterion().getId(), optionalStandardCriteriaMap)) {
+                    if (!isOptionalStandardValidForCriteria(cros.getOptionalStandardId(), cr.getCriterion().getId(), optionalStandardCriteriaMap)) {
                         listing.getErrorMessages().add(errorMessageUtil.getMessage("listing.criteria.optionalStandard.invalidCriteria",
-                                cros.getOptionalStandard().getCitation(), cr.getCriterion().getNumber()));
+                                cros.getCitation(), cr.getCriterion().getNumber()));
                     }
                 }
             }
