@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 public class ChangeRequestDetailsFactory {
     private ChangeRequestWebsiteService crWebsiteService;
     private ChangeRequestDeveloperDetailsService crDevDetailsService;
+    private ChangeRequestAttestationService crAttestattionService;
 
     @Value("${changerequest.website}")
     private Long websiteChangeRequestType;
@@ -15,11 +16,16 @@ public class ChangeRequestDetailsFactory {
     @Value("${changerequest.developerDetails}")
     private Long developerDetailsChangeRequestType;
 
+    @Value("${changerequest.attestation}")
+    private Long attestationChangeRequestType;
+
     @Autowired
     public ChangeRequestDetailsFactory(ChangeRequestWebsiteService crWebsiteService,
-            ChangeRequestDeveloperDetailsService crDevDetailsService) {
+            ChangeRequestDeveloperDetailsService crDevDetailsService,
+            ChangeRequestAttestationService crAttestationService) {
         this.crWebsiteService = crWebsiteService;
         this.crDevDetailsService = crDevDetailsService;
+        this.crAttestattionService = crAttestationService;
     }
 
     public ChangeRequestDetailsService<?> get(Long changeRequestType) {
@@ -29,6 +35,8 @@ public class ChangeRequestDetailsFactory {
             crDetailsService = crWebsiteService;
         } else if (changeRequestType.equals(developerDetailsChangeRequestType)) {
             crDetailsService = crDevDetailsService;
+        } else if (changeRequestType.equals(attestationChangeRequestType)) {
+            crDetailsService = crAttestattionService;
         }
         return crDetailsService;
     }
