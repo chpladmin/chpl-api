@@ -2,14 +2,12 @@ package gov.healthit.chpl.email;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StringSubstitutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -21,14 +19,14 @@ import org.springframework.util.StreamUtils;
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ChplHtmlEmailBuilder {
-    private static final String EMAIL_CONTENT_TAG = "email-content";
-    private static final String TITLE_TAG = "title";
-    private static final String SUBTITLE_TAG = "subtitle";
-    private static final String PARAGRAPH_HEADING_TAG = "paragraph-heading";
-    private static final String PARAGRAPH_TEXT_TAG = "paragraph-text";
-    private static final String TABLE_HEADER_TAG = "table-header";
-    private static final String TABLE_DATA_TAG = "table-data";
-    private static final String BUTTON_BAR_TAG = "buttons";
+    private static final String EMAIL_CONTENT_TAG = "${email-content}";
+    private static final String TITLE_TAG = "${title}";
+    private static final String SUBTITLE_TAG = "${subtitle}";
+    private static final String PARAGRAPH_HEADING_TAG = "${paragraph-heading}";
+    private static final String PARAGRAPH_TEXT_TAG = "${paragraph-text}";
+    private static final String TABLE_HEADER_TAG = "${table-header}";
+    private static final String TABLE_DATA_TAG = "${table-data}";
+    private static final String BUTTON_BAR_TAG = "${buttons}";
 
     private String htmlSkeleton;
     private String htmlHeading;
@@ -37,7 +35,7 @@ public class ChplHtmlEmailBuilder {
     private String htmlButtonBar;
     private String htmlFooter;
 
-    private StringBuilder emailContents;
+    private String emailContents;
 
     @Autowired
     public ChplHtmlEmailBuilder(@Value("classpath:email/chpl-email-skeleton.html") Resource htmlSkeletonResource,
@@ -53,7 +51,7 @@ public class ChplHtmlEmailBuilder {
         htmlButtonBar = StreamUtils.copyToString(htmlButtonBarResource.getInputStream(), StandardCharsets.UTF_8);
         htmlFooter = StreamUtils.copyToString(htmlFooterResource.getInputStream(), StandardCharsets.UTF_8);
 
-        emailContents = new StringBuilder(htmlSkeleton);
+        emailContents = new String(htmlSkeleton);
     }
 
     public ChplHtmlEmailBuilder heading(String title, String subtitle) {
@@ -61,14 +59,14 @@ public class ChplHtmlEmailBuilder {
             return this;
         }
 
-        Map<String, String> values = new HashMap<String, String>();
+        String modifiedHtmlHeading = new String(htmlHeading);
         if (!StringUtils.isEmpty(title)) {
-            values.put(TITLE_TAG, "<h1>" + title + "</h1>");
+            modifiedHtmlHeading = modifiedHtmlHeading.replace(TITLE_TAG, "<h1>" + title + "</h1>");
         } else {
-            values.put(TITLE_TAG, "");
+            modifiedHtmlHeading = modifiedHtmlHeading.replace(TITLE_TAG, "");
         }
         if (!StringUtils.isEmpty(subtitle)) {
-            values.put(SUBTITLE_TAG, "<p style="
+            modifiedHtmlHeading = modifiedHtmlHeading.replace(SUBTITLE_TAG, "<p style="
                     + "\"margin-top: -10px; "
                     + "font-size: 12px; "
                     + "color: white; "
@@ -77,10 +75,9 @@ public class ChplHtmlEmailBuilder {
                     + "font-weight: 400; "
                     + "padding-bottom: 64px;\">" + subtitle + "</p>");
         } else {
-            values.put(SUBTITLE_TAG, "");
+            modifiedHtmlHeading = modifiedHtmlHeading.replace(SUBTITLE_TAG, "");
         }
 
-        String modifiedHtmlHeading = StringSubstitutor.replace(htmlHeading, values);
         addItemToEmailContents(modifiedHtmlHeading);
         return this;
     }
@@ -90,19 +87,18 @@ public class ChplHtmlEmailBuilder {
             return this;
         }
 
-        Map<String, String> values = new HashMap<String, String>();
+        String modifiedHtmlParagraph = new String(htmlParagraph);
         if (!StringUtils.isEmpty(heading)) {
-            values.put(PARAGRAPH_HEADING_TAG, "<h2>" + heading + "</h2>");
+            modifiedHtmlParagraph = modifiedHtmlParagraph.replace(PARAGRAPH_HEADING_TAG, "<h2>" + heading + "</h2>");
         } else {
-            values.put(PARAGRAPH_HEADING_TAG, "");
+            modifiedHtmlParagraph = modifiedHtmlParagraph.replace(PARAGRAPH_HEADING_TAG, "");
         }
         if (!StringUtils.isEmpty(text)) {
-            values.put(PARAGRAPH_TEXT_TAG, "<p>" + text + "</p>");
+            modifiedHtmlParagraph = modifiedHtmlParagraph.replace(PARAGRAPH_TEXT_TAG, "<p>" + text + "</p>");
         } else {
-            values.put(PARAGRAPH_TEXT_TAG, "");
+            modifiedHtmlParagraph = modifiedHtmlParagraph.replace(PARAGRAPH_TEXT_TAG, "");
         }
 
-        String modifiedHtmlParagraph = StringSubstitutor.replace(htmlParagraph, values);
         addItemToEmailContents(modifiedHtmlParagraph);
         return this;
     }
@@ -112,25 +108,24 @@ public class ChplHtmlEmailBuilder {
             return this;
         }
 
-        Map<String, String> values = new HashMap<String, String>();
+        String modifiedHtmlTable = new String(htmlTable);
         if (!CollectionUtils.isEmpty(tableHeadings)) {
             StringBuffer tableHeadingHtml = new StringBuffer();
             tableHeadingHtml.append("<tr>");
             tableHeadings.stream().forEach(heading -> tableHeadingHtml.append("<th align=\"left\">" + heading + "</th>"));
             tableHeadingHtml.append("</tr>");
-            values.put(TABLE_HEADER_TAG, "<h2>" + tableHeadingHtml.toString() + "</h2>");
+            modifiedHtmlTable = modifiedHtmlTable.replace(TABLE_HEADER_TAG, "<h2>" + tableHeadingHtml.toString() + "</h2>");
         } else {
-            values.put(TABLE_HEADER_TAG, "");
+            modifiedHtmlTable = modifiedHtmlTable.replace(TABLE_HEADER_TAG, "");
         }
         if (!CollectionUtils.isEmpty(tableData)) {
             StringBuffer tableDataHtml = new StringBuffer();
             tableData.stream().forEach(row -> tableDataHtml.append("<tr>" + tableRow(row) + "</tr>"));
-            values.put(TABLE_DATA_TAG, tableDataHtml.toString());
+            modifiedHtmlTable = modifiedHtmlTable.replace(TABLE_DATA_TAG, tableDataHtml.toString());
         } else {
-            values.put(TABLE_DATA_TAG, "");
+            modifiedHtmlTable = modifiedHtmlTable.replace(TABLE_DATA_TAG, "");
         }
 
-        String modifiedHtmlTable = StringSubstitutor.replace(htmlTable, values);
         addItemToEmailContents(modifiedHtmlTable);
         return this;
     }
@@ -150,10 +145,8 @@ public class ChplHtmlEmailBuilder {
         StringBuilder buttonsHtml = new StringBuilder();
         buttonLabelToHrefMap.keySet().stream()
             .forEach(buttonLabel -> buttonsHtml.append(button(buttonLabel, buttonLabelToHrefMap.get(buttonLabel))));
-        Map<String, String> values = new HashMap<String, String>();
-        values.put(BUTTON_BAR_TAG, buttonsHtml.toString());
 
-        String modifiedHtmlButtonBar = StringSubstitutor.replace(htmlButtonBar, values);
+        String modifiedHtmlButtonBar = htmlButtonBar.replace(BUTTON_BAR_TAG, buttonsHtml.toString());
         addItemToEmailContents(modifiedHtmlButtonBar);
         return this;
     }
@@ -188,14 +181,10 @@ public class ChplHtmlEmailBuilder {
     }
 
     private void addItemToEmailContents(String htmlToAdd) {
-        Map<String, String> values = new HashMap<String, String>();
-        values.put(EMAIL_CONTENT_TAG, htmlToAdd + "\n" + "${" + EMAIL_CONTENT_TAG + "}");
-        StringSubstitutor.replace(emailContents, values);
+        emailContents = emailContents.replace(EMAIL_CONTENT_TAG, htmlToAdd + EMAIL_CONTENT_TAG);
     }
 
     public String build() {
-        Map<String, String> values = new HashMap<String, String>();
-        values.put(EMAIL_CONTENT_TAG, "");
-        return StringSubstitutor.replace(emailContents, values);
+        return emailContents.replace(EMAIL_CONTENT_TAG, "");
     }
 }
