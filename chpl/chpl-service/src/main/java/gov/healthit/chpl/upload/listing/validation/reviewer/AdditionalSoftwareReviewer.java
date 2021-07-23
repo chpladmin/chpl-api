@@ -28,7 +28,8 @@ public class AdditionalSoftwareReviewer extends PermissionBasedReviewer {
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
+            .filter(certResult -> certResult.getCriterion() != null && certResult.getCriterion().getId() != null
+                && BooleanUtils.isTrue(certResult.isSuccess()))
             .forEach(certResult -> review(listing, certResult));
     }
 
