@@ -16,7 +16,6 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestAttestationDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestation;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestWebsite;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -25,8 +24,10 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.util.EmailBuilder;
+import lombok.extern.log4j.Log4j2;
 
 @Component
+@Log4j2
 public class ChangeRequestAttestationService extends ChangeRequestDetailsService<ChangeRequestAttestation> {
     private ChangeRequestDAO crDAO;
     private ChangeRequestAttestationDAO crAttesttionDAO;
@@ -110,6 +111,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     @Override
     protected ChangeRequest execute(ChangeRequest cr) throws EntityRetrievalException, EntityCreationException {
         // This will need to be implemented once we know what do when an attestation is approved
+        LOGGER.info("Attestation Change Request has been executed.");
         return cr;
     }
 
@@ -138,7 +140,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                 .subject(pendingDeveloperActionEmailSubject)
                 .htmlMessage(String.format(pendingDeveloperActionEmailBody,
                         df.format(cr.getSubmittedDate()),
-                        ((ChangeRequestWebsite) cr.getDetails()).getWebsite(),
+                        ((ChangeRequestAttestation) cr.getDetails()).getAttestation(),
                         getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
                 .sendEmail();
@@ -154,7 +156,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                 .subject(rejectedEmailSubject)
                 .htmlMessage(String.format(rejectedEmailBody,
                         df.format(cr.getSubmittedDate()),
-                        ((ChangeRequestWebsite) cr.getDetails()).getWebsite(),
+                        ((ChangeRequestAttestation) cr.getDetails()).getAttestation(),
                         getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
                 .sendEmail();
