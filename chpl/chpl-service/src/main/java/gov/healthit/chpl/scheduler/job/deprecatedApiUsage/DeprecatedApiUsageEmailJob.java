@@ -70,7 +70,6 @@ public class DeprecatedApiUsageEmailJob implements Job {
             emailBuilder.recipient(apiKey.getEmail())
                 .subject(deprecatedApiUsageEmailSubject)
                 .htmlMessage(createHtmlMessage(apiKey, deprecatedApiUsage))
-                .publicHtmlFooter()
                 .sendEmail();
             LOGGER.info("Sent email to " + apiKey.getEmail() + ".");
             deprecatedApiUsage.stream().forEach(item -> deleteDeprecatedApiUsage(item));
@@ -84,11 +83,14 @@ public class DeprecatedApiUsageEmailJob implements Job {
         List<String> apiUsageHeading  = Stream.of("HTTP Method", "API Endpoint", "Usage Count", "Last Accessed", "Message").collect(Collectors.toList());
         List<List<String>> apiUsageData = new ArrayList<List<String>>();
         deprecatedApiUsage.stream().forEach(api -> apiUsageData.add(createUsageData(api)));
-        String htmlMessage = chplHtmlEmailBuilder.heading("Deprecated API Usage Notification", null)
-            .paragraph("", String.format(deprecatedApiUsageEmailBody, apiKey.getKey()))
-            .table(apiUsageHeading, apiUsageData)
-            .footer()
-            .build();
+        String htmlMessage = chplHtmlEmailBuilder.initialize()
+                .heading("Deprecated API Usage Notification", null)
+                .paragraph("", String.format(deprecatedApiUsageEmailBody, apiKey.getKey(),
+                        isDuplicate(deprecatedApiUsage) ? "s" : "",
+                        isDuplicate(deprecatedApiUsage) ? "s" : " "))
+                .table(apiUsageHeading, apiUsageData)
+                .footer(true)
+                .build();
         LOGGER.debug("HTML Email being sent to " + apiKey.getEmail() + ": \n" + htmlMessage);
         return htmlMessage;
     }
@@ -99,6 +101,10 @@ public class DeprecatedApiUsageEmailJob implements Job {
                 deprecatedApiUsage.getCallCount().toString(),
                 deprecatedApiUsage.getLastAccessedDate().toString(),
                 deprecatedApiUsage.getApi().getChangeDescription()).collect(Collectors.toList());
+    }
+
+    private boolean isDuplicate(List<DeprecatedApiUsage> deprecatedApiUsage) {
+        return deprecatedApiUsage.size() > 1;
     }
 
     private void deleteDeprecatedApiUsage(DeprecatedApiUsage deprecatedApiUsage) {

@@ -27,6 +27,7 @@ public class ChplHtmlEmailBuilder {
     private static final String TABLE_HEADER_TAG = "${table-header}";
     private static final String TABLE_DATA_TAG = "${table-data}";
     private static final String BUTTON_BAR_TAG = "${buttons}";
+    private static final String FEEDBACK_URL_TAG = "${feedback-url}";
 
     private String htmlSkeleton;
     private String htmlHeading;
@@ -34,7 +35,8 @@ public class ChplHtmlEmailBuilder {
     private String htmlTable;
     private String htmlButtonBar;
     private String htmlFooter;
-
+    private String publicFeedbackUrl;
+    private String adminAcbAndAtlFeedbackUrl;
     private String emailContents;
 
     @Autowired
@@ -43,15 +45,23 @@ public class ChplHtmlEmailBuilder {
             @Value("classpath:email/chpl-email-paragraph.html") Resource htmlParagraphResource,
             @Value("classpath:email/chpl-email-table.html") Resource htmlTableResource,
             @Value("classpath:email/chpl-email-button-bar.html") Resource htmlButtonBarResource,
-            @Value("classpath:email/chpl-email-footer.html") Resource htmlFooterResource) throws IOException {
+            @Value("classpath:email/chpl-email-footer.html") Resource htmlFooterResource,
+            @Value("${footer.acbatlUrl}") String adminAcbAndAtlFeedbackUrl,
+            @Value("${footer.publicUrl}") String publicFeedbackUrl) throws IOException {
         htmlSkeleton = StreamUtils.copyToString(htmlSkeletonResource.getInputStream(), StandardCharsets.UTF_8);
         htmlHeading = StreamUtils.copyToString(htmlHeadingResource.getInputStream(), StandardCharsets.UTF_8);
         htmlParagraph = StreamUtils.copyToString(htmlParagraphResource.getInputStream(), StandardCharsets.UTF_8);
         htmlTable = StreamUtils.copyToString(htmlTableResource.getInputStream(), StandardCharsets.UTF_8);
         htmlButtonBar = StreamUtils.copyToString(htmlButtonBarResource.getInputStream(), StandardCharsets.UTF_8);
         htmlFooter = StreamUtils.copyToString(htmlFooterResource.getInputStream(), StandardCharsets.UTF_8);
-
+        this.adminAcbAndAtlFeedbackUrl = adminAcbAndAtlFeedbackUrl;
+        this.publicFeedbackUrl = publicFeedbackUrl;
         emailContents = new String(htmlSkeleton);
+    }
+
+    public ChplHtmlEmailBuilder initialize() {
+        this.emailContents = new String(htmlSkeleton);
+        return this;
     }
 
     public ChplHtmlEmailBuilder heading(String title, String subtitle) {
@@ -114,7 +124,7 @@ public class ChplHtmlEmailBuilder {
             tableHeadingHtml.append("<tr>");
             tableHeadings.stream().forEach(heading -> tableHeadingHtml.append("<th align=\"left\">" + heading + "</th>"));
             tableHeadingHtml.append("</tr>");
-            modifiedHtmlTable = modifiedHtmlTable.replace(TABLE_HEADER_TAG, "<h2>" + tableHeadingHtml.toString() + "</h2>");
+            modifiedHtmlTable = modifiedHtmlTable.replace(TABLE_HEADER_TAG,  tableHeadingHtml.toString());
         } else {
             modifiedHtmlTable = modifiedHtmlTable.replace(TABLE_HEADER_TAG, "");
         }
@@ -133,7 +143,7 @@ public class ChplHtmlEmailBuilder {
     private String tableRow(List<String> row) {
         StringBuffer rowHtml = new StringBuffer();
         row.stream()
-            .forEach(cell -> rowHtml.append("<td>" + row + "</td>"));
+            .forEach(cell -> rowHtml.append("<td>" + cell + "</td>"));
         return rowHtml.toString();
     }
 
@@ -175,8 +185,15 @@ public class ChplHtmlEmailBuilder {
                 + "</td>";
     }
 
-    public ChplHtmlEmailBuilder footer() {
-        addItemToEmailContents(htmlFooter);
+    public ChplHtmlEmailBuilder footer(boolean publicUrl) {
+        String modifiedHtmlFooter = new String(htmlFooter);
+        if (!publicUrl) {
+            modifiedHtmlFooter = modifiedHtmlFooter.replace(FEEDBACK_URL_TAG, adminAcbAndAtlFeedbackUrl);
+        } else {
+            modifiedHtmlFooter = modifiedHtmlFooter.replace(FEEDBACK_URL_TAG, publicFeedbackUrl);
+        }
+
+        addItemToEmailContents(modifiedHtmlFooter);
         return this;
     }
 
