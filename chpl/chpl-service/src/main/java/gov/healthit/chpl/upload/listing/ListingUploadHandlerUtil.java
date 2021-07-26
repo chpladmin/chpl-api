@@ -367,7 +367,9 @@ public class ListingUploadHandlerUtil {
                 result = false;
             }
         } catch (NumberFormatException ex) {
-            LOGGER.error("Could not parse " + value + " as an integer. " + ex.getMessage());
+            if (!StringUtils.isBlank(value)) {
+                LOGGER.error("Could not parse " + value + " as an integer. " + ex.getMessage());
+            }
         }
 
         if (result == null) {

@@ -27,6 +27,17 @@ public class CSVHeaderReviewer {
             return;
         }
         CSVRecord heading = handlerUtil.getHeadingRecord(uploadedMetadata.getRecords());
+        reviewDuplicateHeadings(listing, heading);
+        reviewUnrecognizedHeadings(listing, heading);
+    }
+
+    private void reviewDuplicateHeadings(CertifiedProductSearchDetails listing, CSVRecord heading) {
+        //TODO:
+        //look for duplicates outside of criteria headings
+        //look for duplicates within each criteria heading
+    }
+
+    private void reviewUnrecognizedHeadings(CertifiedProductSearchDetails listing, CSVRecord heading) {
         heading.forEach(headingVal -> {
             if (!StringUtils.isEmpty(headingVal) && Headings.getHeading(headingVal) == null) {
                 listing.getWarningMessages().add(msgUtil.getMessage("listing.upload.unrecognizedHeading", headingVal));

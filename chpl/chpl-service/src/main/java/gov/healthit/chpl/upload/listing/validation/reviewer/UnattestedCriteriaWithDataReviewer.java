@@ -36,8 +36,8 @@ public class UnattestedCriteriaWithDataReviewer {
 
         listing.getCertificationResults().stream()
             .filter(certResult -> certResult != null && certResult.getCriterion() != null && certResult.getCriterion().getId() != null
-                    && BooleanUtils.isTrue(certResult.isSuccess()))
-            .forEach(certResult -> reviewCertificationResult(listing, certResult));
+                    && BooleanUtils.isFalse(certResult.isSuccess()))
+            .forEach(unattestedCertResult -> reviewCertificationResult(listing, unattestedCertResult));
     }
 
     private void reviewCertificationResult(CertifiedProductSearchDetails listing, CertificationResult certResult) {
