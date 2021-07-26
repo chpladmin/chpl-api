@@ -15,7 +15,7 @@
         </RollingFile>
         <RollingFile name="chplServiceJsonLog" fileName="${logDir}/chplservice.json.log" filePermissions="rw-rw-r--" filePattern="${logDir}/chplservice.json-%d{yyyyMMdd}.log">
             <JsonLayout compact="true" eventEol="true" >
-                <KeyValuePair key="service" value="java-app" />
+                <KeyValuePair key="service" value="CHPL Dev - chplservice.log" />
             </JsonLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1" modulate="true" />

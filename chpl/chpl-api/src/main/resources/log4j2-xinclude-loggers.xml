@@ -17,6 +17,7 @@
     <Logger name="summaryStatisticsCreatorJobLogger" level="INFO"
         additivity="false">
         <AppenderRef ref="summaryStatisticsCreatorJob" />
+        <AppenderRef ref="summaryStatisticsCreatorJobJson" />
     </Logger>
     <Logger name="curesStatisticsCreatorJobLogger" level="INFO"
         additivity="false">
