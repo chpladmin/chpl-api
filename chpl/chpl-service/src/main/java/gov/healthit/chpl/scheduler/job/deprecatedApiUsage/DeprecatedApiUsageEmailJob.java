@@ -2,6 +2,7 @@ package gov.healthit.chpl.scheduler.job.deprecatedApiUsage;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,6 +23,7 @@ import gov.healthit.chpl.api.deprecatedUsage.DeprecatedApiUsageDao;
 import gov.healthit.chpl.api.domain.ApiKey;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.util.DateUtil;
 
 public class DeprecatedApiUsageEmailJob implements Job {
     private static final Logger LOGGER = LogManager.getLogger("deprecatedApiUsageEmailJobLogger");
@@ -86,6 +88,7 @@ public class DeprecatedApiUsageEmailJob implements Job {
         String htmlMessage = chplHtmlEmailBuilder.initialize()
                 .heading("Deprecated API Usage Notification", null)
                 .paragraph("", String.format(deprecatedApiUsageEmailBody, apiKey.getKey(),
+                        apiKey.getName(),
                         isDuplicate(deprecatedApiUsage) ? "s" : "",
                         isDuplicate(deprecatedApiUsage) ? "s" : " "))
                 .table(apiUsageHeading, apiUsageData)
@@ -99,8 +102,12 @@ public class DeprecatedApiUsageEmailJob implements Job {
         return Stream.of(deprecatedApiUsage.getApi().getHttpMethod().name(),
                 deprecatedApiUsage.getApi().getApiOperation(),
                 deprecatedApiUsage.getCallCount().toString(),
-                deprecatedApiUsage.getLastAccessedDate().toString(),
+                getEasternTimeDisplay(deprecatedApiUsage.getLastAccessedDate()),
                 deprecatedApiUsage.getApi().getChangeDescription()).collect(Collectors.toList());
+    }
+
+    private String getEasternTimeDisplay(Date date) {
+        return DateUtil.formatInEasternTime(date, "MMM d, yyyy, hh:mm");
     }
 
     private boolean isDuplicate(List<DeprecatedApiUsage> deprecatedApiUsage) {
