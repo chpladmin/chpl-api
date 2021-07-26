@@ -15,6 +15,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 
@@ -61,7 +62,7 @@ public class OptionalStandardReviewer implements Reviewer {
                         optionalStandard.getCitation()));
             } else if (!isOptionalStandardValidForCriteria(foundOptionalStandard.getId(), certResult.getCriterion().getId(), optionalStandardCriteriaMap)) {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.optionalStandard.invalidCriteria",
-                        foundOptionalStandard.getCitation(), certResult.getCriterion().getNumber()));
+                        foundOptionalStandard.getCitation(), Util.formatCriteriaNumber(certResult.getCriterion())));
             }
         }
     }
