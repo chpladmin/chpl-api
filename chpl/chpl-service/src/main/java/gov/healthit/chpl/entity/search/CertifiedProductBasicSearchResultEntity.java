@@ -61,16 +61,12 @@ public class CertifiedProductBasicSearchResultEntity {
     @Column(name = "owner_history")
     private String previousDevelopers;
 
-    @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.NONE)
     @Column(name = "certification_date")
     private Date certificationDate;
 
     @Column(name = "certification_status_name")
     private String certificationStatus;
 
-    @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.NONE)
     @Column(name = "decertification_date")
     private Date decertificationDate;
 
@@ -107,10 +103,11 @@ public class CertifiedProductBasicSearchResultEntity {
     @Column(name = "meaningful_use_users")
     private Long meaningfulUseUserCount;
 
-    @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.NONE)
     @Column(name = "meaningful_use_users_date")
     private Date meaningfulUseUserDate;
+
+    @Column(name = "rwt_eligibility_year")
+    private Integer rwtEligibilityYear;
 
     @Column(name = "certs")
     private String certs; // comma-separated list of all certification criteria
@@ -126,27 +123,4 @@ public class CertifiedProductBasicSearchResultEntity {
     @Column(name = "child")
     private String child; // comma-separated list of all children
 
-    public Date getMeaningfulUseUserDate() {
-        return Util.getNewDate(meaningfulUseUserDate);
-    }
-
-    public void setMeaningfulUseUserDate(Date meaningfulUseUserDate) {
-        this.meaningfulUseUserDate = Util.getNewDate(meaningfulUseUserDate);
-    }
-
-    public Date getCertificationDate() {
-        return Util.getNewDate(certificationDate);
-    }
-
-    public void setCertificationDate(Date certificationDate) {
-        this.certificationDate = Util.getNewDate(certificationDate);
-    }
-
-    public Date getDecertificationDate() {
-        return Util.getNewDate(decertificationDate);
-    }
-
-    public void setDecertificationDate(Date decertificationDate) {
-        this.decertificationDate = Util.getNewDate(decertificationDate);
-    }
 }

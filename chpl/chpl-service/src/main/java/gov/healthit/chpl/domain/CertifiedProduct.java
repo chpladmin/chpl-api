@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.springframework.util.StringUtils;
@@ -69,6 +70,9 @@ public class CertifiedProduct implements Serializable {
     @XmlElement(required = false, nillable = true)
     private Boolean curesUpdate;
 
+    @XmlTransient
+    private Integer rwtEligibilityYear;
+
     public CertifiedProduct() {
     }
 
@@ -87,6 +91,7 @@ public class CertifiedProduct implements Serializable {
         this.certificationDate = (dto.getCertificationDate() != null ? dto.getCertificationDate().getTime() : -1);
         this.certificationStatus = dto.getCertificationStatusName();
         this.curesUpdate = dto.getCuresUpdate();
+        this.rwtEligibilityYear = dto.getRwtEligibilityYear();
     }
 
     /**

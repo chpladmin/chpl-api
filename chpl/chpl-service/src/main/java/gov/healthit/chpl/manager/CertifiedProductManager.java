@@ -512,6 +512,20 @@ public class CertifiedProductManager extends SecuredManager {
         toCreate.setIcsCode(uniqueIdParts[ICS_CODE_LOC]);
         toCreate.setAdditionalSoftwareCode(uniqueIdParts[SW_CODE_LOC]);
         toCreate.setCertifiedDateCode(uniqueIdParts[DATE_CODE_LOC]);
+        if (pendingCp.getIcsParents() != null && pendingCp.getIcsParents().size() > 0) {
+            for (CertifiedProductDetailsDTO parentCpDto : pendingCp.getIcsParents()) {
+                CertifiedProduct cp = searchDao.getByChplProductNumber(parentCpDto.getChplProductNumber());
+                if (cp != null) {
+                    if (pendingCp.getIcs() && cp.getRwtEligibilityYear() != null) {
+                        if (toCreate.getRwtEligibilityYear() != null) {
+                            toCreate.setRwtEligibilityYear(Math.min(cp.getRwtEligibilityYear(), toCreate.getRwtEligibilityYear()));
+                        } else {
+                            toCreate.setRwtEligibilityYear(cp.getRwtEligibilityYear());
+                        }
+                    }
+                }
+            }
+        }
 
         CertifiedProductDTO newCertifiedProduct = cpDao.create(toCreate);
 

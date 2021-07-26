@@ -83,6 +83,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         result.setChplProductNumber(results.get(0).getChplProductNumber());
         result.setEdition(results.get(0).getEdition());
         result.setCuresUpdate(results.get(0).getCuresUpdate());
+        result.setRwtEligibilityYear(results.get(0).getRwtEligibilityYear());
         result.setId(results.get(0).getId());
         return result;
     }
