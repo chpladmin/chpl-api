@@ -242,7 +242,6 @@ public class ChangeRequestManager extends SecurityManager {
         return crMap.containsKey("attestation");
     }
 
-
     private boolean isWebsiteChanged(ChangeRequest cr) {
         Developer existingDeveloper = cr.getDeveloper();
         HashMap<String, Object> crMap = (HashMap) cr.getDetails();
