@@ -236,7 +236,7 @@ public class ChangeRequestManager extends SecurityManager {
     }
 
     private boolean isDeveloperAttestationChangeRequest(ChangeRequest cr) {
-        // This needs to be able to identify the an attestation "details" object.
+        // This needs to be able to identify an attestation "details" object.
         // This will probably need to be changed when the attestation object is defined
         HashMap<String, Object> crMap = (HashMap) cr.getDetails();
         return crMap.containsKey("attestation");
