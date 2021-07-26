@@ -45,7 +45,7 @@ public class TestStandardReviewer implements Reviewer {
         } else {
             if (ff4j.check(FeatureList.OPTIONAL_STANDARDS_ERROR)) {
                 listing.getErrorMessages().add(
-                        msgUtil.getMessage("listing.criteria.disallowedTestStandard",
+                        msgUtil.getMessage("listing.criteria.testStandardNotAllowed",
                         Util.formatCriteriaNumber(certResult.getCriterion()),
                         testStandard.getName()));
             } else {
@@ -59,7 +59,7 @@ public class TestStandardReviewer implements Reviewer {
                                     listing.getCertificationEdition()));
                 } else if (ff4j.check(FeatureList.OPTIONAL_STANDARDS)) {
                     listing.getWarningMessages().add(
-                            msgUtil.getMessage("listing.criteria.disallowedTestStandard",
+                            msgUtil.getMessage("listing.criteria.testStandardNotAllowed",
                                     Util.formatCriteriaNumber(certResult.getCriterion()),
                                     testStandard.getName()));
                 }
