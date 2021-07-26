@@ -17,6 +17,9 @@
             <JsonLayout compact="true" eventEol="true" >
                 <KeyValuePair key="service" value="java-app" />
             </JsonLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
         </RollingFile>
     </Appenders>
     <Loggers>
