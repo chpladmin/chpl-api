@@ -8,20 +8,29 @@
                 <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
             </PatternLayout>
         </Console>
+        <File name="chplServiceJsonLog" fileName="${logDir}/chplservice.json.log" filePermissions="rw-rw-r--" filePattern="${logDir}/chplservice.json-%d{yyyyMMdd}.log">
+            <JsonLayout compact="true" eventEol="true" >
+                <KeyValuePair key="service" value="java-app" />
+            </JsonLayout>
+        </File>
     </Appenders>
     <Loggers>
         <Logger name="org.jose4j" level="ERROR" additivity="false">
             <AppenderRef ref="STDOUT" />
+            <AppenderRef ref="chplServiceJsonLog" />
         </Logger>
         <Logger name="org.hibernate" level="ERROR" additivity="false">
             <AppenderRef ref="STDOUT" />
+            <AppenderRef ref="chplServiceJsonLog" />
         </Logger>
         <Logger name="org.springframework" level="ERROR"
             additivity="false">
             <AppenderRef ref="STDOUT" />
+            <AppenderRef ref="chplServiceJsonLog" />
         </Logger>
         <Logger name="gov.healthit.chpl" level="INFO" additivity="false">
             <AppenderRef ref="STDOUT" />
+            <AppenderRef ref="chplServiceJsonLog" />
         </Logger>
     </Loggers>
 </Configuration>

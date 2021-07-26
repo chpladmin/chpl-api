@@ -13,20 +13,28 @@
                     interval="1" modulate="true" />
             </Policies>
         </RollingFile>
+        <RollingFile name="chplServiceJsonLog" fileName="${logDir}/chplservice.json.log" filePermissions="rw-rw-r--" filePattern="${logDir}/chplservice.json-%d{yyyyMMdd}.log">
+            <JsonLayout compact="true" eventEol="true" >
+                <KeyValuePair key="service" value="java-app" />
+            </JsonLayout>
+        </RollingFile>
     </Appenders>
     <Loggers>
         <Logger name="org.jose4j" level="ERROR" additivity="false">
             <AppenderRef ref="FILE" />
+            <AppenderRef ref="chplServiceJsonLog" />
         </Logger>
         <Logger name="org.hibernate" level="ERROR" additivity="false">
             <AppenderRef ref="FILE" />
+            <AppenderRef ref="chplServiceJsonLog" />
         </Logger>
-        <Logger name="org.springframework" level="ERROR"
-            additivity="false">
+        <Logger name="org.springframework" level="ERROR" additivity="false">
             <AppenderRef ref="FILE" />
+            <AppenderRef ref="chplServiceJsonLog" />
         </Logger>
         <Logger name="gov.healthit.chpl" level="INFO" additivity="false">
             <AppenderRef ref="FILE" />
+            <AppenderRef ref="chplServiceJsonLog" />
         </Logger>
     </Loggers>
 </Configuration>
