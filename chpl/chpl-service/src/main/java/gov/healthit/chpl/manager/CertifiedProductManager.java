@@ -164,6 +164,7 @@ import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CuresUpdateService;
+import gov.healthit.chpl.service.RealWorldTestingService;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
@@ -218,6 +219,7 @@ public class CertifiedProductManager extends SecuredManager {
     private ListingValidatorFactory validatorFactory;
     private CuresUpdateService curesUpdateService;
     private CertificationCriterionService criteriaService;
+    private RealWorldTestingService realWorldTestingService;
 
     private static final int PROD_CODE_LOC = 4;
     private static final int VER_CODE_LOC = 5;
@@ -256,7 +258,7 @@ public class CertifiedProductManager extends SecuredManager {
             PendingCertifiedProductManager pcpManager,
             ActivityManager activityManager, ListingValidatorFactory validatorFactory,
             CuresUpdateService curesUpdateService,
-            CertificationCriterionService criteriaService) {
+            CertificationCriterionService criteriaService, RealWorldTestingService realWorldTestingService) {
 
         this.msgUtil = msgUtil;
         this.cpDao = cpDao;
@@ -302,6 +304,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.validatorFactory = validatorFactory;
         this.curesUpdateService = curesUpdateService;
         this.criteriaService = criteriaService;
+        this.realWorldTestingService = realWorldTestingService;
     }
 
     @Transactional(readOnly = true)
@@ -512,7 +515,8 @@ public class CertifiedProductManager extends SecuredManager {
         toCreate.setIcsCode(uniqueIdParts[ICS_CODE_LOC]);
         toCreate.setAdditionalSoftwareCode(uniqueIdParts[SW_CODE_LOC]);
         toCreate.setCertifiedDateCode(uniqueIdParts[DATE_CODE_LOC]);
-        if (pendingCp.getIcsParents() != null && pendingCp.getIcsParents().size() > 0) {
+        if (pendingCp.getIcsParents() != null && pendingCp.getIcsParents().size() > 0
+                && realWorldTestingService.doesListingAttestToEligibleCriteria(pendingCp)) {
             for (CertifiedProductDetailsDTO parentCpDto : pendingCp.getIcsParents()) {
                 CertifiedProduct cp = searchDao.getByChplProductNumber(parentCpDto.getChplProductNumber());
                 if (cp != null) {
