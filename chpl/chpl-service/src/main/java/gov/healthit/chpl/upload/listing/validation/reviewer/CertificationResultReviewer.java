@@ -71,8 +71,6 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
         if (listing.getCertificationResults() == null) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.missingCertificationResults"));
             return;
-        } else if (listing.getCertificationResults().size() == 0 || hasNoAttestedCriteria(listing)) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.missingCertificationResults"));
         }
 
         listing.getCertificationResults().stream()
@@ -82,6 +80,18 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
             .filter(certResult -> certResult != null && certResult.getCriterion() != null && certResult.getCriterion().getId() != null
                         && BooleanUtils.isTrue(certResult.isSuccess()))
             .forEach(certResult -> reviewCertResultFields(listing, certResult));
+        criteriaReviewer.review(listing);
+        privacyAndSecurityFrameworkReviewer.review(listing);
+        additionalSoftwareReviewer.review(listing);
+        gapAllowedReviewer.review(listing);
+        testToolReviewer.review(listing);
+        testDataReviewer.review(listing);
+        testProcedureReviewer.review(listing);
+        testFunctionalityReviewer.review(listing);
+        testStandardReviewer.review(listing);
+        unattestedCriteriaWithDataReviewer.review(listing);
+        oldCriteriaWithoutIcsReviewer.review(listing);
+        sedG3Reviewer.review(listing);
     }
 
     private boolean hasNoAttestedCriteria(CertifiedProductSearchDetails listing) {
@@ -106,19 +116,6 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
         reviewExportDocumentation(listing, certResult);
         reviewUseCases(listing, certResult);
         reviewServiceBaseUrlList(listing, certResult);
-
-        criteriaReviewer.review(listing);
-        privacyAndSecurityFrameworkReviewer.review(listing);
-        additionalSoftwareReviewer.review(listing);
-        gapAllowedReviewer.review(listing);
-        testToolReviewer.review(listing);
-        testDataReviewer.review(listing);
-        testProcedureReviewer.review(listing);
-        testFunctionalityReviewer.review(listing);
-        testStandardReviewer.review(listing);
-        unattestedCriteriaWithDataReviewer.review(listing);
-        oldCriteriaWithoutIcsReviewer.review(listing);
-        sedG3Reviewer.review(listing);
     }
 
     private void reviewGap(CertifiedProductSearchDetails listing, CertificationResult certResult) {
