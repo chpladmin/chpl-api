@@ -83,7 +83,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     @Override
     public ChangeRequest update(ChangeRequest cr) throws InvalidArgumentsException {
         try {
-            // Get the current cr to determine if the website changed
+            // Get the current cr to determine if the attestation changed
             ChangeRequest crFromDb = crDAO.get(cr.getId());
 
             // Convert the map of key/value pairs to a ChangeRequestWebsite object
