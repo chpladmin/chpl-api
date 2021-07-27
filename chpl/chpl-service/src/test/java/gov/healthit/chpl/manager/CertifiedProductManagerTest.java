@@ -78,6 +78,7 @@ import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CuresUpdateService;
+import gov.healthit.chpl.service.RealWorldTestingService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.Validator;
@@ -130,6 +131,7 @@ public class CertifiedProductManagerTest {
     private ListingValidatorFactory validatorFactory;
     private CuresUpdateService curesUpdateService;
     private CertificationCriterionService criterionService;
+    private RealWorldTestingService realWorldTestingService;
 
     private CertifiedProductManager certifiedProductManager;
 
@@ -178,6 +180,7 @@ public class CertifiedProductManagerTest {
         validatorFactory = Mockito.mock(ListingValidatorFactory.class);
         curesUpdateService = Mockito.mock(CuresUpdateService.class);
         criterionService = Mockito.mock(CertificationCriterionService.class);
+        realWorldTestingService = Mockito.mock(RealWorldTestingService.class);
 
         certifiedProductManager = new  CertifiedProductManager(msgUtil, cpDao,  searchDao, certDao,
                 certCriterionDao, qmsDao,  targetedUserDao, asDao,  cpQmsDao, cpMeasureDao, cpTestingLabDao,
@@ -187,7 +190,7 @@ public class CertifiedProductManagerTest {
                 testProcDao,  testDataDao, testFuncDao,  ucdDao, testParticipantDao,  testTaskDao, certStatusDao,
                 listingGraphDao, fuzzyChoicesDao,  resourcePermissions, certifiedProductSearchResultDAO,
                 certifiedProductDetailsManager, Mockito.mock(PendingCertifiedProductManager.class),
-                activityManager, validatorFactory, curesUpdateService, criterionService);
+                activityManager, validatorFactory, curesUpdateService, criterionService, realWorldTestingService);
     }
 
     @Test(expected = ValidationException.class)
