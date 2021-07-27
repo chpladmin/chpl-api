@@ -518,13 +518,13 @@ public class CertifiedProductManager extends SecuredManager {
         if (pendingCp.getIcsParents() != null && pendingCp.getIcsParents().size() > 0
                 && realWorldTestingService.doesListingAttestToEligibleCriteria(pendingCp)) {
             for (CertifiedProductDetailsDTO parentCpDto : pendingCp.getIcsParents()) {
-                CertifiedProduct cp = searchDao.getByChplProductNumber(parentCpDto.getChplProductNumber());
-                if (cp != null) {
-                    if (pendingCp.getIcs() && cp.getRwtEligibilityYear() != null) {
+                List<CertifiedProductDetailsDTO> cp = certifiedProductSearchResultDAO.getByChplProductNumber(parentCpDto.getChplProductNumber());
+                if (cp.size() > 0) {
+                    if (pendingCp.getIcs() && cp.get(0).getRwtEligibilityYear() != null) {
                         if (toCreate.getRwtEligibilityYear() != null) {
-                            toCreate.setRwtEligibilityYear(Math.min(cp.getRwtEligibilityYear(), toCreate.getRwtEligibilityYear()));
+                            toCreate.setRwtEligibilityYear(Math.min(cp.get(0).getRwtEligibilityYear(), toCreate.getRwtEligibilityYear()));
                         } else {
-                            toCreate.setRwtEligibilityYear(cp.getRwtEligibilityYear());
+                            toCreate.setRwtEligibilityYear(cp.get(0).getRwtEligibilityYear());
                         }
                     }
                 }

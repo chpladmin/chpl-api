@@ -102,9 +102,6 @@ public class CertifiedProductBasicSearchResultEntity {
     @Column(name = "meaningful_use_users_date")
     private Date meaningfulUseUserDate;
 
-    @Column(name = "rwt_eligibility_year")
-    private Integer rwtEligibilityYear;
-
     @Column(name = "certs")
     private String certs; // comma-separated list of all certification criteria
     // met by the certified product
