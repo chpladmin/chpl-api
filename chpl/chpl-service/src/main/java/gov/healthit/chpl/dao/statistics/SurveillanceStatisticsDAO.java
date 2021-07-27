@@ -1,5 +1,7 @@
 package gov.healthit.chpl.dao.statistics;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -100,7 +102,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
      */
     public Long getTotalOpenNonconformities(Date endDate) {
         String hql = "SELECT count(*) " + "FROM SurveillanceNonconformityEntity "
-                + "WHERE nonConformityCloseDate IS NULL ";
+                + "WHERE nonconformityCloseDate IS NULL ";
         if (endDate == null) {
             hql += " AND deleted = false";
         } else {
@@ -125,7 +127,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
                 + "SurveillanceEntity s, "
                 + "SurveillanceRequirementEntity sr, "
                 + "SurveillanceNonconformityEntity sn "
-                + "WHERE sn.nonConformityCloseDate IS NULL "
+                + "WHERE sn.nonconformityCloseDate IS NULL "
                 + "AND cp.certificationBodyId = cb.id "
                 + "AND cp.id = s.certifiedProductId "
                 + "AND s.id = sr.surveillanceId "
@@ -162,19 +164,26 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
      * Closed NCs.
      */
     public Long getTotalClosedNonconformities(Date endDate) {
+        LocalDate localDateEndDate = null;
+        if (endDate != null) {
+            localDateEndDate = endDate.toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+        }
+
         String hql = "SELECT count(*) "
                 + "FROM SurveillanceNonconformityEntity "
-                + "WHERE nonConformityCloseDate IS NOT NULL ";
+                + "WHERE nonconformityCloseDate IS NOT NULL ";
         if (endDate == null) {
             hql += " AND deleted = false";
         } else {
-            hql += " AND ((deleted = false AND nonConformityCloseDate <= :endDate) "
-                    + " OR " + "(deleted = true AND nonConformityCloseDate <= :endDate AND lastModifiedDate > :endDate)) ";
+            hql += " AND ((deleted = false AND nonconformityCloseDate <= :endDate) "
+                    + " OR " + "(deleted = true AND nonconformityCloseDate <= :endDate AND lastModifiedDate > :endDate)) ";
         }
 
         Query query = entityManager.createQuery(hql);
         if (endDate != null) {
-            query.setParameter("endDate", endDate);
+            query.setParameter("endDate", localDateEndDate);
         }
         return (Long) query.getSingleResult();
     }
