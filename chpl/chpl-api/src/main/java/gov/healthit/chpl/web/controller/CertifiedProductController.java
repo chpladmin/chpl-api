@@ -14,7 +14,6 @@ import java.util.function.Function;
 
 import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -492,15 +491,6 @@ public class CertifiedProductController {
                 new CertificationResults(cpdManager.getCertifiedProductCertificationResults(chplProductNumber));
 
         return results;
-    }
-
-    @ApiOperation(value = "Download all SED details that are certified to 170.315(g)(3).",
-            notes = "Download a specific file that is generated overnight.")
-    @RequestMapping(value = "/sed_details", method = RequestMethod.GET)
-    public void streamSEDDetailsDocumentContents(HttpServletResponse response)
-            throws EntityRetrievalException, IOException {
-        File downloadFile = fileUtils.getNewestFileMatchingName("^" + env.getProperty("SEDDownloadName") + "-.+\\.csv$");
-        fileUtils.streamFileAsResponse(downloadFile, "text/csv", response);
     }
 
     @ApiOperation(value = "Get the ICS family tree for the specified certified product.",

@@ -218,6 +218,17 @@ public class QuestionableActivityManager implements EnvironmentAware {
                 createListingActivity(activity, origListing.getId(), activityDate, activityUser,
                         QuestionableActivityTriggerConcept.REAL_WORLD_TESTING_REMOVED, activityReason);
             }
+            activity = listingQuestionableActivityProvider.checkRealWorldTestingPlanAddedForNotEligibleListing(origListing, newListing);
+            if (activity != null) {
+                createListingActivity(activity, origListing.getId(), activityDate, activityUser,
+                        QuestionableActivityTriggerConcept.REAL_WORLD_TESTING_ADDED, activityReason);
+            }
+            activity = listingQuestionableActivityProvider.checkRealWorldTestingResultsAddedForNotEligibleListing(origListing, newListing);
+            if (activity != null) {
+                createListingActivity(activity, origListing.getId(), activityDate, activityUser,
+                        QuestionableActivityTriggerConcept.REAL_WORLD_TESTING_ADDED, activityReason);
+            }
+
             List<QuestionableActivityListingDTO> activities
                 = listingQuestionableActivityProvider.checkMeasuresAdded(origListing, newListing);
             if (activities != null && activities.size() > 0) {

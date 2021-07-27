@@ -6,7 +6,10 @@ import java.util.Set;
 
 import org.springframework.util.StringUtils;
 
-public class SearchRequest implements Serializable {
+import gov.healthit.chpl.search.domain.SearchSetOperator;
+
+@Deprecated
+public class SearchRequestLegacy implements Serializable {
     private static final long serialVersionUID = 1179207628639701580L;
 
     public static final String CERTIFICATION_DATE_SEARCH_FORMAT = "yyyy-MM-dd";

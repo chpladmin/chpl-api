@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import gov.healthit.chpl.search.domain.SearchViews;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
