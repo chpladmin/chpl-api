@@ -60,7 +60,7 @@ public class CSVHeaderReviewer {
             headingRecord = uploadUtil.convertToCsvRecord(allHeadingColumns);
             nextCertResultIndex = uploadUtil.getNextIndexOfCertificationResult(0, headingRecord);
         }
-        //Note that if there were any listing-level headings (like VENDOR) that were duplicated
+        //Note that if there were any listing-level headings (like VENDOR__C) that were duplicated
         //at the certification result level (like if it was put in between A_1 and A_2) then
         //it won't get counted as a duplicate. I'm not sure how to deal with this and the root cause
         //of the difficulty is there are two headings TASK_ID and PARTICIPANT_ID that can be found
