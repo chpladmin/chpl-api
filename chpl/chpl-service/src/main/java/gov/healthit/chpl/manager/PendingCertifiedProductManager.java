@@ -377,6 +377,9 @@ public class PendingCertifiedProductManager extends SecuredManager {
                         CertificationResultRules.FUNCTIONALITY_TESTED)) {
                     certResult.setTestFunctionality(null);
                 }
+                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.OPTIONAL_STANDARD)) {
+                    certResult.setOptionalStandards(null);
+                }
                 if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.STANDARDS_TESTED)) {
                     certResult.setTestStandards(null);
                 }
