@@ -489,6 +489,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.MEASURE_REMOVED
                 .getName())) {
             currRow.set(ACTIVITY_DESCRIPTION_COL, "Removed " + activity.getBefore());
+        } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.REAL_WORLD_TESTING_ADDED.getName())) {
+          currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getAfter());
         } else if (activity.getTrigger().getName()
                 .equals(QuestionableActivityTriggerConcept.REAL_WORLD_TESTING_REMOVED.getName())) {
             currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getBefore());
