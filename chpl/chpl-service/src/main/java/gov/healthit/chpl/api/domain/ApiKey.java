@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -29,7 +27,6 @@ public class ApiKey implements Serializable {
     private Date deleteWarningSentDate;
 
     @JsonIgnore
-    @XmlTransient
     private boolean unrestricted;
 
     @Override
