@@ -63,6 +63,7 @@ import gov.healthit.chpl.listing.measure.PendingListingMeasureEntity;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap2015Version1;
+import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("certifiedProductHandler2015Version1")
@@ -536,7 +537,9 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                     parseTestStandardAsTestStandard(listing, cert, tsValue);
                 } else {
                     boolean parsed = false;
-                    parsed = parseTestStandardAsOptionalStandard(cert, tsValue);
+                    if (certRules.hasCertOption(cert.getMappedCriterion().getNumber(), CertificationResultRules.OPTIONAL_STANDARD)) {
+                        parsed = parseTestStandardAsOptionalStandard(cert, tsValue);
+                    }
                     if (!parsed) {
                         parseTestStandardAsTestStandard(listing, cert, tsValue);
                     }

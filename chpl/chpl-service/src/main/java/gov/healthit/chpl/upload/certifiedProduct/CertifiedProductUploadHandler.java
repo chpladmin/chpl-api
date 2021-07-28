@@ -40,6 +40,7 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
 import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
+import gov.healthit.chpl.util.CertificationResultRules;
 
 public abstract class CertifiedProductUploadHandler {
     @Autowired
@@ -102,6 +103,8 @@ public abstract class CertifiedProductUploadHandler {
     protected ListingMeasureDAO listingMeasureDao;
     @Autowired
     protected FF4j ff4j;
+    @Autowired
+    protected CertificationResultRules certRules;
 
     private static final String CERTIFICATION_DATE_FORMAT = "yyyyMMdd";
     protected SimpleDateFormat dateFormatter;
