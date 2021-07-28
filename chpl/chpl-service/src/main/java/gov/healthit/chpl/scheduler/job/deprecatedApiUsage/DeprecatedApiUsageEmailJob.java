@@ -43,6 +43,9 @@ public class DeprecatedApiUsageEmailJob implements Job {
     @Value("${deprecatedApiUsage.email.heading}")
     private String deprecatedApiUsageEmailHeading;
 
+    @Value("${deprecatedApiUsage.email.subHeading}")
+    private String deprecatedApiUsageEmailSubheading;
+
     @Value("${deprecatedApiUsage.email.greeting}")
     private String deprecatedApiUsageEmailGreeting;
 
@@ -98,7 +101,7 @@ public class DeprecatedApiUsageEmailJob implements Job {
         List<List<String>> apiUsageData = new ArrayList<List<String>>();
         deprecatedApiUsage.stream().forEach(api -> apiUsageData.add(createUsageData(api)));
         String htmlMessage = chplHtmlEmailBuilder.initialize()
-                .heading(deprecatedApiUsageEmailHeading, null)
+                .heading(deprecatedApiUsageEmailHeading, deprecatedApiUsageEmailSubheading)
                 .paragraph(
                         String.format(deprecatedApiUsageEmailGreeting, apiKey.getName()),
                         String.format(deprecatedApiUsageEmailBody,
