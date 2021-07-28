@@ -71,6 +71,8 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Questionable URL Report Generator job. *********");
         activeStatuses.add(CertificationStatusType.Active);
+        activeStatuses.add(CertificationStatusType.SuspendedByAcb);
+        activeStatuses.add(CertificationStatusType.SuspendedByOnc);
 
         try {
             List<FailedUrlResult> questionableUrls = new ArrayList<FailedUrlResult>();
