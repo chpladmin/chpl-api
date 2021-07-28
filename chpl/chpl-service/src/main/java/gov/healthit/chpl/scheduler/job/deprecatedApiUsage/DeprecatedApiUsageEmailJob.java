@@ -40,8 +40,20 @@ public class DeprecatedApiUsageEmailJob implements Job {
     @Value("${deprecatedApiUsage.email.subject}")
     private String deprecatedApiUsageEmailSubject;
 
+    @Value("${deprecatedApiUsage.email.heading}")
+    private String deprecatedApiUsageEmailHeading;
+
+    @Value("${deprecatedApiUsage.email.greeting}")
+    private String deprecatedApiUsageEmailGreeting;
+
     @Value("${deprecatedApiUsage.email.body}")
     private String deprecatedApiUsageEmailBody;
+
+    @Value("${deprecatedApiUsage.email.valediction}")
+    private String deprecatedApiUsageEmailValediction;
+
+    @Value("${footer.publicUrl}")
+    private String publicFeedbackUrl;
 
     @SuppressWarnings("checkstyle:linelength")
     @Override
@@ -86,12 +98,13 @@ public class DeprecatedApiUsageEmailJob implements Job {
         List<List<String>> apiUsageData = new ArrayList<List<String>>();
         deprecatedApiUsage.stream().forEach(api -> apiUsageData.add(createUsageData(api)));
         String htmlMessage = chplHtmlEmailBuilder.initialize()
-                .heading("Deprecated API Usage Notification", null)
-                .paragraph("", String.format(deprecatedApiUsageEmailBody, apiKey.getKey(),
-                        apiKey.getName(),
-                        isDuplicate(deprecatedApiUsage) ? "s" : "",
-                        isDuplicate(deprecatedApiUsage) ? "s" : " "))
+                .heading(deprecatedApiUsageEmailHeading, null)
+                .paragraph(
+                        String.format(deprecatedApiUsageEmailGreeting, apiKey.getName()),
+                        String.format(deprecatedApiUsageEmailBody,
+                                apiKey.getKey(), publicFeedbackUrl))
                 .table(apiUsageHeading, apiUsageData)
+                .paragraph("", deprecatedApiUsageEmailValediction)
                 .footer(true)
                 .build();
         LOGGER.debug("HTML Email being sent to " + apiKey.getEmail() + ": \n" + htmlMessage);
@@ -108,10 +121,6 @@ public class DeprecatedApiUsageEmailJob implements Job {
 
     private String getEasternTimeDisplay(Date date) {
         return DateUtil.formatInEasternTime(date, "MMM d, yyyy, hh:mm");
-    }
-
-    private boolean isDuplicate(List<DeprecatedApiUsage> deprecatedApiUsage) {
-        return deprecatedApiUsage.size() > 1;
     }
 
     private void deleteDeprecatedApiUsage(DeprecatedApiUsage deprecatedApiUsage) {
