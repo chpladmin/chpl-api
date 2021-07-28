@@ -87,8 +87,6 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
             }
         }
 
-        //TODO: something about deprecated parameters
-
         chain.doFilter(req, res);
     }
 
