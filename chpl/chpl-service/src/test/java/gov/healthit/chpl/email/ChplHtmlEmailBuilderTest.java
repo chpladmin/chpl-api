@@ -20,7 +20,7 @@ public class ChplHtmlEmailBuilderTest {
     @SuppressWarnings("checkstyle:magicnumber")
     public void setup() throws IOException {
         Resource htmlSkeletonResource = new ByteArrayResource("<html>${email-content}</html>".getBytes());
-        Resource htmlHeadingResource = new ByteArrayResource("<div>${title}</div><div>${subtitle}</div>".getBytes());
+        Resource htmlHeadingResource = new ByteArrayResource("<div>${title}</div>".getBytes());
         Resource htmlParagraphResource = new ByteArrayResource("<div>${paragraph-heading}</div><div>${paragraph-text}</div>".getBytes());
         Resource htmlTableResource = new ByteArrayResource("<table>${table-header}${table-data}</table>".getBytes());
         Resource htmlButtonBarResource = new ByteArrayResource("<div>${buttons}</div>".getBytes());
@@ -42,32 +42,9 @@ public class ChplHtmlEmailBuilderTest {
     @Test
     public void testEmailWithHeaderOnly_hasExpectedHtml() {
         String html = emailBuilder
-                .heading("my title", "my subtitle")
+                .heading("my title")
                 .build();
-        assertEquals("<html>"
-                + "<div><h1>my title</h1></div>"
-                + "<div><p style=\"margin-top: -10px; font-size: 12px; color: white; font-family: 'Open Sans', sans-serif; font-weight: 400; padding-bottom: 64px;\">my subtitle</p>"
-                + "</div></html>", html);
-    }
-
-    @Test
-    public void testEmailWithHeaderWithTitleOnly_hasExpectedHtml() {
-        String html = emailBuilder
-                .heading("my title", null)
-                .build();
-        assertEquals("<html><div><h1>my title</h1></div><div></div></html>", html);
-    }
-
-    @Test
-    public void testEmailWithHeaderWithSubtitleOnly_hasExpectedHtml() {
-        String html = emailBuilder
-                .heading(null, "my subtitle")
-                .build();
-        assertEquals("<html>"
-                + "<div></div>"
-                + "<div><p style=\"margin-top: -10px; font-size: 12px; color: white; font-family: 'Open Sans', sans-serif; font-weight: 400; padding-bottom: 64px;\">my subtitle"
-                + "</p></div>"
-                + "</html>", html);
+        assertEquals("<html><div><h1>my title</h1></div></html>", html);
     }
 
     @Test
@@ -131,20 +108,20 @@ public class ChplHtmlEmailBuilderTest {
     @Test
     public void testEmailWithHeaderTitleAndParagraphText_hasExpectedHtml() {
         String html = emailBuilder
-                .heading("my title", null)
+                .heading("my title")
                 .paragraph("",  "some text")
                 .build();
-        assertEquals("<html><div><h1>my title</h1></div><div></div><div></div><div><p>some text</p></div></html>", html);
+        assertEquals("<html><div><h1>my title</h1></div><div></div><div><p>some text</p></div></html>", html);
     }
 
     @Test
     public void testEmailWithHeaderTitleAndParagraphAndFooterText_hasExpectedHtml() {
         String html = emailBuilder
-                .heading("my title", null)
+                .heading("my title")
                 .paragraph("",  "some text")
                 .footer(true)
                 .build();
-        assertEquals("<html><div><h1>my title</h1></div><div></div><div></div><div><p>some text</p></div><div>http://www.publicUrl.com</div></html>", html);
+        assertEquals("<html><div><h1>my title</h1></div><div></div><div><p>some text</p></div><div>http://www.publicUrl.com</div></html>", html);
     }
 
     @Test

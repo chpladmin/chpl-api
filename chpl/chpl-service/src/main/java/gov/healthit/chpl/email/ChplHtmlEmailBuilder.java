@@ -21,7 +21,6 @@ import org.springframework.util.StreamUtils;
 public class ChplHtmlEmailBuilder {
     private static final String EMAIL_CONTENT_TAG = "${email-content}";
     private static final String TITLE_TAG = "${title}";
-    private static final String SUBTITLE_TAG = "${subtitle}";
     private static final String PARAGRAPH_HEADING_TAG = "${paragraph-heading}";
     private static final String PARAGRAPH_TEXT_TAG = "${paragraph-text}";
     private static final String TABLE_HEADER_TAG = "${table-header}";
@@ -64,28 +63,12 @@ public class ChplHtmlEmailBuilder {
         return this;
     }
 
-    public ChplHtmlEmailBuilder heading(String title, String subtitle) {
-        if (StringUtils.isAllBlank(title, subtitle)) {
-            return this;
-        }
-
+    public ChplHtmlEmailBuilder heading(String title) {
         String modifiedHtmlHeading = new String(htmlHeading);
         if (!StringUtils.isEmpty(title)) {
             modifiedHtmlHeading = modifiedHtmlHeading.replace(TITLE_TAG, "<h1>" + title + "</h1>");
         } else {
             modifiedHtmlHeading = modifiedHtmlHeading.replace(TITLE_TAG, "");
-        }
-        if (!StringUtils.isEmpty(subtitle)) {
-            modifiedHtmlHeading = modifiedHtmlHeading.replace(SUBTITLE_TAG, "<p style="
-                    + "\"margin-top: -10px; "
-                    + "font-size: 12px; "
-                    + "color: white; "
-                    + "font-family: 'Open Sans', "
-                    + "sans-serif; "
-                    + "font-weight: 400; "
-                    + "padding-bottom: 64px;\">" + subtitle + "</p>");
-        } else {
-            modifiedHtmlHeading = modifiedHtmlHeading.replace(SUBTITLE_TAG, "");
         }
 
         addItemToEmailContents(modifiedHtmlHeading);
