@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -185,14 +186,17 @@ public class EmailBuilder {
         return this;
     }
 
-    /**
-     * Send the email that has been built.
-     * @throws MessagingException - general exception that can occur for several reasons, see the message for
-     * details
-     */
     public void sendEmail() throws MessagingException {
-       build();
-       Transport.send(message);
+       try {
+           build();
+           Transport.send(message);
+       } catch (Exception ex) {
+           //exception logged here so we can create an alert in DataDog
+           LOGGER.fatal("Email could not be sent to "
+                   + recipients.stream().collect(Collectors.joining(","))
+                   + ". Exception was: " + ex.getMessage(), ex);
+           throw ex;
+       }
     }
 
     private Authenticator getAuthenticator(Properties properties) {
