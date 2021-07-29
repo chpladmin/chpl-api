@@ -43,14 +43,14 @@ public class DeprecatedApiUsageEmailJob implements Job {
     @Value("${deprecatedApiUsage.email.heading}")
     private String deprecatedApiUsageEmailHeading;
 
-    @Value("${deprecatedApiUsage.email.greeting}")
-    private String deprecatedApiUsageEmailGreeting;
+    @Value("${chpl.email.greeting}")
+    private String chplEmailGreeting;
 
     @Value("${deprecatedApiUsage.email.body}")
     private String deprecatedApiUsageEmailBody;
 
-    @Value("${deprecatedApiUsage.email.valediction}")
-    private String deprecatedApiUsageEmailValediction;
+    @Value("${chpl.email.valediction}")
+    private String chplEmailValediction;
 
     @Value("${footer.publicUrl}")
     private String publicFeedbackUrl;
@@ -100,11 +100,10 @@ public class DeprecatedApiUsageEmailJob implements Job {
         String htmlMessage = chplHtmlEmailBuilder.initialize()
                 .heading(deprecatedApiUsageEmailHeading)
                 .paragraph(
-                        String.format(deprecatedApiUsageEmailGreeting, apiKey.getName()),
-                        String.format(deprecatedApiUsageEmailBody,
-                                apiKey.getKey(), publicFeedbackUrl))
+                        String.format(chplEmailGreeting, apiKey.getName()),
+                        String.format(deprecatedApiUsageEmailBody, apiKey.getKey()))
                 .table(apiUsageHeading, apiUsageData)
-                .paragraph("", deprecatedApiUsageEmailValediction)
+                .paragraph("", String.format(chplEmailValediction, publicFeedbackUrl))
                 .footer(true)
                 .build();
         LOGGER.debug("HTML Email being sent to " + apiKey.getEmail() + ": \n" + htmlMessage);
