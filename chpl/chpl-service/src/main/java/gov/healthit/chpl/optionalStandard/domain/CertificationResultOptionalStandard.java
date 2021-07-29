@@ -5,7 +5,6 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -36,9 +35,6 @@ public class CertificationResultOptionalStandard implements Serializable {
     @XmlElement(required = true)
     private Long id;
 
-    @XmlTransient
-    private OptionalStandard optionalStandard;
-
     /**
      * The Optional Standard internal identifier.
      */
@@ -63,25 +59,16 @@ public class CertificationResultOptionalStandard implements Serializable {
 
     public CertificationResultOptionalStandard(CertificationResultOptionalStandardEntity entity) {
         this.id = entity.getId();
-        OptionalStandard os = new OptionalStandard();
         if (entity.getOptionalStandard() != null) {
-            os.setId(entity.getOptionalStandard().getId());
-            os.setCitation(entity.getOptionalStandard().getCitation());
-            os.setDescription(entity.getOptionalStandard().getDescription());
+            this.optionalStandardId = entity.getOptionalStandard().getId();
+            this.citation = entity.getOptionalStandard().getCitation();
+            this.description = entity.getOptionalStandard().getDescription();
         }
-        this.optionalStandard = os;
-        this.citation = os.getCitation();
-        this.description = os.getDescription();
-        this.optionalStandardId = os.getId();
     }
 
-    public boolean matches(CertificationResultOptionalStandard anotherStd) {
-        boolean result = false;
-        if (this.getOptionalStandard() != null && anotherStd.getOptionalStandard() != null
-                && this.getOptionalStandard().getId().longValue() == anotherStd.getOptionalStandard().getId().longValue()) {
-            result = true;
-        }
-        return result;
+    public boolean matches(CertificationResultOptionalStandard existingItem) {
+        return this.optionalStandardId.longValue() == existingItem.getOptionalStandardId().longValue()
+                || this.citation.equalsIgnoreCase(existingItem.getCitation());
     }
 
     public Long getId() {
@@ -90,14 +77,6 @@ public class CertificationResultOptionalStandard implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public OptionalStandard getOptionalStandard() {
-        return optionalStandard;
-    }
-
-    public void setOptionalStandard(OptionalStandard optionalStandard) {
-        this.optionalStandard = optionalStandard;
     }
 
     public Long getOptionalStandardId() {

@@ -645,6 +645,7 @@ public class CertifiedProductController {
             PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(product);
             pcpManager.addAllVersionsToCmsCriterion(pcpDetails);
             pcpManager.addAvailableTestFunctionalities(pcpDetails);
+            pcpManager.addAvailableOptionalStandards(pcpDetails);
             result.add(pcpDetails);
         }
         PendingCertifiedProductResults results = new PendingCertifiedProductResults();
