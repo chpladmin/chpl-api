@@ -133,6 +133,7 @@ import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultOptionalStandardDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestProcedureDTO;
@@ -154,6 +155,7 @@ import gov.healthit.chpl.dto.listing.pending.PendingTestTaskDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
+import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -161,6 +163,9 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
+import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
+import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CuresUpdateService;
@@ -199,6 +204,7 @@ public class CertifiedProductManager extends SecuredManager {
     private CuresUpdateEventDAO curesUpdateDao;
     private MeaningfulUseUserDAO muuDao;
     private CertificationResultManager certResultManager;
+    private OptionalStandardDAO optionalStandardDao;
     private TestToolDAO testToolDao;
     private TestStandardDAO testStandardDao;
     private TestProcedureDAO testProcDao;
@@ -245,6 +251,7 @@ public class CertifiedProductManager extends SecuredManager {
             ProductVersionManager versionManager, CertificationStatusEventDAO statusEventDao,
             CuresUpdateEventDAO curesUpdateDao,
             MeaningfulUseUserDAO muuDao, CertificationResultManager certResultManager,
+            OptionalStandardDAO optionalStandardDao,
             TestToolDAO testToolDao, TestStandardDAO testStandardDao,
             TestProcedureDAO testProcDao, TestDataDAO testDataDao,
             TestFunctionalityDAO testFuncDao, UcdProcessDAO ucdDao,
@@ -283,6 +290,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.curesUpdateDao = curesUpdateDao;
         this.muuDao = muuDao;
         this.certResultManager = certResultManager;
+        this.optionalStandardDao = optionalStandardDao;
         this.testToolDao = testToolDao;
         this.testStandardDao = testStandardDao;
         this.testProcDao = testProcDao;
@@ -700,6 +708,28 @@ public class CertifiedProductManager extends SecuredManager {
                             as.setGrouping(software.getGrouping());
                             as.setCertificationResultId(createdCert.getId());
                             certDao.addAdditionalSoftwareMapping(as);
+                        }
+                    }
+
+                    if (certResult.getOptionalStandards() != null && certResult.getOptionalStandards().size() > 0) {
+                        for (PendingCertificationResultOptionalStandardDTO std : certResult.getOptionalStandards()) {
+                            CertificationResultOptionalStandardEntity standard = new CertificationResultOptionalStandardEntity();
+                            if (std.getOptionalStandardId() == null) {
+                                OptionalStandard foundOptionalStandard = optionalStandardDao.getByCitation(std.getCitation());
+                                if (foundOptionalStandard != null) {
+                                    standard.setOptionalStandardId(foundOptionalStandard.getId());
+                                } else {
+                                    LOGGER.error("Will not insert optional standard with null id. Citation was " + std.getCitation());
+                                }
+                            } else {
+                                standard.setOptionalStandardId(std.getOptionalStandardId());
+                            }
+                            standard.setCertificationResultId(createdCert.getId());
+                            CertificationResultOptionalStandard existingMapping = certDao.lookupOptionalStandardMapping(
+                                    standard.getCertificationResultId(), standard.getOptionalStandardId());
+                            if (existingMapping == null) {
+                                certDao.addOptionalStandardMapping(standard);
+                            }
                         }
                     }
 
