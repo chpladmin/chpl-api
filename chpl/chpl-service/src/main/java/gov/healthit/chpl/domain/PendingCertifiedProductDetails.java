@@ -14,6 +14,7 @@ import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultOptionalStandardDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestProcedureDTO;
@@ -32,6 +33,7 @@ import gov.healthit.chpl.dto.listing.pending.PendingCqmCertificationCriterionDTO
 import gov.healthit.chpl.dto.listing.pending.PendingCqmCriterionDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingTestParticipantDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingTestTaskDTO;
+import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 
 public class PendingCertifiedProductDetails extends CertifiedProductSearchDetails implements Serializable {
     private static final long serialVersionUID = -461584179489619328L;
@@ -351,6 +353,19 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
                 }
             } else {
                 cert.setTestStandards(null);
+            }
+
+            if (certCriterion.getOptionalStandards() != null) {
+                for (PendingCertificationResultOptionalStandardDTO os : certCriterion.getOptionalStandards()) {
+                    CertificationResultOptionalStandard optionalStd = CertificationResultOptionalStandard.builder()
+                            .id(os.getId())
+                            .citation(os.getCitation())
+                            .optionalStandardId(os.getOptionalStandardId())
+                            .build();
+                    cert.getOptionalStandards().add(optionalStd);
+                }
+            } else {
+                cert.setOptionalStandards(null);
             }
 
             // set all sed data: ucd processes and test tasks
