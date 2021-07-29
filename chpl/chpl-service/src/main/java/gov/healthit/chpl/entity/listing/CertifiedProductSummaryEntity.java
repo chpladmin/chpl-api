@@ -17,7 +17,6 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Where;
 
-import gov.healthit.chpl.util.Util;
 import lombok.Data;
 
 @Entity
@@ -113,8 +112,8 @@ public class CertifiedProductSummaryEntity implements Serializable {
     @Column(name = "deleted")
     private Boolean deleted;
 
-    @Column(name = "meaningful_use_users")
-    private Long meaninigfulUseUsers;
+    @Column(name = "promoting_interoperability_user_count")
+    private Long promotingInteroperabilityUserCount;
 
     @Column(name = "pending_certified_product_id")
     private Long pendingCertifiedProductId;
@@ -184,28 +183,4 @@ public class CertifiedProductSummaryEntity implements Serializable {
 
     @Column(name = "svap_notice_url")
     private String svapNoticeUrl;
-
-    public Date getSedTestingEnd() {
-        return Util.getNewDate(sedTestingEnd);
-    }
-
-    public void setSedTestingEnd(Date sedTestingEnd) {
-        this.sedTestingEnd = Util.getNewDate(sedTestingEnd);
-    }
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
 }

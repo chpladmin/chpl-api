@@ -15,6 +15,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("optionalStandardReviewer")
@@ -49,9 +50,9 @@ public class OptionalStandardReviewer implements Reviewer {
 
             for (CertificationResult cr : certificationResultsWithOptionalStandards) {
                 for (CertificationResultOptionalStandard cros : cr.getOptionalStandards()) {
-                    if (!isOptionalStandardValidForCriteria(cros.getOptionalStandard().getId(), cr.getCriterion().getId(), optionalStandardCriteriaMap)) {
+                    if (!isOptionalStandardValidForCriteria(cros.getOptionalStandardId(), cr.getCriterion().getId(), optionalStandardCriteriaMap)) {
                         listing.getErrorMessages().add(errorMessageUtil.getMessage("listing.criteria.optionalStandard.invalidCriteria",
-                                cros.getOptionalStandard().getCitation(), cr.getCriterion().getNumber()));
+                                cros.getCitation(), CertificationCriterionService.formatCriteriaNumber(cr.getCriterion())));
                     }
                 }
             }

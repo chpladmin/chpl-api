@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity.search;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -96,24 +97,21 @@ public class CertifiedProductBasicSearchResultEntity {
     @Column(name = "status_events")
     private String statusEvents;
 
-    @Column(name = "meaningful_use_users")
-    private Long meaningfulUseUserCount;
+    @Column(name = "promoting_interoperability_user_count")
+    private Long promotingInteroperabilityUserCount;
 
-    @Column(name = "meaningful_use_users_date")
-    private Date meaningfulUseUserDate;
+    @Column(name = "promoting_interoperability_user_count_date")
+    private LocalDate promotingInteroperabilityUserCountDate;
 
     @Column(name = "certs")
-    private String certs; // comma-separated list of all certification criteria
-    // met by the certified product
+    private String certs; // comma-separated list of all certification criteria met by the certified product
 
     @Column(name = "cqms")
-    private String cqms; // comma-separated list of all cqms met by the
-    // certified product
+    private String cqms; // comma-separated list of all cqms met by the certified product
 
     @Column(name = "parent")
     private String parent; // comma-separated list of all parents
 
     @Column(name = "child")
     private String child; // comma-separated list of all children
-
 }
