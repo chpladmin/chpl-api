@@ -86,7 +86,6 @@ public class CertifiedProductDetailsDTO implements Serializable {
     private String productAdditionalSoftware;
     private TransparencyAttestationDTO transparencyAttestation;
     private String transparencyAttestationUrl;
-    private Long numMeaningfulUse;
     private String rwtPlansUrl;
     private LocalDate rwtPlansCheckDate;
     private String rwtResultsUrl;
@@ -125,7 +124,6 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.sedReportFileLocation = entity.getSedReportFileLocation();
         this.sedIntendedUserDescription = entity.getSedIntendedUserDescription();
         this.sedTestingEnd = entity.getSedTestingEnd();
-        this.numMeaningfulUse = entity.getMeaningfulUseUsers();
 
         this.developer = new DeveloperDTO();
         this.developer.setId(entity.getDeveloperId());
@@ -232,7 +230,6 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.sedReportFileLocation = entity.getSedReportFileLocation();
         this.sedIntendedUserDescription = entity.getSedIntendedUserDescription();
         this.sedTestingEnd = entity.getSedTestingEnd();
-        this.numMeaningfulUse = entity.getMeaningfulUseUsers();
 
         this.developer = new DeveloperDTO();
         this.developer.setId(entity.getDeveloperId());
