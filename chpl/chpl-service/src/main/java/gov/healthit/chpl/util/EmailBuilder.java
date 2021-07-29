@@ -191,10 +191,9 @@ public class EmailBuilder {
            build();
            Transport.send(message);
        } catch (Exception ex) {
+           String failureMessage = "Email could not be sent to " + recipients.stream().collect(Collectors.joining(",")) + ".";
            //exception logged here so we can create an alert in DataDog
-           LOGGER.fatal("Email could not be sent to "
-                   + recipients.stream().collect(Collectors.joining(","))
-                   + ". Exception was: " + ex.getMessage(), ex);
+           LOGGER.fatal(failureMessage, ex);
            throw ex;
        }
     }
