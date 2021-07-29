@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -54,7 +55,7 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.FuzzyChoicesDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
-import gov.healthit.chpl.dao.MeaningfulUseUserDAO;
+import gov.healthit.chpl.dao.PromotingInteroperabilityUserDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestDataDAO;
@@ -82,7 +83,7 @@ import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
-import gov.healthit.chpl.domain.MeaningfulUseUser;
+import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AddressDTO;
@@ -117,7 +118,6 @@ import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
-import gov.healthit.chpl.dto.MeaningfulUseUserDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
@@ -174,6 +174,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.Validator;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -202,7 +203,7 @@ public class CertifiedProductManager extends SecuredManager {
     private ProductVersionManager versionManager;
     private CertificationStatusEventDAO statusEventDao;
     private CuresUpdateEventDAO curesUpdateDao;
-    private MeaningfulUseUserDAO muuDao;
+    private PromotingInteroperabilityUserDAO piuDao;
     private CertificationResultManager certResultManager;
     private OptionalStandardDAO optionalStandardDao;
     private TestToolDAO testToolDao;
@@ -250,7 +251,7 @@ public class CertifiedProductManager extends SecuredManager {
             @Lazy DeveloperManager developerManager, ProductManager productManager,
             ProductVersionManager versionManager, CertificationStatusEventDAO statusEventDao,
             CuresUpdateEventDAO curesUpdateDao,
-            MeaningfulUseUserDAO muuDao, CertificationResultManager certResultManager,
+            PromotingInteroperabilityUserDAO piuDao, CertificationResultManager certResultManager,
             OptionalStandardDAO optionalStandardDao,
             TestToolDAO testToolDao, TestStandardDAO testStandardDao,
             TestProcedureDAO testProcDao, TestDataDAO testDataDao,
@@ -288,7 +289,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.versionManager = versionManager;
         this.statusEventDao = statusEventDao;
         this.curesUpdateDao = curesUpdateDao;
-        this.muuDao = muuDao;
+        this.piuDao = piuDao;
         this.certResultManager = certResultManager;
         this.optionalStandardDao = optionalStandardDao;
         this.testToolDao = testToolDao;
@@ -1198,8 +1199,8 @@ public class CertifiedProductManager extends SecuredManager {
                 updatedListing.getCertificationEvents());
         updateCuresUpdateEvents(updatedListing.getId(), existingListing.getCuresUpdate(),
                 updatedListing);
-        updateMeaningfulUseUserHistory(updatedListing.getId(), existingListing.getMeaningfulUseUserHistory(),
-                updatedListing.getMeaningfulUseUserHistory());
+        updatePromotingInteroperabilityUserHistory(updatedListing.getId(), existingListing.getPromotingInteroperabilityUserHistory(),
+                updatedListing.getPromotingInteroperabilityUserHistory());
         updateCertifications(existingListing, updatedListing,
                 existingListing.getCertificationResults(), updatedListing.getCertificationResults());
         copyCriterionIdsToCqmMappings(updatedListing);
@@ -2016,31 +2017,32 @@ public class CertifiedProductManager extends SecuredManager {
         return numChanges;
     }
 
-    private int updateMeaningfulUseUserHistory(Long listingId, List<MeaningfulUseUser> existingMuuHistory,
-            List<MeaningfulUseUser> updatedMuuHistory)
+    private int updatePromotingInteroperabilityUserHistory(Long listingId,
+            List<PromotingInteroperabilityUser> existingPiuHistory,
+            List<PromotingInteroperabilityUser> updatedPiuHistory)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         int numChanges = 0;
-        List<MeaningfulUseUser> itemsToAdd = new ArrayList<MeaningfulUseUser>();
-        List<MeaningfulUseUserPair> itemsToUpdate = new ArrayList<MeaningfulUseUserPair>();
+        List<PromotingInteroperabilityUser> itemsToAdd = new ArrayList<PromotingInteroperabilityUser>();
+        List<PromotingInteroperabilityUserPair> itemsToUpdate = new ArrayList<PromotingInteroperabilityUserPair>();
         List<Long> idsToRemove = new ArrayList<Long>();
 
         // figure out which status events to add
-        if (updatedMuuHistory != null && updatedMuuHistory.size() > 0) {
-            if (existingMuuHistory == null || existingMuuHistory.size() == 0) {
+        if (updatedPiuHistory != null && updatedPiuHistory.size() > 0) {
+            if (existingPiuHistory == null || existingPiuHistory.size() == 0) {
                 // existing listing has none, add all from the update
-                for (MeaningfulUseUser updatedItem : updatedMuuHistory) {
+                for (PromotingInteroperabilityUser updatedItem : updatedPiuHistory) {
                     itemsToAdd.add(updatedItem);
                 }
-            } else if (existingMuuHistory.size() > 0) {
+            } else if (existingPiuHistory.size() > 0) {
                 // existing listing has some, compare to the update to see if
                 // any are different
-                for (MeaningfulUseUser updatedItem : updatedMuuHistory) {
+                for (PromotingInteroperabilityUser updatedItem : updatedPiuHistory) {
                     boolean inExistingListing = false;
-                    for (MeaningfulUseUser existingItem : existingMuuHistory) {
+                    for (PromotingInteroperabilityUser existingItem : existingPiuHistory) {
                         if (updatedItem.matches(existingItem)) {
                             inExistingListing = true;
-                            itemsToUpdate.add(new MeaningfulUseUserPair(existingItem, updatedItem));
+                            itemsToUpdate.add(new PromotingInteroperabilityUserPair(existingItem, updatedItem));
                         }
                     }
 
@@ -2052,16 +2054,16 @@ public class CertifiedProductManager extends SecuredManager {
         }
 
         // figure out which muu items to remove
-        if (existingMuuHistory != null && existingMuuHistory.size() > 0) {
+        if (existingPiuHistory != null && existingPiuHistory.size() > 0) {
             // if the updated listing has none, remove them all from existing
-            if (updatedMuuHistory == null || updatedMuuHistory.size() == 0) {
-                for (MeaningfulUseUser existingItem : existingMuuHistory) {
+            if (updatedPiuHistory == null || updatedPiuHistory.size() == 0) {
+                for (PromotingInteroperabilityUser existingItem : existingPiuHistory) {
                     idsToRemove.add(existingItem.getId());
                 }
-            } else if (updatedMuuHistory.size() > 0) {
-                for (MeaningfulUseUser existingItem : existingMuuHistory) {
+            } else if (updatedPiuHistory.size() > 0) {
+                for (PromotingInteroperabilityUser existingItem : existingPiuHistory) {
                     boolean inUpdatedListing = false;
-                    for (MeaningfulUseUser updatedItem : updatedMuuHistory) {
+                    for (PromotingInteroperabilityUser updatedItem : updatedPiuHistory) {
                         inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
                     }
                     if (!inUpdatedListing) {
@@ -2072,35 +2074,25 @@ public class CertifiedProductManager extends SecuredManager {
         }
 
         numChanges = itemsToAdd.size() + idsToRemove.size();
-        for (MeaningfulUseUser toAdd : itemsToAdd) {
-            MeaningfulUseUserDTO muuDto = new MeaningfulUseUserDTO();
-            muuDto.setCertifiedProductId(listingId);
-            muuDto.setMuuCount(toAdd.getMuuCount());
-            muuDto.setMuuDate(new Date(toAdd.getMuuDate()));
-            muuDao.create(muuDto);
+        for (PromotingInteroperabilityUser toAdd : itemsToAdd) {
+            piuDao.create(listingId, toAdd);
         }
 
-        for (MeaningfulUseUserPair toUpdate : itemsToUpdate) {
+        for (PromotingInteroperabilityUserPair toUpdate : itemsToUpdate) {
             boolean hasChanged = false;
-            if (!ObjectUtils.equals(toUpdate.getOrig().getMuuCount(), toUpdate.getUpdated().getMuuCount())
-                    || !ObjectUtils.equals(toUpdate.getOrig().getMuuDate(), toUpdate.getUpdated().getMuuDate())) {
+            if (!Objects.equals(toUpdate.getOrig().getUserCount(), toUpdate.getUpdated().getUserCount())
+                    || !Objects.equals(toUpdate.getOrig().getUserCountDate(), toUpdate.getUpdated().getUserCountDate())) {
                 hasChanged = true;
             }
 
             if (hasChanged) {
-                MeaningfulUseUser muuToUpdate = toUpdate.getUpdated();
-                MeaningfulUseUserDTO muuDto = new MeaningfulUseUserDTO();
-                muuDto.setId(muuToUpdate.getId());
-                muuDto.setCertifiedProductId(listingId);
-                muuDto.setMuuDate(new Date(muuToUpdate.getMuuDate()));
-                muuDto.setMuuCount(muuToUpdate.getMuuCount());
-                muuDao.update(muuDto);
+                piuDao.update(toUpdate.getUpdated());
                 numChanges++;
             }
         }
 
         for (Long idToRemove : idsToRemove) {
-            muuDao.delete(idToRemove);
+            piuDao.delete(idToRemove);
         }
         return numChanges;
     }
@@ -2449,15 +2441,12 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     @Data
-    private static class MeaningfulUseUserPair {
-        private MeaningfulUseUser orig;
-        private MeaningfulUseUser updated;
+    @NoArgsConstructor
+    private static class PromotingInteroperabilityUserPair {
+        private PromotingInteroperabilityUser orig;
+        private PromotingInteroperabilityUser updated;
 
-        MeaningfulUseUserPair() {
-        }
-
-        MeaningfulUseUserPair(MeaningfulUseUser orig, MeaningfulUseUser updated) {
-
+        PromotingInteroperabilityUserPair(PromotingInteroperabilityUser orig, PromotingInteroperabilityUser updated) {
             this.orig = orig;
             this.updated = updated;
         }

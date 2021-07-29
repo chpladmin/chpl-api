@@ -92,7 +92,6 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
             InheritedCertificationStatusXmlGenerator.add(cp.getIcs(), "ics", sw);
             createSimpleElement(cp.getId(), "id", sw);
             createSimpleElement(cp.getLastModifiedDate(), "lastModifiedDate", sw);
-            MeaningfulUseUserXmlGenerator.add(cp.getMeaningfulUseUserHistory(), "meaningfulUseUserHistory", sw);
             ListingMeasureXmlGenerator.add(cp.getMeasures(), "measures", sw);
             createSimpleElement(cp.getOtherAcb(), "otherAcb", sw);
             if (cp.getPracticeType() != null && cp.getPracticeType().size() > 0) {
@@ -111,6 +110,7 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
             }
             ProductXmlGenerator.addProduct(cp.getProduct(), "product", sw);
             createSimpleElement(cp.getProductAdditionalSoftware(), "productAdditionalSoftware", sw);
+            PromotingInteroperabilityXmlGenerator.add(cp.getPromotingInteroperabilityUserHistory(), "promotingInteroperabilityUserHistory", sw);
             CertifiedProductQmsStandardXmlGenerator.add(cp.getQmsStandards(), "qmsStandards", sw);
             createSimpleElement(cp.getReportFileLocation(), "reportFileLocation", sw);
             createSimpleElement(cp.getRwtEligibilityYear(), "rwtEligibilityYear", sw);
