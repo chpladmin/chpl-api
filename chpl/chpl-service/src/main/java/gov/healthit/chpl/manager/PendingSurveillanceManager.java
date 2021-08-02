@@ -402,6 +402,11 @@ public class PendingSurveillanceManager extends SecuredManager {
                         nc.setSummary(pnc.getSummary());
                         nc.setTotalSites(pnc.getTotalSites());
                         nc.setNonconformityCloseDate(pnc.getNonconformityCloseDate());
+                        if (nc.getNonconformityCloseDate() == null) {
+                            nc.setNonconformityStatus("Open");
+                        } else {
+                            nc.setNonconformityStatus("Closed");
+                        }
                         req.getNonconformities().add(nc);
                     }
                 }
