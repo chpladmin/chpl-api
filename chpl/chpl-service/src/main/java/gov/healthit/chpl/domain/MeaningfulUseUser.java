@@ -2,17 +2,16 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import gov.healthit.chpl.dto.MeaningfulUseUserDTO;
-
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Deprecated
 public class MeaningfulUseUser implements Serializable {
     private static final long serialVersionUID = -4803363243075068608L;
 
@@ -20,45 +19,7 @@ public class MeaningfulUseUser implements Serializable {
     private Long muuCount;
     private Long muuDate;
 
-    public MeaningfulUseUser() {
-    }
-
-    public MeaningfulUseUser(MeaningfulUseUserDTO dto) {
-        this.id = dto.getId();
-        this.muuCount = dto.getMuuCount();
-        this.muuDate = dto.getMuuDate().getTime();
-    };
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Long getMuuCount() {
-        return muuCount;
-    }
-
-    public void setMuuCount(final Long muuCount) {
-        this.muuCount = muuCount;
-    }
-
-    public Long getMuuDate() {
-        return muuDate;
-    }
-
-    public void setMuuDate(final Long muuDate) {
-        this.muuDate = muuDate;
-    }
-
-    /**
-     * Check to see if this muu matches another one.
-     * @param other muu to check against
-     * @return true if the IDs match
-     */
-    public boolean matches(final MeaningfulUseUser other) {
+    public boolean matches(final PromotingInteroperabilityUser other) {
         boolean result = false;
 
         if (this.getId() != null && other.getId() != null
