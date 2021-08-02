@@ -1,5 +1,17 @@
 # Release Notes
 
+## Version 30.4.0
+_2 August 2021_
+
+### Features
+* Change Meaningful Use User term to Promoting Interoperability; deprecated MUU fields and endpoints
+* Enable Real World Testing fields for all 2015 Edition Listings
+
+### Flagged Features
+* Treat Test Standards as Optional Standards on Upload/Confirm
+
+---
+
 ## Version 30.3.0
 _12 July 2021_
 
