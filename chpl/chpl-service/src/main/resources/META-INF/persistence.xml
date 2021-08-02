@@ -9,8 +9,8 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <properties>
             <!-- SQL values should be false normally; true if debugging -->
-            <property name="hibernate.show_sql" value="false" />
-            <property name="hibernate.format_sql" value="false" />
+            <property name="hibernate.show_sql" value="true" />
+            <property name="hibernate.format_sql" value="true" />
             <property name="hibernate.driver_class" value="org.postgresql.Driver" />
             <property name="hibernate.connection.datasource"
                 value="java:/comp/env/jdbc/openchpl" />

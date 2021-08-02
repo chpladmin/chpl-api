@@ -310,10 +310,11 @@ public class CertifiedProductDAO extends BaseDAOImpl {
     @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> findWithSurveillance() {
 
-        List<CertifiedProductDetailsEntity> entities = entityManager.createQuery(
-                "SELECT DISTINCT cp " + "FROM CertifiedProductDetailsEntity cp, SurveillanceEntity surv "
-                        + "WHERE surv.certifiedProductId = cp.id " + "AND (NOT surv.deleted = true)",
-                        CertifiedProductDetailsEntity.class).getResultList();
+        List<CertifiedProductDetailsEntity> entities = entityManager.createQuery("SELECT DISTINCT cp "
+            + "FROM CertifiedProductDetailsEntity cp, SurveillanceEntity surv "
+            + "WHERE surv.certifiedProductId = cp.id "
+            + "AND (NOT surv.deleted = true)",
+            CertifiedProductDetailsEntity.class).getResultList();
 
         List<CertifiedProductDetailsDTO> products = new ArrayList<>();
 
@@ -322,6 +323,20 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             products.add(product);
         }
         return products;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Long> findListingIdsWithSvap() {
+        List<Long> listingIds = entityManager.createQuery("SELECT DISTINCT cp.id "
+                + "FROM CertifiedProductEntity cp, CertificationResultDetailsEntity cr "
+                + "LEFT JOIN cr.certificationResultSvaps crSvaps "
+                + "WHERE cr.certifiedProductId = cp.id "
+                + "AND cp.deleted = false "
+                + "AND cr.deleted = false "
+                + "AND (cp.svapNoticeUrl IS NOT NULL OR crSvaps.id IS NOT NULL)",
+                Long.class).getResultList();
+
+        return listingIds;
     }
 
     @Transactional(readOnly = true)

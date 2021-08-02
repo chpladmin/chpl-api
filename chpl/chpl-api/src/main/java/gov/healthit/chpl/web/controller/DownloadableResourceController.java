@@ -2,6 +2,7 @@ package gov.healthit.chpl.web.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,9 +15,11 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.SurveillanceManager;
@@ -34,6 +37,7 @@ public class DownloadableResourceController {
     private Environment env;
     private ErrorMessageUtil msgUtil;
     private SurveillanceManager survManager;
+    private CertifiedProductDAO cpDao;
     private FF4j ff4j;
     private FileUtils fileUtils;
 
@@ -47,11 +51,13 @@ public class DownloadableResourceController {
     public DownloadableResourceController(Environment env,
             ErrorMessageUtil msgUtil,
             SurveillanceManager survManager,
+            CertifiedProductDAO cpDao,
             FF4j ff4j,
             FileUtils fileUtils) {
         this.env = env;
         this.msgUtil = msgUtil;
         this.survManager = survManager;
+        this.cpDao = cpDao;
         this.ff4j = ff4j;
         this.fileUtils = fileUtils;
     }
@@ -235,5 +241,12 @@ public class DownloadableResourceController {
 
         LOGGER.info("Downloading " + downloadFile.getName());
         fileUtils.streamFileAsResponse(downloadFile, "text/csv", response);
+    }
+
+    @RequestMapping(value = "/listings-with-svap",
+    method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public @ResponseBody List<Long> getListingIdsWithSvap() {
+        return cpDao.findListingIdsWithSvap();
     }
 }
