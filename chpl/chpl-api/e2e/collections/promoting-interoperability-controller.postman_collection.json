@@ -1,0 +1,194 @@
+{
+	"info": {
+		"name": "promoting-interoperability-controller",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "POST /promoting-interoperability/upload should return 200 status for ONC users",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"usernameONC\"),password:pm.environment.get(\"passwordONC\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"ONC users should get 200 response status when uploading promoting-interoperability using /promoting-interoperability/upload end point\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "API-KEY",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "chpl/chpl-api/e2e/data/interoperabilty_upload.csv"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}/rest/promoting-interoperability/upload?accurate_as_of=1555200000",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"promoting-interoperability",
+						"upload"
+					],
+					"query": [
+						{
+							"key": "accurate_as_of",
+							"value": "1555200000"
+						}
+					]
+				},
+				"description": "POST /promoting-interoperability/upload should return 200 status for ONC users"
+			},
+			"response": []
+		},
+		{
+			"name": "POST /promoting-interoperability/upload should give 401 status for ACB users",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"usernameACB\"),password:pm.environment.get(\"passwordACB\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"ACB users should get 401 response status when uploading promoting-interoperability using /promoting-interoperability/upload end point\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "API-KEY",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "chpl/chpl-api/e2e/data/interoperabilty_upload.csv"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}/rest/promoting-interoperability/upload?accurate_as_of=1609506",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"promoting-interoperability",
+						"upload"
+					],
+					"query": [
+						{
+							"key": "accurate_as_of",
+							"value": "1609506"
+						}
+					]
+				},
+				"description": "POST /promoting-interoperability/upload should give 401 status for ACB users"
+			},
+			"response": []
+		}
+	]
+}

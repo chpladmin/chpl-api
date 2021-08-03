@@ -949,6 +949,7 @@ public class CertifiedProductController {
                 .id(e.getId())
                 .lastModifiedDate(e.getLastModifiedDate())
                 .meaningfulUseUserHistory(e.getMeaningfulUseUserHistory())
+                .promotingInteroperabilityUserHistory(e.getPromotingInteroperabilityUserHistory())
                 .otherAcb(e.getOtherAcb())
                 .practiceType(e.getPracticeType())
                 .product(e.getProduct())

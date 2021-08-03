@@ -40,7 +40,7 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.FuzzyChoicesDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
-import gov.healthit.chpl.dao.MeaningfulUseUserDAO;
+import gov.healthit.chpl.dao.PromotingInteroperabilityUserDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestDataDAO;
@@ -111,7 +111,7 @@ public class CertifiedProductManagerTest {
     private ProductVersionManager versionManager;
     private CertificationStatusEventDAO statusEventDao;
     private CuresUpdateEventDAO curesUpdateDao;
-    private MeaningfulUseUserDAO muuDao;
+    private PromotingInteroperabilityUserDAO piuDao;
     private CertificationResultManager certResultManager;
     private OptionalStandardDAO optionalStandardDao;
     private TestToolDAO testToolDao;
@@ -160,7 +160,7 @@ public class CertifiedProductManagerTest {
         versionManager = Mockito.mock(ProductVersionManager.class);
         statusEventDao = Mockito.mock(CertificationStatusEventDAO.class);
         curesUpdateDao = Mockito.mock(CuresUpdateEventDAO.class);
-        muuDao = Mockito.mock(MeaningfulUseUserDAO.class);
+        piuDao = Mockito.mock(PromotingInteroperabilityUserDAO.class);
         certResultManager = Mockito.mock(CertificationResultManager.class);
         optionalStandardDao = Mockito.mock(OptionalStandardDAO.class);
         testToolDao = Mockito.mock(TestToolDAO.class);
@@ -186,7 +186,7 @@ public class CertifiedProductManagerTest {
                 certCriterionDao, qmsDao,  targetedUserDao, asDao,  cpQmsDao, cpMeasureDao, cpTestingLabDao,
                 cpTargetedUserDao, cpAccStdDao,  cqmResultDAO, cqmCriterionDao,  atlDao,
                 developerDao,  devStatusDao, developerManager,  productManager, versionManager,
-                statusEventDao, curesUpdateDao, muuDao,  certResultManager, optionalStandardDao, testToolDao,  testStandardDao,
+                statusEventDao, curesUpdateDao, piuDao,  certResultManager, optionalStandardDao, testToolDao, testStandardDao,
                 testProcDao,  testDataDao, testFuncDao,  ucdDao, testParticipantDao,  testTaskDao, certStatusDao,
                 listingGraphDao, fuzzyChoicesDao,  resourcePermissions, certifiedProductSearchResultDAO,
                 certifiedProductDetailsManager, Mockito.mock(PendingCertifiedProductManager.class),

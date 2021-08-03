@@ -775,12 +775,12 @@
             </job-data-map>
         </job>
 
-        <!-- Job fired when a meaningful use file is uploaded -->
+        <!-- Job fired when a promoting interoperability file is uploaded -->
         <job>
-            <name>meaningfulUseUploadJob</name>
+            <name>promotingInteroperabilityUploadJob</name>
             <group>chplBackgroundJobs</group>
-            <description>Complete the work of uploading meaningful use files.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.MeaningfulUseUploadJob</job-class>
+            <description>Complete the work of uploading promoting interoperability files.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.promotingInteroperability.PromotingInteroperabilityUploadJob</job-class>
             <durability>true</durability>
             <recover>true</recover>
             <job-data-map>
