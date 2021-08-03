@@ -9,8 +9,10 @@ import gov.healthit.chpl.util.Util;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class CertificationCriterionDTO implements Serializable {

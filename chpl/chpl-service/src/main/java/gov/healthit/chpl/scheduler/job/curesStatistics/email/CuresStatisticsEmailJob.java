@@ -48,6 +48,9 @@ public class CuresStatisticsEmailJob  extends QuartzJob {
     @Autowired
     private Environment env;
 
+    @Autowired
+    private CuresStatisticsSpreadsheet curesStatisticsSpreadhseet;
+
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         LOGGER.info("*****Cures Reporting Email Job is starting.*****");
