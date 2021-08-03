@@ -40,6 +40,17 @@ public class SvapActivityPresenter implements AutoCloseable {
         csvPrinter.flush();
     }
 
+    public synchronized void addAll(List<ListingSvapActivity> activities) {
+        activities.forEach(activity -> {
+            try {
+                add(activity);
+            } catch (IOException ex) {
+                getLogger().error("An activity was not added to the CSV.");
+                getLogger().catching(ex);
+            }
+        });
+    }
+
     public synchronized void add(ListingSvapActivity data) throws IOException {
         getLogger().info("Adding data to CSV file for listing ID: " + data.getListing().getId());
         List<String> rowValue = generateRowValue(data);

@@ -9,6 +9,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,9 +28,7 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.DownloadableResourceCreatorJob;
-import gov.healthit.chpl.scheduler.presenter.CertifiedProductCsvPresenter;
-import gov.healthit.chpl.scheduler.presenter.CertifiedProductPresenter;
-import gov.healthit.chpl.scheduler.presenter.CertifiedProductXmlPresenter;
+import gov.healthit.chpl.scheduler.presenter.SvapActivityPresenter;
 import lombok.extern.log4j.Log4j2;
 
 @DisallowConcurrentExecution
@@ -58,14 +57,13 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
         LOGGER.info("********* Starting the SVAP Downloadable Resource Creator job. *********");
-        try (CertifiedProductXmlPresenter xmlPresenter = new CertifiedProductXmlPresenter();
-                CertifiedProductCsvPresenter csvPresenter = getCsvPresenter()) {
+        try (SvapActivityPresenter csvPresenter = getCsvPresenter()) {
             initializeTempFile();
             if (tempCsvFile != null) {
                 initializeWritingToFile(csvPresenter);
                 initializeExecutorService();
                 List<Long> listingIdsWithSvap = getRelevantListingIds();
-                List<CertifiedProductPresenter> presenters = Stream.of(csvPresenter).collect(Collectors.toList());
+                List<SvapActivityPresenter> presenters = Stream.of(csvPresenter).collect(Collectors.toList());
                 List<CompletableFuture<Void>> futures = getCertifiedProductSearchFutures(listingIdsWithSvap, presenters);
                 CompletableFuture<Void> combinedFutures = CompletableFuture
                         .allOf(futures.toArray(new CompletableFuture[futures.size()]));
@@ -95,29 +93,47 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
     }
 
     private List<CompletableFuture<Void>> getCertifiedProductSearchFutures(List<Long> listingIds,
-            List<CertifiedProductPresenter> presenters) {
+            List<SvapActivityPresenter> presenters) {
 
         List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
         for (Long listingId : listingIds) {
             futures.add(CompletableFuture
-                    .supplyAsync(() -> getCertifiedProductSearchDetails(listingId), executorService)
-                    .thenAccept(listing -> listing.ifPresent(cp -> addToPresenters(presenters, cp))));
+                    .supplyAsync(() -> getListingSvapActivities(listingId), executorService)
+                    .thenAccept(svapActivity -> svapActivity.ifPresent(sa -> addAllToPresenters(presenters, sa))));
         }
         return futures;
     }
 
-    private void addToPresenters(List<CertifiedProductPresenter> presenters, CertifiedProductSearchDetails listing) {
-        presenters.stream()
-                .forEach(p -> {
-                    try {
-                        p.add(listing);
-                    } catch (IOException e) {
-                        LOGGER.error(String.format("Could not write listing to presenters: %s", listing.getId()), e);
-                    }
-                });
+    protected Optional<List<ListingSvapActivity>> getListingSvapActivities(Long listingId) {
+        CertifiedProductSearchDetails listing = null;
+        try {
+            listing = getCertifiedProductDetailsManager().getCertifiedProductDetails(listingId);
+        } catch (EntityRetrievalException e) {
+            LOGGER.error(String.format("Could not retrieve listing: %s", listingId), e);
+            return Optional.empty();
+        }
+
+        List<ListingSvapActivity> activities = buildSvapActivities(listing);
+        return Optional.of(activities);
     }
 
-    private void initializeWritingToFile(CertifiedProductCsvPresenter csvPresenter)
+    private List<ListingSvapActivity> buildSvapActivities(CertifiedProductSearchDetails listing) {
+        List<ListingSvapActivity> listingSvapActivities = new ArrayList<ListingSvapActivity>();
+        //TODO: break up into multiple svap activities if there are multiple criteria or multiple svaps per criteria
+        listingSvapActivities.add(ListingSvapActivity.builder()
+                .listing(listing)
+                .build());
+        //TODO: get date of last svap notice url change
+        //TODO: get date of last change to any criteria
+        //TODO: get whether svap was added with criteria or separately
+        return listingSvapActivities;
+    }
+
+    private void addAllToPresenters(List<SvapActivityPresenter> presenters, List<ListingSvapActivity> svapActivity) {
+        presenters.stream().forEach(p -> p.addAll(svapActivity));
+    }
+
+    private void initializeWritingToFile(SvapActivityPresenter csvPresenter)
             throws IOException {
         csvPresenter.setLogger(LOGGER);
         csvPresenter.open(tempCsvFile);
@@ -133,8 +149,8 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
         return listingIdsWithSvap;
     }
 
-    private CertifiedProductCsvPresenter getCsvPresenter() {
-        CertifiedProductCsvPresenter presenter = new CertifiedProductCsvPresenter();
+    private SvapActivityPresenter getCsvPresenter() {
+        SvapActivityPresenter presenter = new SvapActivityPresenter();
         return presenter;
     }
 
