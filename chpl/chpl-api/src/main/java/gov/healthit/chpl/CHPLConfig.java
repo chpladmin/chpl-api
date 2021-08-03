@@ -153,7 +153,7 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
     public OpenAPI chplOpenAPI() {
         return new OpenAPI()
                 .info(new Info().title("Certified Health IT Product Listing API")
-                .version("30.1.0")
+                .version("30.4.0")
                 .description("Created by CHPL Development Team. Please submit any questions using the Health IT "
                         + "Feedback Form and select the \"Certified Health IT Products List (CHPL)\" category.\n"
                         + "See more at https://www.healthit.gov/form/healthit-feedback-form")

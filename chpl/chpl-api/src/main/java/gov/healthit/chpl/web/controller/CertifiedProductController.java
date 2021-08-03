@@ -797,6 +797,7 @@ public class CertifiedProductController {
             PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(product);
             pcpManager.addAllVersionsToCmsCriterion(pcpDetails);
             pcpManager.addAvailableTestFunctionalities(pcpDetails);
+            pcpManager.addAvailableOptionalStandards(pcpDetails);
             result.add(pcpDetails);
         }
         PendingCertifiedProductResults results = new PendingCertifiedProductResults();
@@ -1119,6 +1120,7 @@ public class CertifiedProductController {
                 .id(e.getId())
                 .lastModifiedDate(e.getLastModifiedDate())
                 .meaningfulUseUserHistory(e.getMeaningfulUseUserHistory())
+                .promotingInteroperabilityUserHistory(e.getPromotingInteroperabilityUserHistory())
                 .otherAcb(e.getOtherAcb())
                 .practiceType(e.getPracticeType())
                 .product(e.getProduct())
