@@ -8,10 +8,6 @@
         <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
-        <delete-job>
-            <name>meaningfulUseUploadJob</name>
-            <group>chplBackgroundJobs</group>
-        </delete-job>
         <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
@@ -99,6 +95,16 @@
             <group>systemJobs</group>
             <description>Generate direct review download file</description>
             <job-class>gov.healthit.chpl.scheduler.job.DirectReviewDownloadableResourceCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+
+        <!-- Generate SVAP Activity download file -->
+        <job>
+            <name>svapActivityDownloadFileGeneraton</name>
+            <group>systemJobs</group>
+            <description>Generate SVAP activity download file</description>
+            <job-class>gov.healthit.chpl.scheduler.job.svap.SvapDownloadableResourceCreatorJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
         </job>

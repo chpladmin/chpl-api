@@ -33,7 +33,7 @@ import gov.healthit.chpl.scheduler.presenter.CertifiedProductXmlPresenter;
 import lombok.extern.log4j.Log4j2;
 
 @DisallowConcurrentExecution
-@Log4j2(topic = "svapDownloadableResourceCreatorJobLogger")
+@Log4j2(topic = "svapActivityDownloadableResourceCreatorJobLogger")
 public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCreatorJob {
     private static final int MILLIS_PER_SECOND = 1000;
     private static final String TEMP_DIR_NAME = "temp";
