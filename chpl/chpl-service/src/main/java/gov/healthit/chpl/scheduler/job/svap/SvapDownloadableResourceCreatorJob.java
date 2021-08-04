@@ -32,6 +32,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.DownloadableResourceCreatorJob;
 import gov.healthit.chpl.scheduler.presenter.SvapActivityPresenter;
+import gov.healthit.chpl.svap.domain.Svap;
 import lombok.extern.log4j.Log4j2;
 
 @DisallowConcurrentExecution
@@ -130,11 +131,12 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
         if (!hasCertificationResultSvapData(listing)) {
             listingSvapActivities.add(baseSvapActivity);
         } else {
-            listing.getCertificationResults().stream()
-            .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
-            .filter(attestedCertResult -> attestedCertResult.getSvaps() != null && attestedCertResult.getSvaps().size() > 0)
-            .map(attestedCertResult -> createListingSvapActivities(listing, attestedCertResult, baseSvapActivity))
-            .collect(Collectors.toList());
+            listingSvapActivities = listing.getCertificationResults().stream()
+                .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
+                .filter(attestedCertResult -> attestedCertResult.getSvaps() != null && attestedCertResult.getSvaps().size() > 0)
+                .map(attestedCertResult -> createCertificationResultSvapActivities(attestedCertResult, baseSvapActivity))
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
         }
 
         //TODO: get date of last change to any criteria
@@ -149,9 +151,20 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
                 .count() > 0;
     }
 
-    private List<ListingSvapActivity> createListingSvapActivities(CertifiedProductSearchDetails listing, CertificationResult certResult, ListingSvapActivity baseSvapActivity) {
-        //TODO: break up into multiple svap activities if there are multiple criteria or multiple svaps for any criteria
-
+    private List<ListingSvapActivity> createCertificationResultSvapActivities(CertificationResult certResult, ListingSvapActivity baseSvapActivity) {
+        return certResult.getSvaps().stream()
+            .map(certResultSvap -> ListingSvapActivity.builder()
+                    .listing(baseSvapActivity.getListing())
+                    .svapNoticeLastUpdated(baseSvapActivity.getSvapNoticeLastUpdated())
+                    .criterion(certResult.getCriterion())
+                    .criterionSvap(Svap.builder()
+                            .approvedStandardVersion(certResultSvap.getApprovedStandardVersion())
+                            .regulatoryTextCitation(certResultSvap.getRegulatoryTextCitation())
+                            .replaced(certResultSvap.getReplaced())
+                            .svapId(certResultSvap.getSvapId())
+                            .build())
+                    .build())
+            .collect(Collectors.toList());
     }
 
     private void addAllToPresenters(List<SvapActivityPresenter> presenters, List<ListingSvapActivity> svapActivity) {
