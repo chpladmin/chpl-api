@@ -29,13 +29,13 @@ import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.HtmlEmailTemplate;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingType;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUpload;
-import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.util.HtmlEmailTemplate;
 
 public class RealWorldTestingUploadJob implements Job {
     private static final Logger LOGGER = LogManager.getLogger("realWorldTestingUploadJobLogger");

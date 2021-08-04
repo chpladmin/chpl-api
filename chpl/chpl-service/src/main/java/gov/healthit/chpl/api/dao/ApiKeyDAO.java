@@ -1,16 +1,15 @@
 package gov.healthit.chpl.api.dao;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.api.domain.ApiKeyDTO;
+import gov.healthit.chpl.api.domain.ApiKey;
 import gov.healthit.chpl.api.entity.ApiKeyEntity;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -21,12 +20,11 @@ import gov.healthit.chpl.util.AuthUtil;
 @Repository("apiKeyDAO")
 public class ApiKeyDAO extends BaseDAOImpl {
 
-    public ApiKeyDTO create(ApiKeyDTO dto) throws EntityCreationException {
-
+    public ApiKey create(ApiKey apiKey) throws EntityCreationException {
         ApiKeyEntity entity = null;
         try {
-            if (dto.getId() != null) {
-                entity = this.getEntityById(dto.getId());
+            if (apiKey.getId() != null) {
+                entity = this.getEntityById(apiKey.getId());
             }
         } catch (final EntityRetrievalException e) {
             throw new EntityCreationException(e);
@@ -37,173 +35,89 @@ public class ApiKeyDAO extends BaseDAOImpl {
         } else {
 
             entity = new ApiKeyEntity();
-            entity.setApiKey(dto.getApiKey());
-            entity.setEmail(dto.getEmail());
-            entity.setNameOrganization(dto.getNameOrganization());
-            entity.setCreationDate(dto.getCreationDate());
-            entity.setUnrestricted(dto.getUnrestricted());
-            if (dto.getLastModifiedDate() == null) {
-                entity.setLastModifiedDate(new Date());
-            } else {
-                entity.setLastModifiedDate(dto.getLastModifiedDate());
-            }
-            if (dto.getLastUsedDate() == null) {
-                entity.setLastUsedDate(new Date());
-            } else {
-                entity.setLastUsedDate(dto.getLastUsedDate());
-            }
-            entity.setDeleted(dto.getDeleted());
-            if (dto.getLastModifiedUser() == null) {
-                entity.setLastModifiedUser(AuthUtil.getAuditId());
-            } else {
-                entity.setLastModifiedUser(dto.getLastModifiedUser());
-            }
+            entity.setApiKey(apiKey.getKey());
+            entity.setEmail(apiKey.getEmail());
+            entity.setNameOrganization(apiKey.getName());
+            entity.setUnrestricted(apiKey.isUnrestricted());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
+            entity.setDeleted(false);
             create(entity);
         }
-        return new ApiKeyDTO(entity);
+        return entity.toDomain();
     }
 
-    public ApiKeyDTO update(ApiKeyDTO dto) throws EntityRetrievalException {
-
-        ApiKeyEntity entity = getEntityById(dto.getId());
-
-        entity.setApiKey(dto.getApiKey());
-        entity.setEmail(dto.getEmail());
-        entity.setNameOrganization(dto.getNameOrganization());
-        entity.setCreationDate(dto.getCreationDate());
-        entity.setDeleted(dto.getDeleted());
-        entity.setUnrestricted(dto.getUnrestricted());
-        if (dto.getLastModifiedDate() == null) {
-            entity.setLastModifiedDate(new Date());
-        } else {
-            entity.setLastModifiedDate(dto.getLastModifiedDate());
-        }
-        if (dto.getLastModifiedUser() == null) {
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
-        } else {
-            entity.setLastModifiedUser(dto.getLastModifiedUser());
-        }
-        entity.setLastUsedDate(dto.getLastUsedDate());
-        entity.setDeleteWarningSentDate(dto.getDeleteWarningSentDate());
+    public ApiKey update(ApiKey apiKey) throws EntityRetrievalException {
+        ApiKeyEntity entity = getEntityById(apiKey.getId());
+        entity.setApiKey(apiKey.getKey());
+        entity.setEmail(apiKey.getEmail());
+        entity.setNameOrganization(apiKey.getName());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
+        entity.setLastUsedDate(apiKey.getLastUsedDate());
+        entity.setDeleteWarningSentDate(apiKey.getDeleteWarningSentDate());
+        entity.setUnrestricted(apiKey.isUnrestricted());
         update(entity);
-
-        return new ApiKeyDTO(entity);
+        return entity.toDomain();
     }
 
-    public void delete(Long id) {
-        Query query = entityManager.createQuery("UPDATE ApiKeyEntity SET deleted = true WHERE api_key_id = :entityid");
-        query.setParameter("entityid", id);
-        query.executeUpdate();
-    }
-
-    public List<ApiKeyDTO> findAll(Boolean includeDeleted) {
-
-        List<ApiKeyEntity> entities = getAllEntities(includeDeleted);
-        List<ApiKeyDTO> dtos = new ArrayList<>();
-
-        for (ApiKeyEntity entity : entities) {
-            ApiKeyDTO dto = new ApiKeyDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
-
-    }
-
-    public List<ApiKeyDTO> findAllUnrestricted() {
-
-        List<ApiKeyEntity> entities = getAllUnrestrictedApiKeyEntities();
-        List<ApiKeyDTO> dtos = new ArrayList<>();
-
-        for (ApiKeyEntity entity : entities) {
-            ApiKeyDTO dto = new ApiKeyDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
-
-    }
-
-    public ApiKeyDTO getById(Long id) throws EntityRetrievalException {
-
-        ApiKeyDTO dto = null;
+    public void delete(Long id) throws EntityRetrievalException {
         ApiKeyEntity entity = getEntityById(id);
+        entity.setDeleted(true);
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
+        update(entity);
+    }
 
-        if (entity != null) {
-            dto = new ApiKeyDTO(entity);
-        }
-        return dto;
+    public List<ApiKey> findAll(Boolean includeDeleted) {
+        List<ApiKeyEntity> entities = getAllEntities(includeDeleted);
+        return entities.stream().map(entity -> entity.toDomain()).collect(Collectors.toList());
 
     }
 
-    public ApiKeyDTO getByKey(String apiKey) throws EntityRetrievalException {
+    public List<ApiKey> findAllUnrestricted() {
+        List<ApiKeyEntity> entities = getAllUnrestrictedApiKeyEntities();
+        return entities.stream().map(entity -> entity.toDomain()).collect(Collectors.toList());
+    }
 
-        ApiKeyDTO dto = null;
+    public ApiKey getById(Long id) throws EntityRetrievalException {
+        ApiKeyEntity entity = getEntityById(id);
+        if (entity != null) {
+            return entity.toDomain();
+        }
+        return null;
+
+    }
+
+    public ApiKey getByKey(String apiKey) throws EntityRetrievalException {
         ApiKeyEntity entity = getEntityByKey(apiKey);
-
         if (entity != null) {
-            dto = new ApiKeyDTO(entity);
+            return entity.toDomain();
         }
-        return dto;
+        return null;
     }
 
-    public List<ApiKeyDTO> findAllRevoked() {
-
+    public List<ApiKey> findAllRevoked() {
         List<ApiKeyEntity> entities = getAllRevokedEntities();
-        List<ApiKeyDTO> dtos = new ArrayList<>();
-
-        for (ApiKeyEntity entity : entities) {
-            ApiKeyDTO dto = new ApiKeyDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
-
+        return entities.stream().map(entity -> entity.toDomain()).collect(Collectors.toList());
     }
 
-    public ApiKeyDTO getRevokedKeyByKey(String apiKey) {
-
-        ApiKeyDTO dto = null;
+    public ApiKey getRevokedKeyByKey(String apiKey) {
         ApiKeyEntity entity = getRevokedEntityByKey(apiKey);
-
         if (entity != null) {
-            dto = new ApiKeyDTO(entity);
+            return entity.toDomain();
         }
-        return dto;
+        return null;
     }
 
-    public List<ApiKeyDTO> findAllNotUsedInXDays(Integer days) {
+    public List<ApiKey> findAllNotUsedInXDays(Integer days) {
         List<ApiKeyEntity> entities = getAllNotUsedInXDays(days);
-        List<ApiKeyDTO> dtos = new ArrayList<>();
-
-        for (ApiKeyEntity entity : entities) {
-            ApiKeyDTO dto = new ApiKeyDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
+        return entities.stream().map(entity -> entity.toDomain()).collect(Collectors.toList());
     }
 
-    public List<ApiKeyDTO> findAllToBeRevoked(Integer daysSinceWarningSent) {
+    public List<ApiKey> findAllToBeRevoked(Integer daysSinceWarningSent) {
         List<ApiKeyEntity> entities = getAllToBeRevoked(daysSinceWarningSent);
-        List<ApiKeyDTO> dtos = new ArrayList<>();
-
-        for (ApiKeyEntity entity : entities) {
-            ApiKeyDTO dto = new ApiKeyDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
+        return entities.stream().map(entity -> entity.toDomain()).collect(Collectors.toList());
     }
 
-    private void create(final ApiKeyEntity entity) {
-        entityManager.persist(entity);
-        entityManager.flush();
-    }
-
-    private void update(final ApiKeyEntity entity) {
-
-        entityManager.merge(entity);
-        entityManager.flush();
-
-    }
-
-    private List<ApiKeyEntity> getAllEntities(final Boolean includeDeleted) {
+    private List<ApiKeyEntity> getAllEntities(Boolean includeDeleted) {
         List<ApiKeyEntity> result;
         if (includeDeleted) {
             result = entityManager
@@ -219,7 +133,6 @@ public class ApiKeyDAO extends BaseDAOImpl {
 
     @Cacheable(CacheNames.GET_ALL_UNRESTRICTED_APIKEYS)
     private List<ApiKeyEntity> getAllUnrestrictedApiKeyEntities() {
-
         List<ApiKeyEntity> result = entityManager
                 .createQuery("from ApiKeyEntity where (NOT deleted = true) AND unrestricted = true",
                         ApiKeyEntity.class)
@@ -227,7 +140,7 @@ public class ApiKeyDAO extends BaseDAOImpl {
         return result;
     }
 
-    private List<ApiKeyEntity> getAllNotUsedInXDays(final Integer days) {
+    private List<ApiKeyEntity> getAllNotUsedInXDays(Integer days) {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH, (-1 * days));
         List<ApiKeyEntity> result = entityManager.createQuery(
@@ -240,7 +153,7 @@ public class ApiKeyDAO extends BaseDAOImpl {
         return result;
     }
 
-    private List<ApiKeyEntity> getAllToBeRevoked(final Integer daysSinceWarningSent) {
+    private List<ApiKeyEntity> getAllToBeRevoked(Integer daysSinceWarningSent) {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH, (-1 * daysSinceWarningSent));
         List<ApiKeyEntity> result = entityManager.createQuery(
@@ -251,7 +164,7 @@ public class ApiKeyDAO extends BaseDAOImpl {
         return result;
     }
 
-    private ApiKeyEntity getEntityById(final Long entityId) throws EntityRetrievalException {
+    private ApiKeyEntity getEntityById(Long entityId) throws EntityRetrievalException {
         ApiKeyEntity entity = null;
         Query query = entityManager.createQuery(
                 "from ApiKeyEntity "
@@ -272,7 +185,7 @@ public class ApiKeyDAO extends BaseDAOImpl {
         return entity;
     }
 
-    private ApiKeyEntity getEntityByKey(final String key) throws EntityRetrievalException {
+    private ApiKeyEntity getEntityByKey(String key) throws EntityRetrievalException {
         ApiKeyEntity entity = null;
         Query query = entityManager.createQuery("from ApiKeyEntity where (NOT deleted = true) AND (api_key = :apikey) ",
                 ApiKeyEntity.class);
@@ -294,7 +207,7 @@ public class ApiKeyDAO extends BaseDAOImpl {
         return result;
     }
 
-    private ApiKeyEntity getRevokedEntityByKey(final String key) {
+    private ApiKeyEntity getRevokedEntityByKey(String key) {
         ApiKeyEntity entity = null;
 
         Query query = entityManager.createQuery("from ApiKeyEntity where (deleted = true) AND (api_key = :apikey) ",

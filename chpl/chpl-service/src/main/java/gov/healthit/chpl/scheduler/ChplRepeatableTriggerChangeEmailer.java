@@ -14,10 +14,10 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
+import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.HtmlEmailTemplate;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
-import gov.healthit.chpl.util.EmailBuilder;
-import gov.healthit.chpl.util.HtmlEmailTemplate;
 import lombok.extern.log4j.Log4j2;
 
 @Service

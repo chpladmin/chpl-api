@@ -175,8 +175,8 @@
         additivity="false">
         <AppenderRef ref="promotingInteroperabilityUploadJob" />
     </Logger>
-    <Logger name="versionActivityUpdaterJobLogger" level="INFO"
+    <Logger name="deprecatedApiUsageEmailJobLogger" level="INFO"
         additivity="false">
-        <AppenderRef ref="versionActivityUpdaterJob" />
+        <AppenderRef ref="deprecatedApiUsageEmailJob" />
     </Logger>
 </Loggers>

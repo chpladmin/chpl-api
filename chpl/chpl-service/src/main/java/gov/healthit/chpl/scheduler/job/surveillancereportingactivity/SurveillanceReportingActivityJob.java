@@ -20,9 +20,9 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.excel.SurveillanceActivityReportWorkbook;
-import gov.healthit.chpl.util.EmailBuilder;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "surveillanceActivityReportJobLogger")
