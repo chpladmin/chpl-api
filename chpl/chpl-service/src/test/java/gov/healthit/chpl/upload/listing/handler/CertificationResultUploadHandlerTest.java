@@ -86,6 +86,19 @@ public class CertificationResultUploadHandlerTest {
     }
 
     @Test
+    public void buildCertResult_SuccessFieldDuplicate_ReturnsFirstValue() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + "," + HEADER_ROW_BEGIN).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("0,1");
+        assertNotNull(certResultRecords);
+
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNotNull(certResult);
+        assertNotNull(certResult.isSuccess());
+        assertFalse(certResult.isSuccess());
+    }
+
+    @Test
     public void buildCertResult_SuccessFieldInvalidBoolean_ReturnsNull() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
         assertNotNull(headingRecord);
@@ -157,6 +170,20 @@ public class CertificationResultUploadHandlerTest {
                 HEADER_ROW_BEGIN + ",GAP").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Yes");
+        assertNotNull(certResultRecords);
+
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNotNull(certResult);
+        assertNotNull(certResult.isGap());
+        assertTrue(certResult.isGap());
+    }
+
+    @Test
+    public void buildCertResult_GapValueDuplicate_ReturnsFirstValue() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
+                HEADER_ROW_BEGIN + ",GAP,GAP").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Yes,0");
         assertNotNull(certResultRecords);
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
@@ -261,6 +288,20 @@ public class CertificationResultUploadHandlerTest {
     }
 
     @Test
+    public void buildCertResult_AdditionalSoftwareValueDuplicate_ReturnsFirstValue() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
+                HEADER_ROW_BEGIN + ",Additional Software,Additional Software").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Yes,0");
+        assertNotNull(certResultRecords);
+
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNotNull(certResult);
+        assertNotNull(certResult.getHasAdditionalSoftware());
+        assertTrue(certResult.getHasAdditionalSoftware());
+    }
+
+    @Test
     public void buildCertResult_AdditionalSoftwareEmptyString_ReturnsFalse() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 HEADER_ROW_BEGIN + ",Additional Software").get(0);
@@ -352,6 +393,24 @@ public class CertificationResultUploadHandlerTest {
     }
 
     @Test
+    public void buildCertResult_TestFunctionalityDuplicateData_ParsesFirstValue() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
+                + ",Functionality Tested,Functionality Tested").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,func,func2");
+        assertNotNull(certResultRecords);
+
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNotNull(certResult);
+        assertNotNull(certResult.getTestFunctionality());
+        assertEquals(1, certResult.getTestFunctionality().size());
+        CertificationResultTestFunctionality func = certResult.getTestFunctionality().get(0);
+        assertNotNull(func);
+        assertNotNull(func.getName());
+        assertEquals("func", func.getName());
+    }
+
+    @Test
     public void buildCertResult_TestStandardNoColumn_ReturnsEmptyList() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
         assertNotNull(headingRecord);
@@ -384,6 +443,24 @@ public class CertificationResultUploadHandlerTest {
                 + ",Standard Tested Against").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,std");
+        assertNotNull(certResultRecords);
+
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNotNull(certResult);
+        assertNotNull(certResult.getTestStandards());
+        assertEquals(1, certResult.getTestStandards().size());
+        CertificationResultTestStandard std = certResult.getTestStandards().get(0);
+        assertNotNull(std);
+        assertNotNull(std.getTestStandardName());
+        assertEquals("std", std.getTestStandardName());
+    }
+
+    @Test
+    public void buildCertResult_TestStandardDuplicateData_ParsesFirstValue() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
+                + ",Standard Tested Against,Standard Tested Against").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,std,std2");
         assertNotNull(certResultRecords);
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
@@ -459,6 +536,20 @@ public class CertificationResultUploadHandlerTest {
     }
 
     @Test
+    public void buildCertResult_PrivacySecurityDuplicate_ReturnsFirstValue() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
+                + ",Privacy and Security Framework,Privacy and Security Framework").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Approach 1,Approach 2");
+        assertNotNull(certResultRecords);
+
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNotNull(certResult);
+        assertNotNull(certResult.getPrivacySecurityFramework());
+        assertEquals("Approach 1", certResult.getPrivacySecurityFramework());
+    }
+
+    @Test
     public void buildCertResult_PrivacySecurityExtraWhitespace_ReturnsTrimmedValue() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
                 + ",Privacy and Security Framework").get(0);
@@ -504,6 +595,20 @@ public class CertificationResultUploadHandlerTest {
                 + ",Export Documentation").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Something");
+        assertNotNull(certResultRecords);
+
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNotNull(certResult);
+        assertNotNull(certResult.getExportDocumentation());
+        assertEquals("Something", certResult.getExportDocumentation());
+    }
+
+    @Test
+    public void buildCertResult_ExportDocumentationDuplicate_ReturnsFirstValue() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
+                + ",Export Documentation,Export Documentation").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Something,Something2");
         assertNotNull(certResultRecords);
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
@@ -567,6 +672,20 @@ public class CertificationResultUploadHandlerTest {
     }
 
     @Test
+    public void buildCertResult_DocumentationUrlDuplicate_ReturnsFirstValue() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
+                + ",Documentation URL,Documentation URL").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Something,Something2");
+        assertNotNull(certResultRecords);
+
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNotNull(certResult);
+        assertNotNull(certResult.getDocumentationUrl());
+        assertEquals("Something", certResult.getDocumentationUrl());
+    }
+
+    @Test
     public void buildCertResult_DocumentationUrlExtraWhitespace_ReturnsTrimmedValue() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
                 + ",Documentation URL").get(0);
@@ -610,6 +729,20 @@ public class CertificationResultUploadHandlerTest {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",Use Cases").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Something");
+        assertNotNull(certResultRecords);
+
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNotNull(certResult);
+        assertNotNull(certResult.getUseCases());
+        assertEquals("Something", certResult.getUseCases());
+    }
+
+    @Test
+    public void buildCertResult_UseCasesDuplicate_ReturnsFirstValue() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
+                + ",Use Cases,Use Cases").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Something,Something2");
         assertNotNull(certResultRecords);
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
@@ -670,6 +803,20 @@ public class CertificationResultUploadHandlerTest {
     }
 
     @Test
+    public void buildCertResult_ApiDocumentationDuplicate_ReturnsFirstValue() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
+                + ",API Documentation Link,API Documentation Link").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Something,Something2");
+        assertNotNull(certResultRecords);
+
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNotNull(certResult);
+        assertNotNull(certResult.getApiDocumentation());
+        assertEquals("Something", certResult.getApiDocumentation());
+    }
+
+    @Test
     public void buildCertResult_ApiDocumentationExtraWhitespace_ReturnsTrimmedValue() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",API Documentation Link").get(0);
         assertNotNull(headingRecord);
@@ -714,6 +861,20 @@ public class CertificationResultUploadHandlerTest {
                 + ",Service Base URL List").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Something");
+        assertNotNull(certResultRecords);
+
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNotNull(certResult);
+        assertNotNull(certResult.getServiceBaseUrlList());
+        assertEquals("Something", certResult.getServiceBaseUrlList());
+    }
+
+    @Test
+    public void buildCertResult_ServiceBaseUrlListDuplicate_ReturnsFirstValue() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
+                + ",Service Base URL List,Service Base URL List").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Something,Something2");
         assertNotNull(certResultRecords);
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
@@ -796,6 +957,20 @@ public class CertificationResultUploadHandlerTest {
                 HEADER_ROW_BEGIN + ",Attestation Answer").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Yes");
+        assertNotNull(certResultRecords);
+
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNotNull(certResult);
+        assertNotNull(certResult.getAttestationAnswer());
+        assertTrue(certResult.getAttestationAnswer());
+    }
+
+    @Test
+    public void buildCertResult_AttesttionAnswerDuplicate_ReturnsFirstValue() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
+                HEADER_ROW_BEGIN + ",Attestation Answer,Attestation Answer").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Yes,No");
         assertNotNull(certResultRecords);
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);

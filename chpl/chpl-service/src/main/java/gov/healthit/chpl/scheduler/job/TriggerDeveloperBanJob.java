@@ -19,7 +19,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.util.EmailBuilder;
+import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.util.Util;
 
 public class TriggerDeveloperBanJob implements Job {

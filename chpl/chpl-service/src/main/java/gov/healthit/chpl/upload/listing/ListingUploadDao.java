@@ -39,6 +39,7 @@ public class ListingUploadDao extends BaseDAOImpl {
         toCreate.setVersionName(uploadMetadata.getVersion());
         toCreate.setErrorCount(uploadMetadata.getErrorCount());
         toCreate.setWarningCount(uploadMetadata.getWarningCount());
+        toCreate.setStatus(ListingUploadStatus.PROCESSING);
         String fileContents = null;
         try {
             fileContents = printToString(uploadMetadata.getRecords());
@@ -56,17 +57,17 @@ public class ListingUploadDao extends BaseDAOImpl {
     public void updateErrorAndWarningCounts(ListingUpload listingUpload) {
         ListingUploadEntity entity = entityManager.find(ListingUploadEntity.class, listingUpload.getId());
         if (entity != null) {
+            entity.setStatus(listingUpload.getStatus());
             entity.setErrorCount(listingUpload.getErrorCount());
             entity.setWarningCount(listingUpload.getWarningCount());
             update(entity);
         }
     }
 
-    public void updateErrorAndWarningCounts(Long listingUploadId, Integer errorCount, Integer warningCount) {
+    public void updateStatus(Long listingUploadId, ListingUploadStatus status) {
         ListingUploadEntity entity = entityManager.find(ListingUploadEntity.class, listingUploadId);
         if (entity != null) {
-            entity.setErrorCount(errorCount);
-            entity.setWarningCount(warningCount);
+            entity.setStatus(status);
             update(entity);
         }
     }
@@ -159,6 +160,7 @@ public class ListingUploadDao extends BaseDAOImpl {
         listingUpload.setVersion(entity.getVersionName());
         listingUpload.setErrorCount(entity.getErrorCount());
         listingUpload.setWarningCount(entity.getWarningCount());
+        listingUpload.setStatus(entity.getStatus());
         if (includeRecords) {
             listingUpload.setRecords(recordsFromString(entity.getFileContents()));
         }

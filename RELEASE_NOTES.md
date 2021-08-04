@@ -1,5 +1,30 @@
 # Release Notes
 
+## Version 30.4.0
+_2 August 2021_
+
+### Features
+* Change Meaningful Use User term to Promoting Interoperability; deprecated MUU fields and endpoints
+* Enable Real World Testing fields for all 2015 Edition Listings
+
+### Flagged Features
+* Treat Test Standards as Optional Standards on Upload/Confirm
+
+---
+
+## Version 30.3.0
+_12 July 2021_
+
+### Features
+* Create new search endpoint /search/beta that incorporates all types of compliance
+* Deprecate /search endpoint
+* Remove ability for ROLE_ONC to upload surveillance
+* Add acbId to Listing Activity metadata
+* Add header to all responses indicating prod/non-prod environment
+* Disable Merge ability for ROLE_ACB
+
+---
+
 ## Version 30.2.0
 _28 June 2021_
 

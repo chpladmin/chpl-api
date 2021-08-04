@@ -40,8 +40,8 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityProductDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityTriggerDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityVersionDTO;
+import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.service.CertificationCriterionService;
-import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.Util;
 
 public class QuestionableActivityEmailJob extends QuartzJob {
@@ -489,6 +489,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.MEASURE_REMOVED
                 .getName())) {
             currRow.set(ACTIVITY_DESCRIPTION_COL, "Removed " + activity.getBefore());
+        } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.REAL_WORLD_TESTING_ADDED.getName())) {
+          currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getAfter());
         } else if (activity.getTrigger().getName()
                 .equals(QuestionableActivityTriggerConcept.REAL_WORLD_TESTING_REMOVED.getName())) {
             currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getBefore());

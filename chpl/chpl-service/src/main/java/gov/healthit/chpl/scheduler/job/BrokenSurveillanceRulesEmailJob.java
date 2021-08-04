@@ -35,9 +35,9 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.scheduler.BrokenSurveillanceRulesDAO;
 import gov.healthit.chpl.domain.surveillance.SurveillanceOversightRule;
 import gov.healthit.chpl.dto.scheduler.BrokenSurveillanceRulesDTO;
+import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
-import gov.healthit.chpl.util.EmailBuilder;
 
 public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("brokenSurveillanceRulesEmailJobLogger");

@@ -10,8 +10,8 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.service.CertificationCriterionService;
 
 public class ValidationUtilsTest {
 
@@ -20,8 +20,7 @@ public class ValidationUtilsTest {
 
     @Before
     public void before() {
-        CertificationCriterionDAO criterionDao = Mockito.mock(CertificationCriterionDAO.class);
-        validationUtil = new ValidationUtils(criterionDao);
+        validationUtil = new ValidationUtils(Mockito.mock(CertificationCriterionService.class));
     }
 
     @Test

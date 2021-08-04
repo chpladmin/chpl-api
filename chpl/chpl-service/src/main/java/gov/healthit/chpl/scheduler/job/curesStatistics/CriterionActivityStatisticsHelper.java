@@ -42,9 +42,9 @@ public class CriterionActivityStatisticsHelper {
                         .filter(certResult -> certResult.getCriterion() != null && certResult.getCriterion().getId().equals(criterion.getId()))
                         .findAny().get();
                 CertificationResult updatedListingCertResultForCriterion
-                = updatedListingInActivity.getCertificationResults().stream()
-                    .filter(certResult -> certResult.getCriterion() != null && certResult.getCriterion().getId().equals(criterion.getId()))
-                    .findAny().get();
+                    = updatedListingInActivity.getCertificationResults().stream()
+                        .filter(certResult -> certResult.getCriterion() != null && certResult.getCriterion().getId().equals(criterion.getId()))
+                        .findAny().get();
                 if (originalListingCertResultForCriterion.isSuccess() && !updatedListingCertResultForCriterion.isSuccess()) {
                     LOGGER.info("Listing ID " + listingId + " unattested to criterion " + criterion.getId() +  " on " + listingActivity.getActivityDate());
                     return true;

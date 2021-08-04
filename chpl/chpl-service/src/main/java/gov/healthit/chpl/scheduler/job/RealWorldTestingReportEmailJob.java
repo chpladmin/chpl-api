@@ -24,11 +24,11 @@ import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
 import gov.healthit.chpl.realworldtesting.manager.RealWorldTestingReportService;
-import gov.healthit.chpl.util.EmailBuilder;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "realWorldTestingReportEmailJobLogger")
