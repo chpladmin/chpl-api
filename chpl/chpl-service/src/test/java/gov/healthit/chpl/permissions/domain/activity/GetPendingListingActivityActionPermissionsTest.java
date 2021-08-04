@@ -56,7 +56,9 @@ public class GetPendingListingActivityActionPermissionsTest extends ActionPermis
     public void hasAccess_OncStaff() throws Exception {
         setupForOncStaffUser(resourcePermissions);
 
-        assertFalse(permissions.hasAccess());
+        assertTrue(permissions.hasAccess());
+
+        // Not used
         assertFalse(permissions.hasAccess(new Object()));
     }
 
