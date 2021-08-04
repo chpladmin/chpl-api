@@ -202,5 +202,16 @@
                 <cron-expression>0 0 3 * * ?</cron-expression> <!-- At 0300 UTC every day -->
             </cron>
         </trigger>
+
+        <trigger>
+            <cron>
+                <name>deprecatedApiUsage</name>
+                <group>deprecatedApiUsageTrigger</group>
+                <job-name>deprecatedApiUsageEmailJob</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <cron-expression>0 0 8 ? * MON *</cron-expression> <!-- At 0800 UTC weekly on Monday-->
+            </cron>
+        </trigger>
     </schedule>
 </job-scheduling-data>

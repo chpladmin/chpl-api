@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import gov.healthit.chpl.upload.listing.ListingUploadStatus;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import lombok.AllArgsConstructor;
@@ -37,6 +38,7 @@ public class ListingUpload implements Serializable {
     private String version;
     private Integer warningCount;
     private Integer errorCount;
+    private ListingUploadStatus status;
     @XmlTransient
     @JsonIgnore
     private List<CSVRecord> records;

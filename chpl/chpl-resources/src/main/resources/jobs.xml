@@ -752,7 +752,7 @@
                 </entry>
             </job-data-map>
         </job>
-        
+
         <!-- Job fired when a new surveillance activity (by date) is requested -->
         <job>
             <name>surveillanceReportingActivityJob</name>
@@ -801,20 +801,13 @@
             </job-data-map>
         </job>
 
-        <!-- temporary job run once by admin to update version activity -->
         <job>
-            <name>versionActivityUpdaterJob</name>
+            <name>deprecatedApiUsageEmailJob</name>
             <group>systemJobs</group>
-            <description>Attempt to fill in missing product and developer data in version activity.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.versionActivity.VersionActivityUpdaterJob</job-class>
+            <description>Sends emails to any registered API Keys that have accessed deprecated endpoints.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.deprecatedApiUsage.DeprecatedApiUsageEmailJob</job-class>
             <durability>true</durability>
-            <recover>true</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN</value>
-                </entry>
-            </job-data-map>
+            <recover>false</recover>
         </job>
     </schedule>
 </job-scheduling-data>
