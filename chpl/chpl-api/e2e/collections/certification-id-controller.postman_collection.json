@@ -1,0 +1,92 @@
+{
+	"info": {
+		"name": "certification-id-controller",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET /certification_ids/{certificationId}",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"ONC_STAFF users should get 200 status and response is not null for /certification_ids/{certificationId} end point\", function () {\r",
+							"    var exprespbody = pm.response.json();\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(exprespbody).not.eql(null);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/certification_ids?certificationId=9437",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"certification_ids"
+					],
+					"query": [
+						{
+							"key": "certificationId",
+							"value": "9437"
+						}
+					]
+				},
+				"description": "ONC_STAFF users should get 200 status and response is not null for /certification_ids/{certificationId} end point"
+			},
+			"response": []
+		}
+	]
+}
