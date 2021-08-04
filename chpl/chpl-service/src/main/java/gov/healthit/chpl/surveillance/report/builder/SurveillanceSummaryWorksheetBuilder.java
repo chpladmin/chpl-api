@@ -3,7 +3,9 @@ package gov.healthit.chpl.surveillance.report.builder;
 import java.awt.Color;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.BorderExtent;
@@ -373,7 +375,7 @@ public class SurveillanceSummaryWorksheetBuilder {
         if (surv.getEndDate() == null) {
             result = listing.getCurrentStatus().getStatus().getName();
         } else {
-            CertificationStatusEvent statusEvent = listing.getStatusOnDate(surv.getEndDate());
+            CertificationStatusEvent statusEvent = listing.getStatusOnDate(Date.from(surv.getEndDate().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant()));
             if (statusEvent != null) {
                 result = statusEvent.getStatus().getName();
             }
