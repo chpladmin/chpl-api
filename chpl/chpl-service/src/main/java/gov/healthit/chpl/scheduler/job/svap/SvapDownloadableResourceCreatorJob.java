@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.dao.ActivityDAO;
+import gov.healthit.chpl.activity.history.ListingActivityHistoryHelper;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -40,7 +41,7 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
     private ExecutorService executorService;
 
     @Autowired
-    private ActivityDAO activityDao;
+    private ListingActivityHistoryHelper activityHelper;
 
     @Autowired
     private CertifiedProductDAO cpDao;
@@ -118,12 +119,14 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
     }
 
     private List<ListingSvapActivity> buildSvapActivities(CertifiedProductSearchDetails listing) {
+        LocalDate svapNoticeUrlLastUpdate = activityHelper.getLastUpdateDateForSvapNoticeUrl(listing);
+        ListingSvapActivity baseSvapActivity = ListingSvapActivity.builder()
+            .listing(listing)
+            .svapNoticeLastUpdated(svapNoticeUrlLastUpdate)
+            .build();
         List<ListingSvapActivity> listingSvapActivities = new ArrayList<ListingSvapActivity>();
-        //TODO: break up into multiple svap activities if there are multiple criteria or multiple svaps per criteria
-        listingSvapActivities.add(ListingSvapActivity.builder()
-                .listing(listing)
-                .build());
-        //TODO: get date of last svap notice url change
+        //TODO: break up into multiple svap activities if there are multiple criteria or multiple svaps for any criteria
+
         //TODO: get date of last change to any criteria
         //TODO: get whether svap was added with criteria or separately
         return listingSvapActivities;
