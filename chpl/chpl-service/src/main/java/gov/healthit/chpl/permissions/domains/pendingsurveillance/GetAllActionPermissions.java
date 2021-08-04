@@ -20,8 +20,7 @@ public class GetAllActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess() {
-        return getResourcePermissions().isUserRoleAcbAdmin() || getResourcePermissions().isUserRoleAdmin()
-                || getResourcePermissions().isUserRoleOnc();
+        return getResourcePermissions().isUserRoleAcbAdmin() || getResourcePermissions().isUserRoleAdmin();
     }
 
     @Override
@@ -40,12 +39,6 @@ public class GetAllActionPermissions extends ActionPermissions {
                     CertifiedProductDTO dto = certifiedProductDAO.getById(surv.getCertifiedProduct().getId());
                     return isAcbValidForCurrentUser(dto.getCertificationBodyId());
                 }
-            } else if (getResourcePermissions().isUserRoleOnc()
-                    || getResourcePermissions().isUserRoleAdmin()) {
-                Surveillance surv = (Surveillance) obj;
-                // Make sure the pending surveillance belongs to the correct
-                // authority
-                return surv.getAuthority().equals(Authority.ROLE_ONC);
             } else {
                 return false;
             }

@@ -45,7 +45,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
 
         Surveillance surv = new Surveillance();
         surv.setAuthority("ROLE_ONC");
-        assertTrue(permissions.hasAccess(surv));
+        assertFalse(permissions.hasAccess(surv));
 
         surv = new Surveillance();
         surv.setAuthority("ROLE_ACB");
@@ -57,11 +57,11 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Onc() throws Exception {
         setupForOncUser(resourcePermissions);
 
-        assertTrue(permissions.hasAccess());
+        assertFalse(permissions.hasAccess());
 
         Surveillance surv = new Surveillance();
         surv.setAuthority("ROLE_ONC");
-        assertTrue(permissions.hasAccess(surv));
+        assertFalse(permissions.hasAccess(surv));
 
         surv = new Surveillance();
         surv.setAuthority("ROLE_ACB");

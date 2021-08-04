@@ -44,10 +44,10 @@ public class UploadActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Admin() throws Exception {
         setupForAdminUser(resourcePermissions);
 
-        assertTrue(permissions.hasAccess());
+        assertFalse(permissions.hasAccess());
 
         Surveillance surv = new Surveillance();
-        assertTrue(permissions.hasAccess(surv));
+        assertFalse(permissions.hasAccess(surv));
     }
 
     @Override

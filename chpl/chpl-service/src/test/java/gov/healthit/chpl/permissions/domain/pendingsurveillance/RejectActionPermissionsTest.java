@@ -65,7 +65,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
                 .thenReturn(getUserPermissionDTO("ROLE_ONC", "", ""));
 
-        assertTrue(permissions.hasAccess(id));
+        assertFalse(permissions.hasAccess(id));
 
         // Check where authority is not correct for role
         Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
@@ -94,7 +94,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
         Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
                 .thenReturn(getUserPermissionDTO("ROLE_ONC", "", ""));
 
-        assertTrue(permissions.hasAccess(id));
+        assertFalse(permissions.hasAccess(id));
 
         // Check where authority does not match the user's role
         Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))

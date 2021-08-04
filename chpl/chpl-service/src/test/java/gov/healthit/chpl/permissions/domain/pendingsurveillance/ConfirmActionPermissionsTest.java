@@ -46,7 +46,7 @@ public class ConfirmActionPermissionsTest extends ActionPermissionsBaseTest {
 
         Surveillance surv = new Surveillance();
         surv.setAuthority("ROLE_ONC");
-        assertTrue(permissions.hasAccess(surv));
+        assertFalse(permissions.hasAccess(surv));
 
         surv = new Surveillance();
         surv.setAuthority("ROLE_ACB");
@@ -63,7 +63,7 @@ public class ConfirmActionPermissionsTest extends ActionPermissionsBaseTest {
 
         Surveillance surv = new Surveillance();
         surv.setAuthority("ROLE_ONC");
-        assertTrue(permissions.hasAccess(surv));
+        assertFalse(permissions.hasAccess(surv));
 
         surv = new Surveillance();
         surv.setAuthority("ROLE_ACB");

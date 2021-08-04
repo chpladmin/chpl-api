@@ -44,15 +44,6 @@ public class RejectActionPermissions extends ActionPermissions {
                     // Make sure the user has access to the pendingSurveillance
                     return isAcbValidForCurrentUser(entity.getCertifiedProduct().getCertificationBodyId());
                 }
-            } else if (getResourcePermissions().isUserRoleOnc()
-                    || getResourcePermissions().isUserRoleAdmin()) {
-                Long pendingSurveillanceId = (Long) obj;
-                PendingSurveillanceEntity entity = surveillanceDAO.getPendingSurveillanceById(pendingSurveillanceId);
-
-                // Make sure the user belongs to the same authority as the
-                // pending surveillance
-                String authority = userPermissionDAO.findById(entity.getUserPermissionId()).getAuthority();
-                return authority.equals(Authority.ROLE_ONC);
             } else {
                 return false;
             }

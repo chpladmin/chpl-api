@@ -40,12 +40,6 @@ public class ConfirmActionPermissions extends ActionPermissions {
                     CertifiedProductDTO dto = certifiedProductDAO.getById(surv.getCertifiedProduct().getId());
                     return isAcbValidForCurrentUser(dto.getCertificationBodyId());
                 }
-            } else if (getResourcePermissions().isUserRoleOnc()
-                    || getResourcePermissions().isUserRoleAdmin()) {
-                Surveillance surv = (Surveillance) obj;
-                // Make sure the pending surveillance belongs to the correct
-                // authority
-                return surv.getAuthority().equals(Authority.ROLE_ONC);
             } else {
                 return false;
             }
