@@ -19,7 +19,9 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.PropertyTemplate;
 
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2(topic = "quarterlyReportGenerationJobLogger")
 public abstract class ReportInfoWorksheetBuilder {
     private static final int LAST_DATA_COLUMN = 6;
     private static final int MIN_TEXT_AREA_LINES = 4;
@@ -151,6 +153,8 @@ public abstract class ReportInfoWorksheetBuilder {
                 maxDate = report.getEndDate();
             }
         }
+        LOGGER.info("MinDate: " + minDate == null ? "NULL" : minDate.toGMTString());
+        LOGGER.info("MaxDate: " + maxDate == null ? "NULL" : maxDate.toGMTString());
         DateFormat dateFormatter = new SimpleDateFormat("d MMMM yyyy");
         cell.setCellValue(dateFormatter.format(minDate) + " through " + dateFormatter.format(maxDate));
         pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 1),
