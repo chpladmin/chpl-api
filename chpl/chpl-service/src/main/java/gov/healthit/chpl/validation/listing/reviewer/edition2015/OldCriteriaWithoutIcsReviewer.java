@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -115,8 +116,9 @@ public class OldCriteriaWithoutIcsReviewer implements Reviewer {
 
     private boolean hasRelevantCriteria(CertifiedProductSearchDetails listing, long criteriaId) {
         return listing.getCertificationResults().stream()
-                .anyMatch(result -> result.getCriterion().getId().equals(criteriaId)
-                        && result.isSuccess());
+                .anyMatch(certResult -> certResult.getCriterion() != null && certResult.getCriterion().getId() != null
+                    && certResult.getCriterion().getId().equals(criteriaId)
+                    && BooleanUtils.isTrue(certResult.isSuccess()));
     }
 
     private boolean hasICS(CertifiedProductSearchDetails listing) {
