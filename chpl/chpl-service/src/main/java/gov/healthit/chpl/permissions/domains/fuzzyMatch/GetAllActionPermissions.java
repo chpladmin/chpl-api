@@ -9,12 +9,14 @@ public class GetAllActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess() {
-        return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc();
+        return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
+                || getResourcePermissions().isUserRoleOncStaff();
     }
 
     @Override
-    public boolean hasAccess(final Object obj) {
-        return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc();
+    public boolean hasAccess(Object obj) {
+        return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
+                || getResourcePermissions().isUserRoleOncStaff();
     }
 
 }

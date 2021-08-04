@@ -98,7 +98,7 @@ public class DimensionalDataController {
     }
 
     @ApiOperation(value = "Get all fuzzy matching choices for the items that be fuzzy matched.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
+            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC or ROLE_ONC_STAFF")
     @RequestMapping(value = "/fuzzy_choices", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)

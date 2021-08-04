@@ -1,20 +1,17 @@
 package gov.healthit.chpl.permissions.domains.activity;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.util.AuthUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component("actionGetActivityMetadataByAcbActionPermissions")
 public class GetActivityMetadataByAcbActionPermissions extends ActionPermissions {
-    private static final Logger LOGGER = LogManager.getLogger(GetActivityMetadataByAcbActionPermissions.class);
-
     private CertificationBodyDAO acbDao;
 
     @Autowired
@@ -28,10 +25,11 @@ public class GetActivityMetadataByAcbActionPermissions extends ActionPermissions
     }
 
     @Override
-    public boolean hasAccess(final Object obj) {
+    public boolean hasAccess(Object obj) {
         if (!(obj instanceof Long)) {
             return false;
-        } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
+        } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
+                || getResourcePermissions().isUserRoleOncStaff()) {
             return true;
         } else {
             Long acbId = (Long) obj;
