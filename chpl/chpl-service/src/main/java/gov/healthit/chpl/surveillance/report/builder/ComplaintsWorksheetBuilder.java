@@ -76,7 +76,7 @@ public class ComplaintsWorksheetBuilder {
     private CertifiedProductDetailsManager cpdManager;
     private PrivilegedSurveillanceDAO survDao;
     private int lastDataRow;
-    private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy");
+    private DateTimeFormatter dateFormatter;
     private PropertyTemplate pt;
     private CertificationCriterionService criterionService;
 

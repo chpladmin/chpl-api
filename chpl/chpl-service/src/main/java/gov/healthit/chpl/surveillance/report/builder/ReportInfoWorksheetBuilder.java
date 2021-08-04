@@ -150,7 +150,6 @@ public abstract class ReportInfoWorksheetBuilder {
                 maxDate = report.getEndDate();
             }
         }
-        //DateFormat dateFormatter = new SimpleDateFormat("d MMMM yyyy");
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy");
         cell.setCellValue(dateFormatter.format(minDate) + " through " + dateFormatter.format(maxDate));
         pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 1),
