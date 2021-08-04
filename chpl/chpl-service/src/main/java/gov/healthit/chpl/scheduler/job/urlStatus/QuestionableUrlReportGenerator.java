@@ -71,6 +71,8 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Questionable URL Report Generator job. *********");
         activeStatuses.add(CertificationStatusType.Active);
+        activeStatuses.add(CertificationStatusType.SuspendedByAcb);
+        activeStatuses.add(CertificationStatusType.SuspendedByOnc);
 
         try {
             List<FailedUrlResult> questionableUrls = new ArrayList<FailedUrlResult>();
@@ -141,8 +143,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             List<Long> acbIds = getSelectedAcbIds(jobContext);
             return badUrls.stream()
                 .filter(badUrl -> isUrlRelatedToAcbs(badUrl, acbIds))
-                .filter(badUrl -> isNotListingUrl(badUrl) || isUrlRelatedTo2015Edition(badUrl)
-                                    || isUrlRelatedToActiveListing(badUrl))
+                .filter(badUrl -> isNotListingUrl(badUrl) || (isUrlRelatedTo2015Edition(badUrl) && isUrlRelatedToActiveListing(badUrl)))
                 .filter(badUrl -> doesUrlResultMatchAllowedStatusCodes(badUrl, jobContext))
                 .collect(Collectors.toList());
         }
