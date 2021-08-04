@@ -1,5 +1,6 @@
 package gov.healthit.chpl.surveillance.report;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,7 +23,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class SurveillanceSummaryDAO extends BaseDAOImpl {
 
-    public SurveillanceSummaryDTO getCountOfListingsSurveilledByType(Long acbId, Date startDate, Date endDate) {
+    public SurveillanceSummaryDTO getCountOfListingsSurveilledByType(Long acbId, LocalDate startDate, LocalDate endDate) {
         String queryStr = "SELECT survType.name, COUNT(DISTINCT listing) "
                 + "FROM ListingWithPrivilegedSurveillanceEntity listing "
                 + "JOIN listing.surveillances surv "
@@ -53,7 +54,7 @@ public class SurveillanceSummaryDAO extends BaseDAOImpl {
     }
 
     public SurveillanceSummaryDTO getCountOfSurveillanceProcessTypesBySurveillanceType(Long acbId,
-            List<SurveillanceProcessTypeDTO> procTypes, Date startDate, Date endDate) {
+            List<SurveillanceProcessTypeDTO> procTypes, LocalDate startDate, LocalDate endDate) {
         String queryStr = "SELECT survType.name, COUNT(DISTINCT surv.id) "
                 + "FROM ListingWithPrivilegedSurveillanceEntity listing "
                 + "JOIN listing.surveillances surv "
@@ -90,7 +91,7 @@ public class SurveillanceSummaryDAO extends BaseDAOImpl {
     }
 
     public SurveillanceSummaryDTO getCountOfSurveillanceOutcomesBySurveillanceType(Long acbId,
-            List<SurveillanceOutcomeDTO> outcomes, Date startDate, Date endDate) {
+            List<SurveillanceOutcomeDTO> outcomes, LocalDate startDate, LocalDate endDate) {
         String queryStr = "SELECT survType.name, COUNT(DISTINCT surv.id) "
                 + "FROM ListingWithPrivilegedSurveillanceEntity listing "
                 + "JOIN listing.surveillances surv "
@@ -127,7 +128,7 @@ public class SurveillanceSummaryDAO extends BaseDAOImpl {
     }
 
     public List<QuarterlyReportRelevantListingDTO> getListingsBySurveillanceType(Long acbId, SurveillanceTypeDTO survType,
-            Date startDate, Date endDate) {
+            LocalDate startDate, LocalDate endDate) {
         String queryStr = "SELECT DISTINCT listing "
                 + "FROM ListingWithPrivilegedSurveillanceEntity listing "
                 + "JOIN listing.surveillances surv "

@@ -1,7 +1,7 @@
 package gov.healthit.chpl.domain.surveillance;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
 import org.springframework.beans.BeanUtils;
 
@@ -21,8 +21,8 @@ public class SurveillanceBasic implements Serializable {
     private Long id;
     private String friendlyId;
     private Long certifiedProductId;
-    private Date startDate;
-    private Date endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private Long surveillanceTypeId;
     private SurveillanceType surveillanceType;
     private Integer numRandomizedSites;

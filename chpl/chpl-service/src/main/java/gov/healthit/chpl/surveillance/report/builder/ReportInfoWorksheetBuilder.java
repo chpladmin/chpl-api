@@ -2,9 +2,8 @@ package gov.healthit.chpl.surveillance.report.builder;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -151,7 +150,8 @@ public abstract class ReportInfoWorksheetBuilder {
                 maxDate = report.getEndDate();
             }
         }
-        DateFormat dateFormatter = new SimpleDateFormat("d MMMM yyyy");
+        //DateFormat dateFormatter = new SimpleDateFormat("d MMMM yyyy");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy");
         cell.setCellValue(dateFormatter.format(minDate) + " through " + dateFormatter.format(maxDate));
         pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 1),
                 BorderStyle.MEDIUM, BorderExtent.ALL);

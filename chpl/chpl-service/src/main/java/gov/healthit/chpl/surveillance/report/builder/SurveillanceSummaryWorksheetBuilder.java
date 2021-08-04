@@ -3,9 +3,7 @@ package gov.healthit.chpl.surveillance.report.builder;
 import java.awt.Color;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.BorderExtent;
@@ -115,8 +113,6 @@ public class SurveillanceSummaryWorksheetBuilder {
                 endDate = report.getEndDate();
             }
         }
-        Date startDateTime = Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        Date endDateTime = Date.from(endDate.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
 
         Row row = workbook.getRow(sheet, 1);
         Cell cell = workbook.createCell(row, 1, workbook.getRightAlignedTableHeadingStyle());
@@ -131,7 +127,7 @@ public class SurveillanceSummaryWorksheetBuilder {
         createSurveillanceCountsSubheadingRow(workbook, sheet, "Surveillance Counts", 2);
         //number of listings that had an open surveillance during the period of time the reports cover
         SurveillanceSummaryDTO listingSummary =
-                survSummaryDao.getCountOfListingsSurveilledByType(acbId, startDateTime, endDateTime);
+                survSummaryDao.getCountOfListingsSurveilledByType(acbId, startDate, endDate);
         createSurveillanceCountsDataRow(workbook, sheet, "Number of Certificates Surveilled",
                 listingSummary.getReactiveCount(), listingSummary.getRandomizedCount(),
                 listingSummary.getReactiveCount() + listingSummary.getRandomizedCount(), 3);
@@ -149,7 +145,7 @@ public class SurveillanceSummaryWorksheetBuilder {
             }
         }
         SurveillanceSummaryDTO procTypeSummary =
-                survSummaryDao.getCountOfSurveillanceProcessTypesBySurveillanceType(acbId, procTypes, startDateTime, endDateTime);
+                survSummaryDao.getCountOfSurveillanceProcessTypesBySurveillanceType(acbId, procTypes, startDate, endDate);
         createSurveillanceCountsDataRow(workbook, sheet, PROC_TYPE_IN_THE_FIELD,
                 procTypeSummary.getReactiveCount(), procTypeSummary.getRandomizedCount(),
                 procTypeSummary.getReactiveCount() + procTypeSummary.getRandomizedCount(), 5);
@@ -161,7 +157,7 @@ public class SurveillanceSummaryWorksheetBuilder {
             }
         }
         procTypeSummary =
-                survSummaryDao.getCountOfSurveillanceProcessTypesBySurveillanceType(acbId, procTypes, startDateTime, endDateTime);
+                survSummaryDao.getCountOfSurveillanceProcessTypesBySurveillanceType(acbId, procTypes, startDate, endDate);
         createSurveillanceCountsDataRow(workbook, sheet, PROC_TYPE_CONTROLLED,
                 procTypeSummary.getReactiveCount(), procTypeSummary.getRandomizedCount(),
                 procTypeSummary.getReactiveCount() + procTypeSummary.getRandomizedCount(), 6);
@@ -173,7 +169,7 @@ public class SurveillanceSummaryWorksheetBuilder {
             }
         }
         procTypeSummary =
-                survSummaryDao.getCountOfSurveillanceProcessTypesBySurveillanceType(acbId, procTypes, startDateTime, endDateTime);
+                survSummaryDao.getCountOfSurveillanceProcessTypesBySurveillanceType(acbId, procTypes, startDate, endDate);
         createSurveillanceCountsDataRow(workbook, sheet, PROC_TYPE_CORRESPONDENCE,
                 procTypeSummary.getReactiveCount(), procTypeSummary.getRandomizedCount(),
                 procTypeSummary.getReactiveCount() + procTypeSummary.getRandomizedCount(), 7);
@@ -185,7 +181,7 @@ public class SurveillanceSummaryWorksheetBuilder {
             }
         }
         procTypeSummary =
-                survSummaryDao.getCountOfSurveillanceProcessTypesBySurveillanceType(acbId, procTypes, startDateTime, endDateTime);
+                survSummaryDao.getCountOfSurveillanceProcessTypesBySurveillanceType(acbId, procTypes, startDate, endDate);
         createSurveillanceCountsDataRow(workbook, sheet, PROC_TYPE_REVIEW,
                 procTypeSummary.getReactiveCount(), procTypeSummary.getRandomizedCount(),
                 procTypeSummary.getReactiveCount() + procTypeSummary.getRandomizedCount(), 8);
@@ -197,7 +193,7 @@ public class SurveillanceSummaryWorksheetBuilder {
             }
         }
         procTypeSummary =
-                survSummaryDao.getCountOfSurveillanceProcessTypesBySurveillanceType(acbId, procTypes, startDateTime, endDateTime);
+                survSummaryDao.getCountOfSurveillanceProcessTypesBySurveillanceType(acbId, procTypes, startDate, endDate);
         createSurveillanceCountsDataRow(workbook, sheet, PROC_TYPE_OTHER,
                 procTypeSummary.getReactiveCount(), procTypeSummary.getRandomizedCount(),
                 procTypeSummary.getReactiveCount() + procTypeSummary.getRandomizedCount(), 9);
@@ -218,7 +214,7 @@ public class SurveillanceSummaryWorksheetBuilder {
             }
         }
         SurveillanceSummaryDTO outcomeSummary =
-                survSummaryDao.getCountOfSurveillanceOutcomesBySurveillanceType(acbId, outcomes, startDateTime, endDateTime);
+                survSummaryDao.getCountOfSurveillanceOutcomesBySurveillanceType(acbId, outcomes, startDate, endDate);
         createSurveillanceCountsDataRow(workbook, sheet, "Number of Surveillance with No Non-Conformities Found",
                 outcomeSummary.getReactiveCount(), outcomeSummary.getRandomizedCount(),
                 outcomeSummary.getReactiveCount() + outcomeSummary.getRandomizedCount(), 11);
@@ -231,7 +227,7 @@ public class SurveillanceSummaryWorksheetBuilder {
             }
         }
         outcomeSummary =
-                survSummaryDao.getCountOfSurveillanceOutcomesBySurveillanceType(acbId, outcomes, startDateTime, endDateTime);
+                survSummaryDao.getCountOfSurveillanceOutcomesBySurveillanceType(acbId, outcomes, startDate, endDate);
         createSurveillanceCountsDataRow(workbook, sheet, "Number of Surveillance with Non-Conformities Found",
                 outcomeSummary.getReactiveCount(), outcomeSummary.getRandomizedCount(),
                 outcomeSummary.getReactiveCount() + outcomeSummary.getRandomizedCount(), 12);
@@ -244,7 +240,7 @@ public class SurveillanceSummaryWorksheetBuilder {
             }
         }
         outcomeSummary =
-                survSummaryDao.getCountOfSurveillanceOutcomesBySurveillanceType(acbId, outcomes, startDateTime, endDateTime);
+                survSummaryDao.getCountOfSurveillanceOutcomesBySurveillanceType(acbId, outcomes, startDate, endDate);
         createSurveillanceCountsDataRow(workbook, sheet, "Number of Corrective Action Plans",
                 outcomeSummary.getReactiveCount(), outcomeSummary.getRandomizedCount(),
                 outcomeSummary.getReactiveCount() + outcomeSummary.getRandomizedCount(), 13);
@@ -262,9 +258,9 @@ public class SurveillanceSummaryWorksheetBuilder {
         SurveillanceTypeDTO randomizedType = new SurveillanceTypeDTO();
         randomizedType.setName("Randomized");
         List<QuarterlyReportRelevantListingDTO> listingsWithReactive =
-                survSummaryDao.getListingsBySurveillanceType(acbId, reactiveType, startDateTime, endDateTime);
+                survSummaryDao.getListingsBySurveillanceType(acbId, reactiveType, startDate, endDate);
         List<QuarterlyReportRelevantListingDTO> listingsWithRandomized =
-                survSummaryDao.getListingsBySurveillanceType(acbId, randomizedType, startDateTime, endDateTime);
+                survSummaryDao.getListingsBySurveillanceType(acbId, randomizedType, startDate, endDate);
 
         //need to get the certification status events of each listing
         //to determine it's status during the surveillance
