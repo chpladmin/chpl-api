@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.util.EmailBuilder;
+import gov.healthit.chpl.email.EmailBuilder;
 
 /**
  * Job run by Scheduler to send email when the cache is "too old".

@@ -2,54 +2,47 @@ package gov.healthit.chpl.api.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
-import gov.healthit.chpl.util.Util;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ApiKey implements Serializable {
     private static final long serialVersionUID = -3412202704187626073L;
+    private Long id;
     private String name;
     private String email;
     private String key;
+    @Deprecated
+    private String apiKey;
     private Date lastUsedDate;
     private Date deleteWarningSentDate;
 
-    public String getName() {
-        return name;
+    @JsonIgnore
+    private boolean unrestricted;
+
+    @Override
+    public boolean equals(Object another) {
+        if (another == null || !(another instanceof ApiKey)) {
+            return false;
+        }
+        ApiKey anotherApiKey = (ApiKey) another;
+        return Objects.equals(this.getId(), anotherApiKey.getId());
     }
 
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(final String email) {
-        this.email = email;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(final String key) {
-        this.key = key;
-    }
-
-    public Date getLastUsedDate() {
-        return Util.getNewDate(lastUsedDate);
-    }
-
-    public void setLastUsedDate(final Date lastUsedDate) {
-        this.lastUsedDate = Util.getNewDate(lastUsedDate);
-    }
-
-    public Date getDeleteWarningSentDate() {
-        return Util.getNewDate(deleteWarningSentDate);
-    }
-
-    public void setDeleteWarningSentDate(Date deleteWarningSentDate) {
-        this.deleteWarningSentDate = Util.getNewDate(deleteWarningSentDate);
+    @Override
+    public int hashCode() {
+        if (this.getId() == null) {
+            return -1;
+        }
+        return this.getId().hashCode();
     }
 }

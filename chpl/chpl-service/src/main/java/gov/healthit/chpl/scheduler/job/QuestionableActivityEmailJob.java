@@ -40,8 +40,8 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityProductDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityTriggerDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityVersionDTO;
+import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.service.CertificationCriterionService;
-import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.Util;
 
 public class QuestionableActivityEmailJob extends QuartzJob {

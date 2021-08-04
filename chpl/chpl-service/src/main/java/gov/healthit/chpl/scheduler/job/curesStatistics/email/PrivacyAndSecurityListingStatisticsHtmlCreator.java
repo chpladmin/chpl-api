@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.statistics.PrivacyAndSecurityListingStatisticsDAO;
 import gov.healthit.chpl.domain.statistics.PrivacyAndSecurityListingStatistic;
-import gov.healthit.chpl.util.HtmlEmailTemplate;
+import gov.healthit.chpl.email.HtmlEmailTemplate;
 import lombok.extern.log4j.Log4j2;
 
 @Component
