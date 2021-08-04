@@ -35,9 +35,9 @@
 					"script": {
 						"exec": [
 							"pm.test(\"ONC_STAFF users should get 200 status and response is not null for /certification_ids/{certificationId} end point\", function () {\r",
-							"    var exprespbody = pm.response.json();\r",
+							"    var actualResponseBody = pm.response.json();\r",
 							"    pm.response.to.have.status(200);\r",
-							"    pm.expect(exprespbody).not.eql(null);\r",
+							"    pm.expect(actualResponseBody).not.eql(null);\r",
 							"});"
 						],
 						"type": "text/javascript"
