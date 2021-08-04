@@ -17,6 +17,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -26,6 +27,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.activity.history.ListingActivityHistoryHelper;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.DownloadableResourceCreatorJob;
@@ -125,11 +127,31 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
             .svapNoticeLastUpdated(svapNoticeUrlLastUpdate)
             .build();
         List<ListingSvapActivity> listingSvapActivities = new ArrayList<ListingSvapActivity>();
-        //TODO: break up into multiple svap activities if there are multiple criteria or multiple svaps for any criteria
+        if (!hasCertificationResultSvapData(listing)) {
+            listingSvapActivities.add(baseSvapActivity);
+        } else {
+            listing.getCertificationResults().stream()
+            .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
+            .filter(attestedCertResult -> attestedCertResult.getSvaps() != null && attestedCertResult.getSvaps().size() > 0)
+            .map(attestedCertResult -> createListingSvapActivities(listing, attestedCertResult, baseSvapActivity))
+            .collect(Collectors.toList());
+        }
 
         //TODO: get date of last change to any criteria
         //TODO: get whether svap was added with criteria or separately
         return listingSvapActivities;
+    }
+
+    private boolean hasCertificationResultSvapData(CertifiedProductSearchDetails listing) {
+        return listing.getCertificationResults().stream()
+                .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
+                .filter(attestedCertResult -> attestedCertResult.getSvaps() != null && attestedCertResult.getSvaps().size() > 0)
+                .count() > 0;
+    }
+
+    private List<ListingSvapActivity> createListingSvapActivities(CertifiedProductSearchDetails listing, CertificationResult certResult, ListingSvapActivity baseSvapActivity) {
+        //TODO: break up into multiple svap activities if there are multiple criteria or multiple svaps for any criteria
+
     }
 
     private void addAllToPresenters(List<SvapActivityPresenter> presenters, List<ListingSvapActivity> svapActivity) {
