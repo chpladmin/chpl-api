@@ -13,6 +13,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Type;
+
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 import lombok.Data;
 
@@ -53,6 +55,13 @@ public class ListingUploadEntity {
 
     @Column(name = "warning_count")
     private Integer warningCount;
+
+    @Column(name = "status")
+    @Type(type = "gov.healthit.chpl.upload.listing.PostgresListingUploadStatus",
+        parameters = {@org.hibernate.annotations.Parameter(name = "enumClassName",
+            value = "gov.healthit.chpl.upload.listing.ListingUploadStatus")
+    })
+    private ListingUploadStatus status;
 
     @Column(name = "certified_product_id")
     private Long certifiedProductId;

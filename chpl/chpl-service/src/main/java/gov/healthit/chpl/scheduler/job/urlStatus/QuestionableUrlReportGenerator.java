@@ -32,6 +32,7 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -43,7 +44,6 @@ import gov.healthit.chpl.scheduler.job.urlStatus.data.UrlType;
 import gov.healthit.chpl.scheduler.job.urlStatus.email.FailedUrlCsvFormatter;
 import gov.healthit.chpl.scheduler.job.urlStatus.email.FailedUrlResult;
 import gov.healthit.chpl.scheduler.job.urlStatus.email.QuestionableUrlLookupDao;
-import gov.healthit.chpl.util.EmailBuilder;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "questionableUrlReportGeneratorJobLogger")

@@ -205,6 +205,11 @@
             <version>3.8.1</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.9</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
             <version>4.1.0</version>
@@ -410,7 +415,7 @@
                         <source>src/main/java/gov/healthit/chpl/domain/TestProcedure.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestStandard.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationStatusEvent.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/MeaningfulUseUser.java</source>
+                        <source>src/main/java/gov/healthit/chpl/domain/PromotingInteroperabilityUser.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/TestTask.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestTool.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/UcdProcess.java</source>

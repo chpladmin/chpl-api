@@ -1,12 +1,17 @@
 package gov.healthit.chpl.search.domain;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Objects;
 
 import org.apache.commons.lang3.ObjectUtils;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import gov.healthit.chpl.util.LocalDateDeserializer;
+import gov.healthit.chpl.util.LocalDateSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -128,8 +133,16 @@ public class CertifiedProductSearchResult implements Serializable {
     private Long openSurveillanceCount;
     private Long closedSurveillanceCount;
     private Long decertificationDate;
+
+    @Deprecated
     private Long numMeaningfulUse;
+    @Deprecated
     private Long numMeaningfulUseDate;
+
+    private Long promotingInteroperabilityUserCount;
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    private LocalDate promotingInteroperabilityUserDate;
     private String transparencyAttestationUrl;
 
     public CertifiedProductSearchResult(CertifiedProductSearchResult other) {
@@ -158,6 +171,8 @@ public class CertifiedProductSearchResult implements Serializable {
         this.closedDirectReviewNonConformityCount = other.getClosedDirectReviewNonConformityCount();
         this.numMeaningfulUse = other.getNumMeaningfulUse();
         this.numMeaningfulUseDate = other.getNumMeaningfulUseDate();
+        this.promotingInteroperabilityUserCount = other.getPromotingInteroperabilityUserCount();
+        this.promotingInteroperabilityUserDate = other.getPromotingInteroperabilityUserDate();
         this.transparencyAttestationUrl = other.getTransparencyAttestationUrl();
     }
 
