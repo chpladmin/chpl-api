@@ -24,7 +24,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2
-public class CuresStatisticsSpreadsheet {
+public class CuresStatisticsChartData {
     private CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO curesCriterionUpgradedWithoutOriginalListingStatisticsDAO;
     private CriterionUpgradedToCuresFromOriginalListingStatisticsDAO criterionUpgradedToCuresFromOriginalListingStatisticsDAO;
     private CriterionListingStatisticsDAO criterionListingStatisticsDAO;
@@ -33,7 +33,7 @@ public class CuresStatisticsSpreadsheet {
     private List<CertificationCriterionDTO> curesCriteria = new ArrayList<CertificationCriterionDTO>();
 
     @Autowired
-    public CuresStatisticsSpreadsheet(
+    public CuresStatisticsChartData(
             CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO curesCriterionUpgradedWithoutOriginalListingStatisticsDAO,
             CriterionUpgradedToCuresFromOriginalListingStatisticsDAO criterionUpgradedToCuresFromOriginalListingStatisticsDAO,
             CriterionListingStatisticsDAO criterionListingStatisticsDAO, CertificationCriterionService certificationCriterionService) {
