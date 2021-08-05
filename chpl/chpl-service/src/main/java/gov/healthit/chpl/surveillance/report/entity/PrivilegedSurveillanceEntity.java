@@ -1,7 +1,6 @@
 package gov.healthit.chpl.surveillance.report.entity;
 
-
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,10 +39,10 @@ public class PrivilegedSurveillanceEntity {
     private Long certifiedProductId;
 
     @Column(name = "start_date")
-    private Date startDate;
+    private LocalDate startDate;
 
     @Column(name = "end_date")
-    private Date endDate;
+    private LocalDate endDate;
 
     @Column(name = "type_id")
     private Long surveillanceTypeId;
