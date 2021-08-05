@@ -52,6 +52,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMetadataDTO;
+import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.exception.DeprecatedUploadTemplateException;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -70,7 +71,6 @@ import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
-import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
@@ -656,7 +656,7 @@ public class CertifiedProductController {
     @ApiOperation(value = "List a specific pending certified product.",
             notes = "Security Restrictions: ROLE_ADMIN, ROLE_ACB and administrative authority "
                     + "on the ACB for each pending certified product is required.")
-    @RequestMapping(value = "/pending/{pcpId}", method = RequestMethod.GET,
+    @RequestMapping(value = "/pending/{pcpId:^-?\\d+$}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody PendingCertifiedProductDetails getPendingCertifiedProductById(
             @PathVariable("pcpId") Long pcpId) throws EntityRetrievalException, EntityNotFoundException,
@@ -677,7 +677,7 @@ public class CertifiedProductController {
     @ApiOperation(value = "Reject a pending certified product.",
             notes = "Essentially deletes a pending certified product. Security Restrictions: ROLE_ADMIN or have ROLE_ACB "
                     + "and administrative authority on the ACB for each pending certified product is required.")
-    @RequestMapping(value = "/pending/{pcpId}", method = RequestMethod.DELETE,
+    @RequestMapping(value = "/pending/{pcpId:^-?\\d+$}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingCertifiedProduct(@PathVariable("pcpId") Long pcpId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
@@ -724,7 +724,7 @@ public class CertifiedProductController {
                     + "to check for errors, then a new certified product is created, and the old pending certified"
                     + "product will be removed. Security Restrictions:  ROLE_ADMIN or have ROLE_ACB and "
                     + "administrative authority on the ACB for each pending certified product is required.")
-    @RequestMapping(value = "/pending/{pcpId}/confirm", method = RequestMethod.POST,
+    @RequestMapping(value = "/pending/{pcpId:^-?\\d+$}/confirm", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProduct(
             @RequestBody(required = true) PendingCertifiedProductDetails pendingCp)
@@ -745,7 +745,7 @@ public class CertifiedProductController {
                     + "to check for errors, then a new certified product is created, and the old pending certified"
                     + "product will be removed. Security Restrictions:  ROLE_ADMIN or have ROLE_ACB and "
                     + "administrative authority on the ACB for each pending certified product is required.")
-    @RequestMapping(value = "/pending/{pcpId}/beta/confirm", method = RequestMethod.POST,
+    @RequestMapping(value = "/pending/{pcpId:^-?\\d+$}/beta/confirm", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProductRequest(
             @RequestBody(required = true) ConfirmCertifiedProductRequest request)

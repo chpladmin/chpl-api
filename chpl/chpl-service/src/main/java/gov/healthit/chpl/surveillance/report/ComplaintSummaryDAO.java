@@ -1,7 +1,7 @@
 package gov.healthit.chpl.surveillance.report;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -21,7 +21,7 @@ public class ComplaintSummaryDAO extends BaseDAOImpl {
         this.survDao = survDao;
     }
 
-    public Long getTotalComplaints(Long acbId, Date startDate, Date endDate) {
+    public Long getTotalComplaints(Long acbId, LocalDate startDate, LocalDate endDate) {
         Query query = entityManager.createQuery("SELECT COUNT(DISTINCT c) "
                 + "FROM ComplaintEntity c "
                 + "JOIN c.certificationBody "
@@ -40,7 +40,7 @@ public class ComplaintSummaryDAO extends BaseDAOImpl {
         return 0L;
     }
 
-    public Long getTotalComplaintsFromOnc(Long acbId, Date startDate, Date endDate) {
+    public Long getTotalComplaintsFromOnc(Long acbId, LocalDate startDate, LocalDate endDate) {
         Query query = entityManager.createQuery("SELECT COUNT(DISTINCT c) "
                 + "FROM ComplaintEntity c "
                 + "JOIN c.certificationBody "
@@ -60,7 +60,7 @@ public class ComplaintSummaryDAO extends BaseDAOImpl {
         return 0L;
     }
 
-    public Long getTotalComplaintsResultingInSurveillance(Long acbId, Date startDate, Date endDate) {
+    public Long getTotalComplaintsResultingInSurveillance(Long acbId, LocalDate startDate, LocalDate endDate) {
         Query query = entityManager.createQuery("SELECT COUNT(DISTINCT c) "
                 + "FROM ComplaintEntity c "
                 + "JOIN c.certificationBody "
@@ -80,7 +80,7 @@ public class ComplaintSummaryDAO extends BaseDAOImpl {
         return 0L;
     }
 
-    public Long getTotalSurveillanceRelatedToComplaints(Long acbId, Date startDate, Date endDate) {
+    public Long getTotalSurveillanceRelatedToComplaints(Long acbId, LocalDate startDate, LocalDate endDate) {
         Query query = entityManager.createQuery("SELECT COUNT(DISTINCT survs) "
                 + "FROM ComplaintEntity c "
                 + "JOIN c.certificationBody "
@@ -100,7 +100,7 @@ public class ComplaintSummaryDAO extends BaseDAOImpl {
         return 0L;
     }
 
-    public Long getTotalComplaintsResultingInNonconformities(Long acbId, Date startDate, Date endDate) {
+    public Long getTotalComplaintsResultingInNonconformities(Long acbId, LocalDate startDate, LocalDate endDate) {
         Query query = entityManager.createQuery("SELECT COUNT(DISTINCT c) "
                     + "FROM ComplaintEntity c "
                     + "JOIN c.certificationBody "
@@ -135,7 +135,7 @@ public class ComplaintSummaryDAO extends BaseDAOImpl {
         return 0L;
     }
 
-    public Long getTotalNonconformitiesRelatedToComplaints(Long acbId, Date startDate, Date endDate) {
+    public Long getTotalNonconformitiesRelatedToComplaints(Long acbId, LocalDate startDate, LocalDate endDate) {
         Query query = entityManager.createQuery("SELECT COUNT(DISTINCT ps) "
                 + "FROM PrivilegedSurveillanceEntity ps "
                 + "JOIN ps.privSurvMap privSurvMap "

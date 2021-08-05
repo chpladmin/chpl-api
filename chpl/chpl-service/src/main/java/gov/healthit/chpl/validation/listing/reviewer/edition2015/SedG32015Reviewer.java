@@ -4,35 +4,41 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 
 @Component("sedG32015Reviewer")
 public class SedG32015Reviewer extends PermissionBasedReviewer {
-    private static final String G3_2015 = "170.315 (g)(3)";
+    private CertificationCriterion g3;
 
     @Autowired
-    public SedG32015Reviewer(ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
+    public SedG32015Reviewer(CertificationCriterionService criteriaService,
+            ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
         super(msgUtil, resourcePermissions);
+        g3 = criteriaService.get(Criteria2015.G_3);
     }
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         List<CertificationResult> presentCriteriaWithSed = listing.getCertificationResults().stream()
-                .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess().equals(Boolean.TRUE)
+                .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess())
                         && certResult.isSed() != null && certResult.isSed().equals(Boolean.TRUE)
                         && certResult.getCriterion().getRemoved() != null
                         && certResult.getCriterion().getRemoved().equals(Boolean.FALSE))
                 .collect(Collectors.<CertificationResult>toList());
 
         List<CertificationResult> removedCriteriaWithSed = listing.getCertificationResults().stream()
-                .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess().equals(Boolean.TRUE)
+                .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess())
                         && certResult.isSed() != null && certResult.isSed().equals(Boolean.TRUE)
                         && certResult.getCriterion().getRemoved() != null
                         && certResult.getCriterion().getRemoved().equals(Boolean.TRUE))
@@ -40,8 +46,8 @@ public class SedG32015Reviewer extends PermissionBasedReviewer {
 
         Optional<CertificationResult> g3CertificationResult = listing.getCertificationResults().stream()
                 .filter(certResult -> certResult.getCriterion() != null
-                    && certResult.getCriterion().getNumber().equals(G3_2015)
-                    && certResult.isSuccess() != null && certResult.isSuccess().equals(Boolean.TRUE))
+                    && certResult.getCriterion().getId().equals(g3.getId())
+                    && BooleanUtils.isTrue(certResult.isSuccess()))
                 .findFirst();
 
 
