@@ -26,9 +26,9 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.scheduler.InheritanceErrorsReportDAO;
 import gov.healthit.chpl.dto.scheduler.InheritanceErrorsReportDTO;
+import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
-import gov.healthit.chpl.util.EmailBuilder;
 
 public class InheritanceErrorsReportEmailJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("inheritanceErrorsReportEmailJobLogger");

@@ -41,7 +41,8 @@ public class CertificationCriterionNormalizer {
             return false;
         }
         return listingCertResults.stream()
-                    .filter(certResult -> certResult.getCriterion().getId().equals(criterionDto.getId()))
+                    .filter(certResult -> certResult.getCriterion() != null && certResult.getCriterion().getId() != null
+                        && certResult.getCriterion().getId().equals(criterionDto.getId()))
                     .findAny().isPresent();
     }
 

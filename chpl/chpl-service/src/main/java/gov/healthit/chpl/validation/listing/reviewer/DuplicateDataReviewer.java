@@ -11,6 +11,7 @@ import gov.healthit.chpl.validation.listing.reviewer.duplicate.AdditionalSoftwar
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.AtlDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.IcsSourceDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.MeasureDuplicateReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.duplicate.PromotingInteroperabilityUserCountReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.QmsStandardDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TargetedUserDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestDataDuplicateReviewer;
@@ -33,6 +34,7 @@ public class DuplicateDataReviewer implements Reviewer {
     private IcsSourceDuplicateReviewer icsSourceDuplicateReviewer;
     private AtlDuplicateReviewer atlDuplicateReviewer;
     private TargetedUserDuplicateReviewer targetedUserDuplicateReviewer;
+    private PromotingInteroperabilityUserCountReviewer piuReviewer;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
@@ -48,7 +50,8 @@ public class DuplicateDataReviewer implements Reviewer {
             @Qualifier("measureDuplicateReviewer") MeasureDuplicateReviewer measureDuplicateReviewer,
             @Qualifier("icsSourceDuplicateReviewer") IcsSourceDuplicateReviewer icsSourceDuplicateReviewer,
             @Qualifier("atlDuplicateReviewer") AtlDuplicateReviewer atlDuplicateReviewer,
-            @Qualifier("targetedUserDuplicateReviewer") TargetedUserDuplicateReviewer targetedUserDuplicateReviewer) {
+            @Qualifier("targetedUserDuplicateReviewer") TargetedUserDuplicateReviewer targetedUserDuplicateReviewer,
+            @Qualifier("promotingInteroperabilityUserCountDuplicateReviewer") PromotingInteroperabilityUserCountReviewer piuReviewer) {
         this.testFunctionalityDuplicateReviewer = testFunctionalityDuplicateReviewer;
         this.testDataDuplicateReviewer = testDataDuplicateReviewer;
         this.testToolDuplicateReviewer = testToolDuplicateReviewer;
@@ -61,6 +64,7 @@ public class DuplicateDataReviewer implements Reviewer {
         this.icsSourceDuplicateReviewer = icsSourceDuplicateReviewer;
         this.atlDuplicateReviewer = atlDuplicateReviewer;
         this.targetedUserDuplicateReviewer = targetedUserDuplicateReviewer;
+        this.piuReviewer = piuReviewer;
     }
 
     @Override
@@ -71,6 +75,7 @@ public class DuplicateDataReviewer implements Reviewer {
         measureDuplicateReviewer.review(listing);
         icsSourceDuplicateReviewer.review(listing);
         targetedUserDuplicateReviewer.review(listing);
+        piuReviewer.review(listing);
 
         for (CertificationResult cr : listing.getCertificationResults()) {
             additionalSoftwareDuplicateReviewer.review(listing, cr);

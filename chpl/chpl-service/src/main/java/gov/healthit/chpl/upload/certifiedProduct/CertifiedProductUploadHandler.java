@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.apache.commons.csv.CSVRecord;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
@@ -38,6 +39,8 @@ import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
+import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
+import gov.healthit.chpl.util.CertificationResultRules;
 
 public abstract class CertifiedProductUploadHandler {
     @Autowired
@@ -75,6 +78,8 @@ public abstract class CertifiedProductUploadHandler {
     @Autowired
     protected TargetedUserDAO tuDao;
     @Autowired
+    protected OptionalStandardDAO optionalStandardDao;
+    @Autowired
     protected TestFunctionalityDAO testFunctionalityDao;
     @Autowired
     protected TestProcedureDAO testProcedureDao;
@@ -96,6 +101,10 @@ public abstract class CertifiedProductUploadHandler {
     protected MacraMeasureDAO macraMeasureDao;
     @Autowired
     protected ListingMeasureDAO listingMeasureDao;
+    @Autowired
+    protected FF4j ff4j;
+    @Autowired
+    protected CertificationResultRules certRules;
 
     private static final String CERTIFICATION_DATE_FORMAT = "yyyyMMdd";
     protected SimpleDateFormat dateFormatter;

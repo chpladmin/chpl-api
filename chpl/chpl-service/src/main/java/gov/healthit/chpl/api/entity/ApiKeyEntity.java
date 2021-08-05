@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.api.domain.ApiKey;
 import gov.healthit.chpl.util.Util;
 import lombok.Data;
 
@@ -41,11 +42,11 @@ public class ApiKeyEntity {
     private Boolean unrestricted;
 
     @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
+    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
     private Date creationDate;
 
     @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
+    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
     private Date lastModifiedDate;
 
     @Basic(optional = false)
@@ -92,5 +93,18 @@ public class ApiKeyEntity {
 
     public void setDeleteWarningSentDate(final Date deleteWarningSentDate) {
         this.deleteWarningSentDate = Util.getNewDate(deleteWarningSentDate);
+    }
+
+    public ApiKey toDomain() {
+        return ApiKey.builder()
+                .id(this.getId())
+                .email(this.getEmail())
+                .key(this.getApiKey())
+                .apiKey(this.getApiKey())
+                .name(this.getNameOrganization())
+                .unrestricted(this.getUnrestricted())
+                .lastUsedDate(this.getLastUsedDate())
+                .deleteWarningSentDate(this.getDeleteWarningSentDate())
+                .build();
     }
 }
