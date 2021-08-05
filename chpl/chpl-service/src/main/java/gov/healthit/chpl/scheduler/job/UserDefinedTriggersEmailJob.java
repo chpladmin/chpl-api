@@ -30,9 +30,9 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
+import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
-import gov.healthit.chpl.util.EmailBuilder;
 import lombok.extern.log4j.Log4j2;
 import net.redhogs.cronparser.CronExpressionDescriptor;
 

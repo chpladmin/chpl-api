@@ -22,13 +22,13 @@ import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
-import gov.healthit.chpl.util.EmailBuilder;
 
 @Component
 public class ChangeRequestWebsiteService extends ChangeRequestDetailsService<ChangeRequestWebsite> {

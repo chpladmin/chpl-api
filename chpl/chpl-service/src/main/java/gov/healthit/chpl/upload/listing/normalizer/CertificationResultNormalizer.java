@@ -1,8 +1,11 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
+import java.util.Iterator;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 
 @Component
@@ -40,5 +43,18 @@ public class CertificationResultNormalizer {
         this.testProcedureNormalizer.normalize(listing);
         this.testStandardNormalizer.normalize(listing);
         this.testToolNormalizer.normalize(listing);
+
+        removeCertificationResultsWithNullCriterion(listing);
+    }
+
+    private void removeCertificationResultsWithNullCriterion(CertifiedProductSearchDetails listing) {
+        //this can happen if an upload file has a made-up criterion column like CRITERIA_170_315_B_20__C
+        Iterator<CertificationResult> certResultIter = listing.getCertificationResults().iterator();
+        while (certResultIter.hasNext()) {
+            CertificationResult certResult = certResultIter.next();
+            if (certResult.getCriterion() == null || certResult.getCriterion().getId() == null) {
+                certResultIter.remove();
+            }
+        }
     }
 }
