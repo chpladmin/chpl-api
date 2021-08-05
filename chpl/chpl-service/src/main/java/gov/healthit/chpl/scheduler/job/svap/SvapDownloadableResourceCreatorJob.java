@@ -21,6 +21,7 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -59,6 +60,9 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
 
     @Autowired
     private Environment env;
+
+    @Value("${svapReportName}")
+    private String svapReportName;
 
     private ListingActivityUtil activityUtil;
 
@@ -230,7 +234,7 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
         Path tempDir = Files.createTempDirectory(tempDirBasePath, TEMP_DIR_NAME);
         this.tempDirectory = tempDir.toFile();
 
-        Path csvPath = Files.createTempFile(tempDir, "chpl-svap", ".csv");
+        Path csvPath = Files.createTempFile(tempDir, svapReportName, ".csv");
         tempCsvFile = csvPath.toFile();
     }
 
@@ -267,7 +271,7 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
     }
 
     private String getFileName(String path, String timeStamp, String extension) {
-        return path + File.separator + "chpl-svap" + "-" + timeStamp + "." + extension;
+        return path + File.separator + svapReportName + "-" + timeStamp + "." + extension;
     }
 
     private Integer getThreadCountForJob() throws NumberFormatException {
