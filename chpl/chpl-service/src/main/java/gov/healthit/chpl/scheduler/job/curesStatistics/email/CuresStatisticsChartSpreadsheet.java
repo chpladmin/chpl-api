@@ -100,9 +100,9 @@ public class CuresStatisticsChartSpreadsheet {
 
     private void writeDataForCuresCriterionChartStatistic(CuresCriterionChartStatistic data, Row row) {
         row.getCell(EXISTING_CERTIFICATION_COL_IDX).setCellValue(data.getExistingCertificationCount());
-        row.getCell(NEW_CERTIFICATION_COL_IDX).setCellValue(data.getExistingCertificationCount());
-        row.getCell(REQUIRES_UPDATE_COL_IDX).setCellValue(data.getExistingCertificationCount());
-        row.getCell(LISTING_COUNT_COL_IDX).setCellValue(data.getExistingCertificationCount());
+        row.getCell(NEW_CERTIFICATION_COL_IDX).setCellValue(data.getNewCertificationCount());
+        row.getCell(REQUIRES_UPDATE_COL_IDX).setCellValue(data.getRequiresUpdateCount());
+        row.getCell(LISTING_COUNT_COL_IDX).setCellValue(data.getListingCount());
     }
 
 
