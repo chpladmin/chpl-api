@@ -7,17 +7,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.statistics.CriterionListingStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.CriterionUpgradedToCuresFromOriginalListingStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO;
+import gov.healthit.chpl.dao.statistics.PrivacyAndSecurityListingStatisticsDAO;
 import gov.healthit.chpl.domain.statistics.CriterionListingCountStatistic;
 import gov.healthit.chpl.domain.statistics.CriterionUpgradedToCuresFromOriginalListingStatistic;
 import gov.healthit.chpl.domain.statistics.CuresCriterionChartStatistic;
 import gov.healthit.chpl.domain.statistics.CuresCriterionUpgradedWithoutOriginalListingStatistic;
+import gov.healthit.chpl.domain.statistics.PrivacyAndSecurityListingStatistic;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.extern.log4j.Log4j2;
@@ -29,6 +30,7 @@ public class CuresStatisticsChartData {
     private CriterionUpgradedToCuresFromOriginalListingStatisticsDAO criterionUpgradedToCuresFromOriginalListingStatisticsDAO;
     private CriterionListingStatisticsDAO criterionListingStatisticsDAO;
     private CertificationCriterionService certificationCriterionService;
+    private PrivacyAndSecurityListingStatisticsDAO privacyAndSecurityStatisticsDAO;
 
     private List<CertificationCriterionDTO> curesCriteria = new ArrayList<CertificationCriterionDTO>();
 
@@ -36,11 +38,13 @@ public class CuresStatisticsChartData {
     public CuresStatisticsChartData(
             CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO curesCriterionUpgradedWithoutOriginalListingStatisticsDAO,
             CriterionUpgradedToCuresFromOriginalListingStatisticsDAO criterionUpgradedToCuresFromOriginalListingStatisticsDAO,
-            CriterionListingStatisticsDAO criterionListingStatisticsDAO, CertificationCriterionService certificationCriterionService) {
+            CriterionListingStatisticsDAO criterionListingStatisticsDAO, CertificationCriterionService certificationCriterionService,
+            PrivacyAndSecurityListingStatisticsDAO privacyAndSecurityStatisticsDAO) {
         this.curesCriterionUpgradedWithoutOriginalListingStatisticsDAO = curesCriterionUpgradedWithoutOriginalListingStatisticsDAO;
         this.criterionUpgradedToCuresFromOriginalListingStatisticsDAO = criterionUpgradedToCuresFromOriginalListingStatisticsDAO;
         this.criterionListingStatisticsDAO = criterionListingStatisticsDAO;
         this.certificationCriterionService = certificationCriterionService;
+        this.privacyAndSecurityStatisticsDAO = privacyAndSecurityStatisticsDAO;
 
         //Create list of cures criteria used in charts
         curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.B_1_CURES)));
@@ -54,8 +58,8 @@ public class CuresStatisticsChartData {
         curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_2_CURES)));
         curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_3_CURES)));
         curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_10_CURES)));
-        //curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_12)));
-        //curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_13)));
+        curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_12)));
+        curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_13)));
         curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.E_1_CURES)));
         curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.F_5_CURES)));
         curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.G_6_CURES)));
@@ -79,18 +83,7 @@ public class CuresStatisticsChartData {
                         listingCounts))
                 .collect(Collectors.toMap(CuresCriterionChartStatistic::getCriterion, item -> item));
 
-        log(curesCriterionChartStatistics);
         return curesCriterionChartStatistics;
-    }
-
-    private void log(Map<CertificationCriterionDTO, CuresCriterionChartStatistic> data) {
-       data.values().stream()
-               .forEach(item -> LOGGER.info(String.format("%s    %s    %s    %s    %s",
-                       StringUtils.rightPad(item.getCriterion().getNumber(), 12, ' '),
-                       StringUtils.leftPad(item.getExistingCertificationCount().toString(), 3, ' '),
-                       StringUtils.leftPad(item.getNewCertificationCount().toString(), 3, ' '),
-                       StringUtils.leftPad(item.getRequiresUpdateCount().toString(), 3, ' '),
-                       StringUtils.leftPad(item.getListingCount().toString(), 3, ' '))));
     }
 
     private CuresCriterionChartStatistic getCuresCriterionChartStatisticForCriteria(CertificationCriterionDTO criterion,
@@ -110,11 +103,18 @@ public class CuresStatisticsChartData {
     }
 
     private Long getExistingCertificationCountByCriteria(Map<CertificationCriterionDTO, Long> existingCertificationCounts, CertificationCriterionDTO criterion) {
-        CertificationCriterionDTO criterionFromMap = getMatchingCriterionFromSet(existingCertificationCounts.keySet(), criterion);
-        if (existingCertificationCounts.containsKey(criterionFromMap)) {
-            return existingCertificationCounts.get(criterionFromMap);
+        // Handle d12 and d13 differently
+        if (criterion.getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_12).getId())
+                || criterion.getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_13).getId())) {
+
+            return null;
         } else {
-            return 0L;
+            CertificationCriterionDTO criterionFromMap = getMatchingCriterionFromSet(existingCertificationCounts.keySet(), criterion);
+            if (existingCertificationCounts.containsKey(criterionFromMap)) {
+                return existingCertificationCounts.get(criterionFromMap);
+            } else {
+                return 0L;
+            }
         }
     }
 
@@ -128,11 +128,25 @@ public class CuresStatisticsChartData {
     }
 
     private Long getListingCountByCriteria(Map<CertificationCriterionDTO, Long> listingCounts, CertificationCriterionDTO criterion) {
-        CertificationCriterionDTO criterionFromMap = getMatchingCriterionFromSet(listingCounts.keySet(), criterion);
-        if (listingCounts.containsKey(criterionFromMap)) {
-            return listingCounts.get(criterionFromMap);
+        // Handle d12 and d13 differently
+        if (criterion.getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_12).getId())
+                || criterion.getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_13).getId())) {
+
+            List<PrivacyAndSecurityListingStatistic> privacyAndSecurityListingStatistic =
+                    privacyAndSecurityStatisticsDAO.getStatisticsForDate(privacyAndSecurityStatisticsDAO.getDateOfMostRecentStatistics());
+
+            if (privacyAndSecurityListingStatistic != null && privacyAndSecurityListingStatistic.size() > 0) {
+                return privacyAndSecurityListingStatistic.get(0).getListingsRequiringPrivacyAndSecurityCount();
+            } else {
+                return 0L;
+            }
         } else {
-            return 0L;
+            CertificationCriterionDTO criterionFromMap = getMatchingCriterionFromSet(listingCounts.keySet(), criterion);
+            if (listingCounts.containsKey(criterionFromMap)) {
+                return listingCounts.get(criterionFromMap);
+            } else {
+                return 0L;
+            }
         }
     }
 
@@ -192,6 +206,10 @@ public class CuresStatisticsChartData {
             return new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_3_OLD));
         } else if (curesUpdatedCriterion.getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_10_CURES).getId())) {
             return new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_10_OLD));
+        } else if (curesUpdatedCriterion.getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_12).getId())) {
+            return new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_12));
+        } else if (curesUpdatedCriterion.getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_13).getId())) {
+            return new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_13));
         } else if (curesUpdatedCriterion.getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.E_1_CURES).getId())) {
             return new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.E_1_OLD));
         } else if (curesUpdatedCriterion.getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.F_5_CURES).getId())) {

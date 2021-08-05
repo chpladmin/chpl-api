@@ -59,8 +59,8 @@ public class CuresStatisticsChartSpreadsheet {
         criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.D_2_CURES, 9));
         criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.D_3_CURES, 10));
         criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.D_10_CURES, 11));
-        //criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.D_12, 12));
-        //criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.D_13, 13));
+        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.D_12, 12));
+        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.D_13, 13));
         criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.E_1_CURES, 14));
         criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.F_5_CURES, 15));
         criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.G_6_CURES, 16));
@@ -99,7 +99,11 @@ public class CuresStatisticsChartSpreadsheet {
     }
 
     private void writeDataForCuresCriterionChartStatistic(CuresCriterionChartStatistic data, Row row) {
-        row.getCell(EXISTING_CERTIFICATION_COL_IDX).setCellValue(data.getExistingCertificationCount());
+        if (data.getExistingCertificationCount() != null) {
+            row.getCell(EXISTING_CERTIFICATION_COL_IDX).setCellValue(data.getExistingCertificationCount());
+        } else {
+            row.getCell(EXISTING_CERTIFICATION_COL_IDX).setCellValue("-");
+        }
         row.getCell(NEW_CERTIFICATION_COL_IDX).setCellValue(data.getNewCertificationCount());
         row.getCell(REQUIRES_UPDATE_COL_IDX).setCellValue(data.getRequiresUpdateCount());
         row.getCell(LISTING_COUNT_COL_IDX).setCellValue(data.getListingCount());
