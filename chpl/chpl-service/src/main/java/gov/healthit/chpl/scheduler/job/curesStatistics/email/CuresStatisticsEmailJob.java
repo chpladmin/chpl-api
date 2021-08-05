@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
-import gov.healthit.chpl.util.EmailBuilder;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "curesStatisticsEmailJobLogger")

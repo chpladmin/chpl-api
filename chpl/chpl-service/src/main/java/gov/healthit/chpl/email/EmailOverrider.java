@@ -1,4 +1,4 @@
-package gov.healthit.chpl.util;
+package gov.healthit.chpl.email;
 
 import java.util.ArrayList;
 import java.util.Arrays;

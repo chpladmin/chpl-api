@@ -117,7 +117,7 @@ public class ListingUploadHandlerUtil {
         return certResultRows;
     }
 
-    private CSVRecord convertToCsvRecord(List<String> values) {
+    public CSVRecord convertToCsvRecord(List<String> values) {
         CSVFormat csvFormat = CSVFormat.EXCEL.withRecordSeparator(System.lineSeparator())
                 .withQuoteMode(QuoteMode.ALL);
         CSVRecord csvRecord = null;
@@ -130,6 +130,15 @@ public class ListingUploadHandlerUtil {
             LOGGER.error("Cannot write values as CSVRecord.", ex);
         }
         return csvRecord;
+    }
+
+    public List<String> convertToList(CSVRecord record) {
+        List<String> items = new ArrayList<String>();
+        Iterator<String> recordIter = record.iterator();
+        while(recordIter.hasNext()) {
+            items.add(recordIter.next());
+        }
+        return items;
     }
 
     @SuppressWarnings("checkstyle:magicnumber")
@@ -309,7 +318,7 @@ public class ListingUploadHandlerUtil {
             return null;
         }
 
-        return new CellRangeAddress(0, dataRecords.size() - 1, certResultStartIndex, certResultEndIndex);
+        return new CellRangeAddress(0, dataRecords.size() > 0 ? dataRecords.size() - 1 : 0, certResultStartIndex, certResultEndIndex);
     }
 
     private boolean looksLikeCriteriaStart(String headingVal) {
@@ -367,7 +376,9 @@ public class ListingUploadHandlerUtil {
                 result = false;
             }
         } catch (NumberFormatException ex) {
-            LOGGER.error("Could not parse " + value + " as an integer. " + ex.getMessage());
+            if (!StringUtils.isBlank(value)) {
+                LOGGER.error("Could not parse " + value + " as an integer. " + ex.getMessage());
+            }
         }
 
         if (result == null) {

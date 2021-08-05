@@ -62,6 +62,9 @@ public class ChangeRequestManager extends SecurityManager {
     @Value("${changerequest.developerDetails}")
     private Long developerDetailsChangeRequestTypeId;
 
+    @Value("${changerequest.attestation}")
+    private Long attestationChangeRequestTypeId;
+
     private ChangeRequestDAO changeRequestDAO;
     private ChangeRequestTypeDAO changeRequestTypeDAO;
     private ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO;
@@ -98,14 +101,14 @@ public class ChangeRequestManager extends SecurityManager {
     public Set<KeyValueModel> getChangeRequestTypes() {
         return changeRequestTypeDAO.getChangeRequestTypes().stream()
                 .map(crType -> new KeyValueModel(crType.getId(), crType.getName()))
-                .collect(Collectors.<KeyValueModel> toSet());
+                .collect(Collectors.<KeyValueModel>toSet());
     }
 
     @Transactional(readOnly = true)
     public Set<KeyValueModel> getChangeRequestStatusTypes() {
         return changeRequestStatusTypeDAO.getChangeRequestStatusTypes().stream()
                 .map(crStatusType -> new KeyValueModel(crStatusType.getId(), crStatusType.getName()))
-                .collect(Collectors.<KeyValueModel> toSet());
+                .collect(Collectors.<KeyValueModel>toSet());
     }
 
     @Transactional
@@ -202,8 +205,7 @@ public class ChangeRequestManager extends SecurityManager {
             websiteChangeRequest.setSubmittedDate(parentChangeRequest.getSubmittedDate());
             websiteChangeRequest.setDetails(extractWebsiteChangesFromDetails(parentChangeRequest));
             changeRequests.add(websiteChangeRequest);
-        }
-        if (isDeveloperDetailsChangeRequest(parentChangeRequest)) {
+        } else if (isDeveloperDetailsChangeRequest(parentChangeRequest)) {
             ChangeRequestType devDetailsChangeRequestType = new ChangeRequestType();
             devDetailsChangeRequestType.setId(developerDetailsChangeRequestTypeId);
             ChangeRequest developerDetailsChangeRequest = new ChangeRequest();
@@ -212,6 +214,15 @@ public class ChangeRequestManager extends SecurityManager {
             developerDetailsChangeRequest.setSubmittedDate(parentChangeRequest.getSubmittedDate());
             developerDetailsChangeRequest.setDetails(extractDeveloperChangesFromDetails(parentChangeRequest));
             changeRequests.add(developerDetailsChangeRequest);
+        } else if (isDeveloperAttestationChangeRequest(parentChangeRequest)) {
+            ChangeRequestType attestationChangeRequestType = new ChangeRequestType();
+            attestationChangeRequestType.setId(attestationChangeRequestTypeId);
+            ChangeRequest attestationChangeRequest = new ChangeRequest();
+            attestationChangeRequest.setChangeRequestType(attestationChangeRequestType);
+            attestationChangeRequest.setDeveloper(parentChangeRequest.getDeveloper());
+            attestationChangeRequest.setSubmittedDate(parentChangeRequest.getSubmittedDate());
+            attestationChangeRequest.setDetails(extractAttestationsFromDetails(parentChangeRequest));
+            changeRequests.add(attestationChangeRequest);
         }
         return changeRequests;
     }
@@ -224,6 +235,13 @@ public class ChangeRequestManager extends SecurityManager {
         return isSelfDeveloperChanged(cr) || isAddressChanged(cr) || isContactChanged(cr);
     }
 
+    private boolean isDeveloperAttestationChangeRequest(ChangeRequest cr) {
+        // This needs to be able to identify an attestation "details" object.
+        // This will probably need to be changed when the attestation object is defined
+        HashMap<String, Object> crMap = (HashMap) cr.getDetails();
+        return crMap.containsKey("attestation");
+    }
+
     private boolean isWebsiteChanged(ChangeRequest cr) {
         Developer existingDeveloper = cr.getDeveloper();
         HashMap<String, Object> crMap = (HashMap) cr.getDetails();
@@ -231,8 +249,9 @@ public class ChangeRequestManager extends SecurityManager {
         String crWebsite = null;
         if (crMap.containsKey("website")) {
             crWebsite = crMap.get("website").toString();
+            return !StringUtils.equals(crWebsite, existingDeveloper.getWebsite());
         }
-        return !StringUtils.equals(crWebsite, existingDeveloper.getWebsite());
+        return false;
     }
 
     private boolean isSelfDeveloperChanged(ChangeRequest cr) {
@@ -242,8 +261,9 @@ public class ChangeRequestManager extends SecurityManager {
         Boolean crSelfDeveloper = null;
         if (crMap.containsKey("selfDeveloper")) {
             crSelfDeveloper = Boolean.parseBoolean(crMap.get("selfDeveloper").toString());
+            return !ObjectUtils.equals(crSelfDeveloper, existingDeveloper.getSelfDeveloper());
         }
-        return !ObjectUtils.equals(crSelfDeveloper, existingDeveloper.getSelfDeveloper());
+        return false;
     }
 
     private boolean isAddressChanged(ChangeRequest cr) {
@@ -298,6 +318,16 @@ public class ChangeRequestManager extends SecurityManager {
         }
         if (crDetails.containsKey("contact")) {
             devDetails.put("contact", crDetails.get("contact"));
+        }
+        return devDetails;
+    }
+
+    private Object extractAttestationsFromDetails(ChangeRequest cr) {
+        // This method will probably need to be changed when the attestation object is defined
+        HashMap<String, Object> devDetails = new HashMap<String, Object>();
+        HashMap<String, Object> crDetails = (HashMap) cr.getDetails();
+        if (crDetails.containsKey("attestation")) {
+            devDetails.put("attestation", crDetails.get("attestation"));
         }
         return devDetails;
     }
