@@ -20,6 +20,7 @@ import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.dao.auth.UserResetTokenDAO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserResetTokenDTO;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
@@ -228,7 +229,7 @@ public class UserManagerTest {
 
     @Test
     public void updateFailedLoginCount_FailedLoginCountLessThanMaxFailedAttempts_NoErrors()
-            throws UserRetrievalException, MultipleUserAccountsException {
+            throws UserRetrievalException, MultipleUserAccountsException, EmailNotSentException {
 
         UserManager userManager = new UserManager(env, userDAO, null, null, null, null);
 
@@ -238,8 +239,8 @@ public class UserManagerTest {
     }
 
     @Test(expected = UserRetrievalException.class)
-    public void updateFailedLoginCount_UserNotFound_UserRetrievalExceptionThrown() throws UserRetrievalException,
-    MultipleUserAccountsException {
+    public void updateFailedLoginCount_UserNotFound_UserRetrievalExceptionThrown()
+            throws UserRetrievalException, MultipleUserAccountsException, EmailNotSentException {
 
         Mockito.doThrow(UserRetrievalException.class).when(userDAO).updateFailedLoginCount(
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyInt());
@@ -253,7 +254,7 @@ public class UserManagerTest {
 
     @Test
     public void updateFailedLoginCount_FailedLoginCountGreaterThanMaxFailedAttempts_AccountIsLocked()
-            throws UserRetrievalException, MultipleUserAccountsException {
+            throws UserRetrievalException, MultipleUserAccountsException, EmailNotSentException {
 
         UserManager userManager = new UserManager(env, userDAO, null, null, null, null);
 

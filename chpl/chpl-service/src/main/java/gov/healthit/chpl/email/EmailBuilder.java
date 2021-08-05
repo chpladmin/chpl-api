@@ -27,6 +27,7 @@ import javax.mail.internet.MimeMultipart;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.exception.EmailNotSentException;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -186,7 +187,7 @@ public class EmailBuilder {
         return this;
     }
 
-    public void sendEmail() throws MessagingException {
+    public void sendEmail() throws EmailNotSentException {
        try {
            build();
            Transport.send(message);
@@ -194,7 +195,7 @@ public class EmailBuilder {
            String failureMessage = "Email could not be sent to " + recipients.stream().collect(Collectors.joining(",")) + ".";
            //exception logged here so we can create an alert in DataDog
            LOGGER.fatal(failureMessage, ex);
-           throw ex;
+           throw new EmailNotSentException(failureMessage);
        }
     }
 

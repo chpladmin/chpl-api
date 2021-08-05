@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 
 import org.apache.commons.collections.MapUtils;
@@ -55,6 +54,7 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMetadataDTO;
 import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.exception.DeprecatedUploadTemplateException;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -907,8 +907,8 @@ public class CertifiedProductController {
             .fileAttachments(attachments)
             .htmlMessage(htmlBody)
             .sendEmail();
-        } catch (MessagingException msgEx) {
-            LOGGER.error("Could not send email about failed listing upload.", msgEx);
+        } catch (EmailNotSentException msgEx) {
+            LOGGER.error("Could not send email about failed listing upload: " + msgEx.getMessage(), msgEx);
         }
     }
 

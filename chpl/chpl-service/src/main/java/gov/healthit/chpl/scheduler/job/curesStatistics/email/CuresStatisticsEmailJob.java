@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.mail.MessagingException;
-
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +12,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import lombok.extern.log4j.Log4j2;
 
@@ -80,7 +79,7 @@ public class CuresStatisticsEmailJob  extends QuartzJob {
 
         try {
             sendEmail(context, csvAttachments);
-        } catch (MessagingException ex) {
+        } catch (EmailNotSentException ex) {
             LOGGER.error("Error sending email!", ex);
         }
 
@@ -94,7 +93,7 @@ public class CuresStatisticsEmailJob  extends QuartzJob {
         return emailBody;
     }
 
-    private void sendEmail(JobExecutionContext context, List<File> attachments) throws MessagingException {
+    private void sendEmail(JobExecutionContext context, List<File> attachments) throws EmailNotSentException {
         String emailAddress = context.getMergedJobDataMap().getString(JOB_DATA_KEY_EMAIL);
         LOGGER.info("Sending email to: " + emailAddress);
         EmailBuilder emailBuilder = new EmailBuilder(env);

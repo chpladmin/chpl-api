@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.mail.MessagingException;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -34,6 +32,7 @@ import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
@@ -235,7 +234,7 @@ public class PromotingInteroperabilityUploadJob implements Job {
             String errorHtmlBody = createHtmlEmailBodyFailure(piuRecords);
             try {
                 sendEmail(user.getEmail(), errorSubject, errorHtmlBody);
-            } catch (MessagingException ex) {
+            } catch (EmailNotSentException ex) {
                 LOGGER.error("Unable to send email to " + user.getEmail());
                 LOGGER.catching(ex);
             }
@@ -244,7 +243,7 @@ public class PromotingInteroperabilityUploadJob implements Job {
             String errorHtmlBody = createHtmlEmailBodySuccess(piuRecords);
             try {
                 sendEmail(user.getEmail(), errorSubject, errorHtmlBody);
-            } catch (MessagingException ex) {
+            } catch (EmailNotSentException ex) {
                 LOGGER.error("Unable to send email to " + user.getEmail());
                 LOGGER.catching(ex);
             }
@@ -258,7 +257,7 @@ public class PromotingInteroperabilityUploadJob implements Job {
     }
 
     private void sendEmail(String recipientEmail, String subject, String htmlMessage)
-            throws MessagingException {
+            throws EmailNotSentException {
         LOGGER.info("Sending email to: " + recipientEmail);
         LOGGER.info("Message to be sent: " + htmlMessage);
 

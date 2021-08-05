@@ -3,14 +3,13 @@ package gov.healthit.chpl.changerequest.domain.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.mail.MessagingException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -62,9 +61,9 @@ public abstract class ChangeRequestDetailsService<T> {
     public abstract ChangeRequest update(ChangeRequest cr) throws InvalidArgumentsException;
 
     protected abstract ChangeRequest execute(ChangeRequest cr) throws EntityRetrievalException, EntityCreationException;
-    protected abstract void sendApprovalEmail(ChangeRequest cr) throws MessagingException;
-    protected abstract void sendPendingDeveloperActionEmail(ChangeRequest cr) throws MessagingException;
-    protected abstract void sendRejectedEmail(ChangeRequest cr) throws MessagingException;
+    protected abstract void sendApprovalEmail(ChangeRequest cr) throws EmailNotSentException;
+    protected abstract void sendPendingDeveloperActionEmail(ChangeRequest cr) throws EmailNotSentException;
+    protected abstract void sendRejectedEmail(ChangeRequest cr) throws EmailNotSentException;
 
 
     protected String getApprovalBody(ChangeRequest cr) {
