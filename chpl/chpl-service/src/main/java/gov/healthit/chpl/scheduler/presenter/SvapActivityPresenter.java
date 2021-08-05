@@ -26,6 +26,7 @@ import gov.healthit.chpl.util.Util;
 import lombok.Setter;
 
 public class SvapActivityPresenter implements AutoCloseable {
+    private static final String DATE_PATTERN = "yyyy-MM-dd";
     @Setter
     private Logger logger;
     private OutputStreamWriter writer = null;
@@ -133,17 +134,17 @@ public class SvapActivityPresenter implements AutoCloseable {
     }
 
     private String formatSvapNewOrUpdated(ListingSvapActivity svapActivity) {
-        if (svapActivity.getWasCriterionAttestedToBeforeSvap() == null) {
+        if (svapActivity.getWasCriterionAttestedToBeforeSvapAdded() == null) {
             return "";
         }
-        return svapActivity.getWasCriterionAttestedToBeforeSvap() ? "Updated" : "New";
+        return svapActivity.getWasCriterionAttestedToBeforeSvapAdded() ? "Updated" : "New";
     }
 
     private String formatDate(LocalDate date) {
         if (date == null) {
             return "";
         }
-        return DateTimeFormatter.ISO_LOCAL_DATE.format(date);
+        return DateTimeFormatter.ofPattern(DATE_PATTERN).format(date);
     }
 
     private String formatDate(Long dateInMillis) {
@@ -152,6 +153,6 @@ public class SvapActivityPresenter implements AutoCloseable {
         }
 
         LocalDateTime localDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(dateInMillis), ZoneId.systemDefault());
-        return DateTimeFormatter.ISO_LOCAL_DATE.format(localDate);
+        return DateTimeFormatter.ofPattern(DATE_PATTERN).format(localDate);
     }
 }

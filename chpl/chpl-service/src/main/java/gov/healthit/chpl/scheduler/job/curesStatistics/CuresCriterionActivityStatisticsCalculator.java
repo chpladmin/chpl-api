@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.SpecialProperties;
+import gov.healthit.chpl.activity.history.CertificationResultActivityHistoryHelper;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.statistics.CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -27,7 +28,7 @@ import lombok.extern.log4j.Log4j2;
 public class CuresCriterionActivityStatisticsCalculator {
     private CertificationCriterionService criteriaService;
     private CertifiedProductDAO certifiedProductDao;
-    private CriterionActivityStatisticsHelper activityStatisticsHelper;
+    private CertificationResultActivityHistoryHelper activityStatisticsHelper;
     private CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO curesCriterionUpgradedWithoutOriginalStatisticDao;
     private Date curesEffectiveDate;
     private Date currentDate;
@@ -35,7 +36,7 @@ public class CuresCriterionActivityStatisticsCalculator {
 
     @Autowired
     public CuresCriterionActivityStatisticsCalculator(CertificationCriterionService criteriaService,
-            CriterionActivityStatisticsHelper activityStatisticsHelper,
+            CertificationResultActivityHistoryHelper activityStatisticsHelper,
             CertifiedProductDAO certifiedProductDao,
             CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO curesCriterionUpgradedWithoutOriginalStatisticDao,
             SpecialProperties specialProperties) {

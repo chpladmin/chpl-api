@@ -19,6 +19,6 @@ public class ListingSvapActivity {
     private LocalDate svapNoticeLastUpdated;
     private CertificationCriterion criterion;
     private Svap criterionSvap;
-    private Boolean wasCriterionAttestedToBeforeSvap;
+    private Boolean wasCriterionAttestedToBeforeSvapAdded;
     private LocalDate criterionSvapLastUpdated;
 }

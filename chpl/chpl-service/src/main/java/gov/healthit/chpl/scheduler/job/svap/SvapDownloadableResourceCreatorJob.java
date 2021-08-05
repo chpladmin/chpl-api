@@ -25,14 +25,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.activity.history.CertificationResultActivityHistoryHelper;
 import gov.healthit.chpl.activity.history.ListingActivityHistoryHelper;
+import gov.healthit.chpl.activity.history.ListingActivityUtil;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.DownloadableResourceCreatorJob;
 import gov.healthit.chpl.scheduler.presenter.SvapActivityPresenter;
 import gov.healthit.chpl.svap.domain.Svap;
+import gov.healthit.chpl.util.DateUtil;
+import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
 @DisallowConcurrentExecution
@@ -44,7 +50,10 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
     private ExecutorService executorService;
 
     @Autowired
-    private ListingActivityHistoryHelper activityHelper;
+    private ListingActivityHistoryHelper listingActivityHelper;
+
+    @Autowired
+    private CertificationResultActivityHistoryHelper certResultActivityHelper;
 
     @Autowired
     private CertifiedProductDAO cpDao;
@@ -52,8 +61,11 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
     @Autowired
     private Environment env;
 
+    private ListingActivityUtil activityUtil;
+
     public SvapDownloadableResourceCreatorJob() throws Exception {
         super(LOGGER);
+        activityUtil = new ListingActivityUtil();
     }
 
     @Override
@@ -122,7 +134,7 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
     }
 
     private List<ListingSvapActivity> buildSvapActivities(CertifiedProductSearchDetails listing) {
-        LocalDate svapNoticeUrlLastUpdate = activityHelper.getLastUpdateDateForSvapNoticeUrl(listing);
+        LocalDate svapNoticeUrlLastUpdate = listingActivityHelper.getLastUpdateDateForSvapNoticeUrl(listing);
         ListingSvapActivity baseSvapActivity = ListingSvapActivity.builder()
             .listing(listing)
             .svapNoticeLastUpdated(svapNoticeUrlLastUpdate)
@@ -139,8 +151,9 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
                 .collect(Collectors.toList());
         }
 
-        //TODO: get date of last change to any criteria
-        //TODO: get whether svap was added with criteria or separately
+        listingSvapActivities.stream()
+            .filter(listingSvapActivity -> listingSvapActivity.getCriterion() != null && listingSvapActivity.getCriterionSvap() != null)
+            .forEach(listingSvapActivity -> updateCertificationResultActivityData(listing, listingSvapActivity));
         return listingSvapActivities;
     }
 
@@ -165,6 +178,26 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
                             .build())
                     .build())
             .collect(Collectors.toList());
+    }
+
+    private void updateCertificationResultActivityData(CertifiedProductSearchDetails listing, ListingSvapActivity listingSvapActivity) {
+        ActivityDTO activity = certResultActivityHelper.getActivityWhenCertificationResultHasSvap(listing, listingSvapActivity.getCriterion(), listingSvapActivity.getCriterionSvap());
+        if (activity == null) {
+            LOGGER.warn("No activity was found where " + listingSvapActivity.getCriterionSvap().getRegulatoryTextCitation() + " was added to " + Util.formatCriteriaNumber(listingSvapActivity.getCriterion()) + " for listing ID " + listing.getId());
+            return;
+        }
+        listingSvapActivity.setCriterionSvapLastUpdated(DateUtil.toLocalDate(activity.getActivityDate().getTime()));
+        if (activity.getOriginalData() == null || !listingAttestsToCriteria(activityUtil.getListing(activity.getOriginalData()), listingSvapActivity.getCriterion())) {
+            listingSvapActivity.setWasCriterionAttestedToBeforeSvapAdded(false);
+        } else {
+            listingSvapActivity.setWasCriterionAttestedToBeforeSvapAdded(true);
+        }
+    }
+
+    private boolean listingAttestsToCriteria(CertifiedProductSearchDetails listing, CertificationCriterion criterion) {
+        return listing.getCertificationResults().stream()
+                .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()) && certResult.getCriterion().getId().equals(criterion.getId()))
+                .count() > 0;
     }
 
     private void addAllToPresenters(List<SvapActivityPresenter> presenters, List<ListingSvapActivity> svapActivity) {
