@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -134,10 +133,10 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
     }
 
     private List<ListingSvapActivity> buildSvapActivities(CertifiedProductSearchDetails listing) {
-        LocalDate svapNoticeUrlLastUpdate = listingActivityHelper.getLastUpdateDateForSvapNoticeUrl(listing);
+        ActivityDTO svapNoticeUrlLastUpdateActivity = listingActivityHelper.getActivityForLastUpdateToSvapNoticeUrl(listing);
         ListingSvapActivity baseSvapActivity = ListingSvapActivity.builder()
             .listing(listing)
-            .svapNoticeLastUpdated(svapNoticeUrlLastUpdate)
+            .svapNoticeLastUpdated(svapNoticeUrlLastUpdateActivity != null ? DateUtil.toLocalDate(svapNoticeUrlLastUpdateActivity.getActivityDate().getTime()) : null)
             .build();
         List<ListingSvapActivity> listingSvapActivities = new ArrayList<ListingSvapActivity>();
         if (!hasCertificationResultSvapData(listing)) {

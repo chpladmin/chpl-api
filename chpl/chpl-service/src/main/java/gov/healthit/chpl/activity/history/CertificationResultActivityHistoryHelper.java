@@ -32,8 +32,7 @@ public class CertificationResultActivityHistoryHelper {
     private ListingActivityUtil activityUtil;
 
     @Autowired
-    public CertificationResultActivityHistoryHelper(
-            ActivityDAO activityDao) {
+    public CertificationResultActivityHistoryHelper(ActivityDAO activityDao) {
         this.activityDao = activityDao;
         this.activityUtil = new ListingActivityUtil();
     }

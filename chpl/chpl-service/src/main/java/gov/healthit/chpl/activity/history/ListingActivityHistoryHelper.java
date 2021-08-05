@@ -1,6 +1,5 @@
 package gov.healthit.chpl.activity.history;
 
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -15,7 +14,6 @@ import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
-import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Service
@@ -32,7 +30,7 @@ public class ListingActivityHistoryHelper {
     }
 
     @Transactional
-    public LocalDate getLastUpdateDateForSvapNoticeUrl(CertifiedProductSearchDetails listing) {
+    public ActivityDTO getActivityForLastUpdateToSvapNoticeUrl(CertifiedProductSearchDetails listing) {
         if (StringUtils.isBlank(listing.getSvapNoticeUrl())) {
             LOGGER.info("No SVAP Notice URL for listing ID " + listing.getId());
             return null;
@@ -47,9 +45,9 @@ public class ListingActivityHistoryHelper {
         LOGGER.info("There are " + listingActivities.size() + " activities for listing ID " + listing.getId());
         activityUtil.sortNewestActivityFirst(listingActivities);
 
-        LocalDate svapNoticeLastUpdate = null;
+        ActivityDTO svapNoticeLastUpdateActivity = null;
         Iterator<ActivityDTO> listingActivityIter = listingActivities.iterator();
-        while (svapNoticeLastUpdate == null && listingActivityIter.hasNext()) {
+        while (svapNoticeLastUpdateActivity == null && listingActivityIter.hasNext()) {
             ActivityDTO currActivity = listingActivityIter.next();
             CertifiedProductSearchDetails orig = null, updated = null;
             if (currActivity.getOriginalData() != null) {
@@ -60,15 +58,15 @@ public class ListingActivityHistoryHelper {
             }
 
             if (wasSvapNoticeUrlSetToCurrent(orig, updated, listing.getSvapNoticeUrl())) {
-                svapNoticeLastUpdate = DateUtil.toLocalDate(currActivity.getActivityDate().getTime());
-                LOGGER.info("Listing " + listing.getId() + " SVAP Notice URL was set to " + listing.getSvapNoticeUrl() + " on " + svapNoticeLastUpdate + ".");
+                svapNoticeLastUpdateActivity = currActivity;
+                LOGGER.info("Listing " + listing.getId() + " SVAP Notice URL was set to " + listing.getSvapNoticeUrl() + " on " + currActivity.getActivityDate() + ".");
             }
         }
 
-        if (svapNoticeLastUpdate == null) {
+        if (svapNoticeLastUpdateActivity == null) {
             LOGGER.warn("Unable to determine when listing " + listing.getId() + " set SVAP Notice URL to " + listing.getSvapNoticeUrl());
         }
-        return svapNoticeLastUpdate;
+        return svapNoticeLastUpdateActivity;
     }
 
     private boolean wasSvapNoticeUrlSetToCurrent(CertifiedProductSearchDetails orig, CertifiedProductSearchDetails updated,

@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
@@ -41,27 +40,27 @@ public class ListingActivityHistoryHelperTest {
     }
 
     @Test
-    public void getLastUpdateDateForSvapNoticeUrl_nullActivityForListing_returnsNull() {
+    public void getActivityForLastUpdateToSvapNoticeUrl_nullActivityForListing_returnsNull() {
         Mockito.when(activityDao.findByObjectId(ArgumentMatchers.anyLong(),
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(null);
-        LocalDate ld = historyHelper.getLastUpdateDateForSvapNoticeUrl(CertifiedProductSearchDetails.builder().id(1L).build());
-        assertNull(ld);
+        ActivityDTO activity = historyHelper.getActivityForLastUpdateToSvapNoticeUrl(CertifiedProductSearchDetails.builder().id(1L).build());
+        assertNull(activity);
     }
 
     @Test
-    public void getLastUpdateDateForSvapNoticeUrl_emptyActivityForListing_returnsNull() {
+    public void getActivityForLastUpdateToSvapNoticeUrl_emptyActivityForListing_returnsNull() {
         Mockito.when(activityDao.findByObjectId(ArgumentMatchers.anyLong(),
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(new ArrayList<ActivityDTO>());
-        LocalDate ld = historyHelper.getLastUpdateDateForSvapNoticeUrl(CertifiedProductSearchDetails.builder().id(1L).build());
-        assertNull(ld);
+        ActivityDTO activity = historyHelper.getActivityForLastUpdateToSvapNoticeUrl(CertifiedProductSearchDetails.builder().id(1L).build());
+        assertNull(activity);
     }
 
     @Test
-    public void getLastUpdateDateForSvapNoticeUrl_nullCurrentSvapNoticeUrl_returnsNull() throws ParseException, JsonProcessingException {
+    public void getActivityForLastUpdateToSvapNoticeUrl_nullCurrentSvapNoticeUrl_returnsNull() throws ParseException, JsonProcessingException {
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .svapNoticeUrl(null)
@@ -76,13 +75,13 @@ public class ListingActivityHistoryHelperTest {
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(Stream.of(activity).collect(Collectors.toList()));
-        LocalDate ld = historyHelper.getLastUpdateDateForSvapNoticeUrl(
+        ActivityDTO foundActivity = historyHelper.getActivityForLastUpdateToSvapNoticeUrl(
                 CertifiedProductSearchDetails.builder().id(1L).svapNoticeUrl(null).build());
-        assertNull(ld);
+        assertNull(foundActivity);
     }
 
     @Test
-    public void getLastUpdateDateForSvapNoticeUrl_emptyCurrentSvapNoticeUrl_returnsNull() throws ParseException, JsonProcessingException {
+    public void getActivityForLastUpdateToSvapNoticeUrl_emptyCurrentSvapNoticeUrl_returnsNull() throws ParseException, JsonProcessingException {
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .svapNoticeUrl("")
@@ -97,13 +96,13 @@ public class ListingActivityHistoryHelperTest {
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(Stream.of(activity).collect(Collectors.toList()));
-        LocalDate ld = historyHelper.getLastUpdateDateForSvapNoticeUrl(
+        ActivityDTO foundActivity = historyHelper.getActivityForLastUpdateToSvapNoticeUrl(
                 CertifiedProductSearchDetails.builder().id(1L).svapNoticeUrl("").build());
-        assertNull(ld);
+        assertNull(foundActivity);
     }
 
     @Test
-    public void getLastUpdateDateForSvapNoticeUrl_noActivityWithMatchingSvapNoticeUrl_returnsNull() throws ParseException, JsonProcessingException {
+    public void getActivityForLastUpdateToSvapNoticeUrl_noActivityWithMatchingSvapNoticeUrl_returnsNull() throws ParseException, JsonProcessingException {
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .svapNoticeUrl("url1")
@@ -118,13 +117,13 @@ public class ListingActivityHistoryHelperTest {
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(Stream.of(activity).collect(Collectors.toList()));
-        LocalDate ld = historyHelper.getLastUpdateDateForSvapNoticeUrl(
+        ActivityDTO foundActivity = historyHelper.getActivityForLastUpdateToSvapNoticeUrl(
                 CertifiedProductSearchDetails.builder().id(1L).svapNoticeUrl("url2").build());
-        assertNull(ld);
+        assertNull(foundActivity);
     }
 
     @Test
-    public void getLastUpdateDateForSvapNoticeUrl_confirmActivityWithMatchingSvapNoticeUrl_returnsCorrectDate() throws ParseException, JsonProcessingException {
+    public void getActivityForLastUpdateToSvapNoticeUrl_confirmActivityWithMatchingSvapNoticeUrl_returnsCorrectDate() throws ParseException, JsonProcessingException {
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .svapNoticeUrl("url1")
@@ -139,14 +138,14 @@ public class ListingActivityHistoryHelperTest {
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(Stream.of(activity).collect(Collectors.toList()));
-        LocalDate ld = historyHelper.getLastUpdateDateForSvapNoticeUrl(
+        ActivityDTO foundActivity = historyHelper.getActivityForLastUpdateToSvapNoticeUrl(
                 CertifiedProductSearchDetails.builder().id(1L).svapNoticeUrl("url1").build());
-        assertNotNull(ld);
-        assertEquals(LocalDate.parse("2020-02-01"), ld);
+        assertNotNull(foundActivity);
+        assertEquals(1L, foundActivity.getId());
     }
 
     @Test
-    public void getLastUpdateDateForSvapNoticeUrl_confirmAndEditActivityWithMatchingSvapNoticeUrl_returnsCorrectDate() throws ParseException, JsonProcessingException {
+    public void getActivityForLastUpdateToSvapNoticeUrl_confirmAndEditActivityWithMatchingSvapNoticeUrl_returnsCorrectDate() throws ParseException, JsonProcessingException {
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .svapNoticeUrl("url1")
@@ -171,14 +170,14 @@ public class ListingActivityHistoryHelperTest {
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(Stream.of(confirmActivity, updateActivity).collect(Collectors.toList()));
-        LocalDate ld = historyHelper.getLastUpdateDateForSvapNoticeUrl(
+        ActivityDTO foundActivity = historyHelper.getActivityForLastUpdateToSvapNoticeUrl(
                 CertifiedProductSearchDetails.builder().id(1L).svapNoticeUrl("url2").build());
-        assertNotNull(ld);
-        assertEquals(LocalDate.parse("2020-02-02"), ld);
+        assertNotNull(foundActivity);
+        assertEquals(2L, foundActivity.getId());
     }
 
     @Test
-    public void getLastUpdateDateForSvapNoticeUrl_confirmAndTwoEditActivitiesWithMatchingSvapNoticeUrl_returnsCorrectDate() throws ParseException, JsonProcessingException {
+    public void getActivityForLastUpdateToSvapNoticeUrl_confirmAndTwoEditActivitiesWithMatchingSvapNoticeUrl_returnsCorrectDate() throws ParseException, JsonProcessingException {
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .svapNoticeUrl("url1")
@@ -214,10 +213,10 @@ public class ListingActivityHistoryHelperTest {
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(Stream.of(confirmActivity, updateActivity1, updateActivity2).collect(Collectors.toList()));
-        LocalDate ld = historyHelper.getLastUpdateDateForSvapNoticeUrl(
+        ActivityDTO foundActivity = historyHelper.getActivityForLastUpdateToSvapNoticeUrl(
                 CertifiedProductSearchDetails.builder().id(1L).svapNoticeUrl("url2").build());
-        assertNotNull(ld);
-        assertEquals(LocalDate.parse("2020-02-02"), ld);
+        assertNotNull(foundActivity);
+        assertEquals(2L, foundActivity.getId());
     }
 
     @Test
