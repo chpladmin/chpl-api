@@ -38,7 +38,7 @@ public abstract class ChangeRequestDetailsService<T> {
         this.userDeveloperMapDAO = userDeveloperMapDAO;
     }
 
-    public ChangeRequest postStatusChangeProcessing(ChangeRequest cr) {
+    public ChangeRequest postStatusChangeProcessing(ChangeRequest cr) throws EmailNotSentException {
         try {
             if (cr.getCurrentStatus().getChangeRequestStatusType().getId().equals(pendingDeveloperActionStatus)) {
                 sendPendingDeveloperActionEmail(cr);
@@ -48,6 +48,8 @@ public abstract class ChangeRequestDetailsService<T> {
                 cr = execute(cr);
                 sendApprovalEmail(cr);
             }
+        } catch (EmailNotSentException ex) {
+            throw ex;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
