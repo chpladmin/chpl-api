@@ -101,7 +101,7 @@
 
         <!-- Generate SVAP Activity download file -->
         <job>
-            <name>svapActivityDownloadFileGeneraton</name>
+            <name>svapActivityDownloadFileGeneration</name>
             <group>systemJobs</group>
             <description>Generate SVAP activity download file</description>
             <job-class>gov.healthit.chpl.scheduler.job.svap.SvapDownloadableResourceCreatorJob</job-class>
