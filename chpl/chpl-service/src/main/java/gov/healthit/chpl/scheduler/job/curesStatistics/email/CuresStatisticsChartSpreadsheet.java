@@ -9,10 +9,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -26,13 +29,16 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.statistics.CuresCriterionChartStatistic;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import lombok.extern.log4j.Log4j2;
 
 @Component
+@Log4j2
 public class CuresStatisticsChartSpreadsheet {
     private static final Integer EXISTING_CERTIFICATION_COL_IDX = 1;
     private static final Integer NEW_CERTIFICATION_COL_IDX = 2;
     private static final Integer REQUIRES_UPDATE_COL_IDX = 3;
     private static final Integer LISTING_COUNT_COL_IDX = 4;
+    private static final Integer PERCENT_CURES_COL_IDX = 6;
 
     @Value("${curesStatisticsChartSpreadsheetTemplate}")
     private String template;
@@ -96,14 +102,83 @@ public class CuresStatisticsChartSpreadsheet {
                                 getCuresCriterionChartStatisticByCriterion(
                                         dataMap, criterionService.get(map.getCriteriaKey())),
                                         sheet.getRow(map.getRowNumber())));
+
+        cloneSheetAndReorder(sheet);
+    }
+
+    private void cloneSheetAndReorder(Sheet origSheet) {
+        Workbook workbook = origSheet.getWorkbook();
+
+        Sheet clonedSheet = workbook.cloneSheet(workbook.getSheetIndex(origSheet));
+
+        List<Row> clonedRows = getRows(clonedSheet, false);
+        Collections.sort(clonedRows, (a, b) -> -1 * Double.compare(a.getCell(PERCENT_CURES_COL_IDX).getNumericCellValue(), b.getCell(PERCENT_CURES_COL_IDX).getNumericCellValue()));
+
+        writeRowsToSheet(clonedRows, getDataSortedSheet(workbook));
+
+        workbook.removeSheetAt(workbook.getSheetIndex(clonedSheet));
+    }
+
+    private void writeRowsToSheet(List<Row> rows, Sheet sheet) {
+        Integer currRowIdx = 1;
+        for (Row currRow : rows) {
+            copyRow(currRow, sheet.createRow(currRowIdx));
+            currRowIdx++;
+        }
+    }
+
+    private List<Row> getRows(Sheet sheet, Boolean includeHeaderRow) {
+        List<Row> clonedRows = new ArrayList<Row>();
+        Iterator<Row> rowIterator = sheet.iterator();
+
+        if (!includeHeaderRow && rowIterator.hasNext()) {
+            rowIterator.next();
+        }
+        while (rowIterator.hasNext()) {
+            Row clonedRow = rowIterator.next();
+            clonedRows.add(clonedRow);
+        }
+        return clonedRows;
+    }
+
+    private Row copyRow(Row originalRow, Row newRow) {
+        short minColIx = originalRow.getFirstCellNum();
+        short maxColIx = originalRow.getLastCellNum();
+        for (short colIx = minColIx; colIx < maxColIx; colIx++) {
+          Cell originalCell = originalRow.getCell(colIx);
+          Cell newCell = newRow.createCell(colIx);
+
+          CellStyle newCellStyle = originalRow.getSheet().getWorkbook().createCellStyle();
+          newCellStyle.cloneStyleFrom(originalCell.getCellStyle());
+          newCell.setCellStyle(newCellStyle);
+
+          switch (originalCell.getCellType()) {
+              case STRING:
+                  newCell.setCellValue(originalCell.getStringCellValue());
+                  break;
+              case BOOLEAN:
+                  newCell.setCellValue(originalCell.getBooleanCellValue());
+                  break;
+              case ERROR:
+                  newCell.setCellErrorValue(originalCell.getErrorCellValue());
+                  break;
+              case FORMULA:
+                  newCell.setCellValue(originalCell.getNumericCellValue());
+                  break;
+              case NUMERIC:
+                  newCell.setCellValue(originalCell.getNumericCellValue());
+                  break;
+              case _NONE:
+                  break;
+              default:
+                  break;
+          }
+        }
+        return newRow;
     }
 
     private void writeDataForCuresCriterionChartStatistic(CuresCriterionChartStatistic data, Row row) {
-        if (data.getExistingCertificationCount() != null) {
-            row.getCell(EXISTING_CERTIFICATION_COL_IDX).setCellValue(data.getExistingCertificationCount());
-        } else {
-            row.getCell(EXISTING_CERTIFICATION_COL_IDX).setCellValue("-");
-        }
+        row.getCell(EXISTING_CERTIFICATION_COL_IDX).setCellValue(data.getExistingCertificationCount());
         row.getCell(NEW_CERTIFICATION_COL_IDX).setCellValue(data.getNewCertificationCount());
         row.getCell(REQUIRES_UPDATE_COL_IDX).setCellValue(data.getRequiresUpdateCount());
         row.getCell(LISTING_COUNT_COL_IDX).setCellValue(data.getListingCount());
@@ -120,6 +195,10 @@ public class CuresStatisticsChartSpreadsheet {
 
     private Sheet getDataSheet(Workbook workbook) {
         return workbook.getSheet("Data");
+    }
+
+    private Sheet getDataSortedSheet(Workbook workbook) {
+        return workbook.getSheet("Data Sorted");
     }
 
     private Workbook getWorkbook(File newFile) throws IOException {
@@ -139,194 +218,11 @@ public class CuresStatisticsChartSpreadsheet {
         return new File(downloadPath + "/" + template);
     }
 
-    private void updateTemplate() throws IOException {
-        File template = new File("C:\\CHPL\\files\\Cures_Update.xlsx");
-        FileInputStream fis = new FileInputStream(template);
-        XSSFWorkbook wb = new XSSFWorkbook(fis);
-
-        Sheet sheet = wb.getSheet("Data");
-
-        Integer currRow = 1;
-        Cell currCell = null;
-
-        Row row = sheet.getRow(currRow);
-        currCell = row.getCell(1);
-        currCell.setCellValue(2);
-        currCell = row.getCell(2);
-        currCell.setCellValue(100);
-        currCell = row.getCell(3);
-        currCell.setCellValue(544);
-        currCell = row.getCell(4);
-        currCell.setCellValue(10);
-
-        row = sheet.getRow(currRow++);
-        currCell = row.getCell(1);
-        currCell.setCellValue(2);
-        currCell = row.getCell(2);
-        currCell.setCellValue(4);
-        currCell = row.getCell(3);
-        currCell.setCellValue(527);
-        currCell = row.getCell(4);
-        currCell.setCellValue(6);
-
-        row = sheet.getRow(currRow++);
-        currCell = row.getCell(1);
-        currCell.setCellValue(0);
-        currCell = row.getCell(2);
-        currCell.setCellValue(12);
-        currCell = row.getCell(3);
-        currCell.setCellValue(433);
-        currCell = row.getCell(4);
-        currCell.setCellValue(12);
-
-        row = sheet.getRow(currRow++);
-        currCell = row.getCell(1);
-        currCell.setCellValue(0);
-        currCell = row.getCell(2);
-        currCell.setCellValue(2);
-        currCell = row.getCell(3);
-        currCell.setCellValue(66);
-        currCell = row.getCell(4);
-        currCell.setCellValue(2);
-
-        row = sheet.getRow(currRow++);
-        currCell = row.getCell(1);
-        currCell.setCellValue(0);
-        currCell = row.getCell(2);
-        currCell.setCellValue(50);
-        currCell = row.getCell(3);
-        currCell.setCellValue(66);
-        currCell = row.getCell(4);
-        currCell.setCellValue(2);
-
-        row = sheet.getRow(currRow++);
-        currCell = row.getCell(1);
-        currCell.setCellValue(1);
-        currCell = row.getCell(2);
-        currCell.setCellValue(2);
-        currCell = row.getCell(3);
-        currCell.setCellValue(523);
-        currCell = row.getCell(4);
-        currCell.setCellValue(3);
-
-        row = sheet.getRow(currRow++);
-        currCell = row.getCell(1);
-        currCell.setCellValue(6);
-        currCell = row.getCell(2);
-        currCell.setCellValue(11);
-        currCell = row.getCell(3);
-        currCell.setCellValue(416);
-        currCell = row.getCell(4);
-        currCell.setCellValue(17);
-
-        row = sheet.getRow(currRow++);
-        currCell = row.getCell(1);
-        currCell.setCellValue(15);
-        currCell = row.getCell(2);
-        currCell.setCellValue(5);
-        currCell = row.getCell(3);
-        currCell.setCellValue(843);
-        currCell = row.getCell(4);
-        currCell.setCellValue(70);
-
-        row = sheet.getRow(currRow++);
-        currCell = row.getCell(1);
-        currCell.setCellValue(0);
-        currCell = row.getCell(2);
-        currCell.setCellValue(12);
-        currCell = row.getCell(3);
-        currCell.setCellValue(852);
-        currCell = row.getCell(4);
-        currCell.setCellValue(12);
-
-        row = sheet.getRow(currRow++);
-        currCell = row.getCell(1);
-        currCell.setCellValue(1);
-        currCell = row.getCell(2);
-        currCell.setCellValue(6);
-        currCell = row.getCell(3);
-        currCell.setCellValue(106);
-        currCell = row.getCell(4);
-        currCell.setCellValue(7);
-
-        row = sheet.getRow(currRow++);
-        currCell = row.getCell(1);
-        currCell.setCellValue("-");
-        currCell = row.getCell(2);
-        currCell.setCellValue(269);
-        currCell = row.getCell(3);
-        currCell.setCellValue(645);
-        currCell = row.getCell(4);
-        currCell.setCellValue(269);
-
-        row = sheet.getRow(currRow++);
-        currCell = row.getCell(1);
-        currCell.setCellValue("-");
-        currCell = row.getCell(2);
-        currCell.setCellValue(269);
-        currCell = row.getCell(3);
-        currCell.setCellValue(645);
-        currCell = row.getCell(4);
-        currCell.setCellValue(269);
-
-        row = sheet.getRow(currRow++);
-        currCell = row.getCell(1);
-        currCell.setCellValue(2);
-        currCell = row.getCell(2);
-        currCell.setCellValue(6);
-        currCell = row.getCell(3);
-        currCell.setCellValue(498);
-        currCell = row.getCell(4);
-        currCell.setCellValue(8);
-
-        row = sheet.getRow(currRow++);
-        currCell = row.getCell(1);
-        currCell.setCellValue(0);
-        currCell = row.getCell(2);
-        currCell.setCellValue(1);
-        currCell = row.getCell(3);
-        currCell.setCellValue(81);
-        currCell = row.getCell(4);
-        currCell.setCellValue(3);
-
-        row = sheet.getRow(currRow++);
-        currCell = row.getCell(1);
-        currCell.setCellValue(2);
-        currCell = row.getCell(2);
-        currCell.setCellValue(10);
-        currCell = row.getCell(3);
-        currCell.setCellValue(636);
-        currCell = row.getCell(4);
-        currCell.setCellValue(10);
-
-        row = sheet.getRow(currRow++);
-        currCell = row.getCell(1);
-        currCell.setCellValue(1);
-        currCell = row.getCell(2);
-        currCell.setCellValue(9);
-        currCell = row.getCell(3);
-        currCell.setCellValue(525);
-        currCell = row.getCell(4);
-        currCell.setCellValue(10);
-
-        row = sheet.getRow(currRow++);
-        currCell = row.getCell(1);
-        currCell.setCellValue(0);
-        currCell = row.getCell(2);
-        currCell.setCellValue(2);
-        currCell = row.getCell(3);
-        currCell.setCellValue(533);
-        currCell = row.getCell(4);
-        currCell.setCellValue(2);
-
-
-    }
-
     class CriteraToRowMap {
         private String criteriaKey;
         private Integer rowNumber;
 
-        public CriteraToRowMap(String criteriaKey, Integer rowNumber) {
+        CriteraToRowMap(String criteriaKey, Integer rowNumber) {
             this.criteriaKey = criteriaKey;
             this.rowNumber = rowNumber;
         }

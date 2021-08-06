@@ -58,8 +58,8 @@ public class CuresStatisticsChartData {
         curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_2_CURES)));
         curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_3_CURES)));
         curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_10_CURES)));
-        curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_12)));
-        curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_13)));
+        //curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_12)));
+        //curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_13)));
         curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.E_1_CURES)));
         curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.F_5_CURES)));
         curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.G_6_CURES)));
@@ -83,7 +83,25 @@ public class CuresStatisticsChartData {
                         listingCounts))
                 .collect(Collectors.toMap(CuresCriterionChartStatistic::getCriterion, item -> item));
 
+        // Handle d12 and d13 completely different (Privacy & Security)
+        CertificationCriterionDTO d12Criterion = new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_12));
+        curesCriterionChartStatistics.put(d12Criterion, getCuresCriterionChartStatisticForPrivacyAndSecurityCriteria(d12Criterion));
+
+        CertificationCriterionDTO d13Criterion = new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_13));
+        curesCriterionChartStatistics.put(d13Criterion, getCuresCriterionChartStatisticForPrivacyAndSecurityCriteria(d13Criterion));
+
         return curesCriterionChartStatistics;
+    }
+
+    private CuresCriterionChartStatistic getCuresCriterionChartStatisticForPrivacyAndSecurityCriteria(CertificationCriterionDTO criterion) {
+
+        return  CuresCriterionChartStatistic.builder()
+                .criterion(criterion)
+                .existingCertificationCount(0L)
+                .newCertificationCount(getListingsWithPrivacyAndSecurityCount())
+                .requiresUpdateCount(getListingsRequiringPrivacyAndSecurityCount())
+                .listingCount(getListingsWithPrivacyAndSecurityCount())
+                .build();
     }
 
     private CuresCriterionChartStatistic getCuresCriterionChartStatisticForCriteria(CertificationCriterionDTO criterion,
@@ -103,18 +121,11 @@ public class CuresStatisticsChartData {
     }
 
     private Long getExistingCertificationCountByCriteria(Map<CertificationCriterionDTO, Long> existingCertificationCounts, CertificationCriterionDTO criterion) {
-        // Handle d12 and d13 differently
-        if (criterion.getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_12).getId())
-                || criterion.getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_13).getId())) {
-
-            return null;
+        CertificationCriterionDTO criterionFromMap = getMatchingCriterionFromSet(existingCertificationCounts.keySet(), criterion);
+        if (existingCertificationCounts.containsKey(criterionFromMap)) {
+            return existingCertificationCounts.get(criterionFromMap);
         } else {
-            CertificationCriterionDTO criterionFromMap = getMatchingCriterionFromSet(existingCertificationCounts.keySet(), criterion);
-            if (existingCertificationCounts.containsKey(criterionFromMap)) {
-                return existingCertificationCounts.get(criterionFromMap);
-            } else {
-                return 0L;
-            }
+            return 0L;
         }
     }
 
@@ -128,25 +139,33 @@ public class CuresStatisticsChartData {
     }
 
     private Long getListingCountByCriteria(Map<CertificationCriterionDTO, Long> listingCounts, CertificationCriterionDTO criterion) {
-        // Handle d12 and d13 differently
-        if (criterion.getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_12).getId())
-                || criterion.getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_13).getId())) {
-
-            List<PrivacyAndSecurityListingStatistic> privacyAndSecurityListingStatistic =
-                    privacyAndSecurityStatisticsDAO.getStatisticsForDate(privacyAndSecurityStatisticsDAO.getDateOfMostRecentStatistics());
-
-            if (privacyAndSecurityListingStatistic != null && privacyAndSecurityListingStatistic.size() > 0) {
-                return privacyAndSecurityListingStatistic.get(0).getListingsRequiringPrivacyAndSecurityCount();
-            } else {
-                return 0L;
-            }
+        CertificationCriterionDTO criterionFromMap = getMatchingCriterionFromSet(listingCounts.keySet(), criterion);
+        if (listingCounts.containsKey(criterionFromMap)) {
+            return listingCounts.get(criterionFromMap);
         } else {
-            CertificationCriterionDTO criterionFromMap = getMatchingCriterionFromSet(listingCounts.keySet(), criterion);
-            if (listingCounts.containsKey(criterionFromMap)) {
-                return listingCounts.get(criterionFromMap);
-            } else {
-                return 0L;
-            }
+            return 0L;
+        }
+    }
+
+    private Long getListingsRequiringPrivacyAndSecurityCount() {
+        List<PrivacyAndSecurityListingStatistic> privacyAndSecurityListingStatistic =
+            privacyAndSecurityStatisticsDAO.getStatisticsForDate(privacyAndSecurityStatisticsDAO.getDateOfMostRecentStatistics());
+
+        if (privacyAndSecurityListingStatistic != null && privacyAndSecurityListingStatistic.size() > 0) {
+            return privacyAndSecurityListingStatistic.get(0).getListingsRequiringPrivacyAndSecurityCount();
+        } else {
+            return 0L;
+        }
+    }
+
+    private Long getListingsWithPrivacyAndSecurityCount() {
+        List<PrivacyAndSecurityListingStatistic> privacyAndSecurityListingStatistic =
+            privacyAndSecurityStatisticsDAO.getStatisticsForDate(privacyAndSecurityStatisticsDAO.getDateOfMostRecentStatistics());
+
+        if (privacyAndSecurityListingStatistic != null && privacyAndSecurityListingStatistic.size() > 0) {
+            return privacyAndSecurityListingStatistic.get(0).getListingsWithPrivacyAndSecurityCount();
+        } else {
+            return 0L;
         }
     }
 
@@ -206,10 +225,10 @@ public class CuresStatisticsChartData {
             return new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_3_OLD));
         } else if (curesUpdatedCriterion.getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_10_CURES).getId())) {
             return new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_10_OLD));
-        } else if (curesUpdatedCriterion.getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_12).getId())) {
-            return new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_12));
-        } else if (curesUpdatedCriterion.getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_13).getId())) {
-            return new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_13));
+        //} else if (curesUpdatedCriterion.getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_12).getId())) {
+        //    return new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_12));
+        //} else if (curesUpdatedCriterion.getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_13).getId())) {
+        //    return new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_13));
         } else if (curesUpdatedCriterion.getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.E_1_CURES).getId())) {
             return new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.E_1_OLD));
         } else if (curesUpdatedCriterion.getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.F_5_CURES).getId())) {
