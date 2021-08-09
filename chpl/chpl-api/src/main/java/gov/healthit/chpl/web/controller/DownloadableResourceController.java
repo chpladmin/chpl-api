@@ -2,8 +2,6 @@ package gov.healthit.chpl.web.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,7 +13,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.FeatureList;
@@ -285,12 +282,5 @@ public class DownloadableResourceController {
 
         LOGGER.info("Downloading " + downloadFile.getName());
         fileUtils.streamFileAsResponse(downloadFile, "text/csv", response);
-    }
-
-    @RequestMapping(value = "/listings-with-svap",
-    method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
-    public @ResponseBody List<Long> getListingIdsWithSvap() {
-        return cpDao.findListingIdsWithSvap();
     }
 }
