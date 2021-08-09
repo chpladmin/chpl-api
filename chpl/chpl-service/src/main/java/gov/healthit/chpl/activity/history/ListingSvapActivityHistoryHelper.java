@@ -18,13 +18,13 @@ import lombok.extern.log4j.Log4j2;
 
 @Service
 @Log4j2
-public class ListingActivityHistoryHelper {
+public class ListingSvapActivityHistoryHelper {
     private static final Date EPOCH = new Date(0);
     private ActivityDAO activityDao;
     private ListingActivityUtil activityUtil;
 
     @Autowired
-    public ListingActivityHistoryHelper(ActivityDAO activityDao) {
+    public ListingSvapActivityHistoryHelper(ActivityDAO activityDao) {
         this.activityDao = activityDao;
         activityUtil = new ListingActivityUtil();
     }
@@ -80,32 +80,5 @@ public class ListingActivityHistoryHelper {
             return true;
         }
         return false;
-    }
-
-    @Transactional
-    public CertifiedProductSearchDetails getListingOnDate(Long listingId, Date date) {
-        LOGGER.info("Getting listing details for ID " + listingId + " as of " + date + ".");
-        List<ActivityDTO> listingActivities = activityDao.findByObjectId(listingId, ActivityConcept.CERTIFIED_PRODUCT, EPOCH, date);
-        if (listingActivities == null || listingActivities.size() == 0) {
-            LOGGER.warn("No listing activities were found for listing ID " + listingId + ". Is the ID valid?");
-            return null;
-        }
-        LOGGER.info("There are " + listingActivities.size() + " activities for listing with ID " + listingId);
-        activityUtil.sortOldestActivityFirst(listingActivities);
-        CertifiedProductSearchDetails listingOnDate = null;
-        Date closestWithoutGoingOver = null;
-        Iterator<ActivityDTO> listingActivityIter = listingActivities.iterator();
-        while (listingActivityIter.hasNext()) {
-            ActivityDTO currActivity = listingActivityIter.next();
-            if ((closestWithoutGoingOver == null || currActivity.getActivityDate().after(closestWithoutGoingOver))
-                    && (currActivity.getActivityDate().equals(date) || currActivity.getActivityDate().before(date))) {
-                closestWithoutGoingOver = currActivity.getActivityDate();
-                listingOnDate = activityUtil.getListing(currActivity.getNewData());
-            }
-        }
-        if (listingOnDate == null) {
-            LOGGER.warn("No representation of listing with ID " + listingId + " was found on " + date + ". Did the listing exist at this time?");
-        }
-        return listingOnDate;
     }
 }

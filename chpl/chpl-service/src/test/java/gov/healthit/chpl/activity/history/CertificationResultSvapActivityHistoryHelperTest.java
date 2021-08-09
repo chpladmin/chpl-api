@@ -30,9 +30,9 @@ import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.util.JSONUtils;
 
-public class CertificationResultActivityHistoryHelperTest {
+public class CertificationResultSvapActivityHistoryHelperTest {
     private ActivityDAO activityDao;
-    private CertificationResultActivityHistoryHelper historyHelper;
+    private CertificationResultSvapActivityHistoryHelper historyHelper;
     private SimpleDateFormat formatter;
     @Before
     public void setup() {
@@ -40,7 +40,7 @@ public class CertificationResultActivityHistoryHelperTest {
         formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
 
         activityDao = Mockito.mock(ActivityDAO.class);
-        historyHelper = new CertificationResultActivityHistoryHelper(activityDao);
+        historyHelper = new CertificationResultSvapActivityHistoryHelper(activityDao);
     }
 
     @Test

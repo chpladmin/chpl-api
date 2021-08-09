@@ -25,8 +25,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.activity.history.CertificationResultActivityHistoryHelper;
-import gov.healthit.chpl.activity.history.ListingActivityHistoryHelper;
+import gov.healthit.chpl.activity.history.CertificationResultSvapActivityHistoryHelper;
+import gov.healthit.chpl.activity.history.ListingSvapActivityHistoryHelper;
 import gov.healthit.chpl.activity.history.ListingActivityUtil;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -50,10 +50,10 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
     private ExecutorService executorService;
 
     @Autowired
-    private ListingActivityHistoryHelper listingActivityHelper;
+    private ListingSvapActivityHistoryHelper listingSvapActivityHelper;
 
     @Autowired
-    private CertificationResultActivityHistoryHelper certResultActivityHelper;
+    private CertificationResultSvapActivityHistoryHelper certResultSvapActivityHelper;
 
     @Autowired
     private CertifiedProductDAO cpDao;
@@ -137,7 +137,7 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
     }
 
     private List<ListingSvapActivity> buildSvapActivities(CertifiedProductSearchDetails listing) {
-        ActivityDTO svapNoticeUrlLastUpdateActivity = listingActivityHelper.getActivityForLastUpdateToSvapNoticeUrl(listing);
+        ActivityDTO svapNoticeUrlLastUpdateActivity = listingSvapActivityHelper.getActivityForLastUpdateToSvapNoticeUrl(listing);
         ListingSvapActivity baseSvapActivity = ListingSvapActivity.builder()
             .listing(listing)
             .svapNoticeLastUpdated(svapNoticeUrlLastUpdateActivity != null ? DateUtil.toLocalDate(svapNoticeUrlLastUpdateActivity.getActivityDate().getTime()) : null)
@@ -184,7 +184,7 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
     }
 
     private void updateCertificationResultActivityData(CertifiedProductSearchDetails listing, ListingSvapActivity listingSvapActivity) {
-        ActivityDTO activity = certResultActivityHelper.getActivityWhenCertificationResultHasSvap(listing, listingSvapActivity.getCriterion(), listingSvapActivity.getCriterionSvap());
+        ActivityDTO activity = certResultSvapActivityHelper.getActivityWhenCertificationResultHasSvap(listing, listingSvapActivity.getCriterion(), listingSvapActivity.getCriterionSvap());
         if (activity == null) {
             LOGGER.warn("No activity was found where " + listingSvapActivity.getCriterionSvap().getRegulatoryTextCitation() + " was added to " + Util.formatCriteriaNumber(listingSvapActivity.getCriterion()) + " for listing ID " + listing.getId());
             return;
