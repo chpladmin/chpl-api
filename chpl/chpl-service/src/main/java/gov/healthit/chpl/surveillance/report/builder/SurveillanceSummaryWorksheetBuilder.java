@@ -2,6 +2,8 @@ package gov.healthit.chpl.surveillance.report.builder;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -103,13 +105,13 @@ public class SurveillanceSummaryWorksheetBuilder {
         //the reports must all be for the same ACB so just take the acb in the first one
         Long acbId = reports.get(0).getAcb().getId();
         //find the date range encompassing all the reports
-        Date startDate = reports.get(0).getStartDate();
-        Date endDate = reports.get(0).getEndDate();
+        LocalDate startDate = reports.get(0).getStartDate();
+        LocalDate endDate = reports.get(0).getEndDate();
         for (QuarterlyReportDTO report : reports) {
-            if (report.getStartDate().getTime() < startDate.getTime()) {
+            if (report.getStartDate().isBefore(startDate)) {
                 startDate = report.getStartDate();
             }
-            if (report.getEndDate().getTime() > endDate.getTime()) {
+            if (report.getEndDate().isAfter(endDate)) {
                 endDate = report.getEndDate();
             }
         }
@@ -373,7 +375,7 @@ public class SurveillanceSummaryWorksheetBuilder {
         if (surv.getEndDate() == null) {
             result = listing.getCurrentStatus().getStatus().getName();
         } else {
-            CertificationStatusEvent statusEvent = listing.getStatusOnDate(surv.getEndDate());
+            CertificationStatusEvent statusEvent = listing.getStatusOnDate(Date.from(surv.getEndDate().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant()));
             if (statusEvent != null) {
                 result = statusEvent.getStatus().getName();
             }
@@ -386,13 +388,13 @@ public class SurveillanceSummaryWorksheetBuilder {
         //the reports must all be for the same ACB so just take the acb in the first one
         Long acbId = reports.get(0).getAcb().getId();
         //find the date range encompassing all the reports
-        Date startDate = reports.get(0).getStartDate();
-        Date endDate = reports.get(0).getEndDate();
+        LocalDate startDate = reports.get(0).getStartDate();
+        LocalDate endDate = reports.get(0).getEndDate();
         for (QuarterlyReportDTO report : reports) {
-            if (report.getStartDate().getTime() < startDate.getTime()) {
+            if (report.getStartDate().isBefore(startDate)) {
                 startDate = report.getStartDate();
             }
-            if (report.getEndDate().getTime() > endDate.getTime()) {
+            if (report.getEndDate().isAfter(endDate)) {
                 endDate = report.getEndDate();
             }
         }

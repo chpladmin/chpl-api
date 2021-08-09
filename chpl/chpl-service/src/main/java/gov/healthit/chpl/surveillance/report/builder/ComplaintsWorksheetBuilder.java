@@ -2,7 +2,7 @@ package gov.healthit.chpl.surveillance.report.builder;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -76,7 +76,7 @@ public class ComplaintsWorksheetBuilder {
     private CertifiedProductDetailsManager cpdManager;
     private PrivilegedSurveillanceDAO survDao;
     private int lastDataRow;
-    private SimpleDateFormat dateFormatter;
+    private DateTimeFormatter dateFormatter;
     private PropertyTemplate pt;
     private CertificationCriterionService criterionService;
 
@@ -87,7 +87,7 @@ public class ComplaintsWorksheetBuilder {
         this.complaintManager = complaintManager;
         this.cpdManager = cpdManager;
         this.survDao = survDao;
-        dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
+        dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy");
     }
 
     public int getLastDataColumn() {
@@ -263,14 +263,7 @@ public class ComplaintsWorksheetBuilder {
         uniqueComplaints.sort(new Comparator<Complaint>() {
             @Override
             public int compare(final Complaint o1, final Complaint o2) {
-                if (o1.getReceivedDate().getTime() < o2.getReceivedDate().getTime()) {
-                    return -1;
-                } else if (o1.getReceivedDate().getTime() == o2.getReceivedDate().getTime()) {
-                    return 0;
-                } else {
-                    return 1;
-                }
-            }
+                return o1.getReceivedDate().compareTo(o2.getReceivedDate());            }
         });
 
         for (Complaint complaint : uniqueComplaints) {

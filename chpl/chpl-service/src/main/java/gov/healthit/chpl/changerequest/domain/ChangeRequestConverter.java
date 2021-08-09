@@ -1,5 +1,6 @@
 package gov.healthit.chpl.changerequest.domain;
 
+import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestDeveloperDetailsEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusEntity;
@@ -15,7 +16,11 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.auth.UserPermissionDTO;
 
-public class ChangeRequestConverter {
+public final class ChangeRequestConverter {
+
+    private ChangeRequestConverter() {
+        // not called
+    }
 
     public static ChangeRequestStatusType convert(ChangeRequestStatusTypeEntity entity) {
         ChangeRequestStatusType status = new ChangeRequestStatusType();
@@ -89,4 +94,12 @@ public class ChangeRequestConverter {
         crDev.setContact(contact);
         return crDev;
     }
+
+    public static ChangeRequestAttestation convert(ChangeRequestAttestationEntity entity) {
+        ChangeRequestAttestation crAttestation = new ChangeRequestAttestation();
+        crAttestation.setId(entity.getId());
+        crAttestation.setAttestation(entity.getAttestation());
+        return crAttestation;
+    }
+
 }

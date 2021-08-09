@@ -23,14 +23,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.api.ApiKeyManager;
 import gov.healthit.chpl.api.domain.ApiKey;
-import gov.healthit.chpl.api.domain.ApiKeyDTO;
 import gov.healthit.chpl.api.domain.ApiKeyRegistration;
-import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.logging.Loggable;
-import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.web.controller.results.BooleanResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -64,26 +62,17 @@ public class ApiKeyController {
 
     private KeyRegistered create(final ApiKeyRegistration registration) throws JsonProcessingException, EntityCreationException,
             EntityRetrievalException, AddressException, MessagingException  {
-
         Date now = new Date();
-
-        String apiKey = gov.healthit.chpl.util.Util.md5(registration.getName()
-                + registration.getEmail() + now.getTime());
-        ApiKeyDTO toCreate = new ApiKeyDTO();
-
-        toCreate.setApiKey(apiKey);
-        toCreate.setEmail(registration.getEmail());
-        toCreate.setNameOrganization(registration.getName());
-        toCreate.setCreationDate(now);
-        toCreate.setLastUsedDate(now);
-        toCreate.setLastModifiedDate(now);
-        toCreate.setLastModifiedUser(User.SYSTEM_USER_ID);
-        toCreate.setDeleted(false);
+        String apiKey = gov.healthit.chpl.util.Util.md5(registration.getName() + registration.getEmail() + now.getTime());
+        ApiKey toCreate = ApiKey.builder()
+                .key(apiKey)
+                .email(registration.getEmail())
+                .name(registration.getName())
+                .unrestricted(false)
+                .build();
 
         apiKeyManager.createKey(toCreate);
-
         sendRegistrationEmail(registration.getEmail(), registration.getName(), apiKey);
-
         return new KeyRegistered(apiKey);
     }
 
@@ -102,7 +91,7 @@ public class ApiKeyController {
                     + "API key. It must be included in subsequent API calls via either a header with the name "
                     + "'API-Key' or as a URL parameter named 'api_key'.")
     @RequestMapping(value = "/confirm", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    public ApiKeyDTO confirm(@RequestBody String apiKeyRequestToken) throws JsonProcessingException, ValidationException, EntityCreationException, EntityRetrievalException, MessagingException {
+    public ApiKey confirm(@RequestBody String apiKeyRequestToken) throws JsonProcessingException, ValidationException, EntityCreationException, EntityRetrievalException, MessagingException {
         return apiKeyManager.confirmRequest(apiKeyRequestToken);
     }
 
@@ -113,7 +102,6 @@ public class ApiKeyController {
     public KeyRevoked revoke(@PathVariable("key") final String key,
             @RequestHeader(value = "API-Key", required = false) String userApiKey,
             @RequestParam(value = "apiKey", required = false) String userApiKeyParam) throws Exception {
-
         return delete(key, userApiKey, userApiKeyParam);
     }
 
@@ -131,21 +119,7 @@ public class ApiKeyController {
             notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ApiKey> listKeys(@RequestParam(required = false, defaultValue = "false") boolean includeDeleted) {
-
-        List<ApiKey> keys = new ArrayList<ApiKey>();
-        List<ApiKeyDTO> dtos = apiKeyManager.findAll(includeDeleted);
-
-        for (ApiKeyDTO dto : dtos) {
-            ApiKey apiKey = new ApiKey();
-            apiKey.setName(dto.getNameOrganization());
-            apiKey.setEmail(dto.getEmail());
-            apiKey.setKey(dto.getApiKey());
-            apiKey.setLastUsedDate(dto.getLastUsedDate());
-            apiKey.setDeleteWarningSentDate(dto.getDeleteWarningSentDate());
-            keys.add(apiKey);
-        }
-
-        return keys;
+        return apiKeyManager.findAll(includeDeleted);
     }
 
     private void sendRegistrationEmail(String email, String orgName, String apiKey)

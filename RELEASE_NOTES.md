@@ -1,5 +1,20 @@
 # Release Notes
 
+## Version 30.5.0
+_9 August 2021_
+
+### Features
+* Add Attestation change request
+* Track and notify of deprecated endpoint usage by API Key
+* Add "Suspended by *" statuses to ONC-ACB Questionable URL report
+* Require "Actions/Response" on closed Complaints
+* Validate Complaint dates for reasonableness
+
+### Bug Fixes
+* Filter ONC-ACB Questionable URL report by Status AND Edition, not Status OR Edition
+
+---
+
 ## Version 30.4.0
 _2 August 2021_
 
