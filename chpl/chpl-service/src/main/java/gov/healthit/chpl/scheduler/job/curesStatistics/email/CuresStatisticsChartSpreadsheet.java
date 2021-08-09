@@ -40,6 +40,25 @@ public class CuresStatisticsChartSpreadsheet {
     private static final Integer LISTING_COUNT_COL_IDX = 4;
     private static final Integer PERCENT_CURES_COL_IDX = 6;
 
+    private static final Integer B_1_CURES_ROW_IDX = 1;
+    private static final Integer B_2_CURES_ROW_IDX = 2;
+    private static final Integer B_3_CURES_ROW_IDX = 3;
+    private static final Integer B_7_CURES_ROW_IDX = 4;
+    private static final Integer B_8_CURES_ROW_IDX = 5;
+    private static final Integer B_9_CURES_ROW_IDX = 6;
+    private static final Integer B_10_ROW_IDX = 7;
+    private static final Integer C_3_CURES_ROW_IDX = 8;
+    private static final Integer D_2_CURES_ROW_IDX = 9;
+    private static final Integer D_3_CURES_ROW_IDX = 10;
+    private static final Integer D_10_CURES_ROW_IDX = 11;
+    private static final Integer D_12_ROW_IDX = 12;
+    private static final Integer D_13_ROW_IDX = 13;
+    private static final Integer E_1_CURES_ROW_IDX = 14;
+    private static final Integer F_5_CURES_ROW_IDX = 15;
+    private static final Integer G_6_CURES_ROW_IDX = 16;
+    private static final Integer G_9_CURES_ROW_IDX = 17;
+    private static final Integer G_10_ROW_IDX = 18;
+
     @Value("${curesStatisticsChartSpreadsheetTemplate}")
     private String template;
 
@@ -54,24 +73,24 @@ public class CuresStatisticsChartSpreadsheet {
     public CuresStatisticsChartSpreadsheet(CertificationCriterionService criterionService) {
         this.criterionService = criterionService;
 
-        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.B_1_CURES, 1));
-        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.B_2_CURES, 2));
-        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.B_3_CURES, 3));
-        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.B_7_CURES, 4));
-        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.B_8_CURES, 5));
-        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.B_9_CURES, 6));
-        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.B_10, 7));
-        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.C_3_CURES, 8));
-        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.D_2_CURES, 9));
-        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.D_3_CURES, 10));
-        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.D_10_CURES, 11));
-        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.D_12, 12));
-        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.D_13, 13));
-        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.E_1_CURES, 14));
-        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.F_5_CURES, 15));
-        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.G_6_CURES, 16));
-        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.G_9_CURES, 17));
-        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.G_10, 18));
+        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.B_1_CURES, B_1_CURES_ROW_IDX));
+        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.B_2_CURES, B_2_CURES_ROW_IDX));
+        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.B_3_CURES, B_3_CURES_ROW_IDX));
+        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.B_7_CURES, B_7_CURES_ROW_IDX));
+        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.B_8_CURES, B_8_CURES_ROW_IDX));
+        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.B_9_CURES, B_9_CURES_ROW_IDX));
+        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.B_10, B_10_ROW_IDX));
+        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.C_3_CURES, C_3_CURES_ROW_IDX));
+        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.D_2_CURES, D_2_CURES_ROW_IDX));
+        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.D_3_CURES, D_3_CURES_ROW_IDX));
+        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.D_10_CURES, D_10_CURES_ROW_IDX));
+        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.D_12, D_12_ROW_IDX));
+        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.D_13, D_13_ROW_IDX));
+        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.E_1_CURES, E_1_CURES_ROW_IDX));
+        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.F_5_CURES, F_5_CURES_ROW_IDX));
+        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.G_6_CURES, G_6_CURES_ROW_IDX));
+        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.G_9_CURES, G_9_CURES_ROW_IDX));
+        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.G_10, G_10_ROW_IDX));
     }
 
     public File generateSpreadsheet(Map<CertificationCriterionDTO, CuresCriterionChartStatistic> dataMap) throws IOException {
@@ -103,79 +122,11 @@ public class CuresStatisticsChartSpreadsheet {
                                         dataMap, criterionService.get(map.getCriteriaKey())),
                                         sheet.getRow(map.getRowNumber())));
 
-        cloneSheetAndReorder(sheet);
+        Sheet sortedDataSheet = getDataSortedSheet(workbook);
+        CopyAndSortWorksheet.copy(sheet, sortedDataSheet, PERCENT_CURES_COL_IDX, false);
     }
 
-    private void cloneSheetAndReorder(Sheet origSheet) {
-        Workbook workbook = origSheet.getWorkbook();
 
-        Sheet clonedSheet = workbook.cloneSheet(workbook.getSheetIndex(origSheet));
-
-        List<Row> clonedRows = getRows(clonedSheet, false);
-        Collections.sort(clonedRows, (a, b) -> -1 * Double.compare(a.getCell(PERCENT_CURES_COL_IDX).getNumericCellValue(), b.getCell(PERCENT_CURES_COL_IDX).getNumericCellValue()));
-
-        writeRowsToSheet(clonedRows, getDataSortedSheet(workbook));
-
-        workbook.removeSheetAt(workbook.getSheetIndex(clonedSheet));
-    }
-
-    private void writeRowsToSheet(List<Row> rows, Sheet sheet) {
-        Integer currRowIdx = 1;
-        for (Row currRow : rows) {
-            copyRow(currRow, sheet.createRow(currRowIdx));
-            currRowIdx++;
-        }
-    }
-
-    private List<Row> getRows(Sheet sheet, Boolean includeHeaderRow) {
-        List<Row> clonedRows = new ArrayList<Row>();
-        Iterator<Row> rowIterator = sheet.iterator();
-
-        if (!includeHeaderRow && rowIterator.hasNext()) {
-            rowIterator.next();
-        }
-        while (rowIterator.hasNext()) {
-            Row clonedRow = rowIterator.next();
-            clonedRows.add(clonedRow);
-        }
-        return clonedRows;
-    }
-
-    private Row copyRow(Row originalRow, Row newRow) {
-        short minColIx = originalRow.getFirstCellNum();
-        short maxColIx = originalRow.getLastCellNum();
-        for (short colIx = minColIx; colIx < maxColIx; colIx++) {
-          Cell originalCell = originalRow.getCell(colIx);
-          Cell newCell = newRow.createCell(colIx);
-
-          CellStyle newCellStyle = originalRow.getSheet().getWorkbook().createCellStyle();
-          newCellStyle.cloneStyleFrom(originalCell.getCellStyle());
-          newCell.setCellStyle(newCellStyle);
-
-          switch (originalCell.getCellType()) {
-              case STRING:
-                  newCell.setCellValue(originalCell.getStringCellValue());
-                  break;
-              case BOOLEAN:
-                  newCell.setCellValue(originalCell.getBooleanCellValue());
-                  break;
-              case ERROR:
-                  newCell.setCellErrorValue(originalCell.getErrorCellValue());
-                  break;
-              case FORMULA:
-                  newCell.setCellValue(originalCell.getNumericCellValue());
-                  break;
-              case NUMERIC:
-                  newCell.setCellValue(originalCell.getNumericCellValue());
-                  break;
-              case _NONE:
-                  break;
-              default:
-                  break;
-          }
-        }
-        return newRow;
-    }
 
     private void writeDataForCuresCriterionChartStatistic(CuresCriterionChartStatistic data, Row row) {
         row.getCell(EXISTING_CERTIFICATION_COL_IDX).setCellValue(data.getExistingCertificationCount());
@@ -216,6 +167,86 @@ public class CuresStatisticsChartSpreadsheet {
 
     private File getTemplate() {
         return new File(downloadPath + "/" + template);
+    }
+
+    static class CopyAndSortWorksheet {
+        public static Sheet copy(Sheet origSheet, Sheet newSheet, Integer sortColumnIndex, Boolean includeHeaders) {
+            Workbook workbook = origSheet.getWorkbook();
+
+            Sheet clonedSheet = workbook.cloneSheet(workbook.getSheetIndex(origSheet));
+
+            List<Row> clonedRows = getRows(clonedSheet, includeHeaders);
+
+            if (sortColumnIndex != null) {
+                Collections.sort(clonedRows, (a, b) -> -1 * Double.compare(a.getCell(sortColumnIndex).getNumericCellValue(), b.getCell(sortColumnIndex).getNumericCellValue()));
+            }
+
+            writeRowsToSheet(clonedRows, newSheet);
+
+            workbook.removeSheetAt(workbook.getSheetIndex(clonedSheet));
+
+            return newSheet;
+        }
+
+        private static List<Row> getRows(Sheet sheet, Boolean includeHeaderRow) {
+            List<Row> clonedRows = new ArrayList<Row>();
+            Iterator<Row> rowIterator = sheet.iterator();
+
+            if (!includeHeaderRow && rowIterator.hasNext()) {
+                rowIterator.next();
+            }
+            while (rowIterator.hasNext()) {
+                Row clonedRow = rowIterator.next();
+                clonedRows.add(clonedRow);
+            }
+            return clonedRows;
+        }
+
+        private static void writeRowsToSheet(List<Row> rows, Sheet sheet) {
+            Integer currRowIdx = 1;
+            for (Row currRow : rows) {
+                copyRow(currRow, sheet.createRow(currRowIdx));
+                currRowIdx++;
+            }
+        }
+
+
+        private static Row copyRow(Row originalRow, Row newRow) {
+            short minColIx = originalRow.getFirstCellNum();
+            short maxColIx = originalRow.getLastCellNum();
+            for (short colIx = minColIx; colIx < maxColIx; colIx++) {
+              Cell originalCell = originalRow.getCell(colIx);
+              Cell newCell = newRow.createCell(colIx);
+
+              CellStyle newCellStyle = originalRow.getSheet().getWorkbook().createCellStyle();
+              newCellStyle.cloneStyleFrom(originalCell.getCellStyle());
+              newCell.setCellStyle(newCellStyle);
+
+              switch (originalCell.getCellType()) {
+                  case STRING:
+                      newCell.setCellValue(originalCell.getStringCellValue());
+                      break;
+                  case BOOLEAN:
+                      newCell.setCellValue(originalCell.getBooleanCellValue());
+                      break;
+                  case ERROR:
+                      newCell.setCellErrorValue(originalCell.getErrorCellValue());
+                      break;
+                  case FORMULA:
+                      newCell.setCellValue(originalCell.getNumericCellValue());
+                      break;
+                  case NUMERIC:
+                      newCell.setCellValue(originalCell.getNumericCellValue());
+                      break;
+                  case _NONE:
+                      break;
+                  default:
+                      break;
+              }
+            }
+            return newRow;
+        }
+
     }
 
     class CriteraToRowMap {
