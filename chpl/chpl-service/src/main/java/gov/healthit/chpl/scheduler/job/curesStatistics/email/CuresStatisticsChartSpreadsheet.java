@@ -4,9 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -94,7 +93,7 @@ public class CuresStatisticsChartSpreadsheet {
     }
 
     public File generateSpreadsheet(Map<CertificationCriterionDTO, CuresCriterionChartStatistic> dataMap) throws IOException {
-        File newFile = copyFileToTemporaryFile(getTemplate());
+        File newFile = copyTemplateFileToTemporaryFile();
         Workbook workbook = getWorkbook(newFile);
 
         populateDataSheet(dataMap, workbook);
@@ -157,16 +156,18 @@ public class CuresStatisticsChartSpreadsheet {
         return new XSSFWorkbook(fis);
     }
 
-    private File copyFileToTemporaryFile(File src) throws IOException {
-        File tempFile = File.createTempFile("CuresStatisticsCharts_", ".xlsx");
-        Path copied = Paths.get(tempFile.getPath());
-        Path originalPath = Paths.get(src.getPath());
-        Files.copy(originalPath, copied, StandardCopyOption.REPLACE_EXISTING);
-        return tempFile;
+    private File copyTemplateFileToTemporaryFile() throws IOException {
+        try (InputStream srcInputStream = getTemplateAsStream()) {
+            File tempFile = File.createTempFile("CuresStatisticsCharts_", ".xlsx");
+            Files.copy(srcInputStream, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            return tempFile;
+        }
     }
 
-    private File getTemplate() {
-        return new File(downloadPath + "/" + template);
+    private InputStream getTemplateAsStream() {
+        //return new File(downloadPath + "/" + template);c
+        //return new File(template);
+        return getClass().getClassLoader().getResourceAsStream(template);
     }
 
     static class CopyAndSortWorksheet {
