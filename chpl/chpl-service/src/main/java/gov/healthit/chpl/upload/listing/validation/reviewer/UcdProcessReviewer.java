@@ -50,7 +50,7 @@ public class UcdProcessReviewer extends PermissionBasedReviewer {
         }
         removeUcdProcessesNotFound(listing);
         reviewAllUcdProcessCriteriaAreAllowed(listing);
-        reviewUcdFields(listing);
+        reviewCertResultsHaveUcdProcessesIfRequired(listing);
     }
 
     private void removeUcdProcessesNotFound(CertifiedProductSearchDetails listing) {
@@ -91,13 +91,13 @@ public class UcdProcessReviewer extends PermissionBasedReviewer {
         }
     }
 
-    public void reviewUcdFields(CertifiedProductSearchDetails listing) {
+    public void reviewCertResultsHaveUcdProcessesIfRequired(CertifiedProductSearchDetails listing) {
         List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
         ucdProcessCriteria.stream()
             .filter(criterion -> validationUtils.hasCriterion(criterion, attestedCriteria))
             .map(attestedUcdProcessCriterion -> getCertificationResultForCriterion(listing, attestedUcdProcessCriterion))
             .filter(certResult -> certResult != null)
-            .forEach(certResult -> reviewUcdFields(listing, certResult));
+            .forEach(certResult -> reviewCertResultsHasUcdProcessIfRequired(listing, certResult));
     }
 
     private CertificationResult getCertificationResultForCriterion(CertifiedProductSearchDetails listing, CertificationCriterion criterionToReview) {
@@ -110,7 +110,7 @@ public class UcdProcessReviewer extends PermissionBasedReviewer {
         return null;
     }
 
-    private void reviewUcdFields(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    private void reviewCertResultsHasUcdProcessIfRequired(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResult.isSed()) {
             if (listing.getSed() == null || CollectionUtils.isEmpty(listing.getSed().getUcdProcesses())) {
                 addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.missingUcdProcess",
