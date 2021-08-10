@@ -30,7 +30,7 @@ public class UcdProcessReviewerTest {
     private CertificationCriterionService criteriaService;
     private ErrorMessageUtil errorMessageUtil;
     private ResourcePermissions resourcePermissions;
-    private CertificationCriterion a1, a2;
+    private CertificationCriterion a1, a2, a3;
     private UcdProcessReviewer reviewer;
 
     @Before
@@ -50,12 +50,18 @@ public class UcdProcessReviewerTest {
         criteriaService = Mockito.mock(CertificationCriterionService.class);
         a1 = CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("a1").build();
         a2 = CertificationCriterion.builder().id(2L).number("170.315 (a)(2)").title("a2").build();
-        Mockito.when(criteriaService.get(ArgumentMatchers.eq(1L))).thenReturn(a1);
-        Mockito.when(criteriaService.get(ArgumentMatchers.eq(2L))).thenReturn(a2);
+        a3 = CertificationCriterion.builder().id(3L).number("170.315 (a)(3)").title("a3").build();
+        Mockito.when(criteriaService.get(ArgumentMatchers.eq(a1.getId()))).thenReturn(a1);
+        Mockito.when(criteriaService.get(ArgumentMatchers.eq(a2.getId()))).thenReturn(a2);
+        Mockito.when(criteriaService.get(ArgumentMatchers.eq(a3.getId()))).thenReturn(a3);
 
         certResultRules = Mockito.mock(CertificationResultRules.class);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.UCD_FIELDS)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a1.getNumber()), ArgumentMatchers.eq(CertificationResultRules.UCD_FIELDS)))
             .thenReturn(true);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a2.getNumber()), ArgumentMatchers.eq(CertificationResultRules.UCD_FIELDS)))
+            .thenReturn(true);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a3.getNumber()), ArgumentMatchers.eq(CertificationResultRules.UCD_FIELDS)))
+            .thenReturn(false);
 
         resourcePermissions = Mockito.mock(ResourcePermissions.class);
         reviewer = new UcdProcessReviewer(criteriaService, new ValidationUtils(), certResultRules, "1,2",
@@ -89,11 +95,6 @@ public class UcdProcessReviewerTest {
 
     @Test
     public void review_ucdProcessHasNotAllowedCriteria_certResultHasSedTrue_hasError() {
-        CertificationCriterion a3 = CertificationCriterion.builder().id(3L).number("170.315 (a)(3)").title("a3").build();
-        Mockito.when(criteriaService.get(ArgumentMatchers.eq(a3.getId()))).thenReturn(a3);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a3.getNumber()), ArgumentMatchers.eq(CertificationResultRules.UCD_FIELDS)))
-            .thenReturn(false);
-
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .success(true)
@@ -118,11 +119,6 @@ public class UcdProcessReviewerTest {
 
     @Test
     public void review_ucdProcessHasNotAllowedCriteria_certResultHasSedFalse_hasError() {
-        CertificationCriterion a3 = CertificationCriterion.builder().id(3L).number("170.315 (a)(3)").title("a3").build();
-        Mockito.when(criteriaService.get(ArgumentMatchers.eq(a3.getId()))).thenReturn(a3);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a3.getNumber()), ArgumentMatchers.eq(CertificationResultRules.UCD_FIELDS)))
-            .thenReturn(false);
-
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .success(true)
@@ -147,11 +143,6 @@ public class UcdProcessReviewerTest {
 
     @Test
     public void review_ucdProcessHasNotAllowedCriteria_certResultUnattested_hasError() {
-        CertificationCriterion a3 = CertificationCriterion.builder().id(3L).number("170.315 (a)(3)").title("a3").build();
-        Mockito.when(criteriaService.get(ArgumentMatchers.eq(a3.getId()))).thenReturn(a3);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a3.getNumber()), ArgumentMatchers.eq(CertificationResultRules.UCD_FIELDS)))
-            .thenReturn(false);
-
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .success(false)
@@ -260,11 +251,6 @@ public class UcdProcessReviewerTest {
 
     @Test
     public void review_ucdProcessWithoutIdIsRemoved_criteriaDoesNotAllowUcd_hasWarningNoErrors() {
-        CertificationCriterion a3 = CertificationCriterion.builder().id(3L).number("170.315 (a)(3)").title("a3").build();
-        Mockito.when(criteriaService.get(ArgumentMatchers.eq(a3.getId()))).thenReturn(a3);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a3.getNumber()), ArgumentMatchers.eq(CertificationResultRules.UCD_FIELDS)))
-            .thenReturn(false);
-
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .success(true)
@@ -313,11 +299,6 @@ public class UcdProcessReviewerTest {
 
     @Test
     public void review_ucdProcessIncludesUnattestedCriteria_hasErrors() {
-        CertificationCriterion a3 = CertificationCriterion.builder().id(3L).number("170.315 (a)(3)").title("a3").build();
-        Mockito.when(criteriaService.get(ArgumentMatchers.eq(a3.getId()))).thenReturn(a3);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a3.getNumber()), ArgumentMatchers.eq(CertificationResultRules.UCD_FIELDS)))
-            .thenReturn(false);
-
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .success(true)
@@ -342,8 +323,6 @@ public class UcdProcessReviewerTest {
 
     @Test
     public void review_ucdProcessesValid_noError() {
-        CertificationCriterion a3 = CertificationCriterion.builder().id(3L).number("170.315 (a)(3)").title("a3").build();
-        Mockito.when(criteriaService.get(ArgumentMatchers.eq(a3.getId()))).thenReturn(a3);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .success(true)
