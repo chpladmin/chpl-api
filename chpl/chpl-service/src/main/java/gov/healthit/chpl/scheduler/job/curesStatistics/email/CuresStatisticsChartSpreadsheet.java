@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -18,6 +20,8 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFChart;
+import org.apache.poi.xssf.usermodel.XSSFDrawing;
 import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,11 +96,13 @@ public class CuresStatisticsChartSpreadsheet {
         criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.G_10, G_10_ROW_IDX));
     }
 
-    public File generateSpreadsheet(Map<CertificationCriterionDTO, CuresCriterionChartStatistic> dataMap) throws IOException {
+    public File generateSpreadsheet(Map<CertificationCriterionDTO, CuresCriterionChartStatistic> dataMap, LocalDate reportDataDate) throws IOException {
         File newFile = copyTemplateFileToTemporaryFile();
         Workbook workbook = getWorkbook(newFile);
 
         populateDataSheet(dataMap, workbook);
+
+        updateChartTitles(workbook, reportDataDate);
 
         XSSFFormulaEvaluator.evaluateAllFormulaCells(workbook);
 
@@ -111,6 +117,24 @@ public class CuresStatisticsChartSpreadsheet {
         return saveFile;
     }
 
+    private void updateChartTitles(Workbook workbook, LocalDate reportDate) {
+        List<Sheet> allChartSheets = new ArrayList<Sheet>();
+        allChartSheets.add(workbook.getSheetAt(2));
+        allChartSheets.add(workbook.getSheetAt(3));
+        allChartSheets.add(workbook.getSheetAt(4));
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy");
+
+        for (Sheet currentSheet : allChartSheets) {
+            XSSFDrawing drawing = (XSSFDrawing) currentSheet.createDrawingPatriarch();
+            for (XSSFChart chart : drawing.getCharts()) {
+                // This goes into the XML that makes up the chart to set the data in the title.  This has potential
+                // to vary from chart to chart, based on formatting.
+                chart.getCTChart().getTitle().getTx().getRich().getPArray(1).getRArray(0).setT(reportDate.format(formatter));
+            }
+        }
+    }
+
     private void populateDataSheet(Map<CertificationCriterionDTO, CuresCriterionChartStatistic> dataMap, Workbook workbook) {
         Sheet sheet = getDataSheet(workbook);
 
@@ -118,8 +142,7 @@ public class CuresStatisticsChartSpreadsheet {
                 .forEach(map ->
                         writeDataForCuresCriterionChartStatistic(
                                 getCuresCriterionChartStatisticByCriterion(
-                                        dataMap, criterionService.get(map.getCriteriaKey())),
-                                        sheet.getRow(map.getRowNumber())));
+                                        dataMap, criterionService.get(map.getCriteriaKey())), sheet.getRow(map.getRowNumber())));
 
         Sheet sortedDataSheet = getDataSortedSheet(workbook);
         CopyAndSortWorksheet.copy(sheet, sortedDataSheet, PERCENT_CURES_COL_IDX, false);
@@ -165,8 +188,6 @@ public class CuresStatisticsChartSpreadsheet {
     }
 
     private InputStream getTemplateAsStream() {
-        //return new File(downloadPath + "/" + template);c
-        //return new File(template);
         return getClass().getClassLoader().getResourceAsStream(template);
     }
 

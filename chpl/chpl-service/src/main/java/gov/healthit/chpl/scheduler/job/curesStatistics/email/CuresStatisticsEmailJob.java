@@ -2,6 +2,7 @@ package gov.healthit.chpl.scheduler.job.curesStatistics.email;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,9 +86,10 @@ public class CuresStatisticsEmailJob  extends QuartzJob {
         }
 
         try {
+            LocalDate reportDate = curesStatisticsChartData.getReportDate();
             attachments.add(
                 curesStatisticsChartSpreadsheet.generateSpreadsheet(
-                        curesStatisticsChartData.getCuresCriterionChartStatistics()));
+                        curesStatisticsChartData.getCuresCriterionChartStatistics(reportDate), reportDate));
         } catch (IOException ex) {
             LOGGER.error("Error creating charts spreadhseet", ex);
         }
