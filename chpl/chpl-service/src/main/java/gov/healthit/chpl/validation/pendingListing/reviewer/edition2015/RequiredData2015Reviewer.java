@@ -472,7 +472,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                         .getTaskParticipants()) {
                                     if (part.getTestParticipant().getEducationTypeId() == null) {
                                         listing.getErrorMessages().add(
-                                                msgUtil.getMessage("listing.criteria.badParticipantEducationLevel",
+                                                msgUtil.getMessage("listing.criteria.invalidParticipantEducationLevel",
                                                         (part.getTestParticipant().getUserEnteredEducationType() == null
                                                         ? "'unknown'"
                                                                 : part.getTestParticipant()
@@ -481,7 +481,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     }
                                     if (part.getTestParticipant().getAgeRangeId() == null) {
                                         listing.getErrorMessages().add(
-                                                msgUtil.getMessage("listing.criteria.badParticipantAgeRange",
+                                                msgUtil.getMessage("listing.criteria.invalidParticipantAgeRange",
                                                         (part.getTestParticipant().getUserEnteredAgeRange() == null
                                                         ? "'unknown'"
                                                                 : part.getTestParticipant().getUserEnteredAgeRange()),
@@ -489,22 +489,22 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     }
                                     if (StringUtils.isEmpty(part.getTestParticipant().getGender())) {
                                         listing.getErrorMessages().add(
-                                                msgUtil.getMessage("listing.criteria.badParticipantGender",
+                                                msgUtil.getMessage("listing.criteria.missingParticipantGender",
                                                         part.getTestParticipant().getUniqueId()));
                                     }
                                     if (StringUtils.isEmpty(part.getTestParticipant().getOccupation())) {
                                         listing.getErrorMessages().add(
-                                                msgUtil.getMessage("listing.criteria.badParticipantOccupation",
+                                                msgUtil.getMessage("listing.criteria.missingParticipantOccupation",
                                                         part.getTestParticipant().getUniqueId()));
                                     }
                                     if (StringUtils.isEmpty(part.getTestParticipant().getAssistiveTechnologyNeeds())) {
                                         listing.getErrorMessages().add(
-                                                msgUtil.getMessage("listing.criteria.badParticipantAssistiveTechnologyNeeds",
+                                                msgUtil.getMessage("listing.criteria.missingParticipantAssistiveTechnologyNeeds",
                                                         part.getTestParticipant().getUniqueId()));
                                     }
                                     if (part.getTestParticipant().getProfessionalExperienceMonths() == null) {
                                         listing.getErrorMessages().add(
-                                                msgUtil.getMessage("listing.criteria.badParticipantProfessionalExperienceMonths",
+                                                msgUtil.getMessage("listing.criteria.missingParticipantProfessionalExperienceMonths",
                                                         part.getTestParticipant().getUniqueId()));
                                     } else {
                                         try {
@@ -530,7 +530,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     }
                                     if (part.getTestParticipant().getProductExperienceMonths() == null) {
                                         listing.getErrorMessages().add(
-                                                msgUtil.getMessage("listing.criteria.badParticipantProductExperienceMonths",
+                                                msgUtil.getMessage("listing.criteria.missingParticipantProductExperienceMonths",
                                                         part.getTestParticipant().getUniqueId()));
                                     } else {
                                         try {
@@ -556,7 +556,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     }
                                     if (part.getTestParticipant().getComputerExperienceMonths() == null) {
                                         listing.getErrorMessages().add(
-                                                msgUtil.getMessage("listing.criteria.badParticipantComputerExperienceMonths",
+                                                msgUtil.getMessage("listing.criteria.missingParticipantComputerExperienceMonths",
                                                         part.getTestParticipant().getUniqueId()));
                                     } else {
                                         try {

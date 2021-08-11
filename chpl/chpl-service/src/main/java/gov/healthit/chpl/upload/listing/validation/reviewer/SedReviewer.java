@@ -11,17 +11,20 @@ public class SedReviewer {
 
     private UcdProcessReviewer ucdProcessReviewer;
     private TestTaskReviewer testTaskReviewer;
-    //TODO: test participants
+    private TestParticipantReviewer testParticipantReviewer;
 
     @Autowired
     public SedReviewer(@Qualifier("listingUploadUcdProcessReviewer") UcdProcessReviewer ucdProcessReviewer,
-            @Qualifier("listingUploadTestTaskReviewer") TestTaskReviewer testTaskReviewer) {
+            @Qualifier("listingUploadTestTaskReviewer") TestTaskReviewer testTaskReviewer,
+            @Qualifier("listingUploadTestParticipantReviewer") TestParticipantReviewer testParticipantReviewer) {
         this.ucdProcessReviewer = ucdProcessReviewer;
         this.testTaskReviewer = testTaskReviewer;
+        this.testParticipantReviewer = testParticipantReviewer;
     }
 
     public void review(CertifiedProductSearchDetails listing) {
         ucdProcessReviewer.review(listing);
         testTaskReviewer.review(listing);
+        testParticipantReviewer.review(listing);
     }
 }
