@@ -233,13 +233,13 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                 }
                                 if (StringUtils.isEmpty(task.getDescription())) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.criteria.badTestDescription",
+                                            msgUtil.getMessage("listing.criteria.missingTestDescription",
                                                     task.getUniqueId(),
                                                     Util.formatCriteriaNumber(cert.getCriterion())));
                                 }
                                 if (task.getTaskSuccessAverage() == null) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.criteria.badTestTaskSuccessAverage",
+                                            msgUtil.getMessage("listing.criteria.missingTestTaskSuccessAverage",
                                                     task.getUniqueId(),
                                                     Util.formatCriteriaNumber(cert.getCriterion())));
                                 } else {
@@ -254,7 +254,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                 }
                                 if (task.getTaskSuccessStddev() == null) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.criteria.badTestTaskSuccessStddev",
+                                            msgUtil.getMessage("listing.criteria.missingTestTaskSuccessStddev",
                                                     task.getUniqueId(),
                                                     Util.formatCriteriaNumber(cert.getCriterion())));
                                 } else {
@@ -269,7 +269,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                 }
                                 if (task.getTaskPathDeviationObserved() == null) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.criteria.badTestTaskPathDeviationObserved",
+                                            msgUtil.getMessage("listing.criteria.missingTestTaskPathDeviationObserved",
                                                     task.getUniqueId(),
                                                     Util.formatCriteriaNumber(cert.getCriterion())));
                                 } else {
@@ -292,7 +292,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                 }
                                 if (task.getTaskPathDeviationOptimal() == null) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.criteria.badTestTaskPathDeviationOptimal",
+                                            msgUtil.getMessage("listing.criteria.missingTestTaskPathDeviationOptimal",
                                                     task.getUniqueId(),
                                                     Util.formatCriteriaNumber(cert.getCriterion())));
                                 } else {
@@ -315,7 +315,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                 }
                                 if (task.getTaskTimeAvg() == null) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.criteria.badTestTaskTimeAvg",
+                                            msgUtil.getMessage("listing.criteria.missingTestTaskTimeAvg",
                                                     task.getUniqueId(),
                                                     Util.formatCriteriaNumber(cert.getCriterion())));
                                 } else {
@@ -337,7 +337,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                 }
                                 if (task.getTaskTimeStddev() == null) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.criteria.badTestTaskTimeStddev",
+                                            msgUtil.getMessage("listing.criteria.missingTestTaskTimeStddev",
                                                     task.getUniqueId(),
                                                     Util.formatCriteriaNumber(cert.getCriterion())));
                                 } else {
@@ -360,7 +360,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                 }
                                 if (task.getTaskTimeDeviationObservedAvg() == null) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.criteria.badTestTaskTimeDeviationObservedAvg",
+                                            msgUtil.getMessage("listing.criteria.missingTestTaskTimeDeviationObservedAvg",
                                                     task.getUniqueId(),
                                                     Util.formatCriteriaNumber(cert.getCriterion())));
                                 } else {
@@ -383,7 +383,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                 }
                                 if (task.getTaskTimeDeviationOptimalAvg() == null) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.criteria.badTestTaskTimeDeviationOptimalAvg",
+                                            msgUtil.getMessage("listing.criteria.missingTestTaskTimeDeviationOptimalAvg",
                                                     task.getUniqueId(),
                                                     Util.formatCriteriaNumber(cert.getCriterion())));
                                 } else {
@@ -406,7 +406,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                 }
                                 if (task.getTaskErrors() == null) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.criteria.badTestTaskErrors",
+                                            msgUtil.getMessage("listing.criteria.missingTestTaskErrors",
                                                     task.getUniqueId(),
                                                     Util.formatCriteriaNumber(cert.getCriterion())));
                                 } else {
@@ -420,7 +420,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                 }
                                 if (task.getTaskErrorsStddev() == null) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.criteria.badTestTaskErrorsStddev",
+                                            msgUtil.getMessage("listing.criteria.missingTestTaskErrorsStddev",
                                                     task.getUniqueId(),
                                                     Util.formatCriteriaNumber(cert.getCriterion())));
                                 } else {
@@ -435,13 +435,13 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                 }
                                 if (StringUtils.isEmpty(task.getTaskRatingScale())) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.criteria.badTestTaskRatingScale",
+                                            msgUtil.getMessage("listing.criteria.missingTestTaskRatingScale",
                                                     task.getUniqueId(),
                                                     Util.formatCriteriaNumber(cert.getCriterion())));
                                 }
                                 if (task.getTaskRating() == null) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.criteria.badTestTaskRating",
+                                            msgUtil.getMessage("listing.criteria.missingTestTaskRating",
                                                     task.getUniqueId(),
                                                     Util.formatCriteriaNumber(cert.getCriterion())));
                                 } else {
@@ -455,7 +455,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                 }
                                 if (task.getTaskRatingStddev() == null) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.criteria.badTestTaskRatingStddev",
+                                            msgUtil.getMessage("listing.criteria.missingTestTaskRatingStddev",
                                                     task.getUniqueId(),
                                                     Util.formatCriteriaNumber(cert.getCriterion())));
                                 } else {

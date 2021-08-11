@@ -91,7 +91,7 @@ public class UcdProcessReviewer extends PermissionBasedReviewer {
         }
     }
 
-    public void reviewCertResultsHaveUcdProcessesIfRequired(CertifiedProductSearchDetails listing) {
+    private void reviewCertResultsHaveUcdProcessesIfRequired(CertifiedProductSearchDetails listing) {
         List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
         ucdProcessCriteria.stream()
             .filter(criterion -> validationUtils.hasCriterion(criterion, attestedCriteria))

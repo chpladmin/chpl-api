@@ -379,7 +379,7 @@ public class TestTask implements Serializable {
             try {
                 taskSuccessAverage = Float.valueOf(value);
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as a float.");
+                LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
     }
@@ -393,7 +393,7 @@ public class TestTask implements Serializable {
             try {
                 taskSuccessStddev = Float.valueOf(value);
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as a float.");
+                LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
     }
@@ -407,7 +407,7 @@ public class TestTask implements Serializable {
             try {
                 taskPathDeviationObserved = Math.round(Float.valueOf(value));
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as a float.");
+                LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
     }
@@ -421,7 +421,7 @@ public class TestTask implements Serializable {
             try {
                 taskPathDeviationOptimal = Math.round(Float.valueOf(value));
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as a float.");
+                LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
     }
@@ -435,7 +435,7 @@ public class TestTask implements Serializable {
             try {
                 taskTimeAvg = (long) Math.round(Float.valueOf(value));
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as a float.");
+                LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
     }
@@ -449,7 +449,7 @@ public class TestTask implements Serializable {
             try {
                 taskTimeStddev = Math.round(Float.valueOf(value));
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as a float.");
+                LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
     }
@@ -463,7 +463,7 @@ public class TestTask implements Serializable {
             try {
                 taskTimeDeviationObservedAvg = Math.round(Float.valueOf(value));
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as a float.");
+                LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
     }
@@ -477,7 +477,7 @@ public class TestTask implements Serializable {
             try {
                 taskTimeDeviationOptimalAvg = Math.round(Float.valueOf(value));
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as a float.");
+                LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
     }
@@ -491,7 +491,7 @@ public class TestTask implements Serializable {
             try {
                 taskErrors = Float.valueOf(value);
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as a float.");
+                LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
     }
@@ -505,7 +505,7 @@ public class TestTask implements Serializable {
             try {
                 taskErrorsStddev = Float.valueOf(value);
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as a float.");
+                LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
     }
@@ -527,7 +527,7 @@ public class TestTask implements Serializable {
             try {
                 taskRating = Float.valueOf(value);
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as a float.");
+                LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
     }
@@ -557,7 +557,7 @@ public class TestTask implements Serializable {
             try {
                 taskRatingStddev = Float.valueOf(value);
             } catch (final Exception e) {
-                LOGGER.error("can't parse " + value + " as a float or integer.");
+                LOGGER.debug("can't parse " + value + " as a float or integer.");
             }
         }
     }
@@ -648,6 +648,14 @@ public class TestTask implements Serializable {
 
     public void setTaskErrorsStddevStr(String taskErrorsStddevStr) {
         this.taskErrorsStddevStr = taskErrorsStddevStr;
+    }
+
+    public String getTaskRatingStr() {
+        return taskRatingStr;
+    }
+
+    public void setTaskRatingStr(String taskRatingStr) {
+        this.taskRatingStr = taskRatingStr;
     }
 
     public String getTaskRatingStddevStr() {
