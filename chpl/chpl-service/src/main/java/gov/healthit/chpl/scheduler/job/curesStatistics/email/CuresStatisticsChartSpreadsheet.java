@@ -62,6 +62,10 @@ public class CuresStatisticsChartSpreadsheet {
     private static final Integer G_9_CURES_ROW_IDX = 17;
     private static final Integer G_10_ROW_IDX = 18;
 
+    private static final Integer USCDI_CRITERIA_SHEET_IDX = 2;
+    private static final Integer CURES_UPDATE_CRITERIA_VERT_SHEET_IDX = 3;
+    private static final Integer CURES_UPDATE_CRITERIA_HORZ_SHEET_IDX = 4;
+
     @Value("${curesStatisticsChartSpreadsheetTemplate}")
     private String template;
 
@@ -119,9 +123,9 @@ public class CuresStatisticsChartSpreadsheet {
 
     private void updateChartTitles(Workbook workbook, LocalDate reportDate) {
         List<Sheet> allChartSheets = new ArrayList<Sheet>();
-        allChartSheets.add(workbook.getSheetAt(2));
-        allChartSheets.add(workbook.getSheetAt(3));
-        allChartSheets.add(workbook.getSheetAt(4));
+        allChartSheets.add(workbook.getSheetAt(USCDI_CRITERIA_SHEET_IDX));
+        allChartSheets.add(workbook.getSheetAt(CURES_UPDATE_CRITERIA_VERT_SHEET_IDX));
+        allChartSheets.add(workbook.getSheetAt(CURES_UPDATE_CRITERIA_HORZ_SHEET_IDX));
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy");
 
@@ -148,15 +152,12 @@ public class CuresStatisticsChartSpreadsheet {
         CopyAndSortWorksheet.copy(sheet, sortedDataSheet, PERCENT_CURES_COL_IDX, false);
     }
 
-
-
     private void writeDataForCuresCriterionChartStatistic(CuresCriterionChartStatistic data, Row row) {
         row.getCell(EXISTING_CERTIFICATION_COL_IDX).setCellValue(data.getExistingCertificationCount());
         row.getCell(NEW_CERTIFICATION_COL_IDX).setCellValue(data.getNewCertificationCount());
         row.getCell(REQUIRES_UPDATE_COL_IDX).setCellValue(data.getRequiresUpdateCount());
         row.getCell(LISTING_COUNT_COL_IDX).setCellValue(data.getListingCount());
     }
-
 
     private CuresCriterionChartStatistic getCuresCriterionChartStatisticByCriterion(Map<CertificationCriterionDTO, CuresCriterionChartStatistic> dataMap, CertificationCriterion criterion) {
         return dataMap.entrySet().stream()
@@ -194,9 +195,7 @@ public class CuresStatisticsChartSpreadsheet {
     static class CopyAndSortWorksheet {
         public static Sheet copy(Sheet origSheet, Sheet newSheet, Integer sortColumnIndex, Boolean includeHeaders) {
             Workbook workbook = origSheet.getWorkbook();
-
             Sheet clonedSheet = workbook.cloneSheet(workbook.getSheetIndex(origSheet));
-
             List<Row> clonedRows = getRows(clonedSheet, includeHeaders);
 
             if (sortColumnIndex != null) {
@@ -204,9 +203,7 @@ public class CuresStatisticsChartSpreadsheet {
             }
 
             writeRowsToSheet(clonedRows, newSheet);
-
             workbook.removeSheetAt(workbook.getSheetIndex(clonedSheet));
-
             return newSheet;
         }
 
@@ -232,43 +229,41 @@ public class CuresStatisticsChartSpreadsheet {
             }
         }
 
-
         private static Row copyRow(Row originalRow, Row newRow) {
             short minColIx = originalRow.getFirstCellNum();
             short maxColIx = originalRow.getLastCellNum();
             for (short colIx = minColIx; colIx < maxColIx; colIx++) {
-              Cell originalCell = originalRow.getCell(colIx);
-              Cell newCell = newRow.createCell(colIx);
+                Cell originalCell = originalRow.getCell(colIx);
+                Cell newCell = newRow.createCell(colIx);
 
-              CellStyle newCellStyle = originalRow.getSheet().getWorkbook().createCellStyle();
-              newCellStyle.cloneStyleFrom(originalCell.getCellStyle());
-              newCell.setCellStyle(newCellStyle);
+                CellStyle newCellStyle = originalRow.getSheet().getWorkbook().createCellStyle();
+                newCellStyle.cloneStyleFrom(originalCell.getCellStyle());
+                newCell.setCellStyle(newCellStyle);
 
-              switch (originalCell.getCellType()) {
-                  case STRING:
-                      newCell.setCellValue(originalCell.getStringCellValue());
-                      break;
-                  case BOOLEAN:
-                      newCell.setCellValue(originalCell.getBooleanCellValue());
-                      break;
-                  case ERROR:
-                      newCell.setCellErrorValue(originalCell.getErrorCellValue());
-                      break;
-                  case FORMULA:
-                      newCell.setCellValue(originalCell.getNumericCellValue());
-                      break;
-                  case NUMERIC:
-                      newCell.setCellValue(originalCell.getNumericCellValue());
-                      break;
-                  case _NONE:
-                      break;
-                  default:
-                      break;
-              }
+                switch (originalCell.getCellType()) {
+                    case STRING:
+                        newCell.setCellValue(originalCell.getStringCellValue());
+                        break;
+                    case BOOLEAN:
+                        newCell.setCellValue(originalCell.getBooleanCellValue());
+                        break;
+                    case ERROR:
+                        newCell.setCellErrorValue(originalCell.getErrorCellValue());
+                        break;
+                    case FORMULA:
+                        newCell.setCellValue(originalCell.getNumericCellValue());
+                        break;
+                    case NUMERIC:
+                        newCell.setCellValue(originalCell.getNumericCellValue());
+                        break;
+                    case _NONE:
+                        break;
+                    default:
+                        break;
+                }
             }
             return newRow;
         }
-
     }
 
     class CriteraToRowMap {

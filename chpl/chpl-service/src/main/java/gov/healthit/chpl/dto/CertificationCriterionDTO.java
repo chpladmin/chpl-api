@@ -5,14 +5,13 @@ import java.util.Date;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
-import gov.healthit.chpl.util.Util;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Builder
-@ToString
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class CertificationCriterionDTO implements Serializable {
@@ -65,115 +64,4 @@ public class CertificationCriterionDTO implements Serializable {
         this.removed = domain.getRemoved();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Boolean getAutomatedMeasureCapable() {
-        return automatedMeasureCapable;
-    }
-
-    public void setAutomatedMeasureCapable(final Boolean automatedMeasureCapable) {
-        this.automatedMeasureCapable = automatedMeasureCapable;
-    }
-
-    public Boolean getAutomatedNumeratorCapable() {
-        return automatedNumeratorCapable;
-    }
-
-    public void setAutomatedNumeratorCapable(final Boolean automatedNumeratorCapable) {
-        this.automatedNumeratorCapable = automatedNumeratorCapable;
-    }
-
-    public Long getCertificationEditionId() {
-        return certificationEditionId;
-    }
-
-    public void setCertificationEditionId(final Long certificationEditionId) {
-        this.certificationEditionId = certificationEditionId;
-    }
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(final String description) {
-        this.description = description;
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(final String number) {
-        this.number = number;
-    }
-
-    public Boolean getRequiresSed() {
-        return requiresSed;
-    }
-
-    public void setRequiresSed(final Boolean requiresSed) {
-        this.requiresSed = requiresSed;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(final String title) {
-        this.title = title;
-    }
-
-    public String getCertificationEdition() {
-        return certificationEdition;
-    }
-
-    public void setCertificationEdition(final String certificationEdition) {
-        this.certificationEdition = certificationEdition;
-    }
-
-    public Boolean getRemoved() {
-        return removed;
-    }
-
-    public void setRemoved(final Boolean removed) {
-        this.removed = removed;
-    }
 }
