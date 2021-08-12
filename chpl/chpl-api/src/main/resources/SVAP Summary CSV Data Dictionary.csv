@@ -11,8 +11,8 @@ Developer Database ID,Yes,<int>,The unique database ID of the developer
 SVAP Notice Current URL,No,<string>,URL indicating the location of the SVAP notice for this listing; required if SVAP Notice Last Update is present
 SVAP Notice Last Update,No,<YYYY-DD-MM>,Date the SVAP Notice URL was last updated; required if SVAP Notice URL is present
 Criterion,No,<string>,Any criterion that has at least one SVAP Value
-Criterion Regulatory Text Citation,No,<string>,Regulatory text citation for the selected SVAP value
-Criterion SVAP Value,No,<string>,SVAP value for listed criterion
-Criterion SVAP Last Update,No,<YYYY-DD-MM>,Date the SVAP was added to the criterion
-Criterion SVAP New-Updated Certification,No,New; Updated,"""New"" indicates the SVAP was added at the same time as the criterion; ""Updated"" indicates the SVAP was added to an existing criterion"
-Criterion SVAP Value Status,No,Current; Replaced,Indicates whether this is a current SVAP value or if it has been replaced by another SVAP for this criterion
+Reg Text Citation,No,<string>,Regulatory text citation for the selected SVAP value
+SVAP Value,No,<string>,SVAP value for listed criterion
+SVAP Last Update,No,<YYYY-DD-MM>,Date the SVAP was added to the criterion
+SVAP Certification,No,New; Updated,"""New"" indicates the SVAP was added at the same time as the criterion; ""Updated"" indicates the SVAP was added to an existing criterion"
+SVAP Value Status,No,Current; Replaced,Indicates whether this is a current SVAP value or if it has been replaced by another SVAP for this criterion

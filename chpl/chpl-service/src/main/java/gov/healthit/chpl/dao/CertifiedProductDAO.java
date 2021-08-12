@@ -334,6 +334,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
                 + "WHERE cr.certifiedProductId = cp.id "
                 + "AND cp.deleted = false "
                 + "AND cr.deleted = false "
+                + "AND cr.success = true "
                 + "AND ((cp.svapNoticeUrl IS NOT NULL AND cp.svapNoticeUrl != '') OR crSvaps.id IS NOT NULL)",
                 Long.class).getResultList();
 

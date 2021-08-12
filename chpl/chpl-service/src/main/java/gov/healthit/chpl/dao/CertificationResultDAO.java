@@ -1230,6 +1230,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
     public void deleteCertificationResultSvap(CertificationResultSvap certificationResultSvapToDelete) {
         CertificationResultSvapEntity entity = getCertificationResultSvapEntityById(certificationResultSvapToDelete.getId());
         entity.setDeleted(true);
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.persist(entity);
         entityManager.flush();
         entityManager.refresh(entity);

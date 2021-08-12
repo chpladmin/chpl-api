@@ -83,17 +83,17 @@ public class SvapActivityPresenter implements AutoCloseable {
                 "ONC-ACB Certification ID",
                 "Certification Date",
                 "Certification Status",
-                "ONC-ACB Name",
+                "ACB Name",
                 "Developer Name",
                 "Developer Database ID",
                 "SVAP Notice Current URL",
                 "SVAP Notice Last Update",
                 "Criterion",
-                "Criterion Regulatory Text Citation",
-                "Criterion SVAP Value",
-                "Criterion SVAP Last Update",
-                "Criterion SVAP New-Updated Certification",
-                "Criterion SVAP Value Status").collect(Collectors.toList());
+                "Reg Text Citation",
+                "SVAP Value",
+                "SVAP Last Update",
+                "SVAP Certification",
+                "SVAP Value Status").collect(Collectors.toList());
     }
 
     @SuppressWarnings("checkstyle:linelength")
