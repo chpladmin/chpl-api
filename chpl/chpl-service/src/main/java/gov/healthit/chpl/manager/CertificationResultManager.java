@@ -194,7 +194,7 @@ private SvapDAO svapDao;
             numChanges += updateTestData(updated, orig.getTestDataUsed(), null);
             numChanges += updateTestProcedures(updated, orig.getTestProcedures(), null);
             numChanges += updateTestFunctionality(updatedListing, updated, orig.getTestFunctionality(), null);
-            numChanges += updateSvap(updated, orig.getSvaps(), updated.getSvaps());
+            numChanges += updateSvap(updated, orig.getSvaps(), null);
 
             if (existingListing.getSed() != null && existingListing.getSed().getUcdProcesses() != null
                     && existingListing.getSed().getUcdProcesses().size() > 0) {
