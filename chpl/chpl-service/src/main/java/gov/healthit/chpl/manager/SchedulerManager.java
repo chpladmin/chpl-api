@@ -110,7 +110,10 @@ public class SchedulerManager extends SecuredManager {
             }
 
             ChplRepeatableTrigger newTrigger = new ChplRepeatableTrigger((CronTrigger) scheduler.getTrigger(triggerId));
-            emailer.sendEmail(newTrigger, trigger.getJob(),  ADDED);
+            try {
+                emailer.sendEmail(newTrigger, trigger.getJob(),  ADDED);
+            } catch (Exception ignore) {
+            }
             return newTrigger;
         } else {
             throw new AccessDeniedException("Can not create this trigger");
@@ -149,7 +152,10 @@ public class SchedulerManager extends SecuredManager {
         TriggerKey triggerKey = triggerKey(triggerName, triggerGroup);
         Trigger trigger = scheduler.getTrigger(triggerKey);
         if (doesUserHavePermissionToTrigger(trigger)) {
-            emailer.sendEmail(getChplTrigger(triggerKey), getJobBasedOnTrigger(trigger), DELETED);
+            try {
+                emailer.sendEmail(getChplTrigger(triggerKey), getJobBasedOnTrigger(trigger), DELETED);
+            } catch (Exception ignore) {
+            }
             scheduler.unscheduleJob(triggerKey);
         } else {
             throw new AccessDeniedException("Can not update this trigger");
@@ -235,7 +241,10 @@ public class SchedulerManager extends SecuredManager {
             scheduler.rescheduleJob(oldTrigger.getKey(), qzTrigger);
 
             ChplRepeatableTrigger newTrigger = getChplTrigger(qzTrigger.getKey());
-            emailer.sendEmail(newTrigger, getJobBasedOnTrigger(qzTrigger), UPDATED);
+            try {
+                emailer.sendEmail(newTrigger, getJobBasedOnTrigger(qzTrigger), UPDATED);
+            } catch (Exception ignore) {
+            }
             return newTrigger;
         } else {
             throw new AccessDeniedException("Can not update this trigger");
