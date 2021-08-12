@@ -1,6 +1,7 @@
 package gov.healthit.chpl.domain.surveillance;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -11,38 +12,44 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.util.LocalDateAdapter;
+import gov.healthit.chpl.util.LocalDateDeserializer;
+import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.Util;
 
 /**
- * Domain object for Nonconformities related to surveillance.
+ * Domain object for Non-conformities related to surveillance.
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SurveillanceNonconformity implements Serializable {
-    private static long serialVersionUID = -1116153210791576784L;
+    private static final long serialVersionUID = -1116153210791576784L;
 
     /**
-     * Nonconformity internal ID
+     * Non-conformity internal ID
      */
     @XmlElement(required = true)
     private Long id;
 
     /**
-     * Type of nonconformity; this is either a certification criteria number or
+     * Type of non-conformity; this is either a certification criteria number or
      * a textual description
      */
     @XmlElement(required = true)
     private String nonconformityType;
 
     /**
-     * If the nonconformity type is a certified capability
+     * If the non-conformity type is a certified capability
      * then this field will have the criterion details (number, title, etc).
      */
     @XmlElement(required = false)
@@ -52,11 +59,19 @@ public class SurveillanceNonconformity implements Serializable {
      * The status of a non-conformity found as a result of a surveillance
      * activity. Allowable values are "Open" or "Closed".
      */
-    @XmlElement(required = true)
+    @XmlTransient
+    @Deprecated
     private SurveillanceNonconformityStatus status;
 
     /**
-     * Date of determination of nonconformity
+     * The status of a non-conformity found as a result of a surveillance
+     * activity. Allowable values are "Open" or "Closed".
+     */
+    @XmlElement(required = true)
+    private String nonconformityStatus;
+
+    /**
+     * Date of determination of non-conformity
      */
     @XmlElement(required = true)
     private Date dateOfDetermination;
@@ -86,13 +101,22 @@ public class SurveillanceNonconformity implements Serializable {
     private Date capMustCompleteDate;
 
     /**
-     * Nonconformity summary
+     * Date non-conformity was closed
+     */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    @XmlElement(required = false, nillable = true)
+    private LocalDate nonconformityCloseDate;
+
+    /**
+     * Non-conformity summary
      */
     @XmlElement(required = false, nillable = true)
     private String summary;
 
     /**
-     * Nonconformity findings.
+     * Non-conformity findings.
      */
     @XmlElement(required = false, nillable = true)
     private String findings;
@@ -110,19 +134,19 @@ public class SurveillanceNonconformity implements Serializable {
     private Integer totalSites;
 
     /**
-     * Developer explanation for the nonconformity
+     * Developer explanation for the non-conformity
      */
     @XmlElement(required = false, nillable = true)
     private String developerExplanation;
 
     /**
-     * Resolution description of the nonconformity
+     * Resolution description of the non-conformity
      */
     @XmlElement(required = false, nillable = true)
     private String resolution;
 
     /**
-     * Any documents associated with the nonconformity
+     * Any documents associated with the non-conformity
      */
     @XmlElementWrapper(name = "documents", nillable = true, required = false)
     @XmlElement(name = "document")
@@ -135,9 +159,9 @@ public class SurveillanceNonconformity implements Serializable {
     private Date lastModifiedDate;
 
     /**
-     * Determines if this nonconformity matches another nonconformity.
+     * Determines if this non-conformity matches another non-conformity.
      * @param anotherNonconformity
-     * @return whether the two nonconformity objects are the same
+     * @return whether the two non-conformity objects are the same
      */
     public boolean matches(SurveillanceNonconformity anotherNonconformity) {
         if (!propertiesMatch(anotherNonconformity)) {
@@ -189,7 +213,7 @@ public class SurveillanceNonconformity implements Serializable {
             }
         }
         //all checks passed and turned out to be matching
-        //so the two nonconformities must be identical
+        //so the two non-conformities must be identical
         return true;
     }
 
@@ -213,13 +237,6 @@ public class SurveillanceNonconformity implements Serializable {
             return false;
         } else if (this.criterion != null && anotherNonconformity.criterion != null
                 && !this.criterion.getId().equals(anotherNonconformity.criterion.getId())) {
-            return false;
-        }
-        if (this.status == null && anotherNonconformity.status != null
-                || this.status != null && anotherNonconformity.status == null) {
-            return false;
-        } else if (this.status != null && anotherNonconformity.status != null
-                && !this.status.matches(anotherNonconformity.status)) {
             return false;
         }
         if (this.dateOfDetermination == null && anotherNonconformity.dateOfDetermination != null
@@ -255,6 +272,13 @@ public class SurveillanceNonconformity implements Serializable {
             return false;
         } else if (this.capMustCompleteDate != null && anotherNonconformity.capMustCompleteDate != null
                 && this.capMustCompleteDate.getTime() != anotherNonconformity.capMustCompleteDate.getTime()) {
+            return false;
+        }
+        if (this.nonconformityCloseDate == null && anotherNonconformity.nonconformityCloseDate != null
+                || this.nonconformityCloseDate != null && anotherNonconformity.nonconformityCloseDate == null) {
+            return false;
+        } else if (this.nonconformityCloseDate != null && anotherNonconformity.nonconformityCloseDate != null
+                && this.nonconformityCloseDate != anotherNonconformity.nonconformityCloseDate) {
             return false;
         }
         if (StringUtils.isEmpty(this.summary) && !StringUtils.isEmpty(anotherNonconformity.summary)
@@ -333,12 +357,22 @@ public class SurveillanceNonconformity implements Serializable {
         this.criterion = criterion;
     }
 
+    @Deprecated
     public SurveillanceNonconformityStatus getStatus() {
         return status;
     }
 
+    @Deprecated
     public void setStatus(SurveillanceNonconformityStatus status) {
         this.status = status;
+    }
+
+    public String getNonconformityStatus() {
+        return nonconformityStatus;
+    }
+
+    public void setNonconformityStatus(String nonconformityStatus) {
+        this.nonconformityStatus = nonconformityStatus;
     }
 
     public Date getDateOfDetermination() {
@@ -379,6 +413,14 @@ public class SurveillanceNonconformity implements Serializable {
 
     public void setCapMustCompleteDate(Date capMustCompleteDate) {
         this.capMustCompleteDate = Util.getNewDate(capMustCompleteDate);
+    }
+
+    public LocalDate getNonconformityCloseDate() {
+        return nonconformityCloseDate;
+    }
+
+    public void setNonconformityCloseDate(LocalDate nonconformityCloseDate) {
+        this.nonconformityCloseDate = nonconformityCloseDate;
     }
 
     public String getSummary() {
