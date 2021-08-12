@@ -221,7 +221,7 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         result.add("CAP Not Closed Rule");
         result.add("Closed CAP with Open Nonconformity Rule");
         result.add("Non-conformity (Y/N)");
-        result.add("Nonconformity Status");
+        result.add("Non-conformity Close Date");
         result.add("Non-conformity Criteria");
         result.add("Date of Determination of Non-Conformity");
         result.add("Corrective Action Plan Approved Date");
@@ -259,7 +259,7 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         result.add(data.getCapNotClosedRule());
         result.add(data.getClosedCapWithOpenNonconformityRule());
         result.add(data.getNonconformity() ? "Y" : "N");
-        result.add(data.getNonconformityStatus());
+        result.add(data.getNonConformityCloseDate() != null ? dateFormatter.format(data.getNonConformityCloseDate()) : "");
         result.add(data.getNonconformityCriteria());
         result.add(data.getDateOfDeterminationOfNonconformity());
         result.add(data.getCorrectiveActionPlanApprovedDate());

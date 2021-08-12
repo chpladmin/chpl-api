@@ -75,7 +75,7 @@ public class SurveillanceUploadJob implements Job {
             LOGGER.fatal("No user could be found in the job data.");
         } else {
             setSecurityContext(user);
-            String fileContents = (String) jobDataMap.getString(FILE_CONTENTS_KEY);
+            String fileContents = jobDataMap.getString(FILE_CONTENTS_KEY);
             Set<String> processingErrors = new LinkedHashSet<String>();
             Set<Surveillance> pendingSurvs = parseSurveillance(fileContents, processingErrors);
             processPendingSurveillance(pendingSurvs, processingErrors);
@@ -111,14 +111,15 @@ public class SurveillanceUploadJob implements Job {
                                     SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading,
                                             rows);
                                     Surveillance pendingSurv = handler.handle();
-                                    List<String> errors = survUploadManager
-                                            .checkUploadedSurveillanceOwnership(pendingSurv);
+                                    List<String> errors = survUploadManager.checkUploadedSurveillanceOwnership(pendingSurv);
+                                    errors.addAll(survUploadManager.checkNonConformityStatusAndCloseDate(pendingSurv));
                                     // Add any errors that were found when getting the Surveillance
                                     errors.addAll(pendingSurv.getErrorMessages());
 
                                     for (String error : errors) {
                                         processingErrors.add(error);
                                     }
+                                    survUploadManager.setNonConformityCloseDate(pendingSurv);
                                     pendingSurvs.add(pendingSurv);
                                 } catch (InvalidArgumentsException ex) {
                                     LOGGER.error(ex.getMessage());

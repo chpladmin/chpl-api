@@ -131,7 +131,7 @@ public class UserManagementController {
                 + "Please click the link below to activate your account: <br/>" + env.getProperty("chplUrlBegin")
                 + "/#/registration/confirm-user/" + invitation.getConfirmToken() + "</p>"
                 + "<p>If you have any issues completing the registration, "
-                + "please visit the <a href=\"https://inquiry.healthit.gov/\">Health IT Feedback and Inquiry Portal</a> and select \"Certified Health IT Product List (CHPL)\" to submit a ticket.</p>"
+                + "please visit the <a href=\"https://inquiry.healthit.gov/support/plugins/servlet/loginfreeRedirMain?portalid=2&request=51\">Health IT Feedback and Inquiry Portal</a> and select \"Certified Health IT Product List (CHPL)\" to submit a ticket.</p>"
                 + "<p>The CHPL Team</p>";
 
         String[] toEmails = {
@@ -302,7 +302,7 @@ public class UserManagementController {
                 + env.getProperty("chplUrlBegin") + "/#/registration/create-user/" + createdInvite.getInviteToken()
                 + "</p>"
                 + "<p>If you have any issues completing the registration, "
-                + "please visit the <a href=\"https://inquiry.healthit.gov/\">Health IT Feedback and Inquiry Portal</a> and select \"Certified Health IT Product List (CHPL)\" to submit a ticket.</p>"
+                + "please visit the <a href=\"https://inquiry.healthit.gov/support/plugins/servlet/loginfreeRedirMain?portalid=2&request=51\">Health IT Feedback and Inquiry Portal</a> and select \"Certified Health IT Product List (CHPL)\" to submit a ticket.</p>"
                 + "<p>Take care,<br/> " + "The CHPL Team</p>";
 
         String[] toEmails = {

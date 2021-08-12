@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity.surveillance;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,9 +20,11 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
-import gov.healthit.chpl.entity.NonconformityStatusEntity;
-import gov.healthit.chpl.util.Util;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "surveillance_nonconformity")
 public class SurveillanceNonconformityEntity {
@@ -44,13 +47,6 @@ public class SurveillanceNonconformityEntity {
     @Column(name = "nonconformity_type")
     private String type;
 
-    @Column(name = "nonconformity_status_id")
-    private Long nonconformityStatusId;
-
-    @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "nonconformity_status_id", insertable = false, updatable = false)
-    private NonconformityStatusEntity nonconformityStatus;
-
     @Column(name = "date_of_determination")
     private Date dateOfDetermination;
 
@@ -65,6 +61,9 @@ public class SurveillanceNonconformityEntity {
 
     @Column(name = "corrective_action_end_date")
     private Date capEndDate;
+
+    @Column(name = "non_conformity_close_date")
+    private LocalDate nonconformityCloseDate;
 
     @Column(name = "summary")
     private String summary;
@@ -102,187 +101,4 @@ public class SurveillanceNonconformityEntity {
     @Where(clause = "deleted <> 'true'")
     private Set<SurveillanceNonconformityDocumentationEntity> documents = new HashSet<SurveillanceNonconformityDocumentationEntity>();
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(final String type) {
-        this.type = type;
-    }
-
-    public Date getDateOfDetermination() {
-        return Util.getNewDate(dateOfDetermination);
-    }
-
-    public void setDateOfDetermination(final Date dateOfDetermination) {
-        this.dateOfDetermination = Util.getNewDate(dateOfDetermination);
-    }
-
-    public Date getCapApproval() {
-        return Util.getNewDate(capApproval);
-    }
-
-    public void setCapApproval(final Date capApproval) {
-        this.capApproval = Util.getNewDate(capApproval);
-    }
-
-    public Date getCapStart() {
-        return Util.getNewDate(capStart);
-    }
-
-    public void setCapStart(final Date capStart) {
-        this.capStart = Util.getNewDate(capStart);
-    }
-
-    public Date getCapMustCompleteDate() {
-        return Util.getNewDate(capMustCompleteDate);
-    }
-
-    public void setCapMustCompleteDate(final Date capMustCompleteDate) {
-        this.capMustCompleteDate = Util.getNewDate(capMustCompleteDate);
-    }
-
-    public Date getCapEndDate() {
-        return Util.getNewDate(capEndDate);
-    }
-
-    public void setCapEndDate(final Date capEndDate) {
-        this.capEndDate = Util.getNewDate(capEndDate);
-    }
-
-    public String getSummary() {
-        return summary;
-    }
-
-    public void setSummary(final String summary) {
-        this.summary = summary;
-    }
-
-    public String getFindings() {
-        return findings;
-    }
-
-    public void setFindings(final String findings) {
-        this.findings = findings;
-    }
-
-    public Integer getSitesPassed() {
-        return sitesPassed;
-    }
-
-    public void setSitesPassed(final Integer sitesPassed) {
-        this.sitesPassed = sitesPassed;
-    }
-
-    public Integer getTotalSites() {
-        return totalSites;
-    }
-
-    public void setTotalSites(final Integer totalSites) {
-        this.totalSites = totalSites;
-    }
-
-    public String getDeveloperExplanation() {
-        return developerExplanation;
-    }
-
-    public void setDeveloperExplanation(final String developerExplanation) {
-        this.developerExplanation = developerExplanation;
-    }
-
-    public String getResolution() {
-        return resolution;
-    }
-
-    public void setResolution(final String resolution) {
-        this.resolution = resolution;
-    }
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Long getSurveillanceRequirementId() {
-        return surveillanceRequirementId;
-    }
-
-    public void setSurveillanceRequirementId(final Long surveillanceRequirementId) {
-        this.surveillanceRequirementId = surveillanceRequirementId;
-    }
-
-    public Long getCertificationCriterionId() {
-        return certificationCriterionId;
-    }
-
-    public void setCertificationCriterionId(final Long certificationCriterionId) {
-        this.certificationCriterionId = certificationCriterionId;
-    }
-
-    public CertificationCriterionEntity getCertificationCriterionEntity() {
-        return certificationCriterionEntity;
-    }
-
-    public void setCertificationCriterionEntity(final CertificationCriterionEntity certificationCriterionEntity) {
-        this.certificationCriterionEntity = certificationCriterionEntity;
-    }
-
-    public Long getNonconformityStatusId() {
-        return nonconformityStatusId;
-    }
-
-    public void setNonconformityStatusId(final Long nonconformityStatusId) {
-        this.nonconformityStatusId = nonconformityStatusId;
-    }
-
-    public NonconformityStatusEntity getNonconformityStatus() {
-        return nonconformityStatus;
-    }
-
-    public void setNonconformityStatus(final NonconformityStatusEntity nonconformityStatus) {
-        this.nonconformityStatus = nonconformityStatus;
-    }
-
-    public Set<SurveillanceNonconformityDocumentationEntity> getDocuments() {
-        return documents;
-    }
-
-    public void setDocuments(final Set<SurveillanceNonconformityDocumentationEntity> documents) {
-        this.documents = documents;
-    }
 }
