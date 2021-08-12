@@ -44,7 +44,6 @@ import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityDocument;
-import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
@@ -402,9 +401,12 @@ public class PendingSurveillanceManager extends SecuredManager {
                         nc.setSitesPassed(pnc.getSitesPassed());
                         nc.setSummary(pnc.getSummary());
                         nc.setTotalSites(pnc.getTotalSites());
-                        SurveillanceNonconformityStatus status = new SurveillanceNonconformityStatus();
-                        status.setName(pnc.getStatus());
-                        nc.setStatus(status);
+                        nc.setNonconformityCloseDate(pnc.getNonconformityCloseDate());
+                        if (nc.getNonconformityCloseDate() == null) {
+                            nc.setNonconformityStatus("Open");
+                        } else {
+                            nc.setNonconformityStatus("Closed");
+                        }
                         req.getNonconformities().add(nc);
                     }
                 }
@@ -592,16 +594,7 @@ public class PendingSurveillanceManager extends SecuredManager {
                         nc.setSummary(ncEntity.getSummary());
                         nc.setTotalSites(ncEntity.getTotalSites());
                         nc.setLastModifiedDate(ncEntity.getLastModifiedDate());
-                        if (ncEntity.getNonconformityStatus() != null) {
-                            SurveillanceNonconformityStatus status = new SurveillanceNonconformityStatus();
-                            status.setId(ncEntity.getNonconformityStatus().getId());
-                            status.setName(ncEntity.getNonconformityStatus().getName());
-                            nc.setStatus(status);
-                        } else {
-                            SurveillanceNonconformityStatus status = new SurveillanceNonconformityStatus();
-                            status.setId(ncEntity.getNonconformityStatusId());
-                            nc.setStatus(status);
-                        }
+                        nc.setNonconformityCloseDate(ncEntity.getNonconformityCloseDate());
                         req.getNonconformities().add(nc);
 
                         if (ncEntity.getDocuments() != null && ncEntity.getDocuments().size() > 0) {
