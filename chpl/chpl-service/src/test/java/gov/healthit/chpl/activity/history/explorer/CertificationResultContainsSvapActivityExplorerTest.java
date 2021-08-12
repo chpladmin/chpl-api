@@ -1,4 +1,4 @@
-package gov.healthit.chpl.activity.history;
+package gov.healthit.chpl.activity.history.explorer;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -20,6 +20,7 @@ import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.activity.history.query.CertificationResultContainsSvapActivityQuery;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -30,9 +31,9 @@ import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.util.JSONUtils;
 
-public class CertificationResultSvapActivityHistoryHelperTest {
+public class CertificationResultContainsSvapActivityExplorerTest {
     private ActivityDAO activityDao;
-    private CertificationResultSvapActivityHistoryHelper historyHelper;
+    private CertificationResultContainsSvapActivityExplorer explorer;
     private SimpleDateFormat formatter;
     @Before
     public void setup() {
@@ -40,7 +41,7 @@ public class CertificationResultSvapActivityHistoryHelperTest {
         formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
 
         activityDao = Mockito.mock(ActivityDAO.class);
-        historyHelper = new CertificationResultSvapActivityHistoryHelper(activityDao);
+        explorer = new CertificationResultContainsSvapActivityExplorer(activityDao);
     }
 
     @Test
@@ -49,10 +50,12 @@ public class CertificationResultSvapActivityHistoryHelperTest {
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(null);
-        ActivityDTO activity = historyHelper.getActivityWhenCertificationResultHasSvap(
-                CertifiedProductSearchDetails.builder().id(1L).build(),
-                CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("").build(),
-                Svap.builder().svapId(1L).regulatoryTextCitation("stuff").build());
+        CertificationResultContainsSvapActivityQuery query = CertificationResultContainsSvapActivityQuery.builder()
+                .listingId(1L)
+                .criterion(CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("").build())
+                .svap(Svap.builder().svapId(1L).regulatoryTextCitation("stuff").build())
+                .build();
+        ActivityDTO activity = explorer.getActivity(query);
         assertNull(activity);
     }
 
@@ -62,10 +65,12 @@ public class CertificationResultSvapActivityHistoryHelperTest {
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(new ArrayList<ActivityDTO>());
-        ActivityDTO activity = historyHelper.getActivityWhenCertificationResultHasSvap(
-                CertifiedProductSearchDetails.builder().id(1L).build(),
-                CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("").build(),
-                Svap.builder().svapId(1L).regulatoryTextCitation("stuff").build());
+        CertificationResultContainsSvapActivityQuery query = CertificationResultContainsSvapActivityQuery.builder()
+                .listingId(1L)
+                .criterion(CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("").build())
+                .svap(Svap.builder().svapId(1L).regulatoryTextCitation("stuff").build())
+                .build();
+        ActivityDTO activity = explorer.getActivity(query);
         assertNull(activity);
     }
 
@@ -93,10 +98,12 @@ public class CertificationResultSvapActivityHistoryHelperTest {
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(Stream.of(activity).collect(Collectors.toList()));
 
-        ActivityDTO foundActivity = historyHelper.getActivityWhenCertificationResultHasSvap(
-                CertifiedProductSearchDetails.builder().id(1L).build(),
-                criterion,
-                Svap.builder().svapId(1L).regulatoryTextCitation("stuff").build());
+        CertificationResultContainsSvapActivityQuery query = CertificationResultContainsSvapActivityQuery.builder()
+                .listingId(1L)
+                .criterion(criterion)
+                .svap(Svap.builder().svapId(1L).regulatoryTextCitation("stuff").build())
+                .build();
+        ActivityDTO foundActivity = explorer.getActivity(query);
         assertNull(foundActivity);
     }
 
@@ -131,10 +138,12 @@ public class CertificationResultSvapActivityHistoryHelperTest {
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(Stream.of(activity).collect(Collectors.toList()));
 
-        ActivityDTO foundActivity = historyHelper.getActivityWhenCertificationResultHasSvap(
-                CertifiedProductSearchDetails.builder().id(1L).build(),
-                a2,
-                svap);
+        CertificationResultContainsSvapActivityQuery query = CertificationResultContainsSvapActivityQuery.builder()
+                .listingId(1L)
+                .criterion(a2)
+                .svap(svap)
+                .build();
+        ActivityDTO foundActivity = explorer.getActivity(query);
         assertNull(foundActivity);
     }
 
@@ -168,10 +177,12 @@ public class CertificationResultSvapActivityHistoryHelperTest {
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(Stream.of(activity).collect(Collectors.toList()));
 
-        ActivityDTO foundActivity = historyHelper.getActivityWhenCertificationResultHasSvap(
-                CertifiedProductSearchDetails.builder().id(1L).build(),
-                a1,
-                svap);
+        CertificationResultContainsSvapActivityQuery query = CertificationResultContainsSvapActivityQuery.builder()
+                .listingId(1L)
+                .criterion(a1)
+                .svap(svap)
+                .build();
+        ActivityDTO foundActivity = explorer.getActivity(query);
         assertNotNull(foundActivity);
         assertEquals(1L, foundActivity.getId());
     }
@@ -222,10 +233,12 @@ public class CertificationResultSvapActivityHistoryHelperTest {
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(Stream.of(confirmActivity, updateActivity).collect(Collectors.toList()));
 
-        ActivityDTO foundActivity = historyHelper.getActivityWhenCertificationResultHasSvap(
-                CertifiedProductSearchDetails.builder().id(1L).build(),
-                a1,
-                svap);
+        CertificationResultContainsSvapActivityQuery query = CertificationResultContainsSvapActivityQuery.builder()
+                .listingId(1L)
+                .criterion(a1)
+                .svap(svap)
+                .build();
+        ActivityDTO foundActivity = explorer.getActivity(query);
         assertNotNull(foundActivity);
         assertEquals(2L, foundActivity.getId());
     }
@@ -276,10 +289,12 @@ public class CertificationResultSvapActivityHistoryHelperTest {
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(Stream.of(confirmActivity, updateActivity).collect(Collectors.toList()));
 
-        ActivityDTO foundActivity = historyHelper.getActivityWhenCertificationResultHasSvap(
-                CertifiedProductSearchDetails.builder().id(1L).build(),
-                a1,
-                svap);
+        CertificationResultContainsSvapActivityQuery query = CertificationResultContainsSvapActivityQuery.builder()
+                .listingId(1L)
+                .criterion(a1)
+                .svap(svap)
+                .build();
+        ActivityDTO foundActivity = explorer.getActivity(query);
         assertNotNull(foundActivity);
         assertEquals(2L, foundActivity.getId());
     }
@@ -350,10 +365,12 @@ public class CertificationResultSvapActivityHistoryHelperTest {
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(Stream.of(confirmActivity, updateActivity1, updateActivity2).collect(Collectors.toList()));
 
-        ActivityDTO foundActivity = historyHelper.getActivityWhenCertificationResultHasSvap(
-                CertifiedProductSearchDetails.builder().id(1L).build(),
-                a1,
-                svap);
+        CertificationResultContainsSvapActivityQuery query = CertificationResultContainsSvapActivityQuery.builder()
+                .listingId(1L)
+                .criterion(a1)
+                .svap(svap)
+                .build();
+        ActivityDTO foundActivity = explorer.getActivity(query);
         assertNotNull(foundActivity);
         assertEquals(3L, foundActivity.getId());
     }

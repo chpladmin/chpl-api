@@ -1,4 +1,4 @@
-package gov.healthit.chpl.activity.history;
+package gov.healthit.chpl.activity.history.explorer;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -20,15 +20,16 @@ import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.activity.history.query.SvapNoticeUrlLastUpdateActivityQuery;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.util.JSONUtils;
 
-public class ListingSvapActivityHistoryHelperTest {
+public class SvapNoticeUrlLastUpdateActivityExplorerTest {
     private ActivityDAO activityDao;
-    private ListingSvapActivityHistoryHelper historyHelper;
+    private SvapNoticeUrlLastUpdateActivityExplorer explorer;
     private SimpleDateFormat formatter;
     @Before
     public void setup() {
@@ -36,7 +37,7 @@ public class ListingSvapActivityHistoryHelperTest {
         formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
 
         activityDao = Mockito.mock(ActivityDAO.class);
-        historyHelper = new ListingSvapActivityHistoryHelper(activityDao);
+        explorer = new SvapNoticeUrlLastUpdateActivityExplorer(activityDao);
     }
 
     @Test
@@ -45,8 +46,12 @@ public class ListingSvapActivityHistoryHelperTest {
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(null);
-        ActivityDTO activity = historyHelper.getActivityForLastUpdateToSvapNoticeUrl(CertifiedProductSearchDetails.builder().id(1L).build());
-        assertNull(activity);
+        SvapNoticeUrlLastUpdateActivityQuery query = SvapNoticeUrlLastUpdateActivityQuery.builder()
+                .listingId(1L)
+                .svapNoticeUrl(null)
+                .build();
+        ActivityDTO foundActivity = explorer.getActivity(query);
+        assertNull(foundActivity);
     }
 
     @Test
@@ -55,8 +60,12 @@ public class ListingSvapActivityHistoryHelperTest {
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(new ArrayList<ActivityDTO>());
-        ActivityDTO activity = historyHelper.getActivityForLastUpdateToSvapNoticeUrl(CertifiedProductSearchDetails.builder().id(1L).build());
-        assertNull(activity);
+        SvapNoticeUrlLastUpdateActivityQuery query = SvapNoticeUrlLastUpdateActivityQuery.builder()
+                .listingId(1L)
+                .svapNoticeUrl(null)
+                .build();
+        ActivityDTO foundActivity = explorer.getActivity(query);
+        assertNull(foundActivity);
     }
 
     @Test
@@ -75,8 +84,11 @@ public class ListingSvapActivityHistoryHelperTest {
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(Stream.of(activity).collect(Collectors.toList()));
-        ActivityDTO foundActivity = historyHelper.getActivityForLastUpdateToSvapNoticeUrl(
-                CertifiedProductSearchDetails.builder().id(1L).svapNoticeUrl(null).build());
+        SvapNoticeUrlLastUpdateActivityQuery query = SvapNoticeUrlLastUpdateActivityQuery.builder()
+                .listingId(1L)
+                .svapNoticeUrl(null)
+                .build();
+        ActivityDTO foundActivity = explorer.getActivity(query);
         assertNull(foundActivity);
     }
 
@@ -96,8 +108,11 @@ public class ListingSvapActivityHistoryHelperTest {
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(Stream.of(activity).collect(Collectors.toList()));
-        ActivityDTO foundActivity = historyHelper.getActivityForLastUpdateToSvapNoticeUrl(
-                CertifiedProductSearchDetails.builder().id(1L).svapNoticeUrl("").build());
+        SvapNoticeUrlLastUpdateActivityQuery query = SvapNoticeUrlLastUpdateActivityQuery.builder()
+                .listingId(1L)
+                .svapNoticeUrl("")
+                .build();
+        ActivityDTO foundActivity = explorer.getActivity(query);
         assertNull(foundActivity);
     }
 
@@ -117,8 +132,11 @@ public class ListingSvapActivityHistoryHelperTest {
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(Stream.of(activity).collect(Collectors.toList()));
-        ActivityDTO foundActivity = historyHelper.getActivityForLastUpdateToSvapNoticeUrl(
-                CertifiedProductSearchDetails.builder().id(1L).svapNoticeUrl("url2").build());
+        SvapNoticeUrlLastUpdateActivityQuery query = SvapNoticeUrlLastUpdateActivityQuery.builder()
+                .listingId(1L)
+                .svapNoticeUrl("url2")
+                .build();
+        ActivityDTO foundActivity = explorer.getActivity(query);
         assertNull(foundActivity);
     }
 
@@ -138,8 +156,11 @@ public class ListingSvapActivityHistoryHelperTest {
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(Stream.of(activity).collect(Collectors.toList()));
-        ActivityDTO foundActivity = historyHelper.getActivityForLastUpdateToSvapNoticeUrl(
-                CertifiedProductSearchDetails.builder().id(1L).svapNoticeUrl("url1").build());
+        SvapNoticeUrlLastUpdateActivityQuery query = SvapNoticeUrlLastUpdateActivityQuery.builder()
+                .listingId(1L)
+                .svapNoticeUrl("url1")
+                .build();
+        ActivityDTO foundActivity = explorer.getActivity(query);
         assertNotNull(foundActivity);
         assertEquals(1L, foundActivity.getId());
     }
@@ -170,8 +191,11 @@ public class ListingSvapActivityHistoryHelperTest {
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(Stream.of(confirmActivity, updateActivity).collect(Collectors.toList()));
-        ActivityDTO foundActivity = historyHelper.getActivityForLastUpdateToSvapNoticeUrl(
-                CertifiedProductSearchDetails.builder().id(1L).svapNoticeUrl("url2").build());
+        SvapNoticeUrlLastUpdateActivityQuery query = SvapNoticeUrlLastUpdateActivityQuery.builder()
+                .listingId(1L)
+                .svapNoticeUrl("url2")
+                .build();
+        ActivityDTO foundActivity = explorer.getActivity(query);
         assertNotNull(foundActivity);
         assertEquals(2L, foundActivity.getId());
     }
@@ -213,8 +237,11 @@ public class ListingSvapActivityHistoryHelperTest {
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(Stream.of(confirmActivity, updateActivity1, updateActivity2).collect(Collectors.toList()));
-        ActivityDTO foundActivity = historyHelper.getActivityForLastUpdateToSvapNoticeUrl(
-                CertifiedProductSearchDetails.builder().id(1L).svapNoticeUrl("url2").build());
+        SvapNoticeUrlLastUpdateActivityQuery query = SvapNoticeUrlLastUpdateActivityQuery.builder()
+                .listingId(1L)
+                .svapNoticeUrl("url2")
+                .build();
+        ActivityDTO foundActivity = explorer.getActivity(query);
         assertNotNull(foundActivity);
         assertEquals(2L, foundActivity.getId());
     }

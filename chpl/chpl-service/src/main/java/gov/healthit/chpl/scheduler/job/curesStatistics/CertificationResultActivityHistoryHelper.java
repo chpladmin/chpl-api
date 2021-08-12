@@ -1,4 +1,4 @@
-package gov.healthit.chpl.activity.history;
+package gov.healthit.chpl.scheduler.job.curesStatistics;
 
 import java.util.Date;
 import java.util.List;
@@ -7,6 +7,7 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import gov.healthit.chpl.activity.history.ListingActivityUtil;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
