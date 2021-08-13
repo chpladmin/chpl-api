@@ -13,6 +13,7 @@ public class ComplaintValidationFactory {
     public static final String ACB_COMPLAINT_ID = "ACB_COMPLAINT_ID";
     public static final String SUMMARY = "SUMMARY";
     public static final String LISTINGS = "LISTINGS";
+    public static final String CLOSED_DATE = "CLOSED_DATE";
 
     public ValidationRule<ComplaintValidationContext> getRule(String name) {
         switch (name) {
@@ -30,6 +31,8 @@ public class ComplaintValidationFactory {
             return new SummaryValidation();
         case LISTINGS:
             return new ComplaintListingValidation();
+        case CLOSED_DATE:
+            return new ClosedDateValidation();
         default:
             return null;
         }

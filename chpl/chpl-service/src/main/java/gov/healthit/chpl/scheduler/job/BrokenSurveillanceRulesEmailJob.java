@@ -35,9 +35,9 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.scheduler.BrokenSurveillanceRulesDAO;
 import gov.healthit.chpl.domain.surveillance.SurveillanceOversightRule;
 import gov.healthit.chpl.dto.scheduler.BrokenSurveillanceRulesDTO;
+import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
-import gov.healthit.chpl.util.EmailBuilder;
 
 public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("brokenSurveillanceRulesEmailJobLogger");
@@ -222,7 +222,7 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         result.add("CAP Not Closed Rule");
         result.add("Closed CAP with Open Nonconformity Rule");
         result.add("Non-conformity (Y/N)");
-        result.add("Nonconformity Status");
+        result.add("Non-conformity Close Date");
         result.add("Non-conformity Criteria");
         result.add("Date of Determination of Non-Conformity");
         result.add("Corrective Action Plan Approved Date");
@@ -260,7 +260,7 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         result.add(data.getCapNotClosedRule());
         result.add(data.getClosedCapWithOpenNonconformityRule());
         result.add(data.getNonconformity() ? "Y" : "N");
-        result.add(data.getNonconformityStatus());
+        result.add(data.getNonConformityCloseDate() != null ? dateFormatter.format(data.getNonConformityCloseDate()) : "");
         result.add(data.getNonconformityCriteria());
         result.add(data.getDateOfDeterminationOfNonconformity());
         result.add(data.getCorrectiveActionPlanApprovedDate());

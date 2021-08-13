@@ -125,7 +125,7 @@ public class ActivityController {
     @Operation(summary = "Get detailed audit data for a specific activity event.",
                 description = "Security Restrictions: ROLE_ADMIN and ROLE_ONC may view any activity event. "
                         + "Other users may be restricted in what they can see.")
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/{id:^-?\\d+$}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public ActivityDetails activityById(@PathVariable("id") final Long id)
             throws EntityRetrievalException, JsonParseException, IOException, ValidationException {
         ActivityDetails details = activityManager.getActivityById(id);

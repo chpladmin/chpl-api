@@ -20,14 +20,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import gov.healthit.chpl.api.dao.ApiKeyDAO;
-import gov.healthit.chpl.api.domain.ApiKeyDTO;
+import gov.healthit.chpl.api.domain.ApiKey;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-/**
- * Interceptor that handles rate limiting of API-Keys.
- * @author blindsey
- *
- */
 @Component
 public class RateLimitingInterceptor extends HandlerInterceptorAdapter implements EnvironmentAware {
 
@@ -77,10 +72,9 @@ public class RateLimitingInterceptor extends HandlerInterceptorAdapter implement
             return false;
         }
 
-        List<ApiKeyDTO> keyDtos = apiKeyDao.findAllUnrestricted();
-
-        for (ApiKeyDTO dto : keyDtos) {
-            unrestrictedApiKeys.add(dto.getApiKey());
+        List<ApiKey> apiKeys = apiKeyDao.findAllUnrestricted();
+        for (ApiKey apiKey : apiKeys) {
+            unrestrictedApiKeys.add(apiKey.getKey());
         }
 
         // let non-API requests pass

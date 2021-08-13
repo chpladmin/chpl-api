@@ -2,9 +2,8 @@ package gov.healthit.chpl.surveillance.report.builder;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -141,17 +140,17 @@ public abstract class ReportInfoWorksheetBuilder {
         row = workbook.getRow(sheet, currRow++);
         cell = workbook.createCell(row, 1);
         //calculate the minimum start date and maximum end dates out of all reports passed in
-        Date minDate = null;
-        Date maxDate = null;
+        LocalDate minDate = null;
+        LocalDate maxDate = null;
         for (QuarterlyReportDTO report : reports) {
-            if (minDate == null || report.getStartDate().getTime() < minDate.getTime()) {
+            if (minDate == null || report.getStartDate().isBefore(minDate)) {
                 minDate = report.getStartDate();
             }
-            if (maxDate == null || report.getEndDate().getTime() > maxDate.getTime()) {
+            if (maxDate == null || report.getEndDate().isAfter(maxDate)) {
                 maxDate = report.getEndDate();
             }
         }
-        DateFormat dateFormatter = new SimpleDateFormat("d MMMM yyyy");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy");
         cell.setCellValue(dateFormatter.format(minDate) + " through " + dateFormatter.format(maxDate));
         pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 1),
                 BorderStyle.MEDIUM, BorderExtent.ALL);

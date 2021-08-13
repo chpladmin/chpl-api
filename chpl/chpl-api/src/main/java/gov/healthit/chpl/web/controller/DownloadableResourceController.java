@@ -2,7 +2,6 @@ package gov.healthit.chpl.web.controller;
 
 import java.io.File;
 import java.io.IOException;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,9 +16,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.SurveillanceManager;
+import gov.healthit.chpl.svap.manager.SvapManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,6 +35,8 @@ public class DownloadableResourceController {
     private Environment env;
     private ErrorMessageUtil msgUtil;
     private SurveillanceManager survManager;
+    private CertifiedProductDAO cpDao;
+    private SvapManager svapManager;
     private FF4j ff4j;
     private FileUtils fileUtils;
 
@@ -43,15 +46,22 @@ public class DownloadableResourceController {
     @Value("${schemaDirectReviewsName}")
     private String directReviewsSchemaName;
 
+    @Value("${schemaSvapReportName}")
+    private String svapReportSchemaName;
+
     @Autowired
     public DownloadableResourceController(Environment env,
             ErrorMessageUtil msgUtil,
             SurveillanceManager survManager,
+            CertifiedProductDAO cpDao,
+            SvapManager svapManager,
             FF4j ff4j,
             FileUtils fileUtils) {
         this.env = env;
         this.msgUtil = msgUtil;
         this.survManager = survManager;
+        this.cpDao = cpDao;
+        this.svapManager = svapManager;
         this.ff4j = ff4j;
         this.fileUtils = fileUtils;
     }
@@ -144,6 +154,44 @@ public class DownloadableResourceController {
         }
     }
 
+    @Operation(summary = "Download a summary of SVAP activity as a CSV.",
+            description = "Once per day, a summary of SVAP activity is written out to a CSV "
+                    + "file on the CHPL servers. This method allows ROLE_ADMIN, ROLE_ONC, "
+                    + "and ROLE_ONC_STAFF users to download that file.")
+    @RequestMapping(value = "/svap/download", method = RequestMethod.GET, produces = "text/csv")
+    public void downloadSvapSummary(
+            @RequestParam(value = "definition", defaultValue = "false", required = false) Boolean isDefinition,
+            HttpServletRequest request, HttpServletResponse response) throws IOException {
+        File downloadFile = null;
+        if (isDefinition != null && isDefinition.booleanValue()) {
+            try {
+                downloadFile = fileUtils.getDownloadFile(svapReportSchemaName);
+            } catch (IOException ex) {
+                response.getWriter().append(ex.getMessage());
+                return;
+            }
+        } else {
+            try {
+                downloadFile = svapManager.getSvapSummaryFile();
+            } catch (IOException ex) {
+                response.getWriter().append(ex.getMessage());
+                return;
+            }
+        }
+
+        if (downloadFile == null) {
+            response.getWriter().append(msgUtil.getMessage("resources.schemaFileGeneralError"));
+            return;
+        }
+        if (!downloadFile.exists()) {
+            response.getWriter().append(msgUtil.getMessage("resources.schemaFileNotFound", downloadFile.getAbsolutePath()));
+            return;
+        }
+
+        LOGGER.info("Streaming " + downloadFile.getName());
+        fileUtils.streamFileAsResponse(downloadFile, "text/csv", response);
+    }
+
     @Operation(summary = "Download all SED details that are certified to 170.315(g)(3).",
             description = "Download a specific file that is generated overnight.")
     @RequestMapping(value = "/certified_products/sed_details", method = RequestMethod.GET)
@@ -152,7 +200,6 @@ public class DownloadableResourceController {
         File downloadFile = fileUtils.getNewestFileMatchingName("^" + env.getProperty("SEDDownloadName") + "-.+\\.csv$");
         fileUtils.streamFileAsResponse(downloadFile, "text/csv", response);
     }
-
 
     @Operation(summary = "Download all direct reviews as a CSV.",
             description = "Once per day, all direct reviews are written out to a CSV "

@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.entity.statistics.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
@@ -38,7 +39,6 @@ import gov.healthit.chpl.scheduler.job.summarystatistics.email.NonConformityStat
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.ProductStatisticsSectionCreator;
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.SurveillanceStatisticsSectionCreator;
 import gov.healthit.chpl.scheduler.job.summarystatistics.pdf.SummaryStatisticsPdf;
-import gov.healthit.chpl.util.EmailBuilder;
 
 public class SummaryStatisticsEmailJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("summaryStatisticsEmailJobLogger");
@@ -140,10 +140,6 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         ret.append("<br/>");
         ret.append("Email attachment has weekly statistics ending " + endDateCal.getTime());
         ret.append("<br/>");
-        ret.append("In the attached CSV file: <br/>");
-        ret.append("<ul>");
-        ret.append("<li>Total Closed Non-Conformities - Some Non-Conformities may be closed that are not counted in these statistics</li>");
-        ret.append("</ul>");
         return ret.toString();
     }
 }

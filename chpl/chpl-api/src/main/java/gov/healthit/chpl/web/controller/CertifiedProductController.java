@@ -52,6 +52,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMetadataDTO;
+import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.exception.DeprecatedUploadTemplateException;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -70,7 +71,6 @@ import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
-import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
@@ -811,8 +811,8 @@ public class CertifiedProductController {
             security = { @SecurityRequirement(name = "api-key"),
                     @SecurityRequirement(name = "bearer-token")}
     )
-    @RequestMapping(value = "/pending/{pcpId}", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+@   RequestMapping(value = "/pending/{pcpId:^-?\\d+$}", method = RequestMethod.GET,
+        produces = "application/json; charset=utf-8")
     public @ResponseBody PendingCertifiedProductDetails getPendingCertifiedProductById(
             @PathVariable("pcpId") Long pcpId) throws EntityRetrievalException, EntityNotFoundException,
     AccessDeniedException, ObjectMissingValidationException {
@@ -835,8 +835,8 @@ public class CertifiedProductController {
             security = { @SecurityRequirement(name = "api-key"),
                     @SecurityRequirement(name = "bearer-token")}
     )
-    @RequestMapping(value = "/pending/{pcpId}", method = RequestMethod.DELETE,
-    produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/pending/{pcpId:^-?\\d+$}", method = RequestMethod.DELETE,
+        produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingCertifiedProduct(@PathVariable("pcpId") Long pcpId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, ObjectMissingValidationException {
@@ -889,8 +889,8 @@ public class CertifiedProductController {
         security = { @SecurityRequirement(name = "api-key"),
                 @SecurityRequirement(name = "bearer-token")}
     )
-    @RequestMapping(value = "/pending/{pcpId}/confirm", method = RequestMethod.POST,
-    produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/pending/{pcpId:^-?\\d+$}/confirm", method = RequestMethod.POST,
+        produces = "application/json; charset=utf-8")
     public ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProduct(
             @RequestBody(required = true) PendingCertifiedProductDetails pendingCp)
                     throws InvalidArgumentsException, ValidationException,
@@ -913,7 +913,7 @@ public class CertifiedProductController {
             security = { @SecurityRequirement(name = "api-key"),
                     @SecurityRequirement(name = "bearer-token")}
     )
-    @RequestMapping(value = "/pending/{pcpId}/beta/confirm", method = RequestMethod.POST,
+    @RequestMapping(value = "/pending/{pcpId:^-?\\d+$}/beta/confirm", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProductRequest(
             @RequestBody(required = true) ConfirmCertifiedProductRequest request)
