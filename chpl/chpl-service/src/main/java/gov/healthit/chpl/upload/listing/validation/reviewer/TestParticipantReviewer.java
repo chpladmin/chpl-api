@@ -71,19 +71,19 @@ public class TestParticipantReviewer {
 
     private void reviewParticipantGender(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
         if (StringUtils.isEmpty(testParticipant.getGender())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingTestParticipantGender"));
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingParticipantGender", formatParticipantRef(testParticipant)));
         }
     }
 
     private void reviewParticipantOccupation(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
         if (StringUtils.isEmpty(testParticipant.getOccupation())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingTestParticipantOccupation"));
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingParticipantOccupation", formatParticipantRef(testParticipant)));
         }
     }
 
     private void reviewParticipantAssistiveTechnologyNeeds(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
         if (StringUtils.isEmpty(testParticipant.getAssistiveTechnologyNeeds())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingParticipantAssistiveTechnologyNeeds"));
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingParticipantAssistiveTechnologyNeeds", formatParticipantRef(testParticipant)));
         }
     }
 
