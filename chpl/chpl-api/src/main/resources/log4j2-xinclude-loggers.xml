@@ -51,6 +51,14 @@
         level="INFO" additivity="false">
         <AppenderRef ref="surveillanceDownloadableResourceCreatorJob" />
     </Logger>
+    <Logger name="directReviewDownloadableResourceCreatorJobLogger" level="INFO"
+        additivity="false">
+        <AppenderRef ref="directReviewDownloadableResourceCreatorJob" />
+    </Logger>
+    <Logger name="svapActivityDownloadableResourceCreatorJobLogger"
+        level="INFO" additivity="false">
+        <AppenderRef ref="svapActivityDownloadableResourceCreatorJob" />
+    </Logger>
     <Logger name="brokenSurveillanceRulesCreatorJobLogger"
         level="INFO" additivity="false">
         <AppenderRef ref="brokenSurveillanceRulesCreatorJob" />
@@ -118,10 +126,6 @@
     <Logger name="developerAccessEmailJobLogger" level="INFO"
         additivity="false">
         <AppenderRef ref="developerAccessEmailJob" />
-    </Logger>
-    <Logger name="directReviewDownloadableResourceCreatorJobLogger" level="INFO"
-        additivity="false">
-        <AppenderRef ref="directReviewDownloadableResourceCreatorJob" />
     </Logger>
     <Logger name="directReviewCacheRefreshJobLogger" level="INFO"
         additivity="false">

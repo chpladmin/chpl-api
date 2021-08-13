@@ -2,13 +2,12 @@ package gov.healthit.chpl.scheduler.job.curesStatistics;
 
 import java.util.Date;
 import java.util.List;
+import javax.transaction.Transactional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import gov.healthit.chpl.activity.history.ListingActivityUtil;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -17,25 +16,26 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
 import lombok.extern.log4j.Log4j2;
 
-@Component
-@Log4j2(topic = "curesStatisticsCreatorJobLogger")
-public class CriterionActivityStatisticsHelper {
+@Service
+@Log4j2
+public class CertificationResultActivityHistoryHelper {
+
     private ActivityDAO activityDao;
-    private ObjectMapper jsonMapper;
+    private ListingActivityUtil activityUtil;
 
     @Autowired
-    public CriterionActivityStatisticsHelper(
-            ActivityDAO activityDao) {
+    public CertificationResultActivityHistoryHelper(ActivityDAO activityDao) {
         this.activityDao = activityDao;
-        jsonMapper = new ObjectMapper();
+        this.activityUtil = new ListingActivityUtil();
     }
 
+    @Transactional
     public boolean didListingRemoveAttestationToCriterionDuringTimeInterval(Long listingId, CertificationCriterion criterion, Date startDate, Date endDate) {
         LOGGER.info("Determining if listing ID " + listingId + " removed attestation for " + criterion.getId() + " between " + startDate + " and " + endDate);
         List<ActivityDTO> listingActivities = activityDao.findByObjectId(listingId, ActivityConcept.CERTIFIED_PRODUCT, startDate, endDate);
         for (ActivityDTO listingActivity : listingActivities) {
-            CertifiedProductSearchDetails originalListingInActivity = getListing(listingActivity.getOriginalData());
-            CertifiedProductSearchDetails updatedListingInActivity = getListing(listingActivity.getNewData());
+            CertifiedProductSearchDetails originalListingInActivity = activityUtil.getListing(listingActivity.getOriginalData());
+            CertifiedProductSearchDetails updatedListingInActivity = activityUtil.getListing(listingActivity.getNewData());
             if (originalListingInActivity != null && updatedListingInActivity != null) {
                 CertificationResult originalListingCertResultForCriterion
                     = originalListingInActivity.getCertificationResults().stream()
@@ -53,18 +53,5 @@ public class CriterionActivityStatisticsHelper {
         }
         LOGGER.info("Listing ID " + listingId + " never unattested to criterion " + criterion.getId() +  " during the dates specified.");
         return false;
-    }
-
-    public CertifiedProductSearchDetails getListing(String listingJson) {
-        CertifiedProductSearchDetails listing = null;
-        if (!StringUtils.isEmpty(listingJson)) {
-            try {
-                listing =
-                    jsonMapper.readValue(listingJson, CertifiedProductSearchDetails.class);
-            } catch (Exception ex) {
-                LOGGER.error("Could not parse activity JSON " + listingJson, ex);
-            }
-        }
-        return listing;
     }
 }

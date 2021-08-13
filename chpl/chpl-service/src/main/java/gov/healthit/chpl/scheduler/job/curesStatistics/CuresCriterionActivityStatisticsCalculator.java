@@ -27,7 +27,7 @@ import lombok.extern.log4j.Log4j2;
 public class CuresCriterionActivityStatisticsCalculator {
     private CertificationCriterionService criteriaService;
     private CertifiedProductDAO certifiedProductDao;
-    private CriterionActivityStatisticsHelper activityStatisticsHelper;
+    private CertificationResultActivityHistoryHelper activityStatisticsHelper;
     private CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO curesCriterionUpgradedWithoutOriginalStatisticDao;
     private Date curesEffectiveDate;
     private Date currentDate;
@@ -35,7 +35,7 @@ public class CuresCriterionActivityStatisticsCalculator {
 
     @Autowired
     public CuresCriterionActivityStatisticsCalculator(CertificationCriterionService criteriaService,
-            CriterionActivityStatisticsHelper activityStatisticsHelper,
+            CertificationResultActivityHistoryHelper activityStatisticsHelper,
             CertifiedProductDAO certifiedProductDao,
             CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO curesCriterionUpgradedWithoutOriginalStatisticDao,
             SpecialProperties specialProperties) {
