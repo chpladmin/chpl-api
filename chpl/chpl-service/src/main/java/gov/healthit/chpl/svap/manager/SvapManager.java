@@ -1,5 +1,7 @@
 package gov.healthit.chpl.svap.manager;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -8,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +25,7 @@ import gov.healthit.chpl.svap.dao.SvapDAO;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.FileUtils;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -29,13 +33,20 @@ import lombok.extern.log4j.Log4j2;
 public class SvapManager {
     private SvapDAO svapDao;
     private CertificationCriterionAttributeDAO certificationCriterionAttributeDAO;
+    private FileUtils fileUtils;
     private ErrorMessageUtil errorMessageUtil;
+    private String svapReportName = null;
 
     @Autowired
-    public SvapManager(SvapDAO svapDao, ErrorMessageUtil errorMessageUtil, CertificationCriterionAttributeDAO certificationCriterionAttributeDAO) {
+    public SvapManager(SvapDAO svapDao, FileUtils fileUtils,
+            ErrorMessageUtil errorMessageUtil,
+            CertificationCriterionAttributeDAO certificationCriterionAttributeDAO,
+            @Value("${svapReportName}") String svapReportName) {
         this.svapDao = svapDao;
+        this.fileUtils = fileUtils;
         this.errorMessageUtil = errorMessageUtil;
         this.certificationCriterionAttributeDAO = certificationCriterionAttributeDAO;
+        this.svapReportName = svapReportName;
     }
 
     public List<SvapCriteriaMap> getAllSvapCriteriaMaps() throws EntityRetrievalException {
@@ -50,6 +61,12 @@ public class SvapManager {
     @Transactional
     public List<Svap> getAll() {
         return svapDao.getAll();
+    }
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SVAP, "
+            + "T(gov.healthit.chpl.permissions.domains.SvapDomainPermissions).SUMMARY_DOWNLOAD)")
+    public File getSvapSummaryFile() throws IOException {
+        return fileUtils.getNewestFileMatchingName("^" + svapReportName + "-.+\\.csv$");
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SVAP, "

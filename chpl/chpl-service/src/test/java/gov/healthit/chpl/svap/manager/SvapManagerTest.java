@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import gov.healthit.chpl.dao.CertificationCriterionAttributeDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -18,6 +19,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.svap.dao.SvapDAO;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.FileUtils;
 
 public class SvapManagerTest {
     private SvapDAO svapDao;
@@ -30,7 +32,9 @@ public class SvapManagerTest {
         svapDao = Mockito.mock(SvapDAO.class);
         certificationCriterionAttributeDAO = Mockito.mock(CertificationCriterionAttributeDAO.class);
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
-        svapManager = new SvapManager(svapDao, errorMessageUtil, certificationCriterionAttributeDAO);
+        FileUtils fileUtils = new FileUtils(Mockito.mock(Environment.class), errorMessageUtil);
+        svapManager = new SvapManager(svapDao, fileUtils,
+                errorMessageUtil, certificationCriterionAttributeDAO, "report");
     }
 
     @Test
