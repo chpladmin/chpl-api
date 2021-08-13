@@ -101,15 +101,14 @@ public class UcdProcessReviewerTest {
                         .criterion(a3)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .ucdProcess(UcdProcess.builder()
-                                .id(1L)
-                                .criterion(a3)
-                                .name("UCD Name")
-                                .details("some details")
-                                .build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+                .id(1L)
+                .criterion(a3)
+                .name("UCD Name")
+                .details("some details")
+                .build());
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -125,15 +124,14 @@ public class UcdProcessReviewerTest {
                         .criterion(a3)
                         .sed(false)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .ucdProcess(UcdProcess.builder()
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
                                 .id(1L)
                                 .criterion(a3)
                                 .name("UCD Name")
                                 .details("some details")
-                                .build())
-                        .build())
-                .build();
+                                .build());
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -149,15 +147,14 @@ public class UcdProcessReviewerTest {
                         .criterion(a3)
                         .sed(false)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .ucdProcess(UcdProcess.builder()
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
                                 .id(1L)
                                 .criterion(a3)
                                 .name("UCD Name")
                                 .details("some details")
-                                .build())
-                        .build())
-                .build();
+                                .build());
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -282,14 +279,13 @@ public class UcdProcessReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .ucdProcess(UcdProcess.builder()
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
                             .id(1L)
                             .name("UCD Name")
                             .details("some details")
-                            .build())
-                        .build())
-                .build();
+                            .build());
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -310,15 +306,14 @@ public class UcdProcessReviewerTest {
                         .criterion(a1)
                         .sed(false)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .ucdProcess(UcdProcess.builder()
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
                             .id(1L)
                             .criterion(a1)
                             .name("UCD Name")
                             .details("some details")
-                            .build())
-                        .build())
-                .build();
+                            .build());
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -344,22 +339,21 @@ public class UcdProcessReviewerTest {
                         .criterion(a3)
                         .sed(false)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .ucdProcess(UcdProcess.builder()
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
                                 .id(1L)
                                 .criterion(a1)
                                 .criterion(a2)
                                 .name("UCD Name 1")
                                 .details("some details")
-                                .build())
-                        .ucdProcess(UcdProcess.builder()
+                                .build());
+        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
                                 .id(2L)
                                 .criterion(a2)
                                 .name("UCD Name 2")
                                 .details("some details")
-                                .build())
-                        .build())
-                .build();
+                                .build());
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());

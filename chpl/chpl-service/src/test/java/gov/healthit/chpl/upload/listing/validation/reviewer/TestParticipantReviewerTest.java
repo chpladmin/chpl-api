@@ -36,8 +36,7 @@ public class TestParticipantReviewerTest {
     @Test
     public void review_nullTestTasksNoCertificationResults_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         listing.getSed().setTestTasks(null);
         reviewer.review(listing);
@@ -49,8 +48,7 @@ public class TestParticipantReviewerTest {
     @Test
     public void review_emptyTestTasksNoCertificationResults_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         reviewer.review(listing);
 
@@ -61,10 +59,9 @@ public class TestParticipantReviewerTest {
     @Test
     public void review_nullTestParticipantsNoCertificationResults_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder().build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(null);
         reviewer.review(listing);
 
@@ -75,9 +72,7 @@ public class TestParticipantReviewerTest {
     @Test
     public void review_emptyTestParticipantsNoCertificationResults_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder().build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         reviewer.review(listing);
 
@@ -91,12 +86,10 @@ public class TestParticipantReviewerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.missingTestParticipantUniqueId")))
             .thenReturn(errMsg);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .testParticipant(buildValidTestParticipant(null))
-                                .build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(buildValidTestParticipant(null)).collect(Collectors.toSet()));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -111,11 +104,10 @@ public class TestParticipantReviewerTest {
             .thenReturn(errMsg);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .testParticipant(buildValidTestParticipant(""))
-                                .build())
                         .build())
                 .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(buildValidTestParticipant("")).collect(Collectors.toSet()));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -132,14 +124,13 @@ public class TestParticipantReviewerTest {
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .build())
                         .build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                     .ageRange(null)
                     .ageRangeId(null)
                 .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -156,15 +147,13 @@ public class TestParticipantReviewerTest {
             .thenAnswer(i -> String.format(errMsg, i.getArgument(1), ""));
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                     .ageRange("")
                     .ageRangeId(null)
                 .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -181,15 +170,13 @@ public class TestParticipantReviewerTest {
             .thenAnswer(i -> String.format(errMsg, i.getArgument(1), i.getArgument(2)));
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                     .ageRange("notanagerange")
                     .ageRangeId(null)
                 .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -206,15 +193,13 @@ public class TestParticipantReviewerTest {
             .thenAnswer(i -> String.format(errMsg, i.getArgument(1), ""));
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                     .educationTypeName(null)
                     .educationTypeId(null)
                 .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -231,15 +216,13 @@ public class TestParticipantReviewerTest {
             .thenAnswer(i -> String.format(errMsg, i.getArgument(1), ""));
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                     .educationTypeName("")
                     .educationTypeId(null)
                 .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -256,15 +239,13 @@ public class TestParticipantReviewerTest {
             .thenAnswer(i -> String.format(errMsg, i.getArgument(1), i.getArgument(2)));
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                 .educationTypeName("notaneducation")
                 .educationTypeId(null)
             .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -280,14 +261,12 @@ public class TestParticipantReviewerTest {
                 ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(errMsg, i.getArgument(1), ""));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                 .gender(null)
             .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -304,14 +283,12 @@ public class TestParticipantReviewerTest {
                 ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(errMsg, i.getArgument(1), ""));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                 .gender("")
             .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -327,14 +304,12 @@ public class TestParticipantReviewerTest {
                 ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(errMsg, i.getArgument(1), ""));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                 .occupation(null)
             .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -350,14 +325,12 @@ public class TestParticipantReviewerTest {
                 ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(errMsg, i.getArgument(1), ""));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                 .occupation("")
             .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -373,14 +346,12 @@ public class TestParticipantReviewerTest {
                 ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(errMsg, i.getArgument(1), ""));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                 .assistiveTechnologyNeeds(null)
             .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -396,14 +367,12 @@ public class TestParticipantReviewerTest {
                 ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(errMsg, i.getArgument(1), ""));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                 .assistiveTechnologyNeeds("")
             .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -420,15 +389,13 @@ public class TestParticipantReviewerTest {
             .thenAnswer(i -> String.format(errMsg, i.getArgument(1), ""));
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                 .professionalExperienceMonths(null)
                 .professionalExperienceMonthsStr(null)
             .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -445,15 +412,13 @@ public class TestParticipantReviewerTest {
             .thenAnswer(i -> String.format(errMsg, i.getArgument(1), ""));
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                 .professionalExperienceMonths(null)
                 .professionalExperienceMonthsStr("")
             .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -470,15 +435,13 @@ public class TestParticipantReviewerTest {
             .thenAnswer(i -> String.format(errMsg, i.getArgument(1), i.getArgument(2)));
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                 .professionalExperienceMonths(null)
                 .professionalExperienceMonthsStr("K")
             .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -490,15 +453,13 @@ public class TestParticipantReviewerTest {
     @Test
     public void review_RoundedProfessionalExperieneMonths_NaNProfessionalExperienceMonthsStr_hasWarning() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                 .professionalExperienceMonths(1)
                 .professionalExperienceMonthsStr("1.2")
             .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -515,15 +476,13 @@ public class TestParticipantReviewerTest {
             .thenAnswer(i -> String.format(errMsg, i.getArgument(1), ""));
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                 .productExperienceMonths(null)
                 .productExperienceMonthsStr(null)
             .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -540,15 +499,13 @@ public class TestParticipantReviewerTest {
             .thenAnswer(i -> String.format(errMsg, i.getArgument(1), ""));
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                 .productExperienceMonths(null)
                 .productExperienceMonthsStr("")
             .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -565,15 +522,13 @@ public class TestParticipantReviewerTest {
             .thenAnswer(i -> String.format(errMsg, i.getArgument(1), i.getArgument(2)));
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                 .productExperienceMonths(null)
                 .productExperienceMonthsStr("K")
             .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -585,15 +540,13 @@ public class TestParticipantReviewerTest {
     @Test
     public void review_RoundedProductExperieneMonths_NaNProductExperienceMonthsStr_hasWarning() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                 .productExperienceMonths(1)
                 .productExperienceMonthsStr("1.2")
             .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -610,15 +563,13 @@ public class TestParticipantReviewerTest {
             .thenAnswer(i -> String.format(errMsg, i.getArgument(1), ""));
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                 .computerExperienceMonths(null)
                 .computerExperienceMonthsStr(null)
             .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -635,15 +586,13 @@ public class TestParticipantReviewerTest {
             .thenAnswer(i -> String.format(errMsg, i.getArgument(1), ""));
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                 .computerExperienceMonths(null)
                 .computerExperienceMonthsStr("")
             .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -660,15 +609,13 @@ public class TestParticipantReviewerTest {
             .thenAnswer(i -> String.format(errMsg, i.getArgument(1), i.getArgument(2)));
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                 .computerExperienceMonths(null)
                 .computerExperienceMonthsStr("K")
             .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -680,15 +627,13 @@ public class TestParticipantReviewerTest {
     @Test
     public void review_RoundedComputerExperieneMonths_NaNComputerExperienceMonthsStr_hasWarning() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                 .computerExperienceMonths(1)
                 .computerExperienceMonthsStr("1.2")
             .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -700,13 +645,11 @@ public class TestParticipantReviewerTest {
     @Test
     public void review_testParticipantsValid_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(TestTask.builder()
-                                .testParticipant(buildValidTestParticipant("TP1"))
-                                .testParticipant(buildValidTestParticipant("TP2"))
-                                .build())
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(buildValidTestParticipant("TP1"), buildValidTestParticipant("TP2")).collect(Collectors.toSet()));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());

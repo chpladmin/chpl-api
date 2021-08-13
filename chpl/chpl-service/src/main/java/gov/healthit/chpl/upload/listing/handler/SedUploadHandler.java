@@ -238,7 +238,7 @@ public class SedUploadHandler {
                 .uniqueId(testTaskId)
                 .testParticipants(participantIds.stream()
                         .map(participantId -> TestParticipant.builder().uniqueId(participantId).build())
-                        .collect(Collectors.toList()))
+                        .collect(Collectors.toSet()))
                 .build();
         certResultTasks.add(certResultTask);
     }

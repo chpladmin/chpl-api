@@ -75,8 +75,7 @@ public class TestTaskReviewerTest {
     @Test
     public void review_nullTestTasksNoCertificationResults_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         listing.getSed().setTestTasks(null);
         reviewer.review(listing);
@@ -88,8 +87,7 @@ public class TestTaskReviewerTest {
     @Test
     public void review_emptyTestTasksNoCertificationResults_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
         reviewer.review(listing);
 
@@ -105,10 +103,10 @@ public class TestTaskReviewerTest {
                         .criterion(a3)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a3).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a3).collect(Collectors.toList())));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -124,10 +122,10 @@ public class TestTaskReviewerTest {
                         .criterion(a3)
                         .sed(false)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a3).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a3).collect(Collectors.toList())));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -143,10 +141,10 @@ public class TestTaskReviewerTest {
                         .criterion(a3)
                         .sed(false)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a3).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a3).collect(Collectors.toList())));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -167,10 +165,10 @@ public class TestTaskReviewerTest {
                         .criterion(a2)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a2).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a2).collect(Collectors.toList())));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -191,10 +189,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(false)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -215,10 +213,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask(null, Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask(null, Stream.of(a1).collect(Collectors.toList())));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -239,10 +237,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask(null, Stream.of(a1).collect(Collectors.toList())));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -258,10 +256,10 @@ public class TestTaskReviewerTest {
             .thenAnswer(i -> String.format(errMsg, i.getArgument(1), ""));
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", new ArrayList<CertificationCriterion>()))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setCriteria(null);
         reviewer.review(listing);
 
@@ -278,10 +276,10 @@ public class TestTaskReviewerTest {
             .thenAnswer(i -> String.format(errMsg, i.getArgument(1), ""));
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", new ArrayList<CertificationCriterion>()))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", new ArrayList<CertificationCriterion>()));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -302,10 +300,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildTestTask("tt1", Stream.of(a1).collect(Collectors.toList()), 9))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildTestTask("tt1", Stream.of(a1).collect(Collectors.toList()), 9));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -321,10 +319,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildTestTask("tt1", Stream.of(a1).collect(Collectors.toList()), 10))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildTestTask("tt1", Stream.of(a1).collect(Collectors.toList()), 10));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -339,10 +337,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildTestTask("tt1", Stream.of(a1).collect(Collectors.toList()), 11))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildTestTask("tt1", Stream.of(a1).collect(Collectors.toList()), 11));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -362,10 +360,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setDescription(null);
         reviewer.review(listing);
 
@@ -387,10 +385,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setDescription("");
         reviewer.review(listing);
 
@@ -412,10 +410,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskSuccessAverage(null)
             .taskSuccessAverageStr(null)
@@ -441,10 +439,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskSuccessAverage(null)
             .taskSuccessAverageStr("")
@@ -470,10 +468,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskSuccessAverage(null)
             .taskSuccessAverageStr("K")
@@ -499,10 +497,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskSuccessStddev(null)
             .taskSuccessStddevStr(null)
@@ -528,10 +526,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskSuccessStddev(null)
             .taskSuccessStddevStr("")
@@ -557,10 +555,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskSuccessStddev(null)
             .taskSuccessStddevStr("K")
@@ -586,10 +584,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskPathDeviationObserved(null)
             .taskPathDeviationObservedStr(null)
@@ -615,10 +613,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskPathDeviationObserved(null)
             .taskPathDeviationObservedStr("")
@@ -644,10 +642,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskPathDeviationObserved(null)
             .taskPathDeviationObservedStr("K")
@@ -668,10 +666,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskPathDeviationObserved(1)
             .taskPathDeviationObservedStr("1.2")
@@ -697,10 +695,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskPathDeviationOptimal(null)
             .taskPathDeviationOptimalStr(null)
@@ -726,10 +724,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskPathDeviationOptimal(null)
             .taskPathDeviationOptimalStr("")
@@ -755,10 +753,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskPathDeviationOptimal(null)
             .taskPathDeviationOptimalStr("K")
@@ -779,10 +777,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskPathDeviationOptimal(1)
             .taskPathDeviationOptimalStr("1.2")
@@ -808,10 +806,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskTimeAvg(null)
             .taskTimeAvgStr(null)
@@ -837,10 +835,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskTimeAvg(null)
             .taskTimeAvgStr("")
@@ -866,10 +864,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskTimeAvg(null)
             .taskTimeAvgStr("K")
@@ -890,10 +888,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskTimeAvg(1L)
             .taskTimeAvgStr("1.2")
@@ -919,10 +917,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskTimeStddev(null)
             .taskTimeStddevStr(null)
@@ -948,10 +946,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskTimeStddev(null)
             .taskTimeStddevStr("")
@@ -977,10 +975,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskTimeStddev(null)
             .taskTimeStddevStr("K")
@@ -1001,10 +999,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskTimeStddev(1)
             .taskTimeStddevStr("1.2")
@@ -1030,10 +1028,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskTimeDeviationObservedAvg(null)
             .taskTimeDeviationObservedAvgStr(null)
@@ -1059,10 +1057,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskTimeDeviationObservedAvg(null)
             .taskTimeDeviationObservedAvgStr("")
@@ -1088,10 +1086,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskTimeDeviationObservedAvg(null)
             .taskTimeDeviationObservedAvgStr("K")
@@ -1112,10 +1110,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskTimeDeviationObservedAvg(1)
             .taskTimeDeviationObservedAvgStr("1.2")
@@ -1141,10 +1139,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskTimeDeviationOptimalAvg(null)
             .taskTimeDeviationOptimalAvgStr(null)
@@ -1170,10 +1168,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskTimeDeviationOptimalAvg(null)
             .taskTimeDeviationOptimalAvgStr("")
@@ -1199,10 +1197,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskTimeDeviationOptimalAvg(null)
             .taskTimeDeviationOptimalAvgStr("K")
@@ -1223,10 +1221,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskTimeDeviationOptimalAvg(1)
             .taskTimeDeviationOptimalAvgStr("1.2")
@@ -1252,10 +1250,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskErrors(null)
             .taskErrorsStr(null)
@@ -1281,10 +1279,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskErrors(null)
             .taskErrorsStr("")
@@ -1310,10 +1308,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskErrors(null)
             .taskErrorsStr("K")
@@ -1339,10 +1337,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskErrorsStddev(null)
             .taskErrorsStddevStr(null)
@@ -1368,10 +1366,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskErrorsStddev(null)
             .taskErrorsStddevStr("")
@@ -1397,10 +1395,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskErrorsStddev(null)
             .taskErrorsStddevStr("K")
@@ -1426,10 +1424,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTaskRatingScale(null);
         reviewer.review(listing);
 
@@ -1451,10 +1449,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTaskRatingScale("");
         reviewer.review(listing);
 
@@ -1476,10 +1474,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskRating(null)
             .taskRatingStr(null)
@@ -1505,10 +1503,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskRating(null)
             .taskRatingStr("")
@@ -1534,10 +1532,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskRating(null)
             .taskRatingStr("K")
@@ -1563,10 +1561,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskRatingStddev(null)
             .taskRatingStddevStr(null)
@@ -1592,10 +1590,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskRatingStddev(null)
             .taskRatingStddevStr("")
@@ -1621,10 +1619,10 @@ public class TestTaskReviewerTest {
                         .criterion(a1)
                         .sed(true)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
         TestTask modifiedTestTask = listing.getSed().getTestTasks().get(0).toBuilder()
             .taskRatingStddev(null)
             .taskRatingStddevStr("K")
@@ -1655,11 +1653,12 @@ public class TestTaskReviewerTest {
                         .criterion(a3)
                         .sed(false)
                         .build())
-                .sed(CertifiedProductSed.builder()
-                        .testTask(buildValidTestTask("tt1", Stream.of(a1, a2).collect(Collectors.toList())))
-                        .testTask(buildValidTestTask("tt2", Stream.of(a2).collect(Collectors.toList())))
-                        .build())
+                .sed(CertifiedProductSed.builder().build())
                 .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1, a2).collect(Collectors.toList())));
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt2", Stream.of(a2).collect(Collectors.toList())));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -1671,7 +1670,7 @@ public class TestTaskReviewerTest {
     }
 
     private TestTask buildTestTask(String uniqueId, List<CertificationCriterion> criteria, int tpCount) {
-        return TestTask.builder()
+        TestTask tt = TestTask.builder()
                 .uniqueId(uniqueId)
                 .criteria(criteria)
                 .description("desc")
@@ -1700,8 +1699,10 @@ public class TestTaskReviewerTest {
                 .taskTimeDeviationOptimalAvgStr("11")
                 .taskTimeStddev(12)
                 .taskTimeStddevStr("12")
-                .testParticipants(createTestParticipantCollection(tpCount))
         .build();
+        tt.getTestParticipants().addAll(createTestParticipantCollection(tpCount));
+
+        return tt;
     }
 
     private List<TestParticipant> createTestParticipantCollection(int size) {

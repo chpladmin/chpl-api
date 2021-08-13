@@ -1,7 +1,7 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -229,13 +229,13 @@ public class TestTask implements Serializable {
      */
     @XmlElementWrapper(name = "participants", required = true)
     @XmlElement(name = "participant")
-    @Singular
-    private Set<TestParticipant> testParticipants;
+    @Builder.Default
+    private Set<TestParticipant> testParticipants = new LinkedHashSet<TestParticipant>();
 
     public TestTask() {
         super();
-        testParticipants = new HashSet<TestParticipant>();
-        criteria = new HashSet<CertificationCriterion>();
+        testParticipants = new LinkedHashSet<TestParticipant>();
+        criteria = new LinkedHashSet<CertificationCriterion>();
     }
 
     public TestTask(final TestTaskDTO dto) {

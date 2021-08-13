@@ -14,7 +14,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Singular;
 
 /**
  * Safety Enhanced Design data that is relied upon by this Health IT Module to
@@ -37,16 +36,16 @@ public class CertifiedProductSed implements Serializable {
      */
     @XmlElementWrapper(name = "ucdProcesses", nillable = true, required = false)
     @XmlElement(name = "ucdProcess")
-    @Singular
-    private List<UcdProcess> ucdProcesses;
+    @Builder.Default
+    private List<UcdProcess> ucdProcesses = new ArrayList<UcdProcess>();
 
     /**
      * Tasks used for SED testing
      */
     @XmlElementWrapper(name = "testTasks", nillable = true, required = false)
     @XmlElement(name = "testTask")
-    @Singular
-    private List<TestTask> testTasks;
+    @Builder.Default
+    private List<TestTask> testTasks = new ArrayList<TestTask>();
 
     public CertifiedProductSed() {
         super();
