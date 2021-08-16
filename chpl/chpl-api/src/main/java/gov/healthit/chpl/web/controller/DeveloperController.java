@@ -58,8 +58,10 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.service.DirectReviewCachingService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 
@@ -92,7 +94,8 @@ public class DeveloperController {
 
     @Operation(summary = "List all developers in the system.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, and ROLE_ACB can see deleted "
-                    + "developers.  Everyone else can only see active developers.")
+                    + "developers.  Everyone else can only see active developers.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody DeveloperResults getDevelopers(
             @RequestParam(value = "showDeleted", required = false, defaultValue = "false") boolean showDeleted) {
@@ -116,7 +119,8 @@ public class DeveloperController {
         return results;
     }
 
-    @Operation(summary = "Get information about a specific developer.", description = "")
+    @Operation(summary = "Get information about a specific developer.", description = "",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/{developerId}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody Developer getDeveloperById(@PathVariable("developerId") Long developerId)
@@ -131,7 +135,8 @@ public class DeveloperController {
     }
 
     @Operation(summary = "Get all hierarchical information about a specific developer. "
-            + "Includes associated products, versions, and basic listing data.", description = "")
+                + "Includes associated products, versions, and basic listing data.", description = "",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/{developerId}/hierarchy", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody DeveloperTree getDeveloperHierarchyById(@PathVariable("developerId") Long developerId)
@@ -139,10 +144,10 @@ public class DeveloperController {
         return developerManager.getHierarchyById(developerId);
     }
 
-    @Operation(summary = "Get all direct reviews for a specified developer.")
+    @Operation(summary = "Get all direct reviews for a specified developer.",
+        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/{developerId:^-?\\d+$}/direct-reviews",
-    method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ResponseEntity<List<DirectReview>> getDirectReviews(
             @PathVariable("developerId") Long developerId) throws JiraRequestFailedException {
         return new ResponseEntity<List<DirectReview>>(
@@ -150,9 +155,11 @@ public class DeveloperController {
     }
 
     @Operation(summary = "Update a developer.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB")
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/{developerId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     public ResponseEntity<Developer> update(@PathVariable("developerId") Long developerId,
             @RequestBody(required = true) Developer developerToUpdate)
             throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException,
@@ -175,7 +182,9 @@ public class DeveloperController {
                     + "meaning that a new developer is created with all of the information provided (name, address, "
                     + "etc.) and all of the products previously assigned to the specified developerId's are "
                     + "reassigned to the newly created developer. The old developers are then deleted.\n"
-                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB if all developers involved are active.")
+                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB if all developers involved are active.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/merge", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = "application/json; charset=utf-8")
     public ChplOneTimeTrigger merge(@RequestBody(required = true) MergeDevelopersRequest mergeRequest)
@@ -192,7 +201,9 @@ public class DeveloperController {
     @Operation(
             summary = "Split a developer - some products stay with the existing developer and some products are moved "
                     + "to a new developer.",
-                    description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB")
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/{developerId}/split", method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public ChplOneTimeTrigger splitDeveloper(@PathVariable("developerId") Long developerId,
@@ -236,7 +247,9 @@ public class DeveloperController {
             description = "The logged in user must have ROLE_ADMIN, ROLE_ONC, ROLE_ACB, or ROLE_DEVELOPER "
                     + "and have administrative authority on the "
                     + " specified developer. The user specified in the request will have all authorities "
-                    + " removed that are associated with the specified developer.")
+                    + " removed that are associated with the specified developer.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "{developerId}/users/{userId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public PermissionDeletedResponse deleteUserFromDeveloper(
@@ -255,7 +268,9 @@ public class DeveloperController {
 
     @Operation(summary = "List users with permissions on a specified developer.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ACB, or have administrative "
-                    + "authority on the specified developer.")
+                    + "authority on the specified developer.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/{developerId}/users", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody UsersResponse getUsers(@PathVariable("developerId") Long developerId)

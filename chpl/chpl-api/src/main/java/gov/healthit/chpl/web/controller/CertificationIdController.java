@@ -35,10 +35,12 @@ import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.results.CertificationIdLookupResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdVerifyResults;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "certification-ids", description = "All certification ID operations.")
@@ -62,16 +64,11 @@ public class CertificationIdController {
         this.validatorFactory = validatorFactory;
     }
 
-    // **********************************************************************************************************
-    // getAll
-    //
-    // Mapping: / (Root)
-    //
-    // Retrieves all CMS Certification IDs and their date of creation.
-    // **********************************************************************************************************
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_CMS_STAFF')")
     @Operation(summary = "Retrieves a list of all CMS EHR Certification IDs along with the date they were created.",
-    description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_CMS_STAFF")
+        description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_CMS_STAFF",
+        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = {
             MediaType.APPLICATION_JSON_VALUE
     })
@@ -86,18 +83,11 @@ public class CertificationIdController {
         return results;
     }
 
-    // **********************************************************************************************************
-    // searchCertificationId
-    //
-    // Mapping: /search
-    // Params: List ids
-    //
-    // Retrieves a CMS EHR Certification ID for a collection of products.
-    // **********************************************************************************************************
     @Operation(summary = "Retrieves a CMS EHR Certification ID for a collection of products.",
             description = "Retrieves a CMS EHR Certification ID for a collection of products. Returns a list of "
                     + "basic product information, Criteria and CQM calculations, and the associated CMS EHR "
-                    + "Certification ID if one exists.")
+                    + "Certification ID if one exists.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/search", method = RequestMethod.GET, produces = {
             MediaType.APPLICATION_JSON_VALUE
     })
@@ -107,12 +97,12 @@ public class CertificationIdController {
         return this.findCertificationByProductIds(ids, false);
     }
 
-    @Operation(
-            summary = "Creates a new CMS EHR Certification ID for a collection of products if one does not already "
+    @Operation(summary = "Creates a new CMS EHR Certification ID for a collection of products if one does not already "
                     + "exist.",
-                    description = "Retrieves a CMS EHR Certification ID for a collection of products or creates a new one "
-                            + "if one does not already exist. Returns a list of basic product information, Criteria "
-                            + "and CQM calculations, and the associated CMS EHR Certification ID if one exists.")
+            description = "Retrieves a CMS EHR Certification ID for a collection of products or creates a new one "
+                    + "if one does not already exist. Returns a list of basic product information, Criteria "
+                    + "and CQM calculations, and the associated CMS EHR Certification ID if one exists.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = {
             MediaType.APPLICATION_JSON_VALUE
     })
@@ -127,25 +117,12 @@ public class CertificationIdController {
         return this.findCertificationByProductIds(ids, true);
     }
 
-    /**
-     * Retrieves detailed information about a specific CMS EHR Certification ID
-     * including the list of products
-     * that make it up. It optionally retrieves the Certification Criteria and
-     * CQMs of the products
-     * associated with the CMS EHR Certification ID.
-     * @param certificationId ID to look up
-     * @param includeCriteria indicates if should return criteria
-     * @param includeCqms indicates if should return CQMs
-     * @return information about CMS ID
-     * @throws InvalidArgumentsException if arguments are invalid
-     * @throws EntityRetrievalException if couldn't retrieve entity
-     * @throws CertificationIdException if cert id fails
-     */
     @Operation(summary = "Get information about a specific EHR Certification ID.",
             description = "Retrieves detailed information about a specific EHR Certification ID including the list of "
                     + "products that make it up.  This method can be used when verfying a small number of"
                     + "Certification Ids, where the length of the URL, plus the list of IDs, is less than the"
-                    + "maximum length URL that your client can handle.")
+                    + "maximum length URL that your client can handle.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/{certificationId}", method = RequestMethod.GET, produces = {
             MediaType.APPLICATION_JSON_VALUE
     })
@@ -157,15 +134,9 @@ public class CertificationIdController {
         return this.findCertificationIdByCertificationId(certificationId, includeCriteria, includeCqms);
     }
 
-    /**
-     * Verify whether one or more specific EHR Certification ID is valid or not.
-     * @param body post body
-     * @return response indicating if IDs are valid
-     * @throws InvalidArgumentsException if arguments are invalid
-     * @throws CertificationIdException if cert id fails
-     */
     @Operation(summary = "Verify whether one or more specific EHR Certification IDs are valid or not.",
-            description = "Returns a boolean value for each EHR Certification ID specified.")
+            description = "Returns a boolean value for each EHR Certification ID specified.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/verify", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = {
             MediaType.APPLICATION_JSON_VALUE
@@ -176,15 +147,9 @@ public class CertificationIdController {
         return this.verifyCertificationIds(body.getIds());
     }
 
-    /**
-     * Verify whether one or more specific EHR Certification ID is valid or not.
-     * @param certificationIds incoming IDs
-     * @return response indicating if IDs are valid
-     * @throws InvalidArgumentsException if arguments are invalid
-     * @throws CertificationIdException if cert id fails
-     */
     @Operation(summary = "Verify whether one or more specific EHR Certification IDs are valid or not.",
-            description = "Returns true or false for each EHR Certification ID specified.")
+            description = "Returns true or false for each EHR Certification ID specified.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY) })
     @RequestMapping(value = "/verify", method = RequestMethod.GET, produces = {
             MediaType.APPLICATION_JSON_VALUE
     })
@@ -194,10 +159,6 @@ public class CertificationIdController {
         return this.verifyCertificationIds(certificationIds);
     }
 
-    // **********************************************************************************************************
-    // findCertificationIdByCertificationId
-    //
-    // **********************************************************************************************************
     private CertificationIdLookupResults findCertificationIdByCertificationId(final String certificationId,
             final Boolean includeCriteria, final Boolean includeCqms) throws InvalidArgumentsException,
     EntityRetrievalException, CertificationIdException {
@@ -255,10 +216,6 @@ public class CertificationIdController {
         return results;
     }
 
-    // **********************************************************************************************************
-    // verifyCertificationIds
-    //
-    // **********************************************************************************************************
     private CertificationIdVerifyResults verifyCertificationIds(final List<String> certificationIds)
             throws InvalidArgumentsException, CertificationIdException {
 
@@ -285,10 +242,6 @@ public class CertificationIdController {
         return results;
     }
 
-    // **********************************************************************************************************
-    // findCertificationByProductIds
-    //
-    // **********************************************************************************************************
     private CertificationIdResults findCertificationByProductIds(
             final List<Long> productIdListIncoming, final Boolean create)
                     throws InvalidArgumentsException, CertificationIdException {
@@ -362,7 +315,6 @@ public class CertificationIdController {
                 throw new CertificationIdException("Unable to create a new Certification ID.");
             }
         }
-
         return results;
     }
 }

@@ -46,10 +46,12 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.util.ChplProductNumberUtil.ChplProductNumberParts;
 import gov.healthit.chpl.web.controller.results.ProductResults;
 import gov.healthit.chpl.web.controller.results.SplitProductResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "products", description = "Allows management of products.")
@@ -74,7 +76,8 @@ public class ProductController {
     private MessageSource messageSource;
 
     @Operation(summary = "List all products",
-            description = "Either list all products or optionally just all products belonging to a specific developer.")
+            description = "Either list all products or optionally just all products belonging to a specific developer.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ProductResults getAllProducts(@RequestParam(required = false) final Long developerId) {
 
@@ -99,7 +102,8 @@ public class ProductController {
         return results;
     }
 
-    @Operation(summary = "Get information about a specific product.", description = "")
+    @Operation(summary = "Get information about a specific product.", description = "",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/{productId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody Product getProductById(@PathVariable("productId") final Long productId)
             throws EntityRetrievalException {
@@ -112,7 +116,8 @@ public class ProductController {
         return result;
     }
 
-    @Operation(summary = "Get all listings owned by the specified product.", description = "")
+    @Operation(summary = "Get all listings owned by the specified product.", description = "",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/{productId}/listings", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertifiedProduct> getListingsForProduct(@PathVariable("productId") final Long productId)
@@ -132,7 +137,9 @@ public class ProductController {
                     + "that a new product is created with all of the information provided and all of the versions "
                     + " previously assigned to the productIds specified are reassigned to the newly created product. "
                     + "The old products are then deleted. "
-                    + "Security Restrictions: To merge: ROLE_ADMIN or ROLE_ONC.  To update: ROLE_ADMIN, ROLE_ONC or ROLE_ACB.")
+                    + "Security Restrictions: To merge: ROLE_ADMIN or ROLE_ONC. To update: ROLE_ADMIN, ROLE_ONC or ROLE_ACB.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public ResponseEntity<Product> updateProduct(
@@ -339,7 +346,9 @@ public class ProductController {
 
     @Operation(summary = "Split a product - some versions stay with the existing product and some versions are moved "
                     + "to a new product.",
-                    description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB")
+                    description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB",
+                    security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                            @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/{productId}/split", method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public ResponseEntity<SplitProductResponse> splitProduct(@PathVariable("productId") final Long productId,

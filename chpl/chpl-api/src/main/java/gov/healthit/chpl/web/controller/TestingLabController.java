@@ -36,11 +36,13 @@ import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.results.TestingLabResults;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "atls", description = "Allows management of testing labs (ONC-ATLs).")
@@ -64,7 +66,9 @@ public class TestingLabController {
     @Operation(summary = "List all testing labs (ATLs).",
             description = "Setting the 'editable' parameter to true will return all ATLs that the logged in user has edit "
                     + "permissions on.  Security Restrictions: When 'editable' is 'true' ROLE_ADMIN or ROLE_ONC can see all ATLs.  ROLE_ATL "
-                    + "can see their own ATL.  When 'editable' is 'false' all users can see all ATLs.")
+                    + "can see their own ATL.  When 'editable' is 'false' all users can see all ATLs.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody TestingLabResults getAtls(
@@ -86,7 +90,8 @@ public class TestingLabController {
     }
 
     @Operation(summary = "Get details about a specific testing lab (ATL).",
-            description = "")
+            description = "",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/{atlId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody TestingLab getAtlById(@PathVariable("atlId") final Long atlId)
             throws EntityRetrievalException {
@@ -96,7 +101,9 @@ public class TestingLabController {
     }
 
     @Operation(summary = "Create a new testing lab.",
-            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC to create a new testing lab.")
+            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC to create a new testing lab.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public TestingLab createAtl(@RequestBody final TestingLab atlInfo)
@@ -135,7 +142,9 @@ public class TestingLabController {
 
     @Operation(summary = "Update an existing ATL.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ATL and have administrative "
-                    + "authority on the testing lab whose data is being updated.")
+                    + "authority on the testing lab whose data is being updated.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/{atlId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public ResponseEntity<TestingLab> updateAtl(@RequestBody final TestingLab atlInfo)
@@ -200,7 +209,9 @@ public class TestingLabController {
     @Operation(summary = "Remove user permissions from an ATL.",
             description = "The user specified in the request will have all authorities "
                     + "removed that are associated with the specified ATL.  Security Restrictions: ROLE_ADMIN, "
-                    + "ROLE_ONC, or ROLE_ATL and have administrative authority on the specified ATL.")
+                    + "ROLE_ONC, or ROLE_ATL and have administrative authority on the specified ATL.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "{atlId}/users/{userId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public String deleteUserFromAtl(@PathVariable final Long atlId, @PathVariable final Long userId)
@@ -227,7 +238,9 @@ public class TestingLabController {
 
     @Operation(summary = "List users with permissions on a specified ATL.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or have administrative "
-                    + "or read authority on the specified ATL.")
+                    + "or read authority on the specified ATL.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/{atlId}/users", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody UsersResponse getUsers(@PathVariable("atlId") final Long atlId)

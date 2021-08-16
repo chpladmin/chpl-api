@@ -283,8 +283,7 @@ public class CertificationBodyController {
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or have administrative "
                     + "or read authority on the specified ONC-ACB",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) }
-    )
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The request was successful.",
               content = { @Content(mediaType = "application/json",

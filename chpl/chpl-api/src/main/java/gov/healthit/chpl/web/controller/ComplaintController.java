@@ -19,8 +19,10 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.ComplaintManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.results.ComplaintResults;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "complaints", description = "Allows management of complaints.")
@@ -38,7 +40,9 @@ public class ComplaintController {
     }
 
     @Operation(summary = "List all complaints the current user can view.",
-            description = "Security Restrictions: Only complaints owned by the current user's ACB will be returned")
+            description = "Security Restrictions: Only complaints owned by the current user's ACB will be returned",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ComplaintResults getComplaints() {
         ComplaintResults results = new ComplaintResults();
@@ -48,7 +52,9 @@ public class ComplaintController {
     }
 
     @Operation(summary = "Save complaint for use in Surveillance Quarterly Report.",
-            description = "")
+            description = "",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody Complaint create(@RequestBody Complaint complaint) throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
         ValidationException error = new ValidationException();
@@ -62,7 +68,9 @@ public class ComplaintController {
     }
 
     @Operation(summary = "Update complaint for use in Surveillance Quarterly Report.",
-            description = "")
+            description = "",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/{complaintId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public @ResponseBody Complaint update(@RequestBody Complaint complaint)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
@@ -75,7 +83,9 @@ public class ComplaintController {
     }
 
     @Operation(summary = "Delete complaint for use in Surveillance Quarterly Report.",
-            description = "")
+            description = "",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/{complaintId}", method = RequestMethod.DELETE, produces = "application/json; charset=utf-8")
     public void delete(@PathVariable("complaintId") Long complaintId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {

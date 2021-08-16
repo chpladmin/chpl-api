@@ -14,9 +14,11 @@ import gov.healthit.chpl.domain.status.CacheStatus;
 import gov.healthit.chpl.domain.status.CacheStatusName;
 import gov.healthit.chpl.domain.status.SystemStatus;
 import gov.healthit.chpl.logging.Loggable;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.domain.status.ServerStatus;
 import gov.healthit.chpl.domain.status.ServerStatusName;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
@@ -32,7 +34,8 @@ public class StatusController {
                     + "{\"running\":\"OK\", \"cache\":\"OK\"} is returned if all is well."
                     + "If the cache is still initializing, the returned value will be "
                     + "{\"running\":\"OK\", \"cache\":\"INITIALIZING\"}.",
-                    description = "")
+                    description = "",
+                    security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/system-status", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody SystemStatus getCombinedStatus() {
         SystemStatus response = new SystemStatus();
@@ -48,7 +51,8 @@ public class StatusController {
                     + "Check that the rest services are up and running."
                     + "{\"status\":\"OK\"} is returned if all is well.",
                     description = "",
-                    deprecated = true)
+                    deprecated = true,
+                    security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/status", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ServerStatus getStatus() {
         LOGGER.warn("/status called");
@@ -63,7 +67,8 @@ public class StatusController {
                     + "{\"status\":\"OK\"} is returned if all caches are loaded and "
                     + "{\"status\":\"INITIALIZING\"} is returned if not. ",
                     description = "",
-                    deprecated = true)
+                    deprecated = true,
+                    security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/cache_status", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody CacheStatus getCacheStatus() {
         CacheStatus response = new CacheStatus();

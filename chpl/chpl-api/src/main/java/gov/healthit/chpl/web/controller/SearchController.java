@@ -22,9 +22,11 @@ import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchResponse;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "search", description = "Search all CHPL listing data.")
@@ -45,7 +47,8 @@ public class SearchController {
             + "Any parameter that can accept multiple things (i.e. certificationStatuses) expects "
             + "a comma-delimited list of those things (i.e. certificationStatuses = Active,Suspended). "
             + "Date parameters are required to be in the format "
-            + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + ". ")
+            + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + ". ",
+        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/search/beta", method = RequestMethod.GET, produces = {
             "application/json; charset=utf-8", "application/xml"
     })
@@ -157,7 +160,8 @@ public class SearchController {
 
     @Operation(summary = "Search the CHPL with an HTTP POST Request.",
             description = "Search the CHPL by specifycing multiple fields of the data to search. "
-                    + "If paging fields are not specified, the first 20 records are returned by default.")
+                    + "If paging fields are not specified, the first 20 records are returned by default.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/search/beta", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public @ResponseBody SearchResponse search(@RequestBody SearchRequest searchRequest)

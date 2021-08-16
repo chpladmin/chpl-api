@@ -58,9 +58,11 @@ import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.validation.surveillance.reviewer.AuthorityReviewer;
 import gov.healthit.chpl.web.controller.results.SurveillanceResults;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 
@@ -98,7 +100,9 @@ public class SurveillanceController  {
 
     @Operation(summary = "Get the listing of all pending surveillance items that this user has access to.",
             description = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority on the ACB associated "
-                    + "with the certified product is required.")
+                    + "with the certified product is required.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody SurveillanceResults getAllPendingSurveillance() throws AccessDeniedException {
 
@@ -109,7 +113,8 @@ public class SurveillanceController  {
     }
 
     @Operation(summary = "Download nonconformity supporting documentation.",
-            description = "Download a specific file that was previously uploaded to a surveillance nonconformity.")
+            description = "Download a specific file that was previously uploaded to a surveillance nonconformity.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/document/{documentId}", method = RequestMethod.GET)
     public void streamDocumentContents(@PathVariable("documentId") final Long documentId,
             final HttpServletResponse response) throws EntityRetrievalException, IOException {
@@ -151,7 +156,9 @@ public class SurveillanceController  {
                     + "request body. The surveillance passed into this request will first be validated "
                     + " to check for errors. "
                     + "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority on the ACB associated with "
-                    + "the certified product is required.")
+                    + "the certified product is required.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<Surveillance> createSurveillance(
             @RequestBody(required = true) final Surveillance survToInsert) throws ValidationException,
@@ -177,7 +184,9 @@ public class SurveillanceController  {
     @Operation(summary = "Add documentation to an existing nonconformity.",
             description = "Upload a file of any kind (current size limit 5MB) as supporting "
                     + " documentation to an existing nonconformity. Security Restrictions: ROLE_ADMIN, ROLE_ONC, or "
-                    + "ROLE_ACB and administrative authority on the associated ACB.")
+                    + "ROLE_ACB and administrative authority on the associated ONC-ACB.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/{surveillanceId}/nonconformity/{nonconformityId}/document",
     method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody String uploadNonconformityDocument(
@@ -228,7 +237,9 @@ public class SurveillanceController  {
             description = "Updates an existing surveillance activity, surveilled requirements, and any applicable "
                     + "non-conformities in the system. The surveillance passed into this request will first be "
                     + "validated to check for errors. Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB "
-                    + "and associated with the certified product is required.")
+                    + "and associated with the certified product is required.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/{surveillanceId}", method = RequestMethod.PUT,
     produces = "application/json; charset=utf-8")
     public ResponseEntity<Surveillance> updateSurveillance(
@@ -258,7 +269,9 @@ public class SurveillanceController  {
     @Operation(summary = "Delete a surveillance activity for a certified product.",
             description = "Deletes an existing surveillance activity, surveilled requirements, and any applicable "
                     + "non-conformities in the system. Security Restrictions: ROLE_ADMIN or ROLE_ACB and have "
-                    + "administrative authority on the specified ACB for each pending surveillance is required.")
+                    + "administrative authority on the specified ACB for each pending surveillance is required.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/{surveillanceId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public @ResponseBody ResponseEntity<String> deleteSurveillance(
@@ -302,7 +315,9 @@ public class SurveillanceController  {
 
     @Operation(summary = "Remove documentation from a nonconformity.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
-                    + "on the associated ACB.")
+                    + "on the associated ACB.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/{surveillanceId}/document/{docId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public String deleteNonconformityDocumentFromSurveillance(
@@ -339,7 +354,9 @@ public class SurveillanceController  {
         return "{\"success\": \"true\"}";
     }
 
-    @Operation(summary = "Reject (effectively delete) a pending surveillance item.")
+    @Operation(summary = "Reject (effectively delete) a pending surveillance item.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/pending/{pendingSurvId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingSurveillance(@PathVariable("pendingSurvId") final Long id)
@@ -353,7 +370,9 @@ public class SurveillanceController  {
     @Operation(summary = "Reject several pending surveillance.",
             description = "Marks a list of pending surveillance as deleted. "
                     + "If ROLE_ACB, administrative authority on the ACB for each pending surveillance is required. "
-                    + "If ROLE_ADMIN or ROLE_ONC, authority for each pending surveillance is required.")
+                    + "If ROLE_ADMIN or ROLE_ONC, authority for each pending surveillance is required.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/pending", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingSurveillance(@RequestBody final IdListContainer idList)
@@ -394,7 +413,9 @@ public class SurveillanceController  {
                     + "be inserted. The surveillance passed into this request will first be validated "
                     + " to check for errors and the related pending surveillance will be removed. "
                     + "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority on the ACB associated "
-                    + "with the certified product is required.")
+                    + "with the certified product is required.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/pending/confirm", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public ResponseEntity<Surveillance> confirmPendingSurveillance(
@@ -416,7 +437,9 @@ public class SurveillanceController  {
     @Operation(summary = "Upload a file with surveillance and nonconformities for certified products.",
             description = "Accepts a CSV file with very specific fields to create pending surveillance items. "
                     + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
-                    + "on the ACB(s) responsible for the product(s) in the file.")
+                    + "on the ACB(s) responsible for the product(s) in the file.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody ResponseEntity<?> upload(@RequestParam("file") final MultipartFile file)
             throws ValidationException, MaxUploadSizeExceededException, EntityRetrievalException,
@@ -432,8 +455,10 @@ public class SurveillanceController  {
         }
     }
 
-    @Operation(summary = "",
-            description = "")
+    @Operation(summary = "Triggers a Scheduled Job to create a surveillance activity report and email it to the current user.",
+            description = "",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/reports/activity", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ChplOneTimeTrigger getActivityReport(@RequestParam("start") String start, @RequestParam("end") String end) throws ValidationException, UserRetrievalException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");

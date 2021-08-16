@@ -23,7 +23,9 @@ import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.svap.manager.SvapManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 
@@ -66,18 +68,6 @@ public class DownloadableResourceController {
         this.fileUtils = fileUtils;
     }
 
-    /**
-     * Streams a file back to the end user for the specified edition (2011,2014,2015,etc)
-     * in the specified format (xml or csv). Optionally will send back the definition
-     * files instead. The file that is sent back is generated via a quartz job on a
-     * regular basis.
-     * @param editionInput 2011, 2014, or 2015
-     * @param formatInput csv or xml
-     * @param isDefinition whether to send back the data file or definition file
-     * @param request http request
-     * @param response http response, used to stream back the file
-     * @throws IOException if the file cannot be read
-     */
     @Operation(summary = "Download the entire CHPL as XML.",
             description = "Once per day, the entire certified product listing is "
                     + "written out to XML files on the CHPL servers, one for each "
@@ -85,7 +75,8 @@ public class DownloadableResourceController {
                     + "that XML file. It is formatted in such a way that users may import "
                     + "it into Microsoft Excel or any other XML tool of their choosing. To download "
                     + "any one of the XML files, append ‘&edition=year’ to the end of the query string "
-                    + "(e.g., &edition=2015). A separate query is required to download each of the XML files.")
+                    + "(e.g., &edition=2015). A separate query is required to download each of the XML files.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/download", method = RequestMethod.GET, produces = "application/xml")
     public void downloadListingDetails(@RequestParam(value = "edition", required = false) String editionInput,
             @RequestParam(value = "format", defaultValue = "xml", required = false) String formatInput,
@@ -157,7 +148,9 @@ public class DownloadableResourceController {
     @Operation(summary = "Download a summary of SVAP activity as a CSV.",
             description = "Once per day, a summary of SVAP activity is written out to a CSV "
                     + "file on the CHPL servers. This method allows ROLE_ADMIN, ROLE_ONC, "
-                    + "and ROLE_ONC_STAFF users to download that file.")
+                    + "and ROLE_ONC_STAFF users to download that file.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/svap/download", method = RequestMethod.GET, produces = "text/csv")
     public void downloadSvapSummary(
             @RequestParam(value = "definition", defaultValue = "false", required = false) Boolean isDefinition,
@@ -193,7 +186,8 @@ public class DownloadableResourceController {
     }
 
     @Operation(summary = "Download all SED details that are certified to 170.315(g)(3).",
-            description = "Download a specific file that is generated overnight.")
+            description = "Download a specific file that is generated overnight.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/certified_products/sed_details", method = RequestMethod.GET)
     public void streamSEDDetailsDocumentContents(HttpServletResponse response)
             throws EntityRetrievalException, IOException {
@@ -203,7 +197,8 @@ public class DownloadableResourceController {
 
     @Operation(summary = "Download all direct reviews as a CSV.",
             description = "Once per day, all direct reviews are written out to a CSV "
-                    + "file on the CHPL servers. This method allows any user to download that file.")
+                    + "file on the CHPL servers. This method allows any user to download that file.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/developers/direct-reviews/download", method = RequestMethod.GET, produces = "text/csv")
     public void downloadDirectReviews(
             @RequestParam(value = "definition", defaultValue = "false", required = false) Boolean isDefinition,
@@ -240,7 +235,9 @@ public class DownloadableResourceController {
 
     @Operation(summary = "Download surveillance as CSV.",
         description = "Once per day, all surveillance and nonconformities are written out to CSV "
-            + "files on the CHPL servers. This method allows any user to download those files.")
+            + "files on the CHPL servers. This method allows any user to download those files.",
+        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/surveillance/download", method = RequestMethod.GET, produces = "text/csv")
     public void downloadSurveillance(@RequestParam(value = "type", required = false, defaultValue = "") final String type,
             @RequestParam(value = "definition", defaultValue = "false", required = false) final Boolean isDefinition,

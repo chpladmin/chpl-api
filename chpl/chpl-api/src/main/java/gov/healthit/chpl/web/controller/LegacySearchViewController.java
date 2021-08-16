@@ -31,9 +31,11 @@ import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.search.CertifiedProductSearchManager;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 
@@ -67,7 +69,8 @@ public class LegacySearchViewController {
             + "a comma-delimited list of those things (i.e. certificationStatuses = Active,Suspended). "
             + "Date parameters are required to be in the format "
             + SearchRequestLegacy.CERTIFICATION_DATE_SEARCH_FORMAT + ". ",
-            deprecated = true)
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/search", method = RequestMethod.GET, produces = {
             "application/json; charset=utf-8", "application/xml"
     })
@@ -387,7 +390,8 @@ public class LegacySearchViewController {
     @Operation(summary = "Search the CHPL with an HTTP POST Request.",
             description = "Search the CHPL by specifycing multiple fields of the data to search. "
                     + "If paging fields are not specified, the first 20 records are returned by default.",
-             deprecated = true)
+             deprecated = true,
+             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/search", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public @ResponseBody SearchResponseLegacy searchPostLegacy(@RequestBody SearchRequestLegacy searchRequest)

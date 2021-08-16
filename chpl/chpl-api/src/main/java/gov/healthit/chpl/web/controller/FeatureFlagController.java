@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.logging.Loggable;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "feature-flags", description = "Lists all feature flags currently in the system.")
@@ -29,7 +31,8 @@ public class FeatureFlagController {
         this.ff4j = ff4j;
     }
 
-    @Operation(summary = "List all feature flags.", description = "")
+    @Operation(summary = "List all feature flags.", description = "",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<Flag> getFeatureFlags() {
         List<Flag> flags = new ArrayList<Flag>();
