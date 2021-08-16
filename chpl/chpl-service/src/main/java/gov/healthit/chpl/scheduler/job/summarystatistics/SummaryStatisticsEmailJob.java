@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
 import org.apache.logging.log4j.LogManager;
@@ -29,6 +28,7 @@ import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.entity.statistics.SummaryStatisticsEntity;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatistics;
@@ -82,7 +82,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         }
     }
 
-    private void sendEmail(String message, String address) throws AddressException, MessagingException, IOException {
+    private void sendEmail(String message, String address) throws AddressException, EmailNotSentException, IOException {
         String subject = env.getProperty("summaryEmailSubject").toString();
 
         List<String> addresses = new ArrayList<String>();

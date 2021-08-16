@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
 import org.apache.logging.log4j.LogManager;
@@ -23,10 +22,11 @@ import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 
 /**
  * Job run by Scheduler to send email when the cache is "too old".
- * 
+ *
  * @author alarned
  *
  */
@@ -39,7 +39,7 @@ public class CacheStatusAgeJob implements Job {
     /**
      * Main method. Checks to see if the cache is old, then, if it is, sends email messages to subscribers of that
      * notification.
-     * 
+     *
      * @param jobContext
      *            for context of the job
      * @throws JobExecutionException
@@ -54,7 +54,7 @@ public class CacheStatusAgeJob implements Job {
                 String recipient = jobContext.getMergedJobDataMap().getString("email");
                 try {
                     sendEmail(recipient);
-                } catch (IOException | MessagingException e) {
+                } catch (IOException | AddressException | EmailNotSentException e) {
                     LOGGER.error(e);
                 }
             }
@@ -95,8 +95,8 @@ public class CacheStatusAgeJob implements Job {
         }
     }
 
-    private void sendEmail(final String recipient)
-            throws IOException, AddressException, MessagingException {
+    private void sendEmail(String recipient)
+            throws IOException, AddressException, EmailNotSentException {
         LOGGER.info("Sending email to: " + recipient);
         String subject = env.getProperty("cacheStatusMaxAgeSubject");
         String htmlMessage = createHtmlEmailBody();

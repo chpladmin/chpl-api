@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.mail.MessagingException;
-
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +16,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.logging.Loggable;
 import lombok.extern.log4j.Log4j2;
 
@@ -78,7 +77,7 @@ public class DirectReviewUpdateEmailService {
             try {
                 sendDirectReviewEmails(originalDeveloperDrs, originalDevelopers, changedDevelopers, originalListings,
                         changedListings);
-            } catch (MessagingException ex) {
+            } catch (Exception ex) {
                 LOGGER.error("Could not send email to Jira team: " + ex.getMessage());
             }
         } else {
@@ -90,7 +89,7 @@ public class DirectReviewUpdateEmailService {
             List<DeveloperDTO> originalDevelopers, List<DeveloperDTO> changedDevelopers,
             Map<Long, CertifiedProductSearchDetails> originalListings,
             Map<Long, CertifiedProductSearchDetails> changedListings)
-        throws MessagingException {
+        throws EmailNotSentException {
         LOGGER.info("Sending email about direct reviews potentially needing changes.");
 
         String[] recipients = new String[] {};
@@ -125,7 +124,7 @@ public class DirectReviewUpdateEmailService {
     private void sendUnknownDirectReviewEmails(List<DeveloperDTO> originalDevelopers,
             List<DeveloperDTO> changedDevelopers,
             Map<Long, CertifiedProductSearchDetails> originalListings,
-            Map<Long, CertifiedProductSearchDetails> changedListings) throws MessagingException {
+            Map<Long, CertifiedProductSearchDetails> changedListings) throws EmailNotSentException {
         LOGGER.info("Sending email about unknown direct reviews.");
 
         String[] recipients = new String[] {};
