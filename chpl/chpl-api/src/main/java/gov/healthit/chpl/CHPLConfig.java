@@ -68,10 +68,18 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
     private static final long MAX_UPLOAD_FILE_SIZE = 5242880;
     private static final int MAX_COOKIE_AGE_SECONDS = 3600;
     private String chplServiceUrl;
+    private String apiLicenseUrl;
+    private String apiVersion;
+    private String apiDescriptionHtml;
+    private String feedbackFormUrl;
 
     @Override
     public void setEnvironment(Environment env) {
         this.chplServiceUrl = env.getProperty("chplUrlBegin") + env.getProperty("basePath");
+        this.apiLicenseUrl = env.getProperty("api.licenseUrl");
+        this.apiVersion = env.getProperty("api.version");
+        this.apiDescriptionHtml = env.getProperty("api.description");
+        this.feedbackFormUrl = env.getProperty("footer.publicUrl");
     }
 
     @Bean
@@ -154,11 +162,9 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
     public OpenAPI chplOpenAPI() {
         return new OpenAPI()
                 .info(new Info().title("Certified Health IT Product Listing API")
-                .version("30.4.0")
-                .description("Created by CHPL Development Team. Please submit any questions using the Health IT "
-                        + "Feedback Form and select the \"Certified Health IT Products List (CHPL)\" category.\n"
-                        + "See more at https://www.healthit.gov/form/healthit-feedback-form")
-                .license(new License().name("BSD License").url("https://github.com/chpladmin/chpl-api/blob/staging/LICENSE")))
+                .version(apiVersion)
+                .description(String.format(apiDescriptionHtml, feedbackFormUrl, feedbackFormUrl))
+                .license(new License().name("BSD License").url(apiLicenseUrl)))
                 .addServersItem(new Server().url(chplServiceUrl))
                 .components(new Components()
                         .addSecuritySchemes(SwaggerSecurityRequirement.API_KEY,
