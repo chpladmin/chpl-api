@@ -15,8 +15,6 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 
-import javax.mail.MessagingException;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.BooleanUtils;
@@ -35,6 +33,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
@@ -253,7 +252,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                 .fileAttachments(files)
                 .acbAtlHtmlFooter()
                 .sendEmail();
-        } catch (MessagingException e) {
+        } catch (EmailNotSentException e) {
             LOGGER.error(e);
         }
     }

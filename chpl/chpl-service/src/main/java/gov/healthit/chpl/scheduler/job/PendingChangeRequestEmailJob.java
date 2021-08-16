@@ -15,8 +15,6 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import javax.mail.MessagingException;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.logging.log4j.LogManager;
@@ -33,6 +31,7 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
 
@@ -238,7 +237,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
     }
 
     private void sendEmail(JobExecutionContext jobContext, List<List<String>> csvRows, List<CertificationBodyDTO> acbs)
-            throws MessagingException {
+            throws EmailNotSentException {
         LOGGER.info("Sending email to {} with contents {} and a total of {} pending change requests",
                 getEmailRecipients(jobContext).get(0), getHtmlMessage(csvRows.size(), getAcbNamesAsCommaSeparatedList(jobContext)));
 
@@ -285,7 +284,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
     private List<String> getEmailRecipients(JobExecutionContext jobContext) {
         return Arrays.asList(jobContext.getMergedJobDataMap().getString("email"));
     }
-    
+
     private String getAcbNamesAsCommaSeparatedList(JobExecutionContext jobContext) {
         if (Objects.nonNull(jobContext.getMergedJobDataMap().getString("acb"))) {
             return Arrays.asList(

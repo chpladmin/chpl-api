@@ -42,6 +42,7 @@ import gov.healthit.chpl.dto.auth.InvitationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserInvitationDTO;
 import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -104,7 +105,7 @@ public class UserManagementController {
     public @ResponseBody User createUser(@RequestBody CreateUserFromInvitationRequest userInfo)
             throws ValidationException, EntityRetrievalException, InvalidArgumentsException,
             UserRetrievalException, MultipleUserAccountsException, UserCreationException,
-            MessagingException, JsonProcessingException, EntityCreationException {
+            EmailNotSentException, JsonProcessingException, EntityCreationException {
 
         if (userInfo.getUser() == null || userInfo.getUser().getEmail() == null) {
             throw new ValidationException(msgUtil.getMessage("user.email.required"));
@@ -264,7 +265,7 @@ public class UserManagementController {
     produces = "application/json; charset=utf-8")
     public UserInvitation inviteUser(@RequestBody UserInvitation invitation)
             throws InvalidArgumentsException, UserCreationException, UserRetrievalException,
-            UserPermissionRetrievalException, AddressException, MessagingException {
+            UserPermissionRetrievalException, AddressException, EmailNotSentException {
 
         if (!ff4j.check(FeatureList.ROLE_DEVELOPER) && invitation.getRole().equals(Authority.ROLE_DEVELOPER)) {
             throw new NotImplementedException(msgUtil.getMessage("notImplemented"));

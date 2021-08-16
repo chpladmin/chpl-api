@@ -29,6 +29,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import lombok.extern.log4j.Log4j2;
 import net.sf.ehcache.CacheManager;
@@ -163,7 +164,7 @@ public class MergeDeveloperJob implements Job {
     }
 
     private void sendEmail(String recipientEmail, String subject, String htmlMessage)
-            throws MessagingException {
+            throws EmailNotSentException {
         LOGGER.info("Sending email to: " + recipientEmail);
         LOGGER.info("Message to be sent: " + htmlMessage);
 

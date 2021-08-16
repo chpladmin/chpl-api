@@ -19,6 +19,7 @@ import gov.healthit.chpl.auth.jwt.JWTAuthor;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.auth.AuthenticationManager;
@@ -34,7 +35,7 @@ public class UserAuthenticatorTest {
     private ErrorMessageUtil msgUtil;
 
     @Before
-    public void setup() throws UserRetrievalException, MultipleUserAccountsException {
+    public void setup() throws UserRetrievalException, MultipleUserAccountsException, EmailNotSentException {
         jwtAuthor = Mockito.mock(JWTAuthor.class);
         userManager = Mockito.mock(UserManager.class);
         userDAO = Mockito.mock(UserDAO.class);
