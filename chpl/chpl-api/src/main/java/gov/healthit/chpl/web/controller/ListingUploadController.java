@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 
 import org.apache.commons.lang3.NotImplementedException;
@@ -42,6 +41,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -298,8 +298,8 @@ public class ListingUploadController {
             .fileAttachments(attachments)
             .htmlMessage(htmlBody)
             .sendEmail();
-        } catch (MessagingException msgEx) {
-            LOGGER.error("Could not send email about failed listing upload.", msgEx);
+        } catch (EmailNotSentException msgEx) {
+            LOGGER.error("Could not send email about failed listing upload: " + msgEx.getMessage(), msgEx);
         }
     }
 }

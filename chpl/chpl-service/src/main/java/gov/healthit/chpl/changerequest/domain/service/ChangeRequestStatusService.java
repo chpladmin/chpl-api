@@ -18,6 +18,7 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.auth.UserPermission;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -70,7 +71,7 @@ public class ChangeRequestStatusService {
     }
 
     public ChangeRequest updateChangeRequestStatus(ChangeRequest crFromCaller)
-            throws EntityRetrievalException {
+            throws EntityRetrievalException, EmailNotSentException {
         ChangeRequest crFromDb = crDAO.get(crFromCaller.getId());
 
         // Check for nulls - a Java 8 way to check a chain of objects for null

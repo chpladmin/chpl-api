@@ -2,8 +2,6 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.List;
 
-import javax.mail.MessagingException;
-
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +18,7 @@ import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
 import gov.healthit.chpl.domain.schedule.ScheduledSystemJob;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.SchedulerManager;
@@ -52,7 +51,7 @@ public class SchedulerController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/triggers", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody ScheduleTriggersResults createTrigger(@RequestBody(required = true)
-    final ChplRepeatableTrigger trigger) throws SchedulerException, ValidationException, MessagingException {
+        ChplRepeatableTrigger trigger) throws SchedulerException, ValidationException, EmailNotSentException {
         ChplRepeatableTrigger result = schedulerManager.createTrigger(trigger);
         ScheduleTriggersResults results = new ScheduleTriggersResults();
         results.getResults().add(result);
@@ -64,7 +63,7 @@ public class SchedulerController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/triggers/one_time", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody ScheduleOneTimeTriggersResults createOneTimeTrigger(@RequestBody(required = true)
-    final ChplOneTimeTrigger trigger) throws SchedulerException, ValidationException {
+        ChplOneTimeTrigger trigger) throws SchedulerException, ValidationException {
         ChplOneTimeTrigger result = schedulerManager.createOneTimeTrigger(trigger);
         ScheduleOneTimeTriggersResults results = new ScheduleOneTimeTriggersResults();
         results.getResults().add(result);
@@ -75,9 +74,9 @@ public class SchedulerController {
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/triggers/{triggerGroup}/{triggerName}", method = RequestMethod.DELETE)
-    public void deleteTrigger(@PathVariable("triggerGroup") final String triggerGroup,
-            @PathVariable("triggerName") final String triggerName)
-                    throws SchedulerException, ValidationException, MessagingException {
+    public void deleteTrigger(@PathVariable("triggerGroup") String triggerGroup,
+            @PathVariable("triggerName") String triggerName)
+                    throws SchedulerException, ValidationException, EmailNotSentException {
         schedulerManager.deleteTrigger(triggerGroup, triggerName);
     }
 
@@ -111,8 +110,8 @@ public class SchedulerController {
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/triggers", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
-    public @ResponseBody ScheduleTriggersResults updateTrigger(@RequestBody(required = true) final ChplRepeatableTrigger trigger)
-            throws SchedulerException, ValidationException, MessagingException {
+    public @ResponseBody ScheduleTriggersResults updateTrigger(@RequestBody(required = true) ChplRepeatableTrigger trigger)
+            throws SchedulerException, ValidationException, EmailNotSentException {
         ChplRepeatableTrigger result = schedulerManager.updateTrigger(trigger);
         ScheduleTriggersResults results = new ScheduleTriggersResults();
         results.getResults().add(result);
@@ -138,8 +137,8 @@ public class SchedulerController {
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/jobs", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
-    public @ResponseBody ChplJobsResults updateJob(@RequestBody(required = true)
-    final ChplJob job) throws SchedulerException {
+    public @ResponseBody ChplJobsResults updateJob(@RequestBody(required = true) ChplJob job)
+            throws SchedulerException {
         ChplJob result = schedulerManager.updateJob(job);
         ChplJobsResults results = new ChplJobsResults();
         results.getResults().add(result);

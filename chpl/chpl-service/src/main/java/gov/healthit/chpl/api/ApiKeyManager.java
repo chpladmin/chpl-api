@@ -4,8 +4,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import javax.mail.MessagingException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -24,6 +22,7 @@ import gov.healthit.chpl.dao.ApiKeyActivityDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ApiKeyActivityDTO;
 import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -70,28 +69,23 @@ public class ApiKeyManager {
     }
 
     @Transactional
-    public Boolean createRequest(ApiKeyRegistration apiKeyRegistration) throws ValidationException {
+    public Boolean createRequest(ApiKeyRegistration apiKeyRegistration) throws ValidationException, EmailNotSentException {
         if (!Util.isEmailAddressValidFormat(apiKeyRegistration.getEmail())) {
             throw new ValidationException(String.format("%s is not a valid email address", apiKeyRegistration.getEmail()));
         }
 
         ApiKeyRequest apiKeyRequest = getApiKeyRequest(apiKeyRegistration);
-
         EmailBuilder emailBuilder = new EmailBuilder(env);
-        try {
-            emailBuilder.recipient(apiKeyRequest.getEmail())
-                .subject(requestEmailSubject)
-                .htmlMessage(String.format(requestEmailBody, apiKeyRequest.getNameOrganization(), chplUrl, apiKeyRequest.getApiRequestToken()))
-                .sendEmail();
-        } catch (MessagingException e) {
-            return false;
-        }
+        emailBuilder.recipient(apiKeyRequest.getEmail())
+            .subject(requestEmailSubject)
+            .htmlMessage(String.format(requestEmailBody, apiKeyRequest.getNameOrganization(), chplUrl, apiKeyRequest.getApiRequestToken()))
+            .sendEmail();
 
         return true;
     }
 
     @Transactional
-    public ApiKey confirmRequest(String token) throws ValidationException, JsonProcessingException, EntityCreationException, EntityRetrievalException, MessagingException {
+    public ApiKey confirmRequest(String token) throws ValidationException, JsonProcessingException, EntityCreationException, EntityRetrievalException, EmailNotSentException {
         Optional<ApiKeyRequest> request = apiKeyRequestDAO.getByApiRequestToken(token);
         if (!request.isPresent()) {
             throw new ValidationException(errorMessages.getMessage("apiKeyRequest.notFound"));

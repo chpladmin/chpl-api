@@ -18,6 +18,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -105,7 +106,7 @@ public class ChangeRequestController {
         produces = "application/json; charset=utf-8")
     public ChangeRequest updateChangeRequest(@RequestBody final ChangeRequest cr)
             throws EntityRetrievalException, ValidationException, EntityCreationException,
-            JsonProcessingException, InvalidArgumentsException {
+            JsonProcessingException, InvalidArgumentsException, EmailNotSentException {
         if (!ff4j.check(FeatureList.CHANGE_REQUEST)) {
             throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }

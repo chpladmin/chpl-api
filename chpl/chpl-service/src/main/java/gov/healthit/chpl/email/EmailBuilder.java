@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -26,6 +27,7 @@ import javax.mail.internet.MimeMultipart;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.exception.EmailNotSentException;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -185,14 +187,16 @@ public class EmailBuilder {
         return this;
     }
 
-    /**
-     * Send the email that has been built.
-     * @throws MessagingException - general exception that can occur for several reasons, see the message for
-     * details
-     */
-    public void sendEmail() throws MessagingException {
-       build();
-       Transport.send(message);
+    public void sendEmail() throws EmailNotSentException {
+       try {
+           build();
+           Transport.send(message);
+       } catch (Exception ex) {
+           String failureMessage = "Email could not be sent to " + recipients.stream().collect(Collectors.joining(",")) + ".";
+           //exception logged here so we can create an alert in DataDog
+           LOGGER.fatal(failureMessage, ex);
+           throw new EmailNotSentException(failureMessage);
+       }
     }
 
     private Authenticator getAuthenticator(Properties properties) {

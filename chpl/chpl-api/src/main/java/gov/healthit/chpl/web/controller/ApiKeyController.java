@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +24,7 @@ import gov.healthit.chpl.api.ApiKeyManager;
 import gov.healthit.chpl.api.domain.ApiKey;
 import gov.healthit.chpl.api.domain.ApiKeyRegistration;
 import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -58,13 +58,13 @@ public class ApiKeyController {
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = "application/json; charset=utf-8")
     public KeyRegistered register(@RequestBody ApiKeyRegistration registration) throws EntityCreationException,
-    AddressException, MessagingException, JsonProcessingException, EntityRetrievalException {
+    AddressException, EmailNotSentException, JsonProcessingException, EntityRetrievalException {
 
         return create(registration);
     }
 
     private KeyRegistered create(final ApiKeyRegistration registration) throws JsonProcessingException, EntityCreationException,
-            EntityRetrievalException, AddressException, MessagingException  {
+            EntityRetrievalException, AddressException, EmailNotSentException  {
         Date now = new Date();
         String apiKey = gov.healthit.chpl.util.Util.md5(registration.getName() + registration.getEmail() + now.getTime());
         ApiKey toCreate = ApiKey.builder()
@@ -85,7 +85,8 @@ public class ApiKeyController {
                   + "purpose of the invitation is to validate the email address of the potential API user.",
           security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/request", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    public BooleanResult request(@RequestBody ApiKeyRegistration registration) throws ValidationException {
+    public BooleanResult request(@RequestBody ApiKeyRegistration registration)
+            throws ValidationException, EmailNotSentException {
         return new BooleanResult(apiKeyManager.createRequest(registration));
     }
 
@@ -96,7 +97,9 @@ public class ApiKeyController {
                 + "'API-Key' or as a URL parameter named 'api_key'.",
         security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/confirm", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    public ApiKey confirm(@RequestBody String apiKeyRequestToken) throws JsonProcessingException, ValidationException, EntityCreationException, EntityRetrievalException, MessagingException {
+    public ApiKey confirm(@RequestBody String apiKeyRequestToken) throws
+        JsonProcessingException, ValidationException, EntityCreationException,
+        EntityRetrievalException, EmailNotSentException {
         return apiKeyManager.confirmRequest(apiKeyRequestToken);
     }
 
@@ -131,7 +134,7 @@ public class ApiKeyController {
     }
 
     private void sendRegistrationEmail(String email, String orgName, String apiKey)
-            throws AddressException, MessagingException {
+            throws AddressException, EmailNotSentException {
 
         String subject = env.getProperty("apiKey.confirm.email.subject");
         String htmlMessage = String.format(env.getProperty("apiKey.confirm.email.body"),

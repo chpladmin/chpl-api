@@ -20,6 +20,7 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
@@ -124,7 +125,11 @@ public class CertificationBodyManager extends SecuredManager {
         }
         CertificationBodyDTO beforeAcb = certificationBodyDao.getById(acb.getId());
         CertificationBodyDTO result = certificationBodyDao.update(acb);
-        schedulerManager.retireAcb(beforeAcb.getName());
+        try {
+            schedulerManager.retireAcb(beforeAcb.getName());
+        } catch (EmailNotSentException ex) {
+            LOGGER.catching(ex);
+        }
 
         String activityMsg = "Retired acb " + acb.getName();
         activityManager.addActivity(ActivityConcept.CERTIFICATION_BODY, result.getId(), activityMsg,
