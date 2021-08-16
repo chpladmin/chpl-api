@@ -60,7 +60,9 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "activity", description = "Find historical activity about objects in the CHPL.")
@@ -124,7 +126,9 @@ public class ActivityController {
 
     @Operation(summary = "Get detailed audit data for a specific activity event.",
                 description = "Security Restrictions: ROLE_ADMIN and ROLE_ONC may view any activity event. "
-                        + "Other users may be restricted in what they can see.")
+                        + "Other users may be restricted in what they can see.",
+                security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                        @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "/{id:^-?\\d+$}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public ActivityDetails activityById(@PathVariable("id") final Long id)
             throws EntityRetrievalException, JsonParseException, IOException, ValidationException {
@@ -135,7 +139,8 @@ public class ActivityController {
     @Operation(summary = "Get metadata about auditable records in the system for listings.",
             description = "All parameters are optional and will default to the first page of listing activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first.")
+                    + "with the most recent activity first.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/metadata/beta/listings", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForListings(@RequestParam(required = false) Long start,
@@ -148,7 +153,8 @@ public class ActivityController {
     @Deprecated
     @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for listings.",
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
-            deprecated = true)
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/metadata/listings", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForListings(@RequestParam Long start,
@@ -161,7 +167,8 @@ public class ActivityController {
     }
 
     @Operation(summary = "Get metadata about auditable records in the system for a specific listing.",
-            description = "A start and end date may optionally be provided to limit activity results.")
+            description = "A start and end date may optionally be provided to limit activity results.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/metadata/listings/{id:^-?\\d+$}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForListingById(@PathVariable("id") final Long id,
@@ -193,7 +200,8 @@ public class ActivityController {
             description = "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} "
                     + "represents a valid CHPL Product Number.  A valid call to this service would look like "
                     + "activity/certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD. "
-                    + "A start and end date may optionally be provided to limit activity results.")
+                    + "A start and end date may optionally be provided to limit activity results.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/metadata/listings/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}",
     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -243,7 +251,8 @@ public class ActivityController {
             description = "{chplPrefix}-{identifier} represents a valid CHPL Product Number.  "
                     + "A valid call to this service "
                     + "would look like activity/certified_products/CHP-999999. "
-                    + "A start and end date may optionally be provided to limit activity results.")
+                    + "A start and end date may optionally be provided to limit activity results.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/metadata/listings/{chplPrefix}-{identifier}",
     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -283,7 +292,8 @@ public class ActivityController {
     @Operation(summary = "Get metadata about auditable records in the system for developers.",
             description = "All parameters are optional and will default to the first page of listing activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first.")
+                    + "with the most recent activity first.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/metadata/beta/developers", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForDevelopers(@RequestParam(required = false) Long start,
@@ -296,7 +306,8 @@ public class ActivityController {
     @Deprecated
     @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for developers.",
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
-            deprecated = true)
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/metadata/developers", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForDevelopers(@RequestParam final Long start,
@@ -309,7 +320,8 @@ public class ActivityController {
     }
 
     @Operation(summary = "Get metadata about auditable records in the system for a specific developer.",
-            description = "A start or end date may optionally be provided to limit activity results.")
+            description = "A start or end date may optionally be provided to limit activity results.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/metadata/developers/{id:^-?\\d+$}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForDeveloperById(@PathVariable("id") final Long id,
@@ -338,7 +350,8 @@ public class ActivityController {
     @Operation(summary = "Get metadata about auditable records in the system for products.",
             description = "All parameters are optional and will default to the first page of product activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first.")
+                    + "with the most recent activity first.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/metadata/beta/products", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForProducts(@RequestParam(required = false) Long start,
@@ -351,7 +364,8 @@ public class ActivityController {
     @Deprecated
     @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for products.",
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
-            deprecated = true)
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/metadata/products", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForProducts(@RequestParam final Long start,
@@ -364,9 +378,10 @@ public class ActivityController {
     }
 
     @Operation(summary = "Get metadata about auditable records in the system for a specific product.",
-            description = "A start or end date may optionally be provided to limit activity results.")
+            description = "A start or end date may optionally be provided to limit activity results.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/metadata/products/{id:^-?\\d+$}", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForProductById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
@@ -393,7 +408,8 @@ public class ActivityController {
     @Operation(summary = "Get metadata about auditable records in the system for versions.",
             description = "All parameters are optional and will default to the first page of version activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first.")
+                    + "with the most recent activity first.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/metadata/beta/versions", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForVersions(@RequestParam(required = false) Long start,
@@ -406,7 +422,8 @@ public class ActivityController {
     @Deprecated
     @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for version.",
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
-            deprecated = true)
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/metadata/versions", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForVersions(@RequestParam final Long start,
@@ -419,7 +436,8 @@ public class ActivityController {
     }
 
     @Operation(summary = "Get metadata about auditable records in the system for a specific version.",
-            description = "A start or end date may optionally be provided to limit activity results.")
+            description = "A start or end date may optionally be provided to limit activity results.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/metadata/versions/{id:^-?\\d+$}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForVersionById(@PathVariable("id") final Long id,
@@ -448,7 +466,9 @@ public class ActivityController {
     @Operation(summary = "Get metadata about auditable records in the system for certification bodies.",
             description = "All parameters are optional and will default to the first page of ONC-ACB activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first.")
+                    + "with the most recent activity first.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                        @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "/metadata/beta/acbs", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForAcbs(@RequestParam(required = false) Long start,
@@ -461,7 +481,9 @@ public class ActivityController {
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all certification bodies.  "
                     + "ROLE_ACB can see activity for their own ACBs.",
-                    deprecated = true)
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @Deprecated
     @RequestMapping(value = "/metadata/acbs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForAcbs(@RequestParam(required = false) final Long start,
@@ -483,7 +505,9 @@ public class ActivityController {
     }
 
     @Operation(summary = "Get metadata about auditable records in the system for a specific certification body.",
-            description = "A start and end date may optionally be provided to limit activity results.")
+            description = "A start and end date may optionally be provided to limit activity results.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "/metadata/acbs/{id:^-?\\d+$}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForAcbById(@PathVariable("id") final Long id,
@@ -510,9 +534,11 @@ public class ActivityController {
     @Operation(summary = "Get metadata about auditable records in the system for testing labs.",
             description = "All parameters are optional and will default to the first page of ONC-ATL activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first.")
+                    + "with the most recent activity first.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "/metadata/beta/atls", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForAtls(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
@@ -523,7 +549,9 @@ public class ActivityController {
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all testing labs.  "
                     + "ROLE_ATL can see activity for their own ATLs.",
-                    deprecated = true)
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @Deprecated
     @RequestMapping(value = "/metadata/atls", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForAtls(@RequestParam(required = false) final Long start,
@@ -545,7 +573,9 @@ public class ActivityController {
     }
 
     @Operation(summary = "Get metadata about auditable records in the system for a specific testing lab.",
-            description = "A start and end date may optionally be provided to limit activity results.")
+            description = "A start and end date may optionally be provided to limit activity results.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "/metadata/atls/{id:^-?\\d+$}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForAtlById(@PathVariable("id") final Long id,
@@ -572,9 +602,10 @@ public class ActivityController {
     @Operation(summary = "Get metadata about auditable records in the system for users.",
             description = "All parameters are optional and will default to the first page of user activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first.")
-    @RequestMapping(value = "/metadata/beta/users", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+                    + "with the most recent activity first.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
+    @RequestMapping(value = "/metadata/beta/users", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForUsers(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
@@ -583,10 +614,11 @@ public class ActivityController {
 
     @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for users.",
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
-            deprecated = true)
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @Deprecated
-    @RequestMapping(value = "/metadata/users", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/metadata/users", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForUsers(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
@@ -600,7 +632,9 @@ public class ActivityController {
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
                     + "with the most recent activity first. "
                     + "Security Restrictions: Anonymous users are only allowed to see activity for public "
-                    + "announcements. All other roles can see private and public announcements.")
+                    + "announcements. All other roles can see private and public announcements.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "/metadata/beta/announcements", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForAnnouncements(@RequestParam(required = false) Long start,
@@ -613,10 +647,11 @@ public class ActivityController {
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
                     + "Security Restrictions: Anonymous users are only allowed to see activity for public "
                     + "announcements.  All other roles can see private and public announcements.",
-                    deprecated = true)
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @Deprecated
-    @RequestMapping(value = "/metadata/announcements", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/metadata/announcements", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForAnnouncements(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
@@ -628,9 +663,10 @@ public class ActivityController {
     @Operation(summary = "Get metadata about auditable records in the system for complaints.",
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all complaints.  "
-                    + "ROLE_ACB can see activity for their own ACBs.")
-    @RequestMapping(value = "/metadata/complaints", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+                    + "ROLE_ACB can see activity for their own ACBs.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
+    @RequestMapping(value = "/metadata/complaints", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForComplaints(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
@@ -642,9 +678,10 @@ public class ActivityController {
     @Operation(summary = "Get metadata about auditable records in the system for quarterly reports.",
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all quarterly reports.  "
-                    + "ROLE_ACB can see activity for their own ACBs.")
-    @RequestMapping(value = "/metadata/quarterly-reports", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+                    + "ROLE_ACB can see activity for their own ACBs.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
+    @RequestMapping(value = "/metadata/quarterly-reports", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForQuarterlyReports(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
 
@@ -667,9 +704,10 @@ public class ActivityController {
     @Operation(summary = "Get metadata about auditable records in the system for annual reports.",
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all annual reports.  "
-                    + "ROLE_ACB can see activity for their own ACBs.")
-    @RequestMapping(value = "/metadata/annual-reports", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+                    + "ROLE_ACB can see activity for their own ACBs.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
+    @RequestMapping(value = "/metadata/annual-reports", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForAnnualReports(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
@@ -681,9 +719,10 @@ public class ActivityController {
     @Operation(summary = "Get metadata about auditable records in the system for pending listings.",
             description = "All parameters are optional and will default to the first page of pending listing activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first.")
-    @RequestMapping(value = "/metadata/beta/pending-listings", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+                    + "with the most recent activity first.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
+    @RequestMapping(value = "/metadata/beta/pending-listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForPendingListings(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
@@ -692,10 +731,11 @@ public class ActivityController {
 
     @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for pending listings.",
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
-            deprecated = true)
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @Deprecated
-    @RequestMapping(value = "/metadata/pending_listings", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/metadata/pending_listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForPendingListings(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
@@ -707,9 +747,9 @@ public class ActivityController {
     @Operation(summary = "Get metadata about auditable records in the system for corrective action plans.",
             description = "All parameters are optional and will default to the first page of corrective action plan activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first.")
-    @RequestMapping(value = "/metadata/beta/corrective-action-plans", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+                    + "with the most recent activity first.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY) })
+    @RequestMapping(value = "/metadata/beta/corrective-action-plans", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForCorrectiveActionPlans(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
@@ -719,10 +759,10 @@ public class ActivityController {
 
     @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for corrective action plans.",
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
-            deprecated = true)
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY) })
     @Deprecated
-    @RequestMapping(value = "/metadata/corrective_action_plans", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/metadata/corrective_action_plans", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForCorrectiveActionPlans(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
@@ -735,7 +775,9 @@ public class ActivityController {
     @Operation(summary = "Get metadata about auditable records in the system for pending surveillances.",
             description = "All parameters are optional and will default to the first page of pending surveillance activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first.")
+                    + "with the most recent activity first.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "/metadata/beta/pending-surveillances", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForPendingSurveillances(@RequestParam(required = false) Long start,
@@ -746,7 +788,9 @@ public class ActivityController {
 
     @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for pending surveillances.",
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
-            deprecated = true)
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @Deprecated
     @RequestMapping(value = "/metadata/pending_surveillances", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -761,7 +805,9 @@ public class ActivityController {
     @Operation(summary = "Get metadata about auditable records in the system for change requests.",
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all chan ge requests.  "
-                    + "ROLE_ACB can see activity for change requests they are associated with.")
+                    + "ROLE_ACB can see activity for change requests they are associated with.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "/metadata/change-requests", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForChangeRequests(@RequestParam final Long start,
@@ -781,7 +827,9 @@ public class ActivityController {
     description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
             + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all certification bodies. "
             + "ROLE_ACB can see their own information.",
-            deprecated = true)
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "/acbs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForACBs(@RequestParam final Long start,
             @RequestParam final Long end)
@@ -802,7 +850,9 @@ public class ActivityController {
     description = "A start and end date may optionally be provided to limit activity results.  "
             + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all certification bodies.  "
             + "ROLE_ACB can see their own information.",
-            deprecated = true)
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "/acbs/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
 
     public List<ActivityDetails> activityForACBById(@PathVariable("id") final Long id,
@@ -850,7 +900,9 @@ public class ActivityController {
     description = "Users must specify 'start' and 'end' parameters to restrict the date "
             + "range of the results. Anonymous users will only receive activity for public "
             + "announcements.",
-            deprecated = true)
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "/announcements", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForAnnoucements(@RequestParam final Long start,
@@ -866,7 +918,9 @@ public class ActivityController {
     description = "A start and end date may optionally be provided to limit activity results.  "
             + "Security Restrictions: Anonymous users are only allowed to see activity for public "
             + "announcements.  All other roles can see private and public announcements.",
-            deprecated = true)
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "/announcements/{id}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForAnnouncementById(@PathVariable("id") final Long id,
@@ -896,7 +950,9 @@ public class ActivityController {
     description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
             + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all testing labs.  "
             + "ROLE_ATL can see their own information.",
-            deprecated = true)
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "/atls", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityforATLs(@RequestParam final Long start, @RequestParam final Long end)
             throws JsonParseException, IOException, ValidationException {
@@ -915,7 +971,9 @@ public class ActivityController {
     description = "A start and end date may optionally be provided to limit activity results.  "
             + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all testing labs.  "
             + "ROLE_ATL can see their own information.",
-            deprecated = true)
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "/atls/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForATLById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
@@ -961,7 +1019,9 @@ public class ActivityController {
     @Operation(summary = "DEPRECATED. Get auditable data for all API keys",
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
                     + "Security Restrictions: Only ROLE_ADMIN or ROLE_ONC",
-                    deprecated = true)
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "/api_keys", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForApiKeys(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
@@ -975,7 +1035,9 @@ public class ActivityController {
     @Operation(summary = "DEPRECATED. Get auditable data for all API keys",
         description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
             + "Security Restrictions: Only ROLE_ADMIN or ROLE_ONC",
-            deprecated = true)
+        deprecated = true,
+        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "/metadata/api-keys", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForApiKeys(@RequestParam final Long start,
         @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
@@ -988,7 +1050,9 @@ public class ActivityController {
     @Operation(summary = "Get metadata about auditable records in the system for API Keys.",
             description = "All parameters are optional and will default to the first page of API Key activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first.")
+                    + "with the most recent activity first.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "/metadata/beta/api-keys", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForApiKeys(@RequestParam(required = false) Long start,
@@ -999,10 +1063,10 @@ public class ActivityController {
 
     @Deprecated
     @Operation(summary = "DEPRECATED. Get auditable data for certified products",
-    description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
-    deprecated = true)
-    @RequestMapping(value = "/certified_products", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
+        deprecated = true,
+        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+    @RequestMapping(value = "/certified_products", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForCertifiedProducts(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
@@ -1014,9 +1078,9 @@ public class ActivityController {
     @Deprecated
     @Operation(summary = "DEPRECATED. Get auditable data for a specific certified product.",
             description = "A start and end date may optionally be provided to limit activity results.",
-            deprecated = true)
-    @RequestMapping(value = "/certified_products/{id:^-?\\d+$}", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+    @RequestMapping(value = "/certified_products/{id:^-?\\d+$}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForCertifiedProductById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
                     throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
@@ -1042,14 +1106,14 @@ public class ActivityController {
     @Deprecated
     @SuppressWarnings({"checkstyle:parameternumber", "checkstyle:linelength"})
     @Operation(summary = "DEPRECATED Get auditable data for a specific certified product based on CHPL Product Number.",
-    description = "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} "
+        description = "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} "
             + "represents a valid CHPL Product Number.  A valid call to this service would look like "
             + "activity/certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD. "
             + "A start and end date may optionally be provided to limit activity results.",
-            deprecated = true)
+        deprecated = true,
+        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}",
-    method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForCertifiedProductByChplProductNumber(
             @PathVariable("year") final String year,
             @PathVariable("testingLab") final String testingLab,
@@ -1093,14 +1157,14 @@ public class ActivityController {
     @Deprecated
     @Operation(summary = "DEPRECATED. Get auditable data for a specific certified product based "
             + "on a legacy CHPL Product Number.",
-    description = "{chplPrefix}-{identifier} represents a valid CHPL Product Number.  "
-            + "A valid call to this service "
-            + "would look like activity/certified_products/CHP-999999. "
-            + "A start and end date may optionally be provided to limit activity results.",
-            deprecated = true)
+            description = "{chplPrefix}-{identifier} represents a valid CHPL Product Number.  "
+                + "A valid call to this service "
+                + "would look like activity/certified_products/CHP-999999. "
+                + "A start and end date may optionally be provided to limit activity results.",
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/certified_products/{chplPrefix}-{identifier}",
-    method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForCertifiedProductByChplProductNumber(
             @PathVariable("chplPrefix") final String chplPrefix,
             @PathVariable("identifier") final String identifier,
@@ -1135,11 +1199,13 @@ public class ActivityController {
 
     @Deprecated
     @Operation(summary = "DEPRECATED. Get auditable data for all pending certified products",
-    description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.  "
+        description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.  "
             + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB (specific to own ACB).",
-            deprecated = true)
+        deprecated = true,
+        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "/pending_certified_products", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForPendingCertifiedProducts(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
@@ -1154,11 +1220,13 @@ public class ActivityController {
 
     @Deprecated
     @Operation(summary = "DEPRECATED. Get auditable data for a specific pending certified product.",
-    description = "A start and end date may optionally be provided to limit activity results.  "
+        description = "A start and end date may optionally be provided to limit activity results.  "
             + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB (specific to own ACB).",
-            deprecated = true)
+        deprecated = true,
+        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "/pending_certified_products/{id}", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForPendingCertifiedProductById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start,
             @RequestParam(required = false) final Long end)
@@ -1200,8 +1268,9 @@ public class ActivityController {
 
     @Deprecated
     @Operation(summary = "DEPRECATED. Get auditable data for all products",
-    description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
-    deprecated = true)
+        description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
+        deprecated = true,
+        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/products", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForProducts(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
@@ -1213,10 +1282,10 @@ public class ActivityController {
 
     @Deprecated
     @Operation(summary = "DEPRECATED. Get auditable data for a specific product.",
-    description = "A start and end date may optionally be provided to limit activity results.",
-    deprecated = true)
-    @RequestMapping(value = "/products/{id}", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        description = "A start and end date may optionally be provided to limit activity results.",
+        deprecated = true,
+        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+    @RequestMapping(value = "/products/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForProducts(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start,
             @RequestParam(required = false) final Long end)
@@ -1241,8 +1310,9 @@ public class ActivityController {
 
     @Deprecated
     @Operation(summary = "DEPRECATED. Get auditable data for all versions",
-    description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
-    deprecated = true)
+        description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
+        deprecated = true,
+        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/versions", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForVersions(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
@@ -1254,10 +1324,10 @@ public class ActivityController {
 
     @Deprecated
     @Operation(summary = "DEPRECATED. Get auditable data for a specific version.",
-    description = "A start and end date may optionally be provided to limit activity results.",
-    deprecated = true)
-    @RequestMapping(value = "/versions/{id}", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        description = "A start and end date may optionally be provided to limit activity results.",
+        deprecated = true,
+        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+    @RequestMapping(value = "/versions/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForVersions(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start,
             @RequestParam(required = false) final Long end)
@@ -1282,10 +1352,12 @@ public class ActivityController {
 
     @Deprecated
     @Operation(summary = "DEPRECATED. Get auditable data about all CHPL user accounts",
-    description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.  "
+        description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.  "
             + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_CMS_STAFF "
             + "(of ROLE_CMS_STAFF Users), ROLE_ACB (of their own), or ROLE_ATL (of their own).",
-            deprecated = true)
+        deprecated = true,
+        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "/users", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @PreAuthorize("isAuthenticated()")
     public List<ActivityDetails> activityForUsers(@RequestParam final Long start,
@@ -1302,8 +1374,10 @@ public class ActivityController {
 
     @Operation(summary = "Get auditable data about a specific CHPL user account.",
             description = "A start and end date may optionally be provided to limit activity results.  "
-                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_CMS_STAFF "
-                    + "(of ROLE_CMS_STAFF Users), ROLE_ACB (of their own), or ROLE_ATL (of their own).")
+                + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_CMS_STAFF "
+                + "(of ROLE_CMS_STAFF Users), ROLE_ACB (of their own), or ROLE_ATL (of their own).",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "/users/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForUsers(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start,
@@ -1341,8 +1415,9 @@ public class ActivityController {
 
     @Deprecated
     @Operation(summary = "DEPRECATED. Get auditable data about all developers",
-    description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
-    deprecated = true)
+        description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
+        deprecated = true,
+        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/developers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForDevelopers(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
@@ -1355,10 +1430,10 @@ public class ActivityController {
 
     @Deprecated
     @Operation(summary = "DEPRECATED. Get auditable data for a specific developer.",
-    description = "A start and end date may optionally be provided to limit activity results.",
-    deprecated = true)
-    @RequestMapping(value = "/developers/{id}", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        description = "A start and end date may optionally be provided to limit activity results.",
+        deprecated = true,
+        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+    @RequestMapping(value = "/developers/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityForDeveloperById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start,
             @RequestParam(required = false) final Long end)
@@ -1383,11 +1458,12 @@ public class ActivityController {
 
     @Deprecated
     @Operation(summary = "DEPRECATED. Track the actions of all users in the system",
-    description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
+        description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
             + "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
-            deprecated = true)
-    @RequestMapping(value = "/user_activities", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        deprecated = true,
+        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
+    @RequestMapping(value = "/user_activities", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<UserActivity> activityByUser(@RequestParam final Long start,
             @RequestParam final Long end)
                     throws JsonParseException, IOException, UserRetrievalException, ValidationException {
@@ -1399,9 +1475,10 @@ public class ActivityController {
 
     @Operation(summary = "Track the actions of a specific user in the system",
             description = "A start and end date may optionally be provided to limit activity results."
-                    + "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
-    @RequestMapping(value = "/user_activities/{id}", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+                    + "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
+    @RequestMapping(value = "/user_activities/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityDetails> activityByUser(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start,
             @RequestParam(required = false) final Long end)
@@ -1594,12 +1671,6 @@ public class ActivityController {
         return activityManager.getActivityForObject(concept, objectId, startDate, endDate);
     }
 
-    /**
-     * Make sure the start date is not after the end date.
-     * @param startDate
-     * @param endDate
-     * @throws IllegalArgumentException
-     */
     private void validateActivityDates(final Long startDate, final Long endDate) throws IllegalArgumentException {
         LocalDate startDateUtc =
                 Instant.ofEpochMilli(startDate).atZone(ZoneId.of("UTC")).toLocalDate();
@@ -1611,13 +1682,6 @@ public class ActivityController {
         }
     }
 
-    /**
-     * Validates the start is not after the end date.
-     * Validates the amount of time between start/end dates is not larger than our defined max range.
-     * @param startDate
-     * @param endDate
-     * @throws IllegalArgumentException
-     */
     private void validateActivityDatesAndDateRange(final Long startDate, final Long endDate) throws IllegalArgumentException {
         LocalDate startDateUtc =
                 Instant.ofEpochMilli(startDate).atZone(ZoneId.of("UTC")).toLocalDate();

@@ -35,6 +35,7 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
 import gov.healthit.chpl.filter.APIKeyAuthenticationFilter;
 import gov.healthit.chpl.registration.RateLimitingInterceptor;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControlHandlerInterceptor;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -160,8 +161,10 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
                 .license(new License().name("BSD License").url("https://github.com/chpladmin/chpl-api/blob/staging/LICENSE")))
                 .addServersItem(new Server().url(chplServiceUrl))
                 .components(new Components()
-                        .addSecuritySchemes("api-key", new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(In.HEADER).name("API-Key").scheme("API-Key"))
-                        .addSecuritySchemes("bearer-token", new SecurityScheme().type(SecurityScheme.Type.HTTP).in(In.HEADER).name("Bearer").scheme("Bearer").bearerFormat("JWT")));
+                        .addSecuritySchemes(SwaggerSecurityRequirement.API_KEY,
+                                new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(In.HEADER).name("API-Key").scheme("API-Key"))
+                        .addSecuritySchemes(SwaggerSecurityRequirement.BEARER,
+                                new SecurityScheme().type(SecurityScheme.Type.HTTP).in(In.HEADER).name("Bearer").scheme("Bearer").bearerFormat("JWT")));
     }
 
     @Bean

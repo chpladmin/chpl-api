@@ -36,6 +36,7 @@ import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
@@ -69,7 +70,7 @@ public class CertificationBodyController {
     @Operation(summary = "List all certification bodies (ONC-ACBs).",
             description = "Setting the 'editable' parameter to true will return all ONC-ACBs that the logged in user has "
                     + "edit permissions on. Security Restrictions:  All users can see all active ONC-ACBs.",
-            security = { @SecurityRequirement(name = "api-key") }
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY) }
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The ONC-ACBs request was successful.",
@@ -100,7 +101,7 @@ public class CertificationBodyController {
     }
 
     @Operation(summary = "Get details about a specific ONC-ACB.",
-            security = { @SecurityRequirement(name = "api-key") }
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY) }
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The ONC-ACB ID was valid.",
@@ -120,8 +121,8 @@ public class CertificationBodyController {
 
     @Operation(summary = "Create a new ONC-ACB.",
             description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
-            security = { @SecurityRequirement(name = "api-key"),
-                    @SecurityRequirement(name = "bearer-token") }
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) }
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The ONC-ACB ID was valid.",
@@ -172,8 +173,8 @@ public class CertificationBodyController {
 
     @Operation(summary = "Update an existing ONC-ACB.",
             description = "Security Restriction: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB with administrative authority.",
-            security = { @SecurityRequirement(name = "api-key"),
-                    @SecurityRequirement(name = "bearer-token")
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The ONC-ACB data was updated.",
@@ -247,8 +248,8 @@ public class CertificationBodyController {
             description = "The logged in user must have ROLE_ADMIN or ROLE_ACB and have administrative authority on the "
                     + " specified ONC-ACB. The user specified in the request will have all authorities "
                     + " removed that are associated with the specified ONC-ACB.",
-            security = { @SecurityRequirement(name = "api-key"),
-                    @SecurityRequirement(name = "bearer-token") }
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) }
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The permissions were successfully removed.",
@@ -281,8 +282,8 @@ public class CertificationBodyController {
     @Operation(summary = "List users with permissions on a specified ONC-ACB.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or have administrative "
                     + "or read authority on the specified ONC-ACB",
-            security = { @SecurityRequirement(name = "api-key"),
-                    @SecurityRequirement(name = "bearer-token") }
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) }
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The request was successful.",

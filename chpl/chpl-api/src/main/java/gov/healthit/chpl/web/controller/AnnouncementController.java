@@ -24,11 +24,13 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.AnnouncementManager;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.results.AnnouncementResults;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "announcements", description = "Allows CRUD operations on announcements.")
@@ -41,9 +43,11 @@ public class AnnouncementController {
     private AnnouncementManager announcementManager;
 
     @Operation(summary = "Get all announcements.",
-            description = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can retrieve future scheduled announcements "
-                    + "and private announcements.  ROLE_ACB, ROLE_ATL, and ROLE_CMS_STAFF can retrieve private "
-                    + "announcements.  All users can retrieve public announcements.")
+        description = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can retrieve future scheduled announcements "
+                + "and private announcements.  ROLE_ACB, ROLE_ATL, and ROLE_CMS_STAFF can retrieve private "
+                + "announcements.  All users can retrieve public announcements.",
+        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.FOUR_HOURS)
     public @ResponseBody AnnouncementResults getAnnouncements(
@@ -64,11 +68,12 @@ public class AnnouncementController {
     }
 
     @Operation(summary = "Get a specific announcement.",
-            description = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can retrieve future scheduled "
-                    + "announcements and private announcements.  ROLE_ACB, ROLE_ATL, and ROLE_CMS_STAFF "
-                    + "can retrieve private announcements.  All users can retrieve public announcements.")
-    @RequestMapping(value = "/{announcementId}", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        description = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can retrieve future scheduled "
+                + "announcements and private announcements.  ROLE_ACB, ROLE_ATL, and ROLE_CMS_STAFF "
+                + "can retrieve private announcements.  All users can retrieve public announcements.",
+        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
+    @RequestMapping(value = "/{announcementId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.FOUR_HOURS)
     public @ResponseBody Announcement getAnnouncementById(@PathVariable("announcementId") final Long announcementId)
             throws EntityRetrievalException {
@@ -78,9 +83,11 @@ public class AnnouncementController {
     }
 
     @Operation(summary = "Create a new announcement.",
-            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
+            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     public Announcement create(@RequestBody final Announcement announcementInfo) throws InvalidArgumentsException,
     UserRetrievalException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
@@ -113,10 +120,11 @@ public class AnnouncementController {
     }
 
     @Operation(summary = "Change an existing announcement.",
-            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
-    @RequestMapping(value = "/{announcementId}", method = RequestMethod.PUT,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
+            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
+    @RequestMapping(value = "/{announcementId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = "application/json; charset=utf-8")
     public Announcement updateAnnouncement(@RequestBody final Announcement announcementInfo)
             throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateCertifiedBodyException {
@@ -139,9 +147,11 @@ public class AnnouncementController {
     }
 
     @Operation(summary = "Delete an existing announcement.",
-            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
+            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "/{announcementId}", method = RequestMethod.DELETE,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     public String deleteAnnouncement(@PathVariable("announcementId") final Long announcementId)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
 

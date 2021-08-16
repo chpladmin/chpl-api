@@ -29,8 +29,10 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.logging.Loggable;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.results.BooleanResult;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 
@@ -48,12 +50,13 @@ public class ApiKeyController {
     private Environment env;
 
     @Operation(summary = "Sign up for a new API key.",
-            description = "Anyone wishing to access the methods listed in this API must have an API key. This service "
-                    + " will auto-generate a key and send it to the supplied email address. It must be included "
-                    + " in subsequent API calls via either a header with the name 'API-Key' or as a URL parameter"
-                    + " named 'api_key'.")
+        description = "Anyone wishing to access the methods listed in this API must have an API key. This service "
+                + " will auto-generate a key and send it to the supplied email address. It must be included "
+                + " in subsequent API calls via either a header with the name 'API-Key' or as a URL parameter"
+                + " named 'api_key'.",
+        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     public KeyRegistered register(@RequestBody ApiKeyRegistration registration) throws EntityCreationException,
     AddressException, MessagingException, JsonProcessingException, EntityRetrievalException {
 
@@ -77,28 +80,31 @@ public class ApiKeyController {
     }
 
     @Operation(summary = "Sends an email validation to user requesting a new API key.",
-            description = "Anyone wishing to access the methods listed in this API must have an API key. This request "
-                      + "will create an email invitation and send it to the supplied email address. The "
-                      + "purpose of the invitation is to validate the email address of the potential API user.")
+        description = "Anyone wishing to access the methods listed in this API must have an API key. This request "
+                  + "will create an email invitation and send it to the supplied email address. The "
+                  + "purpose of the invitation is to validate the email address of the potential API user.",
+          security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/request", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public BooleanResult request(@RequestBody ApiKeyRegistration registration) throws ValidationException {
         return new BooleanResult(apiKeyManager.createRequest(registration));
     }
 
     @Operation(summary = "Confirms a user's email address and provides the new API key.",
-            description = "Anyone wishing to access the methods listed in this API must have an API key. This service "
-                    + "will validate that the user has provided a valid email address and provide them with a new "
-                    + "API key. It must be included in subsequent API calls via either a header with the name "
-                    + "'API-Key' or as a URL parameter named 'api_key'.")
+        description = "Anyone wishing to access the methods listed in this API must have an API key. This service "
+                + "will validate that the user has provided a valid email address and provide them with a new "
+                + "API key. It must be included in subsequent API calls via either a header with the name "
+                + "'API-Key' or as a URL parameter named 'api_key'.",
+        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/confirm", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public ApiKey confirm(@RequestBody String apiKeyRequestToken) throws JsonProcessingException, ValidationException, EntityCreationException, EntityRetrievalException, MessagingException {
         return apiKeyManager.confirmRequest(apiKeyRequestToken);
     }
 
     @Operation(summary = "Remove an API key.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC")
-    @RequestMapping(value = "/{key}", method = RequestMethod.DELETE,
-    produces = "application/json; charset=utf-8")
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
+    @RequestMapping(value = "/{key}", method = RequestMethod.DELETE, produces = "application/json; charset=utf-8")
     public KeyRevoked revoke(@PathVariable("key") final String key,
             @RequestHeader(value = "API-Key", required = false) String userApiKey,
             @RequestParam(value = "apiKey", required = false) String userApiKeyParam) throws Exception {
@@ -116,7 +122,9 @@ public class ApiKeyController {
     }
 
     @Operation(summary = "List all API keys that have been created.",
-            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
+            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ApiKey> listKeys(@RequestParam(required = false, defaultValue = "false") boolean includeDeleted) {
         return apiKeyManager.findAll(includeDeleted);
