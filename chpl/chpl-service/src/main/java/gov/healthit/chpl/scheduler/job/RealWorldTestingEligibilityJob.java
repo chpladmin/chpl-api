@@ -31,7 +31,6 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.service.RealWorldTestingService;
 import lombok.NoArgsConstructor;
 
 public class RealWorldTestingEligibilityJob extends QuartzJob {
@@ -43,9 +42,6 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
     @Autowired
     @Qualifier("rwtEligibilityYearDAO")
     private RwtEligibilityYearDAO rwtEligibilityYearDAO;
-
-    @Autowired
-    private RealWorldTestingService realWorldTestingService;
 
     @Value("${realWorldTestingCriteriaKeys}")
     private String[] eligibleCriteriaKeys;
@@ -68,11 +64,11 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
                 .filter(listing -> !doesListingHaveExistingRwtEligibility(listing))
                 .collect(Collectors.toList());
 
-        getCertifiedProductDetails(listings).stream()
-            .filter(detail -> isCertificationDateBeforeAsOfDate(detail, asOfDate)
-                    && isListingStatusActiveAsOfDate(detail, asOfDate)
-                    && realWorldTestingService.doesListingAttestToEligibleCriteria(detail))
-            .forEach(detail -> updateRwtEligiblityYear(detail));
+        //getCertifiedProductDetails(listings).stream()
+        //    .filter(detail -> isCertificationDateBeforeAsOfDate(detail, asOfDate)
+        //            && isListingStatusActiveAsOfDate(detail, asOfDate)
+        //            && realWorldTestingService.doesListingAttestToEligibleCriteria(detail))
+        //    .forEach(detail -> updateRwtEligiblityYear(detail));
         LOGGER.info("********* Completed the Real World Testing Eligibility job. *********");
     }
 
@@ -121,12 +117,13 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
     }
 
     private boolean doesListingHaveExistingRwtEligibility(CertifiedProductDetailsDTO listing) {
-        if (Objects.nonNull(listing.getRwtEligibilityYear())) {
-            LOGGER.info("Listing: " + listing.getId() + " - Already RWT eligible");
-            return true;
-        } else {
-            return false;
-        }
+        //if (Objects.nonNull(listing.getRwtEligibilityYear())) {
+        //    LOGGER.info("Listing: " + listing.getId() + " - Already RWT eligible");
+        //    return true;
+        //} else {
+        //    return false;
+        //}
+        return false;
     }
 
     private boolean isCertificationDateBeforeAsOfDate(CertifiedProductSearchDetails listing, Date asOfDate) {
@@ -187,7 +184,7 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
         @Transactional
         public void updateRwtEligibilityYear(Long listingId, Integer year) throws EntityRetrievalException {
             CertifiedProductEntity entity = getEntityById(listingId);
-            entity.setRwtEligibilityYear(year);
+            //entity.setRwtEligibilityYear(year);
             try {
                 update(entity);
             } catch (Exception ex) {

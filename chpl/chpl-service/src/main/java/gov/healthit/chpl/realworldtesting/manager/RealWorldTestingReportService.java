@@ -3,6 +3,7 @@ package gov.healthit.chpl.realworldtesting.manager;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +16,7 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
+import gov.healthit.chpl.service.RealWorldTestingService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -25,21 +27,30 @@ public class RealWorldTestingReportService {
     private CertifiedProductDAO certifiedProductDAO;
     private ErrorMessageUtil errorMsg;
     private Environment env;
+    private RealWorldTestingService realWorldTestingService;
+
 
     @Autowired
-    public RealWorldTestingReportService(CertifiedProductDAO certifiedProductDAO, ErrorMessageUtil errorMsg, Environment env) {
+    public RealWorldTestingReportService(CertifiedProductDAO certifiedProductDAO, ErrorMessageUtil errorMsg, Environment env,
+            RealWorldTestingService realWorldTestingService) {
+
         this.certifiedProductDAO = certifiedProductDAO;
         this.errorMsg = errorMsg;
         this.env = env;
+        this.realWorldTestingService = realWorldTestingService;
     }
 
     public List<RealWorldTestingReport> getRealWorldTestingReports(List<Long> acbIds, Logger logger) {
         List<RealWorldTestingReport> reports = null;
         try {
-            reports = getListingWith2015Edition(logger).stream()
-                    .filter(listing -> isListingRwtEligible(listing.getRwtEligibilityYear()))
+            reports = getListingWith2015Edition(LOGGER).stream()
                     .filter(listing -> isInListOfAcbs(listing, acbIds))
                     .map(listing -> getRealWorldTestingReport(listing, logger))
+                    .filter(report -> report.getRwtEligibilityYear() != null
+                            || report.getRwtPlansCheckDate() != null
+                            || report.getRwtPlansUrl() != null
+                            || report.getRwtResultsCheckDate() != null
+                            || report.getRwtResultsUrl() != null)
                     .collect(Collectors.toList());
         } catch (Exception e) {
             LOGGER.catching(e);
@@ -53,10 +64,6 @@ public class RealWorldTestingReportService {
                 certifiedProductDAO.findByEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
         logger.info("Completed Retreiving 2015 Listings");
         return listings;
-    }
-
-    private boolean isListingRwtEligible(Integer rwtEligYear) {
-        return rwtEligYear != null;
     }
 
     private boolean isRwtPlansEmpty(RealWorldTestingReport report) {
@@ -75,6 +82,8 @@ public class RealWorldTestingReportService {
     }
 
     private RealWorldTestingReport getRealWorldTestingReport(CertifiedProductDetailsDTO listing, Logger logger) {
+        Optional<Integer> rwtEligYear = realWorldTestingService.getRwtEligibilityYearForListing(listing.getId());
+
         RealWorldTestingReport report = RealWorldTestingReport.builder()
                 .acbName(listing.getCertificationBodyName())
                 .chplProductNumber(listing.getChplProductNumber())
@@ -82,14 +91,18 @@ public class RealWorldTestingReportService {
                 .productId(listing.getProduct().getId())
                 .developerName(listing.getDeveloper().getName())
                 .developerId(listing.getDeveloper().getId())
+                .rwtEligibilityYear(rwtEligYear.isPresent() ? rwtEligYear.get() : null)
                 .rwtPlansUrl(listing.getRwtPlansUrl())
                 .rwtPlansCheckDate(listing.getRwtPlansCheckDate())
                 .rwtResultsUrl(listing.getRwtResultsUrl())
                 .rwtResultsCheckDate(listing.getRwtResultsCheckDate())
-                .rwtEligibilityYear(listing.getRwtEligibilityYear())
                 .build();
 
-        return addMessages(report, logger);
+        if (rwtEligYear.isPresent()) {
+            return addMessages(report, logger);
+        } else {
+            return report;
+        }
     }
 
     @SuppressWarnings("checkstyle:linelength")

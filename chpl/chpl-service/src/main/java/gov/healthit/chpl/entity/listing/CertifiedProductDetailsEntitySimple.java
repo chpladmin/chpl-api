@@ -247,9 +247,6 @@ public class CertifiedProductDetailsEntitySimple {
     @Column(name = "rwt_results_check_date")
     private LocalDate rwtResultsCheckDate;
 
-    @Column(name = "rwt_eligibility_year")
-    private Integer rwtEligibilityYear;
-
     @Column(name = "svap_notice_url")
     private String svapNoticeUrl;
 }
