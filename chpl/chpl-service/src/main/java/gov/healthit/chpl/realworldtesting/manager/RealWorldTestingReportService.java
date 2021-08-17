@@ -12,9 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
 import gov.healthit.chpl.service.RealWorldTestingService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -28,16 +31,18 @@ public class RealWorldTestingReportService {
     private ErrorMessageUtil errorMsg;
     private Environment env;
     private RealWorldTestingService realWorldTestingService;
+    private CertificationStatusEventsService certificationStatusEventsService;
 
 
     @Autowired
     public RealWorldTestingReportService(CertifiedProductDAO certifiedProductDAO, ErrorMessageUtil errorMsg, Environment env,
-            RealWorldTestingService realWorldTestingService) {
+            RealWorldTestingService realWorldTestingService, CertificationStatusEventsService certificationStatusEventsService) {
 
         this.certifiedProductDAO = certifiedProductDAO;
         this.errorMsg = errorMsg;
         this.env = env;
         this.realWorldTestingService = realWorldTestingService;
+        this.certificationStatusEventsService = certificationStatusEventsService;
     }
 
     public List<RealWorldTestingReport> getRealWorldTestingReports(List<Long> acbIds, Logger logger) {
@@ -84,9 +89,17 @@ public class RealWorldTestingReportService {
     private RealWorldTestingReport getRealWorldTestingReport(CertifiedProductDetailsDTO listing, Logger logger) {
         Optional<Integer> rwtEligYear = realWorldTestingService.getRwtEligibilityYearForListing(listing.getId());
 
+        CertificationStatusEvent currentStatus;
+        try {
+            currentStatus = certificationStatusEventsService.getCurrentCertificationStatusEvent(listing.getId());
+        } catch (EntityRetrievalException e) {
+            currentStatus = null;
+        }
+
         RealWorldTestingReport report = RealWorldTestingReport.builder()
                 .acbName(listing.getCertificationBodyName())
                 .chplProductNumber(listing.getChplProductNumber())
+                .currentStatus(currentStatus != null ? currentStatus.getStatus().getName() : "")
                 .productName(listing.getProduct().getName())
                 .productId(listing.getProduct().getId())
                 .developerName(listing.getDeveloper().getName())
