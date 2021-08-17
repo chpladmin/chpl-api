@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.mail.MessagingException;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.StringUtils;
@@ -31,6 +29,7 @@ import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
 import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
 import lombok.extern.log4j.Log4j2;
@@ -147,7 +146,7 @@ public class UserDefinedTriggersEmailJob extends QuartzJob {
     }
 
     private void sendEmail(JobExecutionContext jobContext, List<List<String>> csvRows)
-            throws MessagingException {
+            throws EmailNotSentException {
         LOGGER.info("Sending email to {} with contents {} and a total of {} user triggers",
                 getEmailRecipients(jobContext).get(0), getHtmlMessage(csvRows.size()));
 

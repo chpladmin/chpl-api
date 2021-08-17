@@ -22,6 +22,7 @@ SURVEILLANCE_RESULT,Required if SURVEILLANCE_ENDED is not null,"Non-Conformity;
 No Non-Conformity",Whether or not a non-conformity was found for the conducted surveillance.
 NON_CONFORMITY_TYPE,"Required IF SURVEILLANCE_RESULT = ""Non-Conformity""","Where applicable, please use the reg text number (e.g. 170.315(a)(2) or 170.523(k)(1) ). If there is no corresponding regulatory reference, use ""Other Non-Conformity""","For non-conformities related to specific regulatory references (e.g. certified capabilities, transparency or disclosure requirements, or use of the Certification Mark), the regulation reference is used (e.g. 170.315(a)(2) or 170.523(l). If the non-conformity type is designated as ‘Other Non-Conformity', then the associated non-conformity does not have a relevant regulatory reference."
 NON_CONFORMITY_STATUS,"Required IF SURVEILLANCE_RESULT = ""Non-Conformity""",Open; Closed,Whether the non-conformity is open or closed (has been resolved).
+NON_CONFORMITY_CLOSE_DATE,No,<MM/DD/YYYY>,Date the non-conformity was closed.
 DATE_OF_DETERMINATION,"Required IF SURVEILLANCE_RESULT = ""Non-Conformity""",<MM/DD/YYYY>,The date that the ONC-ACB determined that a non-conformity was present.
 CAP_APPROVAL_DATE,No,<MM/DD/YYYY>,The date that the ONC-ACB approved the corrective action plan proposed by the developer.
 ACTION_BEGAN_DATE,No,<MM/DD/YYYY>,The date that the corrective action was started.

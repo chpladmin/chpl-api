@@ -19,6 +19,7 @@ Corrective Action Plan Approved Date,No,<MM/DD/YYYY>,The date that the ONC-ACB a
 Date Corrective Action Began,No,<MM/DD/YYYY>,The date that the corrective action was started.
 Date Corrective Action Must Be Completed,"Required if ""CAP_APPROVAL_DATE"" is not null",<MM/DD/YYYY>,The date that the corrective action must be completed in order to avoid termination of the certified product's certification status.
 Date Corrective Action Was Completed,No,<MM/DD/YYYY>,The date that the corrective action was completed.
+Date Non-conformity Was Closed,No,<MM/DD/YYYY>,The date the non-conformity was closed.
 Number of Days from Determination to CAP Approval,No,<integers>,The number of days from the date of determination of non-conformitiy to the date the CAP was approved.
 Number of Days from Determination to Present,No,<integers>,The number of days from from the date of determination of non-conformity to present day.
 Number of Days from CAP Approval to CAP Began,No,<integers>,The number of days from the date the CAP was approved to the date the CAP began.

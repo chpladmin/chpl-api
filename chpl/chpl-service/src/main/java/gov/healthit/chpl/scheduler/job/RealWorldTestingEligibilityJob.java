@@ -2,7 +2,6 @@ package gov.healthit.chpl.scheduler.job;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -25,7 +24,6 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
@@ -33,7 +31,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.service.RealWorldTestingService;
 import lombok.NoArgsConstructor;
 
 public class RealWorldTestingEligibilityJob extends QuartzJob {
@@ -47,7 +45,7 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
     private RwtEligibilityYearDAO rwtEligibilityYearDAO;
 
     @Autowired
-    private CertificationCriterionService certificationCriterionService;
+    private RealWorldTestingService realWorldTestingService;
 
     @Value("${realWorldTestingCriteriaKeys}")
     private String[] eligibleCriteriaKeys;
@@ -64,7 +62,6 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
         Date asOfDate = getEligibilityAsOfDate();
-        List<CertificationCriterion> eligibleCriteria = getRwtEligibleCriteria();
 
         //This will get us all of the listings that we still need to check criteria eligibility (reduce calls for details)
         List<CertifiedProductDetailsDTO> listings = getAllListingsWith2015Edition().stream()
@@ -74,7 +71,7 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
         getCertifiedProductDetails(listings).stream()
             .filter(detail -> isCertificationDateBeforeAsOfDate(detail, asOfDate)
                     && isListingStatusActiveAsOfDate(detail, asOfDate)
-                    && doesListingAttestToEligibleCriteria(detail, eligibleCriteria))
+                    && realWorldTestingService.doesListingAttestToEligibleCriteria(detail))
             .forEach(detail -> updateRwtEligiblityYear(detail));
         LOGGER.info("********* Completed the Real World Testing Eligibility job. *********");
     }
@@ -105,25 +102,6 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
 
     }
 
-    private boolean doesListingAttestToEligibleCriteria(
-            CertifiedProductSearchDetails listing, List<CertificationCriterion> eligibleCriteria) {
-        boolean doesExist = listing.getCertificationResults().stream()
-                .filter(result -> result.isSuccess()
-                        && eligibleCriteria.stream()
-                        .filter(crit -> crit.getId().equals(result.getCriterion().getId()))
-                        .findAny()
-                        .isPresent())
-                .findAny()
-                .isPresent();
-
-        if (doesExist) {
-            return true;
-        } else {
-            LOGGER.info("Listing: " + listing.getId() + " - Does not attest to any eligible criteria");
-            return false;
-        }
-    }
-
     private CertifiedProductSearchDetails getCertifiedProductSearchDetails(Long listingId) {
         try {
             CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(listingId);
@@ -132,12 +110,6 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
             LOGGER.error("Could not retrieve the details for listing: " + listingId);
             throw new RuntimeException(e);
         }
-    }
-
-    private List<CertificationCriterion> getRwtEligibleCriteria() {
-        return Arrays.asList(eligibleCriteriaKeys).stream()
-                .map(key -> certificationCriterionService.get(key))
-                .collect(Collectors.toList());
     }
 
     private List<CertifiedProductDetailsDTO> getAllListingsWith2015Edition() {
@@ -224,5 +196,4 @@ public class RealWorldTestingEligibilityJob extends QuartzJob {
             }
         }
     }
-
 }

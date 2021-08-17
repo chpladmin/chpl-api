@@ -178,6 +178,26 @@ const promotinginteroperabilityControllerTests = {
   },
 };
 
+const certificationidControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/certification-id-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/certification-id-controller-tests.xml',
+    },
+  },
+};
+
+const activityControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/activity-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/activity-controller-tests.xml',
+    },
+  },
+};
+
 const jobs = [
   cb => newman.run(acbControllerTests,cb),
   cb => newman.run(apiKeyControllerTests,cb),
@@ -195,6 +215,8 @@ const jobs = [
   cb => newman.run(dimensionaldataControllerTests,cb),
   cb => newman.run(surveillanceReportControllerTests,cb),
   cb => newman.run(searchControllerTests,cb),
+  cb => newman.run(certificationidControllerTests,cb),
+  cb => newman.run(activityControllerTests,cb),
 ];
 
 const responseCallback = (err) => {

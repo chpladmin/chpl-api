@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
 import org.apache.logging.log4j.LogManager;
@@ -23,6 +22,7 @@ import gov.healthit.chpl.api.ApiKeyManager;
 import gov.healthit.chpl.api.dao.ApiKeyDAO;
 import gov.healthit.chpl.api.domain.ApiKey;
 import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
@@ -55,7 +55,7 @@ private static final Logger LOGGER = LogManager.getLogger("apiKeyDeleteJobLogger
                 sendEmail(apiKey);
             } catch (EntityRetrievalException | EntityCreationException | JsonProcessingException e) {
                 LOGGER.error("Error updating api_key.deleted for id: " + apiKey.getId(), e);
-            } catch (MessagingException e) {
+            } catch (AddressException | EmailNotSentException e) {
                 LOGGER.error("Error sending email to: " + apiKey.getEmail(), e);
             }
         }
@@ -67,7 +67,7 @@ private static final Logger LOGGER = LogManager.getLogger("apiKeyDeleteJobLogger
         apiKeyManager.deleteKey(apiKey.getId());
     }
 
-    private void sendEmail(ApiKey apiKey) throws AddressException, MessagingException {
+    private void sendEmail(ApiKey apiKey) throws AddressException, EmailNotSentException {
         List<String> recipients = new ArrayList<String>();
         recipients.add(apiKey.getEmail());
 

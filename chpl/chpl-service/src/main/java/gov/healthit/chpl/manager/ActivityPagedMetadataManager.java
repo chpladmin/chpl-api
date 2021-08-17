@@ -131,7 +131,7 @@ public class ActivityPagedMetadataManager extends SecuredManager {
         if (errors.size() > 0) {
             throw new ValidationException(errors);
         }
-        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
+        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc() || resourcePermissions.isUserRoleOncStaff()) {
             return getActivityMetadataPageByConcept(ActivityConcept.USER, startMillis, endMillis, pageNum, pageSize);
         } else {
             List<UserDTO> allowedUsers = resourcePermissions.getAllUsersForCurrentUser();
