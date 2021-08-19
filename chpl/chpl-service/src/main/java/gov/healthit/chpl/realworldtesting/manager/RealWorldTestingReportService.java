@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -48,7 +49,9 @@ public class RealWorldTestingReportService {
     public List<RealWorldTestingReport> getRealWorldTestingReports(List<Long> acbIds, Logger logger) {
         List<RealWorldTestingReport> reports = null;
         try {
-            reports = getListingWith2015Edition(LOGGER).stream()
+            ForkJoinPool pool = new ForkJoinPool(4);
+
+            reports = pool.submit(() -> getListingWith2015Edition(LOGGER).parallelStream()
                     .filter(listing -> isInListOfAcbs(listing, acbIds))
                     .map(listing -> getRealWorldTestingReport(listing, logger))
                     .filter(report -> report.getRwtEligibilityYear() != null
@@ -56,7 +59,8 @@ public class RealWorldTestingReportService {
                             || report.getRwtPlansUrl() != null
                             || report.getRwtResultsCheckDate() != null
                             || report.getRwtResultsUrl() != null)
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toList()))
+                    .get();
         } catch (Exception e) {
             LOGGER.catching(e);
         }
