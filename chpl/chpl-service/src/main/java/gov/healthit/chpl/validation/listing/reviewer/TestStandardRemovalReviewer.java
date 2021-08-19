@@ -9,17 +9,20 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 
 @Component("testStandardRemovalReviewer")
-public class TestStandardRemovalReviewer implements Reviewer {
+public class TestStandardRemovalReviewer extends PermissionBasedReviewer {
     private ErrorMessageUtil msgUtil;
     private FF4j ff4j;
 
     @Autowired
-    public TestStandardRemovalReviewer(ErrorMessageUtil msgUtil, FF4j ff4j) {
+    public TestStandardRemovalReviewer(ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions, FF4j ff4j) {
+        super(msgUtil, resourcePermissions);
         this.msgUtil = msgUtil;
+        this.resourcePermissions = resourcePermissions;
         this.ff4j = ff4j;
     }
 
@@ -40,9 +43,13 @@ public class TestStandardRemovalReviewer implements Reviewer {
                 Util.formatCriteriaNumber(certResult.getCriterion()),
                 testStandardName);
         if ((certResult.getOptionalStandards() != null && certResult.getOptionalStandards().size() > 0) || (ff4j.check(FeatureList.OPTIONAL_STANDARDS_ERROR) && isListing2015Edition(listing))) {
-            listing.getErrorMessages().add(message);
+            addCriterionErrorOrWarningByPermission(listing, certResult, message);
         } else {
-            listing.getWarningMessages().add(message);
+            if (certResult.getCriterion().getRemoved()) {
+                addListingWarningByPermission(listing, message);
+            } else {
+                listing.getWarningMessages().add(message);
+            }
         }
     }
 
