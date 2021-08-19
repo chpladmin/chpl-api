@@ -37,8 +37,8 @@ public class RealWorldTestingService {
     @Value("${realWorldTestingCriteriaKeys}")
     private String[] eligibleCriteriaKeys;
 
-    private LocalDate rwtProgramStartDate = LocalDate.of(2018, 9, 1);
-    private Integer rwtProgramFirstEligibilityYear = 2019;
+    private LocalDate rwtProgramStartDate = LocalDate.of(2020, 8, 1);
+    private Integer rwtProgramFirstEligibilityYear = 2021;
 
     private CertificationCriterionService certificationCriterionService;
     private RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer;
@@ -63,19 +63,26 @@ public class RealWorldTestingService {
         LocalDate currentRwtEligStartDate = rwtProgramStartDate;
         Integer currentRwtEligYear = rwtProgramFirstEligibilityYear;
 
+        Long startTime = (new Date()).getTime();
+        if (log) {
+            logger.info(String.format("ListingId: %s - Starting Eligibility Tests", listingId));
+        }
         while (currentRwtEligStartDate.isBefore(LocalDate.now())) {
             Optional<CertifiedProductSearchDetails> listing = getListingAsOfDate(listingId, currentRwtEligStartDate);
 
             if (listing.isPresent()) {
+
                 Optional<Integer> rwtEligYearBasedOnIcs = getRwtEligibilityYearBasedOnIcs(listing.get(), logger);
                 if (rwtEligYearBasedOnIcs.isPresent()) {
                     if (log) {
-                        logger.info(String.format("ListingId: %s - Eligibility Year calculated using ICS - %s", listing.get().getId(), rwtEligYearBasedOnIcs.get()));
+                        Long endTime = (new Date()).getTime();
+                        logger.info(String.format("ListingId: %s - Eligibility Year calculated using ICS - %s   (%s sec)", listing.get().getId(), rwtEligYearBasedOnIcs.get(), (endTime-startTime)/1000));
                     }
                     return rwtEligYearBasedOnIcs;
                 } else if (isListingRwtEligible(listing.get(), currentRwtEligStartDate)) {
                     if (log) {
-                        logger.info(String.format("ListingId: %s - Eligibility Year - %s", listing.get().getId(), currentRwtEligYear));
+                        Long endTime = (new Date()).getTime();
+                        logger.info(String.format("ListingId: %s - Eligibility Year - %s   (%s sec)", listing.get().getId(), currentRwtEligYear, (endTime-startTime)/1000));
                     }
                     return Optional.of(currentRwtEligYear);
                 }
@@ -99,7 +106,6 @@ public class RealWorldTestingService {
                 //Need a "details" object for the icsCode
                 CertifiedProductDTO cpChild = certifiedProductDAO.getById(listing.getId());
                 List<Integer> parentEligibilityYears = new ArrayList<Integer>();
-
                 for (CertifiedProduct cp : listing.getIcs().getParents()) {
                     //Need a "details" object for the icsCode
                     CertifiedProductDTO cpParent = certifiedProductDAO.getById(cp.getId());
@@ -136,6 +142,7 @@ public class RealWorldTestingService {
             return Optional.of(listing);
         }
     }
+
 
     private boolean isListingRwtEligible(CertifiedProductSearchDetails listing, LocalDate asOfDate) {
         return isListingStatusActiveAsOfEligibilityDate(listing, asOfDate)

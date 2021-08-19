@@ -22,10 +22,8 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
 import gov.healthit.chpl.service.RealWorldTestingService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import lombok.extern.log4j.Log4j2;
 
 @Service
-@Log4j2
 public class RealWorldTestingReportService {
 
     private CertifiedProductDAO certifiedProductDAO;
@@ -51,7 +49,7 @@ public class RealWorldTestingReportService {
         try {
             ForkJoinPool pool = new ForkJoinPool(4);
 
-            reports = pool.submit(() -> getListingWith2015Edition(LOGGER).parallelStream()
+            reports = pool.submit(() -> getListingWith2015Edition(logger).parallelStream()
                     .filter(listing -> isInListOfAcbs(listing, acbIds))
                     .map(listing -> getRealWorldTestingReport(listing, logger))
                     .filter(report -> report.getRwtEligibilityYear() != null
@@ -62,7 +60,7 @@ public class RealWorldTestingReportService {
                     .collect(Collectors.toList()))
                     .get();
         } catch (Exception e) {
-            LOGGER.catching(e);
+            logger.catching(e);
         }
         return reports;
     }
@@ -124,7 +122,7 @@ public class RealWorldTestingReportService {
 
     @SuppressWarnings("checkstyle:linelength")
     private RealWorldTestingReport addMessages(RealWorldTestingReport report, Logger logger) {
-        logger.info("Checking/Adding messages for listing: " + report.getChplProductNumber());
+        //logger.info("Checking/Adding messages for listing: " + report.getChplProductNumber());
         if (isRwtPlansEmpty(report)) {
             if (arePlansLateWarning(report.getRwtEligibilityYear())) {
                 report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.missingPlansWarning",
@@ -147,7 +145,7 @@ public class RealWorldTestingReportService {
                         getResultsLateDate(report.getRwtEligibilityYear()).toString()));
             }
         }
-        logger.info("Completed Checking/Adding messages for listing: " + report.getChplProductNumber());
+        //logger.info("Completed Checking/Adding messages for listing: " + report.getChplProductNumber());
         return report;
     }
 
