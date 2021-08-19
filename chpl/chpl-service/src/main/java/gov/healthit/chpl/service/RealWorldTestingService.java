@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -27,10 +28,8 @@ import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.DateUtil;
-import lombok.extern.log4j.Log4j2;
 
 @Component
-@Log4j2
 public class RealWorldTestingService {
     private static final String CURES_TITLE = "Cures Update";
     public static final String CURES_SUFFIX = " (" + CURES_TITLE + ")";
@@ -56,11 +55,11 @@ public class RealWorldTestingService {
         this.certifiedProductDAO = certifiedProductDAO;
     }
 
-    public Optional<Integer> getRwtEligibilityYearForListing(Long listingId) {
-        return getRwtEligibilityYearForListing(listingId, true);
+    public Optional<Integer> getRwtEligibilityYearForListing(Long listingId, Logger logger) {
+        return getRwtEligibilityYearForListing(listingId, true, logger);
     }
 
-    public Optional<Integer> getRwtEligibilityYearForListing(Long listingId, boolean log) {
+    public Optional<Integer> getRwtEligibilityYearForListing(Long listingId, boolean log, Logger logger) {
         LocalDate currentRwtEligStartDate = rwtProgramStartDate;
         Integer currentRwtEligYear = rwtProgramFirstEligibilityYear;
 
@@ -68,15 +67,15 @@ public class RealWorldTestingService {
             Optional<CertifiedProductSearchDetails> listing = getListingAsOfDate(listingId, currentRwtEligStartDate);
 
             if (listing.isPresent()) {
-                Optional<Integer> rwtEligYearBasedOnIcs = getRwtEligibilityYearBasedOnIcs(listing.get());
+                Optional<Integer> rwtEligYearBasedOnIcs = getRwtEligibilityYearBasedOnIcs(listing.get(), logger);
                 if (rwtEligYearBasedOnIcs.isPresent()) {
                     if (log) {
-                        LOGGER.info(String.format("ListingId: %s - Eligibility Year calculated using ICS - %s", listing.get().getId(), rwtEligYearBasedOnIcs.get()));
+                        logger.info(String.format("ListingId: %s - Eligibility Year calculated using ICS - %s", listing.get().getId(), rwtEligYearBasedOnIcs.get()));
                     }
                     return rwtEligYearBasedOnIcs;
                 } else if (isListingRwtEligible(listing.get(), currentRwtEligStartDate)) {
                     if (log) {
-                        LOGGER.info(String.format("ListingId: %s - Eligibility Year - %s", listing.get().getId(), currentRwtEligYear));
+                        logger.info(String.format("ListingId: %s - Eligibility Year - %s", listing.get().getId(), currentRwtEligYear));
                     }
                     return Optional.of(currentRwtEligYear);
                 }
@@ -86,12 +85,12 @@ public class RealWorldTestingService {
             currentRwtEligYear++;
         }
         if (log) {
-            LOGGER.info(String.format("ListingId: %s - Not Eligible", listingId));
+            logger.info(String.format("ListingId: %s - Not Eligible", listingId));
         }
         return Optional.empty();
     }
 
-    private Optional<Integer> getRwtEligibilityYearBasedOnIcs(CertifiedProductSearchDetails listing) {
+    private Optional<Integer> getRwtEligibilityYearBasedOnIcs(CertifiedProductSearchDetails listing, Logger logger) {
         try {
             if (listing.getIcs().getParents() != null
                     && listing.getIcs().getParents().size() > 0
@@ -110,7 +109,7 @@ public class RealWorldTestingService {
                         continue;
                     }
                     //Get the eligiblity year for the parent...  Uh-oh - possible recursion...
-                    Optional<Integer> parentEligibilityYear = getRwtEligibilityYearForListing(cp.getId(), false);
+                    Optional<Integer> parentEligibilityYear = getRwtEligibilityYearForListing(cp.getId(), false, logger);
                     if (parentEligibilityYear.isPresent()) {
                         parentEligibilityYears.add(parentEligibilityYear.get());
                     }

@@ -91,7 +91,7 @@ public class RealWorldTestingReportService {
     }
 
     private RealWorldTestingReport getRealWorldTestingReport(CertifiedProductDetailsDTO listing, Logger logger) {
-        Optional<Integer> rwtEligYear = realWorldTestingService.getRwtEligibilityYearForListing(listing.getId());
+        Optional<Integer> rwtEligYear = realWorldTestingService.getRwtEligibilityYearForListing(listing.getId(), logger);
 
         CertificationStatusEvent currentStatus;
         try {
