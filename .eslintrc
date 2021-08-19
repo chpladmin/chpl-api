@@ -11,8 +11,12 @@
     "globals": {
         "module": true,
         "inject": true,
+        "process": true,
     },
-    "parser": "babel-eslint",
+    "parser": "@babel/eslint-parser",
+    "parserOptions": {
+        "requireConfigFile": false,
+    },
     "rules": {
         "block-spacing": ["error"],
         "comma-dangle": ["error", "always-multiline"],

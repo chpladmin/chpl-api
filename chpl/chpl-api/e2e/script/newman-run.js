@@ -23,13 +23,13 @@ const acbControllerTests = {
 };
 
 const apiKeyControllerTests = {
-    ...commonOptions,
-    collection: collection_path + '/api-key-controller.postman_collection.json',
-    reporter: {
-        junit: {
-            export: reports_path + '/api-key-controller-tests.xml',
-        },
+  ...commonOptions,
+  collection: collection_path + '/api-key-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/api-key-controller-tests.xml',
     },
+  },
 };
 
 const certifiedProductControllerDataTests = {
@@ -216,7 +216,7 @@ const jobs = [
   cb => newman.run(surveillanceReportControllerTests,cb),
   cb => newman.run(searchControllerTests,cb),
   cb => newman.run(certificationidControllerTests,cb),
-  cb => newman.run(activityControllerTests,cb)
+  cb => newman.run(activityControllerTests,cb),
 ];
 
 const responseCallback = (err) => {
