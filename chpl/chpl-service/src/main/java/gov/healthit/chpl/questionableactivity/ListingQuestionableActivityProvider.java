@@ -3,6 +3,7 @@ package gov.healthit.chpl.questionableactivity;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -14,10 +15,14 @@ import java.util.Optional;
 import java.util.TimeZone;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.activity.history.ListingActivityUtil;
+import gov.healthit.chpl.activity.history.explorer.RealWorldTestingEligibilityActivityExplorer;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
@@ -27,6 +32,7 @@ import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.service.RealWorldTestingEligiblityService;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -38,11 +44,29 @@ public class ListingQuestionableActivityProvider {
     private Environment env;
     private CertificationCriterionService criterionService;
 
+    //Needed to determine if listing is Real World Testing Eligible
+    @Value("${realWorldTestingCriteriaKeys}")
+    private String[] eligibleCriteriaKeys;
+
+    @Value("${rwtProgramFirstEligibilityYear}")
+    private Integer rwtProgramFirstEligibilityYear;
+
+    @Value("#{T(java.time.LocalDate).parse('${rwtProgramStartDate}')}")
+    private LocalDate rwtProgramStartDate;
+
+    private RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer;
+    private ListingActivityUtil listingActivityUtil;
+    private CertifiedProductDAO certifiedProductDAO;
+
     @Autowired
-    public ListingQuestionableActivityProvider(Environment env,
-            CertificationCriterionService criterionService) {
+    public ListingQuestionableActivityProvider(Environment env, CertificationCriterionService criterionService,
+            RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer, ListingActivityUtil listingActivityUtil,
+            CertifiedProductDAO certifiedProductDAO) {
         this.env = env;
         this.criterionService = criterionService;
+        this.realWorldTestingEligibilityActivityExplorer = realWorldTestingEligibilityActivityExplorer;
+        this.listingActivityUtil = listingActivityUtil;
+        this.certifiedProductDAO = certifiedProductDAO;
     }
 
     public QuestionableActivityListingDTO check2011EditionUpdated(
@@ -470,7 +494,7 @@ public class ListingQuestionableActivityProvider {
 
     public QuestionableActivityListingDTO checkRealWorldTestingPlanAddedForNotEligibleListing(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         QuestionableActivityListingDTO activity = null;
-        if (origListing.getRwtEligibilityYear() == null && StringUtils.isEmpty(origListing.getRwtPlansUrl()) && !StringUtils.isEmpty(newListing.getRwtPlansUrl())) {
+        if (isListingRealWorldTestingEligible(newListing.getId()) && StringUtils.isEmpty(origListing.getRwtPlansUrl()) && !StringUtils.isEmpty(newListing.getRwtPlansUrl())) {
             activity = new QuestionableActivityListingDTO();
             activity.setAfter("Added Plans URL " + newListing.getRwtPlansUrl());
         }
@@ -479,7 +503,7 @@ public class ListingQuestionableActivityProvider {
 
     public QuestionableActivityListingDTO checkRealWorldTestingResultsAddedForNotEligibleListing(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         QuestionableActivityListingDTO activity = null;
-        if (origListing.getRwtEligibilityYear() == null && StringUtils.isEmpty(origListing.getRwtResultsUrl()) && !StringUtils.isEmpty(newListing.getRwtResultsUrl())) {
+        if (isListingRealWorldTestingEligible(newListing.getId()) && StringUtils.isEmpty(origListing.getRwtResultsUrl()) && !StringUtils.isEmpty(newListing.getRwtResultsUrl())) {
             activity = new QuestionableActivityListingDTO();
             activity.setAfter("Added Results URL " + newListing.getRwtResultsUrl());
         }
@@ -575,6 +599,14 @@ public class ListingQuestionableActivityProvider {
         } else {
             return false;
         }
+    }
+
+    private boolean isListingRealWorldTestingEligible(Long listingId) {
+        RealWorldTestingEligiblityService realWorldTestingEligibilityService =
+                new RealWorldTestingEligiblityService(criterionService, realWorldTestingEligibilityActivityExplorer,
+                        listingActivityUtil, certifiedProductDAO, eligibleCriteriaKeys, rwtProgramStartDate, rwtProgramFirstEligibilityYear);
+
+        return realWorldTestingEligibilityService.getRwtEligibilityYearForListing(listingId, LOGGER).getEligibilityYear().isPresent();
     }
 
     static class CertificationStatusEventComparator implements Comparator<CertificationStatusEvent>, Serializable {
