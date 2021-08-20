@@ -299,12 +299,6 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
      */
     private LocalDate rwtResultsCheckDate;
 
-    /**
-     * First year that the listing is eligible for Real World Testing data
-     */
-    private Integer rwtEligibilityYear;
-
-
     public CertifiedProductSearchBasicDetails() {
         sed = new CertifiedProductSed();
     }
