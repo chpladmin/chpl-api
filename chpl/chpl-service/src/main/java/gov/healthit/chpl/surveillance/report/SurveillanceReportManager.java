@@ -554,8 +554,8 @@ public class SurveillanceReportManager extends SecuredManager {
             //copy the four data fields
             nextReport.setActivitiesOutcomesSummary(prevReport.getActivitiesOutcomesSummary());
             nextReport.setPrioritizedElementSummary(prevReport.getPrioritizedElementSummary());
-            nextReport.setReactiveSummary(prevReport.getReactiveSummary());
-            nextReport.setDisclosureSummary(prevReport.getDisclosureSummary());
+            nextReport.setReactiveSurveillanceSummary(prevReport.getReactiveSurveillanceSummary());
+            nextReport.setDisclosureRequirementsSummary(prevReport.getDisclosureRequirementsSummary());
             try {
                 quarterlyDao.update(nextReport);
             } catch (Exception ex) {

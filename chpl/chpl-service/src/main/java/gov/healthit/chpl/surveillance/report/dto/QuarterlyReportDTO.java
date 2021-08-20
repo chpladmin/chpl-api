@@ -21,18 +21,18 @@ public class QuarterlyReportDTO {
     private Integer year;
     private QuarterDTO quarter;
     private String activitiesOutcomesSummary;
-    private String reactiveSummary;
+    private String reactiveSurveillanceSummary;
     private String prioritizedElementSummary;
-    private String disclosureSummary;
+    private String disclosureRequirementsSummary;
 
     public QuarterlyReportDTO(QuarterlyReportEntity entity) {
         this();
         this.id = entity.getId();
         this.year = entity.getYear();
         this.activitiesOutcomesSummary = entity.getActivitiesOutcomesSummary();
-        this.reactiveSummary = entity.getReactiveSummary();
+        this.reactiveSurveillanceSummary = entity.getReactiveSurveillanceSummary();
         this.prioritizedElementSummary = entity.getPrioritizedElementSummary();
-        this.disclosureSummary = entity.getDisclosureSummary();
+        this.disclosureRequirementsSummary = entity.getDisclosureRequirementsSummary();
 
         if (entity.getAcb() != null) {
             this.acb = new CertificationBodyDTO(entity.getAcb());

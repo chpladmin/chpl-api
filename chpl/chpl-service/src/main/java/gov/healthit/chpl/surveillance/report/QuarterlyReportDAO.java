@@ -257,8 +257,8 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
         toCreateEntity.setPrioritizedElementSummary(toCreate.getPrioritizedElementSummary());
         toCreateEntity.setQuarterId(toCreate.getQuarter().getId());
         toCreateEntity.setActivitiesOutcomesSummary(toCreate.getActivitiesOutcomesSummary());
-        toCreateEntity.setReactiveSummary(toCreate.getReactiveSummary());
-        toCreateEntity.setDisclosureSummary(toCreate.getDisclosureSummary());
+        toCreateEntity.setReactiveSurveillanceSummary(toCreate.getReactiveSurveillanceSummary());
+        toCreateEntity.setDisclosureRequirementsSummary(toCreate.getDisclosureRequirementsSummary());
         toCreateEntity.setCreationDate(new Date());
         toCreateEntity.setLastModifiedUser(AuthUtil.getAuditId());
 
@@ -293,8 +293,8 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
         QuarterlyReportEntity toUpdateEntity = getEntityById(toUpdate.getId());
         toUpdateEntity.setActivitiesOutcomesSummary(toUpdate.getActivitiesOutcomesSummary());
         toUpdateEntity.setPrioritizedElementSummary(toUpdate.getPrioritizedElementSummary());
-        toUpdateEntity.setReactiveSummary(toUpdate.getReactiveSummary());
-        toUpdateEntity.setDisclosureSummary(toUpdate.getDisclosureSummary());
+        toUpdateEntity.setReactiveSurveillanceSummary(toUpdate.getReactiveSurveillanceSummary());
+        toUpdateEntity.setDisclosureRequirementsSummary(toUpdate.getDisclosureRequirementsSummary());
         toUpdateEntity.setLastModifiedUser(AuthUtil.getAuditId());
 
         super.update(toUpdateEntity);
