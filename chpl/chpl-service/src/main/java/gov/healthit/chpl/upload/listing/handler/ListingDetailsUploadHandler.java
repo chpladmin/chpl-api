@@ -86,7 +86,8 @@ public class ListingDetailsUploadHandler {
                 .product(parseProduct(headingRecord, listingRecords))
                 .version(parseVersion(headingRecord, listingRecords))
                 .certificationEdition(editionHandler.handle(headingRecord, listingRecords))
-                .transparencyAttestationUrl(parseTransparencyAttestationUrl(headingRecord, listingRecords))
+                .transparencyAttestationUrl(parseMandatoryDisclosures(headingRecord, listingRecords))
+                .mandatoryDisclosures(parseMandatoryDisclosures(headingRecord, listingRecords))
                 .targetedUsers(targetedUserUploadHandler.handle(headingRecord, listingRecords))
                 .accessibilityStandards(accessibilityStandardsHandler.handle(headingRecord, listingRecords))
                 .qmsStandards(qmsHandler.handle(headingRecord, listingRecords))
@@ -217,7 +218,7 @@ public class ListingDetailsUploadHandler {
         return atls;
     }
 
-    private String parseTransparencyAttestationUrl(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+    private String parseMandatoryDisclosures(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         return uploadUtil.parseSingleRowField(Headings.K_1_URL, headingRecord, listingRecords);
     }
 
