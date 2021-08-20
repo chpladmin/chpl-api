@@ -151,7 +151,7 @@ public class RealWorldTestingEligiblityService {
 
     private boolean doesListingAttestToEligibleCriteria(CertifiedProductSearchDetails listing) {
         List<CertificationCriterion> eligibleCriteria = getRwtEligibleCriteria();
-        boolean doesExist = listing.getCertificationResults().stream()
+        return listing.getCertificationResults().stream()
                 .filter(result -> result.isSuccess()
                         && eligibleCriteria.stream()
                         .filter(crit -> crit.getId().equals(result.getCriterion().getId()))
@@ -159,12 +159,6 @@ public class RealWorldTestingEligiblityService {
                         .isPresent())
                 .findAny()
                 .isPresent();
-
-        if (doesExist) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
 
@@ -180,21 +174,12 @@ public class RealWorldTestingEligiblityService {
         } else {
             LocalDate certDate = DateUtil.toLocalDate(listing.getCertificationDate());
             return certDate.isBefore(eligibilityDate);
-                return true;
-            } else {
-                return false;
-            }
         }
     }
 
     private boolean isListingStatusActiveAsOfEligibilityDate(CertifiedProductSearchDetails listing, LocalDate eligibilityDate) {
         CertificationStatusEvent event = listing.getStatusOnDate(convertLocalDateToDateUtcAtMidnight(eligibilityDate));
-        if (Objects.nonNull(event)
-                && event.getStatus().getName().equals(CertificationStatusType.Active.getName())) {
-            return true;
-        } else {
-            return false;
-        }
+        return Objects.nonNull(event) && event.getStatus().getName().equals(CertificationStatusType.Active.getName());
     }
 
     private Date convertLocalDateToDateUtcAtMidnight(LocalDate localDate) {
