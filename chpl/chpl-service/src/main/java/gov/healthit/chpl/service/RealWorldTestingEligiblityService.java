@@ -163,7 +163,6 @@ public class RealWorldTestingEligiblityService {
         if (doesExist) {
             return true;
         } else {
-            //LOGGER.info("Listing: " + listing.getId() + " - Does not attest to any eligible criteria");
             return false;
         }
     }
@@ -177,14 +176,12 @@ public class RealWorldTestingEligiblityService {
 
     private boolean isCertificationDateBeforeEligibilityDate(CertifiedProductSearchDetails listing, LocalDate eligibilityDate) {
         if (Objects.isNull(listing) || Objects.isNull(listing.getCertificationDate())) {
-            //LOGGER.info("Listing: " + listing.getId() + " - Certification date does not exist");
             return false;
         } else {
             LocalDate certDate = DateUtil.toLocalDate(listing.getCertificationDate());
-            if (certDate.isBefore(eligibilityDate)) {
+            return certDate.isBefore(eligibilityDate);
                 return true;
             } else {
-                //LOGGER.info("Listing: " + listing.getId() + " - Certification date is after eligibility start date");
                 return false;
             }
         }
@@ -196,7 +193,6 @@ public class RealWorldTestingEligiblityService {
                 && event.getStatus().getName().equals(CertificationStatusType.Active.getName())) {
             return true;
         } else {
-            //LOGGER.info("Listing: " + listing.getId() + " - Not Active");
             return false;
         }
     }

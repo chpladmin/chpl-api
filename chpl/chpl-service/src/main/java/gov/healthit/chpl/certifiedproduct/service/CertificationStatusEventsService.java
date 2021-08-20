@@ -46,7 +46,6 @@ public class CertificationStatusEventsService {
                 .map(dto -> createCertificationStatusEventBasedOnDto(dto))
                 .collect(Collectors.toCollection(ArrayList::new));
 
-
         if (statusEvents == null || statusEvents.size() == 0) {
             return null;
         }
