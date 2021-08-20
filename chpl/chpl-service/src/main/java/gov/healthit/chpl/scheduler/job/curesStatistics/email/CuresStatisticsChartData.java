@@ -186,18 +186,18 @@ public class CuresStatisticsChartData {
         }
     }
 
-    private Map<CertificationCriterionDTO, Long> getExistingCertificationCounts(LocalDate reportDate) {
+    private Map<CertificationCriterionDTO, Long> getNewCertificationCounts(LocalDate reportDate) {
         List<CuresCriterionUpgradedWithoutOriginalListingStatistic> counts =
                 curesCriterionUpgradedWithoutOriginalListingStatisticsDAO.getStatisticsForDate(reportDate);
         return counts.stream()
                 .collect(Collectors.toMap(CuresCriterionUpgradedWithoutOriginalListingStatistic::getCuresCriterion, CuresCriterionUpgradedWithoutOriginalListingStatistic::getListingsUpgradedWithoutAttestingToOriginalCount));
     }
 
-    private Map<CertificationCriterionDTO, Long> getNewCertificationCounts(LocalDate reportDate) {
-        List<CriterionUpgradedToCuresFromOriginalListingStatistic> counts =
-                criterionUpgradedToCuresFromOriginalListingStatisticsDAO.getStatisticsForDate(reportDate);
+    private Map<CertificationCriterionDTO, Long> getExistingCertificationCounts(LocalDate reportDate) {
+        List<CriterionUpgradedToCuresFromOriginalListingStatistic> counts = criterionUpgradedToCuresFromOriginalListingStatisticsDAO.getStatisticsForDate(reportDate);
         return counts.stream()
-                .collect(Collectors.toMap(CriterionUpgradedToCuresFromOriginalListingStatistic::getCuresCriterion, CriterionUpgradedToCuresFromOriginalListingStatistic::getListingsUpgradedFromOriginalCount));
+                .collect(Collectors.toMap(CriterionUpgradedToCuresFromOriginalListingStatistic::getCuresCriterion,
+                        CriterionUpgradedToCuresFromOriginalListingStatistic::getListingsUpgradedFromOriginalCount));
     }
 
     private Map<CertificationCriterionDTO, Long> getListingCounts(LocalDate reportDate) {
