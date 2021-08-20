@@ -494,7 +494,9 @@ public class ListingQuestionableActivityProvider {
 
     public QuestionableActivityListingDTO checkRealWorldTestingPlanAddedForNotEligibleListing(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         QuestionableActivityListingDTO activity = null;
-        if (isListingRealWorldTestingEligible(newListing.getId()) && StringUtils.isEmpty(origListing.getRwtPlansUrl()) && !StringUtils.isEmpty(newListing.getRwtPlansUrl())) {
+        if (StringUtils.isEmpty(origListing.getRwtPlansUrl())
+                && !StringUtils.isEmpty(newListing.getRwtPlansUrl())
+                && !isListingRealWorldTestingEligible(newListing.getId())) {
             activity = new QuestionableActivityListingDTO();
             activity.setAfter("Added Plans URL " + newListing.getRwtPlansUrl());
         }
@@ -503,7 +505,9 @@ public class ListingQuestionableActivityProvider {
 
     public QuestionableActivityListingDTO checkRealWorldTestingResultsAddedForNotEligibleListing(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         QuestionableActivityListingDTO activity = null;
-        if (isListingRealWorldTestingEligible(newListing.getId()) && StringUtils.isEmpty(origListing.getRwtResultsUrl()) && !StringUtils.isEmpty(newListing.getRwtResultsUrl())) {
+        if (StringUtils.isEmpty(origListing.getRwtResultsUrl())
+                && !StringUtils.isEmpty(newListing.getRwtResultsUrl())
+                && !isListingRealWorldTestingEligible(newListing.getId())) {
             activity = new QuestionableActivityListingDTO();
             activity.setAfter("Added Results URL " + newListing.getRwtResultsUrl());
         }
