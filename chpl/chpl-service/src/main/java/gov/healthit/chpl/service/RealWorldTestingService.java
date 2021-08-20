@@ -31,8 +31,8 @@ import gov.healthit.chpl.util.DateUtil;
 // Each time this class is used, a new instance is required so that the memoization is threadsafe
 public class RealWorldTestingService {
     private String[] eligibleCriteriaKeys;
-    private LocalDate rwtProgramStartDate = LocalDate.of(2021, 8, 1);
-    private Integer rwtProgramFirstEligibilityYear = 2022;
+    private LocalDate rwtProgramStartDate;
+    private Integer rwtProgramFirstEligibilityYear;
     private CertificationCriterionService certificationCriterionService;
     private RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer;
     private ListingActivityUtil listingActivityUtil;
@@ -42,12 +42,14 @@ public class RealWorldTestingService {
 
     public RealWorldTestingService(CertificationCriterionService certificationCriterionService,
             RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer, ListingActivityUtil listingActivityUtil,
-            CertifiedProductDAO certifiedProductDAO, String[] eligibleCriteriaKeys) {
+            CertifiedProductDAO certifiedProductDAO, String[] eligibleCriteriaKeys, LocalDate rwtProgramStartDate, Integer rwtProgramFirstEligibilityYear) {
         this.certificationCriterionService = certificationCriterionService;
         this.realWorldTestingEligibilityActivityExplorer = realWorldTestingEligibilityActivityExplorer;
         this.listingActivityUtil = listingActivityUtil;
         this.certifiedProductDAO = certifiedProductDAO;
         this.eligibleCriteriaKeys = eligibleCriteriaKeys;
+        this.rwtProgramStartDate = rwtProgramStartDate;
+        this.rwtProgramFirstEligibilityYear = rwtProgramFirstEligibilityYear;
     }
 
     public RealWorldTestingEligibility getRwtEligibilityYearForListing(Long listingId, Logger logger) {

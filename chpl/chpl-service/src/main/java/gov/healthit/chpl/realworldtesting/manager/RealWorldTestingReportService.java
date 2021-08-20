@@ -3,7 +3,6 @@ package gov.healthit.chpl.realworldtesting.manager;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -33,10 +32,15 @@ public class RealWorldTestingReportService {
     @Value("${realWorldTestingCriteriaKeys}")
     private String[] eligibleCriteriaKeys;
 
+    @Value("${rwtProgramFirstEligibilityYear}")
+    private Integer rwtProgramFirstEligibilityYear;
+
+    @Value("#{T(java.time.LocalDate).parse('${rwtProgramStartDate}')}")
+    private LocalDate rwtProgramStartDate;
+
     private CertifiedProductDAO certifiedProductDAO;
     private ErrorMessageUtil errorMsg;
     private Environment env;
-    //private RealWorldTestingService realWorldTestingService;
     private CertificationStatusEventsService certificationStatusEventsService;
     private CertificationCriterionService certificationCriterionService;
     private RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer;
@@ -57,23 +61,14 @@ public class RealWorldTestingReportService {
     }
 
     public List<RealWorldTestingReport> getRealWorldTestingReports(List<Long> acbIds, Logger logger) {
+        logger.info("Real World Testing Program Start Date: " + rwtProgramStartDate.toString());
+        logger.info("Real World Testing First Eligibility Year: " + rwtProgramFirstEligibilityYear.toString());
+
         List<RealWorldTestingReport> reports = null;
         try {
-            ForkJoinPool pool = new ForkJoinPool(4);
-
-//            reports = pool.submit(() -> getListingWith2015Edition(logger).parallelStream()
-//                    .filter(listing -> isInListOfAcbs(listing, acbIds))
-//                    .map(listing -> getRealWorldTestingReport(listing, logger))
-//                    .filter(report -> report.getRwtEligibilityYear() != null
-//                            || report.getRwtPlansCheckDate() != null
-//                            || report.getRwtPlansUrl() != null
-//                            || report.getRwtResultsCheckDate() != null
-//                            || report.getRwtResultsUrl() != null)
-//                    .collect(Collectors.toList()))
-//                    .get();
             RealWorldTestingService realWorldTestingService =
                     new RealWorldTestingService(certificationCriterionService, realWorldTestingEligibilityActivityExplorer,
-                            listingActivityUtil, certifiedProductDAO, eligibleCriteriaKeys);
+                            listingActivityUtil, certifiedProductDAO, eligibleCriteriaKeys, rwtProgramStartDate, rwtProgramFirstEligibilityYear);
 
             reports = getListingWith2015Edition(logger).stream()
                   .filter(listing -> isInListOfAcbs(listing, acbIds))
@@ -145,15 +140,14 @@ public class RealWorldTestingReportService {
                 .build();
 
         if (rwtElig.getEligibilityYear().isPresent()) {
-            return addMessages(report, logger);
+            return addMessages(report);
         } else {
             return report;
         }
     }
 
     @SuppressWarnings("checkstyle:linelength")
-    private RealWorldTestingReport addMessages(RealWorldTestingReport report, Logger logger) {
-        //logger.info("Checking/Adding messages for listing: " + report.getChplProductNumber());
+    private RealWorldTestingReport addMessages(RealWorldTestingReport report) {
         if (isRwtPlansEmpty(report)) {
             if (arePlansLateWarning(report.getRwtEligibilityYear())) {
                 report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.missingPlansWarning",
@@ -176,7 +170,6 @@ public class RealWorldTestingReportService {
                         getResultsLateDate(report.getRwtEligibilityYear()).toString()));
             }
         }
-        //logger.info("Completed Checking/Adding messages for listing: " + report.getChplProductNumber());
         return report;
     }
 
