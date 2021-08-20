@@ -183,7 +183,6 @@ public class CertifiedProductManagerTest {
         validatorFactory = Mockito.mock(ListingValidatorFactory.class);
         curesUpdateService = Mockito.mock(CuresUpdateService.class);
         criterionService = Mockito.mock(CertificationCriterionService.class);
-        realWorldTestingService = Mockito.mock(RealWorldTestingService.class);
 
         certifiedProductManager = new  CertifiedProductManager(msgUtil, cpDao,  searchDao, certDao,
                 certCriterionDao, qmsDao,  targetedUserDao, asDao,  cpQmsDao, cpMeasureDao, cpTestingLabDao,
@@ -193,7 +192,7 @@ public class CertifiedProductManagerTest {
                 testProcDao,  testDataDao, testFuncDao,  ucdDao, testParticipantDao,  testTaskDao, certStatusDao,
                 listingGraphDao, fuzzyChoicesDao,  resourcePermissions, certifiedProductSearchResultDAO,
                 certifiedProductDetailsManager, Mockito.mock(PendingCertifiedProductManager.class),
-                activityManager, validatorFactory, curesUpdateService, criterionService, realWorldTestingService);
+                activityManager, validatorFactory, curesUpdateService, criterionService);
     }
 
     @Test(expected = ValidationException.class)
