@@ -28,7 +28,7 @@ public class ListingActivityUtil {
 
     public ListingActivityUtil(CertificationCriterionService certificationCriterionService, CertificationStatusEventsService certificationStatusEventsService) {
         this.certificationCriterionService = certificationCriterionService;
-        this.certificationStatusEventsService=  certificationStatusEventsService;
+        this.certificationStatusEventsService = certificationStatusEventsService;
 
         jsonMapper = new ObjectMapper();
     }

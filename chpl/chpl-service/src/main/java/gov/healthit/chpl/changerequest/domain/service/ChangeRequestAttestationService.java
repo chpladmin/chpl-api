@@ -19,6 +19,7 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestation;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -116,7 +117,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     }
 
     @Override
-    protected void sendApprovalEmail(ChangeRequest cr) throws MessagingException {
+    protected void sendApprovalEmail(ChangeRequest cr) throws EmailNotSentException {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         new EmailBuilder(env)
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
@@ -131,7 +132,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     }
 
     @Override
-    protected void sendPendingDeveloperActionEmail(ChangeRequest cr) throws MessagingException {
+    protected void sendPendingDeveloperActionEmail(ChangeRequest cr) throws EmailNotSentException {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         new EmailBuilder(env)
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
@@ -147,7 +148,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     }
 
     @Override
-    protected void sendRejectedEmail(ChangeRequest cr) throws MessagingException {
+    protected void sendRejectedEmail(ChangeRequest cr) throws EmailNotSentException {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         new EmailBuilder(env)
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()

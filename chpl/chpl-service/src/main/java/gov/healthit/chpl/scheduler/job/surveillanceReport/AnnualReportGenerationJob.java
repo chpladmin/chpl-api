@@ -7,8 +7,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.mail.MessagingException;
-
 import org.apache.poi.ss.usermodel.Workbook;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
@@ -31,6 +29,7 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -224,7 +223,7 @@ public class AnnualReportGenerationJob implements Job {
                     .fileAttachments(attachments)
                     .acbAtlHtmlFooter()
                     .sendEmail();
-        } catch (MessagingException ex) {
+        } catch (EmailNotSentException ex) {
             LOGGER.error("Could not send email to " + recipientEmail, ex);
         }
     }

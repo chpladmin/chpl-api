@@ -8,8 +8,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.mail.MessagingException;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -32,6 +30,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.PendingSurveillanceManager;
@@ -200,14 +199,14 @@ public class SurveillanceUploadJob implements Job {
         String htmlBody = createHtmlEmailBody(pendingSurveillance, processingMessages);
         try {
             sendEmail(user.getEmail(), subject, htmlBody);
-        } catch (MessagingException ex) {
+        } catch (EmailNotSentException ex) {
             LOGGER.error("Unable to send email to " + user.getEmail());
             LOGGER.catching(ex);
         }
     }
 
     private void sendEmail(String recipientEmail, String subject, String htmlMessage)
-            throws MessagingException {
+            throws EmailNotSentException {
         LOGGER.info("Sending email to: " + recipientEmail);
         LOGGER.info("Message to be sent: " + htmlMessage);
 
