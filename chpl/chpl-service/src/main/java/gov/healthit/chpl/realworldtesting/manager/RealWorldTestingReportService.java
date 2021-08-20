@@ -23,7 +23,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.RealWorldTestingEligibility;
-import gov.healthit.chpl.service.RealWorldTestingService;
+import gov.healthit.chpl.service.RealWorldTestingEligiblityService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Service
@@ -66,13 +66,13 @@ public class RealWorldTestingReportService {
 
         List<RealWorldTestingReport> reports = null;
         try {
-            RealWorldTestingService realWorldTestingService =
-                    new RealWorldTestingService(certificationCriterionService, realWorldTestingEligibilityActivityExplorer,
+            RealWorldTestingEligiblityService realWorldTestingEligibilityService =
+                    new RealWorldTestingEligiblityService(certificationCriterionService, realWorldTestingEligibilityActivityExplorer,
                             listingActivityUtil, certifiedProductDAO, eligibleCriteriaKeys, rwtProgramStartDate, rwtProgramFirstEligibilityYear);
 
             reports = getListingWith2015Edition(logger).stream()
                   .filter(listing -> isInListOfAcbs(listing, acbIds))
-                  .map(listing -> getRealWorldTestingReport(listing, realWorldTestingService, logger))
+                  .map(listing -> getRealWorldTestingReport(listing, realWorldTestingEligibilityService, logger))
                   .filter(report -> report.getRwtEligibilityYear() != null
                           || report.getRwtPlansCheckDate() != null
                           || report.getRwtPlansUrl() != null
@@ -108,7 +108,7 @@ public class RealWorldTestingReportService {
                 .isPresent();
     }
 
-    private RealWorldTestingReport getRealWorldTestingReport(CertifiedProductDetailsDTO listing, RealWorldTestingService realWorldTestingService, Logger logger) {
+    private RealWorldTestingReport getRealWorldTestingReport(CertifiedProductDetailsDTO listing, RealWorldTestingEligiblityService realWorldTestingService, Logger logger) {
         RealWorldTestingEligibility rwtElig = realWorldTestingService.getRwtEligibilityYearForListing(listing.getId(), logger);
 
         logger.info(String.format("ListingId: %s, Elig Year %s, %s",

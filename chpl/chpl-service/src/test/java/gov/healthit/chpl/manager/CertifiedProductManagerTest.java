@@ -79,7 +79,6 @@ import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CuresUpdateService;
-import gov.healthit.chpl.service.RealWorldTestingService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.Validator;
@@ -133,7 +132,6 @@ public class CertifiedProductManagerTest {
     private ListingValidatorFactory validatorFactory;
     private CuresUpdateService curesUpdateService;
     private CertificationCriterionService criterionService;
-    private RealWorldTestingService realWorldTestingService;
 
     private CertifiedProductManager certifiedProductManager;
 

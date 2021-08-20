@@ -29,7 +29,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.DateUtil;
 
 // Each time this class is used, a new instance is required so that the memoization is threadsafe
-public class RealWorldTestingService {
+public class RealWorldTestingEligiblityService {
     private String[] eligibleCriteriaKeys;
     private LocalDate rwtProgramStartDate;
     private Integer rwtProgramFirstEligibilityYear;
@@ -40,7 +40,7 @@ public class RealWorldTestingService {
 
     private Map<Long, RealWorldTestingEligibility> memo = new HashMap<Long, RealWorldTestingEligibility>();
 
-    public RealWorldTestingService(CertificationCriterionService certificationCriterionService,
+    public RealWorldTestingEligiblityService(CertificationCriterionService certificationCriterionService,
             RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer, ListingActivityUtil listingActivityUtil,
             CertifiedProductDAO certifiedProductDAO, String[] eligibleCriteriaKeys, LocalDate rwtProgramStartDate, Integer rwtProgramFirstEligibilityYear) {
         this.certificationCriterionService = certificationCriterionService;
