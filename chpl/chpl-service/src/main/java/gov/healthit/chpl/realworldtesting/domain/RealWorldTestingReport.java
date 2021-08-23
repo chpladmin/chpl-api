@@ -20,7 +20,6 @@ public class RealWorldTestingReport {
     private String developerName;
     private Long developerId;
     private Integer rwtEligibilityYear;
-    private String reason;
     private String rwtPlansUrl;
     private LocalDate rwtPlansCheckDate;
     private String rwtResultsUrl;
@@ -38,7 +37,6 @@ public class RealWorldTestingReport {
         results.add(developerName);
         results.add(developerId == null ? null : developerId.toString());
         results.add(rwtEligibilityYear == null ? null : rwtEligibilityYear.toString());
-        results.add(reason);
         results.add(rwtPlansUrl);
         results.add(rwtPlansCheckDate == null ? null : rwtPlansCheckDate.toString());
         results.add(rwtResultsUrl);
@@ -57,8 +55,7 @@ public class RealWorldTestingReport {
         results.add("Product DBID");
         results.add("Developer Name");
         results.add("Developer DBID");
-        results.add("RWT Eligibility Year");
-        results.add("RWT Reason");
+        results.add("Initial RWT Year");
         results.add("RWT Plans URL");
         results.add("RWT Plans Submission Confirmed");
         results.add("RWT Results URL");

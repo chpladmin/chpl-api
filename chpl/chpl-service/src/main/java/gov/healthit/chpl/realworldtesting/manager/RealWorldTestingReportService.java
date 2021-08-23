@@ -115,7 +115,6 @@ public class RealWorldTestingReportService {
                 .developerName(listing.getDeveloper().getName())
                 .developerId(listing.getDeveloper().getId())
                 .rwtEligibilityYear(rwtElig.getEligibilityYear().isPresent() ? rwtElig.getEligibilityYear().get() : null)
-                .reason(rwtElig.getReason().getReason())
                 .rwtPlansUrl(listing.getRwtPlansUrl())
                 .rwtPlansCheckDate(listing.getRwtPlansCheckDate())
                 .rwtResultsUrl(listing.getRwtResultsUrl())
