@@ -13,10 +13,16 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.CertificationBodyEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name = "quarterly_report")
 public class QuarterlyReportEntity {
 

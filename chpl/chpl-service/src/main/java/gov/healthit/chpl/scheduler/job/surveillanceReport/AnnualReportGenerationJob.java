@@ -36,7 +36,7 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
 import gov.healthit.chpl.surveillance.report.builder.AnnualReportBuilderXlsx;
 import gov.healthit.chpl.surveillance.report.builder.ReportBuilderFactory;
-import gov.healthit.chpl.surveillance.report.dto.AnnualReportDTO;
+import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -83,7 +83,7 @@ public class AnnualReportGenerationJob implements Job {
             txTemplate.execute(new TransactionCallbackWithoutResult() {
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
-                    AnnualReportDTO report = null;
+                    AnnualReport report = null;
                     try {
                         report = reportManager.getAnnualReport(annualReportId);
                     } catch (EntityRetrievalException ex) {
@@ -148,7 +148,7 @@ public class AnnualReportGenerationJob implements Job {
         return isValid;
     }
 
-    private Workbook createWorkbook(AnnualReportDTO report) {
+    private Workbook createWorkbook(AnnualReport report) {
         Workbook workbook = null;
         try {
                 AnnualReportBuilderXlsx reportBuilder = reportBuilderFactory.getReportBuilder(report);
@@ -169,7 +169,7 @@ public class AnnualReportGenerationJob implements Job {
         return workbook;
     }
 
-    private File writeWorkbookAsFile(AnnualReportDTO report, Workbook workbook) {
+    private File writeWorkbookAsFile(AnnualReport report, Workbook workbook) {
         File writtenFile = null;
         String filename = getFilename(report);
         //write out the workbook contents to this file
@@ -195,7 +195,7 @@ public class AnnualReportGenerationJob implements Job {
         return writtenFile;
     }
 
-    private String getFilename(AnnualReportDTO report) {
+    private String getFilename(AnnualReport report) {
         return report.getYear() + "-" + report.getAcb().getName() + "-annual-report";
     }
 

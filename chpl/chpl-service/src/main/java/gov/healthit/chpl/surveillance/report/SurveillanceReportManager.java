@@ -35,9 +35,9 @@ import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.scheduler.job.surveillanceReport.AnnualReportGenerationJob;
 import gov.healthit.chpl.scheduler.job.surveillanceReport.QuarterlyReportGenerationJob;
-import gov.healthit.chpl.surveillance.report.dto.AnnualReportDTO;
+import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
+import gov.healthit.chpl.surveillance.report.domain.Quarter;
 import gov.healthit.chpl.surveillance.report.dto.PrivilegedSurveillanceDTO;
-import gov.healthit.chpl.surveillance.report.dto.QuarterDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportExclusionDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportRelevantListingDTO;
@@ -112,7 +112,7 @@ public class SurveillanceReportManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).CREATE_ANNUAL, #toCreate)")
-    public AnnualReportDTO createAnnualReport(AnnualReportDTO toCreate)
+    public AnnualReport createAnnualReport(AnnualReport toCreate)
     throws EntityCreationException, InvalidArgumentsException, JsonProcessingException, EntityRetrievalException {
         //Annual report has to be associated with a year and an ACB
 
@@ -123,14 +123,14 @@ public class SurveillanceReportManager extends SecuredManager {
         }
 
         //make sure there's not already an annual report for this acb and year
-        AnnualReportDTO existingAnnualReport =
+        AnnualReport existingAnnualReport =
                 annualDao.getByAcbAndYear(toCreate.getAcb().getId(), toCreate.getYear());
         if (existingAnnualReport != null) {
             throw new EntityCreationException(msgUtil.getMessage("report.annualSurveillance.exists"));
         }
 
-        AnnualReportDTO created = annualDao.create(toCreate);
-        AnnualReportDTO afterAnnualReport = annualDao.getById(created.getId());
+        AnnualReport created = annualDao.create(toCreate);
+        AnnualReport afterAnnualReport = annualDao.getById(created.getId());
         activityManager.addActivity(ActivityConcept.ANNUAL_REPORT, created.getId(),
                 "Created annual report.", null, afterAnnualReport);
         return created;
@@ -139,10 +139,10 @@ public class SurveillanceReportManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).UPDATE_ANNUAL, #toUpdate)")
-    public AnnualReportDTO updateAnnualReport(AnnualReportDTO toUpdate)
+    public AnnualReport updateAnnualReport(AnnualReport toUpdate)
     throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-        AnnualReportDTO before = annualDao.getById(toUpdate.getId());
-        AnnualReportDTO updated = annualDao.update(toUpdate);
+        AnnualReport before = annualDao.getById(toUpdate.getId());
+        AnnualReport updated = annualDao.update(toUpdate);
         activityManager.addActivity(ActivityConcept.ANNUAL_REPORT, updated.getId(),
                 "Updated annual report.", before, updated);
         return updated;
@@ -153,7 +153,7 @@ public class SurveillanceReportManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).DELETE_ANNUAL, #id)")
     public void deleteAnnualReport(Long id)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-        AnnualReportDTO before = annualDao.getById(id);
+        AnnualReport before = annualDao.getById(id);
         annualDao.delete(id);
         activityManager.addActivity(ActivityConcept.ANNUAL_REPORT, id,
                 "Deleted annual report.", before, null);
@@ -164,7 +164,7 @@ public class SurveillanceReportManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_ANNUAL)")
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_ANNUAL, filterObject)")
-    public List<AnnualReportDTO> getAnnualReports() {
+    public List<AnnualReport> getAnnualReports() {
         return annualDao.getAll();
     }
 
@@ -172,7 +172,7 @@ public class SurveillanceReportManager extends SecuredManager {
     @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_ANNUAL,"
             + "returnObject)")
-    public AnnualReportDTO getAnnualReport(Long id) throws EntityRetrievalException {
+    public AnnualReport getAnnualReport(Long id) throws EntityRetrievalException {
         return annualDao.getById(id);
     }
 
@@ -220,7 +220,7 @@ public class SurveillanceReportManager extends SecuredManager {
                 || (toCreate.getQuarter().getId() == null && StringUtils.isEmpty(toCreate.getQuarter().getName()))) {
             throw new InvalidArgumentsException("report.quarterlySurveillance.missingQuarter");
         } else if (toCreate.getQuarter().getId() == null && toCreate.getQuarter().getName() != null) {
-            QuarterDTO quarter = quarterDao.getByName(toCreate.getQuarter().getName());
+            Quarter quarter = quarterDao.getByName(toCreate.getQuarter().getName());
             if (quarter == null) {
                 throw new InvalidArgumentsException(
                         msgUtil.getMessage("report.quarterlySurveillance.badQuarter", toCreate.getQuarter().getName()));
