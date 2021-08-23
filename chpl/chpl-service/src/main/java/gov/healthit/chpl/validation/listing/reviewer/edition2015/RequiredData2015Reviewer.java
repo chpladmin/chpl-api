@@ -1,6 +1,7 @@
 package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -12,7 +13,6 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
-import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestData;
@@ -21,7 +21,6 @@ import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
-import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -308,37 +307,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                         && (cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
                     addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestProcedure",
                             Util.formatCriteriaNumber(cert.getCriterion()));
-                }
-
-                // if the criteria can and does have test procedures, make sure
-                // they are each valid
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE)
-                        && cert.getTestProcedures() != null && cert.getTestProcedures().size() > 0) {
-                    for (CertificationResultTestProcedure crTestProc : cert.getTestProcedures()) {
-                        if (crTestProc.getTestProcedure() == null) {
-                            addCriterionErrorOrWarningByPermission(listing, cert,
-                                    "listing.criteria.missingTestProcedureName",
-                                    Util.formatCriteriaNumber(cert.getCriterion()));
-                        }
-                        if (crTestProc.getTestProcedure() != null && crTestProc.getTestProcedure().getId() == null) {
-                            TestProcedureDTO foundTestProc = testProcDao.getByCriterionIdAndValue(cert.getCriterion().getId(),
-                                    crTestProc.getTestProcedure().getName());
-                            if (foundTestProc == null || foundTestProc.getId() == null) {
-                                addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.badTestProcedureName",
-                                        Util.formatCriteriaNumber(cert.getCriterion()), crTestProc.getTestProcedure().getName());
-                            } else {
-                                crTestProc.getTestProcedure().setId(foundTestProc.getId());
-                            }
-                        }
-
-                        if (crTestProc.getTestProcedure() != null
-                                && !StringUtils.isEmpty(crTestProc.getTestProcedure().getName())
-                                && StringUtils.isEmpty(crTestProc.getTestProcedureVersion())) {
-                            addCriterionErrorOrWarningByPermission(listing, cert,
-                                    "listing.criteria.missingTestProcedureVersion",
-                                    Util.formatCriteriaNumber(cert.getCriterion()));
-                        }
-                    }
                 }
 
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_DATA)

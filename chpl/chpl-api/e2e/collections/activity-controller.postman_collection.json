@@ -1,0 +1,333 @@
+{
+	"info": {
+		"name": "activity-controller",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET /activity/metadata/atls/{id}",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"ONC_STAFF users should get 200 status and response is not null for /activity/metadata/atls/{id} end point\", function () {\r",
+							"    var actualResponseBody = pm.response.json();\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(actualResponseBody).not.eql(null);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/activity/metadata/atls/3",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"activity",
+						"metadata",
+						"atls",
+						"3"
+					]
+				},
+				"description": "ONC_STAFF users should get 200 status and valid response for /activity/metadata/atls/{id} end point"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /activity/metadata/beta/pending-listings",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"ONC_STAFF users should get 200 status and response is not null for /activity/metadata/beta/pending-listings end point\", function () {\r",
+							"    var actualResponseBody = pm.response.json();\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(actualResponseBody).not.eql(null);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/activity/metadata/beta/pending-listings",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"activity",
+						"metadata",
+						"beta",
+						"pending-listings"
+					]
+				},
+				"description": "ONC_STAFF users should get 200 status and response is not null for /activity/metadata/beta/pending-listings end point"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /activity/metadata/beta/pending-surveillances",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"ONC_STAFF users should get 200 status and response is not null for /activity/metadata/beta/pending-surveillances end point\", function () {\r",
+							"    var actualResponseBody = pm.response.json();\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(actualResponseBody).not.eql(null);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/activity/metadata/beta/pending-surveillances",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"activity",
+						"metadata",
+						"beta",
+						"pending-surveillances"
+					]
+				},
+				"description": "ONC_STAFF users should get 200 status and response is not null for /activity/metadata/beta/pending-surveillances end point"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /activity/metadata/beta/users",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"ONC_STAFF users should get 200 status and response is not null for /activity/metadata/beta/users end point\", function () {\r",
+							"    var actualResponseBody = pm.response.json();\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(actualResponseBody).not.eql(null);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/activity/metadata/beta/users",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"activity",
+						"metadata",
+						"beta",
+						"users"
+					]
+				},
+				"description": "ONC_STAFF users should get 200 status and response is not null for /activity/metadata/beta/users end point"
+			},
+			"response": []
+		}
+	]
+}

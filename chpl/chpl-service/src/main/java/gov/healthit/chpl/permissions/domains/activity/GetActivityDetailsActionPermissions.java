@@ -337,7 +337,8 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
      * @return
      */
     private boolean hasAccessToUser(final JsonNode userJson) {
-        boolean hasAccess = getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc();
+        boolean hasAccess = getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
+                || getResourcePermissions().isUserRoleOncStaff();
 
         if (!hasAccess) {
             UserDTO user = null;
