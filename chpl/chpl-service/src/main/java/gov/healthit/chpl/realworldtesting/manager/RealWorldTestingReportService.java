@@ -48,10 +48,6 @@ public class RealWorldTestingReportService {
     public List<RealWorldTestingReport> getRealWorldTestingReports(List<Long> acbIds, Logger logger) {
         List<RealWorldTestingReport> reports = null;
         try {
-            //RealWorldTestingEligiblityService realWorldTestingEligibilityService =
-            //        new RealWorldTestingEligiblityService(certificationCriterionService, realWorldTestingEligibilityActivityExplorer,
-            //                listingActivityUtil, certifiedProductDAO, eligibleCriteriaKeys, rwtProgramStartDate, rwtProgramFirstEligibilityYear);
-
             RealWorldTestingEligiblityService rwtEligservice = rwtEligServiceFactory.getInstance();
 
             logger.info("Rwt Elig Service Instance: " + rwtEligservice.hashCode() + "  ****   " + rwtEligservice.toString());
