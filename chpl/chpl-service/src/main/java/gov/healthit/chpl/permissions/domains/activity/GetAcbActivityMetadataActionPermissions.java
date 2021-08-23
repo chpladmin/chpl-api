@@ -1,7 +1,5 @@
 package gov.healthit.chpl.permissions.domains.activity;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.activity.CertificationBodyActivityMetadata;
@@ -9,8 +7,6 @@ import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
 @Component("actionGetAcbActivityMetadataActionPermissions")
 public class GetAcbActivityMetadataActionPermissions extends ActionPermissions {
-    private static final Logger LOGGER = LogManager.getLogger(GetAcbActivityMetadataActionPermissions.class);
-
 
     public GetAcbActivityMetadataActionPermissions() {
     }
@@ -18,19 +14,17 @@ public class GetAcbActivityMetadataActionPermissions extends ActionPermissions {
     @Override
     public boolean hasAccess() {
         return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
-                || getResourcePermissions().isUserRoleAcbAdmin();
+                || getResourcePermissions().isUserRoleOncStaff() || getResourcePermissions().isUserRoleAcbAdmin();
     }
 
     @Override
     public boolean hasAccess(final Object obj) {
         if (!(obj instanceof CertificationBodyActivityMetadata)) {
             return false;
-        } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
+        } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
+                || getResourcePermissions().isUserRoleOncStaff()) {
             return true;
         } else {
-            //Admin and onc can see all acb activity
-            //including for retired acbs.
-            //Acb user can see activity for their own acb.
             CertificationBodyActivityMetadata metadata = (CertificationBodyActivityMetadata) obj;
             return isAcbValidForCurrentUser(metadata.getAcbId());
         }

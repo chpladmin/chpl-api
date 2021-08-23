@@ -1,24 +1,21 @@
 package gov.healthit.chpl.permissions.domains.activity;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dto.TestingLabDTO;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.util.AuthUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component("actionGetActivityMetadataByAtlActionPermissions")
 public class GetActivityMetadataByAtlActionPermissions extends ActionPermissions {
-    private static final Logger LOGGER = LogManager.getLogger(GetActivityMetadataByAtlActionPermissions.class);
-
     private TestingLabDAO atlDao;
 
     @Autowired
-    public GetActivityMetadataByAtlActionPermissions(final TestingLabDAO atlDao) {
+    public GetActivityMetadataByAtlActionPermissions(TestingLabDAO atlDao) {
         this.atlDao = atlDao;
     }
 
@@ -31,7 +28,8 @@ public class GetActivityMetadataByAtlActionPermissions extends ActionPermissions
     public boolean hasAccess(final Object obj) {
         if (!(obj instanceof Long)) {
             return false;
-        } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
+        } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
+                || getResourcePermissions().isUserRoleOncStaff()) {
             return true;
         } else {
             Long atlId = (Long) obj;
