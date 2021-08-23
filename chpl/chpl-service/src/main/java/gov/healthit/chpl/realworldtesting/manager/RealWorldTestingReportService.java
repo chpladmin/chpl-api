@@ -8,12 +8,9 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
-import gov.healthit.chpl.activity.history.ListingActivityUtil;
-import gov.healthit.chpl.activity.history.explorer.RealWorldTestingEligibilityActivityExplorer;
 import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
@@ -23,56 +20,46 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.RealWorldTestingEligibility;
-import gov.healthit.chpl.service.RealWorldTestingEligiblityService;
+import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityService;
+import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityServiceFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Service
 public class RealWorldTestingReportService {
 
-    @Value("${realWorldTestingCriteriaKeys}")
-    private String[] eligibleCriteriaKeys;
-
-    @Value("${rwtProgramFirstEligibilityYear}")
-    private Integer rwtProgramFirstEligibilityYear;
-
-    @Value("#{T(java.time.LocalDate).parse('${rwtProgramStartDate}')}")
-    private LocalDate rwtProgramStartDate;
-
     private CertifiedProductDAO certifiedProductDAO;
     private ErrorMessageUtil errorMsg;
     private Environment env;
     private CertificationStatusEventsService certificationStatusEventsService;
-    private CertificationCriterionService certificationCriterionService;
-    private RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer;
-    private ListingActivityUtil listingActivityUtil;
+    private RealWorldTestingEligiblityServiceFactory rwtEligServiceFactory;
 
     @Autowired
     public RealWorldTestingReportService(CertifiedProductDAO certifiedProductDAO, ErrorMessageUtil errorMsg, Environment env,
             CertificationStatusEventsService certificationStatusEventsService, CertificationCriterionService certificationCriterionService,
-            RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer, ListingActivityUtil listingActivityUtil) {
+            RealWorldTestingEligiblityServiceFactory rwtEligServiceFactory) {
 
         this.certifiedProductDAO = certifiedProductDAO;
         this.errorMsg = errorMsg;
         this.env = env;
         this.certificationStatusEventsService = certificationStatusEventsService;
-        this.certificationCriterionService = certificationCriterionService;
-        this.realWorldTestingEligibilityActivityExplorer = realWorldTestingEligibilityActivityExplorer;
-        this.listingActivityUtil = listingActivityUtil;
+        this.rwtEligServiceFactory = rwtEligServiceFactory;
     }
 
     public List<RealWorldTestingReport> getRealWorldTestingReports(List<Long> acbIds, Logger logger) {
-        logger.info("Real World Testing Program Start Date: " + rwtProgramStartDate.toString());
-        logger.info("Real World Testing First Eligibility Year: " + rwtProgramFirstEligibilityYear.toString());
-
         List<RealWorldTestingReport> reports = null;
         try {
-            RealWorldTestingEligiblityService realWorldTestingEligibilityService =
-                    new RealWorldTestingEligiblityService(certificationCriterionService, realWorldTestingEligibilityActivityExplorer,
-                            listingActivityUtil, certifiedProductDAO, eligibleCriteriaKeys, rwtProgramStartDate, rwtProgramFirstEligibilityYear);
+            //RealWorldTestingEligiblityService realWorldTestingEligibilityService =
+            //        new RealWorldTestingEligiblityService(certificationCriterionService, realWorldTestingEligibilityActivityExplorer,
+            //                listingActivityUtil, certifiedProductDAO, eligibleCriteriaKeys, rwtProgramStartDate, rwtProgramFirstEligibilityYear);
+
+            RealWorldTestingEligiblityService rwtEligservice = rwtEligServiceFactory.getInstance();
+
+            logger.info("Rwt Elig Service Instance: " + rwtEligservice.hashCode() + "  ****   " + rwtEligservice.toString());
 
             reports = getListingWith2015Edition(logger).stream()
                   .filter(listing -> isInListOfAcbs(listing, acbIds))
-                  .map(listing -> getRealWorldTestingReport(listing, realWorldTestingEligibilityService, logger))
+                  //.map(listing -> getRealWorldTestingReport(listing, realWorldTestingEligibilityService, logger))
+                  .map(listing -> getRealWorldTestingReport(listing, rwtEligservice, logger))
                   .filter(report -> report.getRwtEligibilityYear() != null
                           || report.getRwtPlansCheckDate() != null
                           || report.getRwtPlansUrl() != null
