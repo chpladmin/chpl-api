@@ -2,7 +2,6 @@ package gov.healthit.chpl;
 
 import java.io.IOException;
 
-import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.servlet.http.HttpServletRequest;
 
@@ -24,6 +23,7 @@ import gov.healthit.chpl.domain.error.ObjectMissingValidationErrorResponse;
 import gov.healthit.chpl.domain.error.ObjectsMissingValidationErrorResponse;
 import gov.healthit.chpl.domain.error.ValidationErrorResponse;
 import gov.healthit.chpl.exception.CertificationBodyAccessException;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -143,10 +143,9 @@ public class ApiExceptionControllerAdvice {
         return new ResponseEntity<ErrorResponse>(new ErrorResponse("Access Denied"), HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler(MessagingException.class)
-    public ResponseEntity<ErrorResponse> exception(MessagingException e) {
-        LOGGER.error("Could not send email", e);
-        return new ResponseEntity<ErrorResponse>(new ErrorResponse("Could not send email. " + e.getMessage()),
+    @ExceptionHandler(EmailNotSentException.class)
+    public ResponseEntity<ErrorResponse> exception(EmailNotSentException e) {
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse(e.getMessage()),
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

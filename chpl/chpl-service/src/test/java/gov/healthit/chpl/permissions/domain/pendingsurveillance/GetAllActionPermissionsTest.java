@@ -73,8 +73,15 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_OncStaff() throws Exception {
         setupForOncStaffUser(resourcePermissions);
 
-        assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(new Surveillance()));
+        assertTrue(permissions.hasAccess());
+
+        Surveillance surv = new Surveillance();
+        surv.setAuthority("ROLE_ONC");
+        assertTrue(permissions.hasAccess(surv));
+
+        surv = new Surveillance();
+        surv.setAuthority("ROLE_ACB");
+        assertFalse(permissions.hasAccess(surv));
     }
 
     @Override
