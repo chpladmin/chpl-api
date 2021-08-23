@@ -46,9 +46,9 @@ public class ListingActivityUtil {
 
                 if (normalize) {
                     listing.getCertificationResults().stream()
-                            .forEach(cr -> normalizeCertificationResult(cr));
+                            .forEach(cr -> ensureCertificationResultHasCriterion(cr));
 
-                    normalizeCertificationStatusHistory(listing);
+                    ensureListingHasCertificationStatusHistory(listing);
 
                 }
             } catch (Exception ex) {
@@ -58,7 +58,7 @@ public class ListingActivityUtil {
         return listing;
     }
 
-    private void normalizeCertificationResult(CertificationResult result) {
+    private void ensureCertificationResultHasCriterion(CertificationResult result) {
         //This method assumes that if the Criterion does not exist, the criterion is not the Cures version
         if (result.getCriterion() == null) {
             List<CertificationCriterion> criteria = certificationCriterionService.getByNumber(result.getNumber());
@@ -71,7 +71,7 @@ public class ListingActivityUtil {
         }
     }
 
-    private void normalizeCertificationStatusHistory(CertifiedProductSearchDetails listing) {
+    private void ensureListingHasCertificationStatusHistory(CertifiedProductSearchDetails listing) {
         try {
             listing.setCertificationEvents(certificationStatusEventsService.getCertificationStatusEvents(listing.getId()));
         } catch (EntityRetrievalException e) {

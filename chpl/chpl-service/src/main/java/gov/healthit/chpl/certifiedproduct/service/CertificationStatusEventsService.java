@@ -42,21 +42,11 @@ public class CertificationStatusEventsService {
     }
 
     public CertificationStatusEvent getCurrentCertificationStatusEvent(Long certifiedProductId) throws EntityRetrievalException {
-        List<CertificationStatusEvent> statusEvents = certStatusEventDao.findByCertifiedProductId(certifiedProductId).stream()
+        return certStatusEventDao.findByCertifiedProductId(certifiedProductId).stream()
                 .map(dto -> createCertificationStatusEventBasedOnDto(dto))
-                .collect(Collectors.toCollection(ArrayList::new));
-
-        if (statusEvents == null || statusEvents.size() == 0) {
-            return null;
-        }
-
-        CertificationStatusEvent newest = statusEvents.get(0);
-        for (CertificationStatusEvent event : statusEvents) {
-            if (event.getEventDate() > newest.getEventDate()) {
-                newest = event;
-            }
-        }
-        return newest;
+                .sorted((event1, event2) -> Long.valueOf(event1.getEventDate() - event2.getEventDate()).intValue())
+                .findFirst()
+                .orElse(null);
     }
 
     private CertificationStatusEvent createCertificationStatusEventBasedOnDto(CertificationStatusEventDTO certStatusDto) {
