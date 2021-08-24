@@ -14,6 +14,7 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,6 +29,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -46,6 +48,15 @@ public class AnnualReportGenerationJob implements Job {
     public static final String JOB_NAME = "annualReportGenerationJob";
     public static final String ANNUAL_REPORT_ID_KEY = "annualReportId";
     public static final String USER_KEY = "user";
+
+    @Autowired
+    private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
+
+    @Value("${chpl.email.valediction}")
+    private String chplEmailValediction;
+
+    @Value("${footer.acbatlUrl}")
+    private String acbatlFeedbackUrl;
 
     @Autowired
     private JpaTransactionManager txManager;
@@ -211,15 +222,20 @@ public class AnnualReportGenerationJob implements Job {
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 
-    private void sendEmail(String recipientEmail, String subject, String htmlMessage, List<File> attachments)  {
+    private void sendEmail(String recipientEmail, String subject, String htmlContent, List<File> attachments)  {
         LOGGER.info("Sending email to: " + recipientEmail);
-        LOGGER.info("Message to be sent: " + htmlMessage);
+        LOGGER.info("Message to be sent: " + htmlContent);
 
         try {
             EmailBuilder emailBuilder = new EmailBuilder(env);
             emailBuilder.recipient(recipientEmail)
                     .subject(subject)
-                    .htmlMessage(htmlMessage)
+                    .htmlMessage(chplHtmlEmailBuilder.initialize()
+                            .heading(subject)
+                            .paragraph("", htmlContent)
+                            .paragraph("", String.format(chplEmailValediction, acbatlFeedbackUrl))
+                            .footer(true)
+                            .build())
                     .fileAttachments(attachments)
                     .acbAtlHtmlFooter()
                     .sendEmail();
