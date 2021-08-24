@@ -50,11 +50,8 @@ public class RealWorldTestingReportService {
         try {
             RealWorldTestingEligiblityService rwtEligservice = rwtEligServiceFactory.getInstance();
 
-            logger.info("Rwt Elig Service Instance: " + rwtEligservice.hashCode() + "  ****   " + rwtEligservice.toString());
-
             reports = getListingWith2015Edition(logger).stream()
                   .filter(listing -> isInListOfAcbs(listing, acbIds))
-                  //.map(listing -> getRealWorldTestingReport(listing, realWorldTestingEligibilityService, logger))
                   .map(listing -> getRealWorldTestingReport(listing, rwtEligservice, logger))
                   .filter(report -> report.getRwtEligibilityYear() != null
                           || report.getRwtPlansCheckDate() != null
@@ -96,7 +93,7 @@ public class RealWorldTestingReportService {
 
         logger.info(String.format("ListingId: %s, Elig Year %s, %s",
                 listing.getId(),
-                rwtElig.getEligibilityYear().isPresent() ? rwtElig.getEligibilityYear().get().toString() : " N/A",
+                rwtElig.getEligibilityYear().isPresent() ? rwtElig.getEligibilityYear().get().toString() : "N/A",
                 rwtElig.getReason().getReason()));
 
         CertificationStatusEvent currentStatus;
