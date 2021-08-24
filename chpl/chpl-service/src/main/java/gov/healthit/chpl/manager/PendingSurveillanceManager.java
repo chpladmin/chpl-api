@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -75,6 +76,7 @@ import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException
 import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
 import gov.healthit.chpl.scheduler.job.SurveillanceUploadJob;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceCreationValidator;
 import gov.healthit.chpl.validation.surveillance.SurveillanceUpdateValidator;
@@ -352,8 +354,10 @@ public class PendingSurveillanceManager extends SecuredManager {
         Surveillance surv = new Surveillance();
         surv.setId(pr.getId());
         surv.setSurveillanceIdToReplace(pr.getSurvFriendlyIdToReplace());
-        surv.setStartDate(pr.getStartDate());
-        surv.setEndDate(pr.getEndDate());
+        surv.setStartDate(new Date(DateUtil.toEpochMillis(pr.getStartDate())));
+        surv.setEndDate(new Date(DateUtil.toEpochMillis(pr.getEndDate())));
+        surv.setStartDay(pr.getStartDate());
+        surv.setEndDay(pr.getEndDate());
         surv.setRandomizedSitesUsed(pr.getNumRandomizedSites());
         surv.setAuthority(userPermissionDAO.findById(pr.getUserPermissionId()).getAuthority());
 

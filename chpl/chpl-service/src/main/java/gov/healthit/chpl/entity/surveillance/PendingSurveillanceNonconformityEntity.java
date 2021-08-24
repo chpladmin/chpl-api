@@ -47,19 +47,19 @@ public class PendingSurveillanceNonconformityEntity {
     private LocalDate nonconformityCloseDate;
 
     @Column(name = "date_of_determination")
-    private Date dateOfDetermination;
+    private LocalDate dateOfDetermination;
 
     @Column(name = "corrective_action_plan_approval_date")
-    private Date capApproval;
+    private LocalDate capApproval;
 
     @Column(name = "corrective_action_start_date")
-    private Date capStart;
+    private LocalDate capStart;
 
     @Column(name = "corrective_action_must_complete_date")
-    private Date capMustCompleteDate;
+    private LocalDate capMustCompleteDate;
 
     @Column(name = "corrective_action_end_date")
-    private Date capEndDate;
+    private LocalDate capEndDate;
 
     @Column(name = "summary")
     private String summary;

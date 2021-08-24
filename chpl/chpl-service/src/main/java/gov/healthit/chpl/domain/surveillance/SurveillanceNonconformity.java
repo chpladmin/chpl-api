@@ -71,34 +71,84 @@ public class SurveillanceNonconformity implements Serializable {
     private String nonconformityStatus;
 
     /**
-     * Date of determination of non-conformity
+     * DEPRECATED. Date of determination of non-conformity
      */
-    @XmlElement(required = true)
+    @Deprecated
+    @XmlTransient
     private Date dateOfDetermination;
 
     /**
-     * Corrective action plan approval date
+     * Date of determination of non-conformity
      */
-    @XmlElement(required = false, nillable = true)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    @XmlElement(required = true)
+    private LocalDate dateOfDeterminationDay;
+
+    /**
+     * DEPRECATED. Corrective action plan approval date
+     */
+    @Deprecated
+    @XmlTransient
     private Date capApprovalDate;
 
     /**
-     * Corrective action plan start date
+     * Corrective action plan approval day
      */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     @XmlElement(required = false, nillable = true)
+    private LocalDate capApprovalDay;
+
+    /**
+     * DEPRECATED. Corrective action plan start date
+     */
+    @Deprecated
+    @XmlTransient
     private Date capStartDate;
 
     /**
-     * Corrective action plan end date
+     * Corrective action plan start day
      */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     @XmlElement(required = false, nillable = true)
+    private LocalDate capStartDay;
+
+    /**
+     * DEPRECATED. Corrective action plan end date
+     */
+    @Deprecated
+    @XmlTransient
     private Date capEndDate;
+
+    /**
+     * Corrective action plan end day
+     */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    @XmlElement(required = false, nillable = true)
+    private LocalDate capEndDay;
+
+    /**
+     * DEPRECATED. Corrective action plan must complete date
+     */
+    @Deprecated
+    @XmlTransient
+    private Date capMustCompleteDate;
 
     /**
      * Corrective action plan must complete date
      */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     @XmlElement(required = false, nillable = true)
-    private Date capMustCompleteDate;
+    private LocalDate capMustCompleteDay;
 
     /**
      * Date non-conformity was closed
@@ -239,39 +289,39 @@ public class SurveillanceNonconformity implements Serializable {
                 && !this.criterion.getId().equals(anotherNonconformity.criterion.getId())) {
             return false;
         }
-        if (this.dateOfDetermination == null && anotherNonconformity.dateOfDetermination != null
-                || this.dateOfDetermination != null && anotherNonconformity.dateOfDetermination == null) {
+        if (this.dateOfDeterminationDay == null && anotherNonconformity.dateOfDeterminationDay != null
+                || this.dateOfDeterminationDay != null && anotherNonconformity.dateOfDeterminationDay == null) {
             return false;
-        } else if (this.dateOfDetermination != null && anotherNonconformity.dateOfDetermination != null
-                && this.dateOfDetermination.getTime() != anotherNonconformity.dateOfDetermination.getTime()) {
-            return false;
-        }
-        if (this.capApprovalDate == null && anotherNonconformity.capApprovalDate != null
-                || this.capApprovalDate != null && anotherNonconformity.capApprovalDate == null) {
-            return false;
-        } else if (this.capApprovalDate != null && anotherNonconformity.capApprovalDate != null
-                && this.capApprovalDate.getTime() != anotherNonconformity.capApprovalDate.getTime()) {
+        } else if (this.dateOfDeterminationDay != null && anotherNonconformity.dateOfDeterminationDay != null
+                && !this.dateOfDeterminationDay.equals(anotherNonconformity.dateOfDeterminationDay)) {
             return false;
         }
-        if (this.capStartDate == null && anotherNonconformity.capStartDate != null
-                || this.capStartDate != null && anotherNonconformity.capStartDate == null) {
+        if (this.capApprovalDay == null && anotherNonconformity.capApprovalDay != null
+                || this.capApprovalDay != null && anotherNonconformity.capApprovalDay == null) {
             return false;
-        } else if (this.capStartDate != null && anotherNonconformity.capStartDate != null
-                && this.capStartDate.getTime() != anotherNonconformity.capStartDate.getTime()) {
-            return false;
-        }
-        if (this.capEndDate == null && anotherNonconformity.capEndDate != null
-                || this.capEndDate != null && anotherNonconformity.capEndDate == null) {
-            return false;
-        } else if (this.capEndDate != null && anotherNonconformity.capEndDate != null
-                && this.capEndDate.getTime() != anotherNonconformity.capEndDate.getTime()) {
+        } else if (this.capApprovalDay != null && anotherNonconformity.capApprovalDay != null
+                && !this.capApprovalDay.equals(anotherNonconformity.capApprovalDay)) {
             return false;
         }
-        if (this.capMustCompleteDate == null && anotherNonconformity.capMustCompleteDate != null
-                || this.capMustCompleteDate != null && anotherNonconformity.capMustCompleteDate == null) {
+        if (this.capStartDay == null && anotherNonconformity.capStartDay != null
+                || this.capStartDay != null && anotherNonconformity.capStartDay == null) {
             return false;
-        } else if (this.capMustCompleteDate != null && anotherNonconformity.capMustCompleteDate != null
-                && this.capMustCompleteDate.getTime() != anotherNonconformity.capMustCompleteDate.getTime()) {
+        } else if (this.capStartDay != null && anotherNonconformity.capStartDay != null
+                && !this.capStartDay.equals(anotherNonconformity.capStartDay)) {
+            return false;
+        }
+        if (this.capEndDay == null && anotherNonconformity.capEndDay != null
+                || this.capEndDay != null && anotherNonconformity.capEndDay == null) {
+            return false;
+        } else if (this.capEndDay != null && anotherNonconformity.capEndDay != null
+                && !this.capEndDay.equals(anotherNonconformity.capEndDay)) {
+            return false;
+        }
+        if (this.capMustCompleteDay == null && anotherNonconformity.capMustCompleteDay != null
+                || this.capMustCompleteDay != null && anotherNonconformity.capMustCompleteDay == null) {
+            return false;
+        } else if (this.capMustCompleteDay != null && anotherNonconformity.capMustCompleteDay != null
+                && !this.capMustCompleteDay.equals(anotherNonconformity.capMustCompleteDay)) {
             return false;
         }
         if (this.nonconformityCloseDate == null && anotherNonconformity.nonconformityCloseDate != null
@@ -375,44 +425,94 @@ public class SurveillanceNonconformity implements Serializable {
         this.nonconformityStatus = nonconformityStatus;
     }
 
+    @Deprecated
     public Date getDateOfDetermination() {
         return Util.getNewDate(dateOfDetermination);
     }
 
+    @Deprecated
     public void setDateOfDetermination(Date dateOfDetermination) {
         this.dateOfDetermination = Util.getNewDate(dateOfDetermination);
     }
 
+    public LocalDate getDateOfDeterminationDay() {
+        return this.dateOfDeterminationDay;
+    }
+
+    public void setDateOfDeterminationDay(LocalDate dateOfDeterminationDay) {
+        this.dateOfDeterminationDay = dateOfDeterminationDay;
+    }
+
+    @Deprecated
     public Date getCapApprovalDate() {
         return Util.getNewDate(capApprovalDate);
     }
 
+    @Deprecated
     public void setCapApprovalDate(Date capApprovalDate) {
         this.capApprovalDate = Util.getNewDate(capApprovalDate);
     }
 
+    public LocalDate getCapApprovalDay() {
+        return this.capApprovalDay;
+    }
+
+    public void setCapApprovalDay(LocalDate capApprovalDay) {
+        this.capApprovalDay = capApprovalDay;
+    }
+
+    @Deprecated
     public Date getCapStartDate() {
         return Util.getNewDate(capStartDate);
     }
 
+    @Deprecated
     public void setCapStartDate(Date capStartDate) {
         this.capStartDate = Util.getNewDate(capStartDate);
     }
 
+    public LocalDate getCapStartDay() {
+        return this.capStartDay;
+    }
+
+    public void setCapStartDay(LocalDate capStartDay) {
+        this.capStartDay = capStartDay;
+    }
+
+    @Deprecated
     public Date getCapEndDate() {
         return Util.getNewDate(capEndDate);
     }
 
+    @Deprecated
     public void setCapEndDate(Date capEndDate) {
         this.capEndDate = Util.getNewDate(capEndDate);
     }
 
+    public LocalDate getCapEndDay() {
+        return this.capEndDay;
+    }
+
+    public void setCapEndDay(LocalDate capEndDay) {
+        this.capEndDay = capEndDay;
+    }
+
+    @Deprecated
     public Date getCapMustCompleteDate() {
         return Util.getNewDate(capMustCompleteDate);
     }
 
+    @Deprecated
     public void setCapMustCompleteDate(Date capMustCompleteDate) {
         this.capMustCompleteDate = Util.getNewDate(capMustCompleteDate);
+    }
+
+    public LocalDate getCapMustCompleteDay() {
+        return this.capMustCompleteDay;
+    }
+
+    public void setCapMustCompleteDay(LocalDate capMustCompleteDay) {
+        this.capMustCompleteDay = capMustCompleteDay;
     }
 
     public LocalDate getNonconformityCloseDate() {

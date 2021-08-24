@@ -23,12 +23,12 @@ public class SurveillanceNonConformityXmlGenerator extends XmlGenerator {
             throws XMLStreamException {
         if (snc != null) {
             sw.writeStartElement(rootNodeName);
-            createSimpleElement(snc.getCapApprovalDate(), "capApprovalDate", sw);
-            createSimpleElement(snc.getCapEndDate(), "capEndDate", sw);
-            createSimpleElement(snc.getCapMustCompleteDate(), "capMustCompleteDate", sw);
-            createSimpleElement(snc.getCapStartDate(), "capStartDate", sw);
+            createSimpleElement(snc.getCapApprovalDay(), "capApprovalDay", sw);
+            createSimpleElement(snc.getCapEndDay(), "capEndDay", sw);
+            createSimpleElement(snc.getCapMustCompleteDay(), "capMustCompleteDay", sw);
+            createSimpleElement(snc.getCapStartDay(), "capStartDay", sw);
             CertificationCriterionXmlGenerator.add(snc.getCriterion(), "criterion", sw);
-            createSimpleElement(snc.getDateOfDetermination(), "dateOfDetermination", sw);
+            createSimpleElement(snc.getDateOfDeterminationDay(), "dateOfDeterminationDay", sw);
             createSimpleElement(snc.getDeveloperExplanation(), "developerExplanation", sw);
             SurveillanceNonConformityDocumentXmlGenerator.add(snc.getDocuments(), "documents", sw);
             createSimpleElement(snc.getFindings(), "findings", sw);
