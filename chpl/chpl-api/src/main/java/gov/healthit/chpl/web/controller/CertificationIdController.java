@@ -35,6 +35,7 @@ import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.results.CertificationIdLookupResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdVerifyResults;
