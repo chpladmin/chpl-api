@@ -35,7 +35,6 @@ import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
-import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.results.CertificationIdLookupResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdVerifyResults;
@@ -64,9 +63,9 @@ public class CertificationIdController {
         this.validatorFactory = validatorFactory;
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_CMS_STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ONC_STAFF', 'ROLE_CMS_STAFF')")
     @Operation(summary = "Retrieves a list of all CMS EHR Certification IDs along with the date they were created.",
-        description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_CMS_STAFF",
+        description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_CMS_STAFF",
         security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                 @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = {
