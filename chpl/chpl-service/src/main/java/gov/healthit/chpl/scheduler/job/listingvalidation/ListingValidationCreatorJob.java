@@ -5,6 +5,8 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.quartz.Job;
@@ -138,6 +140,7 @@ public class ListingValidationCreatorJob implements Job {
 
     private List<ListingValidationReport> createListingValidationReport(CertifiedProductSearchDetails listing) {
         List<ListingValidationReport> reports = listing.getErrorMessages().stream()
+                .filter(error -> !isBannedDeveloperErrorMessage(error))
                 .map(error -> listingValidationReportDAO.create(ListingValidationReport.builder()
                     .certifiedProductId(listing.getId())
                     .chplProductNumber(listing.getChplProductNumber())
@@ -155,5 +158,13 @@ public class ListingValidationCreatorJob implements Job {
                 .collect(Collectors.toList());
         LOGGER.info("Completed save of report data for: " + listing.getId());
         return reports;
+    }
+
+    private boolean isBannedDeveloperErrorMessage(String message) {
+        String bannedDeveloperErrorMessage = "^The developer.* has a status of Under certification ban by ONC\\. Certified products belonging to this developer cannot be updated until its status returns to Active\\.$";
+
+        Pattern pattern = Pattern.compile(bannedDeveloperErrorMessage);
+        Matcher matcher = pattern.matcher(message);
+        return matcher.find();
     }
 }
