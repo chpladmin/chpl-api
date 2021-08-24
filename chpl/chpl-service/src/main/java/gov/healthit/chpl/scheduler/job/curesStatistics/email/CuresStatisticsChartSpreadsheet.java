@@ -251,7 +251,7 @@ public class CuresStatisticsChartSpreadsheet {
                         newCell.setCellErrorValue(originalCell.getErrorCellValue());
                         break;
                     case FORMULA:
-                        newCell.setCellValue(originalCell.getNumericCellValue());
+                        newCell.setCellFormula(originalCell.getCellFormula());
                         break;
                     case NUMERIC:
                         newCell.setCellValue(originalCell.getNumericCellValue());
