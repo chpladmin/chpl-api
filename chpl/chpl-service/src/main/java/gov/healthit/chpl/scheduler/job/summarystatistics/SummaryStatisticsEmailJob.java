@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
 import org.apache.logging.log4j.LogManager;
@@ -29,6 +28,7 @@ import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.entity.statistics.SummaryStatisticsEntity;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatistics;
@@ -82,7 +82,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         }
     }
 
-    private void sendEmail(String message, String address) throws AddressException, MessagingException, IOException {
+    private void sendEmail(String message, String address) throws AddressException, EmailNotSentException, IOException {
         String subject = env.getProperty("summaryEmailSubject").toString();
 
         List<String> addresses = new ArrayList<String>();
@@ -140,10 +140,6 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         ret.append("<br/>");
         ret.append("Email attachment has weekly statistics ending " + endDateCal.getTime());
         ret.append("<br/>");
-        ret.append("In the attached CSV file: <br/>");
-        ret.append("<ul>");
-        ret.append("<li>Total Closed Non-Conformities - Some Non-Conformities may be closed that are not counted in these statistics</li>");
-        ret.append("</ul>");
         return ret.toString();
     }
 }

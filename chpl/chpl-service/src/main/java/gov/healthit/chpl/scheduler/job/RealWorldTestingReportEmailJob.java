@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.mail.MessagingException;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.quartz.Job;
@@ -25,6 +23,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
@@ -67,7 +66,7 @@ public class RealWorldTestingReportEmailJob implements Job {
                 .collect(Collectors.toList());
     }
 
-    private void sendEmail(JobExecutionContext context, List<RealWorldTestingReport> rows) throws MessagingException {
+    private void sendEmail(JobExecutionContext context, List<RealWorldTestingReport> rows) throws EmailNotSentException {
         LOGGER.info("Sending email to: " + context.getMergedJobDataMap().getString("email"));
         EmailBuilder emailBuilder = new EmailBuilder(env);
         emailBuilder.recipient(context.getMergedJobDataMap().getString("email"))

@@ -1,0 +1,18 @@
+Column Name,Required?,Allowed Values,Description
+Certification Edition,Yes,2015,The certification edition to which the listing belongs
+CHPL ID,Yes,Edition.ATL.ACB.Developer.Product.Version.ICS.AdditionalSoftware.Date,"The unique CHPL ID of the listing. The CHPL ID format, Edition.ATL.ACB.Developer.Product.Version.ICS.AdditionalSoftware.Date, is coded using product-specific information. Edition = certification edition (ex. 2014, 2015); ATL = two digit code for the ONC Authorized Testing Laboratory (ATL); ACB = two digit code for the ONC Authorized Certifying Body (ACB); Developer = four digit code for the health IT product developer; Product = four character alphanumeric reference to the certified product; Version = two character alphanumeric reference to the version of the certified product; ICS = binary code indicating Inherited Certified Status (incremental); AdditionalSoftware = binary code indicating the requirement for additional software to meeting certification requirements (1 = yes; 0 = no); Date = Date of certification (format = YYMMDD)"
+Listing Database ID,Yes,<int>,The unique database ID of the listing
+ONC-ACB Certification ID,Yes,<string>,The ID used by ONC-ACBs for internal tracking
+Certification Date,Yes,<YYYY-DD-MM>,The date on which the listing was certified
+Certification Status,Yes,Active; Suspended by ONC; Suspended by ONC-ACB; Withdrawn by Developer; Withdrawn by Developer Under Surveillance/Review; Withdrawn by ONC-ACB; Terminated by ONC; Retired,"The certification status for the corresponding listing. For a detailed description of each certification status, please see 'Understanding Certification Status in the CHPL', available in the CHPL Public User Guide"
+ACB Name,Yes,Drummond Group Inc.;UL LLC;ICSA Labs; SLI Compliance,The ONC-ACB responsible for certifying the listing
+Developer Name,Yes,<string>,The name of the developer or vendor of the certified health IT product
+Developer Database ID,Yes,<int>,The unique database ID of the developer
+SVAP Notice Current URL,No,<string>,URL indicating the location of the SVAP notice for this listing; required if SVAP Notice Last Update is present
+SVAP Notice Last Update,No,<YYYY-DD-MM>,Date the SVAP Notice URL was last updated; required if SVAP Notice URL is present
+Criterion,No,<string>,Any criterion that has at least one SVAP Value
+Reg Text Citation,No,<string>,Regulatory text citation for the selected SVAP value
+SVAP Value,No,<string>,SVAP value for listed criterion
+SVAP Last Update,No,<YYYY-DD-MM>,Date the SVAP was added to the criterion
+SVAP Certification,No,New; Updated,"""New"" indicates the SVAP was added at the same time as the criterion; ""Updated"" indicates the SVAP was added to an existing criterion"
+SVAP Value Status,No,Current; Replaced,Indicates whether this is a current SVAP value or if it has been replaced by another SVAP for this criterion

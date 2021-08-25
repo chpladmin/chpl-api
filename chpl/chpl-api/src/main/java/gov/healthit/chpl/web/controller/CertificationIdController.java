@@ -69,15 +69,16 @@ public class CertificationIdController {
     //
     // Retrieves all CMS Certification IDs and their date of creation.
     // **********************************************************************************************************
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_CMS_STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ONC_STAFF', 'ROLE_CMS_STAFF')")
     @ApiOperation(value = "Retrieves a list of all CMS EHR Certification IDs along with the date they were created.",
-    notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_CMS_STAFF")
+    notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_CMS_STAFF")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = {
             MediaType.APPLICATION_JSON_VALUE
     })
     public List<SimpleCertificationId> getAll() throws IOException {
         List<SimpleCertificationId> results = null;
-        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
+        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()
+                || resourcePermissions.isUserRoleOncStaff()) {
             results = certificationIdManager.getAllWithProductsCached();
         } else {
             results = certificationIdManager.getAllCached();

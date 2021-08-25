@@ -15,8 +15,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import javax.mail.MessagingException;
-
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -39,6 +37,7 @@ import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
 import gov.healthit.chpl.domain.schedule.ScheduledSystemJob;
 import gov.healthit.chpl.domain.schedule.TriggerSchedule;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.impl.SecuredManager;
@@ -76,7 +75,7 @@ public class SchedulerManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
             + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).CREATE_TRIGGER)")
     public ChplRepeatableTrigger createTrigger(ChplRepeatableTrigger trigger)
-            throws SchedulerException, ValidationException, MessagingException {
+            throws SchedulerException, ValidationException, EmailNotSentException {
         Scheduler scheduler = getScheduler();
 
         TriggerKey triggerId = triggerKey(createTriggerName(trigger), createTriggerGroup(trigger.getJob()));
@@ -111,7 +110,10 @@ public class SchedulerManager extends SecuredManager {
             }
 
             ChplRepeatableTrigger newTrigger = new ChplRepeatableTrigger((CronTrigger) scheduler.getTrigger(triggerId));
-            emailer.sendEmail(newTrigger, trigger.getJob(),  ADDED);
+            try {
+                emailer.sendEmail(newTrigger, trigger.getJob(),  ADDED);
+            } catch (Exception ignore) {
+            }
             return newTrigger;
         } else {
             throw new AccessDeniedException("Can not create this trigger");
@@ -145,12 +147,15 @@ public class SchedulerManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
             + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).DELETE_TRIGGER)")
     public void deleteTrigger(String triggerGroup, String triggerName)
-            throws SchedulerException, ValidationException, MessagingException {
+            throws SchedulerException, ValidationException, EmailNotSentException {
         Scheduler scheduler = getScheduler();
         TriggerKey triggerKey = triggerKey(triggerName, triggerGroup);
         Trigger trigger = scheduler.getTrigger(triggerKey);
         if (doesUserHavePermissionToTrigger(trigger)) {
-            emailer.sendEmail(getChplTrigger(triggerKey), getJobBasedOnTrigger(trigger), DELETED);
+            try {
+                emailer.sendEmail(getChplTrigger(triggerKey), getJobBasedOnTrigger(trigger), DELETED);
+            } catch (Exception ignore) {
+            }
             scheduler.unscheduleJob(triggerKey);
         } else {
             throw new AccessDeniedException("Can not update this trigger");
@@ -208,7 +213,7 @@ public class SchedulerManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
             + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).UPDATE_TRIGGER)")
     public ChplRepeatableTrigger updateTrigger(ChplRepeatableTrigger trigger)
-            throws SchedulerException, ValidationException, MessagingException {
+            throws SchedulerException, ValidationException, EmailNotSentException {
         Scheduler scheduler = getScheduler();
         Trigger oldTrigger = scheduler.getTrigger(triggerKey(trigger.getName(), trigger.getGroup()));
         Trigger qzTrigger = null;
@@ -236,7 +241,10 @@ public class SchedulerManager extends SecuredManager {
             scheduler.rescheduleJob(oldTrigger.getKey(), qzTrigger);
 
             ChplRepeatableTrigger newTrigger = getChplTrigger(qzTrigger.getKey());
-            emailer.sendEmail(newTrigger, getJobBasedOnTrigger(qzTrigger), UPDATED);
+            try {
+                emailer.sendEmail(newTrigger, getJobBasedOnTrigger(qzTrigger), UPDATED);
+            } catch (Exception ignore) {
+            }
             return newTrigger;
         } else {
             throw new AccessDeniedException("Can not update this trigger");
@@ -286,7 +294,7 @@ public class SchedulerManager extends SecuredManager {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public void retireAcb(String acb) throws SchedulerException, ValidationException, MessagingException {
+    public void retireAcb(String acb) throws SchedulerException, ValidationException, EmailNotSentException {
         List<ChplRepeatableTrigger> allTriggers = getAllTriggersForUser();
         for (ChplRepeatableTrigger trigger : allTriggers) {
             if (!StringUtils.isEmpty(trigger.getAcb()) && trigger.getAcb().indexOf(acb) > -1) {

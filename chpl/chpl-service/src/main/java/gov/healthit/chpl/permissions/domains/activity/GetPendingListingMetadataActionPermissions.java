@@ -9,7 +9,8 @@ public class GetPendingListingMetadataActionPermissions extends ActionPermission
 
     @Override
     public boolean hasAccess() {
-        return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc();
+        return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
+                || getResourcePermissions().isUserRoleOncStaff();
     }
 
     @Override

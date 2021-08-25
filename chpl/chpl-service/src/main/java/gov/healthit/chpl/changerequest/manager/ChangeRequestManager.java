@@ -35,6 +35,7 @@ import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -159,7 +160,7 @@ public class ChangeRequestManager extends SecurityManager {
             + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).UPDATE, #cr)")
     public ChangeRequest updateChangeRequest(ChangeRequest cr)
             throws EntityRetrievalException, ValidationException, EntityCreationException,
-            JsonProcessingException, InvalidArgumentsException {
+            JsonProcessingException, InvalidArgumentsException, EmailNotSentException {
         ChangeRequest crFromDb = getChangeRequest(cr.getId());
 
         ValidationException validationException = new ValidationException();

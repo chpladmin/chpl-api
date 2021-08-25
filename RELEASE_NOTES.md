@@ -1,5 +1,41 @@
 # Release Notes
 
+## Version 30.6.0
+_23 August 2021_
+
+### Features
+* Generate SVAP Summary CSV and allow download of that file and schema
+* Add new Non-conformity close date field
+* Restrict Listings to have only valid Test Procedures on edit
+* Update email failure with custom exception and log message
+* Confirmed Listings with RWT eligible parents become RWT eligible on confirmation
+
+### User Interface Updates
+* Use updated link for ONC "Contact Us" form
+
+### Bug Fixes
+* Audit Data Retention jobs failing in PROD
+
+### Flagged Features
+* Provide appropriate errors/warnings on Test Standards on removed criteria based on ROLE
+
+---
+
+## Version 30.5.0
+_9 August 2021_
+
+### Features
+* Add Attestation change request
+* Track and notify of deprecated endpoint usage by API Key
+* Add "Suspended by *" statuses to ONC-ACB Questionable URL report
+* Require "Actions/Response" on closed Complaints
+* Validate Complaint dates for reasonableness
+
+### Bug Fixes
+* Filter ONC-ACB Questionable URL report by Status AND Edition, not Status OR Edition
+
+---
+
 ## Version 30.4.0
 _2 August 2021_
 
