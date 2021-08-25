@@ -357,7 +357,7 @@ public class PendingSurveillanceManager extends SecuredManager {
         surv.setStartDay(pr.getStartDate());
         surv.setStartDate(new Date(DateUtil.toEpochMillis(pr.getStartDate())));
         surv.setEndDay(pr.getEndDate());
-        surv.setEndDate(new Date(DateUtil.toEpochMillisEndOfDay(pr.getEndDate())));
+        surv.setEndDate(pr.getEndDate() == null ? null : new Date(DateUtil.toEpochMillisEndOfDay(pr.getEndDate())));
         surv.setRandomizedSitesUsed(pr.getNumRandomizedSites());
         surv.setAuthority(userPermissionDAO.findById(pr.getUserPermissionId()).getAuthority());
 
@@ -390,15 +390,15 @@ public class PendingSurveillanceManager extends SecuredManager {
                     for (PendingSurveillanceNonconformityEntity pnc : preq.getNonconformities()) {
                         SurveillanceNonconformity nc = new SurveillanceNonconformity();
                         nc.setCapApprovalDay(pnc.getCapApproval());
-                        nc.setCapApprovalDate(new Date(DateUtil.toEpochMillis(pnc.getCapApproval())));
+                        nc.setCapApprovalDate(pnc.getCapApproval() == null ? null : new Date(DateUtil.toEpochMillis(pnc.getCapApproval())));
                         nc.setCapEndDay(pnc.getCapEndDate());
-                        nc.setCapEndDate(new Date(DateUtil.toEpochMillisEndOfDay(pnc.getCapEndDate())));
+                        nc.setCapEndDate(pnc.getCapEndDate() == null ? null : new Date(DateUtil.toEpochMillisEndOfDay(pnc.getCapEndDate())));
                         nc.setCapMustCompleteDay(pnc.getCapMustCompleteDate());
-                        nc.setCapMustCompleteDate(new Date(DateUtil.toEpochMillisEndOfDay(pnc.getCapMustCompleteDate())));
+                        nc.setCapMustCompleteDate(pnc.getCapMustCompleteDate() == null ? null : new Date(DateUtil.toEpochMillisEndOfDay(pnc.getCapMustCompleteDate())));
                         nc.setCapStartDay(pnc.getCapStart());
-                        nc.setCapStartDate(new Date(DateUtil.toEpochMillis(pnc.getCapStart())));
+                        nc.setCapStartDate(pnc.getCapStart() == null ? null : new Date(DateUtil.toEpochMillis(pnc.getCapStart())));
                         nc.setDateOfDeterminationDay(pnc.getDateOfDetermination());
-                        nc.setDateOfDetermination(new Date(DateUtil.toEpochMillis(pnc.getDateOfDetermination())));
+                        nc.setDateOfDetermination(pnc.getDateOfDetermination() == null ? null : new Date(DateUtil.toEpochMillis(pnc.getDateOfDetermination())));
                         nc.setDeveloperExplanation(pnc.getDeveloperExplanation());
                         nc.setFindings(pnc.getFindings());
                         nc.setId(pnc.getId());
@@ -526,7 +526,7 @@ public class PendingSurveillanceManager extends SecuredManager {
         surv.setStartDay(entity.getStartDate());
         surv.setStartDate(new Date(DateUtil.toEpochMillis(entity.getStartDate())));
         surv.setEndDay(entity.getEndDate());
-        surv.setEndDate(new Date(DateUtil.toEpochMillis(entity.getEndDate())));
+        surv.setEndDate(entity.getEndDate() == null ? null : new Date(DateUtil.toEpochMillis(entity.getEndDate())));
         surv.setRandomizedSitesUsed(entity.getNumRandomizedSites());
         surv.setAuthority(userPermissionDAO.findById(entity.getUserPermissionId()).getAuthority());
         surv.setLastModifiedDate(entity.getLastModifiedDate());
@@ -592,15 +592,15 @@ public class PendingSurveillanceManager extends SecuredManager {
                     for (SurveillanceNonconformityEntity ncEntity : reqEntity.getNonconformities()) {
                         SurveillanceNonconformity nc = new SurveillanceNonconformity();
                         nc.setCapApprovalDay(ncEntity.getCapApproval());
-                        nc.setCapApprovalDate(new Date(DateUtil.toEpochMillis(ncEntity.getCapApproval())));
+                        nc.setCapApprovalDate(ncEntity.getCapApproval() == null ? null : new Date(DateUtil.toEpochMillis(ncEntity.getCapApproval())));
                         nc.setCapEndDay(ncEntity.getCapEndDate());
-                        nc.setCapEndDate(new Date(DateUtil.toEpochMillisEndOfDay(ncEntity.getCapEndDate())));
+                        nc.setCapEndDate(ncEntity.getCapEndDate() == null ? null : new Date(DateUtil.toEpochMillisEndOfDay(ncEntity.getCapEndDate())));
                         nc.setCapMustCompleteDay(ncEntity.getCapMustCompleteDate());
-                        nc.setCapMustCompleteDate(new Date(DateUtil.toEpochMillisEndOfDay(ncEntity.getCapMustCompleteDate())));
+                        nc.setCapMustCompleteDate(ncEntity.getCapMustCompleteDate() == null ? null : new Date(DateUtil.toEpochMillisEndOfDay(ncEntity.getCapMustCompleteDate())));
                         nc.setCapStartDay(ncEntity.getCapStart());
-                        nc.setCapStartDate(new Date(DateUtil.toEpochMillis(ncEntity.getCapStart())));
+                        nc.setCapStartDate(ncEntity.getCapStart() == null ? null : new Date(DateUtil.toEpochMillis(ncEntity.getCapStart())));
                         nc.setDateOfDeterminationDay(ncEntity.getDateOfDetermination());
-                        nc.setDateOfDetermination(new Date(DateUtil.toEpochMillis(ncEntity.getDateOfDetermination())));
+                        nc.setDateOfDetermination(ncEntity.getDateOfDetermination() == null ? null : new Date(DateUtil.toEpochMillis(ncEntity.getDateOfDetermination())));
                         nc.setDeveloperExplanation(ncEntity.getDeveloperExplanation());
                         nc.setFindings(ncEntity.getFindings());
                         nc.setId(ncEntity.getId());
