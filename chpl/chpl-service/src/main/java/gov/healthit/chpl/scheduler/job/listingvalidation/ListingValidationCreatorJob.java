@@ -53,6 +53,9 @@ public class ListingValidationCreatorJob implements Job {
     @Value("${executorThreadCountForQuartzJobs}")
     private Integer threadCount;
 
+    @Value("${listingValidation.report.bannedDeveloperMessageRegex}")
+    private String bannedDeveloperMessageRegex;
+
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
@@ -104,7 +107,8 @@ public class ListingValidationCreatorJob implements Job {
         List<CertifiedProductDetailsDTO> listings = certifiedProductDAO.findByEdition(
                 CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
         LOGGER.info("Completed retreiving all 2015 listings");
-        return listings;
+        return listings.stream()
+                .collect(Collectors.toList());
     }
 
     private CertifiedProductSearchDetails getCertifiedProductSearchDetails(Long certifiedProductId) {
@@ -161,10 +165,14 @@ public class ListingValidationCreatorJob implements Job {
     }
 
     private boolean isBannedDeveloperErrorMessage(String message) {
-        String bannedDeveloperErrorMessage = "^The developer.* has a status of Under certification ban by ONC\\. Certified products belonging to this developer cannot be updated until its status returns to Active\\.$";
-
-        Pattern pattern = Pattern.compile(bannedDeveloperErrorMessage);
-        Matcher matcher = pattern.matcher(message);
-        return matcher.find();
+        try {
+            Pattern pattern = Pattern.compile(bannedDeveloperMessageRegex);
+            Matcher matcher = pattern.matcher(message);
+            return matcher.find();
+        } catch (Exception e) {
+            LOGGER.error("Message being test when error occurred: " + message);
+            LOGGER.catching(e);
+            return false;
+        }
     }
 }
