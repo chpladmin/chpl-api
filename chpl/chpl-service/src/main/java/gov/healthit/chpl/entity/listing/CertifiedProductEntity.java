@@ -102,8 +102,8 @@ public class CertifiedProductEntity implements Serializable {
     @Column(name = "other_acb", length = OTHER_ACB_LENGTH)
     private String otherAcb;
 
-    @Column(name = "transparency_attestation_url")
-    private String transparencyAttestationUrl;
+    @Column(name = "mandatory_disclosures")
+    private String mandatoryDisclosures;
 
     @Column(name = "ics")
     private Boolean ics;

@@ -261,7 +261,14 @@ public class CertifiedProductSearchDetails implements Serializable {
      * A hyperlink to the mandatory disclosures required by 170.523(k)(1) for the Health IT Module
      */
     @XmlElement(required = false, nillable = true)
+    @Deprecated
     private String transparencyAttestationUrl;
+
+    /**
+     * A hyperlink to the mandatory disclosures required by 170.523(k)(1) for the Health IT Module
+     */
+    @XmlElement(required = false, nillable = true)
+    private String mandatoryDisclosures;
 
     /**
      * The last time this listing was modified in any way given in milliseconds since epoch.
@@ -647,12 +654,24 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.productAdditionalSoftware = productAdditionalSoftware;
     }
 
+    @Deprecated
     public String getTransparencyAttestationUrl() {
         return transparencyAttestationUrl;
     }
 
+    @Deprecated
     public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+        this.mandatoryDisclosures = transparencyAttestationUrl;
         this.transparencyAttestationUrl = transparencyAttestationUrl;
+    }
+
+    public String getMandatoryDisclosures() {
+        return mandatoryDisclosures;
+    }
+
+    public void setMandatoryDisclosures(String mandatoryDisclosures) {
+        this.mandatoryDisclosures = mandatoryDisclosures;
+        this.transparencyAttestationUrl = mandatoryDisclosures;
     }
 
     public List<CertifiedProductQmsStandard> getQmsStandards() {

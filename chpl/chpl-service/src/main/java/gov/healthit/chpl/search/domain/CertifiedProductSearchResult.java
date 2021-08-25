@@ -143,7 +143,9 @@ public class CertifiedProductSearchResult implements Serializable {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate promotingInteroperabilityUserDate;
+    @Deprecated
     private String transparencyAttestationUrl;
+    private String mandatoryDisclosures;
 
     public CertifiedProductSearchResult(CertifiedProductSearchResult other) {
         this.id = other.getId();
@@ -174,6 +176,7 @@ public class CertifiedProductSearchResult implements Serializable {
         this.promotingInteroperabilityUserCount = other.getPromotingInteroperabilityUserCount();
         this.promotingInteroperabilityUserDate = other.getPromotingInteroperabilityUserDate();
         this.transparencyAttestationUrl = other.getTransparencyAttestationUrl();
+        this.mandatoryDisclosures = other.getMandatoryDisclosures();
     }
 
     @Override

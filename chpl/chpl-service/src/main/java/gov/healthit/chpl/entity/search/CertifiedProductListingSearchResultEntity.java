@@ -38,8 +38,8 @@ public class CertifiedProductListingSearchResultEntity {
     @Column(name = "promoting_interoperability_user_count_date")
     private LocalDate promotingInteroperabilityUserCountDate;
 
-    @Column(name = "transparency_attestation_url")
-    private String transparencyAttestationUrl;
+    @Column(name = "mandatory_disclosures")
+    private String mandatoryDisclosures;
 
     @Column(name = "year")
     private String edition;
