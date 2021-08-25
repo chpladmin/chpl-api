@@ -18,11 +18,13 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.listing.CertifiedProductSummaryEntity;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "pending_surveillance")
-@Data
+@Getter
+@Setter
 public class PendingSurveillanceEntity {
 
     @Id

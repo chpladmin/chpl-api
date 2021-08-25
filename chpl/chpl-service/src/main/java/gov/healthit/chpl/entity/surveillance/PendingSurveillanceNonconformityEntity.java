@@ -2,7 +2,6 @@ package gov.healthit.chpl.entity.surveillance;
 
 import java.time.LocalDate;
 import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,14 +14,16 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "pending_surveillance_nonconformity")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public class PendingSurveillanceNonconformityEntity {
 
     @Id

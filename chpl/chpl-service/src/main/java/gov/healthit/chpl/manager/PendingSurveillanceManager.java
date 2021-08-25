@@ -355,7 +355,7 @@ public class PendingSurveillanceManager extends SecuredManager {
         surv.setId(pr.getId());
         surv.setSurveillanceIdToReplace(pr.getSurvFriendlyIdToReplace());
         surv.setStartDay(pr.getStartDate());
-        surv.setStartDate(new Date(DateUtil.toEpochMillis(pr.getStartDate())));
+        surv.setStartDate(pr.getStartDate() == null ? null : new Date(DateUtil.toEpochMillis(pr.getStartDate())));
         surv.setEndDay(pr.getEndDate());
         surv.setEndDate(pr.getEndDate() == null ? null : new Date(DateUtil.toEpochMillisEndOfDay(pr.getEndDate())));
         surv.setRandomizedSitesUsed(pr.getNumRandomizedSites());
