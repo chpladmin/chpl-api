@@ -232,8 +232,8 @@ public class CertifiedProductDetailsEntitySimple {
     @Column(name = "product_additional_software")
     private String productAdditionalSoftware;
 
-    @Column(name = "transparency_attestation_url")
-    private String transparencyAttestationUrl;
+    @Column(name = "mandatory_disclosures")
+    private String mandatoryDisclosures;
 
     @Column(name = "rwt_plans_url")
     private String rwtPlansUrl;
