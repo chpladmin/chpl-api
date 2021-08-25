@@ -208,7 +208,7 @@
 									"    pm.expect(expresp).to.have.property('rwtResultsCheckDate');\r",
 									"});\r",
 									"pm.test(\"/certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} end point response should not have rwtEligibilityYear field\", function () {\r",
-									"    pm.expect(expresult).to.not.have.property('rwtEligibilityYear');\r",
+									"    pm.expect(expresp).to.not.have.property('rwtEligibilityYear');\r",
 									"});"
 								],
 								"type": "text/javascript"
