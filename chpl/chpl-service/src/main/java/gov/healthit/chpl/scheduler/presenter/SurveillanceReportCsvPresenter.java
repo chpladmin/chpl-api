@@ -18,11 +18,8 @@ import gov.healthit.chpl.service.CertificationCriterionService;
 
 public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 
-    private CertificationCriterionService criterionService;
-
-    public SurveillanceReportCsvPresenter(Environment env, CertificationCriterionService criterionService) {
-        super(env, criterionService);
-        this.criterionService = criterionService;
+    public SurveillanceReportCsvPresenter(Environment env) {
+        super(env);
     }
 
     @Override
@@ -122,17 +119,13 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
         } else {
             survFields.add("");
         }
-        if (surv.getStartDate() != null) {
-            LocalDateTime survStartDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(surv.getStartDate().getTime()),
-                    ZoneId.systemDefault());
-            survFields.add(getDateFormatter().format(survStartDate));
+        if (surv.getStartDay() != null) {
+            survFields.add(getDateFormatter().format(surv.getStartDay()));
         } else {
             survFields.add("");
         }
-        if (surv.getEndDate() != null) {
-            LocalDateTime survEndDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(surv.getEndDate().getTime()),
-                    ZoneId.systemDefault());
-            survFields.add(getDateFormatter().format(survEndDate));
+        if (surv.getEndDay() != null) {
+            survFields.add(getDateFormatter().format(surv.getEndDay()));
         } else {
             survFields.add("");
         }
@@ -168,47 +161,32 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
         List<String> ncFields = new ArrayList<String>();
         ncFields.add("Y");
         if (nc.getCriterion() != null) {
-            ncFields.add(criterionService.formatCriteriaNumber(nc.getCriterion()));
+            ncFields.add(CertificationCriterionService.formatCriteriaNumber(nc.getCriterion()));
         } else if (nc.getNonconformityType() != null) {
             ncFields.add(nc.getNonconformityType());
         }
-        LocalDateTime ncDeterminationDate = null;
-        if (nc.getDateOfDetermination() != null) {
-            ncDeterminationDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getDateOfDetermination().getTime()),
-                    ZoneId.systemDefault());
-            ncFields.add(getDateFormatter().format(ncDeterminationDate));
+        if (nc.getDateOfDeterminationDay() != null) {
+            ncFields.add(getDateFormatter().format(nc.getDateOfDeterminationDay()));
         } else {
             ncFields.add("");
         }
-        LocalDateTime capApprovalDate = null;
-        if (nc.getCapApprovalDate() != null) {
-            capApprovalDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getCapApprovalDate().getTime()),
-                    ZoneId.systemDefault());
-            ncFields.add(getDateFormatter().format(capApprovalDate));
+        if (nc.getCapApprovalDay() != null) {
+            ncFields.add(getDateFormatter().format(nc.getCapApprovalDay()));
         } else {
             ncFields.add("");
         }
-        LocalDateTime capStartDate = null;
-        if (nc.getCapStartDate() != null) {
-            capStartDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getCapStartDate().getTime()),
-                    ZoneId.systemDefault());
-            ncFields.add(getDateFormatter().format(capStartDate));
+        if (nc.getCapStartDay() != null) {
+            ncFields.add(getDateFormatter().format(nc.getCapStartDay()));
         } else {
             ncFields.add("");
         }
-        LocalDateTime capMustCompleteDate = null;
-        if (nc.getCapMustCompleteDate() != null) {
-            capMustCompleteDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getCapMustCompleteDate().getTime()),
-                    ZoneId.systemDefault());
-            ncFields.add(getDateFormatter().format(capMustCompleteDate));
+        if (nc.getCapMustCompleteDay() != null) {
+            ncFields.add(getDateFormatter().format(nc.getCapMustCompleteDay()));
         } else {
             ncFields.add("");
         }
-        LocalDateTime capEndDate = null;
-        if (nc.getCapEndDate() != null) {
-            capEndDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getCapEndDate().getTime()),
-                    ZoneId.systemDefault());
-            ncFields.add(getDateFormatter().format(capEndDate));
+        if (nc.getCapEndDay() != null) {
+            ncFields.add(getDateFormatter().format(nc.getCapEndDay()));
         } else {
             ncFields.add("");
         }
@@ -218,26 +196,26 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
             ncFields.add("");
         }
 
-        if (capApprovalDate != null) {
+        if (nc.getCapApprovalDay() != null) {
             // calculate number of days from nc determination to cap approval
             // date
-            Duration timeBetween = Duration.between(ncDeterminationDate, capApprovalDate);
+            Duration timeBetween = Duration.between(nc.getDateOfDeterminationDay(), nc.getCapApprovalDay());
             ncFields.add(timeBetween.toDays() + "");
             ncFields.add("");
         } else {
             ncFields.add("");
             // calculate number of days between nc determination date and
             // present
-            Duration timeBetween = Duration.between(ncDeterminationDate, LocalDateTime.now());
+            Duration timeBetween = Duration.between(nc.getDateOfDeterminationDay(), LocalDateTime.now());
             ncFields.add(timeBetween.toDays() + "");
         }
 
-        if (capApprovalDate != null && capStartDate != null) {
-            Duration timeBetween = Duration.between(capApprovalDate, capStartDate);
+        if (nc.getCapApprovalDay() != null && nc.getCapStartDay() != null) {
+            Duration timeBetween = Duration.between(nc.getCapApprovalDay(), nc.getCapStartDay());
             ncFields.add(timeBetween.toDays() + "");
             ncFields.add("");
-        } else if (capApprovalDate != null) {
-            Duration timeBetween = Duration.between(capApprovalDate, LocalDateTime.now());
+        } else if (nc.getCapApprovalDay() != null) {
+            Duration timeBetween = Duration.between(nc.getCapApprovalDay(), LocalDateTime.now());
             ncFields.add("");
             ncFields.add(timeBetween.toDays() + "");
         } else {
@@ -245,12 +223,12 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
             ncFields.add("");
         }
 
-        if (capStartDate != null && capEndDate != null) {
-            Duration timeBetween = Duration.between(capStartDate, capEndDate);
+        if (nc.getCapStartDay() != null && nc.getCapEndDay() != null) {
+            Duration timeBetween = Duration.between(nc.getCapStartDay(), nc.getCapEndDay());
             ncFields.add(timeBetween.toDays() + "");
             ncFields.add("");
-        } else if (capStartDate != null) {
-            Duration timeBetween = Duration.between(capStartDate, LocalDateTime.now());
+        } else if (nc.getCapStartDay() != null) {
+            Duration timeBetween = Duration.between(nc.getCapStartDay(), LocalDateTime.now());
             ncFields.add("");
             ncFields.add(timeBetween.toDays() + "");
         } else {
@@ -258,8 +236,8 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
             ncFields.add("");
         }
 
-        if (capEndDate != null && capMustCompleteDate != null) {
-            Duration timeBetween = Duration.between(capMustCompleteDate, capEndDate);
+        if (nc.getCapEndDay() != null && nc.getCapMustCompleteDay() != null) {
+            Duration timeBetween = Duration.between(nc.getCapMustCompleteDay(), nc.getCapEndDay());
             ncFields.add(timeBetween.toDays() + "");
         } else {
             ncFields.add("N/A");

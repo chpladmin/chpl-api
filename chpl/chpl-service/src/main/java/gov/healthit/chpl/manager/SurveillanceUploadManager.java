@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -236,7 +235,7 @@ public class SurveillanceUploadManager extends SecuredManager {
             for (SurveillanceNonconformity nc : req.getNonconformities()) {
                 if (nc.getStatus() != null
                         && nc.getStatus().getName().equalsIgnoreCase(SurveillanceNonconformityStatus.CLOSED)
-                        && nc.getCapEndDate() == null) {
+                        && nc.getCapEndDay() == null) {
                     errors.add(errorMessageUtil.getMessage("surveillance.nonconformity.closedStatusInvalid", pendingSurv.getCertifiedProduct().getChplProductNumber()));
                 }
             }
@@ -268,8 +267,8 @@ public class SurveillanceUploadManager extends SecuredManager {
             for (SurveillanceNonconformity nc : req.getNonconformities()) {
                 if (nc.getStatus() != null
                         && nc.getStatus().getName().equalsIgnoreCase(SurveillanceNonconformityStatus.CLOSED)
-                        && nc.getCapEndDate() != null) {
-                    nc.setNonconformityCloseDate(nc.getCapEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                        && nc.getCapEndDay() != null) {
+                    nc.setNonconformityCloseDate(nc.getCapEndDay());
                 }
             }
         }

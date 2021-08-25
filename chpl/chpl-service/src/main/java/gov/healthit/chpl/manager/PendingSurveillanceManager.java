@@ -354,10 +354,10 @@ public class PendingSurveillanceManager extends SecuredManager {
         Surveillance surv = new Surveillance();
         surv.setId(pr.getId());
         surv.setSurveillanceIdToReplace(pr.getSurvFriendlyIdToReplace());
-        surv.setStartDate(new Date(DateUtil.toEpochMillis(pr.getStartDate())));
-        surv.setEndDate(new Date(DateUtil.toEpochMillis(pr.getEndDate())));
         surv.setStartDay(pr.getStartDate());
+        surv.setStartDate(new Date(DateUtil.toEpochMillis(pr.getStartDate())));
         surv.setEndDay(pr.getEndDate());
+        surv.setEndDate(new Date(DateUtil.toEpochMillisEndOfDay(pr.getEndDate())));
         surv.setRandomizedSitesUsed(pr.getNumRandomizedSites());
         surv.setAuthority(userPermissionDAO.findById(pr.getUserPermissionId()).getAuthority());
 
@@ -389,11 +389,16 @@ public class PendingSurveillanceManager extends SecuredManager {
                 if (preq.getNonconformities() != null) {
                     for (PendingSurveillanceNonconformityEntity pnc : preq.getNonconformities()) {
                         SurveillanceNonconformity nc = new SurveillanceNonconformity();
-                        nc.setCapApprovalDate(pnc.getCapApproval());
-                        nc.setCapEndDate(pnc.getCapEndDate());
-                        nc.setCapMustCompleteDate(pnc.getCapMustCompleteDate());
-                        nc.setCapStartDate(pnc.getCapStart());
-                        nc.setDateOfDetermination(pnc.getDateOfDetermination());
+                        nc.setCapApprovalDay(pnc.getCapApproval());
+                        nc.setCapApprovalDate(new Date(DateUtil.toEpochMillis(pnc.getCapApproval())));
+                        nc.setCapEndDay(pnc.getCapEndDate());
+                        nc.setCapEndDate(new Date(DateUtil.toEpochMillisEndOfDay(pnc.getCapEndDate())));
+                        nc.setCapMustCompleteDay(pnc.getCapMustCompleteDate());
+                        nc.setCapMustCompleteDate(new Date(DateUtil.toEpochMillisEndOfDay(pnc.getCapMustCompleteDate())));
+                        nc.setCapStartDay(pnc.getCapStart());
+                        nc.setCapStartDate(new Date(DateUtil.toEpochMillis(pnc.getCapStart())));
+                        nc.setDateOfDeterminationDay(pnc.getDateOfDetermination());
+                        nc.setDateOfDetermination(new Date(DateUtil.toEpochMillis(pnc.getDateOfDetermination())));
                         nc.setDeveloperExplanation(pnc.getDeveloperExplanation());
                         nc.setFindings(pnc.getFindings());
                         nc.setId(pnc.getId());
@@ -468,8 +473,8 @@ public class PendingSurveillanceManager extends SecuredManager {
             alreadyDeletedEx.getErrorMessages()
                     .add("This pending surveillance has already been confirmed or rejected by another user.");
             alreadyDeletedEx.setObjectId(pendingSurv.getId().toString());
-            alreadyDeletedEx.setStartDate(pendingSurv.getStartDate());
-            alreadyDeletedEx.setEndDate(pendingSurv.getEndDate());
+            alreadyDeletedEx.setStartDate(new Date(DateUtil.toEpochMillis(pendingSurv.getStartDate())));
+            alreadyDeletedEx.setEndDate(new Date(DateUtil.toEpochMillisEndOfDay(pendingSurv.getEndDate())));
 
             try {
                 UserDTO lastModifiedUserDto = userDao.getById(pendingSurv.getLastModifiedUser());
@@ -518,8 +523,10 @@ public class PendingSurveillanceManager extends SecuredManager {
         Surveillance surv = new Surveillance();
         surv.setId(entity.getId());
         surv.setFriendlyId(entity.getFriendlyId());
-        surv.setStartDate(entity.getStartDate());
-        surv.setEndDate(entity.getEndDate());
+        surv.setStartDay(entity.getStartDate());
+        surv.setStartDate(new Date(DateUtil.toEpochMillis(entity.getStartDate())));
+        surv.setEndDay(entity.getEndDate());
+        surv.setEndDate(new Date(DateUtil.toEpochMillis(entity.getEndDate())));
         surv.setRandomizedSitesUsed(entity.getNumRandomizedSites());
         surv.setAuthority(userPermissionDAO.findById(entity.getUserPermissionId()).getAuthority());
         surv.setLastModifiedDate(entity.getLastModifiedDate());
@@ -584,11 +591,16 @@ public class PendingSurveillanceManager extends SecuredManager {
                 if (reqEntity.getNonconformities() != null) {
                     for (SurveillanceNonconformityEntity ncEntity : reqEntity.getNonconformities()) {
                         SurveillanceNonconformity nc = new SurveillanceNonconformity();
-                        nc.setCapApprovalDate(ncEntity.getCapApproval());
-                        nc.setCapEndDate(ncEntity.getCapEndDate());
-                        nc.setCapMustCompleteDate(ncEntity.getCapMustCompleteDate());
-                        nc.setCapStartDate(ncEntity.getCapStart());
-                        nc.setDateOfDetermination(ncEntity.getDateOfDetermination());
+                        nc.setCapApprovalDay(ncEntity.getCapApproval());
+                        nc.setCapApprovalDate(new Date(DateUtil.toEpochMillis(ncEntity.getCapApproval())));
+                        nc.setCapEndDay(ncEntity.getCapEndDate());
+                        nc.setCapEndDate(new Date(DateUtil.toEpochMillisEndOfDay(ncEntity.getCapEndDate())));
+                        nc.setCapMustCompleteDay(ncEntity.getCapMustCompleteDate());
+                        nc.setCapMustCompleteDate(new Date(DateUtil.toEpochMillisEndOfDay(ncEntity.getCapMustCompleteDate())));
+                        nc.setCapStartDay(ncEntity.getCapStart());
+                        nc.setCapStartDate(new Date(DateUtil.toEpochMillis(ncEntity.getCapStart())));
+                        nc.setDateOfDeterminationDay(ncEntity.getDateOfDetermination());
+                        nc.setDateOfDetermination(new Date(DateUtil.toEpochMillis(ncEntity.getDateOfDetermination())));
                         nc.setDeveloperExplanation(ncEntity.getDeveloperExplanation());
                         nc.setFindings(ncEntity.getFindings());
                         nc.setId(ncEntity.getId());
@@ -649,8 +661,8 @@ public class PendingSurveillanceManager extends SecuredManager {
         alreadyDeletedEx.getErrorMessages()
                 .add("This pending surveillance has already been confirmed or rejected by another user.");
         alreadyDeletedEx.setObjectId(entity.getId().toString());
-        alreadyDeletedEx.setStartDate(entity.getStartDate());
-        alreadyDeletedEx.setEndDate(entity.getEndDate());
+        alreadyDeletedEx.setStartDate(new Date(DateUtil.toEpochMillis(entity.getStartDate())));
+        alreadyDeletedEx.setEndDate(new Date(DateUtil.toEpochMillisEndOfDay(entity.getEndDate())));
         try {
             UserDTO lastModifiedUserDto = userDao.getById(entity.getLastModifiedUser());
             if (lastModifiedUserDto != null) {

@@ -3,8 +3,10 @@ package gov.healthit.chpl.surveillance.report.builder;
 import java.awt.Color;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -48,6 +50,7 @@ import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
 import gov.healthit.chpl.surveillance.report.dto.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportRelevantListingDTO;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -367,9 +370,9 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         relevantSuveillances.sort(new Comparator<Surveillance>() {
             @Override
             public int compare(final Surveillance o1, final Surveillance o2) {
-                if (o1.getStartDate().getTime() < o2.getStartDate().getTime()) {
+                if (o1.getStartDay().isBefore(o2.getStartDay())) {
                     return -1;
-                } else if (o1.getStartDate().getTime() == o2.getStartDate().getTime()) {
+                } else if (o1.getStartDay().equals(o2.getStartDay())) {
                     return 0;
                 } else {
                     return 1;
@@ -419,8 +422,8 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
             addDataCell(workbook, row, COL_SURV_TYPE, surv.getType().getName());
             addDataCell(workbook, row, COL_SURV_LOCATION_COUNT,
                     surv.getRandomizedSitesUsed() == null ? "" : surv.getRandomizedSitesUsed().toString());
-            addDataCell(workbook, row, COL_SURV_BEGIN, dateFormatter.format(surv.getStartDate()));
-            addDataCell(workbook, row, COL_SURV_END, surv.getEndDate() == null ? "" : dateFormatter.format(surv.getEndDate()));
+            addDataCell(workbook, row, COL_SURV_BEGIN, dateFormatter.format(surv.getStartDay()));
+            addDataCell(workbook, row, COL_SURV_END, surv.getEndDay() == null ? "" : dateFormatter.format(surv.getEndDay()));
             //user has to enter this field
             addDataCell(workbook, row, COL_SURV_OUTCOME,
                     generateSurveillanceOutcomeValue(quarterlyReports, privilegedSurvQuarterlyData));
@@ -559,9 +562,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         for (Surveillance currSurv : allSurveillances) {
             boolean isRelevantToAtLeastOneQuarter = false;
             for (QuarterlyReportDTO quarterlyReport : quarterlyReports) {
-                if (currSurv.getStartDate().getTime() <= quarterlyReport.getEndDateTime().getTime()
-                        && (currSurv.getEndDate() == null
-                        || currSurv.getEndDate().getTime() >= quarterlyReport.getStartDateTime().getTime())) {
+                if (surveillanceOccursDuringQuarterlyReportTime(currSurv, quarterlyReport)) {
                     isRelevantToAtLeastOneQuarter = true;
                 }
             }
@@ -570,6 +571,12 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
             }
         }
         return relevantSurveillances;
+    }
+
+    private boolean surveillanceOccursDuringQuarterlyReportTime(Surveillance surv, QuarterlyReportDTO quarterlyReport) {
+        return surv.getStartDay().compareTo(DateUtil.toLocalDate(quarterlyReport.getEndDateTime().getTime())) <= 0
+                && (surv.getEndDay() == null
+                    || surv.getEndDay().compareTo(DateUtil.toLocalDate(quarterlyReport.getStartDateTime().getTime())) >= 0);
     }
 
     private boolean determineIfSurveillanceHappenedDuringQuarter(String quarterName,
@@ -582,13 +589,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         }
         boolean result = false;
         if (quarterlyReport != null) {
-            if (surv.getStartDate().getTime() <= quarterlyReport.getEndDateTime().getTime()
-                    && surv.getEndDate() == null) {
-                result = true;
-            } else if (surv.getStartDate().getTime() <= quarterlyReport.getEndDateTime().getTime()
-                    && surv.getEndDate() != null && surv.getEndDate().getTime() >= quarterlyReport.getStartDateTime().getTime()) {
-                result = true;
-            }
+            result = surveillanceOccursDuringQuarterlyReportTime(surv, quarterlyReport);
         }
         return result;
     }
@@ -1174,10 +1175,10 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
     private String determineResultantCertificationStatus(CertifiedProductSearchDetails listing,
             Surveillance surv) {
         String result = "";
-        if (surv.getEndDate() == null) {
+        if (surv.getEndDay() == null) {
             result = listing.getCurrentStatus().getStatus().getName();
         } else {
-            CertificationStatusEvent statusEvent = listing.getStatusOnDate(surv.getEndDate());
+            CertificationStatusEvent statusEvent = listing.getStatusOnDate(new Date(DateUtil.toEpochMillisEndOfDay(surv.getEndDay())));
             if (statusEvent != null) {
                 result = statusEvent.getStatus().getName();
             }
@@ -1199,8 +1200,9 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
                     || statusEvent.getStatus().getName().equals(CertificationStatusType.SuspendedByOnc.getName())) {
                 //the suspended status occurred after the surv start and either the surv hasn't
                 //ended yet or the end date occurrs after the suspended status.
-                if (statusEvent.getEventDate().longValue() >= surv.getStartDate().getTime()
-                        && (surv.getEndDate() == null || surv.getEndDate().getTime() >= statusEvent.getEventDate().longValue())) {
+                LocalDate statusEventDay = DateUtil.toLocalDate(statusEvent.getEventDate().longValue());
+                if (statusEventDay.compareTo(surv.getStartDay()) >= 0
+                        && (surv.getEndDay() == null || surv.getEndDay().compareTo(statusEventDay) >= 0)) {
                     result = "Yes";
                 }
             }
