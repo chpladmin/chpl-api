@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -304,32 +305,32 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         }
 
         if (nc.getCapApprovalDay() != null) {
-            Duration timeBetween = Duration.between(nc.getDateOfDeterminationDay(), nc.getCapApprovalDay());
-            rule.setNumberOfDaysFromDeterminationToCapApproval(timeBetween.toDays());
+            long diffInDays = ChronoUnit.DAYS.between(nc.getDateOfDeterminationDay(), nc.getCapApprovalDay());
+            rule.setNumberOfDaysFromDeterminationToCapApproval(diffInDays);
         } else {
-            Duration timeBetween = Duration.between(nc.getDateOfDeterminationDay(), LocalDateTime.now());
-            rule.setNumberOfDaysFromDeterminationToPresent(timeBetween.toDays());
+            long diffInDays = ChronoUnit.DAYS.between(nc.getDateOfDeterminationDay(), LocalDateTime.now());
+            rule.setNumberOfDaysFromDeterminationToPresent(diffInDays);
         }
 
         if (nc.getCapApprovalDay() != null && nc.getCapStartDay() != null) {
-            Duration timeBetween = Duration.between(nc.getCapApprovalDay(), nc.getCapStartDay());
-            rule.setNumberOfDaysFromCapApprovalToCapBegan(timeBetween.toDays());
+            long diffInDays = ChronoUnit.DAYS.between(nc.getCapApprovalDay(), nc.getCapStartDay());
+            rule.setNumberOfDaysFromCapApprovalToCapBegan(diffInDays);
         } else if (nc.getCapApprovalDay() != null) {
-            Duration timeBetween = Duration.between(nc.getCapApprovalDay(), LocalDateTime.now());
-            rule.setNumberOfDaysFromCapApprovalToPresent(timeBetween.toDays());
+            long diffInDays = ChronoUnit.DAYS.between(nc.getCapApprovalDay(), LocalDateTime.now());
+            rule.setNumberOfDaysFromCapApprovalToPresent(diffInDays);
         }
 
         if (nc.getCapStartDay() != null && nc.getCapEndDay() != null) {
-            Duration timeBetween = Duration.between(nc.getCapStartDay(), nc.getCapEndDay());
-            rule.setNumberOfDaysFromCapBeganToCapCompleted(timeBetween.toDays());
-        } else if (nc.getCapStartDate() != null) {
-            Duration timeBetween = Duration.between(nc.getCapStartDay(), LocalDateTime.now());
-            rule.setNumberOfDaysFromCapBeganToPresent(timeBetween.toDays());
+            long diffInDays = ChronoUnit.DAYS.between(nc.getCapStartDay(), nc.getCapEndDay());
+            rule.setNumberOfDaysFromCapBeganToCapCompleted(diffInDays);
+        } else if (nc.getCapStartDay() != null) {
+            long diffInDays = ChronoUnit.DAYS.between(nc.getCapStartDay(), LocalDateTime.now());
+            rule.setNumberOfDaysFromCapBeganToPresent(diffInDays);
         }
 
         if (nc.getCapEndDay() != null && nc.getCapMustCompleteDay() != null) {
-            Duration timeBetween = Duration.between(nc.getCapMustCompleteDay(), nc.getCapEndDay());
-            rule.setDifferenceFromCapCompletedAndCapMustBeCompleted(timeBetween.toDays());
+            long diffInDays = ChronoUnit.DAYS.between(nc.getCapMustCompleteDay(), nc.getCapEndDay());
+            rule.setDifferenceFromCapCompletedAndCapMustBeCompleted(diffInDays);
         }
         return rule;
     }

@@ -1,6 +1,7 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics.data;
 
-import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
@@ -95,11 +96,12 @@ public class NonConformityDataCreator {
                 .distinct() // Want to figure out how to get rid of this
                 .collect(Collectors.toList());
 
+        LocalDate now = LocalDate.from(LocalDateTime.now());
         Long totalDuration = nonconformities.stream()
                 .map(nc -> Math
                         .abs(ChronoUnit.DAYS.between(
                                 nc.getCapApproval(),
-                                nc.getCapEndDate() != null ? nc.getCapEndDate() : Instant.now())))
+                                nc.getCapEndDate() != null ? nc.getCapEndDate() : now)))
                 .collect(Collectors.summingLong(n -> n.longValue()));
         return totalDuration / nonconformities.size();
     }
