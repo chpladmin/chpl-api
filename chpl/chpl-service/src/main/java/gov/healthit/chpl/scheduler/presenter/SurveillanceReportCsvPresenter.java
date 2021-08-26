@@ -1,10 +1,10 @@
 package gov.healthit.chpl.scheduler.presenter;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -197,48 +197,46 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
         }
 
         if (nc.getCapApprovalDay() != null) {
-            // calculate number of days from nc determination to cap approval
-            // date
-            Duration timeBetween = Duration.between(nc.getDateOfDeterminationDay(), nc.getCapApprovalDay());
-            ncFields.add(timeBetween.toDays() + "");
+            // calculate number of days from nc determination to cap approval date
+            long daysBetween = ChronoUnit.DAYS.between(nc.getDateOfDeterminationDay(), nc.getCapApprovalDay());
+            ncFields.add(daysBetween + "");
             ncFields.add("");
         } else {
             ncFields.add("");
-            // calculate number of days between nc determination date and
-            // present
-            Duration timeBetween = Duration.between(nc.getDateOfDeterminationDay(), LocalDateTime.now());
-            ncFields.add(timeBetween.toDays() + "");
+            // calculate number of days between nc determination date and present
+            long daysBetween = ChronoUnit.DAYS.between(nc.getDateOfDeterminationDay(), LocalDateTime.now());
+            ncFields.add(daysBetween + "");
         }
 
         if (nc.getCapApprovalDay() != null && nc.getCapStartDay() != null) {
-            Duration timeBetween = Duration.between(nc.getCapApprovalDay(), nc.getCapStartDay());
-            ncFields.add(timeBetween.toDays() + "");
+            long daysBetween = ChronoUnit.DAYS.between(nc.getCapApprovalDay(), nc.getCapStartDay());
+            ncFields.add(daysBetween + "");
             ncFields.add("");
         } else if (nc.getCapApprovalDay() != null) {
-            Duration timeBetween = Duration.between(nc.getCapApprovalDay(), LocalDateTime.now());
+            long daysBetween = ChronoUnit.DAYS.between(nc.getCapApprovalDay(), LocalDateTime.now());
             ncFields.add("");
-            ncFields.add(timeBetween.toDays() + "");
+            ncFields.add(daysBetween + "");
         } else {
             ncFields.add("");
             ncFields.add("");
         }
 
         if (nc.getCapStartDay() != null && nc.getCapEndDay() != null) {
-            Duration timeBetween = Duration.between(nc.getCapStartDay(), nc.getCapEndDay());
-            ncFields.add(timeBetween.toDays() + "");
+            long daysBetween = ChronoUnit.DAYS.between(nc.getCapStartDay(), nc.getCapEndDay());
+            ncFields.add(daysBetween + "");
             ncFields.add("");
         } else if (nc.getCapStartDay() != null) {
-            Duration timeBetween = Duration.between(nc.getCapStartDay(), LocalDateTime.now());
+            long daysBetween = ChronoUnit.DAYS.between(nc.getCapStartDay(), LocalDateTime.now());
             ncFields.add("");
-            ncFields.add(timeBetween.toDays() + "");
+            ncFields.add(daysBetween + "");
         } else {
             ncFields.add("");
             ncFields.add("");
         }
 
         if (nc.getCapEndDay() != null && nc.getCapMustCompleteDay() != null) {
-            Duration timeBetween = Duration.between(nc.getCapMustCompleteDay(), nc.getCapEndDay());
-            ncFields.add(timeBetween.toDays() + "");
+            long daysBetween = ChronoUnit.DAYS.between(nc.getCapMustCompleteDay(), nc.getCapEndDay());
+            ncFields.add(daysBetween + "");
         } else {
             ncFields.add("N/A");
         }

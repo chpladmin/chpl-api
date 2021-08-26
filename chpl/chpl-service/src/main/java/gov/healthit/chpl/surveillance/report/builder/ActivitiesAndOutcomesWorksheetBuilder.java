@@ -2,8 +2,8 @@ package gov.healthit.chpl.surveillance.report.builder;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -99,7 +99,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
     private SurveillanceManager survManager;
     private PrivilegedSurveillanceDAO privilegedSurvDao;
     private int lastDataRow;
-    private SimpleDateFormat dateFormatter;
+    private DateTimeFormatter dateFormatter;
     private PropertyTemplate pt;
 
     @Autowired
@@ -110,7 +110,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         this.detailsManager = detailsManager;
         this.survManager = survManager;
         this.privilegedSurvDao = privilegedSurvDao;
-        dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
+        dateFormatter = DateTimeFormatter.ofPattern("MM/dd/uuuu");
     }
 
     protected abstract String getGroundsForInitiatingSurveillanceDescription();

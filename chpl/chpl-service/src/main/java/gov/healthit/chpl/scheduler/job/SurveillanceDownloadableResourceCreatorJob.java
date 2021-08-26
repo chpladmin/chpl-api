@@ -51,7 +51,7 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
             writeSurveillanceWithNonconformitiesFile(downloadFolder, orderedListings);
             writeSurveillanceBasicReportFile(downloadFolder, orderedListings);
         } catch (Exception e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
         }
         LOGGER.info("********* Completed the Surveillance Downloadable Resource Creator job. *********");
     }
