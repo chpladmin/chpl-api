@@ -31,16 +31,22 @@ public class RealWorldTestingEligibilityActivityExplorer extends ListingActivity
     @Override
     @Transactional
     public ActivityDTO getActivity(ListingActivityQuery query) {
+        ActivityDTO activityReturn = null;
         RealWorldTestingEligibilityQuery realWorldTestingEligibilityQuery = (RealWorldTestingEligibilityQuery) query;
         List<ActivityDTO> listingActivities = getAllActivityforListing(realWorldTestingEligibilityQuery.getCertifiedProductId());
 
-        ActivityDTO activityReturn = null;
-        Iterator<ActivityDTO> listingActivityIter = listingActivities.iterator();
-        while (listingActivityIter.hasNext()) {
-            ActivityDTO currActivity = listingActivityIter.next();
+        if (realWorldTestingEligibilityQuery.getAsOfDate() == null) {
+            if (listingActivities.size() > 0) {
+                activityReturn = listingActivities.get(0);
+            }
+        } else {
+            Iterator<ActivityDTO> listingActivityIter = listingActivities.iterator();
+            while (listingActivityIter.hasNext()) {
+                ActivityDTO currActivity = listingActivityIter.next();
 
-            if (currActivity.getActivityDate().before(new Date(DateUtil.toEpochMillis(realWorldTestingEligibilityQuery.getAsOfDate())))) {
-                activityReturn = currActivity;
+                if (currActivity.getActivityDate().before(new Date(DateUtil.toEpochMillis(realWorldTestingEligibilityQuery.getAsOfDate())))) {
+                    activityReturn = currActivity;
+                }
             }
         }
         return activityReturn;

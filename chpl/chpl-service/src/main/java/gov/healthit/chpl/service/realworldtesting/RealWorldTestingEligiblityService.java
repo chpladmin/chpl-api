@@ -63,29 +63,31 @@ public class RealWorldTestingEligiblityService {
             return memo.get(listingId);
         }
 
+
+        //When testing for elig via ICS use the version of the listing when it was originally added to the CHPL
+        Optional<CertifiedProductSearchDetails> listing = getListingInOriginalState(listingId);
+        if (listing.isPresent()) {
+            Optional<Integer> rwtEligYearBasedOnIcs = getRwtEligibilityYearBasedOnIcs(listing.get(), logger);
+            if (rwtEligYearBasedOnIcs.isPresent()) {
+                RealWorldTestingEligibility eligibility = new RealWorldTestingEligibility(RealWorldTestingEligiblityReason.ICS, rwtEligYearBasedOnIcs);
+                //This is done simply to determine if the reason s/b ICS or SELF_AND_ICS
+                //if (isListingRwtEligible(listing.get(), currentRwtEligStartDate)) {
+                //    eligibility.setReason(RealWorldTestingEligiblityReason.SELF_AND_ICS);
+                //}
+                addCalculatedResultsToMemo(listingId, eligibility);
+                return eligibility;
+            }
+        }
+
         //Initially try to determine the eligibility based on the beginning of the program
         LocalDate currentRwtEligStartDate = rwtProgramStartDate;
         Integer currentRwtEligYear = rwtProgramFirstEligibilityYear;
-
         while (currentRwtEligStartDate.isBefore(LocalDate.now())) {
-            Optional<CertifiedProductSearchDetails> listing = getListingAsOfDate(listingId, currentRwtEligStartDate);
-
-            if (listing.isPresent()) {
-                //First check eligibility using ICS
-                Optional<Integer> rwtEligYearBasedOnIcs = getRwtEligibilityYearBasedOnIcs(listing.get(), logger);
-                if (rwtEligYearBasedOnIcs.isPresent()) {
-                    RealWorldTestingEligibility eligibility = new RealWorldTestingEligibility(RealWorldTestingEligiblityReason.ICS, rwtEligYearBasedOnIcs);
-                    //This is done simply to determine if the reason s/b ICS or SELF_AND_ICS
-                    if (isListingRwtEligible(listing.get(), currentRwtEligStartDate)) {
-                        eligibility.setReason(RealWorldTestingEligiblityReason.SELF_AND_ICS);
-                    }
-                    addCalculatedResultsToMemo(listingId, eligibility);
-                    return eligibility;
-                } else if (isListingRwtEligible(listing.get(), currentRwtEligStartDate)) {
-                    RealWorldTestingEligibility eligibility = new RealWorldTestingEligibility(RealWorldTestingEligiblityReason.SELF, Optional.of(currentRwtEligYear));
-                    addCalculatedResultsToMemo(listingId, eligibility);
-                    return eligibility;
-                }
+            listing = getListingAsOfDate(listingId, currentRwtEligStartDate);
+            if (listing.isPresent() && isListingRwtEligible(listing.get(), currentRwtEligStartDate)) {
+                RealWorldTestingEligibility eligibility = new RealWorldTestingEligibility(RealWorldTestingEligiblityReason.SELF, Optional.of(currentRwtEligYear));
+                addCalculatedResultsToMemo(listingId, eligibility);
+                return eligibility;
             }
             //Eligibility could not be determined, check the next year...
             currentRwtEligStartDate = currentRwtEligStartDate.plusYears(1L);
@@ -143,6 +145,10 @@ public class RealWorldTestingEligiblityService {
             CertifiedProductSearchDetails listing = listingActivityUtil.getListing(activity.getNewData(), true);
             return Optional.of(listing);
         }
+    }
+
+    private Optional<CertifiedProductSearchDetails> getListingInOriginalState(Long listingId) {
+        return getListingAsOfDate(listingId, null);
     }
 
 
