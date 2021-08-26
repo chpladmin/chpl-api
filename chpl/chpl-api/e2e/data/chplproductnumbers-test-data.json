@@ -1,17 +1,17 @@
 [
 	{
-		"certifiedProductId": 3321,
-		"newChplProductNumber": "15.04.04.2214.Proc.14.00.0.180427",
+		"certifiedProductId": 4609,
+		"newChplProductNumber": "15.04.04.2694.BICl.18.04.0.181114",
 		"oldChplProductNumber": "CHP-028396"
 	},
 	{
-		"certifiedProductId": 4770,
-		"newChplProductNumber": "15.02.02.2391.A046.01.00.1.171109",
-		"oldChplProductNumber": "CHP-006605"
+		"certifiedProductId": 10471,
+		"newChplProductNumber": "15.04.04.2694.BICL.21.07.0.201020",
+		"oldChplProductNumber": "CHP-022218"
 	},
 	{
-		"certifiedProductId": 9437,
-		"newChplProductNumber": "15.05.05.1292.CORT.01.00.1.200114",
-		"oldChplProductNumber": "CHP-009321"
+		"certifiedProductId": 10435,
+		"newChplProductNumber": "15.04.04.1322.Blue.02.00.0.200807",
+		"oldChplProductNumber": "CHP-027911"
 	}
 ]

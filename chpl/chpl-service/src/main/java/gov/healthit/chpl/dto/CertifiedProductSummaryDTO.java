@@ -36,7 +36,7 @@ public class CertifiedProductSummaryDTO implements Serializable {
     private ProductVersionDTO version;
     private String reportFileLocation;
     private String sedReportFileLocation;
-    private String transparencyAttestationUrl;
+    private String mandatoryDisclosures;
     private Date creationDate;
     private Date lastModifiedDate;
     private String lastModifiedUser;
@@ -76,7 +76,7 @@ public class CertifiedProductSummaryDTO implements Serializable {
         this.version.setVersion(entity.getVersion());
         this.reportFileLocation = entity.getReportFileLocation();
         this.sedReportFileLocation = entity.getSedReportFileLocation();
-        this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
+        this.mandatoryDisclosures = entity.getMandatoryDisclosures();
         this.creationDate = entity.getCreationDate();
         this.lastModifiedDate = entity.getLastModifiedDate();
         this.lastModifiedUser = entity.getLastModifiedUser();
@@ -115,7 +115,7 @@ public class CertifiedProductSummaryDTO implements Serializable {
         this.version.setVersion(entity.getProductVersion());
         this.reportFileLocation = entity.getReportFileLocation();
         this.sedReportFileLocation = entity.getSedReportFileLocation();
-        this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
+        this.mandatoryDisclosures = entity.getMandatoryDisclosures();
         this.creationDate = entity.getCreationDate();
         this.lastModifiedDate = entity.getLastModifiedDate();
         this.rwtEligibilityYear = entity.getRwtEligibilityYear();
