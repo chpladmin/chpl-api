@@ -239,7 +239,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
     protected void parseTransparencyAttestation(final PendingCertifiedProductEntity pendingCertifiedProduct,
             final CSVRecord record) {
         // (k)(1) attestation url
-        pendingCertifiedProduct.setTransparencyAttestationUrl(record.get(getColumnIndexMap().getK1Index()).trim());
+        pendingCertifiedProduct.setMandatoryDisclosures(record.get(getColumnIndexMap().getK1Index()).trim());
 
         // (k)(2) attestation status
         if (getColumnIndexMap().getK2Index() >= 0) {

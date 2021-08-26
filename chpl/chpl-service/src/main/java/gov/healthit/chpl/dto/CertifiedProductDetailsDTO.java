@@ -85,7 +85,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
     private Boolean accessibilityCertified;
     private String productAdditionalSoftware;
     private TransparencyAttestationDTO transparencyAttestation;
-    private String transparencyAttestationUrl;
+    private String mandatoryDisclosures;
     private String rwtPlansUrl;
     private LocalDate rwtPlansCheckDate;
     private String rwtResultsUrl;
@@ -181,7 +181,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         if (entity.getTransparencyAttestation() != null) {
             this.transparencyAttestation = new TransparencyAttestationDTO(entity.getTransparencyAttestation().toString());
         }
-        this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
+        this.mandatoryDisclosures = entity.getMandatoryDisclosures();
         this.year = entity.getYear();
         this.certificationDate = entity.getCertificationDate();
         this.decertificationDate = entity.getDecertificationDate();
@@ -285,7 +285,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.qmsTesting = entity.getQmsTesting();
         this.accessibilityCertified = entity.getAccessibilityCertified();
         this.productAdditionalSoftware = entity.getProductAdditionalSoftware();
-        this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
+        this.mandatoryDisclosures = entity.getMandatoryDisclosures();
         this.year = entity.getYear();
         this.certificationDate = entity.getCertificationDate();
         this.decertificationDate = entity.getDecertificationDate();
