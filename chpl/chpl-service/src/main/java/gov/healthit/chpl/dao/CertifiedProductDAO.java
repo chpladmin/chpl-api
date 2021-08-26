@@ -82,7 +82,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             entity.setSedTesting(dto.getSedTesting());
             entity.setQmsTesting(dto.getQmsTesting());
             entity.setAccessibilityCertified(dto.getAccessibilityCertified());
-            entity.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
+            entity.setMandatoryDisclosures(dto.getMandatoryDisclosures());
             entity.setRwtEligibilityYear(dto.getRwtEligibilityYear());
             entity.setSvapNoticeUrl(dto.getSvapNoticeUrl());
 
@@ -154,7 +154,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         entity.setSedTesting(dto.getSedTesting());
         entity.setQmsTesting(dto.getQmsTesting());
         entity.setAccessibilityCertified(dto.getAccessibilityCertified());
-        entity.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
+        entity.setMandatoryDisclosures(dto.getMandatoryDisclosures());
         entity.setCertificationBodyId(dto.getCertificationBodyId());
         entity.setCertificationEditionId(dto.getCertificationEditionId());
         entity.setProductVersionId(dto.getProductVersionId());

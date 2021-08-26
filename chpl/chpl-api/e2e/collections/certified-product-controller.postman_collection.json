@@ -873,6 +873,345 @@
 						"description": "GET /{chplPrefix-identifier} should return Direct Review information"
 					},
 					"response": []
+				},
+				{
+					"name": "GET /{certifiedProductId} - has mandatoryDisclosures field in response",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var certifiedProductId= pm.iterationData.get(\"certifiedProductId\");\r",
+									"pm.environment.set(\"certifiedProductId\",\"certifiedProductId\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"/{certifiedProductId} return 200 status and has mandatoryDisclosures field in response\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var respbody = pm.response.json()\r",
+									"    pm.expect(respbody).to.have.property('mandatoryDisclosures');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/certified_products/{{certifiedProductId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"certified_products",
+								"{{certifiedProductId}}"
+							]
+						},
+						"description": "GET /{certifiedProductId} return 200 status and has mandatoryDisclosures field in response"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /{certifiedProductId}/details - has mandatoryDisclosures field in response",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var certifiedProductId= pm.iterationData.get(\"certifiedProductId\");\r",
+									"pm.environment.set(\"certifiedProductId\",\"certifiedProductId\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"/{certifiedProductId}/details return 200 status and has mandatoryDisclosures field in response\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var respbody = pm.response.json()\r",
+									"    pm.expect(respbody).to.have.property('mandatoryDisclosures');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/certified_products/{{certifiedProductId}}/details",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"certified_products",
+								"{{certifiedProductId}}",
+								"details"
+							]
+						},
+						"description": "GET /{certifiedProductId}/details return 200 status and has mandatoryDisclosures field in response"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode} - has mandatoryDisclosures field in response",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var chplIdtest=  pm.iterationData.get(\"newChplProductNumber\");\r",
+									"pm.environment.set(\"year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode\",chplIdtest);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"/{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode} return 200 status and has mandatoryDisclosures field in response\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var respbody = pm.response.json()\r",
+									"    pm.expect(respbody).to.have.property('mandatoryDisclosures');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/certified_products/{{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"certified_products",
+								"{{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode}}"
+							]
+						},
+						"description": "GET /{certifiedProductId}/details return 200 status and has mandatoryDisclosures field in response"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode}/details - has mandatoryDisclosures field in response",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var chplIdtest=  pm.iterationData.get(\"newChplProductNumber\");\r",
+									"pm.environment.set(\"year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode\",chplIdtest);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"/{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode}/details return 200 status and has mandatoryDisclosures field in response\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var respbody = pm.response.json()\r",
+									"    pm.expect(respbody).to.have.property('mandatoryDisclosures');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/certified_products/{{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode}}/details",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"certified_products",
+								"{{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode}}",
+								"details"
+							]
+						},
+						"description": "GET /{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode}/details return 200 status and has mandatoryDisclosures field in response"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /{chplPrefix-identifier} - has mandatoryDisclosures field in response",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var chplidtest= pm.iterationData.get(\"oldChplProductNumber\");\r",
+									"pm.environment.set(\"chplPrefix-identifier\",chplidtest);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"/{chplPrefix-identifier} return 200 status and has mandatoryDisclosures field in response\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var respbody = pm.response.json()\r",
+									"    pm.expect(respbody).to.have.property('mandatoryDisclosures');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/certified_products/{{chplPrefix-identifier}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"certified_products",
+								"{{chplPrefix-identifier}}"
+							]
+						},
+						"description": "GET /{chplPrefix-identifier} return 200 status and has mandatoryDisclosures field in response"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /{chplPrefix-identifier}/details - has mandatoryDisclosures field in response",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var chplidtest= pm.iterationData.get(\"oldChplProductNumber\");\r",
+									"pm.environment.set(\"chplPrefix-identifier\",chplidtest);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"/{chplPrefix-identifier}/details return 200 status and has mandatoryDisclosures field in response\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var respbody = pm.response.json()\r",
+									"    pm.expect(respbody).to.have.property('mandatoryDisclosures');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/certified_products/{{chplPrefix-identifier}}/details",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"certified_products",
+								"{{chplPrefix-identifier}}",
+								"details"
+							]
+						},
+						"description": "GET /{chplPrefix-identifier}/details return 200 status and has mandatoryDisclosures field in response"
+					},
+					"response": []
 				}
 			]
 		},

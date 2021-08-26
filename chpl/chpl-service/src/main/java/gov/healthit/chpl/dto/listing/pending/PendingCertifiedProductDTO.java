@@ -110,7 +110,7 @@ public class PendingCertifiedProductDTO implements Serializable {
     private Boolean hasQms;
     private Boolean accessibilityCertified;
     private TransparencyAttestationDTO transparencyAttestation;
-    private String transparencyAttestationUrl;
+    private String mandatoryDisclosures;
     private String svapNoticeUrl;
 
     @Singular
@@ -224,7 +224,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         if (details.getTransparencyAttestation() != null) {
             this.transparencyAttestation = new TransparencyAttestationDTO(details.getTransparencyAttestation());
         }
-        this.transparencyAttestationUrl = details.getTransparencyAttestationUrl();
+        this.mandatoryDisclosures = details.getMandatoryDisclosures();
         this.accessibilityCertified = details.getAccessibilityCertified();
         this.svapNoticeUrl = details.getSvapNoticeUrl();
 
@@ -613,7 +613,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         if (entity.getTransparencyAttestation() != null) {
             this.transparencyAttestation = new TransparencyAttestationDTO(entity.getTransparencyAttestation().toString());
         }
-        this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
+        this.mandatoryDisclosures = entity.getMandatoryDisclosures();
 
         this.uploadDate = entity.getCreationDate();
 

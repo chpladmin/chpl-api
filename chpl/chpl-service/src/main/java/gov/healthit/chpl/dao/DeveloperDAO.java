@@ -436,7 +436,7 @@ public class DeveloperDAO extends BaseDAOImpl {
                     entity.getCountWithdrawnByDeveloperUnderSurveillanceListings());
             domain.getListingCounts().setWithdrawnByOncAcb(entity.getCountWithdrawnByOncAcbListings());
             domain.setAcbAttestations(entity.getAcbAttestations());
-            domain.setTransparencyAttestationUrls(entity.getTransparencyAttestationUrls());
+            domain.setMandatoryDisclosures(entity.getMandatoryDisclosures());
             domainResults.add(domain);
         }
         return domainResults;
