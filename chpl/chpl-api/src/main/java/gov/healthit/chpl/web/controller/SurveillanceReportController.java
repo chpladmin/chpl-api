@@ -336,18 +336,12 @@ public class SurveillanceReportController {
     public QuarterlyReport updateQuarterlyReport(
         @RequestBody(required = true) QuarterlyReport updateRequest)
     throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
-    EntityCreationException {
+    EntityCreationException, ValidationException {
         if (updateRequest.getId() == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("report.quarterlySurveillance.missingReportId"));
         }
-        QuarterlyReportDTO reportToUpdate = reportManager.getQuarterlyReport(updateRequest.getId());
-        //above line throws entity retrieval exception if bad id
-        reportToUpdate.setActivitiesOutcomesSummary(updateRequest.getSurveillanceActivitiesAndOutcomes());
-        reportToUpdate.setPrioritizedElementSummary(updateRequest.getPrioritizedElementSummary());
-        reportToUpdate.setReactiveSurveillanceSummary(updateRequest.getReactiveSurveillanceSummary());
-        reportToUpdate.setDisclosureRequirementsSummary(updateRequest.getDisclosureRequirementsSummary());
-        QuarterlyReportDTO createdReport = reportManager.updateQuarterlyReport(reportToUpdate);
-        return new QuarterlyReport(createdReport);
+        QuarterlyReport createdReport = reportManager.updateQuarterlyReport(updateRequest);
+        return createdReport;
     }
 
     @ApiOperation(value = "Delete a quarterly report.",

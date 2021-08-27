@@ -271,14 +271,21 @@ public class SurveillanceReportManager extends SecuredManager {
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
-            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).UPDATE_QUARTERLY, #toUpdate)")
-    public QuarterlyReportDTO updateQuarterlyReport(QuarterlyReportDTO toUpdate)
-    throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-        QuarterlyReportDTO before = quarterlyDao.getById(toUpdate.getId());
-        QuarterlyReportDTO updated = quarterlyDao.update(toUpdate);
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).UPDATE_QUARTERLY, #updateRequest)")
+    public QuarterlyReport updateQuarterlyReport(QuarterlyReport updateRequest)
+    throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
+        QuarterlyReportDTO reportToUpdate = getQuarterlyReport(updateRequest.getId());
+        reviewQuarterlyReportForDeprecatedFields(updateRequest, reportToUpdate);
+        //above line throws entity retrieval exception if bad id
+        reportToUpdate.setActivitiesOutcomesSummary(updateRequest.getSurveillanceActivitiesAndOutcomes());
+        reportToUpdate.setPrioritizedElementSummary(updateRequest.getPrioritizedElementSummary());
+        reportToUpdate.setReactiveSurveillanceSummary(updateRequest.getReactiveSurveillanceSummary());
+        reportToUpdate.setDisclosureRequirementsSummary(updateRequest.getDisclosureRequirementsSummary());
+        QuarterlyReportDTO before = quarterlyDao.getById(reportToUpdate.getId());
+        QuarterlyReportDTO updated = quarterlyDao.update(reportToUpdate);
         activityManager.addActivity(ActivityConcept.QUARTERLY_REPORT, updated.getId(),
                 "Updated quarterly report.", before, updated);
-        return updated;
+        return new QuarterlyReport(updated);
     }
 
     @Transactional
@@ -541,14 +548,38 @@ public class SurveillanceReportManager extends SecuredManager {
     }
 
     private void reviewQuarterlyReportForDeprecatedFields(QuarterlyReport toCreate) throws ValidationException {
-        if (!toCreate.isAcknowledgeWarnings()
-                && (!StringUtils.isEmpty(toCreate.getReactiveSummary()) || !StringUtils.isEmpty(toCreate.getTransparencyDisclosureSummary()))) {
+        if (toCreate.isAcknowledgeWarnings()) {
+            return;
+        }
+        if (!StringUtils.isEmpty(toCreate.getReactiveSummary()) || !StringUtils.isEmpty(toCreate.getTransparencyDisclosureSummary())) {
             HashSet<String> errors = new HashSet<String>();
             HashSet<String> warnings = new HashSet<String>();
             warnings.add("Deprecated fields will not be used when creating a Quarterly Report");
             throw new ValidationException(errors, warnings);
         }
-}
+    }
+
+    private void reviewQuarterlyReportForDeprecatedFields(QuarterlyReport toUpdate, QuarterlyReportDTO existing) throws ValidationException {
+        if (toUpdate.isAcknowledgeWarnings()) {
+            return;
+        }
+        HashSet<String> warnings = new HashSet<String>();
+        if (!toUpdate.getReactiveSummary().equalsIgnoreCase(toUpdate.getReactiveSurveillanceSummary())
+                && existing.getReactiveSurveillanceSummary().equalsIgnoreCase(toUpdate.getReactiveSurveillanceSummary())) {
+
+            warnings.add("The deprecated field \"reactiveSummary\" will not be used when upating a Quarterly Report");
+        }
+        if (!toUpdate.getTransparencyDisclosureSummary().equalsIgnoreCase(toUpdate.getDisclosureRequirementsSummary())
+                && existing.getDisclosureRequirementsSummary().equalsIgnoreCase(toUpdate.getDisclosureRequirementsSummary())) {
+
+            warnings.add("The deprecated field \"transparencyDisclosureSummary\" will not be used when upating a Quarterly Report");
+        }
+        if (warnings.size() > 0) {
+            HashSet<String> errors = new HashSet<String>();
+            throw new ValidationException(errors, warnings);
+        }
+    }
+
     private void reviewQuarterlyReportToCreate(QuarterlyReportDTO toCreate)
             throws EntityCreationException, InvalidArgumentsException, JsonProcessingException, EntityRetrievalException {
         //Quarterly report has to have an ACB, year, and quarter
