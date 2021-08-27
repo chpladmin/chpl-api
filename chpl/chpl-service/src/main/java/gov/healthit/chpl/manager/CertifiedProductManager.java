@@ -464,7 +464,7 @@ public class CertifiedProductManager extends SecuredManager {
                     + "  A new certification edition cannot be created via this process.");
         }
         toCreate.setCertificationEditionId(pendingCp.getCertificationEditionId());
-        toCreate.setTransparencyAttestationUrl(pendingCp.getTransparencyAttestationUrl());
+        toCreate.setMandatoryDisclosures(pendingCp.getMandatoryDisclosures());
         toCreate.setSvapNoticeUrl(pendingCp.getSvapNoticeUrl());
 
         DeveloperDTO developer = null;

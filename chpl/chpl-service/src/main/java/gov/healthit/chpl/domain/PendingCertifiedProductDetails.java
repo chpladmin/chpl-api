@@ -187,7 +187,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
         if (dto.getTransparencyAttestation() != null) {
             this.setTransparencyAttestation(new TransparencyAttestation(dto.getTransparencyAttestation()));
         }
-        this.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
+        this.setMandatoryDisclosures(dto.getMandatoryDisclosures());
 
         List<PendingCertifiedProductQmsStandardDTO> qmsDtos = dto.getQmsStandards();
         if (qmsDtos != null && qmsDtos.size() > 0) {

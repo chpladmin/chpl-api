@@ -44,7 +44,6 @@ import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
-
 @Repository("certifiedProductSearchDAO")
 @Log4j2
 public class CertifiedProductSearchDAO extends BaseDAOImpl {
@@ -645,7 +644,8 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
                 .decertificationDate(entity.getDecertificationDate() == null ? null : entity.getDecertificationDate().getTime())
                 .certificationDate(entity.getCertificationDate().getTime())
                 .certificationStatus(entity.getCertificationStatus())
-                .transparencyAttestationUrl(entity.getTransparencyAttestationUrl())
+                .transparencyAttestationUrl(entity.getMandatoryDisclosures())
+                .mandatoryDisclosures(entity.getMandatoryDisclosures())
                 .apiDocumentation(entity.getApiDocumentation())
                 .serviceBaseUrlList(entity.getServiceBaseUrlList() != null ? entity.getServiceBaseUrlList() : "")
                 .surveillanceCount(entity.getSurveillanceCount())
@@ -690,7 +690,8 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
                 .decertificationDate(entity.getDecertificationDate() == null ? null : entity.getDecertificationDate().getTime())
                 .certificationDate(entity.getCertificationDate().getTime())
                 .certificationStatus(entity.getCertificationStatus())
-                .transparencyAttestationUrl(entity.getTransparencyAttestationUrl())
+                .transparencyAttestationUrl(entity.getMandatoryDisclosures())
+                .mandatoryDisclosures(entity.getMandatoryDisclosures())
                 .apiDocumentation(convertToSetOfStringsWithDelimiter(entity.getApiDocumentation(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
                 .serviceBaseUrlList(convertToSetOfStringsWithDelimiter(entity.getServiceBaseUrlList(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
                 .surveillanceCount(entity.getSurveillanceCount())
@@ -732,7 +733,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         listing.setCertificationStatus(queryResult.getCertificationStatus());
         listing.setNumMeaningfulUse(queryResult.getPromotingInteroperabilityUserCount());
         listing.setNumMeaningfulUseDate(DateUtil.toEpochMillis(queryResult.getPromotingInteroperabilityUserCountDate()));
-        listing.setTransparencyAttestationUrl(queryResult.getTransparencyAttestationUrl());
+        listing.setTransparencyAttestationUrl(queryResult.getMandatoryDisclosures());
         listing.setEdition(queryResult.getEdition());
         listing.setCuresUpdate(queryResult.getCuresUpdate());
         listing.setAcb(queryResult.getAcbName());
@@ -790,7 +791,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
                     dbResult.getDecertificationDate() == null ? null : dbResult.getDecertificationDate().getTime());
             result.setCertificationDate(dbResult.getCertificationDate().getTime());
             result.setCertificationStatus(dbResult.getCertificationStatus());
-            result.setTransparencyAttestationUrl(dbResult.getTransparencyAttestationUrl());
+            result.setTransparencyAttestationUrl(dbResult.getMandatoryDisclosures());
             result.setApiDocumentation(dbResult.getApiDocumentation());
             result.setSurveillanceCount(dbResult.getSurveillanceCount());
             result.setOpenSurveillanceCount(dbResult.getOpenSurveillanceCount());
