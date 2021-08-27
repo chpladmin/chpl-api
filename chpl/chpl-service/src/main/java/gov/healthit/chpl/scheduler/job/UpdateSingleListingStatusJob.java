@@ -74,7 +74,7 @@ public class UpdateSingleListingStatusJob extends QuartzJob {
 
     private CertifiedProductSearchDetails getListing(Long cpId) {
         try {
-            CertifiedProductSearchDetails cpsd = certifiedProductDetailsManager.getCertifiedProductDetails(cpId);
+            CertifiedProductSearchDetails cpsd = certifiedProductDetailsManager.getCertifiedProductDetailsUsingCache(cpId);
             // LOGGER.info("Completed Retrieving certified product {" + cpsd.getId() + "}: "
             // + cpsd.getChplProductNumber());
             return cpsd;

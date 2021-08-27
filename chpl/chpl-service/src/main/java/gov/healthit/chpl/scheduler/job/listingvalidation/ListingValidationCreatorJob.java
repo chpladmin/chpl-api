@@ -108,7 +108,7 @@ public class ListingValidationCreatorJob implements Job {
     private CertifiedProductSearchDetails getCertifiedProductSearchDetails(Long certifiedProductId) {
         try {
             long start = (new Date()).getTime();
-            CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetails(certifiedProductId);
+            CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetailsUsingCache(certifiedProductId);
             LOGGER.info("Completed details for listing(" + ((new Date()).getTime() - start) + "ms): " + certifiedProductId);
             return listing;
         } catch (EntityRetrievalException e) {
