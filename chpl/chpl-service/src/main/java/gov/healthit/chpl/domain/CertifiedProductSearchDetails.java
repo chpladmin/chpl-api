@@ -3,7 +3,6 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -661,7 +660,6 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     @Deprecated
     public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
-        this.mandatoryDisclosures = transparencyAttestationUrl;
         this.transparencyAttestationUrl = transparencyAttestationUrl;
     }
 
@@ -671,7 +669,6 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     public void setMandatoryDisclosures(String mandatoryDisclosures) {
         this.mandatoryDisclosures = mandatoryDisclosures;
-        this.transparencyAttestationUrl = mandatoryDisclosures;
     }
 
     public List<CertifiedProductQmsStandard> getQmsStandards() {
