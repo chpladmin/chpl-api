@@ -44,7 +44,7 @@ public class CertificationStatusEventsService {
     public CertificationStatusEvent getCurrentCertificationStatusEvent(Long certifiedProductId) throws EntityRetrievalException {
         return certStatusEventDao.findByCertifiedProductId(certifiedProductId).stream()
                 .map(dto -> createCertificationStatusEventBasedOnDto(dto))
-                .sorted((event1, event2) -> Long.valueOf(event1.getEventDate() - event2.getEventDate()).intValue())
+                .sorted((event1, event2) -> Long.compare(event1.getEventDate(), event2.getEventDate()))
                 .findFirst()
                 .orElse(null);
     }
