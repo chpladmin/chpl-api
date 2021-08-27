@@ -4,9 +4,15 @@ import java.io.Serializable;
 
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class QuarterlyReport implements Serializable {
     private static final long serialVersionUID = 8743838678379539305L;
 
@@ -24,9 +30,7 @@ public class QuarterlyReport implements Serializable {
     @Deprecated
     private String transparencyDisclosureSummary;
     private String disclosureRequirementsSummary;
-
-    public QuarterlyReport() {
-    }
+    private boolean acknowledgeWarnings;
 
     public QuarterlyReport(QuarterlyReportDTO dto) {
         this();

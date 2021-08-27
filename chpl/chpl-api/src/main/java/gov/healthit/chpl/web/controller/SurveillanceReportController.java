@@ -19,7 +19,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -30,7 +29,6 @@ import gov.healthit.chpl.manager.ComplaintManager;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
 import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
 import gov.healthit.chpl.surveillance.report.domain.PrivilegedSurveillance;
-import gov.healthit.chpl.surveillance.report.domain.Quarter;
 import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 import gov.healthit.chpl.surveillance.report.domain.RelevantListing;
 import gov.healthit.chpl.surveillance.report.dto.PrivilegedSurveillanceDTO;
@@ -238,26 +236,12 @@ public class SurveillanceReportController {
     public QuarterlyReport createQuarterlyReport(
             @RequestBody(required = true) QuarterlyReport createRequest)
     throws AccessDeniedException, InvalidArgumentsException, EntityCreationException,
-    JsonProcessingException, EntityRetrievalException {
+    JsonProcessingException, EntityRetrievalException, ValidationException {
         if (createRequest.getAcb() == null || createRequest.getAcb().getId() == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("report.quarterlySurveillance.missingAcb"));
         }
 
-        //create the report
-        QuarterlyReportDTO quarterlyReport = QuarterlyReportDTO.builder()
-                .year(createRequest.getYear())
-                .acb(CertificationBodyDTO.builder()
-                        .id(createRequest.getAcb().getId())
-                        .build())
-                .quarter(Quarter.builder()
-                        .name(createRequest.getQuarter())
-                        .build())
-                .activitiesOutcomesSummary(createRequest.getSurveillanceActivitiesAndOutcomes())
-                .prioritizedElementSummary(createRequest.getPrioritizedElementSummary())
-                .reactiveSurveillanceSummary(createRequest.getReactiveSurveillanceSummary())
-                .disclosureRequirementsSummary(createRequest.getDisclosureRequirementsSummary())
-                .build();
-        QuarterlyReportDTO createdReport = reportManager.createQuarterlyReport(quarterlyReport);
+        QuarterlyReportDTO createdReport = reportManager.createQuarterlyReport(createRequest);
         return new QuarterlyReport(createdReport);
     }
 

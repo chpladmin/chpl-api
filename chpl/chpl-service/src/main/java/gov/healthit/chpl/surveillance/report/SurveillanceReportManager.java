@@ -22,6 +22,7 @@ import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -37,6 +38,7 @@ import gov.healthit.chpl.scheduler.job.surveillanceReport.AnnualReportGeneration
 import gov.healthit.chpl.scheduler.job.surveillanceReport.QuarterlyReportGenerationJob;
 import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
 import gov.healthit.chpl.surveillance.report.domain.Quarter;
+import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 import gov.healthit.chpl.surveillance.report.dto.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportExclusionDTO;
@@ -206,36 +208,26 @@ public class SurveillanceReportManager extends SecuredManager {
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
-            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).CREATE_QUARTERLY, #toCreate)")
-    public QuarterlyReportDTO createQuarterlyReport(QuarterlyReportDTO toCreate)
-    throws EntityCreationException, InvalidArgumentsException, JsonProcessingException, EntityRetrievalException {
-        //Quarterly report has to have an ACB, year, and quarter
-        if (toCreate.getYear() == null) {
-            throw new InvalidArgumentsException(msgUtil.getMessage("report.quarterlySurveillance.missingYear"));
-        }
-        if (toCreate.getAcb() == null || toCreate.getAcb().getId() == null) {
-            throw new InvalidArgumentsException(msgUtil.getMessage("report.quarterlySurveillance.missingAcb"));
-        }
-        if (toCreate.getQuarter() == null
-                || (toCreate.getQuarter().getId() == null && StringUtils.isEmpty(toCreate.getQuarter().getName()))) {
-            throw new InvalidArgumentsException("report.quarterlySurveillance.missingQuarter");
-        } else if (toCreate.getQuarter().getId() == null && toCreate.getQuarter().getName() != null) {
-            Quarter quarter = quarterDao.getByName(toCreate.getQuarter().getName());
-            if (quarter == null) {
-                throw new InvalidArgumentsException(
-                        msgUtil.getMessage("report.quarterlySurveillance.badQuarter", toCreate.getQuarter().getName()));
-            }
-            toCreate.setQuarter(quarter);
-        }
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).CREATE_QUARTERLY, #createRequest)")
+    public QuarterlyReportDTO createQuarterlyReport(QuarterlyReport createRequest)
+    throws EntityCreationException, InvalidArgumentsException, JsonProcessingException, EntityRetrievalException, ValidationException {
 
-        //make sure there's not already a quarterly report for this acb and year and quarter
-        QuarterlyReportDTO existingQuarterlyReport =
-                quarterlyDao.getByQuarterAndAcbAndYear(toCreate.getQuarter().getId(),
-                        toCreate.getAcb().getId(),
-                        toCreate.getYear());
-        if (existingQuarterlyReport != null) {
-            throw new EntityCreationException(msgUtil.getMessage("report.quarterlySurveillance.exists"));
-        }
+        reviewQuarterlyReportForDeprecatedFields(createRequest);
+        //create the report
+        QuarterlyReportDTO toCreate = QuarterlyReportDTO.builder()
+                .year(createRequest.getYear())
+                .acb(CertificationBodyDTO.builder()
+                        .id(createRequest.getAcb().getId())
+                        .build())
+                .quarter(Quarter.builder()
+                        .name(createRequest.getQuarter())
+                        .build())
+                .activitiesOutcomesSummary(createRequest.getSurveillanceActivitiesAndOutcomes())
+                .prioritizedElementSummary(createRequest.getPrioritizedElementSummary())
+                .reactiveSurveillanceSummary(createRequest.getReactiveSurveillanceSummary())
+                .disclosureRequirementsSummary(createRequest.getDisclosureRequirementsSummary())
+                .build();
+        reviewQuarterlyReportToCreate(toCreate);
         QuarterlyReportDTO created = quarterlyDao.create(toCreate);
         copyPreviousReportDataIntoNextReport(created);
         QuarterlyReportDTO afterQuarterlyReport = quarterlyDao.getById(created.getId());
@@ -546,6 +538,46 @@ public class SurveillanceReportManager extends SecuredManager {
         exportQuarterlyReportTrigger = schedulerManager.createBackgroundJobTrigger(exportQuarterlyReportTrigger);
 
         return exportQuarterlyReportTrigger;
+    }
+
+    private void reviewQuarterlyReportForDeprecatedFields(QuarterlyReport toCreate) throws ValidationException {
+        if (!toCreate.isAcknowledgeWarnings()
+                && (!StringUtils.isEmpty(toCreate.getReactiveSummary()) || !StringUtils.isEmpty(toCreate.getTransparencyDisclosureSummary()))) {
+            HashSet<String> errors = new HashSet<String>();
+            HashSet<String> warnings = new HashSet<String>();
+            warnings.add("Deprecated fields will not be used when creating a Quarterly Report");
+            throw new ValidationException(errors, warnings);
+        }
+}
+    private void reviewQuarterlyReportToCreate(QuarterlyReportDTO toCreate)
+            throws EntityCreationException, InvalidArgumentsException, JsonProcessingException, EntityRetrievalException {
+        //Quarterly report has to have an ACB, year, and quarter
+        if (toCreate.getYear() == null) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("report.quarterlySurveillance.missingYear"));
+        }
+        if (toCreate.getAcb() == null || toCreate.getAcb().getId() == null) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("report.quarterlySurveillance.missingAcb"));
+        }
+        if (toCreate.getQuarter() == null
+                || (toCreate.getQuarter().getId() == null && StringUtils.isEmpty(toCreate.getQuarter().getName()))) {
+            throw new InvalidArgumentsException("report.quarterlySurveillance.missingQuarter");
+        } else if (toCreate.getQuarter().getId() == null && toCreate.getQuarter().getName() != null) {
+            Quarter quarter = quarterDao.getByName(toCreate.getQuarter().getName());
+            if (quarter == null) {
+                throw new InvalidArgumentsException(
+                        msgUtil.getMessage("report.quarterlySurveillance.badQuarter", toCreate.getQuarter().getName()));
+            }
+            toCreate.setQuarter(quarter);
+        }
+
+        //make sure there's not already a quarterly report for this acb and year and quarter
+        QuarterlyReportDTO existingQuarterlyReport =
+                quarterlyDao.getByQuarterAndAcbAndYear(toCreate.getQuarter().getId(),
+                        toCreate.getAcb().getId(),
+                        toCreate.getYear());
+        if (existingQuarterlyReport != null) {
+            throw new EntityCreationException(msgUtil.getMessage("report.quarterlySurveillance.exists"));
+        }
     }
 
     private void copyPreviousReportDataIntoNextReport(QuarterlyReportDTO nextReport) {
