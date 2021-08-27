@@ -37,7 +37,7 @@ public class StatisticsController {
     @Autowired
     private StatisticsManager statisticsManager;
 
-    @Operation(summary = "Get count of nonconformities by criteria.",
+    @Operation(summary = "Get count of non-conformities by criteria.",
             description = "Retrieves and returns the counts.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/nonconformity_criteria_count", method = RequestMethod.GET,

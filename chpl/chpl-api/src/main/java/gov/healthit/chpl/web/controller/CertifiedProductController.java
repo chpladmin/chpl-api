@@ -493,7 +493,7 @@ public class CertifiedProductController {
 
     @Operation(summary = "Get all of the Measures for a specified certified product based on a legacy "
             + "CHPL Product Number.",
-            description = "\"Returns all of the Measures in the CHPL related to the specified certified product.  "
+            description = "Returns all of the Measures in the CHPL related to the specified certified product. "
                     + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call "
                     + "to this service would look like /certified_products/CHP-999999/measures.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY) })
@@ -545,7 +545,7 @@ public class CertifiedProductController {
 
     @SuppressWarnings({"checkstyle:linelength", "checkstyle:parameternumber"})
     @Operation(summary = "Get all of the certification results for a specified certified "
-            + "product based on a CHPL Product Number. This includes both attested an unattested criteria "
+            + "product based on a CHPL Product Number. This includes both attested and unattested criteria "
             + "and associated data for each.",
             description = "Returns all of the certification results in the CHPL related to the specified certified product.  "
                     + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."

@@ -313,9 +313,9 @@ public class SurveillanceController  {
         return new ResponseEntity<String>("{\"success\" : true}", responseHeaders, HttpStatus.OK);
     }
 
-    @Operation(summary = "Remove documentation from a nonconformity.",
+    @Operation(summary = "Remove documentation from a non-conformity.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
-                    + "on the associated ACB.",
+                    + "on the associated Listing.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/{surveillanceId}/document/{docId}", method = RequestMethod.DELETE,

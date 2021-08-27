@@ -21,7 +21,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "svaps", description = "Allows management of SVAPs.")
+@Tag(name = "svaps", description = "Allows management of Standards Version Advancement Process (SVAPs).")
 @RestController
 @RequestMapping("/svaps")
 @Loggable

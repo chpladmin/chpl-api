@@ -100,7 +100,7 @@ public class DimensionalDataController {
     }
 
     @Operation(summary = "Get all fuzzy matching choices for the items that be fuzzy matched.",
-            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ONC_STAFF.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/fuzzy_choices", method = RequestMethod.GET,

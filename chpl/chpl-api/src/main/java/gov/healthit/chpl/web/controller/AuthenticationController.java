@@ -184,7 +184,7 @@ public class AuthenticationController {
         return response;
     }
 
-    @Operation(summary = "Reset password.", description = "Reset the users password.",
+    @Operation(summary = "Reset password.", description = "Reset the user's password.",
         security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                 @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
     @RequestMapping(value = "/reset_password_request", method = RequestMethod.POST, produces = "application/json; charset=utf-8")

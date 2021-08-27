@@ -21,7 +21,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "real-world-testing", description = "Allows upload of RWT file.")
+@Tag(name = "real-world-testing", description = "Allows upload of a Real World Testing file.")
 @RestController
 @RequestMapping("/real-world-testing")
 @Loggable

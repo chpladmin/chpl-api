@@ -185,7 +185,7 @@ public class DownloadableResourceController {
         fileUtils.streamFileAsResponse(downloadFile, "text/csv", response);
     }
 
-    @Operation(summary = "Download all SED details that are certified to 170.315(g)(3).",
+    @Operation(summary = "Download all SED details for Listings that are certified to 170.315(g)(3).",
             description = "Download a specific file that is generated overnight.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/certified_products/sed_details", method = RequestMethod.GET)
