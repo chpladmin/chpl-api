@@ -34,11 +34,12 @@ public class CertificationResultContainsSvapActivityExplorer extends ListingActi
     private ListingActivityUtil activityUtil;
 
     @Autowired
-    public CertificationResultContainsSvapActivityExplorer(ActivityDAO activityDao) {
+    public CertificationResultContainsSvapActivityExplorer(ActivityDAO activityDao, ListingActivityUtil activityUtil) {
         this.activityDao = activityDao;
-        this.activityUtil = new ListingActivityUtil();
+        this.activityUtil = activityUtil;
     }
 
+    @Override
     @Transactional
     public ActivityDTO getActivity(ListingActivityQuery query) {
         if (query == null || !(query instanceof CertificationResultContainsSvapActivityQuery)) {

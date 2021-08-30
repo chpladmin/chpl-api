@@ -96,7 +96,6 @@ public class CertifiedProductDTO implements Serializable {
         this.setRwtPlansCheckDate(entity.getRwtPlansCheckDate());
         this.setRwtResultsUrl(entity.getRwtResultsUrl());
         this.setRwtResultsCheckDate(entity.getRwtResultsCheckDate());
-        this.setRwtEligibilityYear(entity.getRwtEligibilityYear());
         this.setSvapNoticeUrl(entity.getSvapNoticeUrl());
     }
 

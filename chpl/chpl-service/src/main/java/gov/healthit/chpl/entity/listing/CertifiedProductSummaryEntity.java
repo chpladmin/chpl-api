@@ -166,9 +166,6 @@ public class CertifiedProductSummaryEntity implements Serializable {
     @Where(clause = "deleted <> 'true'")
     private Set<CertificationResultDetailsEntity> certificationResults = new HashSet<CertificationResultDetailsEntity>();
 
-    @Column(name = "rwt_eligibility_year")
-    private Integer rwtEligibilityYear;
-
     @Column(name = "rwt_plans_url")
     private String rwtPlansUrl;
 

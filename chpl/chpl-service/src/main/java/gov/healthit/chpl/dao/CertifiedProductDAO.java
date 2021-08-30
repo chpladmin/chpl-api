@@ -83,7 +83,6 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             entity.setQmsTesting(dto.getQmsTesting());
             entity.setAccessibilityCertified(dto.getAccessibilityCertified());
             entity.setMandatoryDisclosures(dto.getMandatoryDisclosures());
-            entity.setRwtEligibilityYear(dto.getRwtEligibilityYear());
             entity.setSvapNoticeUrl(dto.getSvapNoticeUrl());
 
             if (dto.getCertificationBodyId() != null) {

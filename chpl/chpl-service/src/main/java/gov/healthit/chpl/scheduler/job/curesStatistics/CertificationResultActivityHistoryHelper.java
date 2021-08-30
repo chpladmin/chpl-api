@@ -2,6 +2,7 @@ package gov.healthit.chpl.scheduler.job.curesStatistics;
 
 import java.util.Date;
 import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +25,9 @@ public class CertificationResultActivityHistoryHelper {
     private ListingActivityUtil activityUtil;
 
     @Autowired
-    public CertificationResultActivityHistoryHelper(ActivityDAO activityDao) {
+    public CertificationResultActivityHistoryHelper(ActivityDAO activityDao, ListingActivityUtil activityUtil) {
         this.activityDao = activityDao;
-        this.activityUtil = new ListingActivityUtil();
+        this.activityUtil = activityUtil;
     }
 
     @Transactional

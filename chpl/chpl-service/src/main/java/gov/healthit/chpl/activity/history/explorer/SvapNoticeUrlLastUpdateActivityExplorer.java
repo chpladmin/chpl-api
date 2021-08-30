@@ -27,9 +27,9 @@ public class SvapNoticeUrlLastUpdateActivityExplorer extends ListingActivityExpl
     private ListingActivityUtil activityUtil;
 
     @Autowired
-    public SvapNoticeUrlLastUpdateActivityExplorer(ActivityDAO activityDao) {
+    public SvapNoticeUrlLastUpdateActivityExplorer(ActivityDAO activityDao, ListingActivityUtil activityUtil) {
         this.activityDao = activityDao;
-        activityUtil = new ListingActivityUtil();
+        this.activityUtil = activityUtil;
     }
 
     @Override

@@ -11,38 +11,56 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
+import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.service.RealWorldTestingEligibility;
+import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityService;
+import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityServiceFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import lombok.extern.log4j.Log4j2;
 
 @Service
-@Log4j2
 public class RealWorldTestingReportService {
 
     private CertifiedProductDAO certifiedProductDAO;
     private ErrorMessageUtil errorMsg;
     private Environment env;
+    private CertificationStatusEventsService certificationStatusEventsService;
+    private RealWorldTestingEligiblityServiceFactory rwtEligServiceFactory;
 
     @Autowired
-    public RealWorldTestingReportService(CertifiedProductDAO certifiedProductDAO, ErrorMessageUtil errorMsg, Environment env) {
+    public RealWorldTestingReportService(CertifiedProductDAO certifiedProductDAO, ErrorMessageUtil errorMsg, Environment env,
+            CertificationStatusEventsService certificationStatusEventsService, CertificationCriterionService certificationCriterionService,
+            RealWorldTestingEligiblityServiceFactory rwtEligServiceFactory) {
+
         this.certifiedProductDAO = certifiedProductDAO;
         this.errorMsg = errorMsg;
         this.env = env;
+        this.certificationStatusEventsService = certificationStatusEventsService;
+        this.rwtEligServiceFactory = rwtEligServiceFactory;
     }
 
     public List<RealWorldTestingReport> getRealWorldTestingReports(List<Long> acbIds, Logger logger) {
         List<RealWorldTestingReport> reports = null;
         try {
+            RealWorldTestingEligiblityService rwtEligservice = rwtEligServiceFactory.getInstance();
+
             reports = getListingWith2015Edition(logger).stream()
-                    .filter(listing -> isListingRwtEligible(listing.getRwtEligibilityYear()))
-                    .filter(listing -> isInListOfAcbs(listing, acbIds))
-                    .map(listing -> getRealWorldTestingReport(listing, logger))
-                    .collect(Collectors.toList());
+                  .filter(listing -> isInListOfAcbs(listing, acbIds))
+                  .map(listing -> getRealWorldTestingReport(listing, rwtEligservice, logger))
+                  .filter(report -> report.getRwtEligibilityYear() != null
+                          || report.getRwtPlansCheckDate() != null
+                          || !StringUtils.isEmpty(report.getRwtPlansUrl())
+                          || report.getRwtResultsCheckDate() != null
+                          || !StringUtils.isEmpty(report.getRwtResultsUrl()))
+                  .collect(Collectors.toList());
         } catch (Exception e) {
-            LOGGER.catching(e);
+            logger.catching(e);
         }
         return reports;
     }
@@ -53,10 +71,6 @@ public class RealWorldTestingReportService {
                 certifiedProductDAO.findByEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
         logger.info("Completed Retreiving 2015 Listings");
         return listings;
-    }
-
-    private boolean isListingRwtEligible(Integer rwtEligYear) {
-        return rwtEligYear != null;
     }
 
     private boolean isRwtPlansEmpty(RealWorldTestingReport report) {
@@ -74,27 +88,45 @@ public class RealWorldTestingReportService {
                 .isPresent();
     }
 
-    private RealWorldTestingReport getRealWorldTestingReport(CertifiedProductDetailsDTO listing, Logger logger) {
+    private RealWorldTestingReport getRealWorldTestingReport(CertifiedProductDetailsDTO listing, RealWorldTestingEligiblityService realWorldTestingService, Logger logger) {
+        RealWorldTestingEligibility rwtElig = realWorldTestingService.getRwtEligibilityYearForListing(listing.getId(), logger);
+
+        logger.info(String.format("ListingId: %s, Elig Year %s, %s",
+                listing.getId(),
+                rwtElig.getEligibilityYear().isPresent() ? rwtElig.getEligibilityYear().get().toString() : "N/A",
+                rwtElig.getReason().getReason()));
+
+        CertificationStatusEvent currentStatus;
+        try {
+            currentStatus = certificationStatusEventsService.getCurrentCertificationStatusEvent(listing.getId());
+        } catch (EntityRetrievalException e) {
+            currentStatus = null;
+        }
+
         RealWorldTestingReport report = RealWorldTestingReport.builder()
                 .acbName(listing.getCertificationBodyName())
                 .chplProductNumber(listing.getChplProductNumber())
+                .currentStatus(currentStatus != null ? currentStatus.getStatus().getName() : "")
                 .productName(listing.getProduct().getName())
                 .productId(listing.getProduct().getId())
                 .developerName(listing.getDeveloper().getName())
                 .developerId(listing.getDeveloper().getId())
+                .rwtEligibilityYear(rwtElig.getEligibilityYear().isPresent() ? rwtElig.getEligibilityYear().get() : null)
                 .rwtPlansUrl(listing.getRwtPlansUrl())
                 .rwtPlansCheckDate(listing.getRwtPlansCheckDate())
                 .rwtResultsUrl(listing.getRwtResultsUrl())
                 .rwtResultsCheckDate(listing.getRwtResultsCheckDate())
-                .rwtEligibilityYear(listing.getRwtEligibilityYear())
                 .build();
 
-        return addMessages(report, logger);
+        if (rwtElig.getEligibilityYear().isPresent()) {
+            return addMessages(report);
+        } else {
+            return report;
+        }
     }
 
     @SuppressWarnings("checkstyle:linelength")
-    private RealWorldTestingReport addMessages(RealWorldTestingReport report, Logger logger) {
-        logger.info("Checking/Adding messages for listing: " + report.getChplProductNumber());
+    private RealWorldTestingReport addMessages(RealWorldTestingReport report) {
         if (isRwtPlansEmpty(report)) {
             if (arePlansLateWarning(report.getRwtEligibilityYear())) {
                 report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.missingPlansWarning",
@@ -117,7 +149,6 @@ public class RealWorldTestingReportService {
                         getResultsLateDate(report.getRwtEligibilityYear()).toString()));
             }
         }
-        logger.info("Completed Checking/Adding messages for listing: " + report.getChplProductNumber());
         return report;
     }
 
