@@ -566,13 +566,11 @@ public class SurveillanceReportManager extends SecuredManager {
         HashSet<String> warnings = new HashSet<String>();
         if (!toUpdate.getReactiveSummary().equalsIgnoreCase(toUpdate.getReactiveSurveillanceSummary())
                 && existing.getReactiveSurveillanceSummary().equalsIgnoreCase(toUpdate.getReactiveSurveillanceSummary())) {
-
-            warnings.add("The deprecated field \"reactiveSummary\" will not be used when upating a Quarterly Report");
+            warnings.add(msgUtil.getMessage("deprecated.field.update", "reactiveSummary", "reactiveSurveillanceSummary"));
         }
         if (!toUpdate.getTransparencyDisclosureSummary().equalsIgnoreCase(toUpdate.getDisclosureRequirementsSummary())
                 && existing.getDisclosureRequirementsSummary().equalsIgnoreCase(toUpdate.getDisclosureRequirementsSummary())) {
-
-            warnings.add("The deprecated field \"transparencyDisclosureSummary\" will not be used when upating a Quarterly Report");
+            warnings.add(msgUtil.getMessage("deprecated.field.update", "transparencyDisclosureSummary", "disclosureRequirementsSummary"));
         }
         if (warnings.size() > 0) {
             HashSet<String> errors = new HashSet<String>();
