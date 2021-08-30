@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.validation.surveillance.reviewer.ComparisonReviewer;
+import gov.healthit.chpl.validation.surveillance.reviewer.DeprecatedFieldReviewer;
 import gov.healthit.chpl.validation.surveillance.reviewer.SurveillanceRemovedDataComparisonReviewer;
 import gov.healthit.chpl.validation.surveillance.reviewer.Reviewer;
 import gov.healthit.chpl.validation.surveillance.reviewer.SurveillanceDetailsReviewer;
@@ -27,7 +28,8 @@ public class SurveillanceUpdateValidator {
             SurveillanceRequirementReviewer survReqReviewer,
             SurveillanceNonconformityReviewer survNcReviewer,
             @Qualifier("surveillanceUnsupportedCharacterReviewer") UnsupportedCharacterReviewer charReviewer,
-            @Qualifier("surveillanceRemovedDataComparisonReviewer") SurveillanceRemovedDataComparisonReviewer removedDataReviewer) {
+            @Qualifier("surveillanceRemovedDataComparisonReviewer") SurveillanceRemovedDataComparisonReviewer removedDataReviewer,
+            @Qualifier("surveillanceDeprecatedFieldReviewer") DeprecatedFieldReviewer deprecatedFieldReviewer) {
         reviewers = new ArrayList<Reviewer>();
         reviewers.add(survDetailsReviewer);
         reviewers.add(survReqReviewer);
@@ -36,6 +38,7 @@ public class SurveillanceUpdateValidator {
 
         comparisonReviewers = new ArrayList<ComparisonReviewer>();
         comparisonReviewers.add(removedDataReviewer);
+        comparisonReviewers.add(deprecatedFieldReviewer);
     }
 
     public void validate(Surveillance existingSurv, Surveillance updatedSurv) {

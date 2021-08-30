@@ -160,8 +160,10 @@ public class SurveillanceManager extends SecuredManager {
                 .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
 
         validateSurveillanceCreation(survToInsert);
-        if (survToInsert.getErrorMessages() != null && survToInsert.getErrorMessages().size() > 0) {
-            throw new ValidationException(survToInsert.getErrorMessages(), null);
+        if (survToInsert.getErrorMessages() != null && survToInsert.getErrorMessages().size() > 0
+                || (survToInsert.getWarningMessages() != null && survToInsert.getWarningMessages().size() > 0
+                        && !survToInsert.isAcknowledgeWarnings())) {
+            throw new ValidationException(survToInsert.getErrorMessages(), survToInsert.getWarningMessages());
         }
 
         Long insertedId = null;
@@ -204,8 +206,10 @@ public class SurveillanceManager extends SecuredManager {
             .filter(surv -> surv.getId().equals(survToUpdate.getId()))
             .findFirst();
         validateSurveillanceUpdate(beforeSurv.isPresent() ? beforeSurv.get() : null, survToUpdate);
-        if (survToUpdate.getErrorMessages() != null && survToUpdate.getErrorMessages().size() > 0) {
-            throw new ValidationException(survToUpdate.getErrorMessages(), null);
+        if (survToUpdate.getErrorMessages() != null && survToUpdate.getErrorMessages().size() > 0
+                || (survToUpdate.getWarningMessages() != null && survToUpdate.getWarningMessages().size() > 0
+                && !survToUpdate.isAcknowledgeWarnings())) {
+            throw new ValidationException(survToUpdate.getErrorMessages(), survToUpdate.getWarningMessages());
         }
 
         if (beforeSurv.isPresent() && !beforeSurv.get().matches(survToUpdate)) {

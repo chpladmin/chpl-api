@@ -130,6 +130,9 @@ public class Surveillance implements Serializable {
     @XmlElement(required = true)
     private Date lastModifiedDate;
 
+    @XmlTransient
+    private boolean acknowledgeWarnings;
+
     /** Default constructor. */
     public Surveillance() {
         this.requirements = new LinkedHashSet<SurveillanceRequirement>();
@@ -378,5 +381,13 @@ public class Surveillance implements Serializable {
 
     public void setLastModifiedDate(Date lastModifiedDate) {
         this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
+    }
+
+    public boolean isAcknowledgeWarnings() {
+        return acknowledgeWarnings;
+    }
+
+    public void setAcknowledgeWarnings(boolean acknowledgeWarnings) {
+        this.acknowledgeWarnings = acknowledgeWarnings;
     }
 }
