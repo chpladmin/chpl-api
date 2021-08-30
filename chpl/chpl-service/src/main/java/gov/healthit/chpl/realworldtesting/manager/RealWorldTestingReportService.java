@@ -55,9 +55,9 @@ public class RealWorldTestingReportService {
                   .map(listing -> getRealWorldTestingReport(listing, rwtEligservice, logger))
                   .filter(report -> report.getRwtEligibilityYear() != null
                           || report.getRwtPlansCheckDate() != null
-                          || report.getRwtPlansUrl() != null
+                          || !StringUtils.isEmpty(report.getRwtPlansUrl())
                           || report.getRwtResultsCheckDate() != null
-                          || report.getRwtResultsUrl() != null)
+                          || !StringUtils.isEmpty(report.getRwtResultsUrl()))
                   .collect(Collectors.toList());
         } catch (Exception e) {
             logger.catching(e);
