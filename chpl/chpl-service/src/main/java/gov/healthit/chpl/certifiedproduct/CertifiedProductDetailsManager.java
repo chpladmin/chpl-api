@@ -1,18 +1,13 @@
 package gov.healthit.chpl.certifiedproduct;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.caching.listing.ListingCache;
 import gov.healthit.chpl.certifiedproduct.service.CertificationResultService;
 import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
 import gov.healthit.chpl.certifiedproduct.service.CqmResultsService;
@@ -27,9 +22,6 @@ import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.logging.Loggable;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Loggable
 @Component("certifiedProductDetailsManager")
@@ -40,8 +32,7 @@ public class CertifiedProductDetailsManager {
     private CertificationResultService certificationResultService;
     private ListingMeasuresService listingMeasuresService;
     private CertificationStatusEventsService certificationStatusEventsService;
-
-    private ListingCache listingCache = new ListingCache();
+    private ListingCache listingCache;
 
     @Autowired
     public CertifiedProductDetailsManager(
@@ -50,7 +41,8 @@ public class CertifiedProductDetailsManager {
             CqmResultsService cqmResultsService,
             CertificationResultService certificationResultService,
             ListingMeasuresService listingMeasuresService,
-            CertificationStatusEventsService certificationStatusEventsService) {
+            CertificationStatusEventsService certificationStatusEventsService,
+            ListingCache listingCache) {
 
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
         this.listingService = listingService;
@@ -58,6 +50,7 @@ public class CertifiedProductDetailsManager {
         this.certificationResultService = certificationResultService;
         this.listingMeasuresService = listingMeasuresService;
         this.certificationStatusEventsService = certificationStatusEventsService;
+        this.listingCache = listingCache;
     }
 
     @Transactional(readOnly = true)
@@ -150,38 +143,5 @@ public class CertifiedProductDetailsManager {
             throw new EntityRetrievalException("Could not retrieve CertifiedProductSearchDetails.");
         }
         return dtos.get(0);
-    }
-
-
-
-    class ListingCache {
-        private final Logger LOGGER = LogManager.getLogger(ListingCache.class);
-        private Map<Long, ListingCacheItem> cache = new HashMap<Long, CertifiedProductDetailsManager.ListingCacheItem>();
-
-        public Optional<CertifiedProductSearchDetails> get(Long listingId) {
-            if (cache.containsKey(listingId)) {
-                ListingCacheItem item = cache.get(listingId);
-                if (ChronoUnit.HOURS.between(item.getTimeAdded(), LocalDateTime.now()) < 4L) {
-                    LOGGER.info("Getting from cache: " + listingId);
-                    return Optional.of(item.getListing());
-                }
-            }
-            LOGGER.info("Not in cache: " + listingId);
-            return Optional.empty();
-        }
-
-        public void put(CertifiedProductSearchDetails listing) {
-            LOGGER.info("Adding to cache: " + listing.getId());
-            ListingCacheItem item = new ListingCacheItem(LocalDateTime.now(), listing);
-            cache.put(listing.getId(), item);
-        }
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    class ListingCacheItem {
-        private LocalDateTime timeAdded;
-        private CertifiedProductSearchDetails listing;
     }
 }
