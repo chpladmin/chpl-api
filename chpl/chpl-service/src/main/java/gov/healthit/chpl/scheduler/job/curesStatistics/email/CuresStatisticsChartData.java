@@ -59,8 +59,6 @@ public class CuresStatisticsChartData {
         curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_2_CURES)));
         curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_3_CURES)));
         curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_10_CURES)));
-        //curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_12)));
-        //curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_13)));
         curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.E_1_CURES)));
         curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.F_5_CURES)));
         curesCriteria.add(new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.G_6_CURES)));
@@ -230,10 +228,6 @@ public class CuresStatisticsChartData {
             return new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_3_OLD));
         } else if (curesUpdatedCriterion.getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_10_CURES).getId())) {
             return new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_10_OLD));
-        //} else if (curesUpdatedCriterion.getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_12).getId())) {
-        //    return new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_12));
-        //} else if (curesUpdatedCriterion.getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_13).getId())) {
-        //    return new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_13));
         } else if (curesUpdatedCriterion.getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.E_1_CURES).getId())) {
             return new CertificationCriterionDTO(certificationCriterionService.get(CertificationCriterionService.Criteria2015.E_1_OLD));
         } else if (curesUpdatedCriterion.getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.F_5_CURES).getId())) {
