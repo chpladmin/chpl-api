@@ -45,7 +45,7 @@ public class CertificationStatusEventsService {
         return certStatusEventDao.findByCertifiedProductId(certifiedProductId).stream()
                 .map(dto -> createCertificationStatusEventBasedOnDto(dto))
                 .sorted((event1, event2) -> Long.compare(event1.getEventDate(), event2.getEventDate()))
-                .findFirst()
+                .reduce((a, b) -> b) // get the last item in the list
                 .orElse(null);
     }
 
