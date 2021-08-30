@@ -20,6 +20,7 @@ import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.activity.history.ListingActivityUtil;
 import gov.healthit.chpl.activity.history.query.CertificationResultContainsSvapActivityQuery;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -33,6 +34,7 @@ import gov.healthit.chpl.util.JSONUtils;
 
 public class CertificationResultContainsSvapActivityExplorerTest {
     private ActivityDAO activityDao;
+    private ListingActivityUtil listingActivityUtil = new ListingActivityUtil(null,  null);
     private CertificationResultContainsSvapActivityExplorer explorer;
     private SimpleDateFormat formatter;
     @Before
@@ -41,7 +43,7 @@ public class CertificationResultContainsSvapActivityExplorerTest {
         formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
 
         activityDao = Mockito.mock(ActivityDAO.class);
-        explorer = new CertificationResultContainsSvapActivityExplorer(activityDao);
+        explorer = new CertificationResultContainsSvapActivityExplorer(activityDao, listingActivityUtil);
     }
 
     @Test

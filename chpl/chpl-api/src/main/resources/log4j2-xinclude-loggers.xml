@@ -119,10 +119,6 @@
         additivity="false">
         <AppenderRef ref="updateListingStatusJob" />
     </Logger>
-    <Logger name="realWorldTestingEligibilityJobLogger" level="INFO"
-        additivity="false">
-        <AppenderRef ref="realWorldTestingEligibilityJob" />
-    </Logger>
     <Logger name="developerAccessEmailJobLogger" level="INFO"
         additivity="false">
         <AppenderRef ref="developerAccessEmailJob" />

@@ -25,8 +25,8 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.compliance.DirectReview;
+import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
@@ -424,12 +424,6 @@ public class CertifiedProductSearchDetails implements Serializable {
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     @XmlElement(name = "rwtResultsCheckDate", nillable = true, required = false)
     private LocalDate rwtResultsCheckDate;
-
-    /**
-     * First year that the listing is eligible for Real World Testing data
-     */
-    @XmlElement(name = "rwtEligibilityYear", nillable = true, required = false)
-    private Integer rwtEligibilityYear;
 
     /**
      * URL where the Listing's SVAP Notice URL is located
@@ -981,14 +975,6 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     public void setRwtResultsCheckDate(LocalDate rwtResultsCheckDate) {
         this.rwtResultsCheckDate = rwtResultsCheckDate;
-    }
-
-    public Integer getRwtEligibilityYear() {
-        return rwtEligibilityYear;
-    }
-
-    public void setRwtEligibilityYear(Integer rwtEligibilityYear) {
-        this.rwtEligibilityYear = rwtEligibilityYear;
     }
 
     public String getSvapNoticeUrl() {
