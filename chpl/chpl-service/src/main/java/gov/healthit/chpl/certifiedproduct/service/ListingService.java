@@ -164,7 +164,6 @@ public class ListingService {
                 .rwtPlansCheckDate(dto.getRwtPlansCheckDate())
                 .rwtResultsUrl(dto.getRwtResultsUrl())
                 .rwtResultsCheckDate(dto.getRwtResultsCheckDate())
-                .rwtEligibilityYear(dto.getRwtEligibilityYear())
                 .svapNoticeUrl(dto.getSvapNoticeUrl())
                 .sed(new CertifiedProductSed())
                 .testingLabs(getTestingLabs(dto.getId()))

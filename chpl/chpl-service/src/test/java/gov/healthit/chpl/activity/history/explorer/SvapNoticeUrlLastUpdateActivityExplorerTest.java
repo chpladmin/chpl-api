@@ -20,6 +20,7 @@ import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.activity.history.ListingActivityUtil;
 import gov.healthit.chpl.activity.history.query.SvapNoticeUrlLastUpdateActivityQuery;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -29,6 +30,7 @@ import gov.healthit.chpl.util.JSONUtils;
 
 public class SvapNoticeUrlLastUpdateActivityExplorerTest {
     private ActivityDAO activityDao;
+    private ListingActivityUtil listingActivityUtil = new ListingActivityUtil(null, null);
     private SvapNoticeUrlLastUpdateActivityExplorer explorer;
     private SimpleDateFormat formatter;
     @Before
@@ -37,7 +39,7 @@ public class SvapNoticeUrlLastUpdateActivityExplorerTest {
         formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
 
         activityDao = Mockito.mock(ActivityDAO.class);
-        explorer = new SvapNoticeUrlLastUpdateActivityExplorer(activityDao);
+        explorer = new SvapNoticeUrlLastUpdateActivityExplorer(activityDao, listingActivityUtil);
     }
 
     @Test
