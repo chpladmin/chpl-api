@@ -59,7 +59,7 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.CQM_CRITERION_NUMBERS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.DEVELOPER_NAMES));
 
-        //this looks a little weird to me but it's done according to ehcace documentation
+        //this looks a little weird to me but it's done according to ehcache documentation
         //so that the decorated cache gets properly initialized
         //https://www.ehcache.org/documentation/2.8/apis/cache-decorators.html#creating-a-decorator
         Ehcache drCache = backingManager.getEhcache(CacheNames.DIRECT_REVIEWS);
@@ -86,6 +86,7 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.TEST_FUNCTIONALITY_MAPS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.UPLOAD_TEMPLATE_VERSIONS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.UPLOADED_LISTING_DETAILS));
+        backingManager.addCacheIfAbsent(createCache(CacheNames.LISTING_DETAILS, 3600));
         return cacheManager;
     }
 

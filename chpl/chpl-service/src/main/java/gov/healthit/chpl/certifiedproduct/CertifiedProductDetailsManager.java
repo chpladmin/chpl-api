@@ -1,12 +1,13 @@
 package gov.healthit.chpl.certifiedproduct;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.listing.ListingCache;
 import gov.healthit.chpl.certifiedproduct.service.CertificationResultService;
 import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
@@ -66,15 +67,16 @@ public class CertifiedProductDetailsManager {
 
     ///////////////////////////////////////////////////////////////////////////
     @Transactional(readOnly = true)
+    @Cacheable(value = CacheNames.LISTING_DETAILS)
     public CertifiedProductSearchDetails getCertifiedProductDetailsUsingCache(Long certifiedProductId) throws EntityRetrievalException {
-        Optional<CertifiedProductSearchDetails> listing = listingCache.get(certifiedProductId);
-        if (listing.isPresent()) {
-            return listing.get();
-        } else {
-            CertifiedProductSearchDetails cp = listingService.createCertifiedSearchDetails(certifiedProductId);
-            listingCache.put(cp);
-            return cp;
-        }
+        //Optional<CertifiedProductSearchDetails> listing = listingCache.get(certifiedProductId);
+        //if (listing.isPresent()) {
+        //    return listing.get();
+        //} else {
+        return listingService.createCertifiedSearchDetails(certifiedProductId);
+        //    listingCache.put(cp);
+        //    return cp;
+        //}
     }
     ///////////////////////////////////////////////////////////////////////////
 
