@@ -25,11 +25,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.activity.history.ListingActivityUtil;
 import gov.healthit.chpl.activity.history.explorer.CertificationResultContainsSvapActivityExplorer;
 import gov.healthit.chpl.activity.history.explorer.SvapNoticeUrlLastUpdateActivityExplorer;
 import gov.healthit.chpl.activity.history.query.CertificationResultContainsSvapActivityQuery;
 import gov.healthit.chpl.activity.history.query.SvapNoticeUrlLastUpdateActivityQuery;
-import gov.healthit.chpl.activity.history.ListingActivityUtil;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -63,14 +63,14 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
     @Autowired
     private Environment env;
 
+    @Autowired
+    private ListingActivityUtil activityUtil;
+
     @Value("${svapReportName}")
     private String svapReportName;
 
-    private ListingActivityUtil activityUtil;
-
     public SvapDownloadableResourceCreatorJob() throws Exception {
         super(LOGGER);
-        activityUtil = new ListingActivityUtil();
     }
 
     @Override

@@ -22,6 +22,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -41,6 +42,9 @@ public class RealWorldTestingReportEmailJob implements Job {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
 
     private List<Long> acbIds = new ArrayList<Long>();
 
@@ -71,10 +75,18 @@ public class RealWorldTestingReportEmailJob implements Job {
         EmailBuilder emailBuilder = new EmailBuilder(env);
         emailBuilder.recipient(context.getMergedJobDataMap().getString("email"))
                 .subject(env.getProperty("rwt.report.subject"))
-                .htmlMessage(String.format(env.getProperty("rwt.report.body"), getAcbNamesAsCommaSeparatedList(context)))
+                .htmlMessage(createHtmlMessage(context))
                 .fileAttachments(new ArrayList<File>(Arrays.asList(generateCsvFile(context, rows))))
                 .sendEmail();
         LOGGER.info("Completed Sending email to: " + context.getMergedJobDataMap().getString("email"));
+    }
+
+    private String createHtmlMessage(JobExecutionContext context) {
+        return chplHtmlEmailBuilder.initialize()
+                .heading(env.getProperty("rwt.report.subject"))
+                .paragraph(String.format(env.getProperty("rwt.report.body")), getAcbNamesAsBrSeparatedList(context))
+                .footer(true)
+                .build();
     }
 
     private File generateCsvFile(JobExecutionContext context, List<RealWorldTestingReport> rows) {
@@ -118,12 +130,12 @@ public class RealWorldTestingReportEmailJob implements Job {
         return outputFile;
     }
 
-    private String getAcbNamesAsCommaSeparatedList(JobExecutionContext jobContext) {
+    private String getAcbNamesAsBrSeparatedList(JobExecutionContext jobContext) {
         if (Objects.nonNull(jobContext.getMergedJobDataMap().getString("acb"))) {
             return Arrays.asList(
                     jobContext.getMergedJobDataMap().getString("acb").split(SchedulerManager.DATA_DELIMITER)).stream()
                     .map(acbId -> getAcbName(Long.valueOf(acbId)))
-                    .collect(Collectors.joining(", "));
+                    .collect(Collectors.joining("<br />"));
         } else {
             return "";
         }
