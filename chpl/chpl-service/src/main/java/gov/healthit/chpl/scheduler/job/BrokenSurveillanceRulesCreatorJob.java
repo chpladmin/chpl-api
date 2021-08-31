@@ -138,7 +138,6 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
     private List<BrokenSurveillanceRulesDTO> processListing(Long listingId) {
         CertifiedProductSearchDetails listing;
         try {
-            LOGGER.info(String.format("Retrieving CertifiedProductDetails for: %s", listingId));
             listing = certifiedProductDetailsManager.getCertifiedProductDetailsUsingCache(listingId);
             LOGGER.info(String.format("Complete retrieving CertifiedProductDetails for: %s", listingId));
             return brokenRules(listing);

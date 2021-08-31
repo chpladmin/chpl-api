@@ -47,9 +47,9 @@
         </trigger>
         <trigger>
             <cron>
-                <name>surveillanceDownloadFileJob</name>
-                <group>downloadFileTrigger</group>
-                <job-name>surveillanceDownloadFileJob</job-name>
+                <name>generateChartData</name>
+                <group>chartDataCreatorTrigger</group>
+                <job-name>chartDataCreator</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
                 <cron-expression>0 45 3 * * ?</cron-expression> <!-- At 0345 UTC every day -->
@@ -97,9 +97,9 @@
         </trigger>
         <trigger>
             <cron>
-                <name>generateChartData</name>
-                <group>chartDataCreatorTrigger</group>
-                <job-name>chartDataCreator</job-name>
+                <name>surveillanceDownloadFileJob</name>
+                <group>downloadFileTrigger</group>
+                <job-name>surveillanceDownloadFileJob</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
                 <cron-expression>0 30 4 * * ?</cron-expression> <!-- At 0430 UTC every day -->
