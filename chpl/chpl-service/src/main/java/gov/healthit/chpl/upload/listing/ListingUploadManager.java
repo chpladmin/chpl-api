@@ -138,9 +138,6 @@ public class ListingUploadManager {
             throw new ValidationException(msgUtil.getMessage("listing.upload.missingAcb"));
         }
 
-        //Should we actually only allow unique CHPL IDs here?
-        //It would keep functionality the same, but a file with new developer codes can have multiple
-        //listings with the same pending CHPL ID and the latest one would overwrite the earlier one.
         ListingUpload existingListing =
                 listingUploadDao.getByChplProductNumber(uploadMetadata.getChplProductNumber());
         if (existingListing != null) {

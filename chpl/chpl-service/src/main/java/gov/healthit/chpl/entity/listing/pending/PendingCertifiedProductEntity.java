@@ -127,8 +127,8 @@ public class PendingCertifiedProductEntity {
     })
     private AttestationType transparencyAttestation;
 
-    @Column(name = "vendor_transparency_attestation_url")
-    private String transparencyAttestationUrl;
+    @Column(name = "vendor_mandatory_disclosures")
+    private String mandatoryDisclosures;
 
     @Column(name = "vendor_city")
     private String developerCity;

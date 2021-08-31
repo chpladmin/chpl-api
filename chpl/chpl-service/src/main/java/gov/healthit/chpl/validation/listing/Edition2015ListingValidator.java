@@ -23,6 +23,7 @@ import gov.healthit.chpl.validation.listing.reviewer.OptionalStandardReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.RealWorldTestingReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.SvapReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.TestProcedureReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestStandardRemovalReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestStandardReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestToolReviewer;
@@ -106,6 +107,10 @@ public class Edition2015ListingValidator extends Validator {
     @Autowired
     @Qualifier("testStandardReviewer")
     private TestStandardReviewer tsReviewer;
+
+    @Autowired
+    @Qualifier("testProcedureReviewer")
+    private TestProcedureReviewer tpReviewer;
 
     @Autowired
     @Qualifier("testToolReviewer")
@@ -230,6 +235,7 @@ public class Edition2015ListingValidator extends Validator {
             reviewers.add(optionalStandardReviewer);
             reviewers.add(tsrReviewer);
             reviewers.add(tsReviewer);
+            reviewers.add(tpReviewer);
             reviewers.add(inheritanceReviewer);
             reviewers.add(ttReviewer);
             reviewers.add(tt2015Reviewer);

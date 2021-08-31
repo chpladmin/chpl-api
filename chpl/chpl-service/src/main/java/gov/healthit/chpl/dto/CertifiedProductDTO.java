@@ -48,7 +48,7 @@ public class CertifiedProductDTO implements Serializable {
     private Date sedTestingEnd;
     private CertificationStatusDTO certificationStatus;
     private String otherAcb;
-    private String transparencyAttestationUrl;
+    private String mandatoryDisclosures;
     private Boolean ics;
     private Boolean sedTesting;
     private Boolean qmsTesting;
@@ -85,7 +85,7 @@ public class CertifiedProductDTO implements Serializable {
         this.sedReportFileLocation = entity.getSedReportFileLocation();
         this.sedIntendedUserDescription = entity.getSedIntendedUserDescription();
         this.sedTestingEnd = entity.getSedTestingEnd();
-        this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
+        this.mandatoryDisclosures = entity.getMandatoryDisclosures();
         this.otherAcb = entity.getOtherAcb();
         this.setIcs(entity.getIcs());
         this.setSedTesting(entity.getSedTesting());
@@ -96,7 +96,6 @@ public class CertifiedProductDTO implements Serializable {
         this.setRwtPlansCheckDate(entity.getRwtPlansCheckDate());
         this.setRwtResultsUrl(entity.getRwtResultsUrl());
         this.setRwtResultsCheckDate(entity.getRwtResultsCheckDate());
-        this.setRwtEligibilityYear(entity.getRwtEligibilityYear());
         this.setSvapNoticeUrl(entity.getSvapNoticeUrl());
     }
 
@@ -129,7 +128,7 @@ public class CertifiedProductDTO implements Serializable {
         this.setIcs(from.getIcs() == null || from.getIcs().getInherits() == null ? Boolean.FALSE : from.getIcs().getInherits());
         this.setAccessibilityCertified(from.getAccessibilityCertified());
         this.setProductAdditionalSoftware(from.getProductAdditionalSoftware());
-        this.setTransparencyAttestationUrl(from.getTransparencyAttestationUrl());
+        this.setMandatoryDisclosures(from.getMandatoryDisclosures());
         this.setRwtPlansUrl(from.getRwtPlansUrl());
         this.setRwtPlansCheckDate(from.getRwtPlansCheckDate());
         this.setRwtResultsUrl(from.getRwtResultsUrl());

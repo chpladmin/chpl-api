@@ -92,6 +92,7 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
             InheritedCertificationStatusXmlGenerator.add(cp.getIcs(), "ics", sw);
             createSimpleElement(cp.getId(), "id", sw);
             createSimpleElement(cp.getLastModifiedDate(), "lastModifiedDate", sw);
+            createSimpleElement(cp.getMandatoryDisclosures(), "mandatoryDisclosures", sw);
             ListingMeasureXmlGenerator.add(cp.getMeasures(), "measures", sw);
             createSimpleElement(cp.getOtherAcb(), "otherAcb", sw);
             if (cp.getPracticeType() != null && cp.getPracticeType().size() > 0) {
@@ -113,7 +114,6 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
             PromotingInteroperabilityXmlGenerator.add(cp.getPromotingInteroperabilityUserHistory(), "promotingInteroperabilityUserHistory", sw);
             CertifiedProductQmsStandardXmlGenerator.add(cp.getQmsStandards(), "qmsStandards", sw);
             createSimpleElement(cp.getReportFileLocation(), "reportFileLocation", sw);
-            createSimpleElement(cp.getRwtEligibilityYear(), "rwtEligibilityYear", sw);
             createSimpleElement(Objects.nonNull(cp.getRwtPlansCheckDate()) ? cp.getRwtPlansCheckDate().toString() : null, "rwtPlansCheckDate", sw);
             createSimpleElement(cp.getRwtPlansUrl(), "rwtPlansUrl", sw);
             createSimpleElement(Objects.nonNull(cp.getRwtResultsCheckDate()) ? cp.getRwtResultsCheckDate().toString() : null, "rwtResultsCheckDate", sw);
@@ -127,7 +127,6 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
             CertifiedProductTargetedUserXmlGenerator.add(cp.getTargetedUsers(), "targetedUsers", sw);
             CertifiedProductTestingLabXmlGenerator.addTestingLabs(cp.getTestingLabs(), "testingLabs", sw);
             TransparencyAttestationXmlGenerator.add(cp.getTransparencyAttestation(), "transparencyAttestation", sw);
-            createSimpleElement(cp.getTransparencyAttestationUrl(), "transparencyAttestationUrl", sw);
             ProductVersionXmlGenerator.addProductVersion(cp.getVersion(), "version", sw);
 
             sw.writeEndElement();

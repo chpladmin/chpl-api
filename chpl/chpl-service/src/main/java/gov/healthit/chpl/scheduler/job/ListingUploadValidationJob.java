@@ -23,6 +23,7 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.upload.listing.ListingUploadDao;
 import gov.healthit.chpl.upload.listing.ListingUploadManager;
+import gov.healthit.chpl.upload.listing.ListingUploadStatus;
 import lombok.extern.log4j.Log4j2;
 
 @DisallowConcurrentExecution
@@ -66,7 +67,7 @@ public class ListingUploadValidationJob implements Job {
                         } catch (Exception ex) {
                             LOGGER.error("Unexpected exception calculating error/warning counts for listing upload with ID " + listingUploadId);
                             LOGGER.catching(ex);
-                            setFailedValidationErrorAndWarningCounts(listingUploadId);
+                            saveValidationFailed(listingUploadId);
                         }
                     }
                 }
@@ -87,39 +88,48 @@ public class ListingUploadValidationJob implements Job {
                 try {
                     listingUpload = listingUploadDao.getById(listingUploadId);
                 } catch (EntityRetrievalException ex) {
-                    LOGGER.error("Unable to get listing upload with id "
-                            + listingUploadId + ". Error and warning counts will be set to -1.", ex);
+                    LOGGER.error("Unable to get listing upload with id " + listingUploadId + ".", ex);
                 }
 
-                LOGGER.info("Calculating error and warning counts for listing upload ID " + listingUploadId
-                        + "; CHPL Product Number " + listingUpload.getChplProductNumber());
-                CertifiedProductSearchDetails validatedListingUpload = null;
-                try {
-                    validatedListingUpload = listingUploadManager.getDetailsById(listingUpload.getId());
-                } catch (Exception ex) {
-                    LOGGER.error("Unable to get listing upload details with id "
-                            + listingUpload.getId() + ". Error and warning counts will be set to -1.", ex);
-                }
+                if (listingUpload != null) {
+                    LOGGER.info("Calculating error and warning counts for listing upload ID " + listingUploadId
+                            + "; CHPL Product Number " + listingUpload.getChplProductNumber());
+                    CertifiedProductSearchDetails listingDetails = null;
+                    try {
+                        listingDetails = listingUploadManager.getDetailsById(listingUpload.getId());
+                    } catch (Exception ex) {
+                        LOGGER.error("Unable to get listing upload details with id " + listingUpload.getId(), ex);
+                    }
 
-                if (listingUpload != null && validatedListingUpload != null) {
-                    listingUpload.setErrorCount(validatedListingUpload.getErrorMessages() == null ? 0 : validatedListingUpload.getErrorMessages().size());
-                    listingUpload.setWarningCount(validatedListingUpload.getWarningMessages() == null ? 0 : validatedListingUpload.getWarningMessages().size());
-                    LOGGER.info("Listing upload with ID " + listingUpload.getId() + " had "
-                            + listingUpload.getErrorCount() + " errors and " + listingUpload.getWarningCount()
-                            + " warnings.");
-                    listingUploadDao.updateErrorAndWarningCounts(listingUpload);
+                    if (listingDetails != null) {
+                        listingUpload.setStatus(ListingUploadStatus.SUCCESSFUL);
+                        listingUpload.setErrorCount(listingDetails.getErrorMessages() == null ? 0 : listingDetails.getErrorMessages().size());
+                        listingUpload.setWarningCount(listingDetails.getWarningMessages() == null ? 0 : listingDetails.getWarningMessages().size());
+                        LOGGER.info("Listing upload with ID " + listingUpload.getId() + " had "
+                                + listingUpload.getErrorCount() + " errors and " + listingUpload.getWarningCount()
+                                + " warnings.");
+                        try {
+                            listingUploadDao.updateErrorAndWarningCounts(listingUpload);
+                        } catch (Exception ex) {
+                            LOGGER.error("The pending listing " + listingUpload.getChplProductNumber() + " could not be updated. No updates were made to the error/warning counts.", ex);
+                        }
+                    }
                 }
             }
         });
     }
 
-    private void setFailedValidationErrorAndWarningCounts(Long listingUploadId) {
+    private void saveValidationFailed(Long listingUploadId) {
         TransactionTemplate txTemplate = new TransactionTemplate(txManager);
         txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
         txTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                listingUploadDao.updateErrorAndWarningCounts(listingUploadId, -1, -1);
+                try {
+                    listingUploadDao.updateStatus(listingUploadId, ListingUploadStatus.FAILED);
+                } catch (Exception ex) {
+                    LOGGER.error("The pending listing with ID " + listingUploadId + " could not be updated. No updates were made to its status.");
+                }
             }
         });
     }

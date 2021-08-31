@@ -41,6 +41,8 @@ import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.dto.auth.InvitationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserInvitationDTO;
+import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -58,7 +60,6 @@ import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.auth.AuthenticationManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.util.AuthUtil;
-import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -104,7 +105,7 @@ public class UserManagementController {
     public @ResponseBody User createUser(@RequestBody CreateUserFromInvitationRequest userInfo)
             throws ValidationException, EntityRetrievalException, InvalidArgumentsException,
             UserRetrievalException, MultipleUserAccountsException, UserCreationException,
-            MessagingException, JsonProcessingException, EntityCreationException {
+            EmailNotSentException, JsonProcessingException, EntityCreationException {
 
         if (userInfo.getUser() == null || userInfo.getUser().getEmail() == null) {
             throw new ValidationException(msgUtil.getMessage("user.email.required"));
@@ -130,7 +131,7 @@ public class UserManagementController {
                 + "Please click the link below to activate your account: <br/>" + env.getProperty("chplUrlBegin")
                 + "/#/registration/confirm-user/" + invitation.getConfirmToken() + "</p>"
                 + "<p>If you have any issues completing the registration, "
-                + "please visit the <a href=\"https://inquiry.healthit.gov/\">Health IT Feedback and Inquiry Portal</a> and select \"Certified Health IT Product List (CHPL)\" to submit a ticket.</p>"
+                + "please visit the <a href=\"https://inquiry.healthit.gov/support/plugins/servlet/loginfreeRedirMain?portalid=2&request=51\">Health IT Feedback and Inquiry Portal</a> and select \"Certified Health IT Product List (CHPL)\" to submit a ticket.</p>"
                 + "<p>The CHPL Team</p>";
 
         String[] toEmails = {
@@ -264,7 +265,7 @@ public class UserManagementController {
     produces = "application/json; charset=utf-8")
     public UserInvitation inviteUser(@RequestBody UserInvitation invitation)
             throws InvalidArgumentsException, UserCreationException, UserRetrievalException,
-            UserPermissionRetrievalException, AddressException, MessagingException {
+            UserPermissionRetrievalException, AddressException, EmailNotSentException {
 
         if (!ff4j.check(FeatureList.ROLE_DEVELOPER) && invitation.getRole().equals(Authority.ROLE_DEVELOPER)) {
             throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
@@ -301,7 +302,7 @@ public class UserManagementController {
                 + env.getProperty("chplUrlBegin") + "/#/registration/create-user/" + createdInvite.getInviteToken()
                 + "</p>"
                 + "<p>If you have any issues completing the registration, "
-                + "please visit the <a href=\"https://inquiry.healthit.gov/\">Health IT Feedback and Inquiry Portal</a> and select \"Certified Health IT Product List (CHPL)\" to submit a ticket.</p>"
+                + "please visit the <a href=\"https://inquiry.healthit.gov/support/plugins/servlet/loginfreeRedirMain?portalid=2&request=51\">Health IT Feedback and Inquiry Portal</a> and select \"Certified Health IT Product List (CHPL)\" to submit a ticket.</p>"
                 + "<p>Take care,<br/> " + "The CHPL Team</p>";
 
         String[] toEmails = {

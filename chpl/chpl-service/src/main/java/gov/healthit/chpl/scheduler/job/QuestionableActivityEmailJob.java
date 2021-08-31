@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.mail.MessagingException;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.Range;
@@ -40,8 +38,9 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityProductDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityTriggerDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityVersionDTO;
+import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.service.CertificationCriterionService;
-import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.Util;
 
 public class QuestionableActivityEmailJob extends QuartzJob {
@@ -137,8 +136,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
                 .htmlMessage(htmlMessage)
                 .fileAttachments(files)
                 .sendEmail();
-
-        } catch (MessagingException e) {
+        } catch (EmailNotSentException e) {
             LOGGER.error(e);
         }
         LOGGER.info("********* Completed the Questionable Activity Email job. *********");

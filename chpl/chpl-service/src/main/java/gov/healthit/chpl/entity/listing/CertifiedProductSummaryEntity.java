@@ -70,8 +70,8 @@ public class CertifiedProductSummaryEntity implements Serializable {
     @Column(name = "other_acb")
     private String otherAcb;
 
-    @Column(name = "transparency_attestation_url")
-    private String transparencyAttestationUrl;
+    @Column(name = "mandatory_disclosures")
+    private String mandatoryDisclosures;
 
     @Column(name = "ics")
     private Boolean ics;
@@ -165,9 +165,6 @@ public class CertifiedProductSummaryEntity implements Serializable {
     @Column(name = "certified_product_id", nullable = false)
     @Where(clause = "deleted <> 'true'")
     private Set<CertificationResultDetailsEntity> certificationResults = new HashSet<CertificationResultDetailsEntity>();
-
-    @Column(name = "rwt_eligibility_year")
-    private Integer rwtEligibilityYear;
 
     @Column(name = "rwt_plans_url")
     private String rwtPlansUrl;

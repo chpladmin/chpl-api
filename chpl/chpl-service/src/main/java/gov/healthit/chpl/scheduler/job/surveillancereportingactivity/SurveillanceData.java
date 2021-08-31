@@ -29,6 +29,7 @@ public class SurveillanceData {
     private String surveillanceResult;
     private String nonconformityType;
     private String nonconformityStatus;
+    private LocalDate nonconformityCloseDate;
     private LocalDate dateOfDetermination;
     private LocalDate capApprovalDate;
     private LocalDate actionBeganDate;
@@ -70,6 +71,7 @@ public class SurveillanceData {
         this.surveillanceResult = getValueFromRecord(record, "SURVEILLANCE_RESULT");
         this.nonconformityType = getValueFromRecord(record, "NON_CONFORMITY_TYPE");
         this.nonconformityStatus = getValueFromRecord(record, "NON_CONFORMITY_STATUS");
+        this.nonconformityCloseDate = convertStringToLocalDate(getValueFromRecord(record, "NON_CONFORMITY_CLOSE_DATE"));
         this.dateOfDetermination = convertStringToLocalDate(getValueFromRecord(record, "DATE_OF_DETERMINATION"));
         this.capApprovalDate = convertStringToLocalDate(getValueFromRecord(record, "CAP_APPROVAL_DATE"));
         this.actionBeganDate = convertStringToLocalDate(getValueFromRecord(record, "ACTION_BEGAN_DATE"));

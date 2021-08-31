@@ -16,7 +16,6 @@ import java.util.Set;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.mail.MessagingException;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 
@@ -36,11 +35,12 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.auth.UserContactEntity;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
-import gov.healthit.chpl.util.EmailBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -223,7 +223,7 @@ public class DeveloperAccessReport extends QuartzJob {
     }
 
     private void sendEmail(JobExecutionContext jobContext, List<List<String>> csvRows, List<CertificationBodyDTO> acbs)
-            throws MessagingException {
+            throws EmailNotSentException {
         LOGGER.info("Sending email to {} with contents {} and a total of {} developer access rows",
                 getEmailRecipients(jobContext).get(0), getHtmlMessage((csvRows.size()), getAcbNamesAsCommaSeparatedList(jobContext)));
 
@@ -234,7 +234,7 @@ public class DeveloperAccessReport extends QuartzJob {
                 .fileAttachments(getAttachments(csvRows, acbs))
                 .sendEmail();
     }
-    
+
     private String getAcbNamesAsCommaSeparatedList(JobExecutionContext jobContext) {
         if (Objects.nonNull(jobContext.getMergedJobDataMap().getString("acb"))) {
             return Arrays.asList(

@@ -26,6 +26,7 @@ import gov.healthit.chpl.util.CertificationResultRules;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Singular;
+import lombok.ToString;
 
 /**
  * Criteria to which a given listing attests.
@@ -35,6 +36,7 @@ import lombok.Singular;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @AllArgsConstructor
+@ToString
 public class CertificationResult implements Serializable {
     private static final long serialVersionUID = -4917413876078419868L;
     public static final String PRIVACY_SECURITY_FRAMEWORK_DELIMITER = ";";

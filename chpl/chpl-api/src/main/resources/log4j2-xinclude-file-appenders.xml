@@ -132,6 +132,30 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
+    <RollingFile name="directReviewDownloadableResourceCreatorJob"
+        fileName="${logDir}/scheduler/directReviewDownloadableResourceCreatorJob.log"
+        filePattern="${logDir}/scheduler/history/directReviewDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
+        <PatternLayout>
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id} %X{dd.span_id} - %m%n</Pattern>
+        </PatternLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+    </RollingFile>
+    <RollingFile name="svapActivityDownloadableResourceCreatorJob"
+        fileName="${logDir}/scheduler/svapActivityDownloadableResourceCreatorJob.log"
+        filePattern="${logDir}/scheduler/history/svapActivityDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
+        <PatternLayout>
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id} %X{dd.span_id} - %m%n</Pattern>
+        </PatternLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+    </RollingFile>
     <RollingFile name="brokenSurveillanceRulesCreatorJob"
         fileName="${logDir}/scheduler/brokenSurveillanceRulesCreatorJob.log"
         filePattern="${logDir}/scheduler/history/brokenSurveillanceRulesCreatorJob-%d{yyyy-MM-dd}.log"
@@ -303,30 +327,6 @@
     <RollingFile name="updateListingStatusJob"
         fileName="${logDir}/scheduler/updateListingStatusJob.log"
         filePattern="${logDir}/scheduler/history/updateListingStatusJob-%d{yyyy-MM-dd}.log"
-        filePermissions="rw-rw-r--">
-        <PatternLayout>
-            <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id} %X{dd.span_id} - %m%n</Pattern>
-        </PatternLayout>
-        <Policies>
-            <TimeBasedTriggeringPolicy
-                interval="1" modulate="true" />
-        </Policies>
-    </RollingFile>
-    <RollingFile name="realWorldTestingEligibilityJob"
-        fileName="${logDir}/scheduler/realWorldTestingEligibilityJob.log"
-        filePattern="${logDir}/scheduler/history/realWorldTestingEligibilityJob-%d{yyyy-MM-dd}.log"
-        filePermissions="rw-rw-r--">
-        <PatternLayout>
-            <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id} %X{dd.span_id} - %m%n</Pattern>
-        </PatternLayout>
-        <Policies>
-            <TimeBasedTriggeringPolicy
-                interval="1" modulate="true" />
-        </Policies>
-    </RollingFile>
-    <RollingFile name="directReviewDownloadableResourceCreatorJob"
-        fileName="${logDir}/scheduler/directReviewDownloadableResourceCreatorJob.log"
-        filePattern="${logDir}/scheduler/history/directReviewDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.log"
         filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id} %X{dd.span_id} - %m%n</Pattern>
@@ -516,9 +516,9 @@
         </Policies>
     </RollingFile>
 
-     <RollingFile name="versionActivityUpdaterJob"
-        fileName="${logDir}/scheduler/versionActivityUpdaterJob.log"
-        filePattern="${logDir}/scheduler/history/versionActivityUpdaterJob-%d{yyyy-MM-dd}.log"
+    <RollingFile name="deprecatedApiUsageEmailJob"
+        fileName="${logDir}/scheduler/deprecatedApiUsageEmailJob.log"
+        filePattern="${logDir}/scheduler/history/deprecatedApiUsageEmailJob-%d{yyyy-MM-dd}.log"
         filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>

@@ -3,7 +3,6 @@ package gov.healthit.chpl.scheduler.job.auditdata;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.apache.tomcat.dbcp.dbcp2.DelegatingConnection;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.postgresql.PGConnection;
 
@@ -28,12 +27,12 @@ public abstract class AuditDataRetentionService extends BaseDAOImpl {
         return auditDataFilePath;
     }
 
-    @SuppressWarnings({"resource", "rawtypes"})
+    @SuppressWarnings({"resource"})
     public PGConnection getPgConnection() throws SQLException {
         if (pgConnection == null) {
             SessionImplementor sessImpl = (SessionImplementor) getSession();
             Connection conn = sessImpl.getJdbcConnectionAccess().obtainConnection();
-            pgConnection = ((DelegatingConnection) conn).getInnermostDelegateInternal().unwrap(PGConnection.class);
+            pgConnection = conn.unwrap(PGConnection.class);
         }
         return pgConnection;
     }
