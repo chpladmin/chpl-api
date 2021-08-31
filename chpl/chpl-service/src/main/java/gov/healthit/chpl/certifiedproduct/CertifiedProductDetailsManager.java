@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.caching.listing.ListingCache;
 import gov.healthit.chpl.certifiedproduct.service.CertificationResultService;
 import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
 import gov.healthit.chpl.certifiedproduct.service.CqmResultsService;
@@ -33,7 +32,6 @@ public class CertifiedProductDetailsManager {
     private CertificationResultService certificationResultService;
     private ListingMeasuresService listingMeasuresService;
     private CertificationStatusEventsService certificationStatusEventsService;
-    private ListingCache listingCache;
 
     @Autowired
     public CertifiedProductDetailsManager(
@@ -42,8 +40,7 @@ public class CertifiedProductDetailsManager {
             CqmResultsService cqmResultsService,
             CertificationResultService certificationResultService,
             ListingMeasuresService listingMeasuresService,
-            CertificationStatusEventsService certificationStatusEventsService,
-            ListingCache listingCache) {
+            CertificationStatusEventsService certificationStatusEventsService) {
 
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
         this.listingService = listingService;
@@ -51,7 +48,6 @@ public class CertifiedProductDetailsManager {
         this.certificationResultService = certificationResultService;
         this.listingMeasuresService = listingMeasuresService;
         this.certificationStatusEventsService = certificationStatusEventsService;
-        this.listingCache = listingCache;
     }
 
     @Transactional(readOnly = true)
