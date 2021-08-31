@@ -48,7 +48,7 @@ import gov.healthit.chpl.service.CertificationCriterionService;
 @DisallowConcurrentExecution
 public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("brokenSurveillanceRulesCreatorJobLogger");
-    private static final String EDITION_2011 = "2011";
+    private static final String EDITION_2015 = "2015";
     private DateTimeFormatter dateFormatter;
 
     @Autowired
@@ -117,14 +117,14 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
 
     private List<CertifiedProductFlatSearchResult> getListingsForReport() {
         return certifiedProductSearchDAO.getFlatCertifiedProducts().stream()
-                .filter(listing -> !isEdition2011(listing)
+                .filter(listing -> isEdition2015(listing)
                         && (isCertificationStatusSuspendedByAcb(listing)
                                 || hasSurveillances(listing)))
                 .collect(Collectors.toList());
     }
 
-    private boolean isEdition2011(CertifiedProductFlatSearchResult listing) {
-        return listing.getEdition().equals(EDITION_2011);
+    private boolean isEdition2015(CertifiedProductFlatSearchResult listing) {
+        return listing.getEdition().equals(EDITION_2015);
     }
 
     private boolean isCertificationStatusSuspendedByAcb(CertifiedProductFlatSearchResult listing) {
