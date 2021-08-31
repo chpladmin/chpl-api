@@ -12,10 +12,139 @@
                 <job-name>downloadFileJob2015</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 0 3 * * ?</cron-expression> <!-- At 0300 UTC every day -->
+            </cron>
+        </trigger>
+        <trigger>
+            <cron>
+                <name>listingValidationReportCreator</name>
+                <group>listingValidationReportCreatorTrigger</group>
+                <job-name>listingValidationReportCreator</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 30 3 * * ?</cron-expression> <!-- At 0300 UTC every day -->
+            </cron>
+        </trigger>
+        <trigger>
+            <cron>
+                <name>generateBrokenSurveillanceRules</name>
+                <group>brokenSurveillanceRulesTrigger</group>
+                <job-name>brokenSurveillanceRulesCreator</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 35 3 * * ?</cron-expression> <!-- At 0335 UTC every day -->
+            </cron>
+        </trigger>
+        <trigger>
+            <cron>
+                <name>g3Sed2015DownloadFileJob</name>
+                <group>downloadFileTrigger</group>
+                <job-name>g3Sed2015DownloadFileJob</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 40 3 * * ?</cron-expression> <!-- At 0340 UTC every day -->
+            </cron>
+        </trigger>
+        <trigger>
+            <cron>
+                <name>surveillanceDownloadFileJob</name>
+                <group>downloadFileTrigger</group>
+                <job-name>surveillanceDownloadFileJob</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 45 3 * * ?</cron-expression> <!-- At 0345 UTC every day -->
+            </cron>
+        </trigger>
+        <trigger>
+            <cron>
+                <name>generateInheritanceErrorsReport</name>
+                <group>inheritanceErrorsReportTrigger</group>
+                <job-name>inheritanceErrorsReportCreator</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 50 3 * * ?</cron-expression> <!-- At 0350 UTC every day -->
+            </cron>
+        </trigger>
+        <trigger>
+            <cron>
+                <name>generateSVAPActivityFile</name>
+                <group>downloadFileTrigger</group>
+                <job-name>svapActivityDownloadFileGeneration</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 55 3 * * ?</cron-expression> <!-- At 0355 UTC every day -->
+            </cron>
+        </trigger>
+        <trigger>
+            <cron>
+                <name>generateCuresStatistics</name>
+                <group>generateCuresStatisticsTrigger</group>
+                <job-name>curesStatisticsCreator</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 0 4 * * ?</cron-expression> <!-- At 0400 UTC every day -->
+            </cron>
+        </trigger>
+        <trigger>
+            <cron>
+                <name>generateSummaryStatistics</name>
+                <group>summaryStatisticsTrigger</group>
+                <job-name>summaryStatisticsCreator</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 10 4 * * ?</cron-expression> <!-- At 0410 UTC every day -->
+            </cron>
+        </trigger>
+        <trigger>
+            <cron>
+                <name>generateChartData</name>
+                <group>chartDataCreatorTrigger</group>
+                <job-name>chartDataCreator</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
                 <cron-expression>0 30 4 * * ?</cron-expression> <!-- At 0430 UTC every day -->
             </cron>
         </trigger>
-
+        <trigger>
+            <cron>
+                <name>apiKeyDeleteWarningEmail</name>
+                <group>apiKeyDeleteWarningEmailTrigger</group>
+                <job-name>apiKeyDeleteWarningEmailJob</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <cron-expression>0 50 4 1/1 * ? *</cron-expression> <!-- At 0450 UTC every day -->
+            </cron>
+        </trigger>
+        <trigger>
+            <cron>
+                <name>apiKeyDeleteEmail</name>
+                <group>apiKeyDeleteTrigger</group>
+                <job-name>apiKeyDeleteJob</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <cron-expression>0 55 4 1/1 * ? *</cron-expression> <!-- At 0455 UTC every day -->
+            </cron>
+        </trigger>
+        <trigger>
+            <cron>
+                <name>generateDirectReviewFile</name>
+                <group>downloadFileTrigger</group>
+                <job-name>directReviewDownloadFileGeneration</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 0 5 * * ?</cron-expression> <!-- At 0500 UTC every day -->
+            </cron>
+        </trigger>
+        <trigger>
+            <cron>
+                <name>generateUrlStatusData</name>
+                <group>urlStatusDataCollectorTrigger</group>
+                <job-name>urlStatusDataCollector</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 5 5 * * ?</cron-expression> <!-- At 0505 UTC every day -->
+            </cron>
+        </trigger>
         <trigger>
             <cron>
                 <name>generate2014</name>
@@ -26,7 +155,6 @@
                 <cron-expression>0 45 12 ? JAN,APR,JUL,OCT 7#1</cron-expression> <!-- At 1245 UTC on the first Saturday of the quarter -->
             </cron>
         </trigger>
-
         <trigger>
             <cron>
                 <name>generate2011</name>
@@ -37,139 +165,6 @@
                 <cron-expression>0 45 9 ? JAN,APR,JUL,OCT 7#1</cron-expression> <!-- At 0945 UTC on the first Saturday of the quarter -->
             </cron>
         </trigger>
-
-        <trigger>
-            <cron>
-                <name>g3Sed2015DownloadFileJob</name>
-                <group>downloadFileTrigger</group>
-                <job-name>g3Sed2015DownloadFileJob</job-name>
-                <job-group>systemJobs</job-group>
-                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 45 5 * * ?</cron-expression> <!-- At 0545 UTC every day -->
-            </cron>
-        </trigger>
-
-        <trigger>
-            <cron>
-                <name>surveillanceDownloadFileJob</name>
-                <group>downloadFileTrigger</group>
-                <job-name>surveillanceDownloadFileJob</job-name>
-                <job-group>systemJobs</job-group>
-                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 30 6 * * ?</cron-expression> <!-- At 0630 UTC every day -->
-            </cron>
-        </trigger>
-
-        <trigger>
-            <cron>
-                <name>generateDirectReviewFile</name>
-                <group>downloadFileTrigger</group>
-                <job-name>directReviewDownloadFileGeneration</job-name>
-                <job-group>systemJobs</job-group>
-                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 15 9 * * ?</cron-expression> <!-- At 0915 UTC every day -->
-            </cron>
-        </trigger>
-
-        <trigger>
-            <cron>
-                <name>generateSVAPActivityFile</name>
-                <group>downloadFileTrigger</group>
-                <job-name>svapActivityDownloadFileGeneration</job-name>
-                <job-group>systemJobs</job-group>
-                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 20 9 * * ?</cron-expression> <!-- At 0920 UTC every day -->
-            </cron>
-        </trigger>
-
-        <trigger>
-            <cron>
-                <name>generateSummaryStatistics</name>
-                <group>summaryStatisticsTrigger</group>
-                <job-name>summaryStatisticsCreator</job-name>
-                <job-group>systemJobs</job-group>
-                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 45 7 * * ?</cron-expression> <!-- At 0745 UTC every day -->
-            </cron>
-        </trigger>
-
-        <trigger>
-            <cron>
-                <name>generateInheritanceErrorsReport</name>
-                <group>inheritanceErrorsReportTrigger</group>
-                <job-name>inheritanceErrorsReportCreator</job-name>
-                <job-group>systemJobs</job-group>
-                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 0 7 * * ?</cron-expression> <!-- At 0700 UTC every day -->
-            </cron>
-        </trigger>
-
-        <trigger>
-            <cron>
-                <name>generateBrokenSurveillanceRules</name>
-                <group>brokenSurveillanceRulesTrigger</group>
-                <job-name>brokenSurveillanceRulesCreator</job-name>
-                <job-group>systemJobs</job-group>
-                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 15 5 * * ?</cron-expression> <!-- At 0515 UTC every day -->
-            </cron>
-        </trigger>
-
-        <trigger>
-            <cron>
-                <name>generateChartData</name>
-                <group>chartDataCreatorTrigger</group>
-                <job-name>chartDataCreator</job-name>
-                <job-group>systemJobs</job-group>
-                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 0 8 * * ?</cron-expression> <!-- At 0800 UTC every day -->
-            </cron>
-        </trigger>
-
-        <trigger>
-            <cron>
-                <name>generateCuresStatistics</name>
-                <group>generateCuresStatisticsTrigger</group>
-                <job-name>curesStatisticsCreator</job-name>
-                <job-group>systemJobs</job-group>
-                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 30 8 * * ?</cron-expression> <!-- At 0830 UTC every day -->
-            </cron>
-        </trigger>
-
-        <trigger>
-            <cron>
-                <name>apiKeyDeleteWarningEmail</name>
-                <group>apiKeyDeleteWarningEmailTrigger</group>
-                <job-name>apiKeyDeleteWarningEmailJob</job-name>
-                <job-group>systemJobs</job-group>
-                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
-                <cron-expression>0 30 8 1/1 * ? *</cron-expression> <!-- At 0830 UTC every day -->
-            </cron>
-        </trigger>
-
-        <trigger>
-            <cron>
-                <name>apiKeyDeleteEmail</name>
-                <group>apiKeyDeleteTrigger</group>
-                <job-name>apiKeyDeleteJob</job-name>
-                <job-group>systemJobs</job-group>
-                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
-                <cron-expression>0 45 8 1/1 * ? *</cron-expression> <!-- At 0845 UTC every day -->
-            </cron>
-        </trigger>
-
-        <trigger>
-            <cron>
-                <name>generateUrlStatusData</name>
-                <group>urlStatusDataCollectorTrigger</group>
-                <job-name>urlStatusDataCollector</job-name>
-                <job-group>systemJobs</job-group>
-                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 30 3 * * ?</cron-expression> <!-- At 0330 UTC every day -->
-            </cron>
-        </trigger>
-
         <trigger>
             <cron>
                 <name>refreshDirectReviews</name>
@@ -180,7 +175,6 @@
                 <cron-expression>0 0 0,3,6,9,12,15,18,21 ? * *</cron-expression> <!-- Every three hours -->
             </cron>
         </trigger>
-
         <trigger>
             <cron>
                 <name>auditDataRotation</name>
@@ -191,7 +185,6 @@
                 <cron-expression>0 45 10 ? * 7#2</cron-expression> <!-- At 1045 UTC on the second Saturday of the month -->
             </cron>
         </trigger>
-
         <trigger>
             <cron>
                 <name>listingValidationReportCreator</name>
@@ -202,7 +195,6 @@
                 <cron-expression>0 0 3 * * ?</cron-expression> <!-- At 0300 UTC every day -->
             </cron>
         </trigger>
-
         <trigger>
             <cron>
                 <name>deprecatedApiUsage</name>
