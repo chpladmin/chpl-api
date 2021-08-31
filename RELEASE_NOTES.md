@@ -1,5 +1,16 @@
 # Release Notes
 
+## Version 31.0.0
+_31 August 2021_
+
+### Breaking Change
+* Use "Mandatory Disclosures" instead of "Transparency Attestation URL"
+
+### Feature
+* Update Real World Testing email to dynamically determine eligibility
+
+---
+
 ## Version 30.6.0
 _23 August 2021_
 
