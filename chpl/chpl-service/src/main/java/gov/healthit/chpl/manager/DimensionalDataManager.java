@@ -80,7 +80,7 @@ import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.entity.OptionalStandardEntity;
 import gov.healthit.chpl.surveillance.report.QuarterDAO;
-import gov.healthit.chpl.surveillance.report.dto.QuarterDTO;
+import gov.healthit.chpl.surveillance.report.domain.Quarter;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -154,9 +154,9 @@ public class DimensionalDataManager {
     @Transactional
     public Set<KeyValueModel> getQuarters() {
         LOGGER.debug("Getting all quarters from the database (not cached).");
-        List<QuarterDTO> quarters = quarterDao.getAll();
+        List<Quarter> quarters = quarterDao.getAll();
         Set<KeyValueModel> results = new HashSet<KeyValueModel>();
-        for (QuarterDTO dto : quarters) {
+        for (Quarter dto : quarters) {
             String description = dto.getStartMonth() + "/" + dto.getStartDay()
                 + " - " + dto.getEndMonth() + "/" + dto.getEndDay();
             results.add(new KeyValueModel(dto.getId(), dto.getName(), description));

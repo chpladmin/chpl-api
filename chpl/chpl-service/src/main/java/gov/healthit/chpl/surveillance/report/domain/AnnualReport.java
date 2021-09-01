@@ -3,10 +3,16 @@ package gov.healthit.chpl.surveillance.report.domain;
 import java.io.Serializable;
 
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.surveillance.report.dto.AnnualReportDTO;
+import gov.healthit.chpl.surveillance.report.entity.AnnualReportEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class AnnualReport implements Serializable {
     private static final long serialVersionUID = 8743838678379539305L;
 
@@ -16,16 +22,13 @@ public class AnnualReport implements Serializable {
     private String obstacleSummary;
     private String priorityChangesFromFindingsSummary;
 
-    public AnnualReport() {
-    }
-
-    public AnnualReport(AnnualReportDTO dto) {
-        this.id = dto.getId();
-        this.year = dto.getYear();
-        if (dto.getAcb() != null) {
-            this.acb = new CertificationBody(dto.getAcb());
+    public AnnualReport(AnnualReportEntity entity) {
+        this.id = entity.getId();
+        this.year = entity.getYear();
+        if (entity.getAcb() != null) {
+            this.acb = new CertificationBody(entity.getAcb());
         }
-        this.obstacleSummary = dto.getObstacleSummary();
-        this.priorityChangesFromFindingsSummary = dto.getFindingsSummary();
+        this.obstacleSummary = entity.getObstacleSummary();
+        this.priorityChangesFromFindingsSummary = entity.getFindingsSummary();
     }
 }

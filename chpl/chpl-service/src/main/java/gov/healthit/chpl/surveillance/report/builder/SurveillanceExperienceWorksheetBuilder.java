@@ -12,7 +12,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.PropertyTemplate;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.surveillance.report.dto.AnnualReportDTO;
+import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
 
 @Component
 public class SurveillanceExperienceWorksheetBuilder {
@@ -33,7 +33,7 @@ public class SurveillanceExperienceWorksheetBuilder {
         return LAST_DATA_ROW;
     }
 
-    public Sheet buildWorksheet(SurveillanceReportWorkbookWrapper workbook, AnnualReportDTO report) throws IOException {
+    public Sheet buildWorksheet(SurveillanceReportWorkbookWrapper workbook, AnnualReport report) throws IOException {
         pt = new PropertyTemplate();
 
         //create sheet
@@ -60,7 +60,7 @@ public class SurveillanceExperienceWorksheetBuilder {
         return sheet;
     }
 
-    private void addSurveillanceObstacles(SurveillanceReportWorkbookWrapper workbook, Sheet sheet, AnnualReportDTO report) {
+    private void addSurveillanceObstacles(SurveillanceReportWorkbookWrapper workbook, Sheet sheet, AnnualReport report) {
         Row row = workbook.getRow(sheet, 1);
         Cell cell = workbook.createCell(row, 1, workbook.getLeftAlignedTableHeadingStyle());
         cell.setCellValue("List Any Obstacles Encountered During Surveillance");
@@ -78,14 +78,14 @@ public class SurveillanceExperienceWorksheetBuilder {
                 BorderStyle.MEDIUM, BorderExtent.ALL);
     }
 
-    private void addFindingsSummary(SurveillanceReportWorkbookWrapper workbook, Sheet sheet, AnnualReportDTO report) {
+    private void addFindingsSummary(SurveillanceReportWorkbookWrapper workbook, Sheet sheet, AnnualReport report) {
         Row row = workbook.getRow(sheet, 1);
         Cell cell = workbook.createCell(row, 5, workbook.getLeftAlignedTableHeadingStyle());
         cell.setCellValue("Describe How Priorities May Have Shifted in Response to Findings in the Field");
 
         row = workbook.getRow(sheet, 2);
         cell = workbook.createCell(row, 5, workbook.getTopAlignedWrappedStyle());
-        cell.setCellValue(report.getFindingsSummary() == null ? "" : report.getFindingsSummary().trim());
+        cell.setCellValue(report.getPriorityChangesFromFindingsSummary() == null ? "" : report.getPriorityChangesFromFindingsSummary().trim());
         //this is user-entered text that wraps so we should try to resize the height
         //of the row to show all the lines of text.
         int lineCount = workbook.calculateLineCount(cell.getStringCellValue(), sheet, 5, 5);
