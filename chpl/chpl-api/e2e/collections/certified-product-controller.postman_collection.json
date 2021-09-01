@@ -88,7 +88,9 @@
 									"    pm.expect(expresult).to.have.property('rwtPlansCheckDate');\r",
 									"    pm.expect(expresult).to.have.property('rwtResultsUrl');\r",
 									"    pm.expect(expresult).to.have.property('rwtResultsCheckDate');\r",
-									"    pm.expect(expresult).to.have.property('rwtEligibilityYear');\r",
+									"});\r",
+									"pm.test(\"/{certifiedProductId} end point response should not have rwtEligibilityYear field\", function () {\r",
+									"    pm.expect(expresult).to.not.have.property('rwtEligibilityYear');\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -204,7 +206,9 @@
 									"    pm.expect(expresp).to.have.property('rwtPlansCheckDate');\r",
 									"    pm.expect(expresp).to.have.property('rwtResultsUrl');\r",
 									"    pm.expect(expresp).to.have.property('rwtResultsCheckDate');\r",
-									"    pm.expect(expresp).to.have.property('rwtEligibilityYear');\r",
+									"});\r",
+									"pm.test(\"/certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} end point response should not have rwtEligibilityYear field\", function () {\r",
+									"    pm.expect(expresp).to.not.have.property('rwtEligibilityYear');\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -569,7 +573,9 @@
 									"    pm.expect(expresult).to.have.property('rwtPlansCheckDate');\r",
 									"    pm.expect(expresult).to.have.property('rwtResultsUrl');\r",
 									"    pm.expect(expresult).to.have.property('rwtResultsCheckDate');\r",
-									"    pm.expect(expresult).to.have.property('rwtEligibilityYear');\r",
+									"});\r",
+									"pm.test(\"/{chplPrefix-identifier} end point response should not have rwtEligibilityYear field\", function () {\r",
+									"    pm.expect(expresult).to.not.have.property('rwtEligibilityYear');\r",
 									"});\r",
 									"pm.test(\"All RWT fields should be null for 2014/2011 listings\", function() {\r",
 									"    var jsonData = pm.response.json();\r",
@@ -577,7 +583,6 @@
 									"    pm.expect(jsonData.rwtPlansCheckDate).eq(null);\r",
 									"    pm.expect(jsonData.rwtResultsUrl).eq(null);\r",
 									"    pm.expect(jsonData.rwtResultsCheckDate).eq(null);\r",
-									"    pm.expect(jsonData.rwtEligibilityYear).eq(null);\r",
 									"});"
 								],
 								"type": "text/javascript"
