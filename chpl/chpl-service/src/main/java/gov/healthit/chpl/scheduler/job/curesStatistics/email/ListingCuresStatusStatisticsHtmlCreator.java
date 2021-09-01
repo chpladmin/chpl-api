@@ -37,6 +37,7 @@ public class ListingCuresStatusStatisticsHtmlCreator {
         List<ListingCuresStatusStatistic> statistics = null;
         LocalDate statisticDate = listingCuresStatusStatisticsDao.getDateOfMostRecentStatistics();
         if (statisticDate != null) {
+            LOGGER.info("Most recent statistic date for cures status is " + statisticDate);
             statistics = listingCuresStatusStatisticsDao.getStatisticsForDate(statisticDate);
             LOGGER.info("Generating HTML email text for " + statistics.size() + " statistics.");
         } else {
