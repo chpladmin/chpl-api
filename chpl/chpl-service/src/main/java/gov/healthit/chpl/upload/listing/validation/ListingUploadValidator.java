@@ -15,6 +15,7 @@ import gov.healthit.chpl.upload.listing.validation.reviewer.CertificationResultR
 import gov.healthit.chpl.upload.listing.validation.reviewer.CertifiedDateCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.ChplNumberFormatReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.ChplNumberUniqueReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.CqmResultReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.DeveloperCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.DeveloperReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.EditionCodeReviewer;
@@ -31,8 +32,6 @@ import gov.healthit.chpl.validation.listing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.InheritanceReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.AttestedCriteriaCqmReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.CqmAttestedCriteriaReviewer;
 
 @Component
 public class ListingUploadValidator {
@@ -62,8 +61,7 @@ public class ListingUploadValidator {
     private FieldLengthReviewer fieldLengthReviewer;
     private UnsupportedCharacterReviewer unsupportedCharacterReviewer;
     private CertificationResultReviewer certResultReviewer;
-    private CqmAttestedCriteriaReviewer cqmAttestedCriteriaReviewer;
-    private AttestedCriteriaCqmReviewer attestedCriteriaCqmReviewer;
+    private CqmResultReviewer cqmResultReviewer;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
@@ -92,8 +90,7 @@ public class ListingUploadValidator {
             FieldLengthReviewer fieldLengthReviewer,
             UnsupportedCharacterReviewer unsupportedCharacterReviewer,
             CertificationResultReviewer certResultReviewer,
-            @Qualifier("cqmAttestedCriteriaReviewer") CqmAttestedCriteriaReviewer cqmAttestedCriteriaReviewer,
-            @Qualifier("attestedCriteriaCqmReviewer") AttestedCriteriaCqmReviewer attestedCriteriaCqmReviewer) {
+            CqmResultReviewer cqmResultReviewer) {
         this.csvHeaderReviewer = csvHeaderReviewer;
         this.chplNumberFormatReviewer = chplNumberFormatReviewer;
         this.editionCodeReviewer = editionCodeReviewer;
@@ -119,8 +116,7 @@ public class ListingUploadValidator {
         this.fieldLengthReviewer = fieldLengthReviewer;
         this.unsupportedCharacterReviewer = unsupportedCharacterReviewer;
         this.certResultReviewer = certResultReviewer;
-        this.cqmAttestedCriteriaReviewer = cqmAttestedCriteriaReviewer;
-        this.attestedCriteriaCqmReviewer = attestedCriteriaCqmReviewer;
+        this.cqmResultReviewer = cqmResultReviewer;
     }
 
     public void review(ListingUpload uploadedMetadata, CertifiedProductSearchDetails listing) {
@@ -149,7 +145,6 @@ public class ListingUploadValidator {
         fieldLengthReviewer.review(listing);
         unsupportedCharacterReviewer.review(listing);
         certResultReviewer.review(listing);
-        cqmAttestedCriteriaReviewer.review(listing);
-        attestedCriteriaCqmReviewer.review(listing);
+        cqmResultReviewer.review(listing);
     }
 }
