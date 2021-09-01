@@ -44,7 +44,7 @@ public class CuresCriterionUpgradedWithoutOriginalStatisticsCsvCreator {
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.withRecordSeparator(NEW_LINE_SEPARATOR);
         LocalDate statisticDate = criterionUpgradedWithoutOriginalStatisticsDao.getDateOfMostRecentStatistics();
         if (statisticDate != null) {
-            LOGGER.info("Most recent statistic date is " + statisticDate);
+            LOGGER.info("Most recent statistic date for " + filename + " is " + statisticDate);
             csvFile = getOutputFile(statisticDate);
             try (FileWriter fileWriter = new FileWriter(csvFile);
                     CSVPrinter csvFilePrinter = new CSVPrinter(fileWriter, csvFileFormat)) {

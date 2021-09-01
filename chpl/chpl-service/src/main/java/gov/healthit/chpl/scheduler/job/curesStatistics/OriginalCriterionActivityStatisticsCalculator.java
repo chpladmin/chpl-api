@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +31,6 @@ public class OriginalCriterionActivityStatisticsCalculator {
     private CertifiedProductDAO certifiedProductDao;
     private CriterionUpgradedToCuresFromOriginalListingStatisticsDAO criterionUpgradedToCuresFromOriginalStatisticsDao;
     private Date curesEffectiveDate;
-    private Date currentDate;
     private List<CertificationStatusType> activeStatuses;
 
     @Autowired
@@ -44,7 +44,6 @@ public class OriginalCriterionActivityStatisticsCalculator {
         this.certifiedProductDao = certifiedProductDao;
         this.criterionUpgradedToCuresFromOriginalStatisticsDao = criterionUpgradedToCuresFromOriginalStatisticsDao;
         curesEffectiveDate = specialProperties.getEffectiveRuleTimestamp();
-        currentDate = new Date();
         activeStatuses = Stream.of(CertificationStatusType.Active,
                 CertificationStatusType.SuspendedByAcb,
                 CertificationStatusType.SuspendedByOnc)
@@ -61,6 +60,7 @@ public class OriginalCriterionActivityStatisticsCalculator {
     @Transactional
     public List<CriterionUpgradedToCuresFromOriginalListingStatistic> calculateCurrentStatistics(LocalDate statisticDate) {
         LOGGER.info("Calculating original criteria upgraded to cures statistics for " + statisticDate);
+        Date currentDate = new Date();
         List<CriterionUpgradedToCuresFromOriginalListingStatistic> results
             = new ArrayList<CriterionUpgradedToCuresFromOriginalListingStatistic>();
 
@@ -69,7 +69,18 @@ public class OriginalCriterionActivityStatisticsCalculator {
             long listingCount = 0;
             CertificationCriterion curesCriterion = originalToCuresCriteriaMap.get(originalCriterion);
             List<Long> listingIdsAttestingToCriterion = certifiedProductDao.getListingIdsAttestingToCriterion(curesCriterion.getId(), activeStatuses);
+            if (!CollectionUtils.isEmpty(listingIdsAttestingToCriterion)) {
+                LOGGER.debug("Listing IDs attesting to criterion ID " + curesCriterion.getId() + ": "
+                        + listingIdsAttestingToCriterion.stream()
+                            .map(listingId -> listingId.toString())
+                            .collect(Collectors.joining(",")));
+            } else {
+                LOGGER.debug("No listings attest to criterion ID " + curesCriterion.getId());
+            }
             for (Long listingId : listingIdsAttestingToCriterion) {
+                LOGGER.debug("Checking if listing ID " + listingId
+                        + " removed attestation to original criterion ID " + originalCriterion.getId()
+                        + " between " + curesEffectiveDate + " and " + currentDate);
                 if (activityStatisticsHelper.didListingRemoveAttestationToCriterionDuringTimeInterval(listingId, originalCriterion, curesEffectiveDate, currentDate)) {
                     listingCount++;
                 }
