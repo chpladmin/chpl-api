@@ -26,6 +26,8 @@ public class CqmResultReviewer implements Reviewer {
     }
 
     public void review(CertifiedProductSearchDetails listing) {
+        //TODO: CQM + Version doesn't exist = error
+        //TODO: If Version is missing current behavior is it acts as if that CQM isnt listed/attested, i feel like this should be a warning at minimum
         cqmAttestedCriteriaReviewer.review(listing);
         attestedCriteriaCqmReviewer.review(listing);
     }
