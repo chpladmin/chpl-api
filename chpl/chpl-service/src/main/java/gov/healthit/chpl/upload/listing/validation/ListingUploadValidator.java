@@ -31,6 +31,7 @@ import gov.healthit.chpl.validation.listing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.InheritanceReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.AttestedCriteriaCqmReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.CqmAttestedCriteriaReviewer;
 
 @Component
@@ -62,6 +63,7 @@ public class ListingUploadValidator {
     private UnsupportedCharacterReviewer unsupportedCharacterReviewer;
     private CertificationResultReviewer certResultReviewer;
     private CqmAttestedCriteriaReviewer cqmAttestedCriteriaReviewer;
+    private AttestedCriteriaCqmReviewer attestedCriteriaCqmReviewer;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
@@ -90,7 +92,8 @@ public class ListingUploadValidator {
             FieldLengthReviewer fieldLengthReviewer,
             UnsupportedCharacterReviewer unsupportedCharacterReviewer,
             CertificationResultReviewer certResultReviewer,
-            @Qualifier("cqmAttestedCriteriaReviewer") CqmAttestedCriteriaReviewer cqmAttestedCriteriaReviewer) {
+            @Qualifier("cqmAttestedCriteriaReviewer") CqmAttestedCriteriaReviewer cqmAttestedCriteriaReviewer,
+            @Qualifier("attestedCriteriaCqmReviewer") AttestedCriteriaCqmReviewer attestedCriteriaCqmReviewer) {
         this.csvHeaderReviewer = csvHeaderReviewer;
         this.chplNumberFormatReviewer = chplNumberFormatReviewer;
         this.editionCodeReviewer = editionCodeReviewer;
@@ -117,6 +120,7 @@ public class ListingUploadValidator {
         this.unsupportedCharacterReviewer = unsupportedCharacterReviewer;
         this.certResultReviewer = certResultReviewer;
         this.cqmAttestedCriteriaReviewer = cqmAttestedCriteriaReviewer;
+        this.attestedCriteriaCqmReviewer = attestedCriteriaCqmReviewer;
     }
 
     public void review(ListingUpload uploadedMetadata, CertifiedProductSearchDetails listing) {
@@ -146,5 +150,6 @@ public class ListingUploadValidator {
         unsupportedCharacterReviewer.review(listing);
         certResultReviewer.review(listing);
         cqmAttestedCriteriaReviewer.review(listing);
+        attestedCriteriaCqmReviewer.review(listing);
     }
 }
