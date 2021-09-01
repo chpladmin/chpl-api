@@ -19,11 +19,13 @@ import javax.persistence.Table;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "pending_surveillance_requirement")
 @Getter
 @Setter
+@ToString
 public class PendingSurveillanceRequirementEntity {
 
     @Id

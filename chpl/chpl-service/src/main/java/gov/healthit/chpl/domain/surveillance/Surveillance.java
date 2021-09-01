@@ -26,6 +26,9 @@ import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.Util;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 /**
  * Domain object for Surveillance.
@@ -33,6 +36,9 @@ import gov.healthit.chpl.util.Util;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Surveillance implements Serializable {
     private static final long serialVersionUID = 7018071250912371691L;
 
@@ -113,16 +119,19 @@ public class Surveillance implements Serializable {
      */
     @XmlElementWrapper(name = "surveilledRequirements", nillable = true, required = false)
     @XmlElement(name = "requirement")
-    private Set<SurveillanceRequirement> requirements;
+    @Builder.Default
+    private Set<SurveillanceRequirement> requirements = new LinkedHashSet<SurveillanceRequirement>();
 
     @XmlTransient
     private String authority;
 
     @XmlTransient
-    private Set<String> errorMessages;
+    @Builder.Default
+    private Set<String> errorMessages = new HashSet<String>();
 
     @XmlTransient
-    private Set<String> warningMessages;
+    @Builder.Default
+    private Set<String> warningMessages = new HashSet<String>();
 
     /**
      * Date of the last modification of the surveillance.
@@ -132,13 +141,6 @@ public class Surveillance implements Serializable {
 
     @XmlTransient
     private boolean acknowledgeWarnings;
-
-    /** Default constructor. */
-    public Surveillance() {
-        this.requirements = new LinkedHashSet<SurveillanceRequirement>();
-        this.errorMessages = new HashSet<String>();
-        this.warningMessages = new HashSet<String>();
-    }
 
     /**
      * Determines if this surveillance matches another surveillance.

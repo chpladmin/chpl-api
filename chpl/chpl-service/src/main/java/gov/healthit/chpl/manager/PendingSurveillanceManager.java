@@ -353,71 +353,72 @@ public class PendingSurveillanceManager extends SecuredManager {
     }
 
     private Surveillance convertToDomain(PendingSurveillanceEntity pr) {
-        Surveillance surv = new Surveillance();
-        surv.setId(pr.getId());
-        surv.setSurveillanceIdToReplace(pr.getSurvFriendlyIdToReplace());
-        surv.setStartDay(pr.getStartDate());
-        surv.setStartDate(pr.getStartDate() == null ? null : new Date(DateUtil.toEpochMillis(pr.getStartDate())));
-        surv.setEndDay(pr.getEndDate());
-        surv.setEndDate(pr.getEndDate() == null ? null : new Date(DateUtil.toEpochMillisEndOfDay(pr.getEndDate())));
-        surv.setRandomizedSitesUsed(pr.getNumRandomizedSites());
-        surv.setAuthority(userPermissionDAO.findById(pr.getUserPermissionId()).getAuthority());
+        Surveillance surv = Surveillance.builder()
+                .id(pr.getId())
+                .surveillanceIdToReplace(pr.getSurvFriendlyIdToReplace())
+                .startDay(pr.getStartDate())
+                .startDate(pr.getStartDate() == null ? null : new Date(DateUtil.toEpochMillis(pr.getStartDate())))
+                .endDay(pr.getEndDate())
+                .endDate(pr.getEndDate() == null ? null : new Date(DateUtil.toEpochMillisEndOfDay(pr.getEndDate())))
+                .randomizedSitesUsed(pr.getNumRandomizedSites())
+                .authority(userPermissionDAO.findById(pr.getUserPermissionId()).getAuthority())
+                .build();
 
-        SurveillanceType survType = new SurveillanceType();
-        survType.setName(pr.getSurveillanceType());
+        SurveillanceType survType = SurveillanceType.builder()
+                .name(pr.getSurveillanceType())
+                .build();
         surv.setType(survType);
 
         if (pr.getSurveilledRequirements() != null) {
             for (PendingSurveillanceRequirementEntity preq : pr.getSurveilledRequirements()) {
-                SurveillanceRequirement req = new SurveillanceRequirement();
-                req.setId(preq.getId());
-                req.setRequirement(preq.getSurveilledRequirement());
+                SurveillanceRequirement req = SurveillanceRequirement.builder()
+                        .id(preq.getId())
+                        .requirement(preq.getSurveilledRequirement())
+                        .build();
                 if (preq.getCertificationCriterionEntity() != null) {
                     req.setCriterion(convertToDomain(preq.getCertificationCriterionEntity()));
                 }
-                SurveillanceResultType result = new SurveillanceResultType();
-                result.setName(preq.getResult());
+                SurveillanceResultType result = SurveillanceResultType.builder()
+                        .name(preq.getResult())
+                        .build();
                 req.setResult(result);
-                SurveillanceRequirementType reqType = new SurveillanceRequirementType();
-                reqType.setName(preq.getRequirementType());
+                SurveillanceRequirementType reqType = SurveillanceRequirementType.builder()
+                        .name(preq.getRequirementType())
+                        .build();
                 req.setType(reqType);
 
-                CertifiedProduct cp = new CertifiedProduct();
-                cp.setId(pr.getCertifiedProductId());
-                cp.setChplProductNumber(pr.getCertifiedProductUniqueId());
-                cp.setEdition(pr.getCertifiedProduct().getYear());
+                CertifiedProduct cp = CertifiedProduct.builder()
+                        .id(pr.getCertifiedProductId())
+                        .chplProductNumber(pr.getCertifiedProductUniqueId())
+                        .edition(pr.getCertifiedProduct().getYear())
+                        .build();
                 surv.setCertifiedProduct(cp);
 
                 if (preq.getNonconformities() != null) {
                     for (PendingSurveillanceNonconformityEntity pnc : preq.getNonconformities()) {
-                        SurveillanceNonconformity nc = new SurveillanceNonconformity();
-                        nc.setCapApprovalDay(pnc.getCapApproval());
-                        nc.setCapApprovalDate(pnc.getCapApproval() == null ? null : new Date(DateUtil.toEpochMillis(pnc.getCapApproval())));
-                        nc.setCapEndDay(pnc.getCapEndDate());
-                        nc.setCapEndDate(pnc.getCapEndDate() == null ? null : new Date(DateUtil.toEpochMillisEndOfDay(pnc.getCapEndDate())));
-                        nc.setCapMustCompleteDay(pnc.getCapMustCompleteDate());
-                        nc.setCapMustCompleteDate(pnc.getCapMustCompleteDate() == null ? null : new Date(DateUtil.toEpochMillisEndOfDay(pnc.getCapMustCompleteDate())));
-                        nc.setCapStartDay(pnc.getCapStart());
-                        nc.setCapStartDate(pnc.getCapStart() == null ? null : new Date(DateUtil.toEpochMillis(pnc.getCapStart())));
-                        nc.setDateOfDeterminationDay(pnc.getDateOfDetermination());
-                        nc.setDateOfDetermination(pnc.getDateOfDetermination() == null ? null : new Date(DateUtil.toEpochMillis(pnc.getDateOfDetermination())));
-                        nc.setDeveloperExplanation(pnc.getDeveloperExplanation());
-                        nc.setFindings(pnc.getFindings());
-                        nc.setId(pnc.getId());
-                        nc.setNonconformityType(pnc.getType());
-                        if (pnc.getCertificationCriterionEntity() != null) {
-                            nc.setCriterion(convertToDomain(pnc.getCertificationCriterionEntity()));
-                        }
-                        nc.setResolution(pnc.getResolution());
-                        nc.setSitesPassed(pnc.getSitesPassed());
-                        nc.setSummary(pnc.getSummary());
-                        nc.setTotalSites(pnc.getTotalSites());
-                        nc.setNonconformityCloseDate(pnc.getNonconformityCloseDate());
-                        if (nc.getNonconformityCloseDate() == null) {
-                            nc.setNonconformityStatus("Open");
-                        } else {
-                            nc.setNonconformityStatus("Closed");
-                        }
+                        SurveillanceNonconformity nc = SurveillanceNonconformity.builder()
+                                .capApprovalDay(pnc.getCapApproval())
+                                .capApprovalDate(pnc.getCapApproval() == null ? null : new Date(DateUtil.toEpochMillis(pnc.getCapApproval())))
+                                .capEndDay(pnc.getCapEndDate())
+                                .capEndDate(pnc.getCapEndDate() == null ? null : new Date(DateUtil.toEpochMillisEndOfDay(pnc.getCapEndDate())))
+                                .capMustCompleteDay(pnc.getCapMustCompleteDate())
+                                .capMustCompleteDate(pnc.getCapMustCompleteDate() == null ? null : new Date(DateUtil.toEpochMillisEndOfDay(pnc.getCapMustCompleteDate())))
+                                .capStartDay(pnc.getCapStart())
+                                .capStartDate(pnc.getCapStart() == null ? null : new Date(DateUtil.toEpochMillis(pnc.getCapStart())))
+                                .dateOfDeterminationDay(pnc.getDateOfDetermination())
+                                .dateOfDetermination(pnc.getDateOfDetermination() == null ? null : new Date(DateUtil.toEpochMillis(pnc.getDateOfDetermination())))
+                                .developerExplanation(pnc.getDeveloperExplanation())
+                                .findings(pnc.getFindings())
+                                .id(pnc.getId())
+                                .nonconformityType(pnc.getType())
+                                .criterion(pnc.getCertificationCriterionEntity() != null ? pnc.getCertificationCriterionEntity().buildCertificationCriterion() : null)
+                                .resolution(pnc.getResolution())
+                                .sitesPassed(pnc.getSitesPassed())
+                                .summary(pnc.getSummary())
+                                .totalSites(pnc.getTotalSites())
+                                .nonconformityCloseDate(pnc.getNonconformityCloseDate())
+                                .nonconformityStatus(pnc.getNonconformityCloseDate() == null ? "Open" : "Closed")
+                                .build();
                         req.getNonconformities().add(nc);
                     }
                 }

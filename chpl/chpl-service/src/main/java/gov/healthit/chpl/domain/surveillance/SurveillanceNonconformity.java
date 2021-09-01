@@ -25,6 +25,9 @@ import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.Util;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 /**
  * Domain object for Non-conformities related to surveillance.
@@ -32,6 +35,9 @@ import gov.healthit.chpl.util.Util;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SurveillanceNonconformity implements Serializable {
     private static final long serialVersionUID = -1116153210791576784L;
 
@@ -200,6 +206,7 @@ public class SurveillanceNonconformity implements Serializable {
      */
     @XmlElementWrapper(name = "documents", nillable = true, required = false)
     @XmlElement(name = "document")
+    @Builder.Default
     private List<SurveillanceNonconformityDocument> documents = new ArrayList<SurveillanceNonconformityDocument>();
 
     /**
