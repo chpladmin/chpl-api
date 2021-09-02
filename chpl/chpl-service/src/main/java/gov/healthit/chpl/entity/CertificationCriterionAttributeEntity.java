@@ -46,6 +46,9 @@ public class CertificationCriterionAttributeEntity {
     @Column(name = "service_base_url_list")
     private Boolean serviceBaseUrlList;
 
+    @Column(name = "test_tool")
+    private Boolean testTool;
+
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
     private Date creationDate;
