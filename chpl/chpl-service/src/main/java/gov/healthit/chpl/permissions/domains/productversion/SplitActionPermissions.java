@@ -28,6 +28,7 @@ public class SplitActionPermissions extends ActionPermissions {
         allowedCertStatuses.add(CertificationStatusType.WithdrawnByAcb);
         allowedCertStatuses.add(CertificationStatusType.WithdrawnByDeveloper);
         allowedCertStatuses.add(CertificationStatusType.WithdrawnByDeveloperUnderReview);
+        allowedCertStatuses.add(CertificationStatusType.Retired);
     }
 
     @Override
