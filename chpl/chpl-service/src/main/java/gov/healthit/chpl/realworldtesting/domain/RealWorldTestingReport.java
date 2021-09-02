@@ -14,6 +14,7 @@ import lombok.Data;
 public class RealWorldTestingReport {
     private String acbName;
     private String chplProductNumber;
+    private String currentStatus;
     private String productName;
     private Long productId;
     private String developerName;
@@ -30,6 +31,7 @@ public class RealWorldTestingReport {
         List<String> results = new ArrayList<String>();
         results.add(acbName);
         results.add(chplProductNumber);
+        results.add(currentStatus);
         results.add(productName);
         results.add(productId == null ? null : productId.toString());
         results.add(developerName);
@@ -48,11 +50,12 @@ public class RealWorldTestingReport {
         List<String> results = new ArrayList<String>();
         results.add("ONC-ACB Name");
         results.add("CHPL ID");
+        results.add("Current Status");
         results.add("Product Name");
         results.add("Product DBID");
         results.add("Developer Name");
         results.add("Developer DBID");
-        results.add("RWT Eligibility Year");
+        results.add("Initial RWT Year");
         results.add("RWT Plans URL");
         results.add("RWT Plans Submission Confirmed");
         results.add("RWT Results URL");

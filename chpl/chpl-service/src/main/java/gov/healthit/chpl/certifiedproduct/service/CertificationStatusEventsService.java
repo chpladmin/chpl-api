@@ -41,6 +41,14 @@ public class CertificationStatusEventsService {
         return certStatusEventDao.findInitialCertificationEventForCertifiedProduct(listingId);
     }
 
+    public CertificationStatusEvent getCurrentCertificationStatusEvent(Long certifiedProductId) throws EntityRetrievalException {
+        return certStatusEventDao.findByCertifiedProductId(certifiedProductId).stream()
+                .map(dto -> createCertificationStatusEventBasedOnDto(dto))
+                .sorted((event1, event2) -> Long.compare(event1.getEventDate(), event2.getEventDate()))
+                .reduce((a, b) -> b) // get the last item in the list
+                .orElse(null);
+    }
+
     private CertificationStatusEvent createCertificationStatusEventBasedOnDto(CertificationStatusEventDTO certStatusDto) {
         try {
             return CertificationStatusEvent.builder()

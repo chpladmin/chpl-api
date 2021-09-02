@@ -190,7 +190,13 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
     /**
      * A hyperlink to the mandatory disclosures required by 170.523(k)(1) for the Health IT Module
      */
+    @Deprecated
     private String transparencyAttestationUrl;
+
+    /**
+     * A hyperlink to the mandatory disclosures required by 170.523(k)(1) for the Health IT Module
+     */
+    private String mandatoryDisclosures;
 
     /**
      * The last time this listing was modified in any way given in milliseconds since epoch.
@@ -298,12 +304,6 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
      * Date the listing's Real World Testing Results was submitted
      */
     private LocalDate rwtResultsCheckDate;
-
-    /**
-     * First year that the listing is eligible for Real World Testing data
-     */
-    private Integer rwtEligibilityYear;
-
 
     public CertifiedProductSearchBasicDetails() {
         sed = new CertifiedProductSed();

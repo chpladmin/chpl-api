@@ -232,8 +232,8 @@ public class CertifiedProductDetailsEntitySimple {
     @Column(name = "product_additional_software")
     private String productAdditionalSoftware;
 
-    @Column(name = "transparency_attestation_url")
-    private String transparencyAttestationUrl;
+    @Column(name = "mandatory_disclosures")
+    private String mandatoryDisclosures;
 
     @Column(name = "rwt_plans_url")
     private String rwtPlansUrl;
@@ -246,9 +246,6 @@ public class CertifiedProductDetailsEntitySimple {
 
     @Column(name = "rwt_results_check_date")
     private LocalDate rwtResultsCheckDate;
-
-    @Column(name = "rwt_eligibility_year")
-    private Integer rwtEligibilityYear;
 
     @Column(name = "svap_notice_url")
     private String svapNoticeUrl;

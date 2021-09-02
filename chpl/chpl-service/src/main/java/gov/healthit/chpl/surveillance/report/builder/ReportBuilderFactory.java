@@ -8,7 +8,7 @@ import gov.healthit.chpl.surveillance.report.builder2019.AnnualReportBuilder2019
 import gov.healthit.chpl.surveillance.report.builder2019.QuarterlyReportBuilder2019;
 import gov.healthit.chpl.surveillance.report.builder2021.AnnualReportBuilder2021;
 import gov.healthit.chpl.surveillance.report.builder2021.QuarterlyReportBuilder2021;
-import gov.healthit.chpl.surveillance.report.dto.AnnualReportDTO;
+import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 
 @Component
@@ -47,7 +47,7 @@ public class ReportBuilderFactory {
         }
     }
 
-    public AnnualReportBuilderXlsx getReportBuilder(AnnualReportDTO annualReport)
+    public AnnualReportBuilderXlsx getReportBuilder(AnnualReport annualReport)
             throws InvalidArgumentsException {
             if (annualReport == null || annualReport.getYear() == null) {
                 throw new InvalidArgumentsException("Invalid annual report or year.");

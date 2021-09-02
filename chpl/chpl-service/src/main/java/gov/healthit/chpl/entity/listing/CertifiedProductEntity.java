@@ -102,8 +102,8 @@ public class CertifiedProductEntity implements Serializable {
     @Column(name = "other_acb", length = OTHER_ACB_LENGTH)
     private String otherAcb;
 
-    @Column(name = "transparency_attestation_url")
-    private String transparencyAttestationUrl;
+    @Column(name = "mandatory_disclosures")
+    private String mandatoryDisclosures;
 
     @Column(name = "ics")
     private Boolean ics;
@@ -131,9 +131,6 @@ public class CertifiedProductEntity implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "certified_product_id", nullable = false, insertable = false, updatable = false)
     private CertifiedProductEntity certifiedProduct;
-
-    @Column(name = "rwt_eligibility_year")
-    private Integer rwtEligibilityYear;
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)

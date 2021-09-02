@@ -67,8 +67,8 @@ public class CertifiedProductBasicSearchResultEntity {
     @Column(name = "decertification_date")
     private Date decertificationDate;
 
-    @Column(name = "transparency_attestation_url")
-    private String transparencyAttestationUrl;
+    @Column(name = "mandatory_disclosures")
+    private String mandatoryDisclosures;
 
     @Column(name = "api_documentation")
     private String apiDocumentation;

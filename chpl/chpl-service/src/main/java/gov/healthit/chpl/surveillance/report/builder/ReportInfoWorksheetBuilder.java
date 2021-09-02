@@ -226,16 +226,16 @@ public abstract class ReportInfoWorksheetBuilder {
         cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
 
         if (reports.size() == 1) {
-            cell.setCellValue(reports.get(0).getReactiveSummary());
+            cell.setCellValue(reports.get(0).getReactiveSurveillanceSummary());
         } else {
             StringBuffer buf = new StringBuffer();
             for (QuarterlyReportDTO report : reports) {
-                if (!StringUtils.isEmpty(report.getReactiveSummary())) {
+                if (!StringUtils.isEmpty(report.getReactiveSurveillanceSummary())) {
                     if (buf.length() > 0) {
                         buf.append("\n");
                     }
                     buf.append(report.getQuarter().getName()).append(":")
-                        .append(report.getReactiveSummary());
+                        .append(report.getReactiveSurveillanceSummary());
                 }
             }
             cell.setCellValue(buf.toString());
@@ -309,13 +309,13 @@ public abstract class ReportInfoWorksheetBuilder {
         row = workbook.getRow(sheet, currRow++);
         cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
         if (reports.size() == 1) {
-            cell.setCellValue(reports.get(0).getDisclosureSummary());
+            cell.setCellValue(reports.get(0).getDisclosureRequirementsSummary());
         } else {
             StringBuffer buf = new StringBuffer();
             for (QuarterlyReportDTO report : reports) {
-                if (!StringUtils.isEmpty(report.getDisclosureSummary())) {
+                if (!StringUtils.isEmpty(report.getDisclosureRequirementsSummary())) {
                     buf.append(report.getQuarter().getName()).append(":")
-                        .append(report.getDisclosureSummary())
+                        .append(report.getDisclosureRequirementsSummary())
                         .append("\n");
                 }
             }
