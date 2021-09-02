@@ -40,6 +40,12 @@ public class CQMResultDetails implements Serializable {
     private Long id;
 
     /**
+     * CQM Criterion internal ID
+     */
+    @XmlElement(required = false, nillable = true)
+    private Long cqmCriterionId;
+
+    /**
      * The CMS ID clinical quality measures to which the Health IT Module has
      * been certified. It is applicable to 2014 and 2015 Edition. For a list of
      * the clinical quality measures, please reference the CMS eCQM library.
@@ -160,7 +166,7 @@ public class CQMResultDetails implements Serializable {
         return number;
     }
 
-    public void setNumber(final String number) {
+    public void setNumber(String number) {
         this.number = number;
     }
 
@@ -168,7 +174,7 @@ public class CQMResultDetails implements Serializable {
         return cmsId;
     }
 
-    public void setCmsId(final String cmsId) {
+    public void setCmsId(String cmsId) {
         this.cmsId = cmsId;
     }
 
@@ -176,7 +182,7 @@ public class CQMResultDetails implements Serializable {
         return title;
     }
 
-    public void setTitle(final String title) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
@@ -184,7 +190,7 @@ public class CQMResultDetails implements Serializable {
         return nqfNumber;
     }
 
-    public void setNqfNumber(final String nqfNumber) {
+    public void setNqfNumber(String nqfNumber) {
         this.nqfNumber = nqfNumber;
     }
 
@@ -192,7 +198,7 @@ public class CQMResultDetails implements Serializable {
         return typeId;
     }
 
-    public void setTypeId(final Long typeId) {
+    public void setTypeId(Long typeId) {
         this.typeId = typeId;
     }
 
@@ -200,7 +206,7 @@ public class CQMResultDetails implements Serializable {
         return domain;
     }
 
-    public void setDomain(final String domain) {
+    public void setDomain(String domain) {
         this.domain = domain;
     }
 
@@ -208,7 +214,7 @@ public class CQMResultDetails implements Serializable {
         return successVersions;
     }
 
-    public void setSuccessVersions(final Set<String> successVersions) {
+    public void setSuccessVersions(Set<String> successVersions) {
         this.successVersions = successVersions;
     }
 
@@ -216,7 +222,7 @@ public class CQMResultDetails implements Serializable {
         return allVersions;
     }
 
-    public void setAllVersions(final Set<String> allVersions) {
+    public void setAllVersions(Set<String> allVersions) {
         this.allVersions = allVersions;
     }
 
@@ -227,7 +233,7 @@ public class CQMResultDetails implements Serializable {
         return success;
     }
 
-    public void setSuccess(final Boolean success) {
+    public void setSuccess(Boolean success) {
         this.success = success;
     }
 
@@ -235,15 +241,23 @@ public class CQMResultDetails implements Serializable {
         return id;
     }
 
-    public void setId(final Long id) {
+    public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getCqmCriterionId() {
+        return cqmCriterionId;
+    }
+
+    public void setCqmCriterionId(Long cqmCriterionId) {
+        this.cqmCriterionId = cqmCriterionId;
     }
 
     public List<CQMResultCertification> getCriteria() {
         return criteria;
     }
 
-    public void setCriteria(final List<CQMResultCertification> criteria) {
+    public void setCriteria(List<CQMResultCertification> criteria) {
         this.criteria = criteria;
     }
 
@@ -251,7 +265,7 @@ public class CQMResultDetails implements Serializable {
         return description;
     }
 
-    public void setDescription(final String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 

@@ -79,6 +79,7 @@ public class CqmAttestedCriteriaReviewerTest {
     @Test
     public void review_SingleCqmWithEmptyListingCertifiationResults_hasError() {
         CQMResultDetails cqmResult = CQMResultDetails.builder()
+                .success(true)
                 .cmsId("CMS1")
                 .criteria(Stream.of(CQMResultCertification.builder()
                         .certificationId(c1.getId())
@@ -101,6 +102,7 @@ public class CqmAttestedCriteriaReviewerTest {
     @Test
     public void review_MultipleCqmsWithEmptyListingCertifiationResults_hasErrors() {
         CQMResultDetails cqmResult1 = CQMResultDetails.builder()
+                .success(true)
                 .cmsId("CMS1")
                 .criteria(Stream.of(CQMResultCertification.builder()
                         .certificationId(c1.getId())
@@ -108,6 +110,7 @@ public class CqmAttestedCriteriaReviewerTest {
                         .build()).collect(Collectors.toList()))
                 .build();
         CQMResultDetails cqmResult2 = CQMResultDetails.builder()
+                .success(true)
                 .cmsId("CMS2")
                 .criteria(Stream.of(CQMResultCertification.builder()
                         .certificationId(c1.getId())
@@ -131,6 +134,7 @@ public class CqmAttestedCriteriaReviewerTest {
     @Test
     public void review_MultipleCqmsListingDoesNotAttestToCriteria_hasErrors() {
         CQMResultDetails cqmResult1 = CQMResultDetails.builder()
+                .success(true)
                 .cmsId("CMS1")
                 .criteria(Stream.of(CQMResultCertification.builder()
                         .certificationId(c1.getId())
@@ -138,6 +142,7 @@ public class CqmAttestedCriteriaReviewerTest {
                         .build()).collect(Collectors.toList()))
                 .build();
         CQMResultDetails cqmResult2 = CQMResultDetails.builder()
+                .success(true)
                 .cmsId("CMS2")
                 .criteria(Stream.of(CQMResultCertification.builder()
                         .certificationId(c1.getId())
@@ -171,6 +176,7 @@ public class CqmAttestedCriteriaReviewerTest {
     @Test
     public void review_SingleCqmsListingAttestsToCriteria_noErrors() {
         CQMResultDetails cqmResult1 = CQMResultDetails.builder()
+                .success(true)
                 .cmsId("CMS1")
                 .criteria(Stream.of(CQMResultCertification.builder()
                         .certificationId(c1.getId())
@@ -202,6 +208,7 @@ public class CqmAttestedCriteriaReviewerTest {
     @Test
     public void review_SingleCqmsListingAttestsToCuresCriteria_noErrors() {
         CQMResultDetails cqmResult1 = CQMResultDetails.builder()
+                .success(true)
                 .cmsId("CMS1")
                 .criteria(Stream.of(CQMResultCertification.builder()
                         .certificationId(c1.getId())

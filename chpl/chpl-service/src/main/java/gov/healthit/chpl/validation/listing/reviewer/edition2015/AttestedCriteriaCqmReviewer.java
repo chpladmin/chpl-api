@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -57,8 +58,9 @@ public class AttestedCriteriaCqmReviewer implements Reviewer {
 
     private boolean isCriterionInAnyCqm(CertificationCriterion criterion, List<CQMResultDetails> cqms) {
         Optional<CQMResultDetails> foundCqm = cqms.stream()
-            .filter(cqm -> isCriterionInCqmCriteria(criterion, cqm.getCriteria()))
-            .findFirst();
+                .filter(cqm -> BooleanUtils.isTrue(cqm.isSuccess()))
+                .filter(cqm -> isCriterionInCqmCriteria(criterion, cqm.getCriteria()))
+                .findFirst();
         return foundCqm.isPresent();
     }
 

@@ -3,6 +3,7 @@ package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,6 +38,7 @@ public class CqmAttestedCriteriaReviewer implements Reviewer {
 
         List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
         listing.getCqmResults().stream()
+            .filter(cqmResult -> BooleanUtils.isTrue(cqmResult.isSuccess()))
             .forEach(cqmResult -> reviewListingHasAllCriteriaForCqmResult(cqmResult, listing, attestedCriteria));
     }
 

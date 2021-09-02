@@ -23,6 +23,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -75,6 +76,7 @@ public class CqmNormalizer {
     private void populateCqmCriterionData(CQMResultDetails cqmResult) {
         CQMCriterionDTO cqmDto = cqmDao.getCMSByNumber(cqmResult.getCmsId());
         if (cqmDto != null) {
+            cqmResult.setCqmCriterionId(cqmDto.getId());
             cqmResult.setDescription(cqmDto.getDescription());
             cqmResult.setDomain(cqmDto.getCqmDomain());
             cqmResult.setNqfNumber(cqmDto.getNqfNumber());
@@ -109,14 +111,14 @@ public class CqmNormalizer {
         }
         List<String> criterionLookupKeys = new ArrayList<String>();
         if (criterionNumber.equalsIgnoreCase("c1") || criterionNumber.equalsIgnoreCase("(c)(1)")) {
-            criterionLookupKeys.add("criterion.170_315_c_1");
+            criterionLookupKeys.add(Criteria2015.C_1);
         } else if (criterionNumber.equalsIgnoreCase("c2") || criterionNumber.equalsIgnoreCase("(c)(2)")) {
-            criterionLookupKeys.add("criterion.170_315_c_2");
+            criterionLookupKeys.add(Criteria2015.C_2);
         } else if (criterionNumber.equalsIgnoreCase("c3") || criterionNumber.equalsIgnoreCase("(c)(3)")) {
-            criterionLookupKeys.add("criterion.170_315_c_3");
-            criterionLookupKeys.add("criterion.170_315_c_3_cures");
+            criterionLookupKeys.add(Criteria2015.C_3_OLD);
+            criterionLookupKeys.add(Criteria2015.C_3_CURES);
         } else if (criterionNumber.equalsIgnoreCase("c4") || criterionNumber.equalsIgnoreCase("(c)(4)")) {
-            criterionLookupKeys.add("criterion.170_315_c_4");
+            criterionLookupKeys.add(Criteria2015.C_4);
         }
 
         CertificationCriterion foundCriterion = determineCqmCriterionByAttestedCriteria(
@@ -185,6 +187,7 @@ public class CqmNormalizer {
 
     private CQMResultDetails buildCqmDetails(CQMCriterionDTO cqmDto) {
         CQMResultDetails cqmDetails = CQMResultDetails.builder()
+                .cqmCriterionId(cqmDto.getId())
                 .cmsId(cqmDto.getCmsId())
                 .nqfNumber(cqmDto.getNqfNumber())
                 .number(cqmDto.getNumber())
