@@ -11,10 +11,12 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
@@ -39,10 +41,8 @@ public class CQMResultDetails implements Serializable {
     @XmlElement(required = false, nillable = true)
     private Long id;
 
-    /**
-     * CQM Criterion internal ID
-     */
-    @XmlElement(required = false, nillable = true)
+    @JsonIgnore
+    @XmlTransient
     private Long cqmCriterionId;
 
     /**
