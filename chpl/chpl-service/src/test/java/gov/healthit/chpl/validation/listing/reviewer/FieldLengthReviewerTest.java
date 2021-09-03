@@ -125,6 +125,11 @@ public class FieldLengthReviewerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.testProcedureVersion.maxlength"),
                 ArgumentMatchers.any(), ArgumentMatchers.any()))
                 .thenReturn(String.format(FIELD_TOO_LONG, "20", "test procedure version", "placeholder"));
+        Mockito.when(messageSource.getMessage(ArgumentMatchers.eq("maxLength.sedReportHyperlink"), ArgumentMatchers.isNull(), ArgumentMatchers.any()))
+            .thenReturn("20");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.sedReportHyperlink.maxlength"),
+                ArgumentMatchers.any(), ArgumentMatchers.any()))
+                .thenReturn(String.format(FIELD_TOO_LONG, "20", "SED Report Hyperlink", "placeholder"));
         Mockito.when(messageSource.getMessage(ArgumentMatchers.eq("maxLength.ucdProcessName"), ArgumentMatchers.isNull(), ArgumentMatchers.any()))
             .thenReturn("20");
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.ucdProcessName.maxlength"),
@@ -762,6 +767,43 @@ public class FieldLengthReviewerTest {
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "test procedure version", "placeholder")));
+    }
+
+    @Test
+    public void review_nullSedReportHyperlink_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sedReportFileLocation(null)
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_emptySedReportHyperlink_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sedReportFileLocation("")
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_shortSedReportHyperlink_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sedReportFileLocation("shorturl")
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_longSedReportHyperlink_hasError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sedReportFileLocation(createStringLongerThan(20, "A"))
+                .build();
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "SED Report Hyperlink", "placeholder")));
     }
 
     @Test
