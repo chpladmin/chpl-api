@@ -3,7 +3,7 @@ package gov.healthit.chpl.permissions.domains.surveillance.report;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
-import gov.healthit.chpl.surveillance.report.dto.AnnualReportDTO;
+import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
 
 @Component("surveillanceReportCreateAnnualReportActionPermissions")
 public class CreateAnnualReportActionPermissions extends ActionPermissions {
@@ -15,12 +15,12 @@ public class CreateAnnualReportActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess(Object obj) {
-        if (!(obj instanceof AnnualReportDTO)) {
+        if (!(obj instanceof AnnualReport)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
-            AnnualReportDTO toCreate = (AnnualReportDTO) obj;
+            AnnualReport toCreate = (AnnualReport) obj;
             if (toCreate.getAcb() == null
                     || toCreate.getAcb().getId() == null) {
                 return false;
