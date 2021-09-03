@@ -1,15 +1,20 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.dao.TestToolDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.TestToolCriteriaMap;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
@@ -21,14 +26,18 @@ import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 public class TestToolReviewer extends PermissionBasedReviewer {
     private CertificationResultRules certResultRules;
     private ChplProductNumberUtil chplProductNumberUtil;
+    private List<TestToolCriteriaMap> testToolCriteriaMaps;
 
     @Autowired
     public TestToolReviewer(CertificationResultRules certResultRules,
             ChplProductNumberUtil chplProductNumberUtil,
-            ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
+            ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
+            TestToolDAO testToolDAO) throws EntityRetrievalException {
         super(msgUtil, resourcePermissions);
         this.certResultRules = certResultRules;
         this.chplProductNumberUtil = chplProductNumberUtil;
+
+        testToolCriteriaMaps = testToolDAO.getAllTestToolCriteriaMap();
     }
 
     @Override
@@ -94,6 +103,7 @@ public class TestToolReviewer extends PermissionBasedReviewer {
             CertificationResult certResult, CertificationResultTestTool testTool) {
         reviewNameAndVersionRequired(listing, certResult, testTool);
         reviewTestToolNotRetiredUnlessIcs(listing, certResult, testTool);
+        reviewTestToolValidForCriteria(listing, certResult, testTool);
     }
 
     private void reviewNameAndVersionRequired(CertifiedProductSearchDetails listing,
@@ -133,5 +143,21 @@ public class TestToolReviewer extends PermissionBasedReviewer {
             icsBoolean = true;
         }
         return chplProductNumberUtil.hasIcsConflict(listing.getChplProductNumber(), icsBoolean);
+    }
+
+    private void reviewTestToolValidForCriteria(CertifiedProductSearchDetails listing, CertificationResult certResult, CertificationResultTestTool testTool) {
+        if (!isTestToolValidForCriteria(certResult.getCriterion(), testTool)) {
+            listing.getErrorMessages()
+                .add(msgUtil.getMessage("listing.criteria.testToolCriterionMismatch",
+                        testTool.getTestToolName(), Util.formatCriteriaNumber(certResult.getCriterion())));
+        }
+    }
+
+    private Boolean isTestToolValidForCriteria(CertificationCriterion criterion, CertificationResultTestTool testTool) {
+        return testToolCriteriaMaps.stream()
+                .filter(ttcm -> ttcm.getCriterion().getId().equals(criterion.getId())
+                        && ttcm.getTestTool().getId().equals(testTool.getId()))
+                .findAny()
+                .isPresent();
     }
 }
