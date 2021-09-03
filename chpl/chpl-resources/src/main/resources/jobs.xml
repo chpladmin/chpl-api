@@ -7,6 +7,7 @@
     <pre-processing-commands>
         <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
+        <delete-triggers-in-group>systemJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
         <delete-job>
             <name>realWorldTestingEligibilityJob</name>
