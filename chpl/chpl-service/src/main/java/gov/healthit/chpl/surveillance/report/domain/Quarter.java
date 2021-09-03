@@ -1,12 +1,16 @@
-package gov.healthit.chpl.surveillance.report.dto;
+package gov.healthit.chpl.surveillance.report.domain;
 
 import gov.healthit.chpl.surveillance.report.entity.QuarterEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class QuarterDTO {
+@AllArgsConstructor
+@Builder
+public class Quarter {
 
     private Long id;
     private String name;
@@ -15,7 +19,7 @@ public class QuarterDTO {
     private Integer endMonth;
     private Integer endDay;
 
-    public QuarterDTO(QuarterEntity entity) {
+    public Quarter(QuarterEntity entity) {
         this.id = entity.getId();
         this.name = entity.getName();
         this.startMonth = entity.getQuarterBeginMonth();

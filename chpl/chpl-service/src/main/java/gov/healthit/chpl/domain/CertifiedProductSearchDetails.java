@@ -655,7 +655,6 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     @Deprecated
     public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
-        this.mandatoryDisclosures = transparencyAttestationUrl;
         this.transparencyAttestationUrl = transparencyAttestationUrl;
     }
 
@@ -665,7 +664,6 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     public void setMandatoryDisclosures(String mandatoryDisclosures) {
         this.mandatoryDisclosures = mandatoryDisclosures;
-        this.transparencyAttestationUrl = mandatoryDisclosures;
     }
 
     public List<CertifiedProductQmsStandard> getQmsStandards() {

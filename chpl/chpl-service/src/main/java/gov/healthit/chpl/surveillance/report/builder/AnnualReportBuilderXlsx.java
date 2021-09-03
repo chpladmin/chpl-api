@@ -4,9 +4,9 @@ import java.io.IOException;
 
 import org.apache.poi.ss.usermodel.Workbook;
 
-import gov.healthit.chpl.surveillance.report.dto.AnnualReportDTO;
+import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
 
 public interface AnnualReportBuilderXlsx {
 
-    Workbook buildXlsx(AnnualReportDTO annualReport) throws IOException;
+    Workbook buildXlsx(AnnualReport annualReport) throws IOException;
 }

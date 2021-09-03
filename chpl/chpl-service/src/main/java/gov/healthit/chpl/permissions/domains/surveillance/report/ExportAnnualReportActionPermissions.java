@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.surveillance.report.AnnualReportDAO;
-import gov.healthit.chpl.surveillance.report.dto.AnnualReportDTO;
+import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
 
 @Component("surveillanceReportExportAnnualReportActionPermissions")
 public class ExportAnnualReportActionPermissions extends ActionPermissions {
@@ -29,7 +29,7 @@ public class ExportAnnualReportActionPermissions extends ActionPermissions {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             Long idToExport = (Long) obj;
-            AnnualReportDTO toExport = null;
+            AnnualReport toExport = null;
             try {
                 toExport = annualReportDao.getById(idToExport);
                 return isAcbValidForCurrentUser(toExport.getAcb().getId());

@@ -244,19 +244,6 @@ public class ProductVersionManager extends SecuredManager {
             // have to get the cpdetails for before and after code update
             // because that is object sent into activity reports
             CertifiedProductSearchDetails beforeListing = cpdManager.getCertifiedProductDetails(affectedListingId);
-            // make sure each cp listing is owned by an ACB the user has access to
-            boolean hasAccessToAcb = false;
-            for (CertificationBodyDTO allowedAcb : allowedAcbs) {
-                if (allowedAcb.getId().toString().equals(
-                        beforeListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString())) {
-                    hasAccessToAcb = true;
-                }
-            }
-            if (!hasAccessToAcb) {
-                throw new AccessDeniedException(
-                        msgUtil.getMessage("acb.accessDenied.listingUpdate", beforeListing.getChplProductNumber(),
-                                beforeListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)));
-            }
 
             //make sure the affected listing belongs to the old version id
             if (!affectedListing.getProductVersionId().equals(oldVersion.getId().longValue())) {

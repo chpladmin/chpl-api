@@ -2,6 +2,7 @@ package gov.healthit.chpl.scheduler.job.curesStatistics.email;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,17 +38,23 @@ public class CuresStatisticsEmailJob  extends QuartzJob {
     private PrivacyAndSecurityListingStatisticsHtmlCreator privacyAndSecurityListingStatisticsHtmlCreator;
 
     @Autowired
+    private CuresStatisticsChartSpreadsheet curesStatisticsChartSpreadsheet;
+
+    @Autowired
+    private CuresStatisticsChartData curesStatisticsChartData;
+
+    @Autowired
     private Environment env;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         LOGGER.info("*****Cures Reporting Email Job is starting.*****");
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        List<File> csvAttachments = new ArrayList<File>();
+        List<File> attachments = new ArrayList<File>();
         try {
             File statisticsCsv = criterionListingStatisticsCsvCreator.createCsvFile();
             if (statisticsCsv != null) {
-                csvAttachments.add(statisticsCsv);
+                attachments.add(statisticsCsv);
             }
         } catch (IOException ex) {
             LOGGER.error("Error creating statistics", ex);
@@ -55,7 +62,7 @@ public class CuresStatisticsEmailJob  extends QuartzJob {
         try {
             File statisticsCsv = originalCriterionUpgradedStatisticsCsvCreator.createCsvFile();
             if (statisticsCsv != null) {
-                csvAttachments.add(statisticsCsv);
+                attachments.add(statisticsCsv);
             }
         } catch (IOException ex) {
             LOGGER.error("Error creating statistics", ex);
@@ -63,7 +70,7 @@ public class CuresStatisticsEmailJob  extends QuartzJob {
         try {
             File statisticsCsv = curesCriterionUpgradedWithoutOriginalStatisticsCsvCreator.createCsvFile();
             if (statisticsCsv != null) {
-                csvAttachments.add(statisticsCsv);
+                attachments.add(statisticsCsv);
             }
         } catch (IOException ex) {
             LOGGER.error("Error creating statistics", ex);
@@ -71,14 +78,23 @@ public class CuresStatisticsEmailJob  extends QuartzJob {
         try {
             File statisticsCsv = listingCriterionForCuresAchievementStatisticsCsvCreator.createCsvFile();
             if (statisticsCsv != null) {
-                csvAttachments.add(statisticsCsv);
+                attachments.add(statisticsCsv);
             }
         } catch (IOException ex) {
             LOGGER.error("Error creating statistics", ex);
         }
 
         try {
-            sendEmail(context, csvAttachments);
+            LocalDate reportDate = curesStatisticsChartData.getReportDate();
+            attachments.add(
+                curesStatisticsChartSpreadsheet.generateSpreadsheet(
+                        curesStatisticsChartData.getCuresCriterionChartStatistics(reportDate), reportDate));
+        } catch (IOException ex) {
+            LOGGER.error("Error creating charts spreadhseet", ex);
+        }
+
+        try {
+            sendEmail(context, attachments);
         } catch (EmailNotSentException ex) {
             LOGGER.error("Error sending email!", ex);
         }
@@ -104,4 +120,5 @@ public class CuresStatisticsEmailJob  extends QuartzJob {
                 .sendEmail();
         LOGGER.info("Completed Sending email to: " + emailAddress);
     }
+
 }
