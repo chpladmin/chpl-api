@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -31,9 +31,7 @@ import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
 import gov.healthit.chpl.surveillance.report.domain.PrivilegedSurveillance;
 import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 import gov.healthit.chpl.surveillance.report.domain.RelevantListing;
-import gov.healthit.chpl.surveillance.report.dto.AnnualReportDTO;
 import gov.healthit.chpl.surveillance.report.dto.PrivilegedSurveillanceDTO;
-import gov.healthit.chpl.surveillance.report.dto.QuarterDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportExclusionDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportRelevantListingDTO;
@@ -74,11 +72,7 @@ public class SurveillanceReportController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/annual", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<AnnualReport> getAllAnnualReports() throws AccessDeniedException {
-        List<AnnualReportDTO> allReports = reportManager.getAnnualReports();
-        List<AnnualReport> response = new ArrayList<AnnualReport>();
-        for (AnnualReportDTO currReport : allReports) {
-            response.add(new AnnualReport(currReport));
-        }
+        List<AnnualReport> response = reportManager.getAnnualReports();
         return response;
     }
 
@@ -91,8 +85,8 @@ public class SurveillanceReportController {
         method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody AnnualReport getAnnualReport(@PathVariable Long annualReportId)
             throws AccessDeniedException, EntityRetrievalException {
-        AnnualReportDTO reportDto = reportManager.getAnnualReport(annualReportId);
-        return new AnnualReport(reportDto);
+        AnnualReport report = reportManager.getAnnualReport(annualReportId);
+        return report;
     }
 
     @Operation(summary = "Create a new annual surveillance report.",
@@ -118,15 +112,16 @@ public class SurveillanceReportController {
         }
 
         //create the report
-        AnnualReportDTO annualReport = new AnnualReportDTO();
-        CertificationBodyDTO associatedAcb = new CertificationBodyDTO();
-        associatedAcb.setId(createRequest.getAcb().getId());
-        annualReport.setAcb(associatedAcb);
-        annualReport.setYear(createRequest.getYear());
-        annualReport.setFindingsSummary(createRequest.getPriorityChangesFromFindingsSummary());
-        annualReport.setObstacleSummary(createRequest.getObstacleSummary());
-        AnnualReportDTO createdReport = reportManager.createAnnualReport(annualReport);
-        return new AnnualReport(createdReport);
+        AnnualReport annualReport = AnnualReport.builder()
+                .acb(CertificationBody.builder()
+                        .id(createRequest.getAcb().getId())
+                        .build())
+                .year(createRequest.getYear())
+                .priorityChangesFromFindingsSummary(createRequest.getPriorityChangesFromFindingsSummary())
+                .obstacleSummary(createRequest.getObstacleSummary())
+                .build();
+        AnnualReport createdReport = reportManager.createAnnualReport(annualReport);
+        return createdReport;
     }
 
     @Operation(summary = "Update an existing annual surveillance report.",
@@ -143,12 +138,12 @@ public class SurveillanceReportController {
         if (updateRequest.getId() == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("report.annualSurveillance.missingReportId"));
         }
-        AnnualReportDTO reportToUpdate = reportManager.getAnnualReport(updateRequest.getId());
+        AnnualReport reportToUpdate = reportManager.getAnnualReport(updateRequest.getId());
         //above line throws entity retrieval exception if bad id
-        reportToUpdate.setFindingsSummary(updateRequest.getPriorityChangesFromFindingsSummary());
+        reportToUpdate.setPriorityChangesFromFindingsSummary(updateRequest.getPriorityChangesFromFindingsSummary());
         reportToUpdate.setObstacleSummary(updateRequest.getObstacleSummary());
-        AnnualReportDTO createdReport = reportManager.updateAnnualReport(reportToUpdate);
-        return new AnnualReport(createdReport);
+        AnnualReport createdReport = reportManager.updateAnnualReport(reportToUpdate);
+        return createdReport;
     }
 
     @Operation(summary = "Delete an annual report.",
@@ -174,7 +169,7 @@ public class SurveillanceReportController {
     public ChplOneTimeTrigger exportAnnualReport(@PathVariable("annualReportId") Long annualReportId)
             throws ValidationException, SchedulerException, EntityRetrievalException,
             UserRetrievalException, InvalidArgumentsException {
-        AnnualReportDTO reportToExport = reportManager.getAnnualReport(annualReportId);
+        AnnualReport reportToExport = reportManager.getAnnualReport(annualReportId);
         //at least one quarterly report must exist to export the annual report
         List<QuarterlyReportDTO> quarterlyReports =
                 reportManager.getQuarterlyReports(reportToExport.getAcb().getId(), reportToExport.getYear());
@@ -265,25 +260,12 @@ public class SurveillanceReportController {
     public QuarterlyReport createQuarterlyReport(
             @RequestBody(required = true) QuarterlyReport createRequest)
     throws AccessDeniedException, InvalidArgumentsException, EntityCreationException,
-    JsonProcessingException, EntityRetrievalException {
+    JsonProcessingException, EntityRetrievalException, ValidationException {
         if (createRequest.getAcb() == null || createRequest.getAcb().getId() == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("report.quarterlySurveillance.missingAcb"));
         }
 
-        //create the report
-        QuarterlyReportDTO quarterlyReport = new QuarterlyReportDTO();
-        quarterlyReport.setYear(createRequest.getYear());
-        CertificationBodyDTO associatedAcb = new CertificationBodyDTO();
-        associatedAcb.setId(createRequest.getAcb().getId());
-        quarterlyReport.setAcb(associatedAcb);
-        QuarterDTO quarter = new QuarterDTO();
-        quarter.setName(createRequest.getQuarter());
-        quarterlyReport.setQuarter(quarter);
-        quarterlyReport.setActivitiesOutcomesSummary(createRequest.getSurveillanceActivitiesAndOutcomes());
-        quarterlyReport.setPrioritizedElementSummary(createRequest.getPrioritizedElementSummary());
-        quarterlyReport.setReactiveSummary(createRequest.getReactiveSummary());
-        quarterlyReport.setDisclosureSummary(createRequest.getTransparencyDisclosureSummary());
-        QuarterlyReportDTO createdReport = reportManager.createQuarterlyReport(quarterlyReport);
+        QuarterlyReportDTO createdReport = reportManager.createQuarterlyReport(createRequest);
         return new QuarterlyReport(createdReport);
     }
 
@@ -384,18 +366,12 @@ public class SurveillanceReportController {
     public QuarterlyReport updateQuarterlyReport(
         @RequestBody(required = true) QuarterlyReport updateRequest)
     throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
-    EntityCreationException {
+    EntityCreationException, ValidationException {
         if (updateRequest.getId() == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("report.quarterlySurveillance.missingReportId"));
         }
-        QuarterlyReportDTO reportToUpdate = reportManager.getQuarterlyReport(updateRequest.getId());
-        //above line throws entity retrieval exception if bad id
-        reportToUpdate.setActivitiesOutcomesSummary(updateRequest.getSurveillanceActivitiesAndOutcomes());
-        reportToUpdate.setPrioritizedElementSummary(updateRequest.getPrioritizedElementSummary());
-        reportToUpdate.setReactiveSummary(updateRequest.getReactiveSummary());
-        reportToUpdate.setDisclosureSummary(updateRequest.getTransparencyDisclosureSummary());
-        QuarterlyReportDTO createdReport = reportManager.updateQuarterlyReport(reportToUpdate);
-        return new QuarterlyReport(createdReport);
+        QuarterlyReport createdReport = reportManager.updateQuarterlyReport(updateRequest);
+        return createdReport;
     }
 
     @Operation(summary = "Delete a quarterly report.",

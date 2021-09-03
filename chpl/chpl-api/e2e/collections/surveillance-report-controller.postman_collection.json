@@ -345,6 +345,12 @@
 											"     pm.expect(pm.response.text()).to.include(\"Q3\");\r",
 											"     pm.expect(pm.response.text()).to.include(\"Q4\");\r",
 											"});\r",
+											"\r",
+											"pm.test(\"/surveillance-report/quarterly response should have reactiveSurveillanceSummary and disclosureRequirementsSummary fields \", function () {\r",
+											"    var respbody = pm.response.json()\r",
+											"    pm.expect(respbody[0]).to.have.property('reactiveSurveillanceSummary');\r",
+											"    pm.expect(respbody[0]).to.have.property('disclosureRequirementsSummary');\r",
+											"});\r",
 											""
 										],
 										"type": "text/javascript"
@@ -405,7 +411,12 @@
 											"     pm.expect(pm.response.text()).to.include(\"SLI Compliance\");\r",
 											"     pm.expect(pm.response.text()).to.include(\"Q1\");\r",
 											"});\r",
-											""
+											"\r",
+											"pm.test(\"/surveillance-report/quarterly/{quarterlyReportId} response should have reactiveSurveillanceSummary and disclosureRequirementsSummary fields \", function () {\r",
+											"    var respbody = pm.response.json()\r",
+											"    pm.expect(respbody).to.have.property('reactiveSurveillanceSummary');\r",
+											"    pm.expect(respbody).to.have.property('disclosureRequirementsSummary');\r",
+											"});"
 										],
 										"type": "text/javascript"
 									}
@@ -1077,6 +1088,12 @@
 											"     pm.expect(pm.response.text()).to.include(\"Q3\");\r",
 											"     pm.expect(pm.response.text()).to.include(\"Q4\");\r",
 											"});\r",
+											"\r",
+											"pm.test(\"/surveillance-report/quarterly response should have reactiveSurveillanceSummary and disclosureRequirementsSummary fields \", function () {\r",
+											"    var respbody = pm.response.json()\r",
+											"    pm.expect(respbody[0]).to.have.property('reactiveSurveillanceSummary');\r",
+											"    pm.expect(respbody[0]).to.have.property('disclosureRequirementsSummary');\r",
+											"});\r",
 											""
 										],
 										"type": "text/javascript"
@@ -1137,7 +1154,12 @@
 											"     pm.expect(pm.response.text()).to.include(\"SLI Compliance\");\r",
 											"     pm.expect(pm.response.text()).to.include(\"Q1\");\r",
 											"});\r",
-											""
+											"\r",
+											"pm.test(\"/surveillance-report/quarterly/{quarterlyReportId} response should have reactiveSurveillanceSummary and disclosureRequirementsSummary fields \", function () {\r",
+											"    var respbody = pm.response.json()\r",
+											"    pm.expect(respbody).to.have.property('reactiveSurveillanceSummary');\r",
+											"    pm.expect(respbody).to.have.property('disclosureRequirementsSummary');\r",
+											"});"
 										],
 										"type": "text/javascript"
 									}
@@ -1619,7 +1641,12 @@
 											"     pm.expect(pm.response.text()).to.include(\"Q3\");\r",
 											"     pm.expect(pm.response.text()).to.include(\"Q4\");\r",
 											"});\r",
-											""
+											"\r",
+											"pm.test(\"/surveillance-report/quarterly response should have reactiveSurveillanceSummary and disclosureRequirementsSummary fields \", function () {\r",
+											"    var respbody = pm.response.json()\r",
+											"    pm.expect(respbody[0]).to.have.property('reactiveSurveillanceSummary');\r",
+											"    pm.expect(respbody[0]).to.have.property('disclosureRequirementsSummary');\r",
+											"});"
 										],
 										"type": "text/javascript"
 									}
@@ -1679,7 +1706,12 @@
 											"     pm.expect(pm.response.text()).to.include(\"SLI Compliance\");\r",
 											"     pm.expect(pm.response.text()).to.include(\"Q1\");\r",
 											"});\r",
-											""
+											"\r",
+											"pm.test(\"/surveillance-report/quarterly/{quarterlyReportId} response should have reactiveSurveillanceSummary and disclosureRequirementsSummary fields \", function () {\r",
+											"    var respbody = pm.response.json()\r",
+											"    pm.expect(respbody).to.have.property('reactiveSurveillanceSummary');\r",
+											"    pm.expect(respbody).to.have.property('disclosureRequirementsSummary');\r",
+											"});"
 										],
 										"type": "text/javascript"
 									}
@@ -1966,6 +1998,12 @@
 											"     pm.expect(pm.response.text()).to.include(\"Q2\");\r",
 											"     pm.expect(pm.response.text()).to.include(\"Q3\");\r",
 											"     pm.expect(pm.response.text()).to.include(\"Q4\");  \r",
+											"});\r",
+											"\r",
+											"pm.test(\"/surveillance-report/quarterly response should have reactiveSurveillanceSummary and disclosureRequirementsSummary fields \", function () {\r",
+											"    var respbody = pm.response.json()\r",
+											"    pm.expect(respbody[0]).to.have.property('reactiveSurveillanceSummary');\r",
+											"    pm.expect(respbody[0]).to.have.property('disclosureRequirementsSummary');\r",
 											"});"
 										],
 										"type": "text/javascript"
@@ -2026,7 +2064,12 @@
 											"     pm.expect(pm.response.text()).to.include(\"Drummond Group\");\r",
 											"     pm.expect(pm.response.text()).to.include(\"Q1\");\r",
 											"});\r",
-											""
+											"\r",
+											"pm.test(\"/surveillance-report/quarterly/{quartelrReportId} response should have reactiveSurveillanceSummary and disclosureRequirementsSummary fields \", function () {\r",
+											"    var respbody = pm.response.json()\r",
+											"    pm.expect(respbody).to.have.property('reactiveSurveillanceSummary');\r",
+											"    pm.expect(respbody).to.have.property('disclosureRequirementsSummary');\r",
+											"});"
 										],
 										"type": "text/javascript"
 									}
