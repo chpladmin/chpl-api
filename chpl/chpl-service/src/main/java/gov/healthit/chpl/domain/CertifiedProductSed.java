@@ -8,8 +8,10 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
@@ -47,6 +49,16 @@ public class CertifiedProductSed implements Serializable {
     @Builder.Default
     private List<TestTask> testTasks = new ArrayList<TestTask>();
 
+    @JsonIgnore
+    @XmlTransient
+    @Builder.Default
+    private List<String> unusedTestTaskUniqueIds = new ArrayList<String>();
+
+    @JsonIgnore
+    @XmlTransient
+    @Builder.Default
+    private List<String> unusedTestParticipantUniqueIds = new ArrayList<String>();
+
     public CertifiedProductSed() {
         super();
         this.ucdProcesses = new ArrayList<UcdProcess>();
@@ -67,5 +79,21 @@ public class CertifiedProductSed implements Serializable {
 
     public void setTestTasks(final List<TestTask> testTasks) {
         this.testTasks = testTasks;
+    }
+
+    public List<String> getUnusedTestTaskUniqueIds() {
+        return unusedTestTaskUniqueIds;
+    }
+
+    public void setUnusedTestTaskUniqueIds(List<String> unusedTestTaskUniqueIds) {
+        this.unusedTestTaskUniqueIds = unusedTestTaskUniqueIds;
+    }
+
+    public List<String> getUnusedTestParticipantUniqueIds() {
+        return unusedTestParticipantUniqueIds;
+    }
+
+    public void setUnusedTestParticipantUniqueIds(List<String> unusedTestParticipantUniqueIds) {
+        this.unusedTestParticipantUniqueIds = unusedTestParticipantUniqueIds;
     }
 }
