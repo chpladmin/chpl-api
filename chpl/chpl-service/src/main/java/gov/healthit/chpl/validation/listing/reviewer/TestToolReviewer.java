@@ -1,6 +1,6 @@
 package gov.healthit.chpl.validation.listing.reviewer;
 
-import java.util.Iterator;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -10,7 +10,10 @@ import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.TestToolCriteriaMap;
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
@@ -19,37 +22,78 @@ import gov.healthit.chpl.util.Util;
 public class TestToolReviewer extends PermissionBasedReviewer {
     private TestToolDAO testToolDao;
 
+    private List<TestToolCriteriaMap> testToolCriteriaMap;
+
     @Autowired
-    public TestToolReviewer(TestToolDAO testToolDAO, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
+    public TestToolReviewer(TestToolDAO testToolDAO, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) throws EntityRetrievalException {
         super(msgUtil, resourcePermissions);
         this.testToolDao = testToolDAO;
+
+        testToolCriteriaMap = testToolDao.getAllTestToolCriteriaMap();
     }
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
-        for (CertificationResult cert : listing.getCertificationResults()) {
-            if (cert.isSuccess() != null && cert.isSuccess().equals(Boolean.TRUE)) {
-                if (cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {
-                    Iterator<CertificationResultTestTool> testToolIter = cert.getTestToolsUsed().iterator();
-                    while (testToolIter.hasNext()) {
-                        CertificationResultTestTool testTool = testToolIter.next();
-                        if (StringUtils.isEmpty(testTool.getTestToolName())) {
-                            addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestToolName",
-                                    Util.formatCriteriaNumber(cert.getCriterion()));
-                        } else {
-                            TestToolDTO tt = testToolDao.getByName(testTool.getTestToolName());
-                            if (tt != null && tt.isRetired()) {
-                                listing.getWarningMessages()
-                                        .add(msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
-                                                testTool.getTestToolName(), Util.formatCriteriaNumber(cert.getCriterion())));
-                            } else if (tt == null) {
-                                addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.testToolNotFound",
-                                        Util.formatCriteriaNumber(cert.getCriterion()), testTool.getTestToolName());
-                            }
-                        }
-                    }
-                }
+        listing.getCertificationResults().stream()
+                .filter(cr -> isCertificationResultAttestedTo(cr)
+                        && doesCertificationResultHaveTestTools(cr))
+                .forEach(cr -> validateTestTools(listing, cr));
+
+    }
+
+    private Boolean isCertificationResultAttestedTo(CertificationResult cert) {
+        return cert.isSuccess() != null && cert.isSuccess().equals(Boolean.TRUE);
+    }
+
+    private Boolean doesCertificationResultHaveTestTools(CertificationResult cert) {
+        return cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0;
+    }
+
+    private void validateTestTools(CertifiedProductSearchDetails listing, CertificationResult cert) {
+        cert.getTestToolsUsed().stream()
+                .forEach(crtt -> validateTestTool(listing, cert, crtt));
+    }
+
+    private void validateTestTool(CertifiedProductSearchDetails listing, CertificationResult cert, CertificationResultTestTool testTool) {
+        if (StringUtils.isEmpty(testTool.getTestToolName())) {
+            addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestToolName",
+                    Util.formatCriteriaNumber(cert.getCriterion()));
+        } else {
+            TestToolDTO tt = testToolDao.getByName(testTool.getTestToolName());
+            if (!isTestToolFound(tt)) {
+                addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.testToolNotFound",
+                        Util.formatCriteriaNumber(cert.getCriterion()), testTool.getTestToolName());
+                return;
+            }
+
+            if (isTestToolRetired(tt)) {
+                listing.getWarningMessages()
+                .add(msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
+                        testTool.getTestToolName(), Util.formatCriteriaNumber(cert.getCriterion())));
+            }
+
+            if (!isTestToolValidForCriteria(new CertificationCriterionDTO(cert.getCriterion()), tt)) {
+                listing.getErrorMessages()
+                        .add(msgUtil.getMessage("listing.criteria.testToolCriterionMismatch",
+                        testTool.getTestToolName(), Util.formatCriteriaNumber(cert.getCriterion())));
+
             }
         }
     }
+
+    private Boolean isTestToolFound(TestToolDTO testTool) {
+        return testTool != null;
+    }
+    private Boolean isTestToolRetired(TestToolDTO testTool) {
+        return testTool != null && testTool.isRetired();
+    }
+
+    private Boolean isTestToolValidForCriteria(CertificationCriterionDTO criterion, TestToolDTO testTool) {
+        return testToolCriteriaMap.stream()
+                .filter(ttcm -> ttcm.getCriterion().getId().equals(criterion.getId())
+                        && ttcm.getTestTool().getId().equals(testTool.getId()))
+                .findAny()
+                .isPresent();
+    }
 }
+
