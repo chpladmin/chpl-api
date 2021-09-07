@@ -92,6 +92,9 @@ public class TestFunctionalityAllowedByCriteriaReviewer extends PermissionBasedR
             CertificationEdition edition) {
 
         TestFunctionalityDTO tf = getTestFunctionality(crtf.getName(), edition.getCertificationEditionId());
+        if (tf == null || tf.getId() == null) {
+            return msgUtil.getMessage("listing.criteria.invalidTestFunctionality", Util.formatCriteriaNumber(cr.getCriterion()), crtf.getName());
+        }
         return getTestFunctionalityCriterionErrorMessage(
                 Util.formatCriteriaNumber(cr.getCriterion()),
                 crtf.getName(),
