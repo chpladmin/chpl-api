@@ -25,7 +25,7 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.surveillance.report.AnnualReportDAO;
 import gov.healthit.chpl.surveillance.report.QuarterlyReportDAO;
-import gov.healthit.chpl.surveillance.report.dto.AnnualReportDTO;
+import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportRelevantListingDTO;
 
@@ -217,16 +217,16 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
             // json could be an annual report object or a user object if the
             // action was an export
             try {
-                AnnualReportDTO report = jsonMapper.convertValue(annualReportJson, AnnualReportDTO.class);
+                AnnualReport report = jsonMapper.convertValue(annualReportJson, AnnualReport.class);
                 return isAcbValidForCurrentUser(report.getAcb().getId());
             } catch (Exception e) {
-                LOGGER.warn("Could not parse complaint activity as AnnualReportDTO. JSON was: " + annualReportJson);
+                LOGGER.warn("Could not parse complaint activity as AnnualReport. JSON was: " + annualReportJson);
             }
             // if we haven't returned then it's not an annual report object
             // so must be an export action - look up the annual report by id to
             // see if the user has access
             try {
-                AnnualReportDTO report = annualReportDao.getById(reportId);
+                AnnualReport report = annualReportDao.getById(reportId);
                 return isAcbValidForCurrentUser(report.getAcb().getId());
             } catch (Exception ignore) {
                 LOGGER.warn("Could find annual report with ID " + reportId);
