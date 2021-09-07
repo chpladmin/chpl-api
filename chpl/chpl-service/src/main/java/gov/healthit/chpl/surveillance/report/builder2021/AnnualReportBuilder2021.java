@@ -15,7 +15,7 @@ import gov.healthit.chpl.surveillance.report.builder.ListWorksheetBuilder;
 import gov.healthit.chpl.surveillance.report.builder.SurveillanceExperienceWorksheetBuilder;
 import gov.healthit.chpl.surveillance.report.builder.SurveillanceReportWorkbookWrapper;
 import gov.healthit.chpl.surveillance.report.builder.SurveillanceSummaryWorksheetBuilder;
-import gov.healthit.chpl.surveillance.report.dto.AnnualReportDTO;
+import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 import lombok.NoArgsConstructor;
 
@@ -47,7 +47,7 @@ public class AnnualReportBuilder2021 implements AnnualReportBuilderXlsx {
         this.survExprienceWorksheetBuilder = survExprienceWorksheetBuilder;
     }
 
-    public Workbook buildXlsx(AnnualReportDTO annualReport) throws IOException {
+    public Workbook buildXlsx(AnnualReport annualReport) throws IOException {
         SurveillanceReportWorkbookWrapper workbook = new SurveillanceReportWorkbookWrapper();
 
         listWorksheetBuilder.buildWorksheet(workbook);

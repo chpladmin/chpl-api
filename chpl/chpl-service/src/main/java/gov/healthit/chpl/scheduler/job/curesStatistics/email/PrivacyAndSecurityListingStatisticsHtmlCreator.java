@@ -37,6 +37,7 @@ public class PrivacyAndSecurityListingStatisticsHtmlCreator {
         LocalDate statisticDate = privacyAndSecurityStatisticsDao.getDateOfMostRecentStatistics();
         List<PrivacyAndSecurityListingStatistic> statistics = null;
         if (statisticDate != null) {
+            LOGGER.info("Most recent statistic date for privacy and security is " + statisticDate);
             statistics = privacyAndSecurityStatisticsDao.getStatisticsForDate(statisticDate);
             LOGGER.info("Generating HTML email text for " + statistics.size() + " statistics.");
         } else {
