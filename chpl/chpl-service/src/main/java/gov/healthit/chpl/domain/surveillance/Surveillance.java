@@ -139,9 +139,6 @@ public class Surveillance implements Serializable {
     @XmlElement(required = true)
     private Date lastModifiedDate;
 
-    @XmlTransient
-    private boolean acknowledgeWarnings;
-
     /**
      * Determines if this surveillance matches another surveillance.
      * Not overriding equals and hashCode out of fear of messing something up.
@@ -383,13 +380,5 @@ public class Surveillance implements Serializable {
 
     public void setLastModifiedDate(Date lastModifiedDate) {
         this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public boolean isAcknowledgeWarnings() {
-        return acknowledgeWarnings;
-    }
-
-    public void setAcknowledgeWarnings(boolean acknowledgeWarnings) {
-        this.acknowledgeWarnings = acknowledgeWarnings;
     }
 }

@@ -241,10 +241,8 @@ public class PendingSurveillanceManager extends SecuredManager {
         } else {
             survCreationValidator.validate(survToInsert);
         }
-        if (survToInsert.getErrorMessages() != null && survToInsert.getErrorMessages().size() > 0
-                || (survToInsert.getWarningMessages() != null && survToInsert.getWarningMessages().size() > 0
-                && !survToInsert.isAcknowledgeWarnings())) {
-            throw new ValidationException(survToInsert.getErrorMessages(), survToInsert.getWarningMessages());
+        if (survToInsert.getErrorMessages() != null && survToInsert.getErrorMessages().size() > 0) {
+            throw new ValidationException(survToInsert.getErrorMessages(), null);
         }
 
         Long insertedSurvId = createSurveillance(survToInsert);
