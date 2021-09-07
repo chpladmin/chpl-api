@@ -42,7 +42,7 @@ public class TestProcedureReviewer extends PermissionBasedReviewer {
     private void checkIfTestProcedureIsAllowed(CertifiedProductSearchDetails listing, CertificationResult certResult,
         CertificationResultTestProcedure testProcedure) {
         boolean isAllowed = testProcedureDao.getByCriterionId(certResult.getCriterion().getId()).stream()
-                .anyMatch(tp -> tp.getId() == testProcedure.getTestProcedure().getId());
+                .anyMatch(tp -> tp.getId().equals(testProcedure.getTestProcedure().getId()));
             if (!isAllowed) {
                 addCriterionErrorOrWarningByPermission(listing, certResult,
                         "listing.criteria.badTestProcedureName",

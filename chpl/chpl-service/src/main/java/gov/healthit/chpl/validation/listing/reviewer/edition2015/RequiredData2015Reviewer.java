@@ -333,6 +333,14 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                             } else {
                                 crTestData.getTestData().setId(foundTestData.getId());
                             }
+                        }  else if (crTestData.getTestData() != null && crTestData.getTestData().getId() != null) {
+                            List<TestDataDTO> criterionTestData = testDataDao.getByCriterionId(cert.getCriterion().getId());
+                            boolean hasMatchingTestDatum = criterionTestData.stream()
+                                    .filter(testDatum -> testDatum.getId().equals(crTestData.getTestData().getId()))
+                                    .findAny().isPresent();
+                            if (!hasMatchingTestDatum) {
+                                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.invalidTestData", Util.formatCriteriaNumber(cert.getCriterion())));
+                            }
                         }
 
                         if (crTestData.getTestData() != null && !StringUtils.isEmpty(crTestData.getTestData().getName())
