@@ -61,21 +61,11 @@ public class CertifiedProductDetailsManager {
         return listingService.createCertifiedSearchDetails(certifiedProductId);
     }
 
-    ///////////////////////////////////////////////////////////////////////////
     @Transactional(readOnly = true)
     @Cacheable(value = CacheNames.LISTING_DETAILS)
     public CertifiedProductSearchDetails getCertifiedProductDetailsUsingCache(Long certifiedProductId) throws EntityRetrievalException {
-        //Optional<CertifiedProductSearchDetails> listing = listingCache.get(certifiedProductId);
-        //if (listing.isPresent()) {
-        //    return listing.get();
-        //} else {
         return listingService.createCertifiedSearchDetails(certifiedProductId);
-        //    listingCache.put(cp);
-        //    return cp;
-        //}
     }
-    ///////////////////////////////////////////////////////////////////////////
-
 
     @Transactional(readOnly = true)
     public CertifiedProductSearchDetails getCertifiedProductDetailsBasicByChplProductNumber(String chplProductNumber) throws EntityRetrievalException {
