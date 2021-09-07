@@ -14,6 +14,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -28,6 +29,9 @@ public class ListingValidatorEmailJob  implements Job {
 
     @Autowired
     private CertificationBodyDAO certificationBodyDAO;
+
+    @Autowired
+    private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
 
     @Autowired
     private Environment env;
@@ -60,13 +64,24 @@ public class ListingValidatorEmailJob  implements Job {
         EmailBuilder emailBuilder = new EmailBuilder(env);
         emailBuilder.recipient(context.getMergedJobDataMap().getString("email"))
                 .subject(env.getProperty("listingValidationReport.subject"))
-                .htmlMessage(String.format(env.getProperty("listingValidationReport.body"), getAcbNamesAsCommaSeparatedList(context), rows.size()))
+                .htmlMessage(createHtmlMessage(context, rows.size()))
                 .fileAttachments(Arrays.asList(listingValidationReportCsvCreator.createCsvFile(rows)))
                 .sendEmail();
         LOGGER.info("Completed Sending email to: " + context.getMergedJobDataMap().getString("email"));
     }
 
-    private String getAcbNamesAsCommaSeparatedList(JobExecutionContext jobContext) {
+    private String createHtmlMessage(JobExecutionContext context, int errorCount) {
+        return chplHtmlEmailBuilder.initialize()
+                .heading(env.getProperty("listingValidationReport.subject"))
+                .paragraph(
+                        env.getProperty("listingValidationReport.paragraph1.heading"),
+                        getAcbNamesAsBrSeparatedList(context))
+                .paragraph("", String.format(env.getProperty("listingValidationReport.paragraph2.body"), errorCount))
+                .footer(true)
+                .build();
+    }
+
+    private String getAcbNamesAsBrSeparatedList(JobExecutionContext jobContext) {
         if (Objects.nonNull(jobContext.getMergedJobDataMap().getString("acb"))) {
             return getSelectedAcbIds(jobContext).stream()
                     .map(acbId -> {
@@ -77,7 +92,7 @@ public class ListingValidatorEmailJob  implements Job {
                             return "";
                         }
                     })
-                    .collect(Collectors.joining(", "));
+                    .collect(Collectors.joining("<br />"));
         } else {
             return "";
         }

@@ -4,9 +4,15 @@ import java.io.Serializable;
 
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class QuarterlyReport implements Serializable {
     private static final long serialVersionUID = 8743838678379539305L;
 
@@ -17,21 +23,25 @@ public class QuarterlyReport implements Serializable {
     private Long startDate;
     private Long endDate;
     private String surveillanceActivitiesAndOutcomes;
+    @Deprecated
     private String reactiveSummary;
+    private String reactiveSurveillanceSummary;
     private String prioritizedElementSummary;
+    @Deprecated
     private String transparencyDisclosureSummary;
+    private String disclosureRequirementsSummary;
+    private boolean acknowledgeWarnings;
 
-    public QuarterlyReport() {
-    }
-
-    public QuarterlyReport(final QuarterlyReportDTO dto) {
+    public QuarterlyReport(QuarterlyReportDTO dto) {
         this();
         this.id = dto.getId();
         this.year = dto.getYear();
         this.surveillanceActivitiesAndOutcomes = dto.getActivitiesOutcomesSummary();
-        this.reactiveSummary = dto.getReactiveSummary();
+        this.reactiveSummary = dto.getReactiveSurveillanceSummary();
+        this.reactiveSurveillanceSummary = dto.getReactiveSurveillanceSummary();
         this.prioritizedElementSummary = dto.getPrioritizedElementSummary();
-        this.transparencyDisclosureSummary = dto.getDisclosureSummary();
+        this.transparencyDisclosureSummary = dto.getDisclosureRequirementsSummary();
+        this.disclosureRequirementsSummary = dto.getDisclosureRequirementsSummary();
         if (dto.getQuarter() != null) {
             this.quarter = dto.getQuarter().getName();
         }
