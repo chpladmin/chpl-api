@@ -39,6 +39,10 @@ public class TestStandardReviewerTest {
                 ArgumentMatchers.eq("mock"),
                 ArgumentMatchers.eq(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId())))
         .thenReturn(ts);
+        Mockito.when(testStandardDao.getByIdAndEdition(
+                ArgumentMatchers.eq(1L),
+                ArgumentMatchers.eq(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId())))
+        .thenReturn(ts);
 
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.missingTestStandardName"),
@@ -227,7 +231,7 @@ public class TestStandardReviewerTest {
     }
 
     @Test
-    public void review_UnattestedCriterionNoTestStandardName_HasError() {
+    public void review_UnattestedCriterionNoTestStandardName_NoError() {
         List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();
         testStandards.add(getCertResultTestStandard(1L, null));
 
@@ -242,11 +246,11 @@ public class TestStandardReviewerTest {
         listing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(listing);
-        assertEquals(1, listing.getErrorMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
-    public void review_AttestedCriterionNoTestStandardName_HasError() {
+    public void review_AttestedCriterionNoTestStandardName_NoError() {
         List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();
         testStandards.add(getCertResultTestStandard(1L, null));
 
@@ -261,7 +265,7 @@ public class TestStandardReviewerTest {
         listing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(listing);
-        assertEquals(1, listing.getErrorMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     private CertificationCriterion buildCriterion(Long id, String number) {
