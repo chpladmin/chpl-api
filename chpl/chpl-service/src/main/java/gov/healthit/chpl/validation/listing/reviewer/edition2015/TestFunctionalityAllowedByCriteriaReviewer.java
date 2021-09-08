@@ -66,7 +66,7 @@ public class TestFunctionalityAllowedByCriteriaReviewer extends PermissionBasedR
         Set<String> errors = new HashSet<String>();
 
         CertificationEdition edition = getEdition(getEditionFromListing(listing));
-        TestFunctionalityDTO tf = getTestFunctionality(crtf.getName(), edition.getCertificationEditionId());
+        TestFunctionalityDTO tf = getTestFunctionality(crtf.getTestFunctionalityId(), edition.getCertificationEditionId());
 
         if (!isTestFunctionalityCritierionValid(cr.getCriterion().getId(), tf, edition.getYear())) {
             errors.add(getTestFunctionalityCriterionErrorMessage(crtf, cr, listing, edition));
@@ -91,7 +91,7 @@ public class TestFunctionalityAllowedByCriteriaReviewer extends PermissionBasedR
             CertificationResult cr, CertifiedProductSearchDetails cp,
             CertificationEdition edition) {
 
-        TestFunctionalityDTO tf = getTestFunctionality(crtf.getName(), edition.getCertificationEditionId());
+        TestFunctionalityDTO tf = getTestFunctionality(crtf.getTestFunctionalityId(), edition.getCertificationEditionId());
         if (tf == null || tf.getId() == null) {
             return msgUtil.getMessage("listing.criteria.invalidTestFunctionality", Util.formatCriteriaNumber(cr.getCriterion()), crtf.getName());
         }
@@ -126,8 +126,8 @@ public class TestFunctionalityAllowedByCriteriaReviewer extends PermissionBasedR
         return edition;
     }
 
-    private TestFunctionalityDTO getTestFunctionality(String number, Long editionId) {
-        return testFunctionalityDAO.getByNumberAndEdition(number, editionId);
+    private TestFunctionalityDTO getTestFunctionality(Long testFunctionalityId, Long editionId) {
+        return testFunctionalityDAO.getByIdAndEdition(testFunctionalityId, editionId);
     }
 
     private String getDelimitedListOfValidCriteriaNumbers(TestFunctionalityDTO tfDTO,

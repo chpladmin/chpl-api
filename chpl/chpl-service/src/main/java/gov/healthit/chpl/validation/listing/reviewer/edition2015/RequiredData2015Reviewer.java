@@ -339,7 +339,9 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     .filter(testDatum -> testDatum.getId().equals(crTestData.getTestData().getId()))
                                     .findAny().isPresent();
                             if (!hasMatchingTestDatum) {
-                                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.invalidTestData", Util.formatCriteriaNumber(cert.getCriterion())));
+                                String testDataName = crTestData.getTestData().getName();
+                                testDataName = (testDataName == null ? "" : testDataName);
+                                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.invalidTestData", testDataName, Util.formatCriteriaNumber(cert.getCriterion())));
                             }
                         }
 
