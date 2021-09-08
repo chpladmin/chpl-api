@@ -1,5 +1,22 @@
 # Release Notes
 
+## Version 32.0.0
+_7 September 2021_
+
+### Breaking Change
+* Create and edit of Quarterly Surveillance elements must use new fields
+
+### Features
+* Remove Banned Developer errors from the Listing Validation Report
+* Automate Cures Reporting Phase 1 Charts
+* Use consistent names for Quarterly Surveillance data elements
+
+### Bug Fixes
+* Display consistent permissions error when splitting Products and Versions
+* Move stateful date field out of Spring component, allowing for Cures Statistics Reports to be generated correctly
+
+---
+
 ## Version 31.0.0
 _31 August 2021_
 
