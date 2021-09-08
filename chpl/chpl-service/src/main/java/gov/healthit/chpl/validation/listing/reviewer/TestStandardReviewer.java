@@ -38,7 +38,7 @@ public class TestStandardReviewer implements Reviewer {
         Long editionId = MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY);
 
         if (testStandard.getTestStandardId() != null) {
-            TestStandardDTO foundTestStandard = testStandardDao.getByIdAndEdition(testStandard.getId(), editionId);
+            TestStandardDTO foundTestStandard = testStandardDao.getByIdAndEdition(testStandard.getTestStandardId(), editionId);
             if (foundTestStandard == null) {
                 listing.getErrorMessages().add(
                         msgUtil.getMessage("listing.criteria.testStandardNotFound",
