@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springdoc.core.customizers.OpenApiCustomiser;
 import org.springframework.context.EnvironmentAware;
@@ -35,11 +36,15 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
 import gov.healthit.chpl.filter.APIKeyAuthenticationFilter;
 import gov.healthit.chpl.registration.RateLimitingInterceptor;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControlHandlerInterceptor;
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.security.SecurityScheme.In;
 import io.swagger.v3.oas.models.servers.Server;
 import lombok.extern.log4j.Log4j2;
 
@@ -68,6 +73,7 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
     private String apiVersion;
     private String apiDescriptionHtml;
     private String feedbackFormUrl;
+    private Boolean tryItOutEnabled;
 
     @Override
     public void setEnvironment(Environment env) {
@@ -76,6 +82,7 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
         this.apiVersion = env.getProperty("api.version");
         this.apiDescriptionHtml = env.getProperty("api.description");
         this.feedbackFormUrl = env.getProperty("footer.publicUrl");
+        this.tryItOutEnabled = BooleanUtils.toBooleanObject(env.getProperty("api.tryItOutEnabled"));
     }
 
     @Bean
@@ -156,17 +163,20 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
 
     @Bean
     public OpenAPI chplOpenAPI() {
-        return new OpenAPI()
+        OpenAPI api = new OpenAPI()
                 .info(new Info().title("Certified Health IT Product Listing API")
                 .version(apiVersion)
                 .description(String.format(apiDescriptionHtml, feedbackFormUrl, feedbackFormUrl))
                 .license(new License().name("BSD License").url(apiLicenseUrl)))
                 .addServersItem(new Server().url(chplServiceUrl));
-//                .components(new Components()
-//                        .addSecuritySchemes(SwaggerSecurityRequirement.API_KEY,
-//                                new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(In.HEADER).name("API-Key").scheme("API-Key"))
-//                        .addSecuritySchemes(SwaggerSecurityRequirement.BEARER,
-//                                new SecurityScheme().type(SecurityScheme.Type.HTTP).in(In.HEADER).name("Bearer").scheme("Bearer").bearerFormat("JWT")));
+        if (BooleanUtils.isTrue(tryItOutEnabled)) {
+            api.setComponents(new Components()
+                .addSecuritySchemes(SwaggerSecurityRequirement.API_KEY,
+                        new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(In.HEADER).name("API-Key").scheme("API-Key"))
+                .addSecuritySchemes(SwaggerSecurityRequirement.BEARER,
+                        new SecurityScheme().type(SecurityScheme.Type.HTTP).in(In.HEADER).name("Bearer").scheme("Bearer").bearerFormat("JWT")));
+        }
+        return api;
     }
 
     @Bean
