@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
@@ -470,7 +471,7 @@ public class TestToolReviewerTest {
     }
 
     private List<TestToolCriteriaMap> getTestToolCriteriaMap() {
-        return List.of(
+        return Arrays.asList(
                 TestToolCriteriaMap.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
