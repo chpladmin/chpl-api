@@ -35,15 +35,11 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
 import gov.healthit.chpl.filter.APIKeyAuthenticationFilter;
 import gov.healthit.chpl.registration.RateLimitingInterceptor;
-import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControlHandlerInterceptor;
-import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.security.SecurityScheme;
-import io.swagger.v3.oas.models.security.SecurityScheme.In;
 import io.swagger.v3.oas.models.servers.Server;
 import lombok.extern.log4j.Log4j2;
 
@@ -165,12 +161,12 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
                 .version(apiVersion)
                 .description(String.format(apiDescriptionHtml, feedbackFormUrl, feedbackFormUrl))
                 .license(new License().name("BSD License").url(apiLicenseUrl)))
-                .addServersItem(new Server().url(chplServiceUrl))
-                .components(new Components()
-                        .addSecuritySchemes(SwaggerSecurityRequirement.API_KEY,
-                                new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(In.HEADER).name("API-Key").scheme("API-Key"))
-                        .addSecuritySchemes(SwaggerSecurityRequirement.BEARER,
-                                new SecurityScheme().type(SecurityScheme.Type.HTTP).in(In.HEADER).name("Bearer").scheme("Bearer").bearerFormat("JWT")));
+                .addServersItem(new Server().url(chplServiceUrl));
+//                .components(new Components()
+//                        .addSecuritySchemes(SwaggerSecurityRequirement.API_KEY,
+//                                new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(In.HEADER).name("API-Key").scheme("API-Key"))
+//                        .addSecuritySchemes(SwaggerSecurityRequirement.BEARER,
+//                                new SecurityScheme().type(SecurityScheme.Type.HTTP).in(In.HEADER).name("Bearer").scheme("Bearer").bearerFormat("JWT")));
     }
 
     @Bean
