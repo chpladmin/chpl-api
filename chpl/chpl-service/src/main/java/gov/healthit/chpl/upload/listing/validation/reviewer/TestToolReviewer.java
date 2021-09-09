@@ -153,10 +153,10 @@ public class TestToolReviewer extends PermissionBasedReviewer {
         }
     }
 
-    private Boolean isTestToolValidForCriteria(CertificationCriterion criterion, CertificationResultTestTool testTool) {
+    private Boolean isTestToolValidForCriteria(CertificationCriterion criterion, CertificationResultTestTool certResultTestTool) {
         return testToolCriteriaMaps.stream()
                 .filter(ttcm -> ttcm.getCriterion().getId().equals(criterion.getId())
-                        && ttcm.getTestTool().getId().equals(testTool.getId()))
+                        && ttcm.getTestTool().getId().equals(certResultTestTool.getTestToolId()))
                 .findAny()
                 .isPresent();
     }

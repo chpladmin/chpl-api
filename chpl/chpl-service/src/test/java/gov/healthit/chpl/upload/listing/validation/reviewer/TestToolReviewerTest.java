@@ -11,11 +11,15 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
+import gov.healthit.chpl.domain.TestTool;
+import gov.healthit.chpl.domain.TestToolCriteriaMap;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
@@ -28,19 +32,22 @@ public class TestToolReviewerTest {
     private static final String MISSING_TEST_TOOL_NAME = "There was no test tool name found for certification criteria %s.";
     private static final String MISSING_TEST_TOOL_VERSION = "There was no version found for test tool %s and certification %s.";
     private static final String RETIRED_TEST_TOOL_NOT_ALLOWED = "Test Tool '%s' can not be used for criteria '%s', as it is a retired tool, and this Certified Product does not carry ICS.";
+    private static final String TEST_TOOL_CRITERIA_MISMATCH = "Test Tool '%s' is not valid for criteria %s.";
 
     private CertificationResultRules certResultRules;
     private ErrorMessageUtil msgUtil;
     private ResourcePermissions resourcePermissions;
+    private TestToolDAO testToolDAO;
     private TestToolReviewer reviewer;
 
     @Before
     @SuppressWarnings("checkstyle:magicnumber")
-    public void setup() {
+    public void setup() throws EntityRetrievalException {
         ChplProductNumberUtil chplProductNumberUtil = new ChplProductNumberUtil();
         resourcePermissions = Mockito.mock(ResourcePermissions.class);
         certResultRules = Mockito.mock(CertificationResultRules.class);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
+        testToolDAO = Mockito.mock(TestToolDAO.class);
 
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testToolsNotApplicable"),
                 ArgumentMatchers.anyString()))
@@ -60,7 +67,11 @@ public class TestToolReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.retiredTestToolNoIcsNotAllowed"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(RETIRED_TEST_TOOL_NOT_ALLOWED, i.getArgument(1), i.getArgument(2)));
-        reviewer = new TestToolReviewer(certResultRules, chplProductNumberUtil, msgUtil, resourcePermissions);
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testToolCriterionMismatch"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(TEST_TOOL_CRITERIA_MISMATCH, i.getArgument(1), i.getArgument(2)));
+        Mockito.when(testToolDAO.getAllTestToolCriteriaMap()).thenReturn(getTestToolCriteriaMap());
+        reviewer = new TestToolReviewer(certResultRules, chplProductNumberUtil, msgUtil, resourcePermissions, testToolDAO);
     }
 
     @Test
@@ -456,5 +467,27 @@ public class TestToolReviewerTest {
         assertEquals(2, listing.getCertificationResults().get(0).getTestToolsUsed().size());
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    private List<TestToolCriteriaMap> getTestToolCriteriaMap() {
+        return List.of(
+                TestToolCriteriaMap.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .certificationEdition("2015")
+                                .certificationEditionId(1L)
+                                .number("170.315 (a)(1)")
+                                .build())
+                        .testTool(new TestTool(1L, "good name"))
+                        .build(),
+                TestToolCriteriaMap.builder()
+                .criterion(CertificationCriterion.builder()
+                        .id(1L)
+                        .certificationEdition("2015")
+                        .certificationEditionId(1L)
+                        .number("170.315 (a)(1)")
+                        .build())
+                .testTool(new TestTool(2L, "bad name"))
+                .build());
     }
 }
