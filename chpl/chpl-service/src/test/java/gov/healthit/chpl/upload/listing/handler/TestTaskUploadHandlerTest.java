@@ -160,6 +160,22 @@ public class TestTaskUploadHandlerTest {
     }
 
     @Test
+    public void parseTasks_FloatValueInIntegerField_RoundsToInteger() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
+                + ",Task Path Deviation - Observed #").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN
+                + ",1.3");
+        assertNotNull(listingRecords);
+
+        List<TestTask> parsedTasks = handler.handle(headingRecord, listingRecords);
+        assertNotNull(parsedTasks);
+        assertEquals(1, parsedTasks.size());
+        TestTask task = parsedTasks.get(0);
+        assertEquals(1, task.getTaskPathDeviationObserved());
+    }
+
+    @Test
     public void parseTasks_MultipleTasks_AllFieldsPopulated_ReturnsCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW).get(0);
         assertNotNull(headingRecord);

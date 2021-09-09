@@ -81,6 +81,7 @@ public class SedUploadHandler {
                 .testTasks(testTasks)
                 .ucdProcesses(ucdProcesses)
             .build();
+        updateUnusedTaskAndParticipantIds(sed, availableTestTasks, availableTestParticipants);
         return sed;
     }
 
@@ -238,9 +239,32 @@ public class SedUploadHandler {
                 .uniqueId(testTaskId)
                 .testParticipants(participantIds.stream()
                         .map(participantId -> TestParticipant.builder().uniqueId(participantId).build())
-                        .collect(Collectors.toList()))
+                        .collect(Collectors.toSet()))
                 .build();
         certResultTasks.add(certResultTask);
+    }
+
+    private void updateUnusedTaskAndParticipantIds(CertifiedProductSed sed,
+            List<TestTask> availableTestTasks, List<TestParticipant> availableTestParticipants) {
+        availableTestTasks.stream()
+            .filter(availableTestTask -> !isReferenced(sed.getTestTasks(), availableTestTask))
+            .forEach(unreferencedTestTask -> sed.getUnusedTestTaskUniqueIds().add(unreferencedTestTask.getUniqueId()));
+        availableTestParticipants.stream()
+            .filter(availableTestParticipant -> !isReferenced(sed.getTestTasks(), availableTestParticipant))
+            .forEach(unreferecedParticipant -> sed.getUnusedTestParticipantUniqueIds().add(unreferecedParticipant.getUniqueId()));
+    }
+
+    private boolean isReferenced(List<TestTask> allTestTasks, TestTask testTaskToFind) {
+        return allTestTasks.stream()
+                .filter(tt -> tt.getUniqueId().equals(testTaskToFind.getUniqueId()))
+                .findAny().isPresent();
+    }
+
+    private boolean isReferenced(List<TestTask> allTestTasks, TestParticipant participantToFind) {
+        return allTestTasks.stream()
+                .flatMap(tt -> tt.getTestParticipants().stream())
+                .filter(tp -> tp.getUniqueId().equals(participantToFind.getUniqueId()))
+                .findAny().isPresent();
     }
 
     private List<String> parseTaskIds(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
