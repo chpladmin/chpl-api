@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,12 +21,16 @@ import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.CertifiedProductSed;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.TestData;
+import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestProcedure;
+import gov.healthit.chpl.domain.TestTask;
+import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class FieldLengthReviewerTest {
@@ -119,6 +125,47 @@ public class FieldLengthReviewerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.testProcedureVersion.maxlength"),
                 ArgumentMatchers.any(), ArgumentMatchers.any()))
                 .thenReturn(String.format(FIELD_TOO_LONG, "20", "test procedure version", "placeholder"));
+        Mockito.when(messageSource.getMessage(ArgumentMatchers.eq("maxLength.sedReportHyperlink"), ArgumentMatchers.isNull(), ArgumentMatchers.any()))
+            .thenReturn("20");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.sedReportHyperlink.maxlength"),
+                ArgumentMatchers.any(), ArgumentMatchers.any()))
+                .thenReturn(String.format(FIELD_TOO_LONG, "20", "SED Report Hyperlink", "placeholder"));
+        Mockito.when(messageSource.getMessage(ArgumentMatchers.eq("maxLength.ucdProcessName"), ArgumentMatchers.isNull(), ArgumentMatchers.any()))
+            .thenReturn("20");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.ucdProcessName.maxlength"),
+                ArgumentMatchers.any(), ArgumentMatchers.any()))
+                .thenReturn(String.format(FIELD_TOO_LONG, "20", "UCD Process Name", "placeholder"));
+        Mockito.when(messageSource.getMessage(ArgumentMatchers.eq("maxLength.taskIdentifier"), ArgumentMatchers.isNull(), ArgumentMatchers.any()))
+            .thenReturn("20");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.taskIdentifier.maxlength"),
+                ArgumentMatchers.any(), ArgumentMatchers.any()))
+                .thenReturn(String.format(FIELD_TOO_LONG, "20", "Task Identifier", "placeholder"));
+        Mockito.when(messageSource.getMessage(ArgumentMatchers.eq("maxLength.taskRatingScale"), ArgumentMatchers.isNull(), ArgumentMatchers.any()))
+            .thenReturn("20");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.taskRatingScale.maxlength"),
+            ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(String.format(FIELD_TOO_LONG, "20", "Task Rating Scale", "placeholder"));
+        Mockito.when(messageSource.getMessage(ArgumentMatchers.eq("maxLength.participantIdentifier"), ArgumentMatchers.isNull(), ArgumentMatchers.any()))
+            .thenReturn("20");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.participantIdentifier.maxlength"),
+            ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(String.format(FIELD_TOO_LONG, "20", "Participant Identifier", "placeholder"));
+        Mockito.when(messageSource.getMessage(ArgumentMatchers.eq("maxLength.participantGender"), ArgumentMatchers.isNull(), ArgumentMatchers.any()))
+            .thenReturn("20");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.participantGender.maxlength"),
+            ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(String.format(FIELD_TOO_LONG, "20", "Participant Gender", "placeholder"));
+        Mockito.when(messageSource.getMessage(ArgumentMatchers.eq("maxLength.participantOccupation"), ArgumentMatchers.isNull(), ArgumentMatchers.any()))
+            .thenReturn("20");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.participantOccupation.maxlength"),
+            ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(String.format(FIELD_TOO_LONG, "20", "Participant Occupation", "placeholder"));
+        Mockito.when(messageSource.getMessage(ArgumentMatchers.eq("maxLength.participantAssistiveTechnology"), ArgumentMatchers.isNull(), ArgumentMatchers.any()))
+            .thenReturn("20");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.participantAssistiveTechnology.maxlength"),
+            ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(String.format(FIELD_TOO_LONG, "20", "Participant Assistive Technology Needs", "placeholder"));
+
         reviewer = new FieldLengthReviewer(errorMessageUtil, messageSource);
     }
 
@@ -720,6 +767,292 @@ public class FieldLengthReviewerTest {
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "test procedure version", "placeholder")));
+    }
+
+    @Test
+    public void review_nullSedReportHyperlink_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sedReportFileLocation(null)
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_emptySedReportHyperlink_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sedReportFileLocation("")
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_shortSedReportHyperlink_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sedReportFileLocation("shorturl")
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_longSedReportHyperlink_hasError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sedReportFileLocation(createStringLongerThan(20, "A"))
+                .build();
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "SED Report Hyperlink", "placeholder")));
+    }
+
+    @Test
+    public void review_nullUcdProcesses_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().setUcdProcesses(null);
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_emptyUcdProcesses_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_shortUcdProcessName_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+                .name("name")
+                .details("some details")
+                .build());
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_longUcdProcessName_hasError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+                .name(createStringLongerThan(20, "A"))
+                .details("some details")
+                .build());
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "UCD Process Name", "placeholder")));
+    }
+
+    @Test
+    public void review_nullTestTasks_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().setTestTasks(null);
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_emptyTestTasks_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_shortTestTaskUniqueId_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getTestTasks().add(TestTask.builder()
+                .uniqueId("1A")
+                .build());
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_longTestTaskUniqueId_hasError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getTestTasks().add(TestTask.builder()
+                .uniqueId(createStringLongerThan(20, "A"))
+                .build());
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "Task Identifier", "placeholder")));
+    }
+
+    @Test
+    public void review_shortTestTaskRatingScale_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sed(CertifiedProductSed.builder() .build())
+                .build();
+        listing.getSed().getTestTasks().add(TestTask.builder()
+                .taskRatingScale("TEST")
+                .build());
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_longTestTaskRatingScale_hasError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getTestTasks().add(TestTask.builder()
+                .taskRatingScale(createStringLongerThan(20, "A"))
+                .build());
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "Task Rating Scale", "placeholder")));
+    }
+
+    @Test
+    public void review_nullTestParticipants_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getTestTasks().add(TestTask.builder()
+                .uniqueId("1A")
+                .build());
+        listing.getSed().getTestTasks().get(0).setTestParticipants(null);
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_emptyTestParticipants_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sed(CertifiedProductSed.builder()
+                        .build())
+                .build();
+        listing.getSed().getTestTasks().add(TestTask.builder()
+                .uniqueId("1A")
+                .build());
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_shortTestTaskParticipantUniqueId_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().uniqueId("1A").build());
+        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(TestParticipant.builder()
+                .uniqueId("1P")
+                .build()).collect(Collectors.toSet()));
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_longTestParticipantUniqueId_hasError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().uniqueId("1A").build());
+        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(TestParticipant.builder()
+                .uniqueId(createStringLongerThan(20, "A"))
+                .build()).collect(Collectors.toSet()));
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "Participant Identifier", "placeholder")));
+    }
+
+    @Test
+    public void review_shortTestTaskParticipantGender_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().uniqueId("1A").build());
+        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(TestParticipant.builder()
+                .gender("F")
+                .build()).collect(Collectors.toSet()));
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_longTestParticipantGender_hasError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().uniqueId("1A").build());
+        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(TestParticipant.builder()
+                .gender(createStringLongerThan(20, "A"))
+                .build()).collect(Collectors.toSet()));
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "Participant Gender", "placeholder")));
+    }
+
+    @Test
+    public void review_shortTestTaskParticipantOccupation_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().uniqueId("1A").build());
+        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(TestParticipant.builder()
+                .occupation("Teacher")
+                .build()).collect(Collectors.toSet()));
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_longTestParticipantOccupation_hasError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().uniqueId("1A").build());
+        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(TestParticipant.builder()
+                .occupation(createStringLongerThan(20, "A"))
+                .build()).collect(Collectors.toSet()));
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "Participant Occupation", "placeholder")));
+    }
+
+    @Test
+    public void review_shortTestTaskParticipantAssistiveTechnologyNeeds_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().uniqueId("1A").build());
+        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(TestParticipant.builder()
+                .assistiveTechnologyNeeds("screen reader")
+                .build()).collect(Collectors.toSet()));
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_longTestParticipantAssistiveTechnologyNeeds_hasError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().uniqueId("1A").build());
+        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(TestParticipant.builder()
+                .assistiveTechnologyNeeds(createStringLongerThan(20, "A"))
+                .build()).collect(Collectors.toSet()));
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "Participant Assistive Technology Needs", "placeholder")));
     }
 
     private String createStringLongerThan(int minLength, String charToUse) {
