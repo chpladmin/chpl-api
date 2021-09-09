@@ -1,6 +1,7 @@
 package gov.healthit.chpl.validation.listing.reviewer;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -55,24 +56,26 @@ public class TestToolReviewer extends PermissionBasedReviewer {
     }
 
     private void validateTestTool(CertifiedProductSearchDetails listing, CertificationResult cert, CertificationResultTestTool testTool) {
-        if (StringUtils.isEmpty(testTool.getTestToolName())) {
+        if (StringUtils.isEmpty(testTool.getTestToolName()) && testTool.getTestToolId() == null) {
+            //TODO Update Message?
             addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestToolName",
                     Util.formatCriteriaNumber(cert.getCriterion()));
         } else {
-            TestToolDTO tt = testToolDao.getByName(testTool.getTestToolName());
-            if (!isTestToolFound(tt)) {
+            Optional<TestToolDTO> tt = getTestTool(testTool);
+            if (!tt.isPresent()) {
+                //TODO Update Message?
                 addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.testToolNotFound",
                         Util.formatCriteriaNumber(cert.getCriterion()), testTool.getTestToolName());
                 return;
             }
 
-            if (isTestToolRetired(tt)) {
+            if (isTestToolRetired(tt.get())) {
                 listing.getWarningMessages()
                 .add(msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
                         testTool.getTestToolName(), Util.formatCriteriaNumber(cert.getCriterion())));
             }
 
-            if (!isTestToolValidForCriteria(new CertificationCriterionDTO(cert.getCriterion()), tt)) {
+            if (!isTestToolValidForCriteria(new CertificationCriterionDTO(cert.getCriterion()), tt.get())) {
                 listing.getErrorMessages()
                         .add(msgUtil.getMessage("listing.criteria.testToolCriterionMismatch",
                         testTool.getTestToolName(), Util.formatCriteriaNumber(cert.getCriterion())));
@@ -81,9 +84,6 @@ public class TestToolReviewer extends PermissionBasedReviewer {
         }
     }
 
-    private Boolean isTestToolFound(TestToolDTO testTool) {
-        return testTool != null;
-    }
     private Boolean isTestToolRetired(TestToolDTO testTool) {
         return testTool != null && testTool.isRetired();
     }
@@ -95,5 +95,18 @@ public class TestToolReviewer extends PermissionBasedReviewer {
                 .findAny()
                 .isPresent();
     }
+
+    private Optional<TestToolDTO> getTestTool(CertificationResultTestTool certResultTestTool) {
+        TestToolDTO testTool = null;
+        if (certResultTestTool.getTestToolId() != null) {
+            testTool = testToolDao.getById(certResultTestTool.getTestToolId());
+        }
+        if (testTool == null && !StringUtils.isEmpty(certResultTestTool.getTestToolName())) {
+            testTool = testToolDao.getByName(certResultTestTool.getTestToolName());
+        }
+        return Optional.ofNullable(testTool);
+    }
+
+
 }
 
