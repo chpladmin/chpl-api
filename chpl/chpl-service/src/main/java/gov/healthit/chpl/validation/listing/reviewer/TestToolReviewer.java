@@ -57,13 +57,11 @@ public class TestToolReviewer extends PermissionBasedReviewer {
 
     private void validateTestTool(CertifiedProductSearchDetails listing, CertificationResult cert, CertificationResultTestTool testTool) {
         if (StringUtils.isEmpty(testTool.getTestToolName()) && testTool.getTestToolId() == null) {
-            //TODO Update Message?
             addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestToolName",
                     Util.formatCriteriaNumber(cert.getCriterion()));
         } else {
             Optional<TestToolDTO> tt = getTestTool(testTool);
             if (!tt.isPresent()) {
-                //TODO Update Message?
                 addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.testToolNotFound",
                         Util.formatCriteriaNumber(cert.getCriterion()), testTool.getTestToolName());
                 return;
