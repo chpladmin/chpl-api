@@ -76,7 +76,7 @@ public class TestParticipantsUploadHandler {
             try {
                 professionalExperienceMonths = Integer.parseInt(professionalExperienceAtIndex);
             } catch (NumberFormatException ex) {
-                LOGGER.warn("Cannot parse professional experience '" + professionalExperienceAtIndex + "' into an Integer.");
+                LOGGER.debug("Cannot parse professional experience '" + professionalExperienceAtIndex + "' into an Integer.");
             }
         }
         String computerExperienceAtIndex = (computerExperience != null && computerExperience.size() > index)
@@ -86,7 +86,7 @@ public class TestParticipantsUploadHandler {
             try {
                 computerExperienceMonths = Integer.parseInt(computerExperienceAtIndex);
             } catch (NumberFormatException ex) {
-                LOGGER.warn("Cannot parse computer experience '" + computerExperienceAtIndex + "' into an Integer.");
+                LOGGER.debug("Cannot parse computer experience '" + computerExperienceAtIndex + "' into an Integer.");
             }
         }
         String productExperienceAtIndex = (productExperience != null && productExperience.size() > index)
@@ -96,7 +96,7 @@ public class TestParticipantsUploadHandler {
             try {
                 productExperienceMonths = Integer.parseInt(productExperienceAtIndex);
             } catch (NumberFormatException ex) {
-                LOGGER.warn("Cannot parse product experience '" + productExperienceAtIndex + "' into an Integer.");
+                LOGGER.debug("Cannot parse product experience '" + productExperienceAtIndex + "' into an Integer.");
             }
         }
         String assistiveTechAtIndex = (assistiveTech != null && assistiveTech.size() > index)
