@@ -84,7 +84,7 @@ public class TestTaskUploadHandler {
             try {
                 taskSuccessAvg = Float.parseFloat(taskSuccessAvgAtIndex);
             } catch (NumberFormatException ex) {
-                LOGGER.warn("Cannot parse taskSuccessAvg '" + taskSuccessAvgAtIndex + "' into a Float.");
+                LOGGER.debug("Cannot parse taskSuccessAvg '" + taskSuccessAvgAtIndex + "' into a Float.");
             }
         }
         String taskSuccessStdDevAtIndex = (taskSuccessStdDevs != null && taskSuccessStdDevs.size() > index)
@@ -94,7 +94,7 @@ public class TestTaskUploadHandler {
             try {
                 taskSuccessStdDev = Float.parseFloat(taskSuccessStdDevAtIndex);
             } catch (NumberFormatException ex) {
-                LOGGER.warn("Cannot parse taskSuccessStdDev '" + taskSuccessStdDevAtIndex + "' into a Float.");
+                LOGGER.debug("Cannot parse taskSuccessStdDev '" + taskSuccessStdDevAtIndex + "' into a Float.");
             }
         }
         String taskPathDevObsAtIndex = (taskPathDevObserveds != null && taskPathDevObserveds.size() > index)
@@ -104,7 +104,12 @@ public class TestTaskUploadHandler {
             try {
                 taskPathDevObs = Integer.parseInt(taskPathDevObsAtIndex);
             } catch (NumberFormatException ex) {
-                LOGGER.warn("Cannot parse taskPathDevObs '" + taskPathDevObsAtIndex + "' into an Integer.");
+                LOGGER.debug("Cannot parse taskPathDevObs '" + taskPathDevObsAtIndex + "' into an Integer.");
+                try {
+                    taskPathDevObs = Math.round(Float.valueOf(taskPathDevObsAtIndex));
+                } catch (NumberFormatException ex2) {
+                    LOGGER.debug("Cannot round taskPathDevObs '" + taskPathDevObsAtIndex + "' to an Integer.");
+                }
             }
         }
         String taskPathDevOptAtIndex = (taskPathDevOpts != null && taskPathDevOpts.size() > index)
@@ -114,7 +119,12 @@ public class TestTaskUploadHandler {
             try {
                 taskPathDevOpt = Integer.parseInt(taskPathDevOptAtIndex);
             } catch (NumberFormatException ex) {
-                LOGGER.warn("Cannot parse taskPathDevOpt '" + taskPathDevOptAtIndex + "' into an Integer.");
+                LOGGER.debug("Cannot parse taskPathDevOpt '" + taskPathDevOptAtIndex + "' into an Integer.");
+                try {
+                    taskPathDevOpt = Math.round(Float.valueOf(taskPathDevOptAtIndex));
+                } catch (NumberFormatException ex2) {
+                    LOGGER.debug("Cannot round taskPathDevOpt '" + taskPathDevOptAtIndex + "' to an Integer.");
+                }
             }
         }
         String taskTimeAvgAtIndex = (taskTimeAvgs != null && taskTimeAvgs.size() > index)
@@ -124,7 +134,12 @@ public class TestTaskUploadHandler {
             try {
                 taskTimeAvg = Long.parseLong(taskTimeAvgAtIndex);
             } catch (NumberFormatException ex) {
-                LOGGER.warn("Cannot parse taskTimeAvg '" + taskTimeAvgAtIndex + "' into a Long.");
+                LOGGER.debug("Cannot parse taskTimeAvg '" + taskTimeAvgAtIndex + "' into a Long.");
+                try {
+                    taskTimeAvg = new Long(Math.round(Float.valueOf(taskTimeAvgAtIndex)));
+                } catch (NumberFormatException ex2) {
+                    LOGGER.debug("Cannot round taskTimeAvg '" + taskTimeAvgAtIndex + "' to a Long.");
+                }
             }
         }
         String taskTimeStdDevAtIndex = (taskTimeStdDevs != null && taskTimeStdDevs.size() > index)
@@ -134,7 +149,12 @@ public class TestTaskUploadHandler {
             try {
                 taskTimeStdDev = Integer.parseInt(taskTimeStdDevAtIndex);
             } catch (NumberFormatException ex) {
-                LOGGER.warn("Cannot parse taskTimeStdDev '" + taskTimeStdDevAtIndex + "' into an Integer.");
+                LOGGER.debug("Cannot parse taskTimeStdDev '" + taskTimeStdDevAtIndex + "' into an Integer.");
+                try {
+                    taskTimeStdDev = Math.round(Float.valueOf(taskTimeStdDevAtIndex));
+                } catch (NumberFormatException ex2) {
+                    LOGGER.debug("Cannot round taskTimeStdDev '" + taskTimeStdDevAtIndex + "' to an Integer.");
+                }
             }
         }
         String taskTimeDevObsAtIndex = (taskTimeDevObserveds != null && taskTimeDevObserveds.size() > index)
@@ -144,7 +164,12 @@ public class TestTaskUploadHandler {
             try {
                 taskTimeDevObs = Integer.parseInt(taskTimeDevObsAtIndex);
             } catch (NumberFormatException ex) {
-                LOGGER.warn("Cannot parse taskTimeDevObs '" + taskTimeDevObsAtIndex + "' into an Integer.");
+                LOGGER.debug("Cannot parse taskTimeDevObs '" + taskTimeDevObsAtIndex + "' into an Integer.");
+                try {
+                    taskTimeDevObs = Math.round(Float.valueOf(taskTimeDevObsAtIndex));
+                } catch (NumberFormatException ex2) {
+                    LOGGER.debug("Cannot round taskTimeDevObs '" + taskTimeDevObsAtIndex + "' to an Integer.");
+                }
             }
         }
         String taskTimeDevOptAtIndex = (taskTimeDevOpts != null && taskTimeDevOpts.size() > index)
@@ -154,7 +179,12 @@ public class TestTaskUploadHandler {
             try {
                 taskTimeDevOpt = Integer.parseInt(taskTimeDevOptAtIndex);
             } catch (NumberFormatException ex) {
-                LOGGER.warn("Cannot parse taskTimeDevOpt '" + taskTimeDevOptAtIndex + "' into an Integer.");
+                LOGGER.debug("Cannot parse taskTimeDevOpt '" + taskTimeDevOptAtIndex + "' into an Integer.");
+                try {
+                    taskTimeDevOpt = Math.round(Float.valueOf(taskTimeDevOptAtIndex));
+                } catch (NumberFormatException ex2) {
+                    LOGGER.debug("Cannot round taskTimeDevOpt '" + taskTimeDevOptAtIndex + "' to an Integer.");
+                }
             }
         }
         String taskErrorsAvgAtIndex = (taskErrorsAvgs != null && taskErrorsAvgs.size() > index)
@@ -164,7 +194,7 @@ public class TestTaskUploadHandler {
             try {
                 taskErrorsAvg = Float.parseFloat(taskErrorsAvgAtIndex);
             } catch (NumberFormatException ex) {
-                LOGGER.warn("Cannot parse taskErrorsAvg '" + taskErrorsAvgAtIndex + "' into a Float.");
+                LOGGER.debug("Cannot parse taskErrorsAvg '" + taskErrorsAvgAtIndex + "' into a Float.");
             }
         }
         String taskErrorsStdDevAtIndex = (taskErrorsStdDevs != null && taskErrorsStdDevs.size() > index)
@@ -174,7 +204,7 @@ public class TestTaskUploadHandler {
             try {
                 taskErrorsStdDev = Float.parseFloat(taskErrorsStdDevAtIndex);
             } catch (NumberFormatException ex) {
-                LOGGER.warn("Cannot parse taskErrorsStdDev '" + taskErrorsStdDevAtIndex + "' into a Float.");
+                LOGGER.debug("Cannot parse taskErrorsStdDev '" + taskErrorsStdDevAtIndex + "' into a Float.");
             }
         }
         String taskRatingScaleAtIndex = (taskRatingScales != null && taskRatingScales.size() > index)
@@ -186,7 +216,7 @@ public class TestTaskUploadHandler {
             try {
                 taskRating = Float.parseFloat(taskRatingAtIndex);
             } catch (NumberFormatException ex) {
-                LOGGER.warn("Cannot parse taskRating '" + taskRatingAtIndex + "' into a Float.");
+                LOGGER.debug("Cannot parse taskRating '" + taskRatingAtIndex + "' into a Float.");
             }
         }
         String taskRatingStdDevAtIndex = (taskRatingStdDevs != null && taskRatingStdDevs.size() > index)
@@ -196,7 +226,7 @@ public class TestTaskUploadHandler {
             try {
                 taskRatingStdDev = Float.parseFloat(taskRatingStdDevAtIndex);
             } catch (NumberFormatException ex) {
-                LOGGER.warn("Cannot parse taskRatingStdDev '" + taskRatingStdDevAtIndex + "' into a Float.");
+                LOGGER.debug("Cannot parse taskRatingStdDev '" + taskRatingStdDevAtIndex + "' into a Float.");
             }
         }
 
