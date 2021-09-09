@@ -57,27 +57,32 @@ public class TestToolReviewer extends PermissionBasedReviewer {
 
     private void validateTestTool(CertifiedProductSearchDetails listing, CertificationResult cert, CertificationResultTestTool testTool) {
         if (StringUtils.isEmpty(testTool.getTestToolName()) && testTool.getTestToolId() == null) {
-            addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestToolName",
-                    Util.formatCriteriaNumber(cert.getCriterion()));
+            listing.getErrorMessages().add(msgUtil.getMessage(
+                    "listing.criteria.missingTestToolName",
+                    Util.formatCriteriaNumber(cert.getCriterion())));
         } else {
             Optional<TestToolDTO> tt = getTestTool(testTool);
             if (!tt.isPresent()) {
-                addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.testToolNotFound",
-                        Util.formatCriteriaNumber(cert.getCriterion()), testTool.getTestToolName());
+                listing.getErrorMessages().add(msgUtil.getMessage(
+                        "listing.criteria.testToolNotFound",
+                        Util.formatCriteriaNumber(cert.getCriterion()),
+                        testTool.getTestToolName()));
+                return;
+            }
+
+            if (!isTestToolValidForCriteria(new CertificationCriterionDTO(cert.getCriterion()), tt.get())) {
+                listing.getErrorMessages().add(msgUtil.getMessage(
+                        "listing.criteria.testToolCriterionMismatch",
+                        testTool.getTestToolName(),
+                        Util.formatCriteriaNumber(cert.getCriterion())));
                 return;
             }
 
             if (isTestToolRetired(tt.get())) {
-                listing.getWarningMessages()
-                .add(msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed",
-                        testTool.getTestToolName(), Util.formatCriteriaNumber(cert.getCriterion())));
-            }
-
-            if (!isTestToolValidForCriteria(new CertificationCriterionDTO(cert.getCriterion()), tt.get())) {
-                listing.getErrorMessages()
-                        .add(msgUtil.getMessage("listing.criteria.testToolCriterionMismatch",
-                        testTool.getTestToolName(), Util.formatCriteriaNumber(cert.getCriterion())));
-
+                listing.getWarningMessages().add(msgUtil.getMessage(
+                        "listing.criteria.retiredTestToolNotAllowed",
+                        testTool.getTestToolName(),
+                        Util.formatCriteriaNumber(cert.getCriterion())));
             }
         }
     }
