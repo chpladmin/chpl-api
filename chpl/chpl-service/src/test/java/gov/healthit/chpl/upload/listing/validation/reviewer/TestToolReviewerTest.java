@@ -174,7 +174,7 @@ public class TestToolReviewerTest {
     }
 
     @Test
-    public void review_testToolsNotApplicableToCriteria_hasError() {
+    public void review_criteriaDoesNotSupportTestTools_hasError() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(true);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
@@ -468,6 +468,38 @@ public class TestToolReviewerTest {
         assertEquals(2, listing.getCertificationResults().get(0).getTestToolsUsed().size());
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_testToolsNotApplicableForCriteria_hasError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(true);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+            .thenReturn(true);
+        List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolId(3L)
+                .testToolName("another name")
+                .testToolVersion("1")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .build())
+                        .gap(true)
+                        .success(true)
+                        .testToolsUsed(testTools)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getCertificationResults().get(0).getTestToolsUsed().size());
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(
+                String.format(TEST_TOOL_CRITERIA_MISMATCH, "another name", "170.315 (a)(1)")));
     }
 
     private List<TestToolCriteriaMap> getTestToolCriteriaMap() {
