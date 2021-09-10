@@ -102,8 +102,7 @@ public class TestToolReviewer extends PermissionBasedReviewer {
         TestToolDTO testTool = null;
         if (certResultTestTool.getTestToolId() != null) {
             testTool = testToolDao.getById(certResultTestTool.getTestToolId());
-        }
-        if (testTool == null && !StringUtils.isEmpty(certResultTestTool.getTestToolName())) {
+        } else if (!StringUtils.isEmpty(certResultTestTool.getTestToolName())) {
             testTool = testToolDao.getByName(certResultTestTool.getTestToolName());
         }
         return Optional.ofNullable(testTool);
