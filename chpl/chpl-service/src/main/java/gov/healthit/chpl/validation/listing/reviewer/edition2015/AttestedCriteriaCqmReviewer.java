@@ -30,7 +30,7 @@ public class AttestedCriteriaCqmReviewer implements Reviewer {
     public AttestedCriteriaCqmReviewer(ValidationUtils validationUtils,
             CertificationCriterionService criteriaService,
             ErrorMessageUtil msgUtil,
-            @Value("${cqmEligibleCriteira}") String cqmCriteriaIdList) {
+            @Value("${cqmEligibleCriteria}") String cqmCriteriaIdList) {
         this.validationUtils = validationUtils;
         this.msgUtil = msgUtil;
 
