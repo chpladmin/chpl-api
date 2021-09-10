@@ -51,7 +51,11 @@ public class CqmAttestedCriteriaReviewer implements Reviewer {
     private void reviewListingHasCqmCriterion(CQMResultDetails cqm, CQMResultCertification cqmCriterion,
             CertifiedProductSearchDetails listing, List<CertificationCriterion> attestedCriteria) {
         List<CertificationCriterion> criteriaWithNumber = criteriaService.getByNumber(cqmCriterion.getCertificationNumber());
-        if (!validationUtils.hasAnyCriteria(criteriaWithNumber, attestedCriteria)) {
+        if (CollectionUtils.isEmpty(criteriaWithNumber)) {
+            listing.getErrorMessages().add(
+                    msgUtil.getMessage("listing.criteria.missingCriteriaForCqm",
+                            cqm.getCmsId(), cqmCriterion.getCertificationNumber()));
+        } else if (!validationUtils.hasAnyCriteria(criteriaWithNumber, attestedCriteria)) {
             listing.getErrorMessages().add(
                     msgUtil.getMessage("listing.criteria.missingCriteriaForCqm",
                             cqm.getCmsId(), cqmCriterion.getCertificationNumber()));
