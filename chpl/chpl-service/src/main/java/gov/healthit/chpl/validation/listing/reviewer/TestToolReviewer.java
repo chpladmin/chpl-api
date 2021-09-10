@@ -39,7 +39,6 @@ public class TestToolReviewer extends PermissionBasedReviewer {
                 .filter(cr -> isCertificationResultAttestedTo(cr)
                         && doesCertificationResultHaveTestTools(cr))
                 .forEach(cr -> validateTestTools(listing, cr));
-
     }
 
     private Boolean isCertificationResultAttestedTo(CertificationResult cert) {
@@ -109,7 +108,4 @@ public class TestToolReviewer extends PermissionBasedReviewer {
         }
         return Optional.ofNullable(testTool);
     }
-
-
 }
-
