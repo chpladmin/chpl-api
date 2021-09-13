@@ -5,6 +5,8 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.quartz.Job;
@@ -50,6 +52,9 @@ public class ListingValidationCreatorJob implements Job {
 
     @Value("${executorThreadCountForQuartzJobs}")
     private Integer threadCount;
+
+    @Value("${listingValidation.report.bannedDeveloperMessageRegex}")
+    private String bannedDeveloperMessageRegex;
 
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
@@ -102,7 +107,8 @@ public class ListingValidationCreatorJob implements Job {
         List<CertifiedProductDetailsDTO> listings = certifiedProductDAO.findByEdition(
                 CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
         LOGGER.info("Completed retreiving all 2015 listings");
-        return listings;
+        return listings.stream()
+                .collect(Collectors.toList());
     }
 
     private CertifiedProductSearchDetails getCertifiedProductSearchDetails(Long certifiedProductId) {
@@ -138,6 +144,7 @@ public class ListingValidationCreatorJob implements Job {
 
     private List<ListingValidationReport> createListingValidationReport(CertifiedProductSearchDetails listing) {
         List<ListingValidationReport> reports = listing.getErrorMessages().stream()
+                .filter(error -> !isBannedDeveloperErrorMessage(error))
                 .map(error -> listingValidationReportDAO.create(ListingValidationReport.builder()
                     .certifiedProductId(listing.getId())
                     .chplProductNumber(listing.getChplProductNumber())
@@ -155,5 +162,17 @@ public class ListingValidationCreatorJob implements Job {
                 .collect(Collectors.toList());
         LOGGER.info("Completed save of report data for: " + listing.getId());
         return reports;
+    }
+
+    private boolean isBannedDeveloperErrorMessage(String message) {
+        try {
+            Pattern pattern = Pattern.compile(bannedDeveloperMessageRegex);
+            Matcher matcher = pattern.matcher(message);
+            return matcher.find();
+        } catch (Exception e) {
+            LOGGER.error("Message being test when error occurred: " + message);
+            LOGGER.catching(e);
+            return false;
+        }
     }
 }

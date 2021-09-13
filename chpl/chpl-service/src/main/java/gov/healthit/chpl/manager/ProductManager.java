@@ -269,19 +269,6 @@ public class ProductManager extends SecuredManager {
             // have to get the cpdetails for before and after code update
             // because that is object sent into activity reports
             CertifiedProductSearchDetails beforeListing = cpdManager.getCertifiedProductDetails(affectedCp.getId());
-            // make sure each cp listing associated with the newProduct ->
-            // version is owned by an ACB the user has access to
-            boolean hasAccessToAcb = false;
-            for (CertificationBodyDTO allowedAcb : allowedAcbs) {
-                if (allowedAcb.getId().longValue() == affectedCp.getCertificationBodyId().longValue()) {
-                    hasAccessToAcb = true;
-                }
-            }
-            if (!hasAccessToAcb) {
-                throw new AccessDeniedException(
-                        msgUtil.getMessage("acb.accessDenied.listingUpdate", beforeListing.getChplProductNumber(),
-                                beforeListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)));
-            }
 
             // make sure the updated CHPL product number is unique and that the
             // new product code is valid

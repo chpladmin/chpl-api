@@ -22,6 +22,7 @@ import gov.healthit.chpl.upload.listing.validation.reviewer.EditionReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.IcsCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.ProductReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.QmsStandardReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.SedReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.TestingLabCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.TestingLabReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.VersionReviewer;
@@ -60,6 +61,8 @@ public class ListingUploadValidator {
     private FieldLengthReviewer fieldLengthReviewer;
     private UnsupportedCharacterReviewer unsupportedCharacterReviewer;
     private CertificationResultReviewer certResultReviewer;
+    private SedReviewer sedReviewer;
+    //TODO: measures, CQMs
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
@@ -87,7 +90,8 @@ public class ListingUploadValidator {
             UrlReviewer urlReviewer,
             FieldLengthReviewer fieldLengthReviewer,
             UnsupportedCharacterReviewer unsupportedCharacterReviewer,
-            CertificationResultReviewer certResultReviewer) {
+            CertificationResultReviewer certResultReviewer,
+            SedReviewer sedReviewer) {
         this.csvHeaderReviewer = csvHeaderReviewer;
         this.chplNumberFormatReviewer = chplNumberFormatReviewer;
         this.editionCodeReviewer = editionCodeReviewer;
@@ -113,6 +117,7 @@ public class ListingUploadValidator {
         this.fieldLengthReviewer = fieldLengthReviewer;
         this.unsupportedCharacterReviewer = unsupportedCharacterReviewer;
         this.certResultReviewer = certResultReviewer;
+        this.sedReviewer = sedReviewer;
     }
 
     public void review(ListingUpload uploadedMetadata, CertifiedProductSearchDetails listing) {
@@ -141,5 +146,6 @@ public class ListingUploadValidator {
         fieldLengthReviewer.review(listing);
         unsupportedCharacterReviewer.review(listing);
         certResultReviewer.review(listing);
+        sedReviewer.review(listing);
     }
 }
