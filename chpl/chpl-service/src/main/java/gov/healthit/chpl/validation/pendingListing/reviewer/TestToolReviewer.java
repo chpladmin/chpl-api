@@ -95,9 +95,9 @@ public class TestToolReviewer extends PermissionBasedReviewer {
         }
     }
 
-    private Boolean isTestToolValidForCriteria(PendingCertificationResultDTO criterion, TestToolDTO testTool) {
+    private Boolean isTestToolValidForCriteria(PendingCertificationResultDTO certResult, TestToolDTO testTool) {
         return testToolCriteriaMap.stream()
-                .filter(ttcm -> ttcm.getCriterion().getId().equals(criterion.getId())
+                .filter(ttcm -> ttcm.getCriterion().getId().equals(certResult.getCriterion().getId())
                         && ttcm.getTestTool().getId().equals(testTool.getId()))
                 .findAny()
                 .isPresent();
