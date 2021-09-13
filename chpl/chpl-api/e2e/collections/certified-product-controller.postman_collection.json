@@ -1269,7 +1269,7 @@
 					"response": []
 				},
 				{
-					"name": "PUT /{certifiedProductId}- 400 status and error on adding removed/invalid Test Tools to 2015 listings",
+					"name": "PUT /certified_products/{certifiedProductId}- 400 status and error on adding removed/invalid Test Tools to 2015 listings",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -1307,8 +1307,7 @@
 									"    pm.expect(pm.response.text()).to.include(\"Test Tool 'HL7 v2 Laboratory Results Interface (LRI) Validation Tool' is not valid\");\r",
 									"    pm.expect(pm.response.text()).to.include(\"Test Tool 'HL7 v2 Syndromic Surveillance Reporting Validation Tool' is not valid\");\r",
 									"});\r",
-									"pm.test(\"Adding invalid Test Tool to listing should give 400 status code and error in response\", function () {\r",
-									"    pm.response.to.have.status(400);\r",
+									"pm.test(\"Adding Test Tool with invalid ID and valid Test Tool name to 2015 listing should give error in response\", function () {\r",
 									"    pm.expect(pm.response.text()).to.include(\"contains an invalid test tool 'HL7 CDA Cancer Registry Reporting Validation Tool'\");\r",
 									"});"
 								],
@@ -1360,7 +1359,7 @@
 					"response": []
 				},
 				{
-					"name": "PUT /{certifiedProductId} - 400 status and error for adding new/invalid Test Tools for 2014 listing",
+					"name": "PUT /certified_products/{certifiedProductId} - 400 status and error for adding new/invalid Test Tools for 2014 listing",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -1394,9 +1393,9 @@
 									"    pm.expect(pm.response.text()).to.include(\"Test Tool 'NIST General Validation Tool (GVT)' is not valid\");\r",
 									"    pm.expect(pm.response.text()).to.include(\"Test Tool 'NCPDP Electronic Prescribing (eRx) Testing Tool' is not valid\");\r",
 									"});\r",
-									"pm.test(\"Adding invalid Test Tool to listing should give 400 status code and error in response\", function () {\r",
+									"pm.test(\"Adding Test Tool with invalid ID and valid Test Tool name to 2014 listing should give error in response\", function () {\r",
 									"    pm.response.to.have.status(400);\r",
-									"    pm.expect(pm.response.text()).to.include(\"contains an invalid test tool 'HL7 CDA Cancer Registry Reporting Validation Tool'\");\r",
+									"    pm.expect(pm.response.text()).to.include(\"invalid test tool 'HL7 CDA Cancer Registry Reporting Validation Tool'\");\r",
 									"});"
 								],
 								"type": "text/javascript"
