@@ -14,9 +14,10 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
@@ -563,12 +564,12 @@ public class SurveillanceReportManager extends SecuredManager {
             return;
         }
         HashSet<String> warnings = new HashSet<String>();
-        if (!StringUtils.equalsIgnoreCase(toUpdate.getReactiveSummary(), toUpdate.getReactiveSurveillanceSummary())
-                && StringUtils.equalsIgnoreCase(existing.getReactiveSurveillanceSummary(), toUpdate.getReactiveSurveillanceSummary())) {
+        if (!toUpdate.getReactiveSummary().equalsIgnoreCase(toUpdate.getReactiveSurveillanceSummary())
+                && existing.getReactiveSurveillanceSummary().equalsIgnoreCase(toUpdate.getReactiveSurveillanceSummary())) {
             warnings.add(msgUtil.getMessage("deprecated.field.update", "reactiveSummary", "reactiveSurveillanceSummary"));
         }
-        if (!StringUtils.equalsIgnoreCase(toUpdate.getTransparencyDisclosureSummary(), toUpdate.getDisclosureRequirementsSummary())
-                && StringUtils.equalsIgnoreCase(existing.getDisclosureRequirementsSummary(), toUpdate.getDisclosureRequirementsSummary())) {
+        if (!toUpdate.getTransparencyDisclosureSummary().equalsIgnoreCase(toUpdate.getDisclosureRequirementsSummary())
+                && existing.getDisclosureRequirementsSummary().equalsIgnoreCase(toUpdate.getDisclosureRequirementsSummary())) {
             warnings.add(msgUtil.getMessage("deprecated.field.update", "transparencyDisclosureSummary", "disclosureRequirementsSummary"));
         }
         if (warnings.size() > 0) {
