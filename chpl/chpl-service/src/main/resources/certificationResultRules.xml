@@ -2425,7 +2425,7 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            
+            <testProcedure>true</testProcedure>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
