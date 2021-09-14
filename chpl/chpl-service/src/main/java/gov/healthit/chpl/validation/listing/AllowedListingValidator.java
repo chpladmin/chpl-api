@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.validation.listing.reviewer.CertificationDateComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DeveloperStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
@@ -19,14 +20,16 @@ import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 @Component
 public class AllowedListingValidator extends Validator {
     private DeveloperStatusReviewer devStatusReviewer;
+    private CertificationDateComparisonReviewer certificationDateComparisonReviewer;
 
     private List<Reviewer> reviewers;
     private List<ComparisonReviewer> comparisonReviewers;
 
     @Autowired
-    public AllowedListingValidator(@Qualifier("developerStatusReviewer") DeveloperStatusReviewer devStatusReviewer) {
+    public AllowedListingValidator(@Qualifier("developerStatusReviewer") DeveloperStatusReviewer devStatusReviewer,
+            @Qualifier("certificationDateComparisonReviewer") CertificationDateComparisonReviewer certificationDateComparisonReviewer) {
         this.devStatusReviewer = devStatusReviewer;
-        comparisonReviewers = new ArrayList<ComparisonReviewer>();
+        this.certificationDateComparisonReviewer = certificationDateComparisonReviewer;
     }
 
     public List<Reviewer> getReviewers() {
@@ -38,6 +41,10 @@ public class AllowedListingValidator extends Validator {
     }
 
     public List<ComparisonReviewer> getComparisonReviewers() {
+        if (comparisonReviewers == null) {
+            comparisonReviewers = new ArrayList<ComparisonReviewer>();
+            comparisonReviewers.add(certificationDateComparisonReviewer);
+        }
         return comparisonReviewers;
     }
 }
