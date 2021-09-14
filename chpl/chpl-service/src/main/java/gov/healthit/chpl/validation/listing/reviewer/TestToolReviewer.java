@@ -41,10 +41,6 @@ public class TestToolReviewer extends PermissionBasedReviewer {
                 .forEach(cr -> validateTestTools(listing, cr));
     }
 
-    private Boolean isCertificationResultAttestedTo(CertificationResult cert) {
-        return cert.isSuccess() != null && cert.isSuccess().equals(Boolean.TRUE);
-    }
-
     private Boolean doesCertificationResultHaveTestTools(CertificationResult cert) {
         return cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0;
     }
