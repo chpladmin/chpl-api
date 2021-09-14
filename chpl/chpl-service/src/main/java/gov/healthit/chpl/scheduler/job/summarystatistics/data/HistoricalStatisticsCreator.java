@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.statistics.ListingStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
-import gov.healthit.chpl.dto.CertificationStatusEventDTO;
+import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
@@ -51,7 +51,7 @@ public class HistoricalStatisticsCreator {
     @Transactional(readOnly = true)
     @SuppressWarnings("checkstyle:linelength")
     public CsvStatistics getStatistics(List<CertifiedProductDetailsDTO> allListings,
-            Map<Long, List<CertificationStatusEventDTO>> statusesForAllListings, Date endDate)
+            Map<Long, List<CertificationStatusEvent>> statusesForAllListings, Date endDate)
             throws InterruptedException, ExecutionException {
 
         ExecutorService executorService = Executors.newFixedThreadPool(getThreadCountForJob());
@@ -120,7 +120,7 @@ public class HistoricalStatisticsCreator {
     }
 
     private Long getTotalDevelopers(List<CertifiedProductDetailsDTO> allListings,
-            Map<Long, List<CertificationStatusEventDTO>> allStatuses, Date endDate) {
+            Map<Long, List<CertificationStatusEvent>> allStatuses, Date endDate) {
 
         List<DeveloperDTO> developers = allListings.stream()
                 .filter(listing -> doesListingExistAsOfDate(listing.getId(),
@@ -135,7 +135,7 @@ public class HistoricalStatisticsCreator {
     }
 
     private Long getTotalDevelopersWith2014Listings(List<CertifiedProductDetailsDTO> allListings,
-            Map<Long, List<CertificationStatusEventDTO>> allStatuses, Date endDate) {
+            Map<Long, List<CertificationStatusEvent>> allStatuses, Date endDate) {
 
         List<DeveloperDTO> developers = allListings.stream()
                 .filter(listing -> listing.getCertificationEditionId().equals(EDITION_2014_ID)
@@ -149,7 +149,7 @@ public class HistoricalStatisticsCreator {
     }
 
     private Long getTotalDevelopersWith2015Listings(List<CertifiedProductDetailsDTO> allListings,
-            Map<Long, List<CertificationStatusEventDTO>> allStatuses, Date endDate) {
+            Map<Long, List<CertificationStatusEvent>> allStatuses, Date endDate) {
 
         List<DeveloperDTO> developers = allListings.stream()
                 .filter(listing -> listing.getCertificationEditionId().equals(EDITION_2015_ID)
@@ -164,7 +164,7 @@ public class HistoricalStatisticsCreator {
     }
 
     private Long getTotalUniqueProducts(List<CertifiedProductDetailsDTO> allListings,
-            Map<Long, List<CertificationStatusEventDTO>> allStatuses, Date endDate) {
+            Map<Long, List<CertificationStatusEvent>> allStatuses, Date endDate) {
 
         List<ProductDTO> products = allListings.stream()
                 .filter(listing -> doesListingExistAsOfDate(listing.getId(), allStatuses, endDate))
@@ -178,7 +178,7 @@ public class HistoricalStatisticsCreator {
     }
 
     private Long getTotalProductsActive2014Listings(List<CertifiedProductDetailsDTO> allListings,
-            Map<Long, List<CertificationStatusEventDTO>> allStatuses, Date endDate) {
+            Map<Long, List<CertificationStatusEvent>> allStatuses, Date endDate) {
 
         List<ProductDTO> products = allListings.stream()
                 .filter(listing -> listing.getCertificationEditionId().equals(EDITION_2014_ID)
@@ -192,7 +192,7 @@ public class HistoricalStatisticsCreator {
     }
 
     private Long getTotalProductsActive2015Listings(List<CertifiedProductDetailsDTO> allListings,
-            Map<Long, List<CertificationStatusEventDTO>> allStatuses, Date endDate) {
+            Map<Long, List<CertificationStatusEvent>> allStatuses, Date endDate) {
 
         List<ProductDTO> products = allListings.stream()
                 .filter(listing -> listing.getCertificationEditionId().equals(EDITION_2015_ID)
@@ -206,7 +206,7 @@ public class HistoricalStatisticsCreator {
     }
 
     private Long getTotalUniqueProductsActiveListings(List<CertifiedProductDetailsDTO> allListings,
-            Map<Long, List<CertificationStatusEventDTO>> allStatuses, Date endDate) {
+            Map<Long, List<CertificationStatusEvent>> allStatuses, Date endDate) {
 
         List<ProductDTO> products = allListings.stream()
                 .filter(listing -> isListingActiveAsOfDate(listing.getId(), allStatuses, endDate))
@@ -274,33 +274,33 @@ public class HistoricalStatisticsCreator {
     }
 
     private boolean isListingActiveAsOfDate(Long certifiedProductId,
-            Map<Long, List<CertificationStatusEventDTO>> allStatuses,
+            Map<Long, List<CertificationStatusEvent>> allStatuses,
             Date asOfDate) {
 
-        CertificationStatusEventDTO event = getStatusAsOfDate(allStatuses.get(certifiedProductId), asOfDate);
+        CertificationStatusEvent event = getStatusAsOfDate(allStatuses.get(certifiedProductId), asOfDate);
         if (event == null) {
             return false;
         } else {
-            return event.getStatus().getStatus().toUpperCase().equals(CertificationStatusType.Active.getName()
+            return event.getStatus().getName().toUpperCase().equals(CertificationStatusType.Active.getName()
                     .toUpperCase());
         }
     }
 
-    private CertificationStatusEventDTO getStatusAsOfDate(List<CertificationStatusEventDTO> events, Date asOfDate) {
-        List<CertificationStatusEventDTO> eventsSorted = events.stream()
+    private CertificationStatusEvent getStatusAsOfDate(List<CertificationStatusEvent> events, Date asOfDate) {
+        List<CertificationStatusEvent> eventsSorted = events.stream()
                 .sorted((ev1, ev2) -> ev1.getEventDate().compareTo(ev2.getEventDate()))
                 .collect(Collectors.toList());
 
-        CertificationStatusEventDTO result = null;
-        for (CertificationStatusEventDTO event : eventsSorted) {
-            if (event.getEventDate().before(asOfDate)) {
+        CertificationStatusEvent result = null;
+        for (CertificationStatusEvent event : eventsSorted) {
+            if (event.getEventDate() < asOfDate.getTime()) {
                 result = event;
             }
         }
         return result;
     }
 
-    private boolean doesListingExistAsOfDate(Long certifiedProductId, Map<Long, List<CertificationStatusEventDTO>> allStatuses,
+    private boolean doesListingExistAsOfDate(Long certifiedProductId, Map<Long, List<CertificationStatusEvent>> allStatuses,
             Date asOfDate) {
 
         return getStatusAsOfDate(allStatuses.get(certifiedProductId), asOfDate) != null;

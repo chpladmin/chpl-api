@@ -13,10 +13,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.entity.CertificationStatusEntity;
-import gov.healthit.chpl.util.Util;
+import lombok.Data;
 
 @Entity
+@Data
 @Table(name = "certification_status_event")
 public class CertificationStatusEventEntity implements Serializable {
 
@@ -56,83 +58,12 @@ public class CertificationStatusEventEntity implements Serializable {
     @Column(name = "creation_date", insertable = false, updatable = false)
     private Date creationDate;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Long getCertifiedProductId() {
-        return certifiedProductId;
-    }
-
-    public void setCertifiedProductId(final Long certifiedProductId) {
-        this.certifiedProductId = certifiedProductId;
-    }
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Date getEventDate() {
-        return Util.getNewDate(eventDate);
-    }
-
-    public void setEventDate(final Date eventDate) {
-        this.eventDate = Util.getNewDate(eventDate);
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Long getCertificationStatusId() {
-        return certificationStatusId;
-    }
-
-    public void setCertificationStatusId(final Long certificationStatusId) {
-        this.certificationStatusId = certificationStatusId;
-    }
-
-    public CertificationStatusEntity getCertificationStatus() {
-        return certificationStatus;
-    }
-
-    public void setCertificationStatus(final CertificationStatusEntity certificationStatus) {
-        this.certificationStatus = certificationStatus;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
+    public CertificationStatusEvent toDomain() {
+        return CertificationStatusEvent.builder()
+                .id(this.getId())
+                .eventDate(this.getEventDate().getTime())
+                .status(this.getCertificationStatus().toDomain())
+                .reason(this.getReason())
+                .build();
     }
 }

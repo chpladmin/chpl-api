@@ -46,7 +46,7 @@ public class CertifiedProductDTO implements Serializable {
     private String sedReportFileLocation;
     private String sedIntendedUserDescription;
     private Date sedTestingEnd;
-    private CertificationStatusDTO certificationStatus;
+    private CertificationStatus certificationStatus;
     private String otherAcb;
     private String mandatoryDisclosures;
     private Boolean ics;
@@ -110,13 +110,7 @@ public class CertifiedProductDTO implements Serializable {
             this.setProductClassificationTypeId(Long.valueOf(from.getClassificationType().get("id").toString()));
         }
         this.setProductVersionId(from.getVersion().getVersionId());
-
-        CertificationStatus fromStatus = from.getCurrentStatus().getStatus();
-        if (fromStatus != null) {
-            this.certificationStatus = new CertificationStatusDTO();
-            this.certificationStatus.setId(fromStatus.getId());
-            this.certificationStatus.setStatus(fromStatus.getName());
-        }
+        this.certificationStatus = from.getCurrentStatus().getStatus();
         this.setCertificationEditionId(
                 Long.valueOf(from.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString()));
         this.setReportFileLocation(from.getReportFileLocation());
