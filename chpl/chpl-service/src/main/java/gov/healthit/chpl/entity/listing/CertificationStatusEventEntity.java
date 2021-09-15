@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.entity.CertificationStatusEntity;
 import lombok.Data;
@@ -59,10 +60,18 @@ public class CertificationStatusEventEntity implements Serializable {
     private Date creationDate;
 
     public CertificationStatusEvent toDomain() {
+        CertificationStatus status = null;
+        if (this.getCertificationStatus() != null) {
+            status = this.certificationStatus.toDomain();
+        } else {
+            status = CertificationStatus.builder()
+                    .id(this.getCertificationStatusId())
+                    .build();
+        }
         return CertificationStatusEvent.builder()
                 .id(this.getId())
                 .eventDate(this.getEventDate().getTime())
-                .status(this.getCertificationStatus().toDomain())
+                .status(status)
                 .reason(this.getReason())
                 .build();
     }
