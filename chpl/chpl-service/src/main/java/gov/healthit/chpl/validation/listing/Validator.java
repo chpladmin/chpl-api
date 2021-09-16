@@ -5,12 +5,9 @@ import java.util.List;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
+import lombok.extern.log4j.Log4j2;
 
-/**
- * Base code used to validate Listings.
- * @author alarned
- *
- */
+@Log4j2
 public abstract class Validator {
 
     /**
@@ -35,7 +32,12 @@ public abstract class Validator {
      */
     public void validate(final CertifiedProductSearchDetails listing) {
         for (Reviewer reviewer : getReviewers()) {
-            reviewer.review(listing);
+            try {
+                reviewer.review(listing);
+            } catch (Exception e) {
+                LOGGER.error("There was an exception trying to run the Reviewer: " + reviewer.getClass().getName());
+                throw e;
+            }
         }
     }
 
