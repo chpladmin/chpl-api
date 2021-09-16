@@ -190,8 +190,8 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
         } else {
             ncFields.add("");
         }
-        if (nc.getNonconformityCloseDate() != null) {
-            ncFields.add(getDateFormatter().format(nc.getNonconformityCloseDate()));
+        if (nc.getNonconformityCloseDay() != null) {
+            ncFields.add(getDateFormatter().format(nc.getNonconformityCloseDay()));
         } else {
             ncFields.add("");
         }

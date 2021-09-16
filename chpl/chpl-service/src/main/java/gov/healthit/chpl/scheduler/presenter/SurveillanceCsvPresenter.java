@@ -208,13 +208,13 @@ public class SurveillanceCsvPresenter {
             ncRow.add("");
         }
         // Derive the status
-        if (nc.getNonconformityCloseDate() == null) {
+        if (nc.getNonconformityCloseDay() == null) {
             ncRow.add("Open");
         } else {
             ncRow.add("Closed");
         }
-        if (nc.getNonconformityCloseDate() != null) {
-            ncRow.add(dateFormatter.format(nc.getNonconformityCloseDate()));
+        if (nc.getNonconformityCloseDay() != null) {
+            ncRow.add(dateFormatter.format(nc.getNonconformityCloseDay()));
         } else {
             ncRow.add("");
         }

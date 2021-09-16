@@ -398,6 +398,7 @@ public class SurveillanceManager extends SecuredManager {
                         nc.setDateOfDeterminationDay(ncEntity.getDateOfDetermination());
                         nc.setDateOfDetermination(ncEntity.getDateOfDetermination() == null ? null : new Date(DateUtil.toEpochMillis(ncEntity.getDateOfDetermination())));
                         nc.setNonconformityCloseDate(ncEntity.getNonconformityCloseDate());
+                        nc.setNonconformityCloseDay(ncEntity.getNonconformityCloseDate());
                         nc.setDeveloperExplanation(ncEntity.getDeveloperExplanation());
                         nc.setFindings(ncEntity.getFindings());
                         nc.setId(ncEntity.getId());

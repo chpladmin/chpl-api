@@ -156,6 +156,10 @@ public class SurveillanceNonconformity implements Serializable {
     @XmlElement(required = false, nillable = true)
     private LocalDate capMustCompleteDay;
 
+    @Deprecated
+    @XmlTransient
+    private LocalDate nonconformityCloseDate;
+
     /**
      * Date non-conformity was closed
      */
@@ -163,7 +167,7 @@ public class SurveillanceNonconformity implements Serializable {
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     @XmlElement(required = false, nillable = true)
-    private LocalDate nonconformityCloseDate;
+    private LocalDate nonconformityCloseDay;
 
     /**
      * Non-conformity summary
@@ -331,11 +335,11 @@ public class SurveillanceNonconformity implements Serializable {
                 && !this.capMustCompleteDay.equals(anotherNonconformity.capMustCompleteDay)) {
             return false;
         }
-        if (this.nonconformityCloseDate == null && anotherNonconformity.nonconformityCloseDate != null
-                || this.nonconformityCloseDate != null && anotherNonconformity.nonconformityCloseDate == null) {
+        if (this.nonconformityCloseDay == null && anotherNonconformity.nonconformityCloseDay != null
+                || this.nonconformityCloseDay != null && anotherNonconformity.nonconformityCloseDay == null) {
             return false;
-        } else if (this.nonconformityCloseDate != null && anotherNonconformity.nonconformityCloseDate != null
-                && this.nonconformityCloseDate != anotherNonconformity.nonconformityCloseDate) {
+        } else if (this.nonconformityCloseDay != null && anotherNonconformity.nonconformityCloseDay != null
+                && !this.nonconformityCloseDay.equals(anotherNonconformity.nonconformityCloseDay)) {
             return false;
         }
         if (StringUtils.isEmpty(this.summary) && !StringUtils.isEmpty(anotherNonconformity.summary)
@@ -522,12 +526,22 @@ public class SurveillanceNonconformity implements Serializable {
         this.capMustCompleteDay = capMustCompleteDay;
     }
 
+    @Deprecated
     public LocalDate getNonconformityCloseDate() {
         return nonconformityCloseDate;
     }
 
+    @Deprecated
     public void setNonconformityCloseDate(LocalDate nonconformityCloseDate) {
         this.nonconformityCloseDate = nonconformityCloseDate;
+    }
+
+    public LocalDate getNonconformityCloseDay() {
+        return nonconformityCloseDay;
+    }
+
+    public void setNonconformityCloseDay(LocalDate nonconformityCloseDay) {
+        this.nonconformityCloseDay = nonconformityCloseDay;
     }
 
     public String getSummary() {

@@ -269,6 +269,7 @@ public class SurveillanceUploadManager extends SecuredManager {
                         && nc.getStatus().getName().equalsIgnoreCase(SurveillanceNonconformityStatus.CLOSED)
                         && nc.getCapEndDay() != null) {
                     nc.setNonconformityCloseDate(nc.getCapEndDay());
+                    nc.setNonconformityCloseDay(nc.getCapEndDay());
                 }
             }
         }

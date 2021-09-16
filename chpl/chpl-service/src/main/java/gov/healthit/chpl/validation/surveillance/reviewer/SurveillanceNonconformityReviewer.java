@@ -223,14 +223,14 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
 
     private void checkResolution(Surveillance surv, SurveillanceRequirement req,
             SurveillanceNonconformity nc) {
-        if (nc.getNonconformityCloseDate() != null) {
+        if (nc.getNonconformityCloseDay() != null) {
             if (StringUtils.isEmpty(nc.getResolution())) {
                 surv.getErrorMessages()
                         .add(msgUtil.getMessage("surveillance.resolutionDescriptionIsRequired",
                                 req.getRequirementName(),
                                 nc.getNonconformityTypeName()));
             }
-        } else if (nc.getNonconformityCloseDate() == null) {
+        } else if (nc.getNonconformityCloseDay() == null) {
             if (!StringUtils.isEmpty(nc.getResolution())) {
                 surv.getErrorMessages()
                         .add(msgUtil.getMessage("surveillance.resolutionDescriptionNotApplicable",

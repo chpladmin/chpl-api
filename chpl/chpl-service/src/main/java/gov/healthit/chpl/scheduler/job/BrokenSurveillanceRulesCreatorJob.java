@@ -1,6 +1,5 @@
 package gov.healthit.chpl.scheduler.job;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -226,7 +225,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
     }
 
     private Boolean isNonConformityOpen(SurveillanceNonconformity nonConformity) {
-        return nonConformity.getNonconformityCloseDate() == null;
+        return nonConformity.getNonconformityCloseDay() == null;
     }
 
     private BrokenSurveillanceRulesDTO getDefaultBrokenRule(CertifiedProductSearchDetails listing)
@@ -285,8 +284,8 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         } else {
             rule.setNonconformityCriteria(nc.getNonconformityType());
         }
-        if (nc.getNonconformityCloseDate() != null) {
-            rule.setNonConformityCloseDate(nc.getNonconformityCloseDate());
+        if (nc.getNonconformityCloseDay() != null) {
+            rule.setNonConformityCloseDate(nc.getNonconformityCloseDay());
         }
         if (nc.getDateOfDeterminationDay() != null) {
             rule.setDateOfDeterminationOfNonconformity(dateFormatter.format((nc.getDateOfDeterminationDay())));
