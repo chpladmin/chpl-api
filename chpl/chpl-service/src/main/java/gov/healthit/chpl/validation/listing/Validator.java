@@ -33,7 +33,12 @@ public abstract class Validator {
     public void validate(final CertifiedProductSearchDetails listing) {
         for (Reviewer reviewer : getReviewers()) {
             try {
-                reviewer.review(listing);
+                if (reviewer != null) {
+                    LOGGER.info("Running Reviewer: " + reviewer.getClass().getName());
+                    reviewer.review(listing);
+                } else {
+                    LOGGER.info("Cound not run a NULL reviewer.");
+                }
             } catch (Exception e) {
                 LOGGER.error("There was an exception trying to run the Reviewer: " + reviewer.getClass().getName());
                 throw e;
