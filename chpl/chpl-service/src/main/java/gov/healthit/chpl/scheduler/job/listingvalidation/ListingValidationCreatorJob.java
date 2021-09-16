@@ -94,7 +94,6 @@ public class ListingValidationCreatorJob implements Job {
     }
 
     private List<CertifiedProductSearchDetails> getListingsWithErrors() {
-
         return getAll2015CertifiedProducts().parallelStream()
                 .map(listing -> getCertifiedProductSearchDetails(listing.getId()))
                 .map(detail -> validateListing(detail))
@@ -125,10 +124,15 @@ public class ListingValidationCreatorJob implements Job {
     }
 
     private CertifiedProductSearchDetails validateListing(CertifiedProductSearchDetails listing) {
-        Validator validator = validatorFactory.getValidator(listing);
-        validator.validate(listing);
-        LOGGER.info("Completed validation of listing: " + listing.getId());
-        return listing;
+        try {
+            Validator validator = validatorFactory.getValidator(listing);
+            validator.validate(listing);
+            LOGGER.info("Completed validation of listing: " + listing.getId());
+            return listing;
+        } catch (Exception e) {
+            LOGGER.catching(e);
+            return listing;
+        }
     }
 
     private void deleteAllExistingListingValidationReports() {
