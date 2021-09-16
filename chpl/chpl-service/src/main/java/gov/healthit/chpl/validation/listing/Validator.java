@@ -30,11 +30,11 @@ public abstract class Validator {
      * errors and warnings as appropriate.
      * @param listing the listing to validate
      */
-    public void validate(final CertifiedProductSearchDetails listing) {
+    public synchronized void validate(final CertifiedProductSearchDetails listing) {
         for (Reviewer reviewer : getReviewers()) {
             try {
                 if (reviewer != null) {
-                    LOGGER.info("Running Reviewer: " + reviewer.getClass().getName());
+                    //LOGGER.info("Running Reviewer: " + reviewer.getClass().getName());
                     reviewer.review(listing);
                 } else {
                     LOGGER.info("Cound not run a NULL reviewer.");
