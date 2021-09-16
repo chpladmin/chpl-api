@@ -156,6 +156,8 @@ public class SurveillanceNonconformity implements Serializable {
     @XmlElement(required = false, nillable = true)
     private LocalDate capMustCompleteDay;
 
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     @Deprecated
     @XmlTransient
     private LocalDate nonconformityCloseDate;
