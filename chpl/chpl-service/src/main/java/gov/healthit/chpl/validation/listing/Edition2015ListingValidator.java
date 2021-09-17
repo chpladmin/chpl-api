@@ -50,8 +50,10 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Review
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionalityAllowedByCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionalityAllowedByRoleReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestTool2015Reviewer;
+import lombok.extern.log4j.Log4j2;
 
 @Component
+@Log4j2
 public class Edition2015ListingValidator extends Validator {
     @Autowired
     @Qualifier("chplNumberReviewer")
@@ -221,9 +223,151 @@ public class Edition2015ListingValidator extends Validator {
     private List<ComparisonReviewer> comparisonReviewers;
 
     @Override
-    public List<Reviewer> getReviewers() {
+
+    public synchronized List<Reviewer> getReviewers() {
         if (reviewers == null) {
             reviewers = new ArrayList<Reviewer>();
+//            if (chplNumberReviewer == null) {
+//                LOGGER.error("The chplNumberReviewer is null");
+//            } else {
+//                reviewers.add(chplNumberReviewer);
+//            }
+//            if (devStatusReviewer == null) {
+//                LOGGER.error("The devStatusReviewer is null");
+//            } else {
+//                reviewers.add(devStatusReviewer);
+//            }
+//            if (unsupportedCharacterReviewer == null) {
+//                LOGGER.error("The unsupportedCharacterReviewer is null");
+//            } else {
+//                reviewers.add(unsupportedCharacterReviewer);
+//            }
+//            if (fieldLengthReviewer == null) {
+//                LOGGER.error("The fieldLengthReviewer is null");
+//            } else {
+//                reviewers.add(fieldLengthReviewer);
+//            }
+//            if (requiredDataReviewer == null) {
+//                LOGGER.error("The requiredDataReviewer is null");
+//            } else {
+//                reviewers.add(requiredDataReviewer);
+//            }
+//            if (requiredAndRelatedCriteriaReviewer == null) {
+//                LOGGER.error("The requiredAndRelatedCriteriaReviewer is null");
+//            } else {
+//                reviewers.add(requiredAndRelatedCriteriaReviewer);
+//            }
+//            if (testingLabReviewer == null) {
+//                LOGGER.error("The testingLabReviewer is null");
+//            } else {
+//                reviewers.add(testingLabReviewer);
+//            }
+//            if (validDataReviewer == null) {
+//                LOGGER.error("The validDataReviewer is null");
+//            } else {
+//                reviewers.add(validDataReviewer);
+//            }
+//            if (sedG3Reviewer == null) {
+//                LOGGER.error("The sedG3Reviewer is null");
+//            } else {
+//                reviewers.add(sedG3Reviewer);
+//            }
+//            if (oldCriteriaWithoutIcsReviewer == null) {
+//                LOGGER.error("The oldCriteriaWithoutIcsReviewer is null");
+//            } else {
+//                reviewers.add(oldCriteriaWithoutIcsReviewer);
+//            }
+//            if (certStatusReviewer == null) {
+//                LOGGER.error("The certStatusReviewer is null");
+//            } else {
+//                reviewers.add(certStatusReviewer);
+//            }
+//            if (certDateReviewer == null) {
+//                LOGGER.error("The certDateReviewer is null");
+//            } else {
+//                reviewers.add(certDateReviewer);
+//            }
+//            if (unattestedCriteriaWithDataReviewer == null) {
+//                LOGGER.error("The unattestedCriteriaWithDataReviewer is null");
+//            } else {
+//                reviewers.add(unattestedCriteriaWithDataReviewer);
+//            }
+//            if (optionalStandardReviewer == null) {
+//                LOGGER.error("The optionalStandardReviewer is null");
+//            } else {
+//                reviewers.add(optionalStandardReviewer);
+//            }
+//            if (tsrReviewer == null) {
+//                LOGGER.error("The tsrReviewer is null");
+//            } else {
+//                reviewers.add(tsrReviewer);
+//            }
+//            if (tsReviewer == null) {
+//                LOGGER.error("The tsReviewer is null");
+//            } else {
+//                reviewers.add(tsReviewer);
+//            }
+//            if (tpReviewer == null) {
+//                LOGGER.error("The tpReviewer is null");
+//            } else {
+//                reviewers.add(tpReviewer);
+//            }
+//
+//            if (inheritanceReviewer == null) {
+//                LOGGER.error("The inheritanceReviewer is null");
+//            } else {
+//                reviewers.add(inheritanceReviewer);
+//            }
+//            if (ttReviewer == null) {
+//                LOGGER.error("The ttReviewer is null");
+//            } else {
+//                reviewers.add(ttReviewer);
+//            }
+//            if (tt2015Reviewer == null) {
+//                LOGGER.error("The tt2015Reviewer is null");
+//            } else {
+//                reviewers.add(tt2015Reviewer);
+//            }
+//            if (urlReviewer == null) {
+//                LOGGER.error("The urlReviewer is null");
+//            } else {
+//                reviewers.add(urlReviewer);
+//            }
+//            if (testFunctionalityReviewer == null) {
+//                LOGGER.error("The testFunctionalityReviewer is null");
+//            } else {
+//                reviewers.add(testFunctionalityReviewer);
+//            }
+//            if (invalidCriteriaCombinationReviewer == null) {
+//                LOGGER.error("The invalidCriteriaCombinationReviewer is null");
+//            } else {
+//                reviewers.add(invalidCriteriaCombinationReviewer);
+//            }
+//            if (attestedCriteriaCqmReviewer == null) {
+//                LOGGER.error("The attestedCriteriaCqmReviewer is null");
+//            } else {
+//                reviewers.add(attestedCriteriaCqmReviewer);
+//            }
+//            if (cqmAttestedCriteriaReviewer == null) {
+//                LOGGER.error("The cqmAttestedCriteriaReviewer is null");
+//            } else {
+//                reviewers.add(cqmAttestedCriteriaReviewer);
+//            }
+//            if (duplicateDataReviewer == null) {
+//                LOGGER.error("The duplicateDataReviewer is null");
+//            } else {
+//                reviewers.add(duplicateDataReviewer);
+//            }
+//            if (gapAllowedReviewer == null) {
+//                LOGGER.error("The gapAllowedReviewer is null");
+//            } else {
+//                reviewers.add(gapAllowedReviewer);
+//            }
+//            if (measureReviewer == null) {
+//                LOGGER.error("The measureReviewer is null");
+//            } else {
+//                reviewers.add(measureReviewer);
+//            }
             reviewers.add(chplNumberReviewer);
             reviewers.add(devStatusReviewer);
             reviewers.add(unsupportedCharacterReviewer);

@@ -5,12 +5,9 @@ import java.util.List;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
+import lombok.extern.log4j.Log4j2;
 
-/**
- * Base code used to validate Listings.
- * @author alarned
- *
- */
+@Log4j2
 public abstract class Validator {
 
     /**
@@ -33,9 +30,19 @@ public abstract class Validator {
      * errors and warnings as appropriate.
      * @param listing the listing to validate
      */
-    public void validate(final CertifiedProductSearchDetails listing) {
+    public synchronized void validate(final CertifiedProductSearchDetails listing) {
         for (Reviewer reviewer : getReviewers()) {
-            reviewer.review(listing);
+            try {
+                if (reviewer != null) {
+                    //LOGGER.info("Running Reviewer: " + reviewer.getClass().getName());
+                    reviewer.review(listing);
+                } else {
+                    LOGGER.info("Cound not run a NULL reviewer.");
+                }
+            } catch (Exception e) {
+                LOGGER.error("There was an exception trying to run the Reviewer: " + reviewer.getClass().getName());
+                throw e;
+            }
         }
     }
 
