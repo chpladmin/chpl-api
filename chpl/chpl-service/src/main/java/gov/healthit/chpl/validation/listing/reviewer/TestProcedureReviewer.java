@@ -42,6 +42,7 @@ public class TestProcedureReviewer extends PermissionBasedReviewer {
         } else if (!StringUtils.isEmpty(testProcedure.getTestProcedure().getName())) {
             checkIfTestProcedureIsAllowedByName(listing, certResult, testProcedure);
         }
+        checkIfTestProcedureHasAnId(listing, certResult, testProcedure);
         checkIfTestProcedureHasAName(listing, certResult, testProcedure);
         checkIfTestProcedureHasAVersion(listing, certResult, testProcedure);
     }
@@ -77,23 +78,34 @@ public class TestProcedureReviewer extends PermissionBasedReviewer {
                 testProcedure.getTestProcedure().setId(allowedTestProcedure.get().getId());
             }
     }
+
+    private void checkIfTestProcedureHasAnId(CertifiedProductSearchDetails listing, CertificationResult certResult,
+            CertificationResultTestProcedure testProcedure) {
+            if (testProcedure.getTestProcedure() == null || testProcedure.getTestProcedure().getId() == null) {
+                addCriterionErrorOrWarningByPermission(listing, certResult,
+                        "listing.criteria.missingTestProcedureId",
+                        Util.formatCriteriaNumber(certResult.getCriterion()));
+            }
+    }
+
     private void checkIfTestProcedureHasAName(CertifiedProductSearchDetails listing, CertificationResult certResult,
             CertificationResultTestProcedure testProcedure) {
-                if (testProcedure.getTestProcedure() == null) {
-                    addCriterionErrorOrWarningByPermission(listing, certResult,
-                            "listing.criteria.missingTestProcedureName",
-                            Util.formatCriteriaNumber(certResult.getCriterion()));
-                }
-        }
+            if (testProcedure.getTestProcedure() == null
+                    || StringUtils.isEmpty(testProcedure.getTestProcedure().getName())) {
+                addCriterionErrorOrWarningByPermission(listing, certResult,
+                        "listing.criteria.missingTestProcedureName",
+                        Util.formatCriteriaNumber(certResult.getCriterion()));
+            }
+    }
 
     private void checkIfTestProcedureHasAVersion(CertifiedProductSearchDetails listing, CertificationResult certResult,
             CertificationResultTestProcedure testProcedure) {
-                if (testProcedure.getTestProcedure() != null
-                        && !StringUtils.isEmpty(testProcedure.getTestProcedure().getName())
-                        && StringUtils.isEmpty(testProcedure.getTestProcedureVersion())) {
-                    addCriterionErrorOrWarningByPermission(listing, certResult,
-                            "listing.criteria.missingTestProcedureVersion",
-                            Util.formatCriteriaNumber(certResult.getCriterion()));
-                }
-        }
+            if (testProcedure.getTestProcedure() != null
+                    && !StringUtils.isEmpty(testProcedure.getTestProcedure().getName())
+                    && StringUtils.isEmpty(testProcedure.getTestProcedureVersion())) {
+                addCriterionErrorOrWarningByPermission(listing, certResult,
+                        "listing.criteria.missingTestProcedureVersion",
+                        Util.formatCriteriaNumber(certResult.getCriterion()));
+            }
+    }
 }
