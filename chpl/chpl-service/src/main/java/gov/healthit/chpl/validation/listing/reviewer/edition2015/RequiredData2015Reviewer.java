@@ -8,7 +8,6 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
-import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestData;
@@ -40,19 +39,17 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     private static final int MINIMUM_TEST_PARTICIPANT_COUNT = 10;
 
     private TestFunctionalityDAO testFuncDao;
-    private TestProcedureDAO testProcDao;
     private TestDataDAO testDataDao;
     private ValidationUtils validationUtils;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
     public RequiredData2015Reviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil,
-            TestFunctionalityDAO testFuncDao, TestProcedureDAO testProcDao,
+            TestFunctionalityDAO testFuncDao,
             TestDataDAO testDataDao,
             ValidationUtils validationUtils, ResourcePermissions resourcePermissions) {
         super(certRules, msgUtil, resourcePermissions);
         this.testFuncDao = testFuncDao;
-        this.testProcDao = testProcDao;
         this.testDataDao = testDataDao;
         this.validationUtils = validationUtils;
     }
