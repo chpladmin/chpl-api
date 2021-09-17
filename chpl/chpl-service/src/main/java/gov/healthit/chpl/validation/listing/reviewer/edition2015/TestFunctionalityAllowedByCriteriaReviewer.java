@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
@@ -66,9 +67,17 @@ public class TestFunctionalityAllowedByCriteriaReviewer extends PermissionBasedR
         Set<String> errors = new HashSet<String>();
 
         CertificationEdition edition = getEdition(getEditionFromListing(listing));
-        TestFunctionalityDTO tf = getTestFunctionality(crtf.getTestFunctionalityId(), edition.getCertificationEditionId());
+        TestFunctionalityDTO tf = null;
+        if (crtf.getTestFunctionalityId() != null) {
+            tf = getTestFunctionality(crtf.getTestFunctionalityId(), edition.getCertificationEditionId());
+        } else if (!StringUtils.isEmpty(crtf.getName())) {
+            tf = getTestFunctionality(crtf.getName(), edition.getCertificationEditionId());
+        }
 
-        if (!isTestFunctionalityCritierionValid(cr.getCriterion().getId(), tf, edition.getYear())) {
+//        if (tf == null) {
+//            errors.add(msgUtil.getMessage("listing.criteria.unknownTestFunctionality", Util.formatCriteriaNumber(cr.getCriterion())));
+//        } else
+            if (!isTestFunctionalityCritierionValid(cr.getCriterion().getId(), tf, edition.getYear())) {
             errors.add(getTestFunctionalityCriterionErrorMessage(crtf, cr, listing, edition));
         }
         return errors;
@@ -128,6 +137,10 @@ public class TestFunctionalityAllowedByCriteriaReviewer extends PermissionBasedR
 
     private TestFunctionalityDTO getTestFunctionality(Long testFunctionalityId, Long editionId) {
         return testFunctionalityDAO.getByIdAndEdition(testFunctionalityId, editionId);
+    }
+
+    private TestFunctionalityDTO getTestFunctionality(String testFunctionalityNumber, Long editionId) {
+        return testFunctionalityDAO.getByNumberAndEdition(testFunctionalityNumber, editionId);
     }
 
     private String getDelimitedListOfValidCriteriaNumbers(TestFunctionalityDTO tfDTO,
