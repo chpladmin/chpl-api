@@ -71,13 +71,14 @@ public class CuresCrieriaUpdateByAcbCalculator {
                 x.setCuresCriteriaUpdate(curesCriteriaUpdate);
                 x.setCertificationBody(new CertificationBody(certificationBodyDAO.getById(acbId)));
                 x.setCountOriginalUpgradedToCures(calculateUpgradeCriterionByAcb(acbId, listingsAttestingToCriterion, curesCriteriaUpdate.getOriginalCriterion()));
+                x.setCountCuresWhenCreated(calculateNewCriterionByAcb(acbId, listingsAttestingToCriterion, curesCriteriaUpdate.getOriginalCriterion()));
 
                 curesCriteriaUpdateByAcbs.add(x);
             }
         }
 
         curesCriteriaUpdateByAcbs.stream()
-                .forEach(item -> LOGGER.info(String.format("%s -- %s -- %S", item.getCertificationBody().getName(), item.getCuresCriteriaUpdate().getOriginalCriterion().getNumber(), item.getCountOriginalUpgradedToCures())));
+                .forEach(item -> LOGGER.info(String.format("%s -- %s -- %s -- %s", item.getCertificationBody().getName(), item.getCuresCriteriaUpdate().getOriginalCriterion().getNumber(), item.getCountOriginalUpgradedToCures(), item.getCountCuresWhenCreated())));
         return curesCriteriaUpdateByAcbs;
     }
 
@@ -85,6 +86,13 @@ public class CuresCrieriaUpdateByAcbCalculator {
         return certifiedProductDetails.stream()
                 .filter(listing -> listing.getCertificationBodyId().equals(acbId))
                 .filter(listing -> activityStatisticsHelper.didListingRemoveAttestationToCriterionDuringTimeInterval(listing.getId(), criterion, curesEffectiveDate, new Date()))
+                .collect(Collectors.counting());
+    }
+
+    private Long calculateNewCriterionByAcb(Long acbId, List<CertifiedProductDetailsDTO> certifiedProductDetails, CertificationCriterion criterion) {
+        return certifiedProductDetails.stream()
+                .filter(listing -> listing.getCertificationBodyId().equals(acbId))
+                .filter(listing -> !activityStatisticsHelper.didListingRemoveAttestationToCriterionDuringTimeInterval(listing.getId(), criterion, curesEffectiveDate, new Date()))
                 .collect(Collectors.counting());
     }
 
