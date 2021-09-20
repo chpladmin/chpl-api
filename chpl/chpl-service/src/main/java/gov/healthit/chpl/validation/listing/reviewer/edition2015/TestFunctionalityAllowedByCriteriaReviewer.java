@@ -70,12 +70,14 @@ public class TestFunctionalityAllowedByCriteriaReviewer extends PermissionBasedR
         TestFunctionalityDTO tf = null;
         if (crtf.getTestFunctionalityId() != null) {
             tf = getTestFunctionality(crtf.getTestFunctionalityId(), edition.getCertificationEditionId());
+            if (tf == null) {
+                errors.add(msgUtil.getMessage("listing.criteria.invalidTestFunctionalityId", Util.formatCriteriaNumber(cr.getCriterion()), crtf.getTestFunctionalityId()));
+            }
         } else if (!StringUtils.isEmpty(crtf.getName())) {
             tf = getTestFunctionality(crtf.getName(), edition.getCertificationEditionId());
-        }
-
-        if (!isTestFunctionalityCritierionValid(cr.getCriterion().getId(), tf, edition.getYear())) {
-            errors.add(getTestFunctionalityCriterionErrorMessage(crtf, cr, listing, edition));
+            if (!isTestFunctionalityCritierionValid(cr.getCriterion().getId(), tf, edition.getYear())) {
+                errors.add(getTestFunctionalityCriterionErrorMessage(crtf, cr, listing, edition));
+            }
         }
         return errors;
     }
