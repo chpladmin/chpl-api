@@ -1,10 +1,10 @@
 package gov.healthit.chpl.scheduler.job;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -225,7 +225,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
     }
 
     private Boolean isNonConformityOpen(SurveillanceNonconformity nonConformity) {
-        return nonConformity.getNonconformityCloseDate() == null;
+        return nonConformity.getNonconformityCloseDay() == null;
     }
 
     private BrokenSurveillanceRulesDTO getDefaultBrokenRule(CertifiedProductSearchDetails listing)
@@ -265,15 +265,11 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         if (surv.getFriendlyId() != null) {
             rule.setSurveillanceId(surv.getFriendlyId());
         }
-        if (surv.getStartDate() != null) {
-            LocalDateTime survStartDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(surv.getStartDate().getTime()),
-                    ZoneId.systemDefault());
-            rule.setDateSurveillanceBegan(dateFormatter.format(survStartDate));
+        if (surv.getStartDay() != null) {
+            rule.setDateSurveillanceBegan(dateFormatter.format(surv.getStartDay()));
         }
-        if (surv.getEndDate() != null) {
-            LocalDateTime survEndDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(surv.getEndDate().getTime()),
-                    ZoneId.systemDefault());
-            rule.setDateSurveillanceEnded(dateFormatter.format(survEndDate));
+        if (surv.getEndDay() != null) {
+            rule.setDateSurveillanceEnded(dateFormatter.format(surv.getEndDay()));
         }
         rule.setSurveillanceType(surv.getType().getName());
         rule.setNonconformity(false);
@@ -288,62 +284,52 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         } else {
             rule.setNonconformityCriteria(nc.getNonconformityType());
         }
-        if (nc.getNonconformityCloseDate() != null) {
-            rule.setNonConformityCloseDate(nc.getNonconformityCloseDate());
+        if (nc.getNonconformityCloseDay() != null) {
+            rule.setNonConformityCloseDate(nc.getNonconformityCloseDay());
         }
-        LocalDateTime ncDeterminationDate = null;
-        if (nc.getDateOfDetermination() != null) {
-            ncDeterminationDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getDateOfDetermination().getTime()), ZoneId.systemDefault());
-            rule.setDateOfDeterminationOfNonconformity(dateFormatter.format(ncDeterminationDate));
+        if (nc.getDateOfDeterminationDay() != null) {
+            rule.setDateOfDeterminationOfNonconformity(dateFormatter.format((nc.getDateOfDeterminationDay())));
         }
-        LocalDateTime capApprovalDate = null;
-        if (nc.getCapApprovalDate() != null) {
-            capApprovalDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getCapApprovalDate().getTime()), ZoneId.systemDefault());
-            rule.setCorrectiveActionPlanApprovedDate(dateFormatter.format(capApprovalDate));
+        if (nc.getCapApprovalDay() != null) {
+            rule.setCorrectiveActionPlanApprovedDate(dateFormatter.format(nc.getCapApprovalDay()));
         }
-        LocalDateTime capStartDate = null;
-        if (nc.getCapStartDate() != null) {
-            capStartDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getCapStartDate().getTime()), ZoneId.systemDefault());
-            rule.setDateCorrectiveActionBegan(dateFormatter.format(capStartDate));
+        if (nc.getCapStartDay() != null) {
+            rule.setDateCorrectiveActionBegan(dateFormatter.format(nc.getCapStartDay()));
         }
-        LocalDateTime capMustCompleteDate = null;
-        if (nc.getCapMustCompleteDate() != null) {
-            capMustCompleteDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getCapMustCompleteDate().getTime()), ZoneId.systemDefault());
-            rule.setDateCorrectiveActionMustBeCompleted(dateFormatter.format(capMustCompleteDate));
+        if (nc.getCapMustCompleteDay() != null) {
+            rule.setDateCorrectiveActionMustBeCompleted(dateFormatter.format(nc.getCapMustCompleteDay()));
         }
-        LocalDateTime capEndDate = null;
-        if (nc.getCapEndDate() != null) {
-            capEndDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getCapEndDate().getTime()), ZoneId.systemDefault());
-            rule.setDateCorrectiveActionWasCompleted(dateFormatter.format(capEndDate));
+        if (nc.getCapEndDay() != null) {
+            rule.setDateCorrectiveActionWasCompleted(dateFormatter.format(nc.getCapEndDay()));
         }
 
-        if (capApprovalDate != null) {
-            Duration timeBetween = Duration.between(ncDeterminationDate, capApprovalDate);
-            rule.setNumberOfDaysFromDeterminationToCapApproval(timeBetween.toDays());
+        if (nc.getCapApprovalDay() != null) {
+            long diffInDays = ChronoUnit.DAYS.between(nc.getDateOfDeterminationDay(), nc.getCapApprovalDay());
+            rule.setNumberOfDaysFromDeterminationToCapApproval(diffInDays);
         } else {
-            Duration timeBetween = Duration.between(ncDeterminationDate, LocalDateTime.now());
-            rule.setNumberOfDaysFromDeterminationToPresent(timeBetween.toDays());
+            long diffInDays = ChronoUnit.DAYS.between(nc.getDateOfDeterminationDay(), LocalDateTime.now());
+            rule.setNumberOfDaysFromDeterminationToPresent(diffInDays);
         }
 
-        if (capApprovalDate != null && capStartDate != null) {
-            Duration timeBetween = Duration.between(capApprovalDate, capStartDate);
-            rule.setNumberOfDaysFromCapApprovalToCapBegan(timeBetween.toDays());
-        } else if (capApprovalDate != null) {
-            Duration timeBetween = Duration.between(capApprovalDate, LocalDateTime.now());
-            rule.setNumberOfDaysFromCapApprovalToPresent(timeBetween.toDays());
+        if (nc.getCapApprovalDay() != null && nc.getCapStartDay() != null) {
+            long diffInDays = ChronoUnit.DAYS.between(nc.getCapApprovalDay(), nc.getCapStartDay());
+            rule.setNumberOfDaysFromCapApprovalToCapBegan(diffInDays);
+        } else if (nc.getCapApprovalDay() != null) {
+            long diffInDays = ChronoUnit.DAYS.between(nc.getCapApprovalDay(), LocalDateTime.now());
+            rule.setNumberOfDaysFromCapApprovalToPresent(diffInDays);
         }
 
-        if (capStartDate != null && capEndDate != null) {
-            Duration timeBetween = Duration.between(capStartDate, capEndDate);
-            rule.setNumberOfDaysFromCapBeganToCapCompleted(timeBetween.toDays());
-        } else if (capStartDate != null) {
-            Duration timeBetween = Duration.between(capStartDate, LocalDateTime.now());
-            rule.setNumberOfDaysFromCapBeganToPresent(timeBetween.toDays());
+        if (nc.getCapStartDay() != null && nc.getCapEndDay() != null) {
+            long diffInDays = ChronoUnit.DAYS.between(nc.getCapStartDay(), nc.getCapEndDay());
+            rule.setNumberOfDaysFromCapBeganToCapCompleted(diffInDays);
+        } else if (nc.getCapStartDay() != null) {
+            long diffInDays = ChronoUnit.DAYS.between(nc.getCapStartDay(), LocalDateTime.now());
+            rule.setNumberOfDaysFromCapBeganToPresent(diffInDays);
         }
 
-        if (capEndDate != null && capMustCompleteDate != null) {
-            Duration timeBetween = Duration.between(capMustCompleteDate, capEndDate);
-            rule.setDifferenceFromCapCompletedAndCapMustBeCompleted(timeBetween.toDays());
+        if (nc.getCapEndDay() != null && nc.getCapMustCompleteDay() != null) {
+            long diffInDays = ChronoUnit.DAYS.between(nc.getCapMustCompleteDay(), nc.getCapEndDay());
+            rule.setDifferenceFromCapCompletedAndCapMustBeCompleted(diffInDays);
         }
         return rule;
     }

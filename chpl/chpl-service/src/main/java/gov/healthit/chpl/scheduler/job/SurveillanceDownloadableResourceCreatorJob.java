@@ -22,7 +22,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.presenter.NonconformityCsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.SurveillanceCsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.SurveillanceReportCsvPresenter;
-import gov.healthit.chpl.service.CertificationCriterionService;
 
 @DisallowConcurrentExecution
 public class SurveillanceDownloadableResourceCreatorJob extends DownloadableResourceCreatorJob {
@@ -30,9 +29,6 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
 
     @Autowired
     private Environment env;
-
-    @Autowired
-    private CertificationCriterionService criterionService;
 
     public SurveillanceDownloadableResourceCreatorJob() throws Exception {
         super(LOGGER);
@@ -55,7 +51,7 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
             writeSurveillanceWithNonconformitiesFile(downloadFolder, orderedListings);
             writeSurveillanceBasicReportFile(downloadFolder, orderedListings);
         } catch (Exception e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
         }
         LOGGER.info("********* Completed the Surveillance Downloadable Resource Creator job. *********");
     }
@@ -75,7 +71,7 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
                 + getFilenameTimestampFormat().format(new Date())
                 + ".csv";
         File csvFile = getFile(csvFilename);
-        SurveillanceCsvPresenter csvPresenter = new SurveillanceCsvPresenter(env, criterionService);
+        SurveillanceCsvPresenter csvPresenter = new SurveillanceCsvPresenter(env);
         csvPresenter.presentAsFile(csvFile, results);
         LOGGER.info("Wrote Surveillance-All CSV file.");
     }
@@ -88,7 +84,7 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
                 + getFilenameTimestampFormat().format(new Date())
                 + ".csv";
         File csvFile = getFile(csvFilename);
-        NonconformityCsvPresenter csvPresenter = new NonconformityCsvPresenter(env, criterionService);
+        NonconformityCsvPresenter csvPresenter = new NonconformityCsvPresenter(env);
         csvPresenter.presentAsFile(csvFile, results);
         LOGGER.info("Wrote Surveillance With Nonconformities CSV file.");
     }
@@ -101,7 +97,7 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
                 + getFilenameTimestampFormat().format(new Date())
                 + ".csv";
         File csvFile = getFile(csvFilename);
-        SurveillanceReportCsvPresenter csvPresenter = new SurveillanceReportCsvPresenter(env, criterionService);
+        SurveillanceReportCsvPresenter csvPresenter = new SurveillanceReportCsvPresenter(env);
         csvPresenter.presentAsFile(csvFile, results);
         LOGGER.info("Wrote Surveillance Basic Report CSV file.");
     }
