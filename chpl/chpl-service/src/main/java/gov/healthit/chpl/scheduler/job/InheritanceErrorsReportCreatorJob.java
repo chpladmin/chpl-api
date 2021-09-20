@@ -137,7 +137,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
     private CertifiedProductSearchDetails getCertifiedProductSearchDetails(Long id) {
         CertifiedProductSearchDetails cp = null;
         try {
-            cp = certifiedProductDetailsManager.getCertifiedProductDetails(id);
+            cp = certifiedProductDetailsManager.getCertifiedProductDetailsUsingCache(id);
             LOGGER.info("Completed retrieval of listing [" + cp.getChplProductNumber() + "]");
         } catch (Exception e) {
             LOGGER.error("Could not retrieve listing [" + id + "] - " + e.getMessage(), e);
