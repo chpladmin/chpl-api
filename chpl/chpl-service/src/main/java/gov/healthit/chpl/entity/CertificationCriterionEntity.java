@@ -15,11 +15,15 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "certification_criterion")
 public class CertificationCriterionEntity implements Serializable {
@@ -88,6 +92,18 @@ public class CertificationCriterionEntity implements Serializable {
     @Column(name = "removed")
     private Boolean removed;
 
+    public static CertificationCriterionEntity getNewCertificationCriterionEntity(CertificationCriterion criterion) {
+        return CertificationCriterionEntity.builder()
+                .id(criterion.getId())
+                .certificationEditionId(criterion.getCertificationEditionId())
+                .certificationEdition(new CertificationEditionEntity(criterion.getCertificationEditionId()))
+                .description(criterion.getDescription())
+                .number(criterion.getNumber())
+                .title(criterion.getTitle())
+                .removed(criterion.getRemoved())
+                .build();
+    }
+
     public CertificationCriterion buildCertificationCriterion() {
         return CertificationCriterion.builder()
                 .id(this.getId())
@@ -99,4 +115,5 @@ public class CertificationCriterionEntity implements Serializable {
                 .title(this.getTitle())
                 .build();
     }
+
 }

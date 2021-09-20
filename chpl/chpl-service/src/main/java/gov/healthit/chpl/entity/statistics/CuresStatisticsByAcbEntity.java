@@ -30,15 +30,15 @@ public class CuresStatisticsByAcbEntity {
     private Long id;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "certification_body_id", insertable = false, updatable = false)
+    @JoinColumn(name = "certification_body_id", insertable = true, updatable = true)
     private CertificationBodyEntity certificationBody;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "original_criterion_id", insertable = false, updatable = false)
+    @JoinColumn(name = "original_criterion_id", insertable = true, updatable = true)
     private CertificationCriterionEntity originalCriterion;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "cures_criterion_id", insertable = false, updatable = false)
+    @JoinColumn(name = "cures_criterion_id", insertable = true, updatable = true)
     private CertificationCriterionEntity curesCriterion;
 
     @Basic(optional = false)
@@ -71,9 +71,9 @@ public class CuresStatisticsByAcbEntity {
 
     public CuresStatisticsByAcbEntity(CuresStatisticsByAcb domain) {
         this.id = domain.getId();
-        this.certificationBody = domain.getCertificationBody();
-        this.originalCriterion = domain.getOriginalCriterion();
-        this.curesCriterion = domain.getCuresCriterion();
+        this.certificationBody = CertificationBodyEntity.getNewAcbEntity(domain.getCertificationBody());
+        this.originalCriterion = CertificationCriterionEntity.getNewCertificationCriterionEntity(domain.getOriginalCriterion());
+        this.curesCriterion = CertificationCriterionEntity.getNewCertificationCriterionEntity(domain.getCuresCriterion());
         this.originalCriterionUpgradedCount = domain.getOriginalCriterionUpgradedCount();
         this.curesCriterionCreatedCount = domain.getCuresCriterionCreatedCount();
         this.statisticDate = domain.getStatisticDate();
