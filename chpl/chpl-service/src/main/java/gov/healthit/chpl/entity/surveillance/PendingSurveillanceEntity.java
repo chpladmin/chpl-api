@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity.surveillance;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,10 +18,13 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.listing.CertifiedProductSummaryEntity;
-import gov.healthit.chpl.util.Util;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "pending_surveillance")
+@Getter
+@Setter
 public class PendingSurveillanceEntity {
 
     @Id
@@ -42,10 +46,10 @@ public class PendingSurveillanceEntity {
     private CertifiedProductSummaryEntity certifiedProduct;
 
     @Column(name = "start_date")
-    private Date startDate;
+    private LocalDate startDate;
 
     @Column(name = "end_date")
-    private Date endDate;
+    private LocalDate endDate;
 
     @Column(name = "type_value")
     private String surveillanceType;
@@ -78,132 +82,4 @@ public class PendingSurveillanceEntity {
     @Basic(optional = false)
     @Column(name = "pending_surveillance_id", nullable = false)
     private Set<PendingSurveillanceValidationEntity> validation = new HashSet<PendingSurveillanceValidationEntity>();
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getCertifiedProductUniqueId() {
-        return certifiedProductUniqueId;
-    }
-
-    public void setCertifiedProductUniqueId(final String certifiedProductUniqueId) {
-        this.certifiedProductUniqueId = certifiedProductUniqueId;
-    }
-
-    public Date getStartDate() {
-        return Util.getNewDate(startDate);
-    }
-
-    public void setStartDate(final Date startDate) {
-        this.startDate = Util.getNewDate(startDate);
-    }
-
-    public Date getEndDate() {
-        return Util.getNewDate(endDate);
-    }
-
-    public void setEndDate(final Date endDate) {
-        this.endDate = Util.getNewDate(endDate);
-    }
-
-    public String getSurveillanceType() {
-        return surveillanceType;
-    }
-
-    public void setSurveillanceType(final String surveillanceType) {
-        this.surveillanceType = surveillanceType;
-    }
-
-    public Integer getNumRandomizedSites() {
-        return numRandomizedSites;
-    }
-
-    public void setNumRandomizedSites(final Integer numRandomizedSites) {
-        this.numRandomizedSites = numRandomizedSites;
-    }
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Long getUserPermissionId() {
-        return userPermissionId;
-    }
-
-    public void setUserPermissionId(final Long userPermissionId) {
-        this.userPermissionId = userPermissionId;
-    }
-
-    public Set<PendingSurveillanceRequirementEntity> getSurveilledRequirements() {
-        return surveilledRequirements;
-    }
-
-    public void setSurveilledRequirements(final Set<PendingSurveillanceRequirementEntity> surveilledRequirements) {
-        this.surveilledRequirements = surveilledRequirements;
-    }
-
-    public CertifiedProductSummaryEntity getCertifiedProduct() {
-        return certifiedProduct;
-    }
-
-    public void setCertifiedProduct(final CertifiedProductSummaryEntity certifiedProduct) {
-        this.certifiedProduct = certifiedProduct;
-    }
-
-    public Long getCertifiedProductId() {
-        return certifiedProductId;
-    }
-
-    public void setCertifiedProductId(final Long certifiedProductId) {
-        this.certifiedProductId = certifiedProductId;
-    }
-
-    public String getSurvFriendlyIdToReplace() {
-        return survFriendlyIdToReplace;
-    }
-
-    public void setSurvFriendlyIdToReplace(final String survFriendlyIdToReplace) {
-        this.survFriendlyIdToReplace = survFriendlyIdToReplace;
-    }
-
-    public Set<PendingSurveillanceValidationEntity> getValidation() {
-        return validation;
-    }
-
-    public void setValidation(final Set<PendingSurveillanceValidationEntity> validation) {
-        this.validation = validation;
-    }
 }

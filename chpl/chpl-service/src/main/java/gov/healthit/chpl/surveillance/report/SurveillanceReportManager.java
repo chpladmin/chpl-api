@@ -14,7 +14,7 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -564,12 +564,12 @@ public class SurveillanceReportManager extends SecuredManager {
             return;
         }
         HashSet<String> warnings = new HashSet<String>();
-        if (!toUpdate.getReactiveSummary().equalsIgnoreCase(toUpdate.getReactiveSurveillanceSummary())
-                && existing.getReactiveSurveillanceSummary().equalsIgnoreCase(toUpdate.getReactiveSurveillanceSummary())) {
+        if (!StringUtils.equalsIgnoreCase(toUpdate.getReactiveSummary(), toUpdate.getReactiveSurveillanceSummary())
+                && StringUtils.equalsIgnoreCase(existing.getReactiveSurveillanceSummary(), toUpdate.getReactiveSurveillanceSummary())) {
             warnings.add(msgUtil.getMessage("deprecated.field.update", "reactiveSummary", "reactiveSurveillanceSummary"));
         }
-        if (!toUpdate.getTransparencyDisclosureSummary().equalsIgnoreCase(toUpdate.getDisclosureRequirementsSummary())
-                && existing.getDisclosureRequirementsSummary().equalsIgnoreCase(toUpdate.getDisclosureRequirementsSummary())) {
+        if (!StringUtils.equalsIgnoreCase(toUpdate.getTransparencyDisclosureSummary(), toUpdate.getDisclosureRequirementsSummary())
+                && StringUtils.equalsIgnoreCase(existing.getDisclosureRequirementsSummary(), toUpdate.getDisclosureRequirementsSummary())) {
             warnings.add(msgUtil.getMessage("deprecated.field.update", "transparencyDisclosureSummary", "disclosureRequirementsSummary"));
         }
         if (warnings.size() > 0) {
