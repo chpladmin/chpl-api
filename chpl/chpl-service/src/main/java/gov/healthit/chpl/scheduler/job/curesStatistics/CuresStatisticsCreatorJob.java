@@ -48,6 +48,9 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
     @Autowired
     private ListingCriterionForCuresAchievementStatisticsCalculator listingCriterionForCuresAchievementStatisticsCalculator;
 
+    @Autowired
+    private CuresCrieriaUpdateByAcbCalculator curesCrieriaUpdateByAcbCalculator;
+
     @Override
     public void execute(JobExecutionContext arg0) throws JobExecutionException {
         LOGGER.info("*****Cures Reporting Statistics Job is starting.*****");
@@ -57,13 +60,18 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
         LocalDate yesterday = today.minus(Period.ofDays(ONE_DAY));
         LOGGER.info("Calculating statistics for " + yesterday);
 
-        setCriterionListingCountStatisticsForDate(yesterday);
-        setOriginalCriterionActivityStatisticsForDate(yesterday);
-        setCuresCriterionActivityStatisticsForDate(yesterday);
-        setListingCuresStatusStatisticsForDate(yesterday);
-        setPrivacyAndSecurityListingStatisticsForDate(yesterday);
-        setCriteriaNeededToAchieveCuresStatisticsForDate(yesterday);
+        //setCriterionListingCountStatisticsForDate(yesterday);
+        //setOriginalCriterionActivityStatisticsForDate(yesterday);
+        //setCuresCriterionActivityStatisticsForDate(yesterday);
+        //setListingCuresStatusStatisticsForDate(yesterday);
+        //setPrivacyAndSecurityListingStatisticsForDate(yesterday);
+        //setCriteriaNeededToAchieveCuresStatisticsForDate(yesterday);
 
+        try {
+            curesCrieriaUpdateByAcbCalculator.calculate();
+        } catch (Exception e) {
+            LOGGER.catching(e);
+        }
         LOGGER.info("*****Cures Reporting Statistics Job is complete.*****");
     }
 
