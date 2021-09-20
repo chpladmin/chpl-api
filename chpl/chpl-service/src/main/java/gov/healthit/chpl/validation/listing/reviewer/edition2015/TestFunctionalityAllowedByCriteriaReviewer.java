@@ -74,10 +74,7 @@ public class TestFunctionalityAllowedByCriteriaReviewer extends PermissionBasedR
             tf = getTestFunctionality(crtf.getName(), edition.getCertificationEditionId());
         }
 
-//        if (tf == null) {
-//            errors.add(msgUtil.getMessage("listing.criteria.unknownTestFunctionality", Util.formatCriteriaNumber(cr.getCriterion())));
-//        } else
-            if (!isTestFunctionalityCritierionValid(cr.getCriterion().getId(), tf, edition.getYear())) {
+        if (!isTestFunctionalityCritierionValid(cr.getCriterion().getId(), tf, edition.getYear())) {
             errors.add(getTestFunctionalityCriterionErrorMessage(crtf, cr, listing, edition));
         }
         return errors;
