@@ -17,9 +17,11 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.domain.statistics.CriterionListingCountStatistic;
 import gov.healthit.chpl.domain.statistics.CriterionUpgradedToCuresFromOriginalListingStatistic;
 import gov.healthit.chpl.domain.statistics.CuresCriterionUpgradedWithoutOriginalListingStatistic;
+import gov.healthit.chpl.domain.statistics.CuresStatisticsByAcb;
 import gov.healthit.chpl.domain.statistics.ListingCuresStatusStatistic;
 import gov.healthit.chpl.domain.statistics.ListingToCriterionForCuresAchievementStatistic;
 import gov.healthit.chpl.domain.statistics.PrivacyAndSecurityListingStatistic;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import lombok.extern.log4j.Log4j2;
 
@@ -66,15 +68,29 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
         //setListingCuresStatusStatisticsForDate(yesterday);
         //setPrivacyAndSecurityListingStatisticsForDate(yesterday);
         //setCriteriaNeededToAchieveCuresStatisticsForDate(yesterday);
+        setCuresStatisticsByAcbForDate(yesterday);
 
-        try {
-            curesCrieriaUpdateByAcbCalculator.calculate();
-        } catch (Exception e) {
-            LOGGER.catching(e);
-        }
         LOGGER.info("*****Cures Reporting Statistics Job is complete.*****");
     }
 
+    private void setCuresStatisticsByAcbForDate(LocalDate statisticDate) {
+        TransactionTemplate txTemplate = new TransactionTemplate(txManager);
+        txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        txTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                try {
+                    List<CuresStatisticsByAcb> stats = curesCrieriaUpdateByAcbCalculator.calculate();
+                    curesCrieriaUpdateByAcbCalculator.save(stats);
+                } catch (EntityRetrievalException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+
+            }
+
+        });
+    }
     private void setCriterionListingCountStatisticsForDate(LocalDate statisticDate) {
         TransactionTemplate txTemplate = new TransactionTemplate(txManager);
         txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);

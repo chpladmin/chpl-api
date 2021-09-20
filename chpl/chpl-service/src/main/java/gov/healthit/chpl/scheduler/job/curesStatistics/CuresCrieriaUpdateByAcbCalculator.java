@@ -1,5 +1,6 @@
 package gov.healthit.chpl.scheduler.job.curesStatistics;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -10,10 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.SpecialProperties;
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.statistics.CuresStatisticsByAcbDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.statistics.CuresStatisticsByAcb;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -28,6 +32,7 @@ public class CuresCrieriaUpdateByAcbCalculator {
     private CertifiedProductDAO certifiedProductDAO;
     private CertificationResultActivityHistoryHelper activityStatisticsHelper;
     private CertificationBodyDAO certificationBodyDAO;
+    private CuresStatisticsByAcbDAO curesStatisticsByAcbDAO;
 
     private List<CuresCriteriaUpdate> curesCriteriaUpdates = new ArrayList<CuresCrieriaUpdateByAcbCalculator.CuresCriteriaUpdate>();
     private List<CertificationStatusType> activeStatuses;
@@ -39,12 +44,14 @@ public class CuresCrieriaUpdateByAcbCalculator {
             CertifiedProductDAO certifiedProductDAO,
             CertificationBodyDAO certificationBodyDAO,
             CertificationResultActivityHistoryHelper activityStatisticsHelper,
+            CuresStatisticsByAcbDAO curesStatisticsByAcbDAO,
             SpecialProperties specialProperties) {
 
         //this.certificationCriterionService = certificationCriterionService;
         this.certifiedProductDAO = certifiedProductDAO;
         this.activityStatisticsHelper = activityStatisticsHelper;
         this.certificationBodyDAO = certificationBodyDAO;
+        this.curesStatisticsByAcbDAO = curesStatisticsByAcbDAO;
 
         curesEffectiveDate = specialProperties.getEffectiveRuleDate();
 
@@ -59,27 +66,37 @@ public class CuresCrieriaUpdateByAcbCalculator {
     }
 
 
-    public List<CuresCriteriaUpdateByAcb> calculate() throws EntityRetrievalException {
-        List<CuresCriteriaUpdateByAcb> curesCriteriaUpdateByAcbs = new ArrayList<CuresCriteriaUpdateByAcb>();
+    public List<CuresStatisticsByAcb> calculate() throws EntityRetrievalException {
+        List<CuresStatisticsByAcb> curesCriteriaUpdateByAcbs = new ArrayList<CuresStatisticsByAcb>();
         for (CuresCriteriaUpdate curesCriteriaUpdate : curesCriteriaUpdates) {
             List<CertifiedProductDetailsDTO> listingsAttestingToCriterion = certifiedProductDAO.getListingsAttestingToCriterion(curesCriteriaUpdate.getCuresCriterion().getId(), activeStatuses);
 
             List<Long> acbIds = getListOfAcbs(listingsAttestingToCriterion);
 
             for (Long acbId : acbIds) {
-                CuresCriteriaUpdateByAcb x = new CuresCriteriaUpdateByAcb();
-                x.setCuresCriteriaUpdate(curesCriteriaUpdate);
-                x.setCertificationBody(new CertificationBody(certificationBodyDAO.getById(acbId)));
-                x.setCountOriginalUpgradedToCures(calculateUpgradeCriterionByAcb(acbId, listingsAttestingToCriterion, curesCriteriaUpdate.getOriginalCriterion()));
-                x.setCountCuresWhenCreated(calculateNewCriterionByAcb(acbId, listingsAttestingToCriterion, curesCriteriaUpdate.getOriginalCriterion()));
+                CuresStatisticsByAcb statistic = CuresStatisticsByAcb.builder()
+                        .certificationBody(new CertificationBody(certificationBodyDAO.getById(acbId)))
+                        .originalCriterion(curesCriteriaUpdate.originalCriterion)
+                        .curesCriterion(curesCriteriaUpdate.curesCriterion)
+                        .originalCriterionUpgradedCount(calculateUpgradeCriterionByAcb(acbId, listingsAttestingToCriterion, curesCriteriaUpdate.getOriginalCriterion()))
+                        .curesCriterionCreatedCount(calculateNewCriterionByAcb(acbId, listingsAttestingToCriterion, curesCriteriaUpdate.getOriginalCriterion()))
+                        .statisticDate(LocalDate.now())
+                        .build();
 
-                curesCriteriaUpdateByAcbs.add(x);
+                curesCriteriaUpdateByAcbs.add(statistic);
             }
         }
 
         curesCriteriaUpdateByAcbs.stream()
-                .forEach(item -> LOGGER.info(String.format("%s -- %s -- %s -- %s", item.getCertificationBody().getName(), item.getCuresCriteriaUpdate().getOriginalCriterion().getNumber(), item.getCountOriginalUpgradedToCures(), item.getCountCuresWhenCreated())));
+                .forEach(item -> LOGGER.info(String.format("%s -- %s -- %s -- %s", item.getCertificationBody().getName(), item.getOriginalCriterion().getNumber(), item.getOriginalCriterionUpgradedCount(), item.getCuresCriterionCreatedCount())));
         return curesCriteriaUpdateByAcbs;
+    }
+
+    public void save(List<CuresStatisticsByAcb> statistics) {
+        statistics.stream()
+            .forEach(stat -> stat.setLastModifiedUser(User.SYSTEM_USER_ID));
+
+        curesStatisticsByAcbDAO.create(statistics);
     }
 
     private Long calculateUpgradeCriterionByAcb(Long acbId, List<CertifiedProductDetailsDTO> certifiedProductDetails, CertificationCriterion criterion) {
@@ -126,6 +143,7 @@ public class CuresCrieriaUpdateByAcbCalculator {
         }
     }
 
+    /*
     class CuresCriteriaUpdateByAcb {
         private CuresCriteriaUpdate curesCriteriaUpdate;
         private CertificationBody certificationBody;
@@ -164,5 +182,5 @@ public class CuresCrieriaUpdateByAcbCalculator {
             this.countCuresWhenCreated = countCuresWhenCreated;
         }
     }
-
+    */
 }
