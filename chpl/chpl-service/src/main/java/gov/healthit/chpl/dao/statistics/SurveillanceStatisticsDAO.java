@@ -1,7 +1,5 @@
 package gov.healthit.chpl.dao.statistics;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -16,6 +14,7 @@ import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
 import gov.healthit.chpl.entity.surveillance.NonconformityAggregatedStatisticsEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailCertificationBodyStatistic;
+import gov.healthit.chpl.util.DateUtil;
 
 @Repository("surveillanceStatisticsDAO")
 public class SurveillanceStatisticsDAO extends BaseDAOImpl {
@@ -33,7 +32,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
 
         Query query = entityManager.createQuery(hql);
         if (endDate != null) {
-            query.setParameter("endDate", endDate);
+            query.setParameter("endDate", DateUtil.toLocalDate(endDate.getTime()));
         }
         return (Long) query.getSingleResult();
     }
@@ -53,7 +52,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
 
         Query query = entityManager.createQuery(hql);
         if (endDate != null) {
-            query.setParameter("endDate", endDate);
+            query.setParameter("endDate", DateUtil.toLocalDate(endDate.getTime()));
         }
         return (Long) query.getSingleResult();
     }
@@ -73,7 +72,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
 
         Query query = entityManager.createQuery(hql);
         if (endDate != null) {
-            query.setParameter("endDate", endDate);
+            query.setParameter("endDate", DateUtil.toLocalDate(endDate.getTime()));
         }
         return (Long) query.getSingleResult();
     }
@@ -92,7 +91,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
 
         Query query = entityManager.createQuery(hql);
         if (endDate != null) {
-            query.setParameter("endDate", endDate);
+            query.setParameter("endDate", DateUtil.toLocalDate(endDate.getTime()));
         }
         return (Long) query.getSingleResult();
     }
@@ -112,7 +111,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
 
         Query query = entityManager.createQuery(hql);
         if (endDate != null) {
-            query.setParameter("endDate", endDate);
+            query.setParameter("endDate", DateUtil.toLocalDate(endDate.getTime()));
         }
         return (Long) query.getSingleResult();
     }
@@ -146,7 +145,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery(hql);
 
         if (endDate != null) {
-            query.setParameter("endDate", endDate);
+            query.setParameter("endDate", DateUtil.toLocalDate(endDate.getTime()));
         }
 
         List<Object[]> results = query.getResultList();
@@ -164,13 +163,6 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
      * Closed NCs.
      */
     public Long getTotalClosedNonconformities(Date endDate) {
-        LocalDate localDateEndDate = null;
-        if (endDate != null) {
-            localDateEndDate = endDate.toInstant()
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDate();
-        }
-
         String hql = "SELECT count(*) "
                 + "FROM SurveillanceNonconformityEntity "
                 + "WHERE nonconformityCloseDate IS NOT NULL ";
@@ -183,7 +175,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
 
         Query query = entityManager.createQuery(hql);
         if (endDate != null) {
-            query.setParameter("endDate", localDateEndDate);
+            query.setParameter("endDate", DateUtil.toLocalDate(endDate.getTime()));
         }
         return (Long) query.getSingleResult();
     }
@@ -214,7 +206,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery(hql);
 
         if (endDate != null) {
-            query.setParameter("endDate", endDate);
+            query.setParameter("endDate", DateUtil.toLocalDate(endDate.getTime()));
         }
 
         List<Object[]> results = query.getResultList();

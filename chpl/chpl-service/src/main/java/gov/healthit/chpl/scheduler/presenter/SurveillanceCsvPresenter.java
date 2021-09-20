@@ -3,9 +3,6 @@ package gov.healthit.chpl.scheduler.presenter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -28,13 +25,11 @@ public class SurveillanceCsvPresenter {
     private Environment env;
     private DateTimeFormatter dateFormatter;
     private DateTimeFormatter dateTimeFormatter;
-    private CertificationCriterionService criterionService;
 
-    public SurveillanceCsvPresenter(Environment env, CertificationCriterionService criterionService) {
+    public SurveillanceCsvPresenter(Environment env) {
         dateFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd");
         dateTimeFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm Z");
         this.env = env;
-        this.criterionService = criterionService;
     }
 
     public void presentAsFile(final File file, final List<CertifiedProductSearchDetails> cpList) {
@@ -160,17 +155,13 @@ public class SurveillanceCsvPresenter {
         result.add(listing.getProduct().getName());
         result.add(listing.getVersion().getVersion());
         result.add(surv.getFriendlyId());
-        if (surv.getStartDate() != null) {
-            LocalDateTime survStartDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(surv.getStartDate().getTime()),
-                    ZoneId.systemDefault());
-            result.add(dateFormatter.format(survStartDate));
+        if (surv.getStartDay() != null) {
+            result.add(dateFormatter.format(surv.getStartDay()));
         } else {
             result.add("");
         }
-        if (surv.getEndDate() != null) {
-            LocalDateTime survEndDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(surv.getEndDate().getTime()),
-                    ZoneId.systemDefault());
-            result.add(dateFormatter.format(survEndDate));
+        if (surv.getEndDay() != null) {
+            result.add(dateFormatter.format(surv.getEndDay()));
         } else {
             result.add("");
         }
@@ -193,7 +184,7 @@ public class SurveillanceCsvPresenter {
             reqRow.add("");
         }
         if (req.getCriterion() != null) {
-            reqRow.add(criterionService.formatCriteriaNumber(req.getCriterion()));
+            reqRow.add(CertificationCriterionService.formatCriteriaNumber(req.getCriterion()));
         } else if (req.getRequirement() != null) {
             reqRow.add(req.getRequirement());
         } else {
@@ -210,55 +201,45 @@ public class SurveillanceCsvPresenter {
     protected List<String> generateNonconformityRowValues(final SurveillanceNonconformity nc) {
         List<String> ncRow = new ArrayList<String>();
         if (nc.getCriterion() != null) {
-            ncRow.add(criterionService.formatCriteriaNumber(nc.getCriterion()));
+            ncRow.add(CertificationCriterionService.formatCriteriaNumber(nc.getCriterion()));
         } else if (nc.getNonconformityType() != null) {
             ncRow.add(nc.getNonconformityType());
         } else {
             ncRow.add("");
         }
         // Derive the status
-        if (nc.getNonconformityCloseDate() == null) {
+        if (nc.getNonconformityCloseDay() == null) {
             ncRow.add("Open");
         } else {
             ncRow.add("Closed");
         }
-        if (nc.getNonconformityCloseDate() != null) {
-            ncRow.add(dateFormatter.format(nc.getNonconformityCloseDate()));
+        if (nc.getNonconformityCloseDay() != null) {
+            ncRow.add(dateFormatter.format(nc.getNonconformityCloseDay()));
         } else {
             ncRow.add("");
         }
-        if (nc.getDateOfDetermination() != null) {
-            LocalDateTime ncDeterminationDate = LocalDateTime
-                    .ofInstant(Instant.ofEpochMilli(nc.getDateOfDetermination().getTime()), ZoneId.systemDefault());
-            ncRow.add(dateFormatter.format(ncDeterminationDate));
+        if (nc.getDateOfDeterminationDay() != null) {
+            ncRow.add(dateFormatter.format(nc.getDateOfDeterminationDay()));
         } else {
             ncRow.add("");
         }
-        if (nc.getCapApprovalDate() != null) {
-            LocalDateTime ncApprovalDate = LocalDateTime
-                    .ofInstant(Instant.ofEpochMilli(nc.getCapApprovalDate().getTime()), ZoneId.systemDefault());
-            ncRow.add(dateFormatter.format(ncApprovalDate));
+        if (nc.getCapApprovalDay() != null) {
+            ncRow.add(dateFormatter.format(nc.getCapApprovalDay()));
         } else {
             ncRow.add("");
         }
-        if (nc.getCapStartDate() != null) {
-            LocalDateTime ncStartDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getCapStartDate().getTime()),
-                    ZoneId.systemDefault());
-            ncRow.add(dateFormatter.format(ncStartDate));
+        if (nc.getCapStartDay() != null) {
+            ncRow.add(dateFormatter.format(nc.getCapStartDay()));
         } else {
             ncRow.add("");
         }
-        if (nc.getCapMustCompleteDate() != null) {
-            LocalDateTime ncMustCompleteDate = LocalDateTime
-                    .ofInstant(Instant.ofEpochMilli(nc.getCapMustCompleteDate().getTime()), ZoneId.systemDefault());
-            ncRow.add(dateFormatter.format(ncMustCompleteDate));
+        if (nc.getCapMustCompleteDay() != null) {
+            ncRow.add(dateFormatter.format(nc.getCapMustCompleteDay()));
         } else {
             ncRow.add("");
         }
-        if (nc.getCapEndDate() != null) {
-            LocalDateTime ncEndDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getCapEndDate().getTime()),
-                    ZoneId.systemDefault());
-            ncRow.add(dateFormatter.format(ncEndDate));
+        if (nc.getCapEndDay() != null) {
+            ncRow.add(dateFormatter.format(nc.getCapEndDay()));
         } else {
             ncRow.add("");
         }

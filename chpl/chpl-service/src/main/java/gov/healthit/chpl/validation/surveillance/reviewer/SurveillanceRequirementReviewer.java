@@ -140,7 +140,7 @@ public class SurveillanceRequirementReviewer implements Reviewer {
     }
 
     private void checkResultExistsIfSurveillanceClosed(Surveillance surv, SurveillanceRequirement req) {
-        if (surv.getEndDate() != null) {
+        if (surv.getEndDay() != null) {
             if (req.getResult() == null) {
                 surv.getErrorMessages()
                         .add(msgUtil.getMessage("surveillance.resultNotFound", req.getRequirementName()));

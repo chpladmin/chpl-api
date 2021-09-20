@@ -39,7 +39,7 @@ public class SurveillanceActivityReportDataGatherer {
                         startDate, endDate))
                 .collect(Collectors.toList());
 
-        LOGGER.info(String.format("Found %s sruveillances within date range.", records.size()));
+        LOGGER.info(String.format("Found %s surveillances within date range.", records.size()));
 
         return records;
     }
