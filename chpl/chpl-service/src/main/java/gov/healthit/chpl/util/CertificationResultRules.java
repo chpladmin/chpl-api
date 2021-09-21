@@ -11,7 +11,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
@@ -21,7 +20,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertificationCriterionAttributeDAO;
 import gov.healthit.chpl.entity.CertificationCriterionAttributeEntity;
 import lombok.extern.log4j.Log4j2;
@@ -56,10 +54,9 @@ public class CertificationResultRules {
     private Map<String, List<CertificationResultOption>> rules = new HashMap<String, List<CertificationResultOption>>();
 
     @Autowired
-    public CertificationResultRules(CertificationCriterionAttributeDAO certificationCriterionAttributeDAO, FF4j ff4j) {
+    public CertificationResultRules(CertificationCriterionAttributeDAO certificationCriterionAttributeDAO) {
         setRulesUsingLegacyXmlFile();
         setRulesUsingDatabase(certificationCriterionAttributeDAO);
-        setRulesUntilFlagIsOn(certificationCriterionAttributeDAO, ff4j);
     }
 
     private void setRulesUsingLegacyXmlFile() {
@@ -155,24 +152,6 @@ public class CertificationResultRules {
                         .build());
             }
             if (attribute.getTestProcedure()) {
-                rules.get(attribute.getCriterion().getNumber()).add(
-                        CertificationResultOption.builder()
-                        .canHaveOption(true)
-                        .optionName(TEST_PROCEDURE)
-                        .build());
-            }
-        }
-    }
-
-    private void setRulesUntilFlagIsOn(CertificationCriterionAttributeDAO certificationCriterionAttributeDAO,  FF4j ff4j) {
-        List<CertificationCriterionAttributeEntity> attributes = certificationCriterionAttributeDAO.getAllCriteriaAttributes();
-        for (CertificationCriterionAttributeEntity attribute : attributes) {
-            if (!ff4j.check(FeatureList.CONFORMANCE_METHOD)) {
-                rules.get(attribute.getCriterion().getNumber()).add(
-                        CertificationResultOption.builder()
-                        .canHaveOption(false)
-                        .optionName(CONFORMANCE_METHOD)
-                        .build());
                 rules.get(attribute.getCriterion().getNumber()).add(
                         CertificationResultOption.builder()
                         .canHaveOption(true)
