@@ -52,7 +52,7 @@ public class SvapReviewer implements ComparisonReviewer {
 
             Map<Long, List<SvapCriteriaMap>> svapCriteriaMap = null;
             try {
-            svapCriteriaMap = svapDao.getAllSvapCriteriaMap().stream()
+                svapCriteriaMap = svapDao.getAllSvapCriteriaMap().stream()
                     .collect(Collectors.groupingBy(scm -> scm.getCriterion().getId()));
             } catch (EntityRetrievalException e) {
                 updatedListing.getErrorMessages().add("Could not validate SVAP");
@@ -61,6 +61,7 @@ public class SvapReviewer implements ComparisonReviewer {
 
             for (CertificationResult cr : certificationResultsWithSvaps) {
                 for (CertificationResultSvap crs : cr.getSvaps()) {
+                    populateSvapFields(crs, svapCriteriaMap);
                     if (!isSvapValidForCriteria(crs.getSvapId(), cr.getCriterion().getId(), svapCriteriaMap)) {
                         updatedListing.getErrorMessages().add(errorMessageUtil.getMessage("listing.criteria.svap.invalidCriteria",
                                 crs.getRegulatoryTextCitation(), cr.getCriterion().getNumber()));
@@ -74,15 +75,27 @@ public class SvapReviewer implements ComparisonReviewer {
         }
     }
 
-    private boolean isSvapAddedAndMarkedAsReplaced(CertificationResultSvap crs, Map<Long, List<SvapCriteriaMap>> svapCriteriaMap) {
+    private void populateSvapFields(CertificationResultSvap crs, Map<Long, List<SvapCriteriaMap>> svapCriteriaMap) {
         if (crs.getSvapId() != null) {
             Optional<Svap> svap = getSvap(crs.getSvapId(), svapCriteriaMap);
-            return isSvapAdded(crs) && svap.isPresent() && svap.get().isReplaced();
+            if (svap.isPresent()) {
+                crs.setRegulatoryTextCitation(svap.get().getRegulatoryTextCitation());
+                crs.setApprovedStandardVersion(svap.get().getApprovedStandardVersion());
+                crs.setReplaced(svap.get().isReplaced());
+            }
         } else if (!StringUtils.isEmpty(crs.getRegulatoryTextCitation())) {
             Optional<Svap> svap = getSvap(crs.getRegulatoryTextCitation(), svapCriteriaMap);
-            return isSvapAdded(crs) && svap.isPresent() && svap.get().isReplaced();
+            if (svap.isPresent()) {
+                crs.setSvapId(svap.get().getSvapId());
+                crs.setApprovedStandardVersion(svap.get().getApprovedStandardVersion());
+                crs.setReplaced(svap.get().isReplaced());
+            }
         }
-        return false;
+    }
+
+    private boolean isSvapAddedAndMarkedAsReplaced(CertificationResultSvap crs, Map<Long, List<SvapCriteriaMap>> svapCriteriaMap) {
+        Optional<Svap> svap = getSvap(crs.getSvapId(), svapCriteriaMap);
+        return isSvapAdded(crs) && svap.isPresent() && svap.get().isReplaced();
     }
 
     private void validateSvapNoticeUrl(CertifiedProductSearchDetails listing) {
@@ -119,17 +132,21 @@ public class SvapReviewer implements ComparisonReviewer {
     }
 
     private Optional<Svap> getSvap(Long svapId, Map<Long, List<SvapCriteriaMap>> svapCriteriaMap) {
+        System.out.println("Looking for SVAP ID : " + svapId);
         return svapCriteriaMap.values().stream()
                 .flatMap(List::stream)
                 .map(scm -> scm.getSvap())
+                .peek(svap -> System.out.println(svap.getSvapId()))
                 .filter(svap -> svap.getSvapId().equals(svapId))
                 .findAny();
     }
 
     private Optional<Svap> getSvap(String regText, Map<Long, List<SvapCriteriaMap>> svapCriteriaMap) {
+        System.out.println("Looking for Reg Text : " + regText);
         return svapCriteriaMap.values().stream()
                 .flatMap(List::stream)
                 .map(scm -> scm.getSvap())
+                .peek(svap -> System.out.println(svap.getRegulatoryTextCitation()))
                 .filter(svap -> svap.getRegulatoryTextCitation().equals(regText))
                 .findAny();
     }
