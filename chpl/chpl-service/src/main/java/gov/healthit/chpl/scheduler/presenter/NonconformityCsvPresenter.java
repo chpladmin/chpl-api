@@ -15,13 +15,12 @@ import org.springframework.core.env.Environment;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
-import gov.healthit.chpl.service.CertificationCriterionService;
 
 public class NonconformityCsvPresenter extends SurveillanceCsvPresenter {
     private static final Logger LOGGER = LogManager.getLogger(NonconformityCsvPresenter.class);
 
-    public NonconformityCsvPresenter(Environment env, CertificationCriterionService criterionService) {
-        super(env, criterionService);
+    public NonconformityCsvPresenter(Environment env) {
+        super(env);
     }
 
     @Override

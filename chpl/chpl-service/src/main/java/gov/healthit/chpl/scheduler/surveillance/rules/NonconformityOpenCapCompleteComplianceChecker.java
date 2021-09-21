@@ -1,8 +1,8 @@
 package gov.healthit.chpl.scheduler.surveillance.rules;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -25,10 +25,9 @@ public class NonconformityOpenCapCompleteComplianceChecker implements RuleCompli
     @Override
     public Date check(CertifiedProductSearchDetails cp, Surveillance surv, SurveillanceNonconformity nc) {
         Date result = null;
-        if (nc.getNonconformityCloseDate() == null && nc.getCapEndDate() != null) {
+        if (nc.getNonconformityCloseDay() == null && nc.getCapEndDay() != null) {
             LocalDateTime capCompleteDate = null;
-            capCompleteDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getCapEndDate().getTime()),
-                    ZoneId.systemDefault());
+            capCompleteDate = nc.getCapEndDay().atTime(LocalTime.MAX);
 
             Duration timeBetween = Duration.between(capCompleteDate, LocalDateTime.now());
             long numDays = timeBetween.toDays();
