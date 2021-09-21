@@ -132,21 +132,17 @@ public class SvapReviewer implements ComparisonReviewer {
     }
 
     private Optional<Svap> getSvap(Long svapId, Map<Long, List<SvapCriteriaMap>> svapCriteriaMap) {
-        System.out.println("Looking for SVAP ID : " + svapId);
         return svapCriteriaMap.values().stream()
                 .flatMap(List::stream)
                 .map(scm -> scm.getSvap())
-                .peek(svap -> System.out.println(svap.getSvapId()))
                 .filter(svap -> svap.getSvapId().equals(svapId))
                 .findAny();
     }
 
     private Optional<Svap> getSvap(String regText, Map<Long, List<SvapCriteriaMap>> svapCriteriaMap) {
-        System.out.println("Looking for Reg Text : " + regText);
         return svapCriteriaMap.values().stream()
                 .flatMap(List::stream)
                 .map(scm -> scm.getSvap())
-                .peek(svap -> System.out.println(svap.getRegulatoryTextCitation()))
                 .filter(svap -> svap.getRegulatoryTextCitation().equals(regText))
                 .findAny();
     }
