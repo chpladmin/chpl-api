@@ -37,14 +37,20 @@ public class CertificationCriterionAttributeEntity {
     @JoinColumn(name = "criterion_id", insertable = false, updatable = false)
     private CertificationCriterionEntity criterion;
 
+    @Column(name = "conformance_method")
+    private Boolean conformanceMethod;
+
     @Column(name = "optional_standard")
     private Boolean optionalStandard;
+
+    @Column(name = "service_base_url_list")
+    private Boolean serviceBaseUrlList;
 
     @Column(name = "svap")
     private Boolean svap;
 
-    @Column(name = "service_base_url_list")
-    private Boolean serviceBaseUrlList;
+    @Column(name = "test_procedure")
+    private Boolean testProcedure;
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
