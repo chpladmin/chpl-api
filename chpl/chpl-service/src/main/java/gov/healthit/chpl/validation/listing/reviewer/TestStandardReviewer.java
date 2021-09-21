@@ -41,9 +41,9 @@ public class TestStandardReviewer implements Reviewer {
             TestStandardDTO foundTestStandard = testStandardDao.getByIdAndEdition(testStandard.getTestStandardId(), editionId);
             if (foundTestStandard == null) {
                 listing.getErrorMessages().add(
-                        msgUtil.getMessage("listing.criteria.testStandardNotFound",
+                        msgUtil.getMessage("listing.criteria.testStandardIdNotFound",
                         Util.formatCriteriaNumber(certResult.getCriterion()),
-                        testStandardName == null ? "" : testStandardName,
+                        testStandard.getTestStandardId(),
                         MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY)));
             }
         } else if (!StringUtils.isEmpty(testStandardName)) {

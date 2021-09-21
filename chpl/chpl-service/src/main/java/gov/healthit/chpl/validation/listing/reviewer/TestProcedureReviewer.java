@@ -55,9 +55,9 @@ public class TestProcedureReviewer extends PermissionBasedReviewer {
                 .findAny();
             if (!allowedTestProcedure.isPresent()) {
                 addCriterionErrorOrWarningByPermission(listing, certResult,
-                        "listing.criteria.badTestProcedureName",
+                        "listing.criteria.badTestProcedureId",
                         Util.formatCriteriaNumber(certResult.getCriterion()),
-                        testProcedure.getTestProcedure().getName());
+                        testProcedure.getTestProcedure().getId());
             } else {
                 testProcedure.getTestProcedure().setName(allowedTestProcedure.get().getName());
             }
