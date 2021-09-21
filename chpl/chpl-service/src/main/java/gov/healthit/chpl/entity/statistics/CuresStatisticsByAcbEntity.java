@@ -18,9 +18,11 @@ import gov.healthit.chpl.domain.statistics.CuresStatisticsByAcb;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@NoArgsConstructor
 @Table(name = "cures_statistics_by_acb")
 public class CuresStatisticsByAcbEntity {
     @Id

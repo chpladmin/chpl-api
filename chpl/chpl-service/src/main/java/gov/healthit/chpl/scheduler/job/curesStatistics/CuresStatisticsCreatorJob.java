@@ -21,7 +21,6 @@ import gov.healthit.chpl.domain.statistics.CuresStatisticsByAcb;
 import gov.healthit.chpl.domain.statistics.ListingCuresStatusStatistic;
 import gov.healthit.chpl.domain.statistics.ListingToCriterionForCuresAchievementStatistic;
 import gov.healthit.chpl.domain.statistics.PrivacyAndSecurityListingStatistic;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import lombok.extern.log4j.Log4j2;
 
@@ -79,18 +78,16 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
         txTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                try {
-                    List<CuresStatisticsByAcb> stats = curesCrieriaUpdateByAcbCalculator.calculate();
-                    curesCrieriaUpdateByAcbCalculator.save(stats);
-                } catch (EntityRetrievalException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                if (curesCrieriaUpdateByAcbCalculator.hasStatisticsForDate(statisticDate)) {
+                    curesCrieriaUpdateByAcbCalculator.deleteStatisticsForDate(statisticDate);
                 }
-
+                List<CuresStatisticsByAcb> stats = curesCrieriaUpdateByAcbCalculator.calculate(statisticDate);
+                curesCrieriaUpdateByAcbCalculator.save(stats);
             }
 
         });
     }
+
     private void setCriterionListingCountStatisticsForDate(LocalDate statisticDate) {
         TransactionTemplate txTemplate = new TransactionTemplate(txManager);
         txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);

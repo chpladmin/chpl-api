@@ -66,7 +66,7 @@ public class CuresCrieriaUpdateByAcbCalculator {
     }
 
 
-    public List<CuresStatisticsByAcb> calculate() throws EntityRetrievalException {
+    public List<CuresStatisticsByAcb> calculate(LocalDate statisticsDate) {
         List<CuresStatisticsByAcb> curesCriteriaUpdateByAcbs = new ArrayList<CuresStatisticsByAcb>();
         for (CuresCriteriaUpdate curesCriteriaUpdate : curesCriteriaUpdates) {
             List<CertifiedProductDetailsDTO> listingsAttestingToCriterion = certifiedProductDAO.getListingsAttestingToCriterion(curesCriteriaUpdate.getCuresCriterion().getId(), activeStatuses);
@@ -75,12 +75,12 @@ public class CuresCrieriaUpdateByAcbCalculator {
 
             for (Long acbId : acbIds) {
                 CuresStatisticsByAcb statistic = CuresStatisticsByAcb.builder()
-                        .certificationBody(new CertificationBody(certificationBodyDAO.getById(acbId)))
+                        .certificationBody(getCertificationBody(acbId))
                         .originalCriterion(curesCriteriaUpdate.originalCriterion)
                         .curesCriterion(curesCriteriaUpdate.curesCriterion)
                         .originalCriterionUpgradedCount(calculateUpgradeCriterionByAcb(acbId, listingsAttestingToCriterion, curesCriteriaUpdate.getOriginalCriterion()))
                         .curesCriterionCreatedCount(calculateNewCriterionByAcb(acbId, listingsAttestingToCriterion, curesCriteriaUpdate.getOriginalCriterion()))
-                        .statisticDate(LocalDate.now())
+                        .statisticDate(statisticsDate)
                         .build();
 
                 curesCriteriaUpdateByAcbs.add(statistic);
@@ -90,6 +90,22 @@ public class CuresCrieriaUpdateByAcbCalculator {
         curesCriteriaUpdateByAcbs.stream()
                 .forEach(item -> LOGGER.info(String.format("%s -- %s -- %s -- %s", item.getCertificationBody().getName(), item.getOriginalCriterion().getNumber(), item.getOriginalCriterionUpgradedCount(), item.getCuresCriterionCreatedCount())));
         return curesCriteriaUpdateByAcbs;
+    }
+
+    public boolean hasStatisticsForDate(LocalDate statisticDate) {
+        List<CuresStatisticsByAcb> statisticsForDate = curesStatisticsByAcbDAO.getStatisticsForDate(statisticDate);
+        return statisticsForDate != null && statisticsForDate.size() > 0;
+    }
+
+    public void deleteStatisticsForDate(LocalDate statisticDate) {
+        List<CuresStatisticsByAcb> statisticsForDate = curesStatisticsByAcbDAO.getStatisticsForDate(statisticDate);
+        for (CuresStatisticsByAcb statistic : statisticsForDate) {
+            try {
+                curesStatisticsByAcbDAO.delete(statistic.getId());
+            } catch (Exception ex) {
+                LOGGER.error("Could not delete statistic with ID " + statistic.getId());
+            }
+        }
     }
 
     public void save(List<CuresStatisticsByAcb> statistics) {
@@ -117,6 +133,13 @@ public class CuresCrieriaUpdateByAcbCalculator {
         return StreamEx.of(certifiedProductDetails).map(det -> det.getCertificationBodyId()).distinct().toList();
     }
 
+    private CertificationBody getCertificationBody(Long acbId) {
+        try {
+            return new CertificationBody(certificationBodyDAO.getById(acbId));
+        } catch (EntityRetrievalException e) {
+            return null;
+        }
+    }
     class CuresCriteriaUpdate {
         private CertificationCriterion originalCriterion;
         private CertificationCriterion curesCriterion;
@@ -142,45 +165,4 @@ public class CuresCrieriaUpdateByAcbCalculator {
             this.curesCriterion = curesCriterion;
         }
     }
-
-    /*
-    class CuresCriteriaUpdateByAcb {
-        private CuresCriteriaUpdate curesCriteriaUpdate;
-        private CertificationBody certificationBody;
-        private Long countOriginalUpgradedToCures = 0L;
-        private Long countCuresWhenCreated = 0L;
-
-        public CuresCriteriaUpdate getCuresCriteriaUpdate() {
-            return curesCriteriaUpdate;
-        }
-
-        public void setCuresCriteriaUpdate(CuresCriteriaUpdate curesCriteriaUpdate) {
-            this.curesCriteriaUpdate = curesCriteriaUpdate;
-        }
-
-        public CertificationBody getCertificationBody() {
-            return certificationBody;
-        }
-
-        public void setCertificationBody(CertificationBody certificationBody) {
-            this.certificationBody = certificationBody;
-        }
-
-        public Long getCountOriginalUpgradedToCures() {
-            return countOriginalUpgradedToCures;
-        }
-
-        public void setCountOriginalUpgradedToCures(Long countOriginalUpgradedToCures) {
-            this.countOriginalUpgradedToCures = countOriginalUpgradedToCures;
-        }
-
-        public Long getCountCuresWhenCreated() {
-            return countCuresWhenCreated;
-        }
-
-        public void setCountCuresWhenCreated(Long countCuresWhenCreated) {
-            this.countCuresWhenCreated = countCuresWhenCreated;
-        }
-    }
-    */
 }
