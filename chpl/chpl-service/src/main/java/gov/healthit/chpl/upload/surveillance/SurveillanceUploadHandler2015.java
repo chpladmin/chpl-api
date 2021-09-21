@@ -1,8 +1,8 @@
 package gov.healthit.chpl.upload.surveillance;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +45,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
     private CertificationResultDetailsDAO certResultDetailsDao;
     private SurveillanceDAO survDao;
 
-    protected SimpleDateFormat dateFormatter;
+    protected DateTimeFormatter dateFormatter;
     private List<CSVRecord> record;
     private CSVRecord heading;
     private int lastDataIndex;
@@ -56,7 +56,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         this.cpDao = cpDao;
         this.survDao = survDao;
         this.certResultDetailsDao = certResultDetailsDao;
-        dateFormatter = new SimpleDateFormat(DATE_FORMAT);
+        dateFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
     }
 
     @Transactional(readOnly = true)
@@ -160,9 +160,8 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         String beginDateStr = record.get(colIndex++).trim();
         if (!StringUtils.isEmpty(beginDateStr)) {
             try {
-                Date beginDate = dateFormatter.parse(beginDateStr);
-                surv.setStartDate(beginDate);
-            } catch (final ParseException pex) {
+                surv.setStartDay(LocalDate.parse(beginDateStr, dateFormatter));
+            } catch (final DateTimeParseException pex) {
                 LOGGER.error("Could not parse begin date '" + beginDateStr + "'.");
             }
         }
@@ -171,9 +170,8 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         String endDateStr = record.get(colIndex++).trim();
         if (!StringUtils.isEmpty(endDateStr)) {
             try {
-                Date endDate = dateFormatter.parse(endDateStr);
-                surv.setEndDate(endDate);
-            } catch (final ParseException pex) {
+                surv.setEndDay(LocalDate.parse(endDateStr, dateFormatter));
+            } catch (final DateTimeParseException pex) {
                 LOGGER.error("Could not parse end date '" + endDateStr + "'.");
             }
         }
@@ -286,9 +284,8 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         String determinationDateStr = record.get(colIndex++).trim();
         if (!StringUtils.isEmpty(determinationDateStr)) {
             try {
-                Date determinationDate = dateFormatter.parse(determinationDateStr);
-                nc.setDateOfDetermination(determinationDate);
-            } catch (final ParseException pex) {
+                nc.setDateOfDeterminationDay(LocalDate.parse(determinationDateStr, dateFormatter));
+            } catch (final DateTimeParseException pex) {
                 LOGGER.error("Could not parse determination date '" + determinationDateStr + "'.");
             }
         }
@@ -297,9 +294,8 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         String capApprovalDateStr = record.get(colIndex++).trim();
         if (!StringUtils.isEmpty(capApprovalDateStr)) {
             try {
-                Date capApprovalDate = dateFormatter.parse(capApprovalDateStr);
-                nc.setCapApprovalDate(capApprovalDate);
-            } catch (final ParseException pex) {
+                nc.setCapApprovalDay(LocalDate.parse(capApprovalDateStr, dateFormatter));
+            } catch (final DateTimeParseException pex) {
                 LOGGER.error("Could not parse CAP approval date '" + capApprovalDateStr + "'.");
             }
         }
@@ -308,9 +304,8 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         String actionBeginDateStr = record.get(colIndex++).trim();
         if (!StringUtils.isEmpty(actionBeginDateStr)) {
             try {
-                Date actionBeginDate = dateFormatter.parse(actionBeginDateStr);
-                nc.setCapStartDate(actionBeginDate);
-            } catch (final ParseException pex) {
+                nc.setCapStartDay(LocalDate.parse(actionBeginDateStr, dateFormatter));
+            } catch (final DateTimeParseException pex) {
                 LOGGER.error("Could not parse action begin date '" + actionBeginDateStr + "'.");
             }
         }
@@ -319,9 +314,8 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         String mustCompleteDateStr = record.get(colIndex++).trim();
         if (!StringUtils.isEmpty(mustCompleteDateStr)) {
             try {
-                Date mustCompleteDate = dateFormatter.parse(mustCompleteDateStr);
-                nc.setCapMustCompleteDate(mustCompleteDate);
-            } catch (final ParseException pex) {
+                nc.setCapMustCompleteDay(LocalDate.parse(mustCompleteDateStr, dateFormatter));
+            } catch (final DateTimeParseException pex) {
                 LOGGER.error("Could not parse must complete date '" + mustCompleteDateStr + "'.");
             }
         }
@@ -330,9 +324,8 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         String wasCompleteDateStr = record.get(colIndex++).trim();
         if (!StringUtils.isEmpty(wasCompleteDateStr)) {
             try {
-                Date wasCompleteDate = dateFormatter.parse(wasCompleteDateStr);
-                nc.setCapEndDate(wasCompleteDate);
-            } catch (final ParseException pex) {
+                nc.setCapEndDay(LocalDate.parse(wasCompleteDateStr, dateFormatter));
+            } catch (final DateTimeParseException pex) {
                 LOGGER.error("Could not parse was complete date '" + wasCompleteDateStr + "'.");
             }
         }

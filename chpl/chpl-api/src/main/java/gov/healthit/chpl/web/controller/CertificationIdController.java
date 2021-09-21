@@ -124,7 +124,7 @@ public class CertificationIdController {
                     + "Certification Ids, where the length of the URL, plus the list of IDs, is less than the"
                     + "maximum length URL that your client can handle.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
-    @RequestMapping(value = "/{certificationId}", method = RequestMethod.GET, produces = {
+    @RequestMapping(value = "/{certificationId:^[A-Z0-9]+$}", method = RequestMethod.GET, produces = {
             MediaType.APPLICATION_JSON_VALUE
     })
     public @ResponseBody CertificationIdLookupResults getCertificationId(

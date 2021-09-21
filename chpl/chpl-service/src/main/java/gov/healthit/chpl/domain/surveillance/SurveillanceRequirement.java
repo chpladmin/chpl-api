@@ -17,10 +17,16 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.util.Util;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SurveillanceRequirement implements Serializable {
     private static long serialVersionUID = -4406043308588618231L;
 
@@ -63,11 +69,8 @@ public class SurveillanceRequirement implements Serializable {
      */
     @XmlElementWrapper(name = "nonconformities", nillable = true, required = false)
     @XmlElement(name = "nonconformity")
-    private List<SurveillanceNonconformity> nonconformities;
-
-    public SurveillanceRequirement() {
-        this.nonconformities = new ArrayList<SurveillanceNonconformity>();
-    }
+    @Builder.Default
+    private List<SurveillanceNonconformity> nonconformities = new ArrayList<SurveillanceNonconformity>();
 
     public boolean matches(SurveillanceRequirement anotherRequirement) {
         if (!propertiesMatch(anotherRequirement)) {

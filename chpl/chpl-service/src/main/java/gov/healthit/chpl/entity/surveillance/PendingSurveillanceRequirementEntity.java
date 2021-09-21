@@ -17,10 +17,15 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
-import gov.healthit.chpl.util.Util;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "pending_surveillance_requirement")
+@Getter
+@Setter
+@ToString
 public class PendingSurveillanceRequirementEntity {
 
     @Id
@@ -63,100 +68,4 @@ public class PendingSurveillanceRequirementEntity {
     @Basic(optional = false)
     @Column(name = "pending_surveillance_requirement_id", nullable = false)
     private Set<PendingSurveillanceNonconformityEntity> nonconformities = new HashSet<PendingSurveillanceNonconformityEntity>();
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getPendingSurveillanceId() {
-        return pendingSurveillanceId;
-    }
-
-    public void setPendingSurveillanceId(Long pendingSurveillanceId) {
-        this.pendingSurveillanceId = pendingSurveillanceId;
-    }
-
-    public String getRequirementType() {
-        return requirementType;
-    }
-
-    public void setRequirementType(String requirementType) {
-        this.requirementType = requirementType;
-    }
-
-    public String getSurveilledRequirement() {
-        return surveilledRequirement;
-    }
-
-    public void setSurveilledRequirement(String surveilledRequirement) {
-        this.surveilledRequirement = surveilledRequirement;
-    }
-
-    public String getResult() {
-        return result;
-    }
-
-    public void setResult(String result) {
-        this.result = result;
-    }
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Set<PendingSurveillanceNonconformityEntity> getNonconformities() {
-        return nonconformities;
-    }
-
-    public void setNonconformities(Set<PendingSurveillanceNonconformityEntity> nonconformities) {
-        this.nonconformities = nonconformities;
-    }
-
-    public Long getCertificationCriterionId() {
-        return certificationCriterionId;
-    }
-
-    public void setCertificationCriterionId(Long certificationCriterionId) {
-        this.certificationCriterionId = certificationCriterionId;
-    }
-
-    public CertificationCriterionEntity getCertificationCriterionEntity() {
-        return certificationCriterionEntity;
-    }
-
-    public void setCertificationCriterionEntity(CertificationCriterionEntity certificationCriterionEntity) {
-        this.certificationCriterionEntity = certificationCriterionEntity;
-    }
 }

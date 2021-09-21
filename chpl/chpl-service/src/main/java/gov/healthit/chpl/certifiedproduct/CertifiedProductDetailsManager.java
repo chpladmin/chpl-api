@@ -3,9 +3,11 @@ package gov.healthit.chpl.certifiedproduct;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certifiedproduct.service.CertificationResultService;
 import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
 import gov.healthit.chpl.certifiedproduct.service.CqmResultsService;
@@ -56,6 +58,12 @@ public class CertifiedProductDetailsManager {
 
     @Transactional(readOnly = true)
     public CertifiedProductSearchDetails getCertifiedProductDetails(Long certifiedProductId) throws EntityRetrievalException {
+        return listingService.createCertifiedSearchDetails(certifiedProductId);
+    }
+
+    @Transactional(readOnly = true)
+    @Cacheable(value = CacheNames.LISTING_DETAILS)
+    public CertifiedProductSearchDetails getCertifiedProductDetailsUsingCache(Long certifiedProductId) throws EntityRetrievalException {
         return listingService.createCertifiedSearchDetails(certifiedProductId);
     }
 
