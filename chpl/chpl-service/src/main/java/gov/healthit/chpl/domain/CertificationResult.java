@@ -188,6 +188,13 @@ public class CertificationResult implements Serializable {
     private List<CertificationResultTestFunctionality> testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
 
     /**
+     * The conformance method used for the certification criteria
+     */
+    @XmlElementWrapper(name = "conformanceMethods", nillable = true, required = false)
+    @XmlElement(name = "conformanceMethod")
+    private List<CertificationResultConformanceMethod> conformanceMethods= new ArrayList<CertificationResultConformanceMethod>();
+
+    /**
      * The test procedures used for the certification criteria
      */
     @XmlElementWrapper(name = "testProcedures", nillable = true, required = false)
@@ -267,6 +274,7 @@ public class CertificationResult implements Serializable {
         this.testStandards = new ArrayList<CertificationResultTestStandard>();
         this.additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
         this.testDataUsed = new ArrayList<CertificationResultTestData>();
+        this.conformanceMethods = new ArrayList<CertificationResultConformanceMethod>();
         this.testProcedures = new ArrayList<CertificationResultTestProcedure>();
         this.testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
         this.svaps = new ArrayList<CertificationResultSvap>();
@@ -379,6 +387,7 @@ public class CertificationResult implements Serializable {
 
         this.setOptionalStandards(getOptionalStandards(certResult, certRules));
         this.setTestFunctionality(getTestFunctionalities(certResult, certRules));
+        this.setConformanceMethods(getConformanceMethods(certResult, certRules));
         this.setTestProcedures(getTestProcedures(certResult, certRules));
         this.setTestDataUsed(getTestData(certResult, certRules));
         this.setTestToolsUsed(getTestTools(certResult, certRules));
@@ -414,6 +423,16 @@ public class CertificationResult implements Serializable {
         }
     }
 
+    private List<CertificationResultConformanceMethod> getConformanceMethods(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
+        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.CONFORMANCE_METHOD)) {
+            return certResult.getConformanceMethods().stream()
+                    .map(item -> new CertificationResultConformanceMethod(item))
+                    .collect(Collectors.toList());
+        } else {
+            return null;
+        }
+    }
+
     private List<CertificationResultTestProcedure> getTestProcedures(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_PROCEDURE)) {
             return certResult.getTestProcedures().stream()
@@ -423,6 +442,7 @@ public class CertificationResult implements Serializable {
             return null;
         }
     }
+
 
     private List<CertificationResultTestData> getTestData(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_DATA)) {
@@ -470,6 +490,14 @@ public class CertificationResult implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public List<CertificationResultConformanceMethod> getConformanceMethods() {
+        return conformanceMethods;
+    }
+
+    public void setConformanceMethods(List<CertificationResultConformanceMethod> conformanceMethods) {
+        this.conformanceMethods = conformanceMethods;
     }
 
     public List<CertificationResultTestProcedure> getTestProcedures() {
