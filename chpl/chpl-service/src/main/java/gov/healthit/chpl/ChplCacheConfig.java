@@ -1,5 +1,6 @@
 package gov.healthit.chpl;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
@@ -23,6 +24,10 @@ import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
 @EnableCaching
 @Log4j2
 public class ChplCacheConfig {
+    @Value("${listingDetailsTimeToLiveInHours}")
+    private Integer listingDetailsTimeToLiveInHours;
+
+    private static final int SECONDS_IN_HOUR = 3600;
     private static final int MAX_ENTRIES_LOCAL_HEAP = 10000;
     private static final int MAX_ENTRIES_LOCAL_HEAP_LISTING_COLLECTION = 300000;
     private static final int MAX_ENTRIES_LOCAL_DISK = 10000000;
@@ -59,7 +64,7 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.CQM_CRITERION_NUMBERS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.DEVELOPER_NAMES));
 
-        //this looks a little weird to me but it's done according to ehcace documentation
+        //this looks a little weird to me but it's done according to ehcache documentation
         //so that the decorated cache gets properly initialized
         //https://www.ehcache.org/documentation/2.8/apis/cache-decorators.html#creating-a-decorator
         Ehcache drCache = backingManager.getEhcache(CacheNames.DIRECT_REVIEWS);
@@ -86,6 +91,7 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.TEST_FUNCTIONALITY_MAPS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.UPLOAD_TEMPLATE_VERSIONS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.UPLOADED_LISTING_DETAILS));
+        backingManager.addCacheIfAbsent(createCache(CacheNames.LISTING_DETAILS, listingDetailsTimeToLiveInHours * SECONDS_IN_HOUR));
         return cacheManager;
     }
 

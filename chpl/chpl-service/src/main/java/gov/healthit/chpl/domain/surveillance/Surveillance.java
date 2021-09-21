@@ -1,6 +1,7 @@
 package gov.healthit.chpl.domain.surveillance;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -12,13 +13,22 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.util.LocalDateAdapter;
+import gov.healthit.chpl.util.LocalDateDeserializer;
+import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.Util;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 /**
  * Domain object for Surveillance.
@@ -26,6 +36,9 @@ import gov.healthit.chpl.util.Util;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Surveillance implements Serializable {
     private static final long serialVersionUID = 7018071250912371691L;
 
@@ -52,16 +65,36 @@ public class Surveillance implements Serializable {
     private CertifiedProduct certifiedProduct;
 
     /**
-     * Date surveillance began
+     * DEPRECATED. Date surveillance began
      */
-    @XmlElement(required = true)
+    @Deprecated
+    @XmlTransient
     private Date startDate;
 
     /**
-     * Date surveillance ended
+     * Day surveillance began
      */
-    @XmlElement(required = false, nillable = true)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    @XmlElement(required = true)
+    private LocalDate startDay;
+
+    /**
+     * DEPRECATED. Date surveillance ended
+     */
+    @Deprecated
+    @XmlTransient
     private Date endDate;
+
+    /**
+     * Day surveillance ended
+     */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    @XmlElement(required = false, nillable = true)
+    private LocalDate endDay;
 
     /**
      * The type of surveillance conducted. Allowable values are "Reactive" or
@@ -86,29 +119,25 @@ public class Surveillance implements Serializable {
      */
     @XmlElementWrapper(name = "surveilledRequirements", nillable = true, required = false)
     @XmlElement(name = "requirement")
-    private Set<SurveillanceRequirement> requirements;
+    @Builder.Default
+    private Set<SurveillanceRequirement> requirements = new LinkedHashSet<SurveillanceRequirement>();
 
     @XmlTransient
     private String authority;
 
     @XmlTransient
-    private Set<String> errorMessages;
+    @Builder.Default
+    private Set<String> errorMessages = new HashSet<String>();
 
     @XmlTransient
-    private Set<String> warningMessages;
+    @Builder.Default
+    private Set<String> warningMessages = new HashSet<String>();
 
     /**
      * Date of the last modification of the surveillance.
      */
     @XmlElement(required = true)
     private Date lastModifiedDate;
-
-    /** Default constructor. */
-    public Surveillance() {
-        this.requirements = new LinkedHashSet<SurveillanceRequirement>();
-        this.errorMessages = new HashSet<String>();
-        this.warningMessages = new HashSet<String>();
-    }
 
     /**
      * Determines if this surveillance matches another surveillance.
@@ -184,18 +213,18 @@ public class Surveillance implements Serializable {
                 && !this.friendlyId.equalsIgnoreCase(anotherSurveillance.friendlyId)) {
             return false;
         }
-        if (this.startDate == null && anotherSurveillance.startDate != null
-                || this.startDate != null && anotherSurveillance.startDate == null) {
+        if (this.startDay == null && anotherSurveillance.startDay != null
+                || this.startDay != null && anotherSurveillance.startDay == null) {
             return false;
-        } else if (this.startDate != null && anotherSurveillance.startDate != null
-                && this.startDate.getTime() != anotherSurveillance.startDate.getTime()) {
+        } else if (this.startDay != null && anotherSurveillance.startDay != null
+                && !this.startDay.equals(anotherSurveillance.startDay)) {
             return false;
         }
-        if (this.endDate == null && anotherSurveillance.endDate != null
-                || this.endDate != null && anotherSurveillance.endDate == null) {
+        if (this.endDay == null && anotherSurveillance.endDay != null
+                || this.endDay != null && anotherSurveillance.endDay == null) {
             return false;
-        } else if (this.endDate != null && anotherSurveillance.endDate != null
-                && this.endDate.getTime() != anotherSurveillance.endDate.getTime()) {
+        } else if (this.endDay != null && anotherSurveillance.endDay != null
+                && !this.endDay.equals(anotherSurveillance.endDay)) {
             return false;
         }
         if (this.randomizedSitesUsed == null && anotherSurveillance.randomizedSitesUsed != null
@@ -233,7 +262,7 @@ public class Surveillance implements Serializable {
         return errorMessages;
     }
 
-    public void setErrorMessages(final Set<String> errors) {
+    public void setErrorMessages(Set<String> errors) {
         this.errorMessages = errors;
     }
 
@@ -241,7 +270,7 @@ public class Surveillance implements Serializable {
         return warningMessages;
     }
 
-    public void setWarningMessages(final Set<String> warnings) {
+    public void setWarningMessages(Set<String> warnings) {
         this.warningMessages = warnings;
     }
 
@@ -249,7 +278,7 @@ public class Surveillance implements Serializable {
         return id;
     }
 
-    public void setId(final Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -257,31 +286,51 @@ public class Surveillance implements Serializable {
         return certifiedProduct;
     }
 
-    public void setCertifiedProduct(final CertifiedProduct certifiedProduct) {
+    public void setCertifiedProduct(CertifiedProduct certifiedProduct) {
         this.certifiedProduct = certifiedProduct;
     }
 
+    @Deprecated
     public Date getStartDate() {
         return Util.getNewDate(startDate);
     }
 
-    public void setStartDate(final Date startDate) {
+    @Deprecated
+    public void setStartDate(Date startDate) {
         this.startDate = Util.getNewDate(startDate);
     }
 
+    public LocalDate getStartDay() {
+        return this.startDay;
+    }
+
+    public void setStartDay(LocalDate startDay) {
+        this.startDay = startDay;
+    }
+
+    @Deprecated
     public Date getEndDate() {
         return Util.getNewDate(endDate);
     }
 
-    public void setEndDate(final Date endDate) {
+    @Deprecated
+    public void setEndDate(Date endDate) {
         this.endDate = Util.getNewDate(endDate);
+    }
+
+    public LocalDate getEndDay() {
+        return this.endDay;
+    }
+
+    public void setEndDay(LocalDate endDay) {
+        this.endDay = endDay;
     }
 
     public SurveillanceType getType() {
         return type;
     }
 
-    public void setType(final SurveillanceType type) {
+    public void setType(SurveillanceType type) {
         this.type = type;
     }
 
@@ -289,7 +338,7 @@ public class Surveillance implements Serializable {
         return randomizedSitesUsed;
     }
 
-    public void setRandomizedSitesUsed(final Integer randomizedSitesUsed) {
+    public void setRandomizedSitesUsed(Integer randomizedSitesUsed) {
         this.randomizedSitesUsed = randomizedSitesUsed;
     }
 
@@ -297,7 +346,7 @@ public class Surveillance implements Serializable {
         return requirements;
     }
 
-    public void setRequirements(final Set<SurveillanceRequirement> requirements) {
+    public void setRequirements(Set<SurveillanceRequirement> requirements) {
         this.requirements = requirements;
     }
 
@@ -305,7 +354,7 @@ public class Surveillance implements Serializable {
         return surveillanceIdToReplace;
     }
 
-    public void setSurveillanceIdToReplace(final String surveillanceIdToReplace) {
+    public void setSurveillanceIdToReplace(String surveillanceIdToReplace) {
         this.surveillanceIdToReplace = surveillanceIdToReplace;
     }
 
@@ -313,7 +362,7 @@ public class Surveillance implements Serializable {
         return friendlyId;
     }
 
-    public void setFriendlyId(final String friendlyId) {
+    public void setFriendlyId(String friendlyId) {
         this.friendlyId = friendlyId;
     }
 
@@ -321,7 +370,7 @@ public class Surveillance implements Serializable {
         return authority;
     }
 
-    public void setAuthority(final String authority) {
+    public void setAuthority(String authority) {
         this.authority = authority;
     }
 
@@ -329,7 +378,7 @@ public class Surveillance implements Serializable {
         return Util.getNewDate(lastModifiedDate);
     }
 
-    public void setLastModifiedDate(final Date lastModifiedDate) {
+    public void setLastModifiedDate(Date lastModifiedDate) {
         this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 }

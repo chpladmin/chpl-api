@@ -147,7 +147,7 @@ public class CertificationIdController {
                     + "products that make it up.  This method can be used when verfying a small number of"
                     + "Certification Ids, where the length of the URL, plus the list of IDs, is less than the"
                     + "maximum length URL that your client can handle.")
-    @RequestMapping(value = "/{certificationId}", method = RequestMethod.GET, produces = {
+    @RequestMapping(value = "/{certificationId:^[A-Z0-9]+$}", method = RequestMethod.GET, produces = {
             MediaType.APPLICATION_JSON_VALUE
     })
     public @ResponseBody CertificationIdLookupResults getCertificationId(

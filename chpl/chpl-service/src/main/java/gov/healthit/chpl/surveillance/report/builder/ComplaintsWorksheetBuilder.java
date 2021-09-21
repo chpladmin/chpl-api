@@ -78,12 +78,10 @@ public class ComplaintsWorksheetBuilder {
     private int lastDataRow;
     private DateTimeFormatter dateFormatter;
     private PropertyTemplate pt;
-    private CertificationCriterionService criterionService;
 
     @Autowired
     public ComplaintsWorksheetBuilder(ComplaintManager complaintManager,
-            CertifiedProductDetailsManager cpdManager, PrivilegedSurveillanceDAO survDao,
-            CertificationCriterionService criterionService) {
+            CertifiedProductDetailsManager cpdManager, PrivilegedSurveillanceDAO survDao) {
         this.complaintManager = complaintManager;
         this.cpdManager = cpdManager;
         this.survDao = survDao;
@@ -342,7 +340,7 @@ public class ComplaintsWorksheetBuilder {
                     row = workbook.getRow(sheet, rowNum++);
                     addedRows++;
                 }
-                addDataCell(workbook, row, COL_CRITERIA_ID, criterionService.formatCriteriaNumber(criterion));
+                addDataCell(workbook, row, COL_CRITERIA_ID, CertificationCriterionService.formatCriteriaNumber(criterion));
                 // nothing to show in the rest of the cells since they are all listing/surv specific
                 addDataCell(workbook, row, COL_CHPL_ID, "");
                 addDataCell(workbook, row, COL_SURV_ID, "");

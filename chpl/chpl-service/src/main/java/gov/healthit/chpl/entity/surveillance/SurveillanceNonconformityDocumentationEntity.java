@@ -13,10 +13,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.util.Util;
+import lombok.Data;
 
 @Entity
 @Table(name = "surveillance_nonconformity_document")
+@Data
 public class SurveillanceNonconformityDocumentationEntity {
 
     @Id
@@ -53,84 +54,4 @@ public class SurveillanceNonconformityDocumentationEntity {
 
     @Column(nullable = false)
     private Boolean deleted;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(final String fileName) {
-        this.fileName = fileName;
-    }
-
-    public String getFileType() {
-        return fileType;
-    }
-
-    public void setFileType(final String fileType) {
-        this.fileType = fileType;
-    }
-
-    public byte[] getFileData() {
-        return fileData;
-    }
-
-    public void setFileData(final byte[] fileData) {
-        this.fileData = fileData;
-    }
-
-    public Long getNonconformityId() {
-        return nonconformityId;
-    }
-
-    public void setNonconformityId(final Long nonconformityId) {
-        this.nonconformityId = nonconformityId;
-    }
-
-    public SurveillanceNonconformityEntity getNonconformityEntity() {
-        return nonconformityEntity;
-    }
-
-    public void setNonconformityEntity(final SurveillanceNonconformityEntity nonconformityEntity) {
-        this.nonconformityEntity = nonconformityEntity;
-    }
 }

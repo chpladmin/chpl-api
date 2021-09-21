@@ -51,8 +51,10 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Review
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionalityAllowedByCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionalityAllowedByRoleReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestTool2015Reviewer;
+import lombok.extern.log4j.Log4j2;
 
 @Component
+@Log4j2
 public class Edition2015ListingValidator extends Validator {
     @Autowired
     @Qualifier("chplNumberReviewer")
@@ -226,7 +228,7 @@ public class Edition2015ListingValidator extends Validator {
     private List<ComparisonReviewer> comparisonReviewers;
 
     @Override
-    public List<Reviewer> getReviewers() {
+    public synchronized List<Reviewer> getReviewers() {
         if (reviewers == null) {
             reviewers = new ArrayList<Reviewer>();
             reviewers.add(chplNumberReviewer);
