@@ -52,6 +52,10 @@ public class CuresStatisticsByAcbEntity {
     private Long curesCriterionCreatedCount;
 
     @Basic(optional = false)
+    @Column(name = "criteria_needing_upgrade_count", nullable = false)
+    private Long criteriaNeedingUpgradeCount;
+
+    @Basic(optional = false)
     @Column(name = "statistic_date", nullable = false)
     private LocalDate statisticDate;
 
@@ -78,6 +82,7 @@ public class CuresStatisticsByAcbEntity {
         this.curesCriterion = CertificationCriterionEntity.getNewCertificationCriterionEntity(domain.getCuresCriterion());
         this.originalCriterionUpgradedCount = domain.getOriginalCriterionUpgradedCount();
         this.curesCriterionCreatedCount = domain.getCuresCriterionCreatedCount();
+        this.criteriaNeedingUpgradeCount = domain.getCriteriaNeedingUpgradeCount();
         this.statisticDate = domain.getStatisticDate();
         this.creationDate = domain.getCreationDate();
         this.deleted = domain.getDeleted();

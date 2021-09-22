@@ -45,7 +45,7 @@ public class CuresStatisticsByAcbDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery("SELECT stats "
                 + "FROM CuresStatisticsByAcbEntity stats "
                 + "JOIN FETCH stats.certificationBody cb "
-                + "JOIN FETCH cb.address address"
+                + "JOIN FETCH cb.address address "
                 + "LEFT OUTER JOIN FETCH stats.originalCriterion oc "
                 + "LEFT OUTER JOIN FETCH stats.curesCriterion cc "
                 + "WHERE (stats.deleted = false) "

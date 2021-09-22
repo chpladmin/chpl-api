@@ -80,6 +80,7 @@ public class CuresCrieriaUpdateByAcbCalculator {
                         .curesCriterion(curesCriteriaUpdate.curesCriterion)
                         .originalCriterionUpgradedCount(calculateUpgradeCriterionByAcb(acbId, listingsAttestingToCriterion, curesCriteriaUpdate.getOriginalCriterion()))
                         .curesCriterionCreatedCount(calculateNewCriterionByAcb(acbId, listingsAttestingToCriterion, curesCriteriaUpdate.getOriginalCriterion()))
+                        .criteriaNeedingUpgradeCount(calculateCriteriaNeedingUpgradeCountByAcb(acbId, curesCriteriaUpdate.getOriginalCriterion()))
                         .statisticDate(statisticsDate)
                         .build();
 
@@ -126,6 +127,12 @@ public class CuresCrieriaUpdateByAcbCalculator {
         return certifiedProductDetails.stream()
                 .filter(listing -> listing.getCertificationBodyId().equals(acbId))
                 .filter(listing -> !activityStatisticsHelper.didListingRemoveAttestationToCriterionDuringTimeInterval(listing.getId(), criterion, curesEffectiveDate, new Date()))
+                .collect(Collectors.counting());
+    }
+
+    private Long calculateCriteriaNeedingUpgradeCountByAcb(Long acbId, CertificationCriterion criterion) {
+        return certifiedProductDAO.getListingsAttestingToCriterion(criterion.getId(), activeStatuses).stream()
+                .filter(listing -> listing.getCertificationBodyId().equals(acbId))
                 .collect(Collectors.counting());
     }
 

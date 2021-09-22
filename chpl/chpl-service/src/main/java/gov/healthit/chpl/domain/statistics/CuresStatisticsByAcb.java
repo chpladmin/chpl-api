@@ -22,6 +22,7 @@ public class CuresStatisticsByAcb {
     private CertificationCriterion curesCriterion;
     private Long originalCriterionUpgradedCount;
     private Long curesCriterionCreatedCount;
+    private Long criteriaNeedingUpgradeCount;
     private LocalDate statisticDate;
     private Date creationDate;
     private Boolean deleted;
@@ -35,6 +36,7 @@ public class CuresStatisticsByAcb {
         this.curesCriterion = new CertificationCriterion(entity.getCuresCriterion());
         this.originalCriterionUpgradedCount = entity.getOriginalCriterionUpgradedCount();
         this.curesCriterionCreatedCount = entity.getCuresCriterionCreatedCount();
+        this.criteriaNeedingUpgradeCount = entity.getCriteriaNeedingUpgradeCount();
         this.statisticDate = entity.getStatisticDate();
         this.creationDate = entity.getCreationDate();
         this.deleted = entity.getDeleted();
