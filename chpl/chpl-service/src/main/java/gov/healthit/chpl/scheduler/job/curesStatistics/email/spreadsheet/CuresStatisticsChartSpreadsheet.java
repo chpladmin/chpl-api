@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.curesStatistics.email;
+package gov.healthit.chpl.scheduler.job.curesStatistics.email.spreadsheet;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -73,12 +73,14 @@ public class CuresStatisticsChartSpreadsheet {
     private String downloadPath;
 
     private CertificationCriterionService criterionService;
+    private UscdiCriteriaByAcbWorksheet uscdiCriteriaByAcbWorksheet;
 
     private List<CriteraToRowMap> criteriaToRowMaps = new ArrayList<CuresStatisticsChartSpreadsheet.CriteraToRowMap>();
 
     @Autowired
-    public CuresStatisticsChartSpreadsheet(CertificationCriterionService criterionService) {
+    public CuresStatisticsChartSpreadsheet(CertificationCriterionService criterionService, UscdiCriteriaByAcbWorksheet uscdiCriteriaByAcbWorksheet) {
         this.criterionService = criterionService;
+        this.uscdiCriteriaByAcbWorksheet = uscdiCriteriaByAcbWorksheet;
 
         criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.B_1_CURES, B_1_CURES_ROW_IDX));
         criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.B_2_CURES, B_2_CURES_ROW_IDX));
@@ -105,6 +107,8 @@ public class CuresStatisticsChartSpreadsheet {
         Workbook workbook = getWorkbook(newFile);
 
         populateDataSheet(dataMap, workbook);
+
+        uscdiCriteriaByAcbWorksheet.populate(workbook);
 
         updateChartTitles(workbook, reportDataDate);
 

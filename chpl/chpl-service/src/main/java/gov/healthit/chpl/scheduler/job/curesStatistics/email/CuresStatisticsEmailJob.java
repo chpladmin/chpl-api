@@ -15,6 +15,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
+import gov.healthit.chpl.scheduler.job.curesStatistics.email.spreadsheet.CuresStatisticsChartSpreadsheet;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "curesStatisticsEmailJobLogger")

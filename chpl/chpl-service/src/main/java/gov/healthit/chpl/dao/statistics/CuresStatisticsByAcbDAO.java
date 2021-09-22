@@ -19,44 +19,6 @@ import lombok.extern.log4j.Log4j2;
 @Repository("curesStatisticsByAcbDAO")
 @Log4j2
 public class CuresStatisticsByAcbDAO extends BaseDAOImpl {
-//    private List<String> activeStatusNames;
-
-    public CuresStatisticsByAcbDAO() {
-//        activeStatusNames = Stream.of(CertificationStatusType.Active.getName(),
-//                CertificationStatusType.SuspendedByAcb.getName(),
-//                CertificationStatusType.SuspendedByOnc.getName())
-//                .collect(Collectors.toList());
-    }
-
-//        public Long getListingCountForCriterion(Long certificationCriterionId) {
-//            String hql = "SELECT count(distinct listing.id) "
-//                    + "FROM CertifiedProductDetailsEntitySimple listing, CertificationResultEntity cre "
-//                    + "WHERE listing.id = cre.certifiedProductId "
-//                    + "AND listing.certificationStatusName IN (:statusNames) "
-//                    + "AND cre.certificationCriterionId = :criterionId "
-//                    + "AND cre.success = true "
-//                    + "AND cre.deleted = false "
-//                    + "AND listing.deleted = false ";
-//            Query query = entityManager.createQuery(hql);
-//            query.setParameter("statusNames", activeStatusNames);
-//            query.setParameter("criterionId", certificationCriterionId);
-//            Long result = 0L;
-//            try {
-//                result = (Long) query.getSingleResult();
-//            } catch (NoResultException ex) {
-//                LOGGER.debug("0 active listings attest to criterion ID " + certificationCriterionId);
-//            }
-//            return result;
-//        }
-
-//        public List<CriterionListingCountStatistic> findAll() {
-//            List<CriterionListingCountStatisticEntity> entities = this.findAllEntities();
-//            return entities.stream()
-//                    .map(entity -> entity.toDomain())
-//                    .collect(Collectors.toList());
-//        }
-
-
     public LocalDate getDateOfMostRecentStatistics() {
         LocalDate result = null;
         Query query = entityManager.createQuery("SELECT max(statisticDate) "
@@ -83,6 +45,7 @@ public class CuresStatisticsByAcbDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery("SELECT stats "
                 + "FROM CuresStatisticsByAcbEntity stats "
                 + "JOIN FETCH stats.certificationBody cb "
+                + "JOIN FETCH cb.address address"
                 + "LEFT OUTER JOIN FETCH stats.originalCriterion oc "
                 + "LEFT OUTER JOIN FETCH stats.curesCriterion cc "
                 + "WHERE (stats.deleted = false) "
@@ -110,16 +73,6 @@ public class CuresStatisticsByAcbDAO extends BaseDAOImpl {
 
         create(entity);
     }
-
-//        private List<CriterionListingCountStatisticEntity> findAllEntities() {
-//            Query query = entityManager.createQuery("SELECT stats "
-//                    + "FROM CriterionListingCountStatisticEntity stats "
-//                    + "LEFT OUTER JOIN FETCH stats.certificationCriterion cce "
-//                    + "LEFT OUTER JOIN FETCH cce.certificationEdition "
-//                    + "WHERE (stats.deleted = false)",
-//                    CriterionListingCountStatisticEntity.class);
-//            return query.getResultList();
-//        }
 
     private CuresStatisticsByAcbEntity getEntityById(Long id) throws EntityRetrievalException {
         CuresStatisticsByAcbEntity entity = null;
