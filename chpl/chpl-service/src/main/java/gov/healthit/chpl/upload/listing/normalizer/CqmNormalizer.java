@@ -74,6 +74,9 @@ public class CqmNormalizer {
     }
 
     private void populateCqmCriterionData(CQMResultDetails cqmResult) {
+        if (StringUtils.isEmpty(cqmResult.getCmsId())) {
+            return;
+        }
         CQMCriterionDTO cqmDto = cqmDao.getCMSByNumber(cqmResult.getCmsId());
         if (cqmDto != null) {
             cqmResult.setCqmCriterionId(cqmDto.getId());
@@ -179,8 +182,8 @@ public class CqmNormalizer {
     }
 
     private boolean existsInListing(List<CQMResultDetails> cqmsInListing, CQMCriterionDTO cqmDto) {
-        Optional<CQMResultDetails> cqmInListing =
-                cqmsInListing.stream().filter(cqm -> cqm.getCmsId().equals(cqmDto.getCmsId()))
+        Optional<CQMResultDetails> cqmInListing = cqmsInListing.stream()
+                .filter(cqm -> !StringUtils.isEmpty(cqm.getCmsId()) && cqm.getCmsId().equals(cqmDto.getCmsId()))
                 .findAny();
         return cqmInListing != null && cqmInListing.isPresent() && cqmInListing.get().isSuccess();
     }
