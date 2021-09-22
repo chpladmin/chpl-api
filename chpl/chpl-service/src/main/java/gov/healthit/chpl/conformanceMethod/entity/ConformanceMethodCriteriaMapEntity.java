@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.conformanceMethod.entity;
 
 import java.util.Date;
 
@@ -13,10 +13,17 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "conformance_method_criteria_map")
 public class ConformanceMethodCriteriaMapEntity {
 

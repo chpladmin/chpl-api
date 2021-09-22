@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.conformanceMethod.entity;
 
 import java.util.Date;
 

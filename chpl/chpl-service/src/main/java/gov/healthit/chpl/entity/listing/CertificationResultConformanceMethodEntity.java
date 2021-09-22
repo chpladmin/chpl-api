@@ -13,7 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.entity.ConformanceMethodEntity;
+import gov.healthit.chpl.conformanceMethod.entity.ConformanceMethodEntity;
 import lombok.Data;
 
 @Entity

@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
@@ -165,6 +166,9 @@ public class CertificationResult implements Serializable {
      */
     @XmlElement(required = false, nillable = true)
     private String privacySecurityFramework;
+
+    @XmlTransient
+    private List<ConformanceMethod> allowedConformanceMethods;
 
     @XmlTransient
     private List<TestFunctionality> allowedTestFunctionalities;
@@ -666,6 +670,14 @@ public class CertificationResult implements Serializable {
 
     public void setPrivacySecurityFramework(String privacySecurityFramework) {
         this.privacySecurityFramework = privacySecurityFramework;
+    }
+
+    public List<ConformanceMethod> getAllowedConformanceMethods() {
+        return allowedConformanceMethods;
+    }
+
+    public void setAllowedConformanceMethods(List<ConformanceMethod> allowedConformanceMethods) {
+        this.allowedConformanceMethods = allowedConformanceMethods;
     }
 
     public List<TestFunctionality> getAllowedTestFunctionalities() {

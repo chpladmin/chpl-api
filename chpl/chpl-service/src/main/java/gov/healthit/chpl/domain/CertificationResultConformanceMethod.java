@@ -11,6 +11,7 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
