@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -53,16 +54,19 @@ public class UscdiCriteriaByAcbWorksheet {
                 cell.setCellValue(stat.getCertificationBody().getName());
 
                 cell = currentRow.createCell(cell.getColumnIndex() + 1);
-                cell.setCellFormula("E" + currentRowIdx + "/F" + currentRowIdx);
+                cell.setCellFormula("E" + (currentRowIdx + 1) + "/F" + (currentRowIdx + 1));
+                CellStyle style = workbook.createCellStyle();
+                style.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
+                cell.setCellStyle(style);
 
                 cell = currentRow.createCell(cell.getColumnIndex() + 1);
-                cell.setCellValue(Double.valueOf("500"));
+                cell.setCellValue(stat.getCriteriaNeedingUpgradeCount());
 
                 cell = currentRow.createCell(cell.getColumnIndex() + 1);
                 cell.setCellValue(stat.getCuresCriterionCreatedCount() + stat.getOriginalCriterionUpgradedCount());
 
                 cell = currentRow.createCell(cell.getColumnIndex() + 1);
-                cell.setCellFormula("D" + currentRowIdx + "+E" + currentRowIdx);
+                cell.setCellFormula("D" + (currentRowIdx + 1) + "+E" + (currentRowIdx + 1));
 
                 ++currentRowIdx;
             }
@@ -85,6 +89,7 @@ public class UscdiCriteriaByAcbWorksheet {
                         .curesCriterion(criterion)
                         .curesCriterionCreatedCount(0L)
                         .originalCriterionUpgradedCount(0L)
+                        .criteriaNeedingUpgradeCount(0L)
                         .build());
     }
 
