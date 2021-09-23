@@ -7,12 +7,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.TestDataDAO;
-import gov.healthit.chpl.dao.TestFunctionalityDAO;
-import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestData;
-import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestData;
@@ -20,7 +17,6 @@ import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.dto.TestDataDTO;
-import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -39,20 +35,15 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     private static final String G2_CRITERIA_NUMBER = "170.315 (g)(2)";
     private static final int MINIMUM_TEST_PARTICIPANT_COUNT = 10;
 
-    private TestFunctionalityDAO testFuncDao;
-    private TestProcedureDAO testProcDao;
     private TestDataDAO testDataDao;
     private ValidationUtils validationUtils;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
     public RequiredData2015Reviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil,
-            TestFunctionalityDAO testFuncDao, TestProcedureDAO testProcDao,
             TestDataDAO testDataDao,
             ValidationUtils validationUtils, ResourcePermissions resourcePermissions) {
         super(certRules, msgUtil, resourcePermissions);
-        this.testFuncDao = testFuncDao;
-        this.testProcDao = testProcDao;
         this.testDataDao = testDataDao;
         this.validationUtils = validationUtils;
     }
@@ -285,21 +276,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)
-                        && cert.getTestFunctionality() != null && cert.getTestFunctionality().size() > 0) {
-                    for (CertificationResultTestFunctionality funcMap : cert.getTestFunctionality()) {
-                        if (funcMap.getTestFunctionalityId() == null) {
-                            TestFunctionalityDTO foundTestFunc = testFuncDao.getByNumberAndEdition(funcMap.getName(),
-                                    Long.valueOf(listing.getCertificationEdition()
-                                            .get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString()));
-                            if (foundTestFunc == null || foundTestFunc.getId() == null) {
-                                addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.invalidTestFunctionality",
-                                        Util.formatCriteriaNumber(cert.getCriterion()), funcMap.getName());
-                            }
-                        }
-                    }
-                }
-
                 // require at least one test procedure where gap does not exist
                 // or is false
                 if (!gapEligibleAndTrue
@@ -312,14 +288,17 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_DATA)
                         && cert.getTestDataUsed() != null && cert.getTestDataUsed().size() > 0) {
                     for (CertificationResultTestData crTestData : cert.getTestDataUsed()) {
-                        if (crTestData.getTestData() == null) {
+                        if (crTestData.getTestData() == null
+                                || (crTestData.getTestData() != null && crTestData.getTestData().getId() == null
+                                        && StringUtils.isEmpty(crTestData.getTestData().getName()))) {
                             listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.missingTestDataName",
                                     Util.formatCriteriaNumber(cert.getCriterion()), TestDataDTO.DEFALUT_TEST_DATA));
                             TestDataDTO foundTestData = testDataDao.getByCriterionAndValue(cert.getCriterion().getId(),
                                     TestDataDTO.DEFALUT_TEST_DATA);
                             TestData foundTestDataDomain = new TestData(foundTestData.getId(), foundTestData.getName());
                             crTestData.setTestData(foundTestDataDomain);
-                        } else if (crTestData.getTestData() != null && crTestData.getTestData().getId() == null) {
+                        } else if (crTestData.getTestData() != null && crTestData.getTestData().getId() == null
+                                && !StringUtils.isEmpty(crTestData.getTestData().getName())) {
                             TestDataDTO foundTestData = testDataDao.getByCriterionAndValue(cert.getCriterion().getId(),
                                     crTestData.getTestData().getName());
                             if (foundTestData == null || foundTestData.getId() == null) {
@@ -332,6 +311,15 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                 crTestData.getTestData().setId(foundTestData.getId());
                             } else {
                                 crTestData.getTestData().setId(foundTestData.getId());
+                            }
+                        }  else if (crTestData.getTestData() != null && crTestData.getTestData().getId() != null) {
+                            List<TestDataDTO> criterionTestData = testDataDao.getByCriterionId(cert.getCriterion().getId());
+                            boolean hasMatchingTestDatum = criterionTestData.stream()
+                                    .filter(testDatum -> testDatum.getId().equals(crTestData.getTestData().getId()))
+                                    .findAny().isPresent();
+                            if (!hasMatchingTestDatum) {
+                                String testDataName = crTestData.getTestData().getName();
+                                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.invalidTestDataId", crTestData.getTestData().getId(), Util.formatCriteriaNumber(cert.getCriterion())));
                             }
                         }
 
