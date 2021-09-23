@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.validation.listing.reviewer.CertificationDateComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ChplNumberComparisonReviewer;
@@ -138,10 +137,6 @@ public abstract class Edition2014ListingValidator extends Validator {
     @Qualifier("optionalStandardReviewer")
     private OptionalStandardReviewer optionalStandardReviewer;
 
-    @Autowired
-    @Qualifier("certificationDateComparisonReviewer")
-    private CertificationDateComparisonReviewer certificationDateComparisonReviewer;
-
     private List<Reviewer> reviewers;
     private List<ComparisonReviewer> comparisonReviewers;
 
@@ -181,7 +176,6 @@ public abstract class Edition2014ListingValidator extends Validator {
             comparisonReviewers.add(realWorldTestingReviewer);
             comparisonReviewers.add(svapReviewer);
             comparisonReviewers.add(tsReviewer);
-            comparisonReviewers.add(certificationDateComparisonReviewer);
         }
         return comparisonReviewers;
     }

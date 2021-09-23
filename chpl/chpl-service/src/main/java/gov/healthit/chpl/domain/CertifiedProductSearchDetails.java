@@ -879,7 +879,7 @@ public class CertifiedProductSearchDetails implements Serializable {
     /**
      * Certification date represented in milliseconds since epoch
      */
-    @XmlElement(required = true)
+    @XmlElement(nillable = false, required = true)
     public Long getCertificationDate() {
         if (CollectionUtils.isEmpty(this.getCertificationEvents())) {
             return this.certificationDate;
