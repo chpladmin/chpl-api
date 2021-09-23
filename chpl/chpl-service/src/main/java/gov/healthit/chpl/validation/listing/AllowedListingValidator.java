@@ -26,6 +26,7 @@ public class AllowedListingValidator extends Validator {
     @Autowired
     public AllowedListingValidator(@Qualifier("developerStatusReviewer") DeveloperStatusReviewer devStatusReviewer) {
         this.devStatusReviewer = devStatusReviewer;
+        comparisonReviewers = new ArrayList<ComparisonReviewer>();
     }
 
     public List<Reviewer> getReviewers() {
@@ -37,9 +38,6 @@ public class AllowedListingValidator extends Validator {
     }
 
     public List<ComparisonReviewer> getComparisonReviewers() {
-        if (comparisonReviewers == null) {
-            comparisonReviewers = new ArrayList<ComparisonReviewer>();
-        }
         return comparisonReviewers;
     }
 }
