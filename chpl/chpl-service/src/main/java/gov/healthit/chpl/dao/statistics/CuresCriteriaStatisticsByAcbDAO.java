@@ -11,14 +11,14 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.domain.statistics.CuresStatisticsByAcb;
-import gov.healthit.chpl.entity.statistics.CuresStatisticsByAcbEntity;
+import gov.healthit.chpl.domain.statistics.CuresCriteriaStatisticsByAcb;
+import gov.healthit.chpl.entity.statistics.CuresCriteriaStatisticsByAcbEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import lombok.extern.log4j.Log4j2;
 
 @Repository("curesStatisticsByAcbDAO")
 @Log4j2
-public class CuresStatisticsByAcbDAO extends BaseDAOImpl {
+public class CuresCriteriaStatisticsByAcbDAO extends BaseDAOImpl {
     public LocalDate getDateOfMostRecentStatistics() {
         LocalDate result = null;
         Query query = entityManager.createQuery("SELECT max(statisticDate) "
@@ -33,7 +33,7 @@ public class CuresStatisticsByAcbDAO extends BaseDAOImpl {
     }
 
     public void delete(Long id) throws EntityRetrievalException {
-        CuresStatisticsByAcbEntity toDelete = getEntityById(id);
+        CuresCriteriaStatisticsByAcbEntity toDelete = getEntityById(id);
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
@@ -41,7 +41,7 @@ public class CuresStatisticsByAcbDAO extends BaseDAOImpl {
         }
     }
 
-    public List<CuresStatisticsByAcb> getStatisticsForDate(LocalDate statisticDate) {
+    public List<CuresCriteriaStatisticsByAcb> getStatisticsForDate(LocalDate statisticDate) {
         Query query = entityManager.createQuery("SELECT stats "
                 + "FROM CuresStatisticsByAcbEntity stats "
                 + "JOIN FETCH stats.certificationBody cb "
@@ -50,22 +50,22 @@ public class CuresStatisticsByAcbDAO extends BaseDAOImpl {
                 + "LEFT OUTER JOIN FETCH stats.curesCriterion cc "
                 + "WHERE (stats.deleted = false) "
                 + "AND stats.statisticDate = :statisticDate ",
-                CuresStatisticsByAcbEntity.class);
+                CuresCriteriaStatisticsByAcbEntity.class);
         query.setParameter("statisticDate", statisticDate);
-        List<CuresStatisticsByAcbEntity> entities = query.getResultList();
+        List<CuresCriteriaStatisticsByAcbEntity> entities = query.getResultList();
         return entities.stream()
-                .map(entity -> new CuresStatisticsByAcb(entity))
+                .map(entity -> new CuresCriteriaStatisticsByAcb(entity))
                 .collect(Collectors.toList());
     }
 
-    public void create(List<CuresStatisticsByAcb> domains) {
+    public void create(List<CuresCriteriaStatisticsByAcb> domains) {
         domains.stream()
                 .forEach(domain -> create(domain));
 
     }
 
-    public void create(CuresStatisticsByAcb domain) {
-        CuresStatisticsByAcbEntity entity = new CuresStatisticsByAcbEntity(domain);
+    public void create(CuresCriteriaStatisticsByAcb domain) {
+        CuresCriteriaStatisticsByAcbEntity entity = new CuresCriteriaStatisticsByAcbEntity(domain);
         entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
         entity.setLastModifiedDate(new Date());
         entity.setCreationDate(new Date());
@@ -74,8 +74,8 @@ public class CuresStatisticsByAcbDAO extends BaseDAOImpl {
         create(entity);
     }
 
-    private CuresStatisticsByAcbEntity getEntityById(Long id) throws EntityRetrievalException {
-        CuresStatisticsByAcbEntity entity = null;
+    private CuresCriteriaStatisticsByAcbEntity getEntityById(Long id) throws EntityRetrievalException {
+        CuresCriteriaStatisticsByAcbEntity entity = null;
         Query query = entityManager.createQuery("SELECT stats "
                 + "FROM CuresStatisticsByAcbEntity stats "
                 + "JOIN FETCH stats.certificationBody cb "
@@ -83,9 +83,9 @@ public class CuresStatisticsByAcbDAO extends BaseDAOImpl {
                 + "LEFT OUTER JOIN FETCH stats.curesCriterion cc "
                 + "WHERE stats.deleted = false "
                 + "AND stats.id = :id",
-                CuresStatisticsByAcbEntity.class);
+                CuresCriteriaStatisticsByAcbEntity.class);
         query.setParameter("id", id);
-        List<CuresStatisticsByAcbEntity> result = query.getResultList();
+        List<CuresCriteriaStatisticsByAcbEntity> result = query.getResultList();
 
         if (result.size() == 1) {
             entity = result.get(0);

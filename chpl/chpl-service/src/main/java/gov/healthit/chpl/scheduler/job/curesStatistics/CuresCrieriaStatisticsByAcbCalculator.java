@@ -14,10 +14,10 @@ import gov.healthit.chpl.SpecialProperties;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.statistics.CuresStatisticsByAcbDAO;
+import gov.healthit.chpl.dao.statistics.CuresCriteriaStatisticsByAcbDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.domain.statistics.CuresStatisticsByAcb;
+import gov.healthit.chpl.domain.statistics.CuresCriteriaStatisticsByAcb;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -27,24 +27,24 @@ import one.util.streamex.StreamEx;
 
 @Log4j2(topic = "curesStatisticsCreatorJobLogger")
 @Component
-public class CuresCrieriaUpdateByAcbCalculator {
+public class CuresCrieriaStatisticsByAcbCalculator {
     //private CertificationCriterionService certificationCriterionService;
     private CertifiedProductDAO certifiedProductDAO;
     private CertificationResultActivityHistoryHelper activityStatisticsHelper;
     private CertificationBodyDAO certificationBodyDAO;
-    private CuresStatisticsByAcbDAO curesStatisticsByAcbDAO;
+    private CuresCriteriaStatisticsByAcbDAO curesStatisticsByAcbDAO;
 
-    private List<CuresCriteriaUpdate> curesCriteriaUpdates = new ArrayList<CuresCrieriaUpdateByAcbCalculator.CuresCriteriaUpdate>();
+    private List<CuresCriteriaUpdate> curesCriteriaUpdates = new ArrayList<CuresCrieriaStatisticsByAcbCalculator.CuresCriteriaUpdate>();
     private List<CertificationStatusType> activeStatuses;
     private Date curesEffectiveDate;
 
 
     @Autowired
-    public CuresCrieriaUpdateByAcbCalculator(CertificationCriterionService certificationCriterionService,
+    public CuresCrieriaStatisticsByAcbCalculator(CertificationCriterionService certificationCriterionService,
             CertifiedProductDAO certifiedProductDAO,
             CertificationBodyDAO certificationBodyDAO,
             CertificationResultActivityHistoryHelper activityStatisticsHelper,
-            CuresStatisticsByAcbDAO curesStatisticsByAcbDAO,
+            CuresCriteriaStatisticsByAcbDAO curesStatisticsByAcbDAO,
             SpecialProperties specialProperties) {
 
         //this.certificationCriterionService = certificationCriterionService;
@@ -66,15 +66,15 @@ public class CuresCrieriaUpdateByAcbCalculator {
     }
 
 
-    public List<CuresStatisticsByAcb> calculate(LocalDate statisticsDate) {
-        List<CuresStatisticsByAcb> curesCriteriaUpdateByAcbs = new ArrayList<CuresStatisticsByAcb>();
+    public List<CuresCriteriaStatisticsByAcb> calculate(LocalDate statisticsDate) {
+        List<CuresCriteriaStatisticsByAcb> curesCriteriaUpdateByAcbs = new ArrayList<CuresCriteriaStatisticsByAcb>();
         for (CuresCriteriaUpdate curesCriteriaUpdate : curesCriteriaUpdates) {
             List<CertifiedProductDetailsDTO> listingsAttestingToCriterion = certifiedProductDAO.getListingsAttestingToCriterion(curesCriteriaUpdate.getCuresCriterion().getId(), activeStatuses);
 
             List<Long> acbIds = getListOfAcbs(listingsAttestingToCriterion);
 
             for (Long acbId : acbIds) {
-                CuresStatisticsByAcb statistic = CuresStatisticsByAcb.builder()
+                CuresCriteriaStatisticsByAcb statistic = CuresCriteriaStatisticsByAcb.builder()
                         .certificationBody(getCertificationBody(acbId))
                         .originalCriterion(curesCriteriaUpdate.originalCriterion)
                         .curesCriterion(curesCriteriaUpdate.curesCriterion)
@@ -94,13 +94,13 @@ public class CuresCrieriaUpdateByAcbCalculator {
     }
 
     public boolean hasStatisticsForDate(LocalDate statisticDate) {
-        List<CuresStatisticsByAcb> statisticsForDate = curesStatisticsByAcbDAO.getStatisticsForDate(statisticDate);
+        List<CuresCriteriaStatisticsByAcb> statisticsForDate = curesStatisticsByAcbDAO.getStatisticsForDate(statisticDate);
         return statisticsForDate != null && statisticsForDate.size() > 0;
     }
 
     public void deleteStatisticsForDate(LocalDate statisticDate) {
-        List<CuresStatisticsByAcb> statisticsForDate = curesStatisticsByAcbDAO.getStatisticsForDate(statisticDate);
-        for (CuresStatisticsByAcb statistic : statisticsForDate) {
+        List<CuresCriteriaStatisticsByAcb> statisticsForDate = curesStatisticsByAcbDAO.getStatisticsForDate(statisticDate);
+        for (CuresCriteriaStatisticsByAcb statistic : statisticsForDate) {
             try {
                 curesStatisticsByAcbDAO.delete(statistic.getId());
             } catch (Exception ex) {
@@ -109,7 +109,7 @@ public class CuresCrieriaUpdateByAcbCalculator {
         }
     }
 
-    public void save(List<CuresStatisticsByAcb> statistics) {
+    public void save(List<CuresCriteriaStatisticsByAcb> statistics) {
         statistics.stream()
             .forEach(stat -> stat.setLastModifiedUser(User.SYSTEM_USER_ID));
 

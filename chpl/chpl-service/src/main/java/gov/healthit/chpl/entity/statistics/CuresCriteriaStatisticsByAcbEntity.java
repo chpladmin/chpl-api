@@ -14,7 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.domain.statistics.CuresStatisticsByAcb;
+import gov.healthit.chpl.domain.statistics.CuresCriteriaStatisticsByAcb;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import lombok.Data;
@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @Table(name = "cures_statistics_by_acb")
-public class CuresStatisticsByAcbEntity {
+public class CuresCriteriaStatisticsByAcbEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -75,7 +75,7 @@ public class CuresStatisticsByAcbEntity {
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
-    public CuresStatisticsByAcbEntity(CuresStatisticsByAcb domain) {
+    public CuresCriteriaStatisticsByAcbEntity(CuresCriteriaStatisticsByAcb domain) {
         this.id = domain.getId();
         this.certificationBody = CertificationBodyEntity.getNewAcbEntity(domain.getCertificationBody());
         this.originalCriterion = CertificationCriterionEntity.getNewCertificationCriterionEntity(domain.getOriginalCriterion());

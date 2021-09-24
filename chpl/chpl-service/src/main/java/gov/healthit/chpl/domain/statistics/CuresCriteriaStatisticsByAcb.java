@@ -5,7 +5,7 @@ import java.util.Date;
 
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.entity.statistics.CuresStatisticsByAcbEntity;
+import gov.healthit.chpl.entity.statistics.CuresCriteriaStatisticsByAcbEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CuresStatisticsByAcb {
+public class CuresCriteriaStatisticsByAcb {
     private Long id;
     private CertificationBody certificationBody;
     private CertificationCriterion originalCriterion;
@@ -29,7 +29,7 @@ public class CuresStatisticsByAcb {
     private Date lastModifiedDate;
     private Long lastModifiedUser;
 
-    public CuresStatisticsByAcb(CuresStatisticsByAcbEntity entity) {
+    public CuresCriteriaStatisticsByAcb(CuresCriteriaStatisticsByAcbEntity entity) {
         this.id = entity.getId();
         this.certificationBody = new CertificationBody(entity.getCertificationBody());
         this.originalCriterion = new CertificationCriterion(entity.getOriginalCriterion());

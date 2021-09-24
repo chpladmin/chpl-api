@@ -12,22 +12,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dao.statistics.CuresStatisticsByAcbDAO;
+import gov.healthit.chpl.dao.statistics.CuresCriteriaStatisticsByAcbDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.domain.statistics.CuresStatisticsByAcb;
+import gov.healthit.chpl.domain.statistics.CuresCriteriaStatisticsByAcb;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
 public class UscdiCriteriaByAcbWorksheet {
-    private CuresStatisticsByAcbDAO curesStatisticsByAcbDAO;
+    private CuresCriteriaStatisticsByAcbDAO curesStatisticsByAcbDAO;
     private CertificationCriterionService certificationCriterionService;
     private CertificationBodyDAO certificationBodyDAO;
 
     @Autowired
-    public UscdiCriteriaByAcbWorksheet(CuresStatisticsByAcbDAO curesStatisticsByAcbDAO, CertificationCriterionService certificationCriterionService,
+    public UscdiCriteriaByAcbWorksheet(CuresCriteriaStatisticsByAcbDAO curesStatisticsByAcbDAO, CertificationCriterionService certificationCriterionService,
             CertificationBodyDAO certificat5ionBodyDAO) {
 
         this.curesStatisticsByAcbDAO = curesStatisticsByAcbDAO;
@@ -38,14 +38,14 @@ public class UscdiCriteriaByAcbWorksheet {
     public Workbook populate(Workbook workbook) {
         Sheet sheet = workbook.getSheet("Data By ONC-ACB");
 
-        List<CuresStatisticsByAcb> stats = getMostRecentCuresStatistics();
+        List<CuresCriteriaStatisticsByAcb> stats = getMostRecentCuresStatistics();
 
         Integer currentRowIdx = 1;
         Row currentRow;
 
         for (CertificationCriterion criterion : getUscdiCriteria()) {
             for (CertificationBody acb : getActiveAcbs()) {
-                CuresStatisticsByAcb stat = getCuresStatisticByAcbAndCriteria(stats, acb, criterion);
+                CuresCriteriaStatisticsByAcb stat = getCuresStatisticByAcbAndCriteria(stats, acb, criterion);
                 currentRow = sheet.createRow(currentRowIdx);
                 Cell cell = currentRow.createCell(0);
                 cell.setCellValue(stat.getCuresCriterion().getNumber());
@@ -75,16 +75,16 @@ public class UscdiCriteriaByAcbWorksheet {
     }
 
 
-    private List<CuresStatisticsByAcb> getMostRecentCuresStatistics() {
+    private List<CuresCriteriaStatisticsByAcb> getMostRecentCuresStatistics() {
         return curesStatisticsByAcbDAO.getStatisticsForDate(curesStatisticsByAcbDAO.getDateOfMostRecentStatistics());
     }
 
-    private CuresStatisticsByAcb getCuresStatisticByAcbAndCriteria(List<CuresStatisticsByAcb> stats, CertificationBody acb, CertificationCriterion criterion) {
+    private CuresCriteriaStatisticsByAcb getCuresStatisticByAcbAndCriteria(List<CuresCriteriaStatisticsByAcb> stats, CertificationBody acb, CertificationCriterion criterion) {
         return stats.stream()
                 .filter(stat -> stat.getCertificationBody().getId().equals(acb.getId())
                         && stat.getCuresCriterion().getId().equals(criterion.getId()))
                 .findFirst()
-                .orElse(CuresStatisticsByAcb.builder()
+                .orElse(CuresCriteriaStatisticsByAcb.builder()
                         .certificationBody(acb)
                         .curesCriterion(criterion)
                         .curesCriterionCreatedCount(0L)

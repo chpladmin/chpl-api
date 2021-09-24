@@ -18,7 +18,7 @@ import gov.healthit.chpl.domain.statistics.CriterionListingCountStatistic;
 import gov.healthit.chpl.domain.statistics.CriterionUpgradedToCuresFromOriginalListingStatistic;
 import gov.healthit.chpl.domain.statistics.CuresCriterionUpgradedWithoutOriginalListingStatistic;
 import gov.healthit.chpl.domain.statistics.CuresListingStatistic;
-import gov.healthit.chpl.domain.statistics.CuresStatisticsByAcb;
+import gov.healthit.chpl.domain.statistics.CuresCriteriaStatisticsByAcb;
 import gov.healthit.chpl.domain.statistics.ListingCuresStatusStatistic;
 import gov.healthit.chpl.domain.statistics.ListingToCriterionForCuresAchievementStatistic;
 import gov.healthit.chpl.domain.statistics.PrivacyAndSecurityListingStatistic;
@@ -51,7 +51,7 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
     private ListingCriterionForCuresAchievementStatisticsCalculator listingCriterionForCuresAchievementStatisticsCalculator;
 
     @Autowired
-    private CuresCrieriaUpdateByAcbCalculator curesCrieriaUpdateByAcbCalculator;
+    private CuresCrieriaStatisticsByAcbCalculator curesCrieriaStatisticsByAcbCalculator;
 
     @Autowired
     private CuresListingStatisticsCalculator curesListingStatisticsCalculator;
@@ -99,11 +99,11 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
         txTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                if (curesCrieriaUpdateByAcbCalculator.hasStatisticsForDate(statisticDate)) {
-                    curesCrieriaUpdateByAcbCalculator.deleteStatisticsForDate(statisticDate);
+                if (curesCrieriaStatisticsByAcbCalculator.hasStatisticsForDate(statisticDate)) {
+                    curesCrieriaStatisticsByAcbCalculator.deleteStatisticsForDate(statisticDate);
                 }
-                List<CuresStatisticsByAcb> stats = curesCrieriaUpdateByAcbCalculator.calculate(statisticDate);
-                curesCrieriaUpdateByAcbCalculator.save(stats);
+                List<CuresCriteriaStatisticsByAcb> stats = curesCrieriaStatisticsByAcbCalculator.calculate(statisticDate);
+                curesCrieriaStatisticsByAcbCalculator.save(stats);
             }
 
         });
