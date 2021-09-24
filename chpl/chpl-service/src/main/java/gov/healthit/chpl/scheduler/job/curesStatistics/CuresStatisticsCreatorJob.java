@@ -17,6 +17,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.domain.statistics.CriterionListingCountStatistic;
 import gov.healthit.chpl.domain.statistics.CriterionUpgradedToCuresFromOriginalListingStatistic;
 import gov.healthit.chpl.domain.statistics.CuresCriterionUpgradedWithoutOriginalListingStatistic;
+import gov.healthit.chpl.domain.statistics.CuresListingStatistic;
 import gov.healthit.chpl.domain.statistics.CuresStatisticsByAcb;
 import gov.healthit.chpl.domain.statistics.ListingCuresStatusStatistic;
 import gov.healthit.chpl.domain.statistics.ListingToCriterionForCuresAchievementStatistic;
@@ -52,6 +53,9 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
     @Autowired
     private CuresCrieriaUpdateByAcbCalculator curesCrieriaUpdateByAcbCalculator;
 
+    @Autowired
+    private CuresListingStatisticsCalculator curesListingStatisticsCalculator;
+
     @Override
     public void execute(JobExecutionContext arg0) throws JobExecutionException {
         LOGGER.info("*****Cures Reporting Statistics Job is starting.*****");
@@ -67,9 +71,26 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
         //setListingCuresStatusStatisticsForDate(yesterday);
         //setPrivacyAndSecurityListingStatisticsForDate(yesterday);
         //setCriteriaNeededToAchieveCuresStatisticsForDate(yesterday);
-        setCuresStatisticsByAcbForDate(yesterday);
+        //setCuresStatisticsByAcbForDate(yesterday);
+        setCuresListingStatisticsForDate(yesterday);
 
         LOGGER.info("*****Cures Reporting Statistics Job is complete.*****");
+    }
+
+    private void setCuresListingStatisticsForDate(LocalDate statisticDate) {
+        TransactionTemplate txTemplate = new TransactionTemplate(txManager);
+        txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        txTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                if (curesListingStatisticsCalculator.hasStatisticsForDate(statisticDate)) {
+                    curesListingStatisticsCalculator.deleteStatisticsForDate(statisticDate);
+                }
+                List<CuresListingStatistic> stats = curesListingStatisticsCalculator.calculate(statisticDate);
+                curesListingStatisticsCalculator.save(stats);
+            }
+
+        });
     }
 
     private void setCuresStatisticsByAcbForDate(LocalDate statisticDate) {
