@@ -24,7 +24,7 @@ public class CuresUpdateProgressWorksheet {
     }
 
     public Workbook populate(Workbook workbook) {
-        Sheet sheet = workbook.getSheet("Listing Data By ONC-ACB");
+        Sheet sheet = workbook.getSheet("Cures Update Progress Data");
 
         List<CuresListingStatistic> stats = getMostRecentCuresStatistics();
         if (stats != null && stats.size() > 0) {
@@ -32,7 +32,7 @@ public class CuresUpdateProgressWorksheet {
 
             Row row = sheet.createRow(1);
 
-            Cell currentCell = row.createCell(1);
+            Cell currentCell = row.createCell(0);
             currentCell.setCellValue(stat.getCuresListingWithCuresCriteriaCount() + stat.getCuresListingWithoutCuresCriteriaCount() + stat.getNonCuresListingCount());
 
             currentCell = row.createCell(currentCell.getColumnIndex() + 1);
@@ -47,7 +47,7 @@ public class CuresUpdateProgressWorksheet {
             currentCell = row.createCell(currentCell.getColumnIndex() + 1);
             currentCell.setCellValue(stat.getNonCuresListingCount());
 
-            row = sheet.createRow(row.getRowNum() + 1);
+            //row = sheet.createRow(row.getRowNum() + 1);
 
         }
 
