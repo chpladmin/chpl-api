@@ -9,8 +9,15 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.StringUtils;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SurveillanceRequirementType implements Serializable {
     private static final long serialVersionUID = -5865384642096284604L;
     public static final String CERTIFIED_CAPABILITY = "Certified Capability";
@@ -28,9 +35,6 @@ public class SurveillanceRequirementType implements Serializable {
      */
     @XmlElement(required = true)
     private String name;
-
-    public SurveillanceRequirementType() {
-    }
 
     /**
      * Checks the id and name fields to determine if the two

@@ -37,11 +37,16 @@ public class TestStandardReviewer implements Reviewer {
         String testStandardName = testStandard.getTestStandardName();
         Long editionId = MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY);
 
-        if (StringUtils.isEmpty(testStandardName)) {
-            listing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.criteria.missingTestStandardName",
-                    Util.formatCriteriaNumber(certResult.getCriterion())));
-        } else {
+        if (testStandard.getTestStandardId() != null) {
+            TestStandardDTO foundTestStandard = testStandardDao.getByIdAndEdition(testStandard.getTestStandardId(), editionId);
+            if (foundTestStandard == null) {
+                listing.getErrorMessages().add(
+                        msgUtil.getMessage("listing.criteria.testStandardIdNotFound",
+                        Util.formatCriteriaNumber(certResult.getCriterion()),
+                        testStandard.getTestStandardId(),
+                        MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY)));
+            }
+        } else if (!StringUtils.isEmpty(testStandardName)) {
             TestStandardDTO foundTestStandard = testStandardDao.getByNumberAndEdition(testStandardName, editionId);
             if (foundTestStandard == null) {
                 listing.getErrorMessages().add(
@@ -50,6 +55,10 @@ public class TestStandardReviewer implements Reviewer {
                         testStandardName,
                         MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY)));
             }
+        } else {
+            listing.getErrorMessages().add(
+                    msgUtil.getMessage("listing.criteria.missingTestStandardName",
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
 }

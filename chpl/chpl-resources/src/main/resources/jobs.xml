@@ -142,10 +142,6 @@
                     <key>authorities</key>
                     <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF</value> <!-- Semi-colon delimited string -->
                 </entry>
-                <entry>
-                    <key>frequency</key>
-                    <value>DAILY</value><!-- NEEDS TO BE DAILY -->
-                </entry>
             </job-data-map>
         </job>
 
@@ -161,10 +157,6 @@
                 <entry>
                     <key>authorities</key>
                     <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF</value>
-                </entry>
-                <entry>
-                    <key>frequency</key>
-                    <value>DAILY</value>
                 </entry>
             </job-data-map>
         </job>
@@ -237,10 +229,6 @@
                     <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF</value>
                 </entry>
                 <entry>
-                    <key>frequency</key>
-                    <value>WEEKLY</value>
-                </entry>
-                <entry>
                     <key>range</key>
                     <value>7</value>
                 </entry>
@@ -304,10 +292,6 @@
                     <key>authorities</key>
                     <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF</value>
                 </entry>
-                <entry>
-                    <key>frequency</key>
-                    <value>WEEKLY</value>
-                </entry>
             </job-data-map>
         </job>
 
@@ -327,10 +311,6 @@
                 <entry>
                     <key>httpStatusIncludeRegex</key>
                     <value>[45][0-9][0-9]</value>
-                </entry>
-                <entry>
-                    <key>frequency</key>
-                    <value>WEEKLY</value>
                 </entry>
                 <entry>
                     <key>acbSpecific</key>
@@ -517,10 +497,6 @@
                     <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF;ROLE_ACB</value>
                 </entry>
                 <entry>
-                    <key>frequency</key>
-                    <value>DAILY</value>
-                </entry>
-                <entry>
                     <key>acbSpecific</key>
                     <value>true</value>
                 </entry>
@@ -539,10 +515,6 @@
                 <entry>
                     <key>authorities</key>
                     <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF;ROLE_ACB</value>
-                </entry>
-                <entry>
-                    <key>frequency</key>
-                    <value>DAILY</value>
                 </entry>
                 <entry>
                     <key>type</key>
@@ -569,10 +541,6 @@
                     <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF;ROLE_ACB</value>
                 </entry>
                 <entry>
-                    <key>frequency</key>
-                    <value>DAILY</value>
-                </entry>
-                <entry>
                     <key>acbSpecific</key>
                     <value>true</value>
                 </entry>
@@ -597,10 +565,6 @@
                     <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF;ROLE_ACB</value>
                 </entry>
                 <entry>
-                    <key>frequency</key>
-                    <value>DAILY</value>
-                </entry>
-                <entry>
                     <key>acbSpecific</key>
                     <value>true</value>
                 </entry>
@@ -619,10 +583,6 @@
                 <entry>
                     <key>authorities</key>
                     <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF;ROLE_ACB</value>
-                </entry>
-                <entry>
-                    <key>frequency</key>
-                    <value>DAILY</value>
                 </entry>
                 <entry>
                     <key>acbSpecific</key>
@@ -655,10 +615,6 @@
                     <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF;ROLE_ACB</value>
                 </entry>
                 <entry>
-                    <key>frequency</key>
-                    <value>DAILY</value>
-                </entry>
-                <entry>
                     <key>acbSpecific</key>
                     <value>true</value>
                 </entry>
@@ -673,12 +629,6 @@
             <job-class>gov.healthit.chpl.scheduler.job.listingvalidation.ListingValidationCreatorJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>frequency</key>
-                    <value>DAILY</value>
-                </entry>
-            </job-data-map>
         </job>
 
         <!-- Generate email report for Listing Validation -->
@@ -693,10 +643,6 @@
                 <entry>
                     <key>authorities</key>
                     <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF</value>
-                </entry>
-                <entry>
-                    <key>frequency</key>
-                    <value>DAILY</value>
                 </entry>
                 <entry>
                     <key>acbSpecific</key>
@@ -717,10 +663,6 @@
                 <entry>
                     <key>authorities</key>
                     <value>ROLE_ADMIN</value>
-                </entry>
-                <entry>
-                    <key>frequency</key>
-                    <value>DAILY</value>
                 </entry>
             </job-data-map>
         </job>
@@ -756,7 +698,7 @@
                 </entry>
             </job-data-map>
         </job>
-                
+
         <!-- Job fired when a large surveillance file is uploaded -->
         <job>
             <name>surveillanceUploadJob</name>
