@@ -33,10 +33,17 @@ public class TestFunctionalityDAO extends BaseDAOImpl {
     }
 
     public TestFunctionalityDTO getByNumberAndEdition(String number, Long editionId) {
-
         TestFunctionalityDTO dto = null;
         List<TestFunctionalityEntity> entities = getEntitiesByNumberAndYear(number, editionId);
+        if (entities != null && entities.size() > 0) {
+            dto = new TestFunctionalityDTO(entities.get(0));
+        }
+        return dto;
+    }
 
+    public TestFunctionalityDTO getByIdAndEdition(Long testFunctionalityId, Long editionId) {
+        TestFunctionalityDTO dto = null;
+        List<TestFunctionalityEntity> entities = getEntitiesByIdAndYear(testFunctionalityId, editionId);
         if (entities != null && entities.size() > 0) {
             dto = new TestFunctionalityDTO(entities.get(0));
         }
@@ -127,9 +134,6 @@ public class TestFunctionalityDAO extends BaseDAOImpl {
     }
 
     private List<TestFunctionalityEntity> getEntitiesByNumberAndYear(String number, Long editionId) {
-
-        TestFunctionalityEntity entity = null;
-
         Query query = entityManager.createQuery("SELECT tf "
                         + "FROM TestFunctionalityEntity tf "
                         + "LEFT OUTER JOIN FETCH tf.certificationEdition "
@@ -138,6 +142,20 @@ public class TestFunctionalityDAO extends BaseDAOImpl {
                         + "AND UPPER(tf.number) = :number "
                         + "AND tf.certificationEdition.id = :editionId ", TestFunctionalityEntity.class);
         query.setParameter("number", number.toUpperCase());
+        query.setParameter("editionId", editionId);
+
+        return query.getResultList();
+    }
+
+    private List<TestFunctionalityEntity> getEntitiesByIdAndYear(Long id, Long editionId) {
+        Query query = entityManager.createQuery("SELECT tf "
+                        + "FROM TestFunctionalityEntity tf "
+                        + "LEFT OUTER JOIN FETCH tf.certificationEdition "
+                        + "LEFT OUTER JOIN FETCH tf.practiceType "
+                        + "WHERE tf.deleted <> true "
+                        + "AND tf.id = :id "
+                        + "AND tf.certificationEdition.id = :editionId ", TestFunctionalityEntity.class);
+        query.setParameter("id", id);
         query.setParameter("editionId", editionId);
 
         return query.getResultList();
