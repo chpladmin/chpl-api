@@ -22,7 +22,7 @@ public class CuresCriteriaStatisticsByAcbDAO extends BaseDAOImpl {
     public LocalDate getDateOfMostRecentStatistics() {
         LocalDate result = null;
         Query query = entityManager.createQuery("SELECT max(statisticDate) "
-                + "FROM CuresStatisticsByAcbEntity stats "
+                + "FROM CuresCriteriaStatisticsByAcbEntity stats "
                 + "WHERE (stats.deleted = false) ",
                 LocalDate.class);
         Object queryResult = query.getSingleResult();
@@ -43,7 +43,7 @@ public class CuresCriteriaStatisticsByAcbDAO extends BaseDAOImpl {
 
     public List<CuresCriteriaStatisticsByAcb> getStatisticsForDate(LocalDate statisticDate) {
         Query query = entityManager.createQuery("SELECT stats "
-                + "FROM CuresStatisticsByAcbEntity stats "
+                + "FROM CuresCriteriaStatisticsByAcbEntity stats "
                 + "JOIN FETCH stats.certificationBody cb "
                 + "JOIN FETCH cb.address address "
                 + "LEFT OUTER JOIN FETCH stats.originalCriterion oc "
@@ -77,7 +77,7 @@ public class CuresCriteriaStatisticsByAcbDAO extends BaseDAOImpl {
     private CuresCriteriaStatisticsByAcbEntity getEntityById(Long id) throws EntityRetrievalException {
         CuresCriteriaStatisticsByAcbEntity entity = null;
         Query query = entityManager.createQuery("SELECT stats "
-                + "FROM CuresStatisticsByAcbEntity stats "
+                + "FROM CuresCriteriaStatisticsByAcbEntity stats "
                 + "JOIN FETCH stats.certificationBody cb "
                 + "LEFT OUTER JOIN FETCH stats.originalCriterion oc "
                 + "LEFT OUTER JOIN FETCH stats.curesCriterion cc "

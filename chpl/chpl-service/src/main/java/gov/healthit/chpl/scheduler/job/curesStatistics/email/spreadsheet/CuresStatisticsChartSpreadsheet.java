@@ -74,13 +74,17 @@ public class CuresStatisticsChartSpreadsheet {
 
     private CertificationCriterionService criterionService;
     private UscdiCriteriaByAcbWorksheet uscdiCriteriaByAcbWorksheet;
+    private CuresUpdateProgressWorksheet curesProgressUpdateWorksheet;
 
     private List<CriteraToRowMap> criteriaToRowMaps = new ArrayList<CuresStatisticsChartSpreadsheet.CriteraToRowMap>();
 
     @Autowired
-    public CuresStatisticsChartSpreadsheet(CertificationCriterionService criterionService, UscdiCriteriaByAcbWorksheet uscdiCriteriaByAcbWorksheet) {
+    public CuresStatisticsChartSpreadsheet(CertificationCriterionService criterionService, UscdiCriteriaByAcbWorksheet uscdiCriteriaByAcbWorksheet,
+            CuresUpdateProgressWorksheet curesProgressUpdateWorksheet) {
+
         this.criterionService = criterionService;
         this.uscdiCriteriaByAcbWorksheet = uscdiCriteriaByAcbWorksheet;
+        this.curesProgressUpdateWorksheet = curesProgressUpdateWorksheet;
 
         criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.B_1_CURES, B_1_CURES_ROW_IDX));
         criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.B_2_CURES, B_2_CURES_ROW_IDX));
@@ -109,6 +113,7 @@ public class CuresStatisticsChartSpreadsheet {
         populateDataSheet(dataMap, workbook);
 
         uscdiCriteriaByAcbWorksheet.populate(workbook);
+        curesProgressUpdateWorksheet.populate(workbook);
 
         updateChartTitles(workbook, reportDataDate);
 
@@ -172,11 +177,11 @@ public class CuresStatisticsChartSpreadsheet {
     }
 
     private Sheet getDataSheet(Workbook workbook) {
-        return workbook.getSheet("Data");
+        return workbook.getSheet("Criteria Data");
     }
 
     private Sheet getDataSortedSheet(Workbook workbook) {
-        return workbook.getSheet("Data Sorted");
+        return workbook.getSheet("Criteria Data Sorted");
     }
 
     private Workbook getWorkbook(File newFile) throws IOException {
