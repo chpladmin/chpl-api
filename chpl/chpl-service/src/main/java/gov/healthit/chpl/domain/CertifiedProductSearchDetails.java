@@ -345,6 +345,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElementWrapper(name = "cqmResults", nillable = true, required = false)
     @XmlElement(name = "cqmResult")
+    @Builder.Default
     private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
 
     /**
