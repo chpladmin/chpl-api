@@ -19,8 +19,8 @@ import gov.healthit.chpl.domain.statistics.CuresCriteriaStatisticsByAcb;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 @Component
+@Log4j2(topic = "curesStatisticsEmailJobLogger")
 public class UscdiCriteriaByAcbWorksheet {
     private CuresCriteriaStatisticsByAcbDAO curesStatisticsByAcbDAO;
     private CertificationCriterionService certificationCriterionService;

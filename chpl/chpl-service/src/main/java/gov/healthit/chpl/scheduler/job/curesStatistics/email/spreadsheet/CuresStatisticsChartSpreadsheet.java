@@ -74,17 +74,19 @@ public class CuresStatisticsChartSpreadsheet {
 
     private CertificationCriterionService criterionService;
     private UscdiCriteriaByAcbWorksheet uscdiCriteriaByAcbWorksheet;
-    private CuresUpdateProgressWorksheet curesProgressUpdateWorksheet;
+    private CuresProgressWorksheet curesProgressWorksheet;
+    private CuresProgressByAcbWorksheet curesProgressByAcbWorksheet;
 
     private List<CriteraToRowMap> criteriaToRowMaps = new ArrayList<CuresStatisticsChartSpreadsheet.CriteraToRowMap>();
 
     @Autowired
     public CuresStatisticsChartSpreadsheet(CertificationCriterionService criterionService, UscdiCriteriaByAcbWorksheet uscdiCriteriaByAcbWorksheet,
-            CuresUpdateProgressWorksheet curesProgressUpdateWorksheet) {
+            CuresProgressWorksheet curesProgressWorksheet, CuresProgressByAcbWorksheet curesProgressByAcbWorksheet) {
 
         this.criterionService = criterionService;
         this.uscdiCriteriaByAcbWorksheet = uscdiCriteriaByAcbWorksheet;
-        this.curesProgressUpdateWorksheet = curesProgressUpdateWorksheet;
+        this.curesProgressWorksheet = curesProgressWorksheet;
+        this.curesProgressByAcbWorksheet = curesProgressByAcbWorksheet;
 
         criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.B_1_CURES, B_1_CURES_ROW_IDX));
         criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.B_2_CURES, B_2_CURES_ROW_IDX));
@@ -113,7 +115,8 @@ public class CuresStatisticsChartSpreadsheet {
         populateDataSheet(dataMap, workbook);
 
         uscdiCriteriaByAcbWorksheet.populate(workbook);
-        curesProgressUpdateWorksheet.populate(workbook);
+        curesProgressWorksheet.populate(workbook);
+        curesProgressByAcbWorksheet.populate(workbook);
 
         updateChartTitles(workbook, reportDataDate);
 

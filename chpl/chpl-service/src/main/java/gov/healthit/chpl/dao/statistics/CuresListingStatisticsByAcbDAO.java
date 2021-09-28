@@ -11,16 +11,16 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.domain.statistics.CuresListingStatistic;
-import gov.healthit.chpl.entity.statistics.CuresListingStatisticEntity;
+import gov.healthit.chpl.domain.statistics.CuresListingStatisticByAcb;
+import gov.healthit.chpl.entity.statistics.CuresListingStatisticByAcbEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository
-public class CuresListingStatisticsDAO extends BaseDAOImpl {
+public class CuresListingStatisticsByAcbDAO extends BaseDAOImpl {
     public LocalDate getDateOfMostRecentStatistics() {
         LocalDate result = null;
         Query query = entityManager.createQuery("SELECT max(statisticDate) "
-                + "FROM CuresListingStatisticEntity stats "
+                + "FROM CuresListingStatisticByAcbEntity stats "
                 + "WHERE (stats.deleted = false) ",
                 LocalDate.class);
         Object queryResult = query.getSingleResult();
@@ -31,7 +31,7 @@ public class CuresListingStatisticsDAO extends BaseDAOImpl {
     }
 
     public void delete(Long id) throws EntityRetrievalException {
-        CuresListingStatisticEntity toDelete = getEntityById(id);
+        CuresListingStatisticByAcbEntity toDelete = getEntityById(id);
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
@@ -39,27 +39,29 @@ public class CuresListingStatisticsDAO extends BaseDAOImpl {
         }
     }
 
-    public List<CuresListingStatistic> getStatisticsForDate(LocalDate statisticDate) {
+    public List<CuresListingStatisticByAcb> getStatisticsForDate(LocalDate statisticDate) {
         Query query = entityManager.createQuery("SELECT stats "
-                + "FROM CuresListingStatisticEntity stats "
+                + "FROM CuresListingStatisticByAcbEntity stats "
+                + "JOIN FETCH stats.certificationBody cb "
+                + "LEFT OUTER JOIN FETCH cb.address "
                 + "WHERE (stats.deleted = false) "
                 + "AND stats.statisticDate = :statisticDate ",
-                CuresListingStatisticEntity.class);
+                CuresListingStatisticByAcbEntity.class);
         query.setParameter("statisticDate", statisticDate);
-        List<CuresListingStatisticEntity> entities = query.getResultList();
+        List<CuresListingStatisticByAcbEntity> entities = query.getResultList();
         return entities.stream()
-                .map(entity -> new CuresListingStatistic(entity))
+                .map(entity -> new CuresListingStatisticByAcb(entity))
                 .collect(Collectors.toList());
     }
 
-    public void create(List<CuresListingStatistic> domains) {
+    public void create(List<CuresListingStatisticByAcb> domains) {
         domains.stream()
                 .forEach(domain -> create(domain));
 
     }
 
-    public void create(CuresListingStatistic domain) {
-        CuresListingStatisticEntity entity = new CuresListingStatisticEntity(domain);
+    public void create(CuresListingStatisticByAcb domain) {
+        CuresListingStatisticByAcbEntity entity = new CuresListingStatisticByAcbEntity(domain);
         entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
         entity.setLastModifiedDate(new Date());
         entity.setCreationDate(new Date());
@@ -68,15 +70,17 @@ public class CuresListingStatisticsDAO extends BaseDAOImpl {
         create(entity);
     }
 
-    private CuresListingStatisticEntity getEntityById(Long id) throws EntityRetrievalException {
-        CuresListingStatisticEntity entity = null;
+    private CuresListingStatisticByAcbEntity getEntityById(Long id) throws EntityRetrievalException {
+        CuresListingStatisticByAcbEntity entity = null;
         Query query = entityManager.createQuery("SELECT stats "
-                + "FROM CuresListingStatisticEntity stats "
+                + "FROM CuresListingStatisticByAcbEntity stats "
+                + "JOIN FETCH stats.certificationBody cb "
+                + "LEFT OUTER JOIN FETCH cb.address "
                 + "WHERE stats.deleted = false "
                 + "AND stats.id = :id",
-                CuresListingStatisticEntity.class);
+                CuresListingStatisticByAcbEntity.class);
         query.setParameter("id", id);
-        List<CuresListingStatisticEntity> result = query.getResultList();
+        List<CuresListingStatisticByAcbEntity> result = query.getResultList();
 
         if (result.size() == 1) {
             entity = result.get(0);

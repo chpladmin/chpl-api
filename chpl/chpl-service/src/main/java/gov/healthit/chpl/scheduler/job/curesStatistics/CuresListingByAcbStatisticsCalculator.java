@@ -2,24 +2,27 @@ package gov.healthit.chpl.scheduler.job.curesStatistics;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.statistics.CuresListingStatisticsDAO;
+import gov.healthit.chpl.dao.statistics.CuresListingStatisticsByAcbDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
-import gov.healthit.chpl.domain.statistics.CuresListingStatistic;
+import gov.healthit.chpl.domain.statistics.CuresListingStatisticByAcb;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
@@ -28,82 +31,105 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
-public class CuresListingStatisticsCalculator {
+public class CuresListingByAcbStatisticsCalculator {
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
     private CertifiedProductDAO certifiedProductDAO;
-    private CuresListingStatisticsDAO curesListingStatisticsDAO;
+    private CuresListingStatisticsByAcbDAO curesListingStatisticsByAcbDAO;
+    private CertificationBodyDAO certificationBodyDAO;
 
     private List<CertificationCriterion> curesCriteria;
+    private List<String> activeStatusNames;
+
 
     @Autowired
-    public CuresListingStatisticsCalculator(CertifiedProductDetailsManager certifiedProductDetailsManager, CertifiedProductDAO certifiedProductDAO,
-            CuresUpdateService curesUpdateService, CertificationCriterionService certificationCriterionService, CuresListingStatisticsDAO curesListingStatisticsDAO) {
+    public CuresListingByAcbStatisticsCalculator(CertifiedProductDetailsManager certifiedProductDetailsManager, CertifiedProductDAO certifiedProductDAO,
+            CuresUpdateService curesUpdateService, CertificationCriterionService certificationCriterionService, CuresListingStatisticsByAcbDAO curesListingStatisticsByAcbDAO,
+            CertificationBodyDAO certificationBodyDAO) {
+
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
         this.certifiedProductDAO = certifiedProductDAO;
-        this.curesListingStatisticsDAO = curesListingStatisticsDAO;
+        this.curesListingStatisticsByAcbDAO = curesListingStatisticsByAcbDAO;
+        this.certificationBodyDAO = certificationBodyDAO;
 
         populateCuresCriteria(certificationCriterionService);
+
+        activeStatusNames = Stream.of(CertificationStatusType.Active.getName(),
+                CertificationStatusType.SuspendedByAcb.getName(),
+                CertificationStatusType.SuspendedByOnc.getName())
+                .collect(Collectors.toList());
     }
 
-    public List<CuresListingStatistic> calculate(LocalDate statisticDate) {
+    public List<CuresListingStatisticByAcb> calculate(LocalDate statisticDate) {
+        List<CertificationBody> activeAcbs = certificationBodyDAO.findAllActive().stream()
+                .map(dto -> new CertificationBody(dto))
+                .collect(Collectors.toList());
 
         ForkJoinPool pool = new ForkJoinPool(2);
         try {
             List<CertifiedProductSearchDetails> listings = pool.submit(() -> get2015ListingDetails()).get();
 
-            CuresListingStatistic stat = new CuresListingStatistic();
-            stat.setCuresListingWithoutCuresCriteriaCount(calculateCuresUpdateListingsWithoutCuresCriteriaCount(listings));
-            stat.setCuresListingWithCuresCriteriaCount(calculateCuresUpdatedListingsWithCuresCriteriaCount(listings));
-            stat.setNonCuresListingCount(calculateNonCuresListingCount(listings));
-            stat.setStatisticDate(statisticDate);
-
-            return Arrays.asList(stat);
+            return activeAcbs.stream()
+                    .map(acb -> getCuresListingByAcbStatistic(listings, acb, statisticDate))
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             LOGGER.catching(e);
-            return new ArrayList<CuresListingStatistic>();
+            return new ArrayList<CuresListingStatisticByAcb>();
         }
 
     }
 
-    public boolean hasStatisticsForDate(LocalDate statisticDate) {
-        List<CuresListingStatistic> statisticsForDate = curesListingStatisticsDAO.getStatisticsForDate(statisticDate);
+    public Boolean hasStatisticsForDate(LocalDate statisticDate) {
+        List<CuresListingStatisticByAcb> statisticsForDate = curesListingStatisticsByAcbDAO.getStatisticsForDate(statisticDate);
         return statisticsForDate != null && statisticsForDate.size() > 0;
     }
 
     public void deleteStatisticsForDate(LocalDate statisticDate) {
-        List<CuresListingStatistic> statisticsForDate = curesListingStatisticsDAO.getStatisticsForDate(statisticDate);
-        for (CuresListingStatistic statistic : statisticsForDate) {
+        List<CuresListingStatisticByAcb> statisticsForDate = curesListingStatisticsByAcbDAO.getStatisticsForDate(statisticDate);
+        for (CuresListingStatisticByAcb statistic : statisticsForDate) {
             try {
-                curesListingStatisticsDAO.delete(statistic.getId());
+                curesListingStatisticsByAcbDAO.delete(statistic.getId());
             } catch (Exception ex) {
                 LOGGER.error("Could not delete statistic with ID " + statistic.getId());
             }
         }
     }
 
-    public void save(List<CuresListingStatistic> statistics) {
+    public void save(List<CuresListingStatisticByAcb> statistics) {
         statistics.stream()
             .forEach(stat -> stat.setLastModifiedUser(User.SYSTEM_USER_ID));
 
-        curesListingStatisticsDAO.create(statistics);
+        curesListingStatisticsByAcbDAO.create(statistics);
     }
 
-    private Long calculateCuresUpdateListingsWithoutCuresCriteriaCount(List<CertifiedProductSearchDetails> listings) {
+    private CuresListingStatisticByAcb getCuresListingByAcbStatistic(List<CertifiedProductSearchDetails> listings, CertificationBody acb, LocalDate statisticDate) {
+        CuresListingStatisticByAcb stat = new CuresListingStatisticByAcb();
+        stat.setCertificationBody(acb);
+        stat.setCuresListingWithoutCuresCriteriaCount(calculateCuresUpdateListingsWithoutCuresCriteriaCount(listings, acb));
+        stat.setCuresListingWithCuresCriteriaCount(calculateCuresUpdatedListingsWithCuresCriteriaCount(listings, acb));
+        stat.setNonCuresListingCount(calculateNonCuresListingCount(listings, acb));
+        stat.setStatisticDate(statisticDate);
+        return stat;
+    }
+
+    private Long calculateCuresUpdateListingsWithoutCuresCriteriaCount(List<CertifiedProductSearchDetails> listings, CertificationBody acb) {
         return listings.stream()
+                .filter(listing -> Long.valueOf(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()).equals(acb.getId()))
                 .filter(listing -> listing.getCuresUpdate()
                         && !doesListingAttestToAnyCuresCriteria(listing))
                 .collect(Collectors.counting());
     }
 
-    private Long calculateCuresUpdatedListingsWithCuresCriteriaCount(List<CertifiedProductSearchDetails> listings) {
+    private Long calculateCuresUpdatedListingsWithCuresCriteriaCount(List<CertifiedProductSearchDetails> listings, CertificationBody acb) {
         return listings.stream()
+                .filter(listing -> Long.valueOf(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()).equals(acb.getId()))
                 .filter(listing -> listing.getCuresUpdate()
                         && doesListingAttestToAnyCuresCriteria(listing))
                 .collect(Collectors.counting());
     }
 
-    private Long calculateNonCuresListingCount(List<CertifiedProductSearchDetails> listings) {
+    private Long calculateNonCuresListingCount(List<CertifiedProductSearchDetails> listings, CertificationBody acb) {
         return listings.stream()
+                .filter(listing -> Long.valueOf(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()).equals(acb.getId()))
                 .filter(listing -> !listing.getCuresUpdate())
                 .collect(Collectors.counting());
     }
@@ -111,6 +137,7 @@ public class CuresListingStatisticsCalculator {
     List<CertifiedProductSearchDetails> get2015ListingDetails() {
         return getAll2015CertifiedProducts().parallelStream()
                 .map(detail -> getDetails(detail.getId()))
+                .filter(listing -> isListingActive(listing))
                 .collect(Collectors.toList());
     }
 
@@ -122,7 +149,7 @@ public class CuresListingStatisticsCalculator {
                 .isPresent();
     }
 
-    private boolean isCuresCriterion(CertificationCriterion criterion) {
+    private Boolean isCuresCriterion(CertificationCriterion criterion) {
         return curesCriteria.stream()
                 .filter(cc -> cc.getId().equals(criterion.getId()))
                 .findFirst()
@@ -132,7 +159,7 @@ public class CuresListingStatisticsCalculator {
     private CertifiedProductSearchDetails getDetails(Long id) {
         try {
             Long start = (new Date()).getTime();
-            CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetails(id);
+            CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetailsUsingCache(id);
             Long end = (new Date()).getTime();
             LOGGER.info("Retrieved Listing Details for " + id + " in " + (end - start) + "ms");
             return listing;
@@ -159,5 +186,11 @@ public class CuresListingStatisticsCalculator {
         curesCriteria.add(certificationCriterionService.get(Criteria2015.D_13));
     }
 
+    private Boolean isListingActive(CertifiedProductSearchDetails listing) {
+        return activeStatusNames.stream()
+                .filter(statusName -> statusName.equals(listing.getCurrentStatus().getStatus().getName()))
+                .findAny()
+                .isPresent();
+    }
 
 }

@@ -17,7 +17,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.domain.statistics.CriterionListingCountStatistic;
 import gov.healthit.chpl.domain.statistics.CriterionUpgradedToCuresFromOriginalListingStatistic;
 import gov.healthit.chpl.domain.statistics.CuresCriterionUpgradedWithoutOriginalListingStatistic;
-import gov.healthit.chpl.domain.statistics.CuresListingStatistic;
+import gov.healthit.chpl.domain.statistics.CuresListingStatisticByAcb;
 import gov.healthit.chpl.domain.statistics.CuresCriteriaStatisticsByAcb;
 import gov.healthit.chpl.domain.statistics.ListingCuresStatusStatistic;
 import gov.healthit.chpl.domain.statistics.ListingToCriterionForCuresAchievementStatistic;
@@ -54,7 +54,7 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
     private CuresCrieriaStatisticsByAcbCalculator curesCrieriaStatisticsByAcbCalculator;
 
     @Autowired
-    private CuresListingStatisticsCalculator curesListingStatisticsCalculator;
+    private CuresListingByAcbStatisticsCalculator curesListingStatisticsCalculator;
 
     @Override
     public void execute(JobExecutionContext arg0) throws JobExecutionException {
@@ -86,7 +86,7 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
                 if (curesListingStatisticsCalculator.hasStatisticsForDate(statisticDate)) {
                     curesListingStatisticsCalculator.deleteStatisticsForDate(statisticDate);
                 }
-                List<CuresListingStatistic> stats = curesListingStatisticsCalculator.calculate(statisticDate);
+                List<CuresListingStatisticByAcb> stats = curesListingStatisticsCalculator.calculate(statisticDate);
                 curesListingStatisticsCalculator.save(stats);
             }
 
