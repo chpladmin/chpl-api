@@ -16,9 +16,9 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.domain.statistics.CriterionListingCountStatistic;
 import gov.healthit.chpl.domain.statistics.CriterionUpgradedToCuresFromOriginalListingStatistic;
+import gov.healthit.chpl.domain.statistics.CuresCriteriaStatisticsByAcb;
 import gov.healthit.chpl.domain.statistics.CuresCriterionUpgradedWithoutOriginalListingStatistic;
 import gov.healthit.chpl.domain.statistics.CuresListingStatisticByAcb;
-import gov.healthit.chpl.domain.statistics.CuresCriteriaStatisticsByAcb;
 import gov.healthit.chpl.domain.statistics.ListingCuresStatusStatistic;
 import gov.healthit.chpl.domain.statistics.ListingToCriterionForCuresAchievementStatistic;
 import gov.healthit.chpl.domain.statistics.PrivacyAndSecurityListingStatistic;
@@ -51,7 +51,7 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
     private ListingCriterionForCuresAchievementStatisticsCalculator listingCriterionForCuresAchievementStatisticsCalculator;
 
     @Autowired
-    private CuresCrieriaStatisticsByAcbCalculator curesCrieriaStatisticsByAcbCalculator;
+    private CuresCriteriaStatisticsByAcbCalculator curesCrieriaStatisticsByAcbCalculator;
 
     @Autowired
     private CuresListingByAcbStatisticsCalculator curesListingStatisticsCalculator;
@@ -65,13 +65,13 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
         LocalDate yesterday = today.minus(Period.ofDays(ONE_DAY));
         LOGGER.info("Calculating statistics for " + yesterday);
 
-        //setCriterionListingCountStatisticsForDate(yesterday);
-        //setOriginalCriterionActivityStatisticsForDate(yesterday);
-        //setCuresCriterionActivityStatisticsForDate(yesterday);
-        //setListingCuresStatusStatisticsForDate(yesterday);
-        //setPrivacyAndSecurityListingStatisticsForDate(yesterday);
-        //setCriteriaNeededToAchieveCuresStatisticsForDate(yesterday);
-        //setCuresStatisticsByAcbForDate(yesterday);
+        setCriterionListingCountStatisticsForDate(yesterday);
+        setOriginalCriterionActivityStatisticsForDate(yesterday);
+        setCuresCriterionActivityStatisticsForDate(yesterday);
+        setListingCuresStatusStatisticsForDate(yesterday);
+        setPrivacyAndSecurityListingStatisticsForDate(yesterday);
+        setCriteriaNeededToAchieveCuresStatisticsForDate(yesterday);
+        setCuresStatisticsByAcbForDate(yesterday);
         setCuresListingStatisticsForDate(yesterday);
 
         LOGGER.info("*****Cures Reporting Statistics Job is complete.*****");

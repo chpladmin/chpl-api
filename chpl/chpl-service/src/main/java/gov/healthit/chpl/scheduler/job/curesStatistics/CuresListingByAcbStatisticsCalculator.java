@@ -29,7 +29,7 @@ import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.service.CuresUpdateService;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "curesStatisticsCreatorJobLogger")
 @Component
 public class CuresListingByAcbStatisticsCalculator {
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
@@ -136,8 +136,8 @@ public class CuresListingByAcbStatisticsCalculator {
 
     List<CertifiedProductSearchDetails> get2015ListingDetails() {
         return getAll2015CertifiedProducts().parallelStream()
+                .filter(dto -> isListingActive(dto.getCertificationStatusName()))
                 .map(detail -> getDetails(detail.getId()))
-                .filter(listing -> isListingActive(listing))
                 .collect(Collectors.toList());
     }
 
@@ -186,9 +186,9 @@ public class CuresListingByAcbStatisticsCalculator {
         curesCriteria.add(certificationCriterionService.get(Criteria2015.D_13));
     }
 
-    private Boolean isListingActive(CertifiedProductSearchDetails listing) {
+    private Boolean isListingActive(String certificationStatusName) {
         return activeStatusNames.stream()
-                .filter(statusName -> statusName.equals(listing.getCurrentStatus().getStatus().getName()))
+                .filter(statusName -> statusName.equals(certificationStatusName))
                 .findAny()
                 .isPresent();
     }

@@ -27,27 +27,25 @@ import one.util.streamex.StreamEx;
 
 @Log4j2(topic = "curesStatisticsCreatorJobLogger")
 @Component
-public class CuresCrieriaStatisticsByAcbCalculator {
-    //private CertificationCriterionService certificationCriterionService;
+public class CuresCriteriaStatisticsByAcbCalculator {
     private CertifiedProductDAO certifiedProductDAO;
     private CertificationResultActivityHistoryHelper activityStatisticsHelper;
     private CertificationBodyDAO certificationBodyDAO;
     private CuresCriteriaStatisticsByAcbDAO curesStatisticsByAcbDAO;
 
-    private List<CuresCriteriaUpdate> curesCriteriaUpdates = new ArrayList<CuresCrieriaStatisticsByAcbCalculator.CuresCriteriaUpdate>();
+    private List<CuresCriteriaUpdate> curesCriteriaUpdates = new ArrayList<CuresCriteriaStatisticsByAcbCalculator.CuresCriteriaUpdate>();
     private List<CertificationStatusType> activeStatuses;
     private Date curesEffectiveDate;
 
 
     @Autowired
-    public CuresCrieriaStatisticsByAcbCalculator(CertificationCriterionService certificationCriterionService,
+    public CuresCriteriaStatisticsByAcbCalculator(CertificationCriterionService certificationCriterionService,
             CertifiedProductDAO certifiedProductDAO,
             CertificationBodyDAO certificationBodyDAO,
             CertificationResultActivityHistoryHelper activityStatisticsHelper,
             CuresCriteriaStatisticsByAcbDAO curesStatisticsByAcbDAO,
             SpecialProperties specialProperties) {
 
-        //this.certificationCriterionService = certificationCriterionService;
         this.certifiedProductDAO = certifiedProductDAO;
         this.activityStatisticsHelper = activityStatisticsHelper;
         this.certificationBodyDAO = certificationBodyDAO;
