@@ -18,6 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.conformanceMethod.dao.ConformanceMethodDAO;
 import gov.healthit.chpl.dao.AgeRangeDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
@@ -33,6 +34,7 @@ import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
+import gov.healthit.chpl.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
@@ -62,6 +64,7 @@ import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.entity.FuzzyType;
+import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -75,10 +78,12 @@ import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 @Service
 public class CertificationResultManager extends SecuredManager {
     private static final Logger LOGGER = LogManager.getLogger(CertificationResultManager.class);
+    private static final String CM_MUST_NOT_HAVE_OTHER_DATA = "Attestation";
 
     private CertifiedProductSearchDAO cpDao;
     private CertificationCriterionDAO criteriaDao;
     private CertificationResultDAO certResultDAO;
+    private ConformanceMethodDAO conformanceMethodDAO;
     private OptionalStandardDAO optionalStandardDAO;
     private TestStandardDAO testStandardDAO;
     private TestToolDAO testToolDAO;
@@ -90,8 +95,7 @@ public class CertificationResultManager extends SecuredManager {
     private UcdProcessDAO ucdDao;
     private MeasureDAO mmDao;
     private FuzzyChoicesDAO fuzzyChoicesDao;
-
-private SvapDAO svapDao;
+    private SvapDAO svapDao;
 
     @SuppressWarnings("checkstyle:parameternumber")
     @Autowired
@@ -99,7 +103,7 @@ private SvapDAO svapDao;
             CertificationResultDAO certResultDAO, OptionalStandardDAO optionalStandardDAO, TestStandardDAO testStandardDAO,
             TestToolDAO testToolDAO, TestFunctionalityDAO testFunctionalityDAO, TestParticipantDAO testParticipantDAO,
             AgeRangeDAO ageDao, EducationTypeDAO educDao, TestTaskDAO testTaskDAO, UcdProcessDAO ucdDao, MeasureDAO mmDao,
-            FuzzyChoicesDAO fuzzyChoicesDao, SvapDAO svapDao) {
+            FuzzyChoicesDAO fuzzyChoicesDao, SvapDAO svapDao, ConformanceMethodDAO conformanceMethodDAO) {
         this.cpDao = cpDao;
         this.criteriaDao = criteriaDao;
         this.certResultDAO = certResultDAO;
@@ -115,6 +119,7 @@ private SvapDAO svapDao;
         this.mmDao = mmDao;
         this.fuzzyChoicesDao = fuzzyChoicesDao;
         this.svapDao = svapDao;
+        this.conformanceMethodDAO = conformanceMethodDAO;
     }
 
     @SuppressWarnings({"checkstyle:methodlength", "checkstyle:linelength"})
@@ -188,6 +193,7 @@ private SvapDAO svapDao;
         if (updated.isSuccess() == null || !updated.isSuccess()) {
             // similar to delete - remove all related items
             numChanges += updateAdditionalSoftware(updated, orig.getAdditionalSoftware(), null);
+            numChanges += updateConformanceMethods(updatedListing, updated, orig.getConformanceMethods(), null);
             numChanges += updateOptionalStandards(updatedListing, updated, orig.getOptionalStandards(), null);
             numChanges += updateTestStandards(updatedListing, updated, orig.getTestStandards(), null);
             numChanges += updateTestTools(updated, orig.getTestToolsUsed(), null);
@@ -232,6 +238,7 @@ private SvapDAO svapDao;
         } else {
             // create/update all related items
             numChanges += updateAdditionalSoftware(updated, orig.getAdditionalSoftware(), updated.getAdditionalSoftware());
+            numChanges += updateConformanceMethods(updatedListing, updated, orig.getConformanceMethods(), updated.getConformanceMethods());
             numChanges += updateOptionalStandards(updatedListing, updated, orig.getOptionalStandards(), updated.getOptionalStandards());
             numChanges += updateTestStandards(updatedListing, updated, orig.getTestStandards(), updated.getTestStandards());
             numChanges += updateTestTools(updated, orig.getTestToolsUsed(), updated.getTestToolsUsed());
@@ -539,6 +546,74 @@ private SvapDAO svapDao;
 
         for (Long idToRemove : idsToRemove) {
             certResultDAO.deleteUcdProcessMapping(certResult.getId(), idToRemove);
+        }
+        return numChanges;
+    }
+
+    private int updateConformanceMethods(CertifiedProductSearchDetails listing, CertificationResult certResult,
+            List<CertificationResultConformanceMethod> existingConformanceMethods,
+            List<CertificationResultConformanceMethod> updatedConformanceMethods) throws EntityCreationException {
+
+        int numChanges = 0;
+        List<CertificationResultConformanceMethod> conformanceMethodToAdd = new ArrayList<CertificationResultConformanceMethod>();
+        List<Long> idsToRemove = new ArrayList<Long>();
+
+        // figure out which data to add
+        if (updatedConformanceMethods != null && updatedConformanceMethods.size() > 0) {
+            if (existingConformanceMethods == null || existingConformanceMethods.size() == 0) {
+                // existing listing has none, add all from the update
+                for (CertificationResultConformanceMethod updatedItem : updatedConformanceMethods) {
+                    conformanceMethodToAdd.add(updatedItem);
+                }
+            } else if (existingConformanceMethods.size() > 0) {
+                // existing listing has some, compare to the update to see if
+                // any need to be added
+                for (CertificationResultConformanceMethod updatedItem : updatedConformanceMethods) {
+                    boolean inExistingListing = false;
+                    for (CertificationResultConformanceMethod existingItem : existingConformanceMethods) {
+                        if (updatedItem.matches(existingItem)) {
+                            inExistingListing = true;
+                        }
+                    }
+
+                    if (!inExistingListing) {
+                        conformanceMethodToAdd.add(updatedItem);
+                    }
+                }
+            }
+        }
+
+        // figure out which data to remove
+        if (existingConformanceMethods != null && existingConformanceMethods.size() > 0) {
+            // if the updated listing has none, remove them all from existing
+            if (updatedConformanceMethods == null || updatedConformanceMethods.size() == 0) {
+                for (CertificationResultConformanceMethod existingItem : existingConformanceMethods) {
+                    idsToRemove.add(existingItem.getId());
+                }
+            } else if (updatedConformanceMethods.size() > 0) {
+                for (CertificationResultConformanceMethod existingItem : existingConformanceMethods) {
+                    boolean inUpdatedListing = false;
+                    for (CertificationResultConformanceMethod updatedItem : updatedConformanceMethods) {
+                        inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
+                    }
+                    if (!inUpdatedListing) {
+                        idsToRemove.add(existingItem.getId());
+                    }
+                }
+            }
+        }
+
+        numChanges = conformanceMethodToAdd.size() + idsToRemove.size();
+        for (CertificationResultConformanceMethod toAdd : conformanceMethodToAdd) {
+            CertificationResultConformanceMethodEntity toAddEntity = new CertificationResultConformanceMethodEntity();
+            toAddEntity.setCertificationResultId(certResult.getId());
+            toAddEntity.setConformanceMethodId(toAdd.getConformanceMethod().getId());
+            toAddEntity.setVersion(toAdd.getConformanceMethodVersion());
+            certResultDAO.addConformanceMethodMapping(toAddEntity);
+        }
+
+        for (Long idToRemove : idsToRemove) {
+            certResultDAO.deleteConformanceMethodMapping(idToRemove);
         }
         return numChanges;
     }
