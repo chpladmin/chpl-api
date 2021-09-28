@@ -506,6 +506,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
         CertificationResultConformanceMethodEntity mapping = new CertificationResultConformanceMethodEntity();
         mapping.setCertificationResultId(entity.getCertificationResultId());
         mapping.setConformanceMethodId(entity.getConformanceMethodId());
+        mapping.setVersion(entity.getVersion());
         mapping.setCreationDate(new Date());
         mapping.setDeleted(false);
         mapping.setLastModifiedDate(new Date());
@@ -515,7 +516,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
 
         return new CertificationResultConformanceMethod(mapping);
     }
-    
+
     public void deleteConformanceMethodMapping(Long mappingId) {
         CertificationResultConformanceMethodEntity toDelete = getCertificationResultConformanceMethodById(mappingId);
         if (toDelete != null) {
