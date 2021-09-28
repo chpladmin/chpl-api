@@ -30,6 +30,7 @@ public class CuresProgressByAcbWorksheet {
     }
 
     public Workbook populate(Workbook workbook) {
+        LOGGER.info("Populating sheet Cures Progress By ACB Data");
         Sheet sheet = workbook.getSheet("Cures Progress By ACB Data");
         List<CuresListingStatisticByAcb> stats = getMostRecentCuresStatistics();
         List<CertificationBody> acbs = getActiveCertificationBodies();

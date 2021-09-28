@@ -87,9 +87,7 @@ public class CuresStatisticsEmailJob  extends QuartzJob {
 
         try {
             LocalDate reportDate = curesStatisticsChartData.getReportDate();
-            attachments.add(
-                curesStatisticsChartSpreadsheet.generateSpreadsheet(
-                        curesStatisticsChartData.getCuresCriterionChartStatistics(reportDate), reportDate));
+            attachments.add(curesStatisticsChartSpreadsheet.generateSpreadsheet(reportDate));
         } catch (IOException ex) {
             LOGGER.error("Error creating charts spreadhseet", ex);
         }

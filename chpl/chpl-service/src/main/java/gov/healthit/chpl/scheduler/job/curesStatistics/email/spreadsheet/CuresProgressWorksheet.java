@@ -26,6 +26,7 @@ public class CuresProgressWorksheet {
     }
 
     public Workbook populate(Workbook workbook) {
+        LOGGER.info("Populating sheet Cures Progress Data");
         Sheet sheet = workbook.getSheet("Cures Progress Data");
 
         List<CuresListingStatisticByAcb> stats = getMostRecentCuresStatistics();

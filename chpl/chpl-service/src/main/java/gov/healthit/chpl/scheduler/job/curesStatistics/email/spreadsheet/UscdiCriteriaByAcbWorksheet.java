@@ -36,6 +36,7 @@ public class UscdiCriteriaByAcbWorksheet {
     }
 
     public Workbook populate(Workbook workbook) {
+        LOGGER.info("Populating sheet Listing Data By ONC-ACB Data");
         Sheet sheet = workbook.getSheet("Listing Data By ONC-ACB");
 
         List<CuresCriteriaStatisticsByAcb> stats = getMostRecentCuresStatistics();
