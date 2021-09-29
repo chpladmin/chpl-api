@@ -622,8 +622,6 @@ public class ListingQuestionableActivityProvider {
 
     private boolean hasPromotingInteroperabilityHistoryChanged(CertifiedProductSearchDetails existingListing,
             CertifiedProductSearchDetails updatedListing) {
-        existingListing.getPromotingInteroperabilityUserHistory().sort(new PromotingInteroperabilityComparator());
-        updatedListing.getPromotingInteroperabilityUserHistory().sort(new PromotingInteroperabilityComparator());
         return subtractLists(existingListing.getPromotingInteroperabilityUserHistory(), updatedListing.getPromotingInteroperabilityUserHistory()).size() > 0
                 || subtractLists(updatedListing.getPromotingInteroperabilityUserHistory(), existingListing.getPromotingInteroperabilityUserHistory()).size() > 0;
     }
@@ -650,15 +648,6 @@ public class ListingQuestionableActivityProvider {
             return a.getEventDate().longValue() < b.getEventDate().longValue()
                     ? -1
                             : a.getEventDate().longValue() == b.getEventDate().longValue() ? 0 : 1;
-        }
-    }
-
-    static class PromotingInteroperabilityComparator implements Comparator<PromotingInteroperabilityUser>, Serializable {
-        private static final long serialVersionUID = 5674742856732723797L;
-
-        @Override
-        public int compare(PromotingInteroperabilityUser a, PromotingInteroperabilityUser b) {
-            return a.getUserCountDate().compareTo(b.getUserCountDate());
         }
     }
 }
