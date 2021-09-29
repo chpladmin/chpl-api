@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "cures_statistics_by_acb")
+@Table(name = "cures_criteria_statistics_by_acb")
 public class CuresCriteriaStatisticsByAcbEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
