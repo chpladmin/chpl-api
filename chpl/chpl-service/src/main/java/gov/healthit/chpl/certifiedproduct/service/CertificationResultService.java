@@ -73,6 +73,11 @@ public class CertificationResultService {
         return certificationResultDetailsDTOs;
     }
 
+
+    public List<TestTool> getAvailableTestToolForCriteria(CertificationResult result) throws EntityRetrievalException {
+        return getAvailableTestToolForCriteria(result, testToolDAO.getAllTestToolCriteriaMap());
+    }
+
     private CertificationResult getCertificationResult(CertificationResultDetailsDTO certResult,
             CertifiedProductSearchDetails searchDetails, List<SvapCriteriaMap> svapCriteriaMap,
             List<OptionalStandardCriteriaMap> optionalStandardCriteriaMap,
