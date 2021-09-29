@@ -127,8 +127,8 @@ public class PendingCertifiedProductManager extends SecuredManager {
 
         PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(pendingCp);
         pcpDetails.setCuresUpdate(curesUpdateService.isCuresUpdate(pcpDetails));
-        addAvailableConformanceMethods(pcpDetails);
         addAllVersionsToCmsCriterion(pcpDetails);
+        addAvailableConformanceMethods(pcpDetails);
         addAvailableTestFunctionalities(pcpDetails);
         addAvailableOptionalStandards(pcpDetails);
         return pcpDetails;

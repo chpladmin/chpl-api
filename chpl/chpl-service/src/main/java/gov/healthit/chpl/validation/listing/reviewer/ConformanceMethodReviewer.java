@@ -52,7 +52,6 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
 
         checkIfConformanceMethodIsAllowed(listing, certResult, conformanceMethod);
         checkIfConformanceMethodHasAVersion(listing, certResult, conformanceMethod);
-//        checkIfConformanceMethodHasExtraData(listing, certResult, conformanceMethod);
     }
 
     private void checkIfConformanceMethodIsAllowed(CertifiedProductSearchDetails listing, CertificationResult certResult,
@@ -73,29 +72,11 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
             CertificationResultConformanceMethod conformanceMethod) {
             if (conformanceMethod.getConformanceMethod() != null
                     && !StringUtils.isEmpty(conformanceMethod.getConformanceMethod().getName())
+                    && !conformanceMethod.getConformanceMethod().getName().equalsIgnoreCase(CM_MUST_NOT_HAVE_OTHER_DATA)
                     && StringUtils.isEmpty(conformanceMethod.getConformanceMethodVersion())) {
                 addCriterionErrorOrWarningByPermission(listing, certResult,
                         "listing.criteria.conformanceMethod.missingConformanceMethodVersion",
                         Util.formatCriteriaNumber(certResult.getCriterion()));
             }
     }
-
-    /*
-    private void checkIfConformanceMethodHasExtraData(CertifiedProductSearchDetails listing, CertificationResult certResult,
-            CertificationResultConformanceMethod conformanceMethod) {
-            if (conformanceMethod.getConformanceMethod() != null
-                    && conformanceMethod.getConformanceMethod().getName().equalsIgnoreCase(CM_MUST_NOT_HAVE_OTHER_DATA)) {
-                if (certResult.getTestDataUsed() != null) {
-                    listing.getWarningMessages().add(msgUtil.getMessage(
-                            "listing.criteria.conformanceMethod.mayNotHaveTestData",
-                            Util.formatCriteriaNumber(certResult.getCriterion())));
-                }
-                if (certResult.getTestToolsUsed() != null) {
-                    listing.getWarningMessages().add(msgUtil.getMessage(
-                            "listing.criteria.conformanceMethod.mayNotHaveTestTools",
-                            Util.formatCriteriaNumber(certResult.getCriterion())));
-                }
-            }
-    }
-    */
 }
