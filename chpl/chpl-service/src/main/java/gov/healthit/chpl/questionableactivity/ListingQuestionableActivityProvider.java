@@ -12,7 +12,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.TimeZone;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -24,8 +27,10 @@ import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.ListingMeasure;
+import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityServiceFactory;
 import lombok.extern.log4j.Log4j2;
@@ -37,13 +42,16 @@ public class ListingQuestionableActivityProvider {
     private static final String B3_CRITERIA_NUMER = "170.315 (b)(3)";
 
     private Environment env;
+    private ResourcePermissions resourcePermissions;
     private CertificationCriterionService criterionService;
     private RealWorldTestingEligiblityServiceFactory rwtEligServiceFactory;
 
     @Autowired
-    public ListingQuestionableActivityProvider(Environment env, CertificationCriterionService criterionService,
+    public ListingQuestionableActivityProvider(Environment env, ResourcePermissions resourcePermissions,
+            CertificationCriterionService criterionService,
             RealWorldTestingEligiblityServiceFactory rwtEligServiceFactory) {
         this.env = env;
+        this.resourcePermissions = resourcePermissions;
         this.criterionService = criterionService;
         this.rwtEligServiceFactory = rwtEligServiceFactory;
     }
@@ -493,6 +501,32 @@ public class ListingQuestionableActivityProvider {
         return activity;
     }
 
+    public QuestionableActivityListingDTO checkPromotingInteroperabilityUpdatedByAcb(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+        if (!resourcePermissions.isUserRoleAcbAdmin()
+                || (CollectionUtils.isEmpty(origListing.getPromotingInteroperabilityUserHistory())
+                && CollectionUtils.isEmpty(newListing.getPromotingInteroperabilityUserHistory()))) {
+            return null;
+        }
+
+        QuestionableActivityListingDTO activity = null;
+        if (CollectionUtils.isEmpty(origListing.getPromotingInteroperabilityUserHistory())
+                && CollectionUtils.isNotEmpty(newListing.getPromotingInteroperabilityUserHistory())) {
+            activity = new QuestionableActivityListingDTO();
+            //TODO: How much detail should we give about this?
+            activity.setAfter("An ONC-ACB User Added Data to Promoting Interoperability");
+        } else if (CollectionUtils.isNotEmpty(origListing.getPromotingInteroperabilityUserHistory())
+                && CollectionUtils.isEmpty(newListing.getPromotingInteroperabilityUserHistory())) {
+            activity = new QuestionableActivityListingDTO();
+            //TODO: How much detail should we give about this?
+            activity.setAfter("An ONC-ACB User Removed Data from Promoting Interoperability");
+        } else if (hasPromotingInteroperabilityHistoryChanged(origListing, newListing)) {
+            activity = new QuestionableActivityListingDTO();
+            //TODO: How much detail should we give about this?
+            activity.setAfter("An ONC-ACB User Changed Data about Promoting Interoperability");
+        }
+        return activity;
+    }
+
     public List<QuestionableActivityListingDTO> checkMeasuresAdded(
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
 
@@ -588,6 +622,27 @@ public class ListingQuestionableActivityProvider {
         return rwtEligServiceFactory.getInstance().getRwtEligibilityYearForListing(listingId, LOGGER).getEligibilityYear().isPresent();
     }
 
+    private boolean hasPromotingInteroperabilityHistoryChanged(CertifiedProductSearchDetails existingListing,
+            CertifiedProductSearchDetails updatedListing) {
+        existingListing.getPromotingInteroperabilityUserHistory().sort(new PromotingInteroperabilityComparator());
+        updatedListing.getPromotingInteroperabilityUserHistory().sort(new PromotingInteroperabilityComparator());
+        return subtractLists(existingListing.getPromotingInteroperabilityUserHistory(), updatedListing.getPromotingInteroperabilityUserHistory()).size() > 0
+                || subtractLists(updatedListing.getPromotingInteroperabilityUserHistory(), existingListing.getPromotingInteroperabilityUserHistory()).size() > 0;
+    }
+
+    private List<PromotingInteroperabilityUser> subtractLists(List<PromotingInteroperabilityUser> listA, List<PromotingInteroperabilityUser> listB) {
+        Predicate<PromotingInteroperabilityUser> notInListB = piFromA -> !listB.stream()
+                .anyMatch(pi -> doPromotingInteroperabilityValuesMatch(piFromA, pi));
+
+        return listA.stream()
+                .filter(notInListB)
+                .collect(Collectors.toList());
+    }
+
+    private boolean doPromotingInteroperabilityValuesMatch(PromotingInteroperabilityUser a, PromotingInteroperabilityUser b) {
+        return a.matches(b);
+    }
+
     static class CertificationStatusEventComparator implements Comparator<CertificationStatusEvent>, Serializable {
         private static final long serialVersionUID = 1315674742856524797L;
 
@@ -596,6 +651,15 @@ public class ListingQuestionableActivityProvider {
             return a.getEventDate().longValue() < b.getEventDate().longValue()
                     ? -1
                             : a.getEventDate().longValue() == b.getEventDate().longValue() ? 0 : 1;
+        }
+    }
+
+    static class PromotingInteroperabilityComparator implements Comparator<PromotingInteroperabilityUser>, Serializable {
+        private static final long serialVersionUID = 5674742856732723797L;
+
+        @Override
+        public int compare(PromotingInteroperabilityUser a, PromotingInteroperabilityUser b) {
+            return a.getUserCountDate().compareTo(b.getUserCountDate());
         }
     }
 }
