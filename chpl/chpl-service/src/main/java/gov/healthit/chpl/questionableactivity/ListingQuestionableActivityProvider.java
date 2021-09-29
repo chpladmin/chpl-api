@@ -508,21 +508,19 @@ public class ListingQuestionableActivityProvider {
             return null;
         }
 
+        String piUpdatedMessage = "Promoting Interoperability history was updated.";
         QuestionableActivityListingDTO activity = null;
         if (CollectionUtils.isEmpty(origListing.getPromotingInteroperabilityUserHistory())
                 && CollectionUtils.isNotEmpty(newListing.getPromotingInteroperabilityUserHistory())) {
             activity = new QuestionableActivityListingDTO();
-            //TODO: How much detail should we give about this?
-            activity.setAfter("An ONC-ACB User Added Data to Promoting Interoperability");
+            activity.setAfter(piUpdatedMessage);
         } else if (CollectionUtils.isNotEmpty(origListing.getPromotingInteroperabilityUserHistory())
                 && CollectionUtils.isEmpty(newListing.getPromotingInteroperabilityUserHistory())) {
             activity = new QuestionableActivityListingDTO();
-            //TODO: How much detail should we give about this?
-            activity.setAfter("An ONC-ACB User Removed Data from Promoting Interoperability");
+            activity.setAfter(piUpdatedMessage);
         } else if (hasPromotingInteroperabilityHistoryChanged(origListing, newListing)) {
             activity = new QuestionableActivityListingDTO();
-            //TODO: How much detail should we give about this?
-            activity.setAfter("An ONC-ACB User Changed Data about Promoting Interoperability");
+            activity.setAfter(piUpdatedMessage);
         }
         return activity;
     }
@@ -640,7 +638,8 @@ public class ListingQuestionableActivityProvider {
     }
 
     private boolean doPromotingInteroperabilityValuesMatch(PromotingInteroperabilityUser a, PromotingInteroperabilityUser b) {
-        return a.matches(b);
+        return a.getUserCount().equals(b.getUserCount())
+                && a.getUserCountDate().isEqual(b.getUserCountDate());
     }
 
     static class CertificationStatusEventComparator implements Comparator<CertificationStatusEvent>, Serializable {
