@@ -551,7 +551,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
         CertificationResultConformanceMethodEntity entity = null;
 
         Query query = entityManager.createQuery(
-                "SELECT os " + "FROM CertificationResultConformanceMethodEntity cm "
+                "SELECT cm FROM CertificationResultConformanceMethodEntity cm "
                         + "LEFT OUTER JOIN FETCH cm.conformanceMethod " + "where (NOT cm.deleted = true) AND (cm.id = :id) ",
                         CertificationResultConformanceMethodEntity.class);
         query.setParameter("id", id);
