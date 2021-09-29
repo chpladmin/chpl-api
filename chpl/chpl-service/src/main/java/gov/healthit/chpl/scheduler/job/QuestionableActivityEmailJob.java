@@ -21,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -38,6 +39,7 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityProductDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityTriggerDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityVersionDTO;
+import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.service.CertificationCriterionService;
@@ -48,6 +50,21 @@ public class QuestionableActivityEmailJob extends QuartzJob {
 
     @Autowired
     private QuestionableActivityDAO questionableActivityDao;
+
+    @Autowired
+    private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
+
+    @Value("${questionableActivityEmailSubject}")
+    private String emailSubject;
+
+    @Value("${questionableActivityEmailBodyTitle}")
+    private String emailTitle;
+
+    @Value("${questionableActivityHasDataEmailBody}")
+    private String emailBodyWithData;
+
+    @Value("${questionableActivityNoDataEmailBody}")
+    private String emailBodyEmptyData;
 
     @Autowired
     private Environment env;
@@ -83,7 +100,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
     }
 
     @Override
-    public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Questionable Activity Email job. *********");
         LOGGER.info("Creating questionable activity email for: " + jobContext.getMergedJobDataMap().getString("email"));
@@ -105,22 +122,16 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         start.add(Calendar.DAY_OF_MONTH, range * -1);
         List<List<String>> csvRows = getAppropriateActivities(jobContext, start.getTime(), end.getTime());
         String to = jobContext.getMergedJobDataMap().getString("email");
-        String subject = env.getProperty("questionableActivityEmailSubject");
-        String htmlMessage = null;
-        List<File> files = null;
+        String htmlMessage = buildHtmlMessage(csvRows, start, end);
+        List<File> attachments = null;
         if (csvRows != null && csvRows.size() > 0) {
-            htmlMessage = String.format(env.getProperty("questionableActivityHasDataEmailBody"),
-                    Util.getDateFormatter().format(start.getTime()), Util.getDateFormatter().format(end.getTime()));
             String filename = env.getProperty("questionableActivityReportFilename");
             File output = null;
-            files = new ArrayList<File>();
+            attachments = new ArrayList<File>();
             if (csvRows.size() > 0) {
                 output = getOutputFile(csvRows, filename);
-                files.add(output);
+                attachments.add(output);
             }
-        } else {
-            htmlMessage = String.format(env.getProperty("questionableActivityNoDataEmailBody"),
-                    Util.getDateFormatter().format(start.getTime()), Util.getDateFormatter().format(end.getTime()));
         }
 
         LOGGER.info("Sending email to {} with contents {} and a total of {} questionable activities", to, htmlMessage,
@@ -132,9 +143,9 @@ public class QuestionableActivityEmailJob extends QuartzJob {
 
             EmailBuilder emailBuilder = new EmailBuilder(env);
             emailBuilder.recipients(recipients)
-                .subject(subject)
+                .subject(emailSubject)
                 .htmlMessage(htmlMessage)
-                .fileAttachments(files)
+                .fileAttachments(attachments)
                 .sendEmail();
         } catch (EmailNotSentException e) {
             LOGGER.error(e);
@@ -142,7 +153,25 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         LOGGER.info("********* Completed the Questionable Activity Email job. *********");
     }
 
-    private Integer getRangeInDays(final JobExecutionContext jobContext) {
+    private String buildHtmlMessage(List<List<String>> csvRows, Calendar start, Calendar end) {
+        if (csvRows != null && csvRows.size() > 0) {
+            String formattedEmailBody = String.format(emailBodyWithData, Util.getDateFormatter().format(start.getTime()), Util.getDateFormatter().format(end.getTime()));
+            return chplHtmlEmailBuilder.initialize()
+                    .heading(emailTitle)
+                    .paragraph(null, formattedEmailBody)
+                    .footer(false)
+                    .build();
+        } else {
+            String formattedEmailBody = String.format(emailBodyEmptyData, Util.getDateFormatter().format(start.getTime()), Util.getDateFormatter().format(end.getTime()));
+            return chplHtmlEmailBuilder.initialize()
+                    .heading(emailTitle)
+                    .paragraph(null, formattedEmailBody)
+                    .footer(false)
+                    .build();
+        }
+    }
+
+    private Integer getRangeInDays(JobExecutionContext jobContext) {
         Integer range = DEFAULT_RANGE;
         if (jobContext.getMergedJobDataMap().containsKey("range")) {
             try {
@@ -154,8 +183,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         return range;
     }
 
-    private List<List<String>> getAppropriateActivities(final JobExecutionContext jobContext, final Date start,
-            final Date end) {
+    private List<List<String>> getAppropriateActivities(JobExecutionContext jobContext, Date start, Date end) {
         List<List<String>> activities = new ArrayList<List<String>>();
         activities.addAll(createListingActivityRows(start, end));
         activities.addAll(createCriteriaActivityRows(start, end));
@@ -165,7 +193,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         return activities;
     }
 
-    private File getOutputFile(final List<List<String>> rows, final String reportFilename) {
+    private File getOutputFile(List<List<String>> rows, String reportFilename) {
         File temp = null;
         try {
             temp = File.createTempFile(reportFilename, ".csv");
@@ -207,7 +235,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         return row;
     }
 
-    private List<List<String>> createCriteriaActivityRows(final Date startDate, final Date endDate) {
+    private List<List<String>> createCriteriaActivityRows(Date startDate, Date endDate) {
         LOGGER.debug("Getting certification result activity between " + startDate + " and " + endDate);
         List<QuestionableActivityCertificationResultDTO> certResultActivities = questionableActivityDao
                 .findCertificationResultActivityBetweenDates(startDate, endDate);
@@ -251,7 +279,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         return activityCsvRows;
     }
 
-    private List<List<String>> createListingActivityRows(final Date startDate, final Date endDate) {
+    private List<List<String>> createListingActivityRows(Date startDate, Date endDate) {
         LOGGER.debug("Getting listing activity between " + startDate + " and " + endDate);
         List<QuestionableActivityListingDTO> listingActivities = questionableActivityDao
                 .findListingActivityBetweenDates(startDate, endDate);
@@ -291,7 +319,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         return activityCsvRows;
     }
 
-    private List<List<String>> createDeveloperActivityRows(final Date startDate, final Date endDate) {
+    private List<List<String>> createDeveloperActivityRows(Date startDate, Date endDate) {
         LOGGER.debug("Getting developer activity between " + startDate + " and " + endDate);
         List<QuestionableActivityDeveloperDTO> developerActivities = questionableActivityDao
                 .findDeveloperActivityBetweenDates(startDate, endDate);
@@ -333,7 +361,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         return activityCsvRows;
     }
 
-    private List<List<String>> createProductActivityRows(final Date startDate, final Date endDate) {
+    private List<List<String>> createProductActivityRows(Date startDate, Date endDate) {
         LOGGER.debug("Getting product activity between " + startDate + " and " + endDate);
         List<QuestionableActivityProductDTO> productActivities = questionableActivityDao
                 .findProductActivityBetweenDates(startDate, endDate);
@@ -375,7 +403,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         return activityCsvRows;
     }
 
-    private List<List<String>> createVersionActivityRows(final Date startDate, final Date endDate) {
+    private List<List<String>> createVersionActivityRows(Date startDate, Date endDate) {
         LOGGER.debug("Getting version activity between " + startDate + " and " + endDate);
         List<QuestionableActivityVersionDTO> versionActivities = questionableActivityDao
                 .findVersionActivityBetweenDates(startDate, endDate);
@@ -417,7 +445,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         return activityCsvRows;
     }
 
-    private void putListingActivityInRow(final QuestionableActivityListingDTO activity, final List<String> currRow) {
+    private void putListingActivityInRow(QuestionableActivityListingDTO activity, List<String> currRow) {
         // fill in info about the listing that will be the same for every
         // activity found in this date bucket
         currRow.set(ACB_COL, activity.getListing().getCertificationBodyName());
@@ -539,8 +567,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         currRow.set(ACTIVITY_REASON_COL, activity.getReason());
     }
 
-    private void putDeveloperActivityInRow(final QuestionableActivityDeveloperDTO developerActivity,
-            final List<String> activityRow) {
+    private void putDeveloperActivityInRow(QuestionableActivityDeveloperDTO developerActivity, List<String> activityRow) {
         activityRow.set(DEVELOPER_COL, developerActivity.getDeveloper().getName());
         activityRow.set(ACTIVITY_USER_COL, developerActivity.getUser().getUsername());
         if (developerActivity.getReason() != null) {
@@ -629,8 +656,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         }
     }
 
-    private void putVersionActivityInRow(final QuestionableActivityVersionDTO activity,
-            final List<String> activityRow) {
+    private void putVersionActivityInRow(QuestionableActivityVersionDTO activity, List<String> activityRow) {
         activityRow.set(DEVELOPER_COL, activity.getVersion().getDeveloperName());
         activityRow.set(PRODUCT_COL, activity.getVersion().getProductName());
         activityRow.set(VERSION_COL, activity.getVersion().getVersion());
@@ -649,7 +675,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         return row;
     }
 
-    private void populateRangeDefaultsFromJobData(final JobExecutionContext context) {
+    private void populateRangeDefaultsFromJobData(JobExecutionContext context) {
         ObjectMapper mapper = new ObjectMapper();
         String parametersJson = context.getMergedJobDataMap().getString("parameters");
         JsonNode rootNode = null;
@@ -687,13 +713,13 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         private Date activityDate;
         private QuestionableActivityTriggerDTO trigger;
 
-        ActivityDateTriggerGroup(final Date activityDate, final QuestionableActivityTriggerDTO trigger) {
+        ActivityDateTriggerGroup(Date activityDate, QuestionableActivityTriggerDTO trigger) {
             this.activityDate = activityDate;
             this.trigger = trigger;
         }
 
         @Override
-        public boolean equals(final Object anotherObject) {
+        public boolean equals(Object anotherObject) {
             if (anotherObject == null) {
                 return false;
             }
