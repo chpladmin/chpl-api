@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.BooleanUtils;
@@ -22,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -30,6 +32,7 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
@@ -47,8 +50,12 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "questionableUrlReportGeneratorJobLogger")
 public class QuestionableUrlReportGenerator extends QuartzJob {
+
     @Autowired
     private Environment env;
+
+    @Autowired
+    private ChplHtmlEmailBuilder htmlEmailBuilder;
 
     @Autowired
     private CertifiedProductDAO cpDao;
@@ -61,6 +68,21 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
 
     @Autowired
     private QuestionableUrlLookupDao urlLookupDao;
+
+    @Value("${job.questionableUrlReport.emailSubject}")
+    private String emailSubject;
+
+    @Value("${job.questionableUrlReport.emailBodyNoContent}")
+    private String emailBodyNoContent;
+
+    @Value("${job.questionableUrlReport.emailBodyTitle}")
+    private String emailBodyTitle;
+
+    @Value("${job.questionableUrlReport.acbSpecific.emailBodyAcbNames}")
+    private String emailBodyAcbNames;
+
+    @Value("${job.questionableUrlReport.emailAttachmentName}")
+    private String emailAttachmentName;
 
     private FailedUrlCsvFormatter csvFormatter = new FailedUrlCsvFormatter();
     private List<CertificationStatusType> activeStatuses = new ArrayList<CertificationStatusType>();
@@ -220,17 +242,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
     private void sendEmail(List<FailedUrlResult> questionableUrls, JobExecutionContext jobContext) {
         LOGGER.info("Creating email subject and body.");
         String to = jobContext.getMergedJobDataMap().getString("email");
-        String subject = env.getProperty("job.questionableUrlReport.emailSubject");
-        String htmlMessage = env.getProperty("job.questionableUrlReport.emailBodyBegin");
-        htmlMessage += createHtmlEmailBody(questionableUrls);
-        if (isAcbSpecific(jobContext)) {
-            List<Long> jobAcbIds = getSelectedAcbIds(jobContext);
-            if (jobAcbIds != null && jobAcbIds.size() > 0) {
-                htmlMessage += String.format(
-                        env.getProperty("job.questionableUrlReport.acbSpecific.emailBodyEnd"),
-                        getAcbNamesAsCommaSeparatedString(jobAcbIds));
-            }
-        }
+        String htmlMessage = createHtmlEmailBody(questionableUrls, jobContext);
 
         File output = null;
         List<File> files = new ArrayList<File>();
@@ -247,10 +259,9 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
 
             EmailBuilder emailBuilder = new EmailBuilder(env);
             emailBuilder.recipients(addresses)
-                .subject(subject)
+                .subject(emailSubject)
                 .htmlMessage(htmlMessage)
                 .fileAttachments(files)
-                .acbAtlHtmlFooter()
                 .sendEmail();
         } catch (EmailNotSentException e) {
             LOGGER.error(e);
@@ -260,7 +271,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
     private File getOutputFile(List<FailedUrlResult> urlResultsToWrite) {
         File temp = null;
         try {
-            temp = File.createTempFile(env.getProperty("job.questionableUrlReport.emailAttachmentName"), ".csv");
+            temp = File.createTempFile(emailAttachmentName, ".csv");
             temp.deleteOnExit();
         } catch (IOException ex) {
             LOGGER.error("Could not create temporary file " + ex.getMessage(), ex);
@@ -285,10 +296,23 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
         return temp;
     }
 
-    private String createHtmlEmailBody(List<FailedUrlResult> urlResults) {
+    private String createHtmlEmailBody(List<FailedUrlResult> urlResults, JobExecutionContext jobContext) {
+        String jobAcbHtml = "";
+        if (isAcbSpecific(jobContext)) {
+            List<Long> jobAcbIds = getSelectedAcbIds(jobContext);
+            if (jobAcbIds != null && jobAcbIds.size() > 0) {
+                jobAcbHtml += String.format(emailBodyAcbNames, getAcbNamesAsCommaSeparatedString(jobAcbIds));
+            }
+      }
+
         String htmlMessage = "";
-        if (urlResults.size() == 0) {
-            htmlMessage = env.getProperty("job.questionableUrlReport.emailBodyNoContent");
+        if (CollectionUtils.isEmpty(urlResults)) {
+            htmlMessage = htmlEmailBuilder.initialize()
+                    .heading(emailBodyTitle)
+                    .paragraph(null, emailBodyNoContent)
+                    .paragraph(null, jobAcbHtml)
+                    .footer(false)
+                    .build();
         } else {
             int brokenAcbUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.ACB);
             int brokenAtlUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.ATL);
@@ -305,22 +329,29 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             int brokenRwtResultsUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.REAL_WORLD_TESTING_RESULTS);
             int brokenSvapNoticeUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.STANDARDS_VERSION_ADVANCEMENT_PROCESS_NOTICE);
 
-            htmlMessage += "<ul>";
-            htmlMessage += "<li>" + UrlType.ATL.getName() + ": " + brokenAtlUrls + "</li>";
-            htmlMessage += "<li>" + UrlType.ACB.getName() + ": " + brokenAcbUrls + "</li>";
-            htmlMessage += "<li>" + UrlType.DEVELOPER.getName() + ": " + brokenDeveloperUrls + "</li>";
-            htmlMessage += "<li>" + UrlType.FULL_USABILITY_REPORT.getName() + ": " + brokenFullUsabilityReportUrls + "</li>";
-            htmlMessage += "<li>" + UrlType.MANDATORY_DISCLOSURE.getName() + ": " + brokenMandatoryDisclosureUrls + "</li>";
-            htmlMessage += "<li>" + UrlType.TEST_RESULTS_SUMMARY.getName() + ": " + brokenTestResultsSummaryUrls + "</li>";
-            htmlMessage += "<li>" + UrlType.API_DOCUMENTATION.getName() + ": " + brokenApiDocumentationUrls + "</li>";
-            htmlMessage += "<li>" + UrlType.EXPORT_DOCUMENTATION.getName() + ": " + brokenExportDocumentationUrls + "</li>";
-            htmlMessage += "<li>" + UrlType.DOCUMENTATION.getName() + ": " + brokenDocumentationUrlUrls + "</li>";
-            htmlMessage += "<li>" + UrlType.USE_CASES.getName() + ": " + brokenUseCasesUrls + "</li>";
-            htmlMessage += "<li>" + UrlType.SERVICE_BASE_URL_LIST.getName() + ": " + brokenServiceBaseUrlLists + "</li>";
-            htmlMessage += "<li>" + UrlType.REAL_WORLD_TESTING_PLANS.getName() + ": " + brokenRwtPlansUrls + "</li>";
-            htmlMessage += "<li>" + UrlType.REAL_WORLD_TESTING_RESULTS.getName() + ": " + brokenRwtResultsUrls + "</li>";
-            htmlMessage += "<li>" + UrlType.STANDARDS_VERSION_ADVANCEMENT_PROCESS_NOTICE.getName() + ": " + brokenSvapNoticeUrls + "</li>";
-            htmlMessage += "</ul>";
+            String brokenUrlSummaryHtml = "<ul>";
+            brokenUrlSummaryHtml += "<li>" + UrlType.ATL.getName() + ": " + brokenAtlUrls + "</li>";
+            brokenUrlSummaryHtml += "<li>" + UrlType.ACB.getName() + ": " + brokenAcbUrls + "</li>";
+            brokenUrlSummaryHtml += "<li>" + UrlType.DEVELOPER.getName() + ": " + brokenDeveloperUrls + "</li>";
+            brokenUrlSummaryHtml += "<li>" + UrlType.FULL_USABILITY_REPORT.getName() + ": " + brokenFullUsabilityReportUrls + "</li>";
+            brokenUrlSummaryHtml += "<li>" + UrlType.MANDATORY_DISCLOSURE.getName() + ": " + brokenMandatoryDisclosureUrls + "</li>";
+            brokenUrlSummaryHtml += "<li>" + UrlType.TEST_RESULTS_SUMMARY.getName() + ": " + brokenTestResultsSummaryUrls + "</li>";
+            brokenUrlSummaryHtml += "<li>" + UrlType.API_DOCUMENTATION.getName() + ": " + brokenApiDocumentationUrls + "</li>";
+            brokenUrlSummaryHtml += "<li>" + UrlType.EXPORT_DOCUMENTATION.getName() + ": " + brokenExportDocumentationUrls + "</li>";
+            brokenUrlSummaryHtml += "<li>" + UrlType.DOCUMENTATION.getName() + ": " + brokenDocumentationUrlUrls + "</li>";
+            brokenUrlSummaryHtml += "<li>" + UrlType.USE_CASES.getName() + ": " + brokenUseCasesUrls + "</li>";
+            brokenUrlSummaryHtml += "<li>" + UrlType.SERVICE_BASE_URL_LIST.getName() + ": " + brokenServiceBaseUrlLists + "</li>";
+            brokenUrlSummaryHtml += "<li>" + UrlType.REAL_WORLD_TESTING_PLANS.getName() + ": " + brokenRwtPlansUrls + "</li>";
+            brokenUrlSummaryHtml += "<li>" + UrlType.REAL_WORLD_TESTING_RESULTS.getName() + ": " + brokenRwtResultsUrls + "</li>";
+            brokenUrlSummaryHtml += "<li>" + UrlType.STANDARDS_VERSION_ADVANCEMENT_PROCESS_NOTICE.getName() + ": " + brokenSvapNoticeUrls + "</li>";
+            brokenUrlSummaryHtml += "</ul>";
+
+            htmlMessage = htmlEmailBuilder.initialize()
+                    .heading(emailBodyTitle)
+                    .paragraph(null, brokenUrlSummaryHtml)
+                    .paragraph(null, jobAcbHtml)
+                    .footer(false)
+                    .build();
         }
 
         return htmlMessage;
