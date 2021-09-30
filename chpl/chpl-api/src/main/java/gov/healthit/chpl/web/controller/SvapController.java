@@ -16,10 +16,12 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.svap.manager.SvapManager;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Api(value = "svaps")
+@Tag(name = "svaps", description = "Allows management of Standards Version Advancement Process (SVAPs).")
 @RestController
 @RequestMapping("/svaps")
 @Loggable
@@ -32,44 +34,52 @@ public class SvapController {
         this.svapManager = svapManager;
     }
 
-    @ApiOperation(value = "Update an Standards Version Advancement Process.",
-            notes = "Provides functionality to update an SVAP and the Criteria associated with it. "
-                    + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.")
+    @Operation(summary = "Update an Standards Version Advancement Process.",
+            description = "Provides functionality to update an SVAP and the Criteria associated with it. "
+                    + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = "application/json; charset=utf-8")
     public @ResponseBody Svap updateSvap(@RequestBody(required = true) Svap svap) throws EntityRetrievalException, ValidationException {
         return svapManager.update(svap);
     }
 
-    @ApiOperation(value = "Create an Standards Version Advancement Process.",
-            notes = "Provides functionality to add a new SVAP and the Criteria associated with it. "
-                    + "Security Restrictions: To create: ROLE_ADMIN or ROLE_ONC.")
+    @Operation(summary = "Create an Standards Version Advancement Process.",
+            description = "Provides functionality to add a new SVAP and the Criteria associated with it. "
+                    + "Security Restrictions: To create: ROLE_ADMIN or ROLE_ONC.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = "application/json; charset=utf-8")
     public @ResponseBody Svap createSvap(@RequestBody(required = true) Svap svap) throws EntityRetrievalException, ValidationException {
         return svapManager.create(svap);
     }
 
-    @ApiOperation(value = "Delete an Standards Version Advancement Process.",
-            notes = "Provides functionality to delete an existing SVAP and the Criteria associated with it. "
-                    + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.")
+    @Operation(summary = "Delete an Standards Version Advancement Process.",
+            description = "Provides functionality to delete an existing SVAP and the Criteria associated with it. "
+                    + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "", method = RequestMethod.DELETE, consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = "application/json; charset=utf-8")
     public void deleteSvap(@RequestBody(required = true) Svap svap) throws EntityRetrievalException, ValidationException {
         svapManager.delete(svap);
     }
 
-    @ApiOperation(value = "Retrieve all current Standards Version Advancement Processes. ",
-            notes = "Returns all of the SVAPs that are currenty in the CHPL.")
+    @Operation(summary = "Retrieve all current Standards Version Advancement Processes. ",
+            description = "Returns all of the SVAPs that are currenty in the CHPL.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<Svap> getAllSvaps() {
         return svapManager.getAll();
     }
 
-    @ApiOperation(value = "Get all criteria that SVAPs can be associated with.",
-            notes = "Returns all of the Criteria that an SVAP can be associated to.")
+    @Operation(summary = "Get all criteria that SVAPs can be associated with.",
+            description = "Returns all of the Criteria that an SVAP can be associated to.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/criteria", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<CertificationCriterion> getCertificsationCriteriaForSvap() {
+    public @ResponseBody List<CertificationCriterion> getCertificationCriteriaForSvap() {
         return svapManager.getCertificationCriteriaForSvap();
     }
 }
