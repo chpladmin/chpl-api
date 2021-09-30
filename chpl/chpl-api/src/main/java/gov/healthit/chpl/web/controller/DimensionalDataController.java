@@ -298,8 +298,10 @@ public class DimensionalDataController {
         return result;
     }
 
-    @Operation(summary = "Get all possible test tool options in the CHPL",
+    @Deprecated
+    @Operation(summary = "DEPRECATED. Get all possible test tool options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
+            deprecated = true,
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/test_tools", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
