@@ -19,6 +19,7 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.certifiedproduct.service.CertificationResultService;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
@@ -59,6 +60,7 @@ public class PendingCertifiedProductManager extends SecuredManager {
     private ActivityManager activityManager;
     private CuresUpdateService curesUpdateService;
     private DimensionalDataManager dimensionalDataManager;
+    private CertificationResultService certificationResultService;
     private FF4j ff4j;
 
     @Autowired
@@ -71,7 +73,8 @@ public class PendingCertifiedProductManager extends SecuredManager {
             ActivityManager activityManager,
             CuresUpdateService curesUpdateService,
             DimensionalDataManager dimensionalDataManager,
-            FF4j ff4j) {
+            FF4j ff4j,
+            CertificationResultService certificationResultService) {
 
         this.certRules = certRules;
         this.validatorFactory = validatorFactory;
@@ -83,7 +86,7 @@ public class PendingCertifiedProductManager extends SecuredManager {
         this.curesUpdateService = curesUpdateService;
         this.dimensionalDataManager = dimensionalDataManager;
         this.ff4j = ff4j;
-    }
+        this.certificationResultService = certificationResultService;    }
 
     @Transactional(readOnly = true)
     @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
@@ -124,6 +127,8 @@ public class PendingCertifiedProductManager extends SecuredManager {
         addAllVersionsToCmsCriterion(pcpDetails);
         addAvailableTestFunctionalities(pcpDetails);
         addAvailableOptionalStandards(pcpDetails);
+        addAvailableTestTools(pcpDetails);
+
         return pcpDetails;
     }
 
@@ -470,6 +475,13 @@ public class PendingCertifiedProductManager extends SecuredManager {
             }
             cert.setAllowedTestFunctionalities(
                     testFunctionalityManager.getTestFunctionalities(cert.getCriterion().getId(), edition, practiceTypeId));
+        }
+    }
+
+    public void addAvailableTestTools(final PendingCertifiedProductDetails pcpDetails) throws EntityRetrievalException {
+        // now add allowed Test Tools for criteria
+        for (CertificationResult cert : pcpDetails.getCertificationResults()) {
+            cert.setAllowedTestTools(certificationResultService.getAvailableTestToolForCriteria(cert));
         }
     }
 

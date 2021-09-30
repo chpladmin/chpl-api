@@ -143,6 +143,12 @@ public class CertificationResultRules {
                 option.setCanHaveOption(true);
                 rules.get(attribute.getCriterion().getNumber()).add(option);
             }
+            if (attribute.getTestTool()) {
+                CertificationResultOption option = new CertificationResultOption();
+                option.setOptionName(TEST_TOOLS_USED);
+                option.setCanHaveOption(true);
+                rules.get(attribute.getCriterion().getNumber()).add(option);
+            }
         }
     }
 
