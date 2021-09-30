@@ -28,6 +28,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
+import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -502,7 +503,7 @@ public class ListingQuestionableActivityProvider {
     }
 
     public QuestionableActivityListingDTO checkPromotingInteroperabilityUpdatedByAcb(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
-        if (!resourcePermissions.isUserRoleAcbAdmin()
+        if (!resourcePermissions.doeAuditUserHaveRole(Authority.ROLE_ACB)
                 || (CollectionUtils.isEmpty(origListing.getPromotingInteroperabilityUserHistory())
                 && CollectionUtils.isEmpty(newListing.getPromotingInteroperabilityUserHistory()))) {
             return null;
