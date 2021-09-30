@@ -24,6 +24,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbookFactory;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTCol;
 import org.springframework.util.StringUtils;
 
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2
 public class SurveillanceReportWorkbookWrapper {
     public static final int DEFAULT_MAX_COLUMN = 16384;
     private static final int WORKSHEET_FONT_POINTS  = 10;
@@ -187,8 +190,7 @@ public class SurveillanceReportWorkbookWrapper {
             cell = row.createCell(cellIndex);
             cell.setCellStyle(style);
         } catch (Exception ex) {
-            System.err.println("Error creating cell in row " + row.getRowNum() + " at column " + cellIndex);
-            ex.printStackTrace();
+            LOGGER.error("Error creating cell in row " + row.getRowNum() + " at column " + cellIndex, ex);
         }
         return cell;
     }
