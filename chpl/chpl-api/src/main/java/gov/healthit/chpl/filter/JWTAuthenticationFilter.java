@@ -22,7 +22,7 @@ import gov.healthit.chpl.exception.MultipleUserAccountsException;
 public class JWTAuthenticationFilter extends GenericFilterBean {
 
     private static final String[] ALLOWED_REQUEST_PATHS = {
-            "/monitoring", "/ff4j-console"
+            "/monitoring", "/ff4j-console", "/v3/api-docs"
     };
 
     private JWTUserConverter userConverter;

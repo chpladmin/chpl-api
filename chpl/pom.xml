@@ -17,6 +17,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <org.springframework.version>5.2.10.RELEASE</org.springframework.version>
+        <org.springboot.version>2.2.11.RELEASE</org.springboot.version>
     </properties>
     <dependencyManagement>
         <dependencies>
