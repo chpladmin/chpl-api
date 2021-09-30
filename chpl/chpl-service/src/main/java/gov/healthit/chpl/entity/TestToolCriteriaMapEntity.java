@@ -19,12 +19,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "certification_criterion_attribute")
+@Table(name = "test_tool_criteria_map")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CertificationCriterionAttributeEntity {
+public class TestToolCriteriaMapEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,28 +32,21 @@ public class CertificationCriterionAttributeEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Column(name = "certification_criterion_id")
+    private Long certificationCriterionId;
+
     @Basic(optional = false)
     @OneToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "criterion_id", insertable = false, updatable = false)
-    private CertificationCriterionEntity criterion;
+    @JoinColumn(name = "certification_criterion_id", insertable = false, updatable = false)
+    private CertificationCriterionEntity criteria;
 
-    @Column(name = "conformance_method")
-    private Boolean conformanceMethod;
+    @Column(name = "test_tool_id")
+    private Long testToolId;
 
-    @Column(name = "optional_standard")
-    private Boolean optionalStandard;
-
-    @Column(name = "service_base_url_list")
-    private Boolean serviceBaseUrlList;
-
-    @Column(name = "svap")
-    private Boolean svap;
-
-    @Column(name = "test_procedure")
-    private Boolean testProcedure;
-
-    @Column(name = "test_tool")
-    private Boolean testTool;
+    @Basic(optional = false)
+    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "test_tool_id", insertable = false, updatable = false)
+    private TestToolEntity testTool;
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)

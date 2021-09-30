@@ -179,6 +179,9 @@ public class CertificationResult implements Serializable {
     @XmlTransient
     private List<OptionalStandard> allowedOptionalStandards;
 
+    @XmlTransient
+    private List<TestTool> allowedTestTools;
+
     /**
      * Any optional, alternative, ambulatory (2015 only), or inpatient (2015 only) capabilities within a certification
      * criterion to which the Health IT module was tested and certified. For example, within the 2015 certification
@@ -751,6 +754,14 @@ public class CertificationResult implements Serializable {
 
     public void setAllowedSvaps(List<Svap> allowedSvaps) {
         this.allowedSvaps = allowedSvaps;
+    }
+
+    public List<TestTool> getAllowedTestTools() {
+        return allowedTestTools;
+    }
+
+    public void setAllowedTestTools(List<TestTool> allowedTestTools) {
+        this.allowedTestTools = allowedTestTools;
     }
 
     public List<CertificationResultSvap> getSvaps() {

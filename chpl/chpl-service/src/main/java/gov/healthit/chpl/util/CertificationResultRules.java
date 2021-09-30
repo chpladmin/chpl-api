@@ -158,6 +158,13 @@ public class CertificationResultRules {
                         .optionName(TEST_PROCEDURE)
                         .build());
             }
+            if (attribute.getTestTool()) {
+                rules.get(attribute.getCriterion().getNumber()).add(
+                        CertificationResultOption.builder()
+                        .canHaveOption(true)
+                        .optionName(TEST_TOOLS_USED)
+                        .build());
+            }
         }
     }
 

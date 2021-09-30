@@ -16,7 +16,6 @@
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>true</testData>
             <sed>true</sed>
             <ucd>true</ucd>
@@ -38,7 +37,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>true</sed>
             <ucd>true</ucd>
@@ -60,7 +58,6 @@
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -82,7 +79,6 @@
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -104,7 +100,6 @@
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -127,7 +122,6 @@
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>true</testData>
             <sed>true</sed>
             <ucd>true</ucd>
@@ -150,7 +144,6 @@
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>true</testData>
             <sed>true</sed>
             <ucd>true</ucd>
@@ -172,7 +165,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>true</sed>
             <ucd>true</ucd>
@@ -194,7 +186,6 @@
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -216,7 +207,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -238,7 +228,6 @@
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -260,7 +249,6 @@
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -282,7 +270,6 @@
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -304,7 +291,6 @@
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -326,7 +312,6 @@
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -348,7 +333,6 @@
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>true</testData>
             <sed>true</sed>
             <ucd>true</ucd>
@@ -371,7 +355,6 @@
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -394,7 +377,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>true</testData>
             <sed>true</sed>
             <ucd>true</ucd>
@@ -417,7 +399,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>true</testData>
             <sed>true</sed>
             <ucd>true</ucd>
@@ -440,7 +421,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>true</testData>
             <sed>true</sed>
             <ucd>true</ucd>
@@ -462,7 +442,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -484,7 +463,6 @@
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -506,7 +484,6 @@
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>true</sed>
             <ucd>true</ucd>
@@ -528,7 +505,6 @@
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>true</testData>
             <sed>true</sed>
             <ucd>true</ucd>
@@ -550,7 +526,6 @@
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -573,7 +548,6 @@
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -595,7 +569,6 @@
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -617,7 +590,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -639,7 +611,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -661,7 +632,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>true</testData>
             <sed>true</sed>
             <ucd>true</ucd>
@@ -683,7 +653,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -705,7 +674,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -727,7 +695,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -750,7 +717,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -772,7 +738,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -794,7 +759,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -816,7 +780,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -839,7 +802,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -862,7 +824,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -884,7 +845,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -907,7 +867,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -930,7 +889,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -952,7 +910,6 @@
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -974,7 +931,6 @@
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -996,7 +952,6 @@
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1019,7 +974,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1041,7 +995,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1063,7 +1016,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1085,7 +1037,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1107,7 +1058,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1129,7 +1079,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1152,7 +1101,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1174,7 +1122,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1196,7 +1143,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1218,7 +1164,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1240,7 +1185,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1263,7 +1207,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1286,7 +1229,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1310,7 +1252,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1333,7 +1274,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>true</sed>
             <ucd>true</ucd>
@@ -1356,7 +1296,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>true</sed>
             <ucd>true</ucd>
@@ -1379,7 +1318,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>true</sed>
             <ucd>true</ucd>
@@ -1402,7 +1340,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>true</sed>
             <ucd>true</ucd>
@@ -1424,7 +1361,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>true</sed>
             <ucd>true</ucd>
@@ -1446,7 +1382,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>true</sed>
             <ucd>true</ucd>
@@ -1469,7 +1404,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>true</sed>
             <ucd>true</ucd>
@@ -1492,7 +1426,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>true</sed>
             <ucd>true</ucd>
@@ -1514,7 +1447,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>true</sed>
             <ucd>true</ucd>
@@ -1537,7 +1469,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1560,7 +1491,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1582,7 +1512,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1604,7 +1533,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1626,7 +1554,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>true</sed>
             <ucd>true</ucd>
@@ -1648,7 +1575,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1670,7 +1596,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1692,7 +1617,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>true</sed>
             <ucd>true</ucd>
@@ -1714,7 +1638,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>true</sed>
             <ucd>true</ucd>
@@ -1736,7 +1659,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1758,7 +1680,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1780,7 +1701,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1802,7 +1722,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1824,7 +1743,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1846,7 +1764,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1868,7 +1785,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1890,7 +1806,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1912,7 +1827,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1934,7 +1848,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1956,7 +1869,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -1979,7 +1891,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2001,7 +1912,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2023,7 +1933,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2046,7 +1955,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2069,7 +1977,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2092,7 +1999,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2115,7 +2021,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2137,7 +2042,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2159,7 +2063,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2181,7 +2084,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2204,7 +2106,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2226,7 +2127,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>true</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2248,7 +2148,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>true</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2270,7 +2169,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2292,7 +2190,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2314,7 +2211,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2336,7 +2232,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2358,7 +2253,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2381,7 +2275,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2403,7 +2296,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2425,7 +2317,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2447,7 +2338,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2469,7 +2359,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2491,7 +2380,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2513,7 +2401,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2535,7 +2422,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2557,7 +2443,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2579,7 +2464,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2601,7 +2485,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2623,7 +2506,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2645,7 +2527,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
             <testData>false</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2667,7 +2548,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2689,7 +2569,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2711,7 +2590,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
@@ -2733,7 +2611,6 @@
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>true</testTool>
             <testData>true</testData>
             <sed>false</sed>
             <ucd>false</ucd>
