@@ -503,7 +503,7 @@ public class ListingQuestionableActivityProvider {
     }
 
     public QuestionableActivityListingDTO checkPromotingInteroperabilityUpdatedByAcb(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
-        if (!resourcePermissions.doeAuditUserHaveRole(Authority.ROLE_ACB)
+        if (!resourcePermissions.doesAuditUserHaveRole(Authority.ROLE_ACB)
                 || (CollectionUtils.isEmpty(origListing.getPromotingInteroperabilityUserHistory())
                 && CollectionUtils.isEmpty(newListing.getPromotingInteroperabilityUserHistory()))) {
             return null;

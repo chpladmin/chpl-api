@@ -463,7 +463,7 @@ public class ResourcePermissions {
         return role.getAuthority().equalsIgnoreCase(authority);
     }
 
-    public boolean doeAuditUserHaveRole(String authority) {
+    public boolean doesAuditUserHaveRole(String authority) {
         Long auditUserId = AuthUtil.getAuditId();
         if (auditUserId == null || auditUserId.equals(User.DEFAULT_USER_ID)) {
             return false;
