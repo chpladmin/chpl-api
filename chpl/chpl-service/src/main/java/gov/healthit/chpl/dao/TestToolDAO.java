@@ -2,6 +2,7 @@ package gov.healthit.chpl.dao;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
@@ -9,8 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.TestToolCriteriaMap;
 import gov.healthit.chpl.dto.TestToolDTO;
+import gov.healthit.chpl.entity.TestToolCriteriaMapEntity;
 import gov.healthit.chpl.entity.TestToolEntity;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Repository("testToolDAO")
@@ -54,6 +58,12 @@ public class TestToolDAO extends BaseDAOImpl {
 
     }
 
+    public List<TestToolCriteriaMap> getAllTestToolCriteriaMap() throws EntityRetrievalException {
+        return getAllTestToolCriteriaMapEntities().stream()
+                .map(e -> new TestToolCriteriaMap(e))
+                .collect(Collectors.toList());
+    }
+
     private List<TestToolEntity> getAllEntities() {
         return entityManager.createQuery("from TestToolEntity where (NOT deleted = true) ", TestToolEntity.class)
                 .getResultList();
@@ -78,5 +88,17 @@ public class TestToolDAO extends BaseDAOImpl {
         List<TestToolEntity> result = query.getResultList();
 
         return result;
+    }
+
+    private List<TestToolCriteriaMapEntity> getAllTestToolCriteriaMapEntities() throws EntityRetrievalException {
+        return entityManager.createQuery("SELECT DISTINCT ttm "
+                        + "FROM TestToolCriteriaMapEntity ttm "
+                        + "JOIN FETCH ttm.criteria c "
+                        + "JOIN FETCH c.certificationEdition "
+                        + "JOIN FETCH ttm.testTool tt "
+                        + "WHERE ttm.deleted <> true "
+                        + "AND tt.deleted <> true ",
+                        TestToolCriteriaMapEntity.class)
+                .getResultList();
     }
 }
