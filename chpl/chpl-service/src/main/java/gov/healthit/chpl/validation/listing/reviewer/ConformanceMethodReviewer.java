@@ -51,7 +51,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
             CertificationResultConformanceMethod conformanceMethod) {
 
         checkIfConformanceMethodIsAllowed(listing, certResult, conformanceMethod);
-        checkIfConformanceMethodHasAVersion(listing, certResult, conformanceMethod);
+        checkIfConformanceMethodVersionRequirements(listing, certResult, conformanceMethod);
     }
 
     private void checkIfConformanceMethodIsAllowed(CertifiedProductSearchDetails listing, CertificationResult certResult,
@@ -68,7 +68,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
         }
     }
 
-    private void checkIfConformanceMethodHasAVersion(CertifiedProductSearchDetails listing, CertificationResult certResult,
+    private void checkIfConformanceMethodVersionRequirements(CertifiedProductSearchDetails listing, CertificationResult certResult,
             CertificationResultConformanceMethod conformanceMethod) {
             if (conformanceMethod.getConformanceMethod() != null
                     && !StringUtils.isEmpty(conformanceMethod.getConformanceMethod().getName())
@@ -76,7 +76,17 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
                     && StringUtils.isEmpty(conformanceMethod.getConformanceMethodVersion())) {
                 addCriterionErrorOrWarningByPermission(listing, certResult,
                         "listing.criteria.conformanceMethod.missingConformanceMethodVersion",
-                        Util.formatCriteriaNumber(certResult.getCriterion()));
+                        Util.formatCriteriaNumber(certResult.getCriterion()),
+                        conformanceMethod.getConformanceMethod().getName());
+            }
+            if (conformanceMethod.getConformanceMethod() != null
+                    && !StringUtils.isEmpty(conformanceMethod.getConformanceMethod().getName())
+                    && conformanceMethod.getConformanceMethod().getName().equalsIgnoreCase(CM_MUST_NOT_HAVE_OTHER_DATA)
+                    && !StringUtils.isEmpty(conformanceMethod.getConformanceMethodVersion())) {
+                addCriterionErrorOrWarningByPermission(listing, certResult,
+                        "listing.criteria.conformanceMethod.unallowedConformanceMethodVersion",
+                        Util.formatCriteriaNumber(certResult.getCriterion()),
+                        conformanceMethod.getConformanceMethod().getName());
             }
     }
 }
