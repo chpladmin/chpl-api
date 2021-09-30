@@ -184,10 +184,10 @@ public class UrlCheckerDao extends BaseDAOImpl {
     private List<UrlResult> getMandatoryDisclosureUrls() {
         @SuppressWarnings("unchecked")
         List<String> mandatoryDisclosureWebsites = entityManager.createQuery(
-                        "SELECT DISTINCT transparencyAttestationUrl "
+                        "SELECT DISTINCT mandatoryDisclosures "
                         + "FROM CertifiedProductEntity "
-                        + "WHERE transparencyAttestationUrl IS NOT NULL "
-                        + "AND transparencyAttestationUrl != '' "
+                        + "WHERE mandatoryDisclosures IS NOT NULL "
+                        + "AND mandatoryDisclosures != '' "
                         + "AND deleted = false")
                 .getResultList();
         return mandatoryDisclosureWebsites.stream()
