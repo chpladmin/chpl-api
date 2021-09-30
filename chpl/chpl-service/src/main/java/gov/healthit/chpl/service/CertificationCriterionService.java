@@ -189,7 +189,6 @@ public class CertificationCriterionService {
                 get(Criteria2015.G_6_CURES),
                 get(Criteria2015.G_9_CURES),
                 get(Criteria2015.G_10));
-
     }
 
     public static class Criteria2015 {
