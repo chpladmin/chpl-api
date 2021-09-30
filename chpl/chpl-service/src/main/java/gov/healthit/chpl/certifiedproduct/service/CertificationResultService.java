@@ -9,11 +9,14 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
+import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestTask;
+import gov.healthit.chpl.domain.TestTool;
+import gov.healthit.chpl.domain.TestToolCriteriaMap;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
@@ -37,27 +40,30 @@ public class CertificationResultService {
     private CertificationResultDetailsDAO certificationResultDetailsDAO;
     private SvapDAO svapDao;
     private OptionalStandardDAO optionalStandardDAO;
+    private TestToolDAO testToolDAO;
     private FF4j ff4j;
 
     @Autowired
     public CertificationResultService(CertificationResultRules certRules, CertificationResultManager certResultManager,
             TestingFunctionalityManager testFunctionalityManager, CertificationResultDetailsDAO certificationResultDetailsDAO,
-            SvapDAO svapDAO, OptionalStandardDAO optionalStandardDAO, FF4j ff4j) {
+            SvapDAO svapDAO, OptionalStandardDAO optionalStandardDAO, TestToolDAO testToolDAO, FF4j ff4j) {
         this.certRules = certRules;
         this.certResultManager = certResultManager;
         this.testFunctionalityManager = testFunctionalityManager;
         this.certificationResultDetailsDAO = certificationResultDetailsDAO;
         this.svapDao = svapDAO;
         this.optionalStandardDAO = optionalStandardDAO;
+        this.testToolDAO = testToolDAO;
         this.ff4j = ff4j;
     }
 
     public List<CertificationResult> getCertificationResults(CertifiedProductSearchDetails searchDetails) throws EntityRetrievalException {
         List<SvapCriteriaMap> svapCriteriaMap = svapDao.getAllSvapCriteriaMap();
         List<OptionalStandardCriteriaMap> optionalStandardCriteriaMap = optionalStandardDAO.getAllOptionalStandardCriteriaMap();
+        List<TestToolCriteriaMap> testToolCriteriaMap = testToolDAO.getAllTestToolCriteriaMap();
 
         return getCertificationResultDetailsDTOs(searchDetails.getId()).stream()
-                .map(dto -> getCertificationResult(dto, searchDetails, svapCriteriaMap, optionalStandardCriteriaMap))
+                .map(dto -> getCertificationResult(dto, searchDetails, svapCriteriaMap, optionalStandardCriteriaMap, testToolCriteriaMap))
                 .collect(Collectors.toList());
     }
 
@@ -67,9 +73,15 @@ public class CertificationResultService {
         return certificationResultDetailsDTOs;
     }
 
+
+    public List<TestTool> getAvailableTestToolForCriteria(CertificationResult result) throws EntityRetrievalException {
+        return getAvailableTestToolForCriteria(result, testToolDAO.getAllTestToolCriteriaMap());
+    }
+
     private CertificationResult getCertificationResult(CertificationResultDetailsDTO certResult,
             CertifiedProductSearchDetails searchDetails, List<SvapCriteriaMap> svapCriteriaMap,
-            List<OptionalStandardCriteriaMap> optionalStandardCriteriaMap) {
+            List<OptionalStandardCriteriaMap> optionalStandardCriteriaMap,
+            List<TestToolCriteriaMap> testToolCriteriaMap) {
 
         CertificationResult result = new CertificationResult(certResult, certRules);
 
@@ -80,7 +92,7 @@ public class CertificationResultService {
         result.setAllowedOptionalStandards(getAvailableOptionalStandardsForCriteria(result, optionalStandardCriteriaMap));
         result.setAllowedSvaps(getAvailableSvapForCriteria(result, svapCriteriaMap));
         result.setAllowedTestFunctionalities(getAvailableTestFunctionalities(result, searchDetails));
-
+        result.setAllowedTestTools(getAvailableTestToolForCriteria(result, testToolCriteriaMap));
         return result;
     }
 
@@ -150,4 +162,12 @@ public class CertificationResultService {
         }
         return testFunctionalityManager.getTestFunctionalities(cr.getCriterion().getId(), edition, practiceTypeId);
     }
+
+    private List<TestTool> getAvailableTestToolForCriteria(CertificationResult result, List<TestToolCriteriaMap> testToolCriteriaMap) {
+        return testToolCriteriaMap.stream()
+                .filter(ttcm -> ttcm.getCriterion().getId().equals(result.getCriterion().getId()))
+                .map(ttm -> ttm.getTestTool())
+                .collect(Collectors.toList());
+    }
+
 }
