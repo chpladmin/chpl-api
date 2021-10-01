@@ -260,8 +260,8 @@ public class SurveillanceManager extends SecuredManager {
         surveillanceActivityReportJob.setName(SurveillanceReportingActivityJob.JOB_NAME);
         surveillanceActivityReportJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
         JobDataMap jobDataMap = new JobDataMap();
-        jobDataMap.put(SurveillanceReportingActivityJob.START_DATE_KEY, start);
-        jobDataMap.put(SurveillanceReportingActivityJob.END_DATE_KEY, end);
+        jobDataMap.put(SurveillanceReportingActivityJob.START_DATE_KEY, start.format(SurveillanceReportingActivityJob.JOB_DATA_DATE_FORMATTER));
+        jobDataMap.put(SurveillanceReportingActivityJob.END_DATE_KEY, end.format(SurveillanceReportingActivityJob.JOB_DATA_DATE_FORMATTER));
         jobDataMap.put(SurveillanceReportingActivityJob.USER_EMAIL, user.getEmail());
         surveillanceActivityReportJob.setJobDataMap(jobDataMap);
         surveillanceActivityReportTrigger.setJob(surveillanceActivityReportJob);
