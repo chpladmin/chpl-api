@@ -20,17 +20,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 @Repository("conformanceMethodDAO")
 public class ConformanceMethodDAO extends BaseDAOImpl {
 
-    /*
-    public OptionalStandardEntity getById(Long id) {
-        OptionalStandardEntity entity = getEntityById(id);
-        return entity;
-    }
-
-    public List<OptionalStandardEntity> findAll() {
-        List<OptionalStandardEntity> entities = getAllEntities();
-        return entities;
-    }
-*/
     public List<ConformanceMethod> getByCriterionId(Long criterionId) {
         Set<ConformanceMethodEntity> entities = getConformanceMethodByCertificationCriteria(criterionId);
         List<ConformanceMethod> domains = new ArrayList<ConformanceMethod>();
@@ -67,54 +56,7 @@ public class ConformanceMethodDAO extends BaseDAOImpl {
                 .map(e -> new ConformanceMethodCriteriaMap(e))
                 .collect(Collectors.toList());
     }
-/*
-    public OptionalStandard getByCitation(String citation) {
-        List<OptionalStandardEntity> entities = getEntitiesByCitation(citation);
-        OptionalStandard obj = null;
-        if (entities != null && entities.size() > 0) {
-            obj = new OptionalStandard(entities.get(0));
-        }
-        return obj;
-    }
 
-    private List<OptionalStandardEntity> getAllEntities() {
-        return entityManager
-                .createQuery("from OptionalStandardEntity where (NOT deleted = true) ", OptionalStandardEntity.class)
-                .getResultList();
-    }
-
-    private OptionalStandardEntity getEntityById(Long id) {
-        OptionalStandardEntity entity = null;
-
-        Query query = entityManager.createQuery("SELECT os " + "FROM OptionalStandardEntity os "
-                + "WHERE (NOT deleted = true) " + "AND (os.id = :entityid) ", OptionalStandardEntity.class);
-        query.setParameter("entityid", id);
-        List<OptionalStandardEntity> result = query.getResultList();
-
-        if (result.size() > 0) {
-            entity = result.get(0);
-        }
-        return entity;
-    }
-
-    private List<OptionalStandardEntity> getEntitiesByCitation(String citation) {
-        String osQuery = "SELECT os " + "FROM OptionalStandardEntity os "
-                + "WHERE os.deleted <> true " + "AND UPPER(os.citation) = :citation ";
-        Query query = entityManager.createQuery(osQuery, OptionalStandardEntity.class);
-        query.setParameter("citation", citation.toUpperCase());
-
-        List<OptionalStandardEntity> matches = query.getResultList();
-        if (matches == null || matches.size() == 0) {
-            // if this didn't find anything try again with spaces removed from
-            // the optional standard
-            query = entityManager.createQuery(osQuery, OptionalStandardEntity.class);
-            String citationWithoutSpaces = citation.replaceAll("\\s", "");
-            query.setParameter("citation", citationWithoutSpaces.toUpperCase());
-            matches = query.getResultList();
-        }
-        return matches;
-    }
-*/
     private List<ConformanceMethodCriteriaMapEntity> getAllConformanceMethodCriteriaMapEntities() throws EntityRetrievalException {
         return entityManager.createQuery("SELECT DISTINCT cmcm "
                         + "FROM ConformanceMethodCriteriaMapEntity cmcm "

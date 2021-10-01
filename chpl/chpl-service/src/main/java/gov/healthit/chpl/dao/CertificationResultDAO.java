@@ -488,19 +488,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
      *
      *******************************************************/
 
-    /*
-    public List<CertificationResultOptionalStandard> getOptionalStandardsForCertificationResult(Long certificationResultId) {
-
-        List<CertificationResultOptionalStandardEntity> entities = getOptionalStandardsForCertification(certificationResultId);
-        List<CertificationResultOptionalStandard> domains = new ArrayList<CertificationResultOptionalStandard>();
-
-        for (CertificationResultOptionalStandardEntity entity : entities) {
-            CertificationResultOptionalStandard domain = new CertificationResultOptionalStandard(entity);
-            domains.add(domain);
-        }
-        return domains;
-    }
-*/
     public CertificationResultConformanceMethod addConformanceMethodMapping(CertificationResultConformanceMethodEntity entity)
             throws EntityCreationException {
         CertificationResultConformanceMethodEntity mapping = new CertificationResultConformanceMethodEntity();
@@ -528,25 +515,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         }
     }
 
-    /*
-    public CertificationResultOptionalStandard lookupOptionalStandardMapping(Long certificationResultId,
-            Long optionalStandardId) {
-        Query query = entityManager.createQuery("SELECT os " + "FROM CertificationResultOptionalStandardEntity os "
-                + "LEFT OUTER JOIN FETCH os.optionalStandard " + "where (NOT os.deleted = true) "
-                + "AND (os.certificationResultId = :certificationResultId) "
-                + "AND (os.optionalStandardId = :optionalStandardId)", CertificationResultOptionalStandardEntity.class);
-        query.setParameter("certificationResultId", certificationResultId);
-        query.setParameter("optionalStandardId", optionalStandardId);
-        List<CertificationResultOptionalStandardEntity> entities = query.getResultList();
-
-        CertificationResultOptionalStandard result = null;
-        if (entities != null && entities.size() > 0) {
-            result = new CertificationResultOptionalStandard(entities.get(0));
-        }
-
-        return result;
-    }
-*/
     private CertificationResultConformanceMethodEntity getCertificationResultConformanceMethodById(Long id) {
         CertificationResultConformanceMethodEntity entity = null;
 
@@ -563,21 +531,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         return entity;
     }
 
-  /*  private List<CertificationResultOptionalStandardEntity> getOptionalStandardsForCertification(Long certificationResultId) {
-        Query query = entityManager.createQuery(
-                "SELECT os " + "FROM CertificationResultOptionalStandardEntity os "
-                        + "LEFT OUTER JOIN FETCH os.optionalStandard "
-                        + "where (NOT os.deleted = true) AND (certification_result_id = :certificationResultId) ",
-                CertificationResultOptionalStandardEntity.class);
-        query.setParameter("certificationResultId", certificationResultId);
-
-        List<CertificationResultOptionalStandardEntity> result = query.getResultList();
-        if (result == null) {
-            return null;
-        }
-        return result;
-    }
-*/
     /******************************************************
      * Optional Standard methods.
      *
