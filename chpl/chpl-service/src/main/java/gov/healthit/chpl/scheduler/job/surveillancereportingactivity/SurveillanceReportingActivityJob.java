@@ -30,6 +30,7 @@ public class SurveillanceReportingActivityJob implements Job {
     public static final String START_DATE_KEY = "startDate";
     public static final String END_DATE_KEY = "endDate";
     public static final String USER_EMAIL = "email";
+    public static final DateTimeFormatter JOB_DATA_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Autowired
     private SurveillanceActivityReportDataGatherer dataGatherer;
@@ -99,10 +100,12 @@ public class SurveillanceReportingActivityJob implements Job {
     }
 
     private LocalDate getStartDate(JobExecutionContext context) {
-        return (LocalDate) context.getMergedJobDataMap().get(START_DATE_KEY);
+        String startDateStr = context.getMergedJobDataMap().get(START_DATE_KEY).toString();
+        return LocalDate.parse(startDateStr, JOB_DATA_DATE_FORMATTER);
     }
 
     private LocalDate getEndDate(JobExecutionContext context) {
-        return (LocalDate) context.getMergedJobDataMap().get(END_DATE_KEY);
+        String endDateStr = context.getMergedJobDataMap().get(END_DATE_KEY).toString();
+        return LocalDate.parse(endDateStr, JOB_DATA_DATE_FORMATTER);
     }
 }
