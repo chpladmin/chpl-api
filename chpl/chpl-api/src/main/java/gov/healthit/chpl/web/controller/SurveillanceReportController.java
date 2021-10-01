@@ -38,12 +38,14 @@ import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportRelevantListingD
 import gov.healthit.chpl.surveillance.report.dto.SurveillanceOutcomeDTO;
 import gov.healthit.chpl.surveillance.report.dto.SurveillanceProcessTypeDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.results.ComplaintResults;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 
-@Api(value = "surveillance-report")
+@Tag(name = "surveillance-report", description = "Allows management of quarterly and annual surveillance reporting.")
 @RestController
 @RequestMapping("/surveillance-report")
 @Loggable
@@ -63,18 +65,22 @@ public class SurveillanceReportController {
         this.complaintManager = complaintManager;
     }
 
-    @ApiOperation(value = "Get all annual surveillance reports this user has access to.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative "
-                    + "authority on the ACB associated with the report.")
+    @Operation(summary = "Get all annual surveillance reports this user has access to.",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative "
+                    + "authority on the ACB associated with the report.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/annual", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<AnnualReport> getAllAnnualReports() throws AccessDeniedException {
         List<AnnualReport> response = reportManager.getAnnualReports();
         return response;
     }
 
-    @ApiOperation(value = "Get a specific annual surveillance report by ID.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative "
-                    + "authority on the ACB associated with the report.")
+    @Operation(summary = "Get a specific annual surveillance report by ID.",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative "
+                    + "authority on the ACB associated with the report.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/annual/{annualReportId}",
         method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody AnnualReport getAnnualReport(@PathVariable Long annualReportId)
@@ -83,9 +89,11 @@ public class SurveillanceReportController {
         return report;
     }
 
-    @ApiOperation(value = "Create a new annual surveillance report.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
-                    + "authority on the ACB associated with the report.")
+    @Operation(summary = "Create a new annual surveillance report.",
+            description = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
+                    + "authority on the ACB associated with the report.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/annual", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public AnnualReport createAnnualReport(
         @RequestBody(required = true) AnnualReport createRequest)
@@ -116,10 +124,12 @@ public class SurveillanceReportController {
         return createdReport;
     }
 
-    @ApiOperation(value = "Update an existing annual surveillance report.",
-            notes = "The associated ACB and year of the report cannot be changed. "
-            + "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
-            + "on the ACB associated with the report.")
+    @Operation(summary = "Update an existing annual surveillance report.",
+            description = "The associated ACB and year of the report cannot be changed. "
+                + "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
+                + "on the ACB associated with the report.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/annual", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public AnnualReport updateAnnualReport(
         @RequestBody(required = true) AnnualReport updateRequest)
@@ -136,9 +146,11 @@ public class SurveillanceReportController {
         return createdReport;
     }
 
-    @ApiOperation(value = "Delete an annual report.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
-            + "on the ACB associated with the report.")
+    @Operation(summary = "Delete an annual report.",
+            description = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
+                    + "on the ACB associated with the report.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/annual/{annualReportId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public void deleteAnnualReport(@PathVariable Long annualReportId)
@@ -147,10 +159,12 @@ public class SurveillanceReportController {
     }
 
 
-    @ApiOperation(value = "Generates an annual report as an XLSX file as a background job "
+    @Operation(summary = "Generates an annual report as an XLSX file as a background job "
             + "and emails the report to the logged in user",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative authority "
-                    + "on the ACB associated with the report.")
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative authority "
+                    + "on the ACB associated with the report.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/export/annual/{annualReportId}", method = RequestMethod.GET)
     public ChplOneTimeTrigger exportAnnualReport(@PathVariable("annualReportId") Long annualReportId)
             throws ValidationException, SchedulerException, EntityRetrievalException,
@@ -167,9 +181,11 @@ public class SurveillanceReportController {
         return reportManager.exportAnnualReportAsBackgroundJob(annualReportId);
     }
 
-    @ApiOperation(value = "Get all quarterly surveillance reports this user has access to.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative "
-                    + "authority on the ACB associated with the report.")
+    @Operation(summary = "Get all quarterly surveillance reports this user has access to.",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative "
+                    + "authority on the ACB associated with the report.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/quarterly", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<QuarterlyReport> getAllQuarterlyReports() throws AccessDeniedException {
         List<QuarterlyReportDTO> allReports = reportManager.getQuarterlyReports();
@@ -180,9 +196,11 @@ public class SurveillanceReportController {
         return response;
     }
 
-    @ApiOperation(value = "Get a specific quarterly surveillance report by ID.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative "
-                    + "authority on the ACB associated with the report.")
+    @Operation(summary = "Get a specific quarterly surveillance report by ID.",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative "
+                    + "authority on the ACB associated with the report.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/quarterly/{quarterlyReportId}",
         method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody QuarterlyReport getQuarterlyReport(@PathVariable Long quarterlyReportId)
@@ -191,11 +209,13 @@ public class SurveillanceReportController {
         return new QuarterlyReport(reportDto);
     }
 
-    @ApiOperation(value = "Get listings that are relevant to a specific quarterly report. "
-            + "These are listings belonging to the ACB associated with the report "
-            + "that had an active status at any point during the quarter",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative "
-                    + "authority on the ACB associated with the report.")
+    @Operation(summary = "Get listings that are relevant to a specific quarterly report. "
+                + "These are listings belonging to the ACB associated with the report "
+                + "that had an active status at any point during the quarter",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative "
+                    + "authority on the ACB associated with the report.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/quarterly/{quarterlyReportId}/listings",
         method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<RelevantListing> getRelevantListings(@PathVariable Long quarterlyReportId)
@@ -213,10 +233,12 @@ public class SurveillanceReportController {
         return relevantListings;
     }
 
-    @ApiOperation(value = "Get complaints that are relevant to a specific quarterly report. "
+    @Operation(summary = "Get complaints that are relevant to a specific quarterly report. "
             + "These are complaints that were open during the quarter.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative "
-                    + "authority on the ACB associated with the report.")
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative "
+                    + "authority on the ACB associated with the report.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/quarterly/{quarterlyReportId}/complaints",
         method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ComplaintResults getRelevantComplaints(@PathVariable Long quarterlyReportId)
@@ -229,9 +251,11 @@ public class SurveillanceReportController {
         return results;
     }
 
-    @ApiOperation(value = "Create a new quarterly surveillance report.",
-                    notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
-                            + "authority on the ACB associated with the report.")
+    @Operation(summary = "Create a new quarterly surveillance report.",
+                description = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
+                        + "authority on the ACB associated with the report.",
+                security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                        @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/quarterly", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public QuarterlyReport createQuarterlyReport(
             @RequestBody(required = true) QuarterlyReport createRequest)
@@ -245,9 +269,11 @@ public class SurveillanceReportController {
         return new QuarterlyReport(createdReport);
     }
 
-    @ApiOperation(value = "Updates surveillance data that is tied to the quarterly report. ",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
-                    + "authority on the ACB associated with the report.")
+    @Operation(summary = "Updates surveillance data that is tied to the quarterly report. ",
+            description = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
+                    + "authority on the ACB associated with the report.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/quarterly/{quarterlyReportId}/surveillance/{surveillanceId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public PrivilegedSurveillance updatePrivilegedSurveillanceData(
             @PathVariable Long quarterlyReportId,
@@ -288,10 +314,12 @@ public class SurveillanceReportController {
         return new PrivilegedSurveillance(updated);
     }
 
-    @ApiOperation(value = "Updates whether a relevant listing is marked as excluded from a quarterly "
+    @Operation(summary = "Updates whether a relevant listing is marked as excluded from a quarterly "
             + "report. If it's being excluded then the reason is required.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
-                    + "authority on the ACB associated with the report.")
+            description = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
+                    + "authority on the ACB associated with the report.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/quarterly/{quarterlyReportId}/listings/{listingId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public RelevantListing updateRelevantListing(@PathVariable Long quarterlyReportId,
             @PathVariable Long listingId,
@@ -328,10 +356,12 @@ public class SurveillanceReportController {
         return result;
     }
 
-    @ApiOperation(value = "Update an existing quarterly surveillance report.",
-            notes = "The associated ACB, year, and quarter of the report cannot be changed. "
-            + "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
-            + "on the ACB associated with the report.")
+    @Operation(summary = "Update an existing quarterly surveillance report.",
+            description = "The associated ACB, year, and quarter of the report cannot be changed. "
+                + "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
+                + "on the ACB associated with the report.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/quarterly", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public QuarterlyReport updateQuarterlyReport(
         @RequestBody(required = true) QuarterlyReport updateRequest)
@@ -344,9 +374,11 @@ public class SurveillanceReportController {
         return createdReport;
     }
 
-    @ApiOperation(value = "Delete a quarterly report.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
-            + "on the ACB associated with the report.")
+    @Operation(summary = "Delete a quarterly report.",
+            description = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
+                    + "on the ACB associated with the report.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/quarterly/{quarterlyReportId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public void deleteQuarterlyReport(@PathVariable Long quarterlyReportId)
@@ -354,10 +386,12 @@ public class SurveillanceReportController {
         reportManager.deleteQuarterlyReport(quarterlyReportId);
     }
 
-    @ApiOperation(value = "Generates a quarterly report as an XLSX file as a background job "
+    @Operation(summary = "Generates a quarterly report as an XLSX file as a background job "
             + "and emails the report to the logged in user",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative authority "
-                    + "on the ACB associated with the report.")
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative authority "
+                    + "on the ACB associated with the report.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/export/quarterly/{quarterlyReportId}", method = RequestMethod.GET)
     public ChplOneTimeTrigger exportQuarterlyReport(@PathVariable("quarterlyReportId") Long quarterlyReportId)
                 throws ValidationException, SchedulerException, UserRetrievalException {

@@ -3,12 +3,7 @@ package gov.healthit.chpl.web.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityNotFoundException;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,26 +12,24 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.domain.Filter;
 import gov.healthit.chpl.dto.FilterDTO;
 import gov.healthit.chpl.dto.FilterTypeDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.FilterManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.results.FilterResults;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Api(value = "filters")
+@Tag(name = "filters", description = "Allows management of user filters.")
 @RestController
 @RequestMapping("/filters")
 @Loggable
@@ -51,8 +44,10 @@ public class FilterController {
         this.userManager = userManager;
     }
 
-    @ApiOperation(value = "List all filters based on the filter type for the current user.",
-            notes = "Security Restrictions: Only filters owned by the current user will be returned")
+    @Operation(summary = "List all filters based on the filter type for the current user.",
+            description = "Security Restrictions: Only filters owned by the current user will be returned",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody FilterResults getFiltersByFilterType(@RequestParam() final Long filterTypeId) throws EntityRetrievalException {
         FilterResults results = new FilterResults();
@@ -66,8 +61,10 @@ public class FilterController {
         return results;
     }
 
-    @ApiOperation(value = "Save filter for the current user.",
-            notes = "")
+    @Operation(summary = "Save filter for the current user.",
+            description = "",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody Filter create(@RequestBody final Filter filter) throws EntityRetrievalException, UserRetrievalException, ValidationException {
         FilterDTO dto = new FilterDTO();
@@ -83,8 +80,10 @@ public class FilterController {
         return new Filter(dto);
     }
 
-    @ApiOperation(value = "Deletes a filter.",
-            notes = "")
+    @Operation(summary = "Deletes a filter.",
+            description = "",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/{filterId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public @ResponseBody String deleteFilter(@PathVariable("filterId") final Long filterId) throws EntityRetrievalException, ValidationException {

@@ -34,18 +34,16 @@ import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.search.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.search.domain.SearchViews;
 import gov.healthit.chpl.service.DirectReviewSearchService;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 
-/**
- * Controller for getting collections of Listings and Developer.
- *
- */
-@Api(value = "collections")
+@Tag(name = "collections", description = "Endpoints to get collections of the CHPL listings.")
 @RestController
 @RequestMapping("/collections")
 @Log4j2
@@ -63,13 +61,8 @@ public class CollectionsController {
         this.drService = drService;
     }
 
-    /**
-     * Get basic data about all listings in the system.
-     * @param delimitedFieldNames the names of the fields needed for each listing
-     * @return an array of the listings
-     * @throws JsonProcessingException if processing fails
-     */
-    @ApiOperation(value = "Get basic data about all certified products in the system.", notes = "")
+    @Operation(summary = "Get basic data about all certified products in the system.", description = "",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/certified-products", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.SIX_HOURS)
@@ -118,7 +111,9 @@ public class CollectionsController {
                 // assumes standard java bean getter/setter names
                 if (!isSearchResultFieldRequired
                         && !searchResultField.getName().equalsIgnoreCase("serialVersionUID")
-                        && !searchResultField.getName().equalsIgnoreCase("CERTS_SPLIT_CHAR")) {
+                        && !searchResultField.getName().equalsIgnoreCase("CERTS_SPLIT_CHAR")
+                        && !searchResultField.getName().equalsIgnoreCase("SMILEY_SPLIT_CHAR")
+                        && !searchResultField.getName().equalsIgnoreCase("FROWNEY_SPLIT_CHAR")) {
                     // what type is the field? String? Long?
                     Class searchResultFieldTypeClazz = searchResultField.getType();
                     // find the setter method that accepts the correct type
@@ -177,7 +172,9 @@ public class CollectionsController {
      * @throws JsonProcessingException if processing fails
      */
     @Deprecated
-    @ApiOperation(value = "Get basic data about all certified products in the system.", notes = "")
+    @Operation(summary = "Get basic data about all certified products in the system.", description = "",
+        deprecated = true,
+        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/certified_products", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.SIX_HOURS)
@@ -226,7 +223,9 @@ public class CollectionsController {
                 // assumes standard java bean getter/setter names
                 if (!isSearchResultFieldRequired
                         && !searchResultField.getName().equalsIgnoreCase("serialVersionUID")
-                        && !searchResultField.getName().equalsIgnoreCase("CERTS_SPLIT_CHAR")) {
+                        && !searchResultField.getName().equalsIgnoreCase("CERTS_SPLIT_CHAR")
+                        && !searchResultField.getName().equalsIgnoreCase("SMILEY_SPLIT_CHAR")
+                        && !searchResultField.getName().equalsIgnoreCase("FROWNEY_SPLIT_CHAR")) {
                     // what type is the field? String? Long?
                     Class searchResultFieldTypeClazz = searchResultField.getType();
                     // find the setter method that accepts the correct type
@@ -276,8 +275,9 @@ public class CollectionsController {
     }
 
     @Deprecated
-    @ApiOperation(value = "Get a list of all developers with transparency attestation URLs and ACB attestations.",
-            notes = "DEPRECATED")
+    @Operation(summary = "DEPRECATED. Get a list of all developers with transparency attestation URLs and ACB attestations.",
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/developers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody List<DeveloperTransparency> getDeveloperCollection() {
@@ -285,8 +285,9 @@ public class CollectionsController {
         return developerResults;
     }
 
-    @ApiOperation(value = "Get a list of all banned developers.",
-            notes = "")
+    @Operation(summary = "Get a list of all banned developers.",
+            description = "",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/decertified-developers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody List<DecertifiedDeveloper> getDecertifiedDeveloperCollection() {

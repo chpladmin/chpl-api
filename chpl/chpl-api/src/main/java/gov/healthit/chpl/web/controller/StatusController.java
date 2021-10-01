@@ -14,36 +14,28 @@ import gov.healthit.chpl.domain.status.CacheStatus;
 import gov.healthit.chpl.domain.status.CacheStatusName;
 import gov.healthit.chpl.domain.status.SystemStatus;
 import gov.healthit.chpl.logging.Loggable;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.domain.status.ServerStatus;
 import gov.healthit.chpl.domain.status.ServerStatusName;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 
-/**
- * Controller for checking status of the system.
- * @author alarned
- *
- */
-@Api
+@Tag(name = "status", description = "Gives insight into system status.")
 @RestController
 @Loggable
 public class StatusController {
     private static final Logger LOGGER = LogManager.getLogger(StatusController.class);
 
-    /**
-     * Get the current status of the system. Response indicates whether the system is up
-     * and whether the caches are initializing or complete.
-     * @return JSON value that indicates the server is running
-     */
-    @ApiOperation(
-            value = "Check that the rest services are up and running and indicate whether "
+    @Operation(summary = "Check that the rest services are up and running and indicate whether "
                     + "the pre-loaded caches are initializing or have completed."
                     + "{\"running\":\"OK\", \"cache\":\"OK\"} is returned if all is well."
                     + "If the cache is still initializing, the returned value will be "
                     + "{\"running\":\"OK\", \"cache\":\"INITIALIZING\"}.",
-                    notes = "")
+                    description = "",
+                    security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/system-status", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody SystemStatus getCombinedStatus() {
         SystemStatus response = new SystemStatus();
@@ -54,16 +46,13 @@ public class StatusController {
         return response;
     }
 
-    /**
-     * Get the status, indicating if the server is running at all.
-     * @return JSON value that indicates the server is running
-     */
     @Deprecated
-    @ApiOperation(
-            value = "DEPRECATED. Use /system-status instead. "
+    @Operation(summary = "DEPRECATED. Use /system-status instead. "
                     + "Check that the rest services are up and running."
                     + "{\"status\":\"OK\"} is returned if all is well.",
-                    notes = "")
+                    description = "",
+                    deprecated = true,
+                    security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/status", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ServerStatus getStatus() {
         LOGGER.warn("/status called");
@@ -72,17 +61,14 @@ public class StatusController {
         return response;
     }
 
-    /**
-     * Get information about the basic search cache, including whether it's completed loading and its "age".
-     * @return JSON object with status of load and "age"
-     */
     @Deprecated
-    @ApiOperation(
-            value = "DEPRECATED. Use /system-status instead. "
+    @Operation(summary = "DEPRECATED. Use /system-status instead. "
                     + "Check the status of every cache. "
                     + "{\"status\":\"OK\"} is returned if all caches are loaded and "
                     + "{\"status\":\"INITIALIZING\"} is returned if not. ",
-                    notes = "")
+                    description = "",
+                    deprecated = true,
+                    security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/cache_status", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody CacheStatus getCacheStatus() {
         CacheStatus response = new CacheStatus();

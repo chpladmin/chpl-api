@@ -25,11 +25,13 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.results.ChangeRequestResults;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Api(value = "change-requests")
+@Tag(name = "change-requests", description = "Management of change requests.")
 @RestController
 @RequestMapping("/change-requests")
 @Loggable
@@ -46,10 +48,12 @@ public class ChangeRequestController {
         this.ff4j = ff4j;
     }
 
-    @ApiOperation(value = "Get details about a specific change request.",
-            notes="Security Restrictions: ROLE_ADMIN & ROLE_ONC can get all change requests.  ROLE_ACB can get change requests "
+    @Operation(summary = "Get details about a specific change request.",
+            description = "Security Restrictions: ROLE_ADMIN & ROLE_ONC can get all change requests.  ROLE_ACB can get change requests "
                     + "for developers where they manage at least one certified product for the developer.  ROLE_DEVELOPER can get "
-                    + "change requests where they have administrative authority based on the developer.")
+                    + "change requests where they have administrative authority based on the developer.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/{changeRequestId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ChangeRequest getChangeRequest(@PathVariable final Long changeRequestId) throws EntityRetrievalException {
         if (!ff4j.check(FeatureList.CHANGE_REQUEST)) {
@@ -59,10 +63,12 @@ public class ChangeRequestController {
         return changeRequestManager.getChangeRequest(changeRequestId);
     }
 
-    @ApiOperation(value = "Get details about all change requests.",
-            notes = "Security Restrictions: ROLE_ADMIN & ROLE_ONC can get all change requests.  ROLE_ACB can get change requests "
+    @Operation(summary = "Get details about all change requests.",
+            description = "Security Restrictions: ROLE_ADMIN & ROLE_ONC can get all change requests.  ROLE_ACB can get change requests "
                     + "for developers where they manage at least one certified product for the developer.  ROLE_DEVELOPER can get "
-                    + "change requests where they have administrative authority based on the developer.")
+                    + "change requests where they have administrative authority based on the developer.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ChangeRequest> getAllChangeRequests() throws EntityRetrievalException {
         if (!ff4j.check(FeatureList.CHANGE_REQUEST)) {
@@ -71,10 +77,12 @@ public class ChangeRequestController {
         return changeRequestManager.getAllChangeRequestsForUser();
     }
 
-    @ApiOperation(value = "Create a new change request.",
-            notes = "Security Restrictions: ROLE_DEVELOPER can create change requests where they have administrative authority based on the developer.")
+    @Operation(summary = "Create a new change request.",
+            description = "Security Restrictions: ROLE_DEVELOPER can create change requests where they have administrative authority based on the developer.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     public ChangeRequestResults createChangeRequest(@RequestBody final ChangeRequest cr)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException,
             InvalidArgumentsException {
@@ -88,12 +96,14 @@ public class ChangeRequestController {
         return results;
     }
 
-    @ApiOperation(value = "Update an existing request status or request details.",
-            notes = "Security Restrictions: ROLE_ADMIN & ROLE_ONC can update all chnage requests.  ROLE_ACB can update change requests "
+    @Operation(summary = "Update an existing request status or request details.",
+            description = "Security Restrictions: ROLE_ADMIN & ROLE_ONC can update all chnage requests.  ROLE_ACB can update change requests "
                     + "for developers where they manage at least one certified product for the developer.  ROLE_DEVELOPER can update "
-                    + "change requests where they have administrative authority based on the developer.")
+                    + "change requests where they have administrative authority based on the developer.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     public ChangeRequest updateChangeRequest(@RequestBody final ChangeRequest cr)
             throws EntityRetrievalException, ValidationException, EntityCreationException,
             JsonProcessingException, InvalidArgumentsException, EmailNotSentException {
