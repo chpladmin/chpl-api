@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 public final class JSONUtils {
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final ObjectMapper MAPPER = new ObjectMapper().findAndRegisterModules();
     private static final ObjectReader READER = MAPPER.reader();
     private static final ObjectWriter WRITER = MAPPER.writer();
 
@@ -44,11 +44,16 @@ public final class JSONUtils {
 
     }
 
-    public static boolean jsonEquals(final String json1, final String json2)
+    public static boolean jsonEquals(String json1, String json2)
             throws JsonProcessingException, IOException {
+        if (json1 == null && json2 == null) {
+            return true;
+        } else if ((json1 == null && json2 != null)
+                || (json1 != null && json2 == null)) {
+            return false;
+        }
 
         Boolean equals;
-
         try {
             JsonNode node1 = getReader().readTree(json1);
             JsonNode node2 = getReader().readTree(json2);
