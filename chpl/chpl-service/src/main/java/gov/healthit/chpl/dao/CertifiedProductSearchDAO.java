@@ -424,14 +424,15 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
                 + "GROUP BY certified_product_id) nc_open "
                 + "ON cp.certified_product_id = nc_open.certified_product_id "
                 + "LEFT JOIN "
+                + "(SELECT certified_product_id, count(*) as \"count_closed_nonconformities\" "
                 + "FROM " + SCHEMA_NAME + ".surveillance surv "
                 + "JOIN " + SCHEMA_NAME + ".surveillance_requirement surv_req "
                 + "ON surv.id = surv_req.surveillance_id AND surv_req.deleted <> true "
                 + "JOIN " + SCHEMA_NAME + ".surveillance_nonconformity surv_nc "
                 + "ON surv_req.id = surv_nc.surveillance_requirement_id AND surv_nc.deleted <> true "
                 + "WHERE surv.deleted <> true AND surv_nc.non_conformity_close_date IS NOT NULL "
-                + "GROUP BY certified_product_id) nc_open "
-                + "ON cp.certified_product_id = nc_open.certified_product_id ";
+                + "GROUP BY certified_product_id) nc_closed "
+                + "ON cp.certified_product_id = nc_closed.certified_product_id ";
 
         //everything else is not joined in
         //but instead gets added after there WHERE
