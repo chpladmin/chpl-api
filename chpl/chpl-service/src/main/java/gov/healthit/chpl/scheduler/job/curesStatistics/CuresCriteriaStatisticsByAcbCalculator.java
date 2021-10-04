@@ -22,6 +22,8 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import one.util.streamex.StreamEx;
 
@@ -145,29 +147,11 @@ public class CuresCriteriaStatisticsByAcbCalculator {
             return null;
         }
     }
+
+    @Data
+    @AllArgsConstructor
     class CuresCriteriaUpdate {
         private CertificationCriterion originalCriterion;
         private CertificationCriterion curesCriterion;
-
-         CuresCriteriaUpdate(CertificationCriterion originalCriterion, CertificationCriterion curesCriterion) {
-            this.originalCriterion = originalCriterion;
-            this.curesCriterion = curesCriterion;
-        }
-
-        public CertificationCriterion getOriginalCriterion() {
-            return originalCriterion;
-        }
-
-        public void setOriginalCriterion(CertificationCriterion originalCriterion) {
-            this.originalCriterion = originalCriterion;
-        }
-
-        public CertificationCriterion getCuresCriterion() {
-            return curesCriterion;
-        }
-
-        public void setCuresCriterion(CertificationCriterion curesCriterion) {
-            this.curesCriterion = curesCriterion;
-        }
     }
 }

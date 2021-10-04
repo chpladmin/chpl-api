@@ -16,6 +16,8 @@ import gov.healthit.chpl.domain.statistics.CuresCriterionChartStatistic;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.scheduler.job.curesStatistics.email.CuresStatisticsChartData;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -107,30 +109,12 @@ public class CriteriaDataWorksheet {
         row.getCell(LISTING_COUNT_COL_IDX).setCellValue(data.getListingCount());
     }
 
+
+    @Data
+    @AllArgsConstructor
     class CriteraToRowMap {
         private String criteriaKey;
         private Integer rowNumber;
-
-        CriteraToRowMap(String criteriaKey, Integer rowNumber) {
-            this.criteriaKey = criteriaKey;
-            this.rowNumber = rowNumber;
-        }
-
-        public String getCriteriaKey() {
-            return criteriaKey;
-        }
-
-        public void setCriteriaKey(String criteriaKey) {
-            this.criteriaKey = criteriaKey;
-        }
-
-        public Integer getRowNumber() {
-            return rowNumber;
-        }
-
-        public void setRowNumber(Integer rowNumber) {
-            this.rowNumber = rowNumber;
-        }
     }
 
 }
