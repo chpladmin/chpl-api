@@ -260,8 +260,10 @@ public class SurveillanceManager extends SecuredManager {
         surveillanceActivityReportJob.setName(SurveillanceReportingActivityJob.JOB_NAME);
         surveillanceActivityReportJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
         JobDataMap jobDataMap = new JobDataMap();
-        jobDataMap.put(SurveillanceReportingActivityJob.START_DATE_KEY, start);
-        jobDataMap.put(SurveillanceReportingActivityJob.END_DATE_KEY, end);
+        //our current jackson library does not allow java serliaziation of LocalDate objects
+        //so here we convert them back to Strings (and the job will convert them back to LocalDates)
+        jobDataMap.put(SurveillanceReportingActivityJob.START_DATE_KEY, start.format(SurveillanceReportingActivityJob.JOB_DATA_DATE_FORMATTER));
+        jobDataMap.put(SurveillanceReportingActivityJob.END_DATE_KEY, end.format(SurveillanceReportingActivityJob.JOB_DATA_DATE_FORMATTER));
         jobDataMap.put(SurveillanceReportingActivityJob.USER_EMAIL, user.getEmail());
         surveillanceActivityReportJob.setJobDataMap(jobDataMap);
         surveillanceActivityReportTrigger.setJob(surveillanceActivityReportJob);
