@@ -555,67 +555,39 @@ public class CertificationResultManager extends SecuredManager {
             List<CertificationResultConformanceMethod> updatedConformanceMethods) throws EntityCreationException {
 
         int numChanges = 0;
-        List<CertificationResultConformanceMethod> conformanceMethodToAdd = new ArrayList<CertificationResultConformanceMethod>();
-        List<Long> idsToRemove = new ArrayList<Long>();
 
-        // figure out which data to add
-        if (updatedConformanceMethods != null && updatedConformanceMethods.size() > 0) {
-            if (existingConformanceMethods == null || existingConformanceMethods.size() == 0) {
-                // existing listing has none, add all from the update
-                for (CertificationResultConformanceMethod updatedItem : updatedConformanceMethods) {
-                    conformanceMethodToAdd.add(updatedItem);
-                }
-            } else if (existingConformanceMethods.size() > 0) {
-                // existing listing has some, compare to the update to see if
-                // any need to be added
-                for (CertificationResultConformanceMethod updatedItem : updatedConformanceMethods) {
-                    boolean inExistingListing = false;
-                    for (CertificationResultConformanceMethod existingItem : existingConformanceMethods) {
-                        if (updatedItem.matches(existingItem)) {
-                            inExistingListing = true;
-                        }
-                    }
-
-                    if (!inExistingListing) {
-                        conformanceMethodToAdd.add(updatedItem);
-                    }
-                }
-            }
-        }
-
-        // figure out which data to remove
-        if (existingConformanceMethods != null && existingConformanceMethods.size() > 0) {
-            // if the updated listing has none, remove them all from existing
-            if (updatedConformanceMethods == null || updatedConformanceMethods.size() == 0) {
-                for (CertificationResultConformanceMethod existingItem : existingConformanceMethods) {
-                    idsToRemove.add(existingItem.getId());
-                }
-            } else if (updatedConformanceMethods.size() > 0) {
-                for (CertificationResultConformanceMethod existingItem : existingConformanceMethods) {
-                    boolean inUpdatedListing = false;
-                    for (CertificationResultConformanceMethod updatedItem : updatedConformanceMethods) {
-                        inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
-                    }
-                    if (!inUpdatedListing) {
-                        idsToRemove.add(existingItem.getId());
-                    }
-                }
-            }
-        }
-
-        numChanges = conformanceMethodToAdd.size() + idsToRemove.size();
-        for (CertificationResultConformanceMethod toAdd : conformanceMethodToAdd) {
+        // Handle added data
+        List<CertificationResultConformanceMethod> addedCMs = subtractConformanceMethodLists(
+                updatedConformanceMethods != null ? updatedConformanceMethods : new ArrayList<CertificationResultConformanceMethod>(),
+                        existingConformanceMethods != null ? existingConformanceMethods : new ArrayList<CertificationResultConformanceMethod>());
+        addedCMs.stream()
+        .forEach(crcm -> {
             CertificationResultConformanceMethodEntity toAddEntity = new CertificationResultConformanceMethodEntity();
             toAddEntity.setCertificationResultId(certResult.getId());
-            toAddEntity.setConformanceMethodId(toAdd.getConformanceMethod().getId());
-            toAddEntity.setVersion(toAdd.getConformanceMethodVersion());
+            toAddEntity.setConformanceMethodId(crcm.getConformanceMethod().getId());
+            toAddEntity.setVersion(crcm.getConformanceMethodVersion());
             certResultDAO.addConformanceMethodMapping(toAddEntity);
-        }
+        });
+        numChanges += addedCMs.size();
 
-        for (Long idToRemove : idsToRemove) {
-            certResultDAO.deleteConformanceMethodMapping(idToRemove);
-        }
+        //  Handle removed data
+        List<CertificationResultConformanceMethod> removedCMs = subtractConformanceMethodLists(
+                existingConformanceMethods != null ? existingConformanceMethods : new ArrayList<CertificationResultConformanceMethod>(),
+                        updatedConformanceMethods != null ? updatedConformanceMethods : new ArrayList<CertificationResultConformanceMethod>());
+        removedCMs.stream()
+        .forEach(crcm -> certResultDAO.deleteConformanceMethodMapping(crcm.getId()));
+        numChanges += removedCMs.size();
+
         return numChanges;
+    }
+
+    @SuppressWarnings("checkstyle:linelength")
+    private List<CertificationResultConformanceMethod> subtractConformanceMethodLists(List<CertificationResultConformanceMethod> listA, List<CertificationResultConformanceMethod> listB) {
+        Predicate<CertificationResultConformanceMethod> notInListB = cmFromA -> !listB.stream()
+                .anyMatch(cm -> cm.matches(cmFromA));
+        return listA.stream()
+                .filter(notInListB)
+                .collect(Collectors.toList());
     }
 
     private int updateOptionalStandards(CertifiedProductSearchDetails listing, CertificationResult certResult,

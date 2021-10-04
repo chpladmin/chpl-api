@@ -488,8 +488,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
      *
      *******************************************************/
 
-    public CertificationResultConformanceMethod addConformanceMethodMapping(CertificationResultConformanceMethodEntity entity)
-            throws EntityCreationException {
+    public CertificationResultConformanceMethod addConformanceMethodMapping(CertificationResultConformanceMethodEntity entity) {
         CertificationResultConformanceMethodEntity mapping = new CertificationResultConformanceMethodEntity();
         mapping.setCertificationResultId(entity.getCertificationResultId());
         mapping.setConformanceMethodId(entity.getConformanceMethodId());
