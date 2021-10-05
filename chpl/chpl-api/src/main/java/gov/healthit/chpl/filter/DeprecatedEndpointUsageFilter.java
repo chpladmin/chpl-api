@@ -1,6 +1,10 @@
 package gov.healthit.chpl.filter;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,6 +17,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -30,6 +35,7 @@ import gov.healthit.chpl.api.domain.ApiKey;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.util.ApiKeyUtil;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -84,6 +90,15 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
                     LOGGER.error("Could not determine unique matching URL Pattern for " + request.getMethod()
                         + " Request: " + request.getRequestURI());
                 }
+            } else if (isHandlerReturnTypeDeprecated(handlerMethod)) {
+                String className = handlerMethod.getMethodAnnotation(DeprecatedResponseFields.class).responseClass().getName();
+                LOGGER.info("Finding all deprecated fields for class " + className);
+                List<Field> deprecatedFields = getAllDeprecatedFields(handlerMethod.getMethodAnnotation(DeprecatedResponseFields.class).responseClass());
+                if (CollectionUtils.isEmpty(deprecatedFields)) {
+                    LOGGER.info("No deprecated fields found for class " + className);
+                }
+                deprecatedFields.stream()
+                    .forEach(df -> System.out.println(df.getName()));
             }
         }
 
@@ -111,6 +126,26 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
 
     private boolean isHandlerMethodDeprecated(HandlerMethod handlerMethod) {
         return handlerMethod != null && handlerMethod.getMethodAnnotation(Deprecated.class) != null;
+    }
+
+    private boolean isHandlerReturnTypeDeprecated(HandlerMethod handlerMethod) {
+        return handlerMethod != null && (handlerMethod.getMethodAnnotation(Deprecated.class) == null)
+                && (handlerMethod.getMethodAnnotation(DeprecatedResponseFields.class) != null);
+    }
+
+    private List<Field> getAllDeprecatedFields(Class<?> clazz) {
+        if (clazz == null) {
+            return Collections.emptyList();
+        }
+
+        List<Field> result = new ArrayList<Field>(getAllDeprecatedFields(clazz.getSuperclass()));
+        List<Field> filteredFields = Arrays.stream(clazz.getDeclaredFields())
+          .peek(f -> System.out.println("Found field " + f.getName()))
+          .filter(f -> f.getAnnotation(Deprecated.class) != null)
+          .peek(f -> System.out.println("Field " + f.getName() + " is deprecated!"))
+          .collect(Collectors.toList());
+        result.addAll(filteredFields);
+        return result;
     }
 
     private ApiKey getApiKey(HttpServletRequest request) {
