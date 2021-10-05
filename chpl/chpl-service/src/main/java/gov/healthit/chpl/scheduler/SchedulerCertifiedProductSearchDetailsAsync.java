@@ -28,7 +28,7 @@ public class SchedulerCertifiedProductSearchDetailsAsync {
     public Future<CertifiedProductSearchDetails> getCertifiedProductDetail(
             final Long id, final CertifiedProductDetailsManager certifiedProductDetailsManager)
                 throws EntityRetrievalException {
-        CertifiedProductSearchDetails dto = certifiedProductDetailsManager.getCertifiedProductDetails(id);
+        CertifiedProductSearchDetails dto = certifiedProductDetailsManager.getCertifiedProductDetailsUsingCache(id);
         return new AsyncResult<CertifiedProductSearchDetails>(dto);
     }
 }

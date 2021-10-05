@@ -1,6 +1,7 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics.data;
 
-import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
@@ -80,7 +81,7 @@ public class NonConformityDataCreator {
 
         Long totalDuration = nonconformities.stream()
                 .map(nc -> Math
-                        .abs(ChronoUnit.DAYS.between(nc.getDateOfDetermination().toInstant(), nc.getCapApproval().toInstant())))
+                        .abs(ChronoUnit.DAYS.between(nc.getDateOfDetermination(), nc.getCapApproval())))
                 .collect(Collectors.summingLong(n -> n.longValue()));
         return totalDuration / nonconformities.size();
     }
@@ -95,11 +96,12 @@ public class NonConformityDataCreator {
                 .distinct() // Want to figure out how to get rid of this
                 .collect(Collectors.toList());
 
+        LocalDate now = LocalDate.from(LocalDateTime.now());
         Long totalDuration = nonconformities.stream()
                 .map(nc -> Math
                         .abs(ChronoUnit.DAYS.between(
-                                nc.getCapApproval().toInstant(),
-                                nc.getCapEndDate() != null ? nc.getCapEndDate().toInstant() : Instant.now())))
+                                nc.getCapApproval(),
+                                nc.getCapEndDate() != null ? nc.getCapEndDate() : now)))
                 .collect(Collectors.summingLong(n -> n.longValue()));
         return totalDuration / nonconformities.size();
     }
@@ -222,28 +224,28 @@ public class NonConformityDataCreator {
     }
 
     private Long getDaysToAssessNonconformtity(SurveillanceEntity surveillance, SurveillanceNonconformityEntity nonconformity) {
-        return Math.abs(ChronoUnit.DAYS.between(surveillance.getStartDate().toInstant(),
-                nonconformity.getDateOfDetermination().toInstant()));
+        return Math.abs(ChronoUnit.DAYS.between(surveillance.getStartDate(),
+                nonconformity.getDateOfDetermination()));
     }
 
     private Long getDaysFromCAPApprovalToSurveillanceClose(SurveillanceEntity surveillance,
             SurveillanceNonconformityEntity nonconformity) {
         return Math.abs(ChronoUnit.DAYS.between(
-                nonconformity.getCapApproval().toInstant(),
-                surveillance.getEndDate().toInstant()));
+                nonconformity.getCapApproval(),
+                surveillance.getEndDate()));
     }
 
     private Long getDaysFromCAPEndToSurveillanceClose(SurveillanceEntity surveillance,
             SurveillanceNonconformityEntity nonconformity) {
         return Math.abs(ChronoUnit.DAYS.between(
-                nonconformity.getCapEndDate().toInstant(),
-                surveillance.getEndDate().toInstant()));
+                nonconformity.getCapEndDate(),
+                surveillance.getEndDate()));
     }
 
     private Long getDaysFromSurveillanceOpenToSurveillanceClose(SurveillanceEntity surveillance) {
         return Math.abs(ChronoUnit.DAYS.between(
-                surveillance.getStartDate().toInstant(),
-                surveillance.getEndDate().toInstant()));
+                surveillance.getStartDate(),
+                surveillance.getEndDate()));
     }
 
     private CertificationBodyDTO getCertificationBody(Long id) {

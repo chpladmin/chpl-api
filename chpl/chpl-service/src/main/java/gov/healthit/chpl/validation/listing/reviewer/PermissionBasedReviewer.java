@@ -61,6 +61,10 @@ public abstract class PermissionBasedReviewer implements Reviewer {
         }
     }
 
+    public Boolean isCertificationResultAttestedTo(CertificationResult cert) {
+        return cert.isSuccess() != null && cert.isSuccess().equals(Boolean.TRUE);
+    }
+
     @Override
     public abstract void review(CertifiedProductSearchDetails listing);
 }

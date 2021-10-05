@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
-import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
@@ -22,14 +21,12 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 @Component
 public class SurveillanceNonconformityReviewer implements Reviewer {
     private CertificationResultDetailsDAO certResultDetailsDao;
-    private SurveillanceDAO survDao;
     private ErrorMessageUtil msgUtil;
     private CertificationCriterionService criterionService;
 
     @Autowired
-    public SurveillanceNonconformityReviewer(SurveillanceDAO survDao, CertificationResultDetailsDAO certResultDetailsDao,
+    public SurveillanceNonconformityReviewer(CertificationResultDetailsDAO certResultDetailsDao,
             ErrorMessageUtil msgUtil, CertificationCriterionService criterionService) {
-        this.survDao = survDao;
         this.certResultDetailsDao = certResultDetailsDao;
         this.msgUtil = msgUtil;
         this.criterionService = criterionService;
@@ -116,27 +113,27 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
 
     private void checkCorrectiveActionPlanDatesValidity(Surveillance surv, SurveillanceRequirement req,
             SurveillanceNonconformity nc) {
-        if (!StringUtils.isEmpty(nc.getCapApprovalDate())
-                && StringUtils.isEmpty(nc.getCapMustCompleteDate())) {
+        if (!StringUtils.isEmpty(nc.getCapApprovalDay())
+                && StringUtils.isEmpty(nc.getCapMustCompleteDay())) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.dateCAPMustCompleteIsRequired",
                     req.getRequirementName(),
                     nc.getNonconformityTypeName()));
         }
 
-        if (!StringUtils.isEmpty(nc.getCapEndDate()) && StringUtils.isEmpty(nc.getCapStartDate())) {
+        if (!StringUtils.isEmpty(nc.getCapEndDay()) && StringUtils.isEmpty(nc.getCapStartDay())) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.dateCAPStartIsRequired",
                     req.getRequirementName(),
                     nc.getNonconformityTypeName()));
         }
 
-        if (!StringUtils.isEmpty(nc.getCapEndDate()) && StringUtils.isEmpty(nc.getCapApprovalDate())) {
+        if (!StringUtils.isEmpty(nc.getCapEndDay()) && StringUtils.isEmpty(nc.getCapApprovalDay())) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.dateCAPApprovalIsRequired",
                     req.getRequirementName(),
                     nc.getNonconformityTypeName()));
         }
 
-        if (!StringUtils.isEmpty(nc.getCapEndDate()) && !StringUtils.isEmpty(nc.getCapStartDate())
-                && nc.getCapEndDate().compareTo(nc.getCapStartDate()) < 0) {
+        if (!StringUtils.isEmpty(nc.getCapEndDay()) && !StringUtils.isEmpty(nc.getCapStartDay())
+                && nc.getCapEndDay().compareTo(nc.getCapStartDay()) < 0) {
             surv.getErrorMessages()
                     .add(msgUtil.getMessage("surveillance.dateCAPEndNotGreaterThanDateCAPStart",
                             req.getRequirementName(),
@@ -146,7 +143,7 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
 
     private void checkDateOfDeterminationExists(Surveillance surv, SurveillanceRequirement req,
             SurveillanceNonconformity nc) {
-        if (nc.getDateOfDetermination() == null) {
+        if (nc.getDateOfDeterminationDay() == null) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.dateOfDeterminationIsRequired",
                     req.getRequirementName(),
                     nc.getNonconformityTypeName()));
@@ -226,14 +223,14 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
 
     private void checkResolution(Surveillance surv, SurveillanceRequirement req,
             SurveillanceNonconformity nc) {
-        if (nc.getNonconformityCloseDate() != null) {
+        if (nc.getNonconformityCloseDay() != null) {
             if (StringUtils.isEmpty(nc.getResolution())) {
                 surv.getErrorMessages()
                         .add(msgUtil.getMessage("surveillance.resolutionDescriptionIsRequired",
                                 req.getRequirementName(),
                                 nc.getNonconformityTypeName()));
             }
-        } else if (nc.getNonconformityCloseDate() == null) {
+        } else if (nc.getNonconformityCloseDay() == null) {
             if (!StringUtils.isEmpty(nc.getResolution())) {
                 surv.getErrorMessages()
                         .add(msgUtil.getMessage("surveillance.resolutionDescriptionNotApplicable",

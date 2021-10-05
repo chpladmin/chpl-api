@@ -770,6 +770,7 @@ public class SearchRequestValidatorTest {
         } catch (ValidationException ex) {
             fail(ex.getMessage());
         }
+        assertEquals(1, request.getComplianceActivity().getNonConformityOptions().size());
     }
 
     @Test

@@ -45,6 +45,15 @@ public class TestStandardDAO extends BaseDAOImpl {
         return dto;
     }
 
+    public TestStandardDTO getByIdAndEdition(Long testStandardId, Long editionId) {
+        TestStandardDTO dto = null;
+        List<TestStandardEntity> entities = getEntitiesByIdAndYear(testStandardId, editionId);
+        if (entities != null && entities.size() > 0) {
+            dto = new TestStandardDTO(entities.get(0));
+        }
+        return dto;
+    }
+
     private List<TestStandardEntity> getAllEntities() {
         return entityManager
                 .createQuery("from TestStandardEntity where (NOT deleted = true) ", TestStandardEntity.class)
@@ -67,8 +76,12 @@ public class TestStandardDAO extends BaseDAOImpl {
 
     private List<TestStandardEntity> getEntitiesByNumberAndYear(String number, Long editionId) {
         TestStandardEntity entity = null;
-        String tsQuery = "SELECT ts " + "FROM TestStandardEntity ts " + "JOIN FETCH ts.certificationEdition edition "
-                + "WHERE ts.deleted <> true " + "AND UPPER(ts.name) = :number " + "AND edition.id = :editionId ";
+        String tsQuery = "SELECT ts "
+                + "FROM TestStandardEntity ts "
+                + "JOIN FETCH ts.certificationEdition edition "
+                + "WHERE ts.deleted <> true "
+                + "AND UPPER(ts.name) = :number "
+                + "AND edition.id = :editionId ";
         Query query = entityManager.createQuery(tsQuery, TestStandardEntity.class);
         query.setParameter("number", number.toUpperCase());
         query.setParameter("editionId", editionId);
@@ -84,5 +97,20 @@ public class TestStandardDAO extends BaseDAOImpl {
             matches = query.getResultList();
         }
         return matches;
+    }
+
+    private List<TestStandardEntity> getEntitiesByIdAndYear(Long id, Long editionId) {
+        TestStandardEntity entity = null;
+        String tsQuery = "SELECT ts "
+                + "FROM TestStandardEntity ts "
+                + "JOIN FETCH ts.certificationEdition edition "
+                + "WHERE ts.deleted <> true "
+                + "AND ts.id = :id "
+                + "AND edition.id = :editionId ";
+        Query query = entityManager.createQuery(tsQuery, TestStandardEntity.class);
+        query.setParameter("id", id);
+        query.setParameter("editionId", editionId);
+
+        return query.getResultList();
     }
 }
