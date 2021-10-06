@@ -1,10 +1,13 @@
 package gov.healthit.chpl.filter;
 
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,6 +44,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
+    private static final String CHPL_PKG_BEGIN = "gov.healthit.chpl";
     public static final String[] IGNORED_REQUEST_PATHS = {
             "/api-docs", "/monitoring", "/ff4j-console"
     };
@@ -92,13 +96,16 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
                 }
             } else if (isHandlerReturnTypeDeprecated(handlerMethod)) {
                 String className = handlerMethod.getMethodAnnotation(DeprecatedResponseFields.class).responseClass().getName();
-                LOGGER.info("Finding all deprecated fields for class " + className);
-                List<Field> deprecatedFields = getAllDeprecatedFields(handlerMethod.getMethodAnnotation(DeprecatedResponseFields.class).responseClass());
-                if (CollectionUtils.isEmpty(deprecatedFields)) {
-                    LOGGER.info("No deprecated fields found for class " + className);
+                LOGGER.debug("Finding all deprecated fields for class " + className);
+                Set<String> deprecatedFieldNames = new LinkedHashSet<String>();
+                getAllDeprecatedFields(
+                        handlerMethod.getMethodAnnotation(DeprecatedResponseFields.class).responseClass(),
+                        deprecatedFieldNames);
+                if (CollectionUtils.isEmpty(deprecatedFieldNames)) {
+                    LOGGER.debug("No deprecated fields found for class " + className);
                 }
-                deprecatedFields.stream()
-                    .forEach(df -> System.out.println(df.getName()));
+                deprecatedFieldNames.stream()
+                    .forEach(df -> System.out.println(df));
             }
         }
 
@@ -133,19 +140,59 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
                 && (handlerMethod.getMethodAnnotation(DeprecatedResponseFields.class) != null);
     }
 
-    private List<Field> getAllDeprecatedFields(Class<?> clazz) {
+    private void getAllDeprecatedFields(Class<?> clazz, Set<String> allDeprecatedFieldNames) {
         if (clazz == null) {
-            return Collections.emptyList();
+            return;
         }
 
-        List<Field> result = new ArrayList<Field>(getAllDeprecatedFields(clazz.getSuperclass()));
-        List<Field> filteredFields = Arrays.stream(clazz.getDeclaredFields())
-          .peek(f -> System.out.println("Found field " + f.getName()))
+        getAllDeprecatedFields(clazz.getSuperclass(), allDeprecatedFieldNames);
+
+        //get any normal field that is deprecated and could be returned in the JSON
+        List<String> filteredFieldNames = Arrays.stream(clazz.getDeclaredFields())
           .filter(f -> f.getAnnotation(Deprecated.class) != null)
-          .peek(f -> System.out.println("Field " + f.getName() + " is deprecated!"))
+          .map(f -> f.getName())
           .collect(Collectors.toList());
-        result.addAll(filteredFields);
-        return result;
+        allDeprecatedFieldNames.addAll(filteredFieldNames);
+
+        //get the property associated with any deprecated "getter" method that could also be returned in the json
+        try {
+            for (PropertyDescriptor propertyDescriptor
+                    : Introspector.getBeanInfo(clazz).getPropertyDescriptors()) {
+                Method readMethod = propertyDescriptor.getReadMethod();
+                if (readMethod != null && readMethod.getAnnotation(Deprecated.class) != null) {
+                    allDeprecatedFieldNames.add(propertyDescriptor.getDisplayName());
+                }
+            }
+        } catch (IntrospectionException ex) {
+            LOGGER.error("Could not introspect the class " + clazz.getName(), ex);
+        }
+
+        Set<Class<?>> nestedClassesToCheckForDeprecatedFields = getNestedClasses(clazz);
+        for (Class<?> nestedClass : nestedClassesToCheckForDeprecatedFields) {
+            getAllDeprecatedFields(nestedClass, allDeprecatedFieldNames);
+        }
+    }
+
+    private Set<Class<?>> getNestedClasses(Class<?> clazz) {
+        //this gets the classes that are regular non-deprecated non-primitive non-JDK types of objects
+        Set<Class<?>> nestedClassesToCheckForDeprecatedFields = Arrays.stream(clazz.getDeclaredFields())
+                .filter(field -> field.getAnnotation(Deprecated.class) == null)
+                .map(field -> field.getClass())
+                .filter(classItem -> classItem.getPackage().getName().startsWith(CHPL_PKG_BEGIN))
+                .collect(Collectors.toSet());
+
+        //this gets the classes that are nested in parameterized Collections (i.e. List<T>)
+        nestedClassesToCheckForDeprecatedFields.addAll(Arrays.stream(clazz.getDeclaredFields())
+                .filter(field -> field.getAnnotation(Deprecated.class) == null)
+                .filter(field ->  field.getGenericType() != null && field.getGenericType() instanceof ParameterizedType)
+                .map(field -> (ParameterizedType) field.getGenericType())
+                .map(field -> field.getActualTypeArguments())
+                .flatMap(fieldArr -> Stream.of(fieldArr))
+                .filter(type -> type != null && type instanceof Class<?>)
+                .map(type -> (Class<?>) type)
+                .filter(classItem -> classItem.getPackage().getName().startsWith(CHPL_PKG_BEGIN))
+                .collect(Collectors.toList()));
+        return nestedClassesToCheckForDeprecatedFields;
     }
 
     private ApiKey getApiKey(HttpServletRequest request) {
