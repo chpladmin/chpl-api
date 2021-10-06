@@ -23,8 +23,10 @@ import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 import lombok.Data;
 import lombok.ToString;
+import lombok.extern.log4j.Log4j2;
 
 @Component("testFunctionalityAllowedByRoleReviewer")
+@Log4j2
 public class TestFunctionalityAllowedByRoleReviewer implements ComparisonReviewer {
 
     private ErrorMessageUtil errorMessages;
@@ -139,7 +141,7 @@ public class TestFunctionalityAllowedByRoleReviewer implements ComparisonReviewe
                     RestrictedCriteriaTestFunctionality.class);
             restrictedCriteria = mapper.readValue(jsonRestrictions, javaType);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
         }
 
         return restrictedCriteria;

@@ -18,8 +18,10 @@ import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
+import lombok.extern.log4j.Log4j2;
 
 @Component
+@Log4j2
 public class CqmResultsService {
     private CQMResultDetailsDAO cqmResultDetailsDAO;
     private CQMResultDAO cqmResultDao;
@@ -98,7 +100,7 @@ public class CqmResultsService {
         try {
             cqmResultDetailsDTOs = cqmResultDetailsDAO.getCQMResultDetailsByCertifiedProductId(id);
         } catch (EntityRetrievalException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
         }
         return cqmResultDetailsDTOs;
     }
