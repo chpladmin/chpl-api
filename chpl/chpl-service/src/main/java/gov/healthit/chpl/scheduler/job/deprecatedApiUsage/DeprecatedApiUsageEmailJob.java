@@ -116,7 +116,7 @@ public class DeprecatedApiUsageEmailJob implements Job {
                 deprecatedApiUsage.getCallCount().toString(),
                 getEasternTimeDisplay(deprecatedApiUsage.getLastAccessedDate()),
                 deprecatedApiUsage.getApi().getChangeDescription(),
-                deprecatedApiUsage.getApi().getRemovalDate().toString()).collect(Collectors.toList());
+                DateUtil.format(deprecatedApiUsage.getApi().getRemovalDate())).collect(Collectors.toList());
     }
 
     private String getEasternTimeDisplay(Date date) {
