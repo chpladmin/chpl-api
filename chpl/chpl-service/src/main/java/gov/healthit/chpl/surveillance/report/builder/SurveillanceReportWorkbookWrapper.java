@@ -24,10 +24,15 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbookFactory;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTCol;
 import org.springframework.util.StringUtils;
 
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2
 public class SurveillanceReportWorkbookWrapper {
     public static final int DEFAULT_MAX_COLUMN = 16384;
     private static final int WORKSHEET_FONT_POINTS  = 10;
     private static final int WORKSHEET_LARGE_FONT_POINTS = 12;
+    private static final int POI_WIDTH_FACTOR = 256;
+    private static final int FONT_UNIT_FACTOR = 5;
 
     private Workbook workbook;
     private Font boldFont, smallFont, boldSmallFont, italicSmallFont, boldItalicSmallFont,
@@ -77,7 +82,7 @@ public class SurveillanceReportWorkbookWrapper {
      * width units into the POI width units. It's pretty close but not 100%.
      */
     public int getColumnWidth(double excelWidth) {
-        return (int)(excelWidth * 256);
+        return (int) (excelWidth * POI_WIDTH_FACTOR);
     }
 
     /**
@@ -150,11 +155,11 @@ public class SurveillanceReportWorkbookWrapper {
             totalColWidthInPoiUnits += sheet.getColumnWidth(i);
         }
         //convert from 1/256 character units to character units
-        int totalColWidthInChars = totalColWidthInPoiUnits / 256;
+        int totalColWidthInChars = totalColWidthInPoiUnits / POI_WIDTH_FACTOR;
         //convert from character units to java.awt.Font units
         //not sure about the multiplier of 5.. there is almost certainly
         //a better, less mysterious formula but I can't figure it out and '5' works.
-        int totalColWidth = totalColWidthInChars * 5;
+        int totalColWidth = totalColWidthInChars * FONT_UNIT_FACTOR;
 
         //measure the text string against the column width to see how many lines it takes up
         java.awt.Font currFont = new java.awt.Font(font.getFontName(), 0, font.getFontHeightInPoints());
@@ -187,8 +192,7 @@ public class SurveillanceReportWorkbookWrapper {
             cell = row.createCell(cellIndex);
             cell.setCellStyle(style);
         } catch (Exception ex) {
-            System.err.println("Error creating cell in row " + row.getRowNum() + " at column " + cellIndex);
-            ex.printStackTrace();
+            LOGGER.error("Error creating cell in row " + row.getRowNum() + " at column " + cellIndex, ex);
         }
         return cell;
     }
