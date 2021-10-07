@@ -77,7 +77,7 @@ public class TestFunctionalityAllowedByRoleReviewer implements Reviewer {
                     RestrictedCriteriaTestFunctionality.class);
             restrictedCriteria = mapper.readValue(json, javaType);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
         }
 
         return restrictedCriteria;

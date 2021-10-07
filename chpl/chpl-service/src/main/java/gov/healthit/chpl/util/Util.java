@@ -44,8 +44,8 @@ public final class Util {
             // Converts message digest value in base 16 (hex)
             md5 = new BigInteger(1, digest.digest()).toString(BASE_16);
 
-        } catch (final NoSuchAlgorithmException e) {
-            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            LOGGER.error(e.getMessage(), e);
         }
         return md5;
     }

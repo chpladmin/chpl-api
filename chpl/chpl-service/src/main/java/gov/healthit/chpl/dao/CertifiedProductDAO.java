@@ -639,7 +639,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
                 + "WHERE cp.deleted = false ";
         switch (urlType) {
         case MANDATORY_DISCLOSURE:
-            queryStr += " AND cp.transparencyAttestationUrl = :url ";
+            queryStr += " AND cp.mandatoryDisclosures = :url ";
             break;
         case FULL_USABILITY_REPORT:
             queryStr += " AND cp.sedReportFileLocation = :url ";

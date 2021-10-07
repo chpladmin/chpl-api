@@ -22,13 +22,15 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.CHPLFileManager;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Api(value = "files")
+@Tag(name = "files", description = "Upload and retrieval of the ApiDocumentation file.")
 @RestController
 @RequestMapping("/files")
 @Loggable
@@ -43,8 +45,10 @@ public class CHPLFileController {
         this.chplFileManager = chplFileManager;
     }
 
-    @ApiOperation(value = "Upload an API Documentation file",
-            notes = "Uploads a new current API Documentation file.  Security Restrictions: ROLE_ADMIN or ROLE_ONC")
+    @Operation(summary = "Upload an API Documentation file",
+            description = "Uploads a new current API Documentation file.  Security Restrictions: ROLE_ADMIN or ROLE_ONC",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/api_documentation",
             method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
@@ -69,8 +73,10 @@ public class CHPLFileController {
         return new ResponseEntity<CHPLFileDTO>(fileDTO, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Retrieve an API Documentation file",
-            notes = "Retrieves the current API Documentation file.")
+    @Operation(summary = "Retrieve an API Documentation file",
+            description = "Retrieves the current API Documentation file.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/api_documentation", method = RequestMethod.GET, produces = APPLICATION_MS_EXCEL)
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public ResponseEntity<byte[]> getApiDocumentationFile() throws EntityRetrievalException {
@@ -85,8 +91,10 @@ public class CHPLFileController {
                              .body(fileDTO.getFileData());
     }
 
-    @ApiOperation(value = "Retrieve details about an API Documentation file",
-            notes = "Retrieves the details about the current API Documentation file.")
+    @Operation(summary = "Retrieve details about an API Documentation file",
+            description = "Retrieves the details about the current API Documentation file.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/api_documentation/details",
         method = RequestMethod.GET,
         produces = "application/json; charset=utf-8")

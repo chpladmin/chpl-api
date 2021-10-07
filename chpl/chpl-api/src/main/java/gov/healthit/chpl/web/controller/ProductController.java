@@ -46,13 +46,15 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.util.ChplProductNumberUtil.ChplProductNumberParts;
 import gov.healthit.chpl.web.controller.results.ProductResults;
 import gov.healthit.chpl.web.controller.results.SplitProductResponse;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Api(value = "products")
+@Tag(name = "products", description = "Allows management of products.")
 @RestController
 @RequestMapping("/products")
 @Loggable
@@ -73,8 +75,9 @@ public class ProductController {
     @Autowired
     private MessageSource messageSource;
 
-    @ApiOperation(value = "List all products",
-            notes = "Either list all products or optionally just all products belonging to a specific developer.")
+    @Operation(summary = "List all products",
+            description = "Either list all products or optionally just all products belonging to a specific developer.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ProductResults getAllProducts(@RequestParam(required = false) final Long developerId) {
 
@@ -99,7 +102,8 @@ public class ProductController {
         return results;
     }
 
-    @ApiOperation(value = "Get information about a specific product.", notes = "")
+    @Operation(summary = "Get information about a specific product.", description = "",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/{productId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody Product getProductById(@PathVariable("productId") final Long productId)
             throws EntityRetrievalException {
@@ -112,7 +116,8 @@ public class ProductController {
         return result;
     }
 
-    @ApiOperation(value = "Get all listings owned by the specified product.", notes = "")
+    @Operation(summary = "Get all listings owned by the specified product.", description = "",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/{productId}/listings", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertifiedProduct> getListingsForProduct(@PathVariable("productId") final Long productId)
@@ -125,14 +130,16 @@ public class ProductController {
         return results;
     }
 
-    @ApiOperation(value = "Update a product or merge products.",
-            notes = "This method serves two purposes: to update a single product's information and to merge two "
+    @Operation(summary = "Update a product or merge products.",
+            description = "This method serves two purposes: to update a single product's information and to merge two "
                     + "products into one. A user of this service should pass in a single productId to update just "
                     + "that product.  If multiple product IDs are passed in, the service performs a merge meaning "
                     + "that a new product is created with all of the information provided and all of the versions "
                     + " previously assigned to the productIds specified are reassigned to the newly created product. "
                     + "The old products are then deleted. "
-                    + "Security Restrictions: To merge: ROLE_ADMIN or ROLE_ONC.  To update: ROLE_ADMIN, ROLE_ONC or ROLE_ACB.")
+                    + "Security Restrictions: To merge: ROLE_ADMIN or ROLE_ONC. To update: ROLE_ADMIN, ROLE_ONC or ROLE_ACB.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public ResponseEntity<Product> updateProduct(
@@ -337,10 +344,11 @@ public class ProductController {
         return results;
     }
 
-    @ApiOperation(
-            value = "Split a product - some versions stay with the existing product and some versions are moved "
+    @Operation(summary = "Split a product - some versions stay with the existing product and some versions are moved "
                     + "to a new product.",
-                    notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB")
+                    description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB",
+                    security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                            @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/{productId}/split", method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public ResponseEntity<SplitProductResponse> splitProduct(@PathVariable("productId") final Long productId,
