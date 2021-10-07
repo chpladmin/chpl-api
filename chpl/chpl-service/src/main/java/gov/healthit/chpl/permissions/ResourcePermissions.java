@@ -463,6 +463,19 @@ public class ResourcePermissions {
         return role.getAuthority().equalsIgnoreCase(authority);
     }
 
+    public boolean doesAuditUserHaveRole(String authority) {
+        Long auditUserId = AuthUtil.getAuditId();
+        if (auditUserId == null || auditUserId.equals(User.DEFAULT_USER_ID)) {
+            return false;
+        }
+
+        UserPermissionDTO role = getRoleByUserId(auditUserId);
+        if (role == null) {
+            return false;
+        }
+        return role.getAuthority().equalsIgnoreCase(authority);
+    }
+
     private boolean doesAuthenticationHaveRole(String authority) {
         Authentication auth = AuthUtil.getCurrentAuthentication();
         if (auth == null) {
