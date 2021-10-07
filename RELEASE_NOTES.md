@@ -1,5 +1,25 @@
 # Release Notes
 
+## Version 32.1.0
+_5 October 2021_
+
+### Features
+* Upgrade Swagger library version
+* Revise list of test tools to select for a 2015 Edition listing
+* Update overnight job schedule and improve performance
+* Migrate surveillance and non-conformity timestamp fields to LocalDate
+* Remove "frequency" data from Scheduled Jobs
+
+### Flagged Features
+* Add CQM Validation to flexible upload
+* Add SED validation to flexible upload
+
+### Bug Fixes
+* Restore functionality of URL Status Data Collector job
+* Consistently handle valid/invalid/null ID fields during listing update
+
+---
+
 ## Version 32.0.0
 _7 September 2021_
 

@@ -39,6 +39,7 @@ import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.results.CertificationIdLookupResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdVerifyResults;
+import lombok.extern.log4j.Log4j2;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -47,6 +48,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/certification_ids")
 @Loggable
+@Log4j2
 public class CertificationIdController {
 
     private CertifiedProductManager certifiedProductManager;
@@ -243,9 +245,8 @@ public class CertificationIdController {
         return results;
     }
 
-    private CertificationIdResults findCertificationByProductIds(
-            final List<Long> productIdListIncoming, final Boolean create)
-                    throws InvalidArgumentsException, CertificationIdException {
+    private CertificationIdResults findCertificationByProductIds(List<Long> productIdListIncoming, Boolean create)
+            throws InvalidArgumentsException, CertificationIdException {
         List<Long> productIdList;
         if (null == productIdListIncoming) {
             productIdList = new ArrayList<Long>();
@@ -256,8 +257,8 @@ public class CertificationIdController {
         List<CertifiedProductDetailsDTO> productDtos = new ArrayList<CertifiedProductDetailsDTO>();
         try {
             productDtos = certifiedProductManager.getDetailsByIds(productIdList);
-        } catch (final EntityRetrievalException ex) {
-            ex.printStackTrace();
+        } catch (EntityRetrievalException ex) {
+            LOGGER.error(ex.getMessage(), ex);
         }
 
         // Add products to results

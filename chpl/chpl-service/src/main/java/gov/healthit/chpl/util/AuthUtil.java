@@ -14,7 +14,6 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
 
 public class AuthUtil {
-
     public static String getUsername() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
@@ -26,11 +25,8 @@ public class AuthUtil {
     }
 
     public static User getCurrentUser() {
-
         User user = null;
-
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
         if (auth instanceof User) {
             user = (User) auth;
         }
@@ -53,7 +49,7 @@ public class AuthUtil {
                 return user.getId();
             }
         }
-        return -1;
+        return User.DEFAULT_USER_ID;
     }
 
     public static Authentication getCurrentAuthentication() {
