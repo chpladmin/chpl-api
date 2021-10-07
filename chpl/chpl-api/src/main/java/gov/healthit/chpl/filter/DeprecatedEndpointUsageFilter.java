@@ -1,12 +1,6 @@
 package gov.healthit.chpl.filter;
 
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -38,19 +32,20 @@ import gov.healthit.chpl.api.domain.ApiKey;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.util.ApiKeyUtil;
+import gov.healthit.chpl.util.DeprecatedFieldExplorer;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
 public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
-    private static final String CHPL_PKG_BEGIN = "gov.healthit.chpl";
     public static final String[] IGNORED_REQUEST_PATHS = {
             "/api-docs", "/monitoring", "/ff4j-console"
     };
 
     private ApiKeyManager apiKeyManager;
     private DeprecatedApiUsageDao deprecatedApiUsageDao;
+    private DeprecatedFieldExplorer deprecatedFieldExplorer;
     private RequestMappingHandlerMapping requestMappingHandlerMapping;
 
     @Autowired
@@ -60,6 +55,7 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
         this.apiKeyManager = apiKeyManager;
         this.deprecatedApiUsageDao = deprecatedApiUsageDao;
         this.requestMappingHandlerMapping = requestMappingHandlerMapping;
+        this.deprecatedFieldExplorer = new DeprecatedFieldExplorer();
     }
 
     @Override
@@ -98,9 +94,9 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
                 String className = handlerMethod.getMethodAnnotation(DeprecatedResponseFields.class).responseClass().getName();
                 LOGGER.debug("Finding all deprecated fields for class " + className);
                 Set<String> deprecatedFieldNames = new LinkedHashSet<String>();
-                getAllDeprecatedFields(
+                deprecatedFieldExplorer.getAllDeprecatedFields(
                         handlerMethod.getMethodAnnotation(DeprecatedResponseFields.class).responseClass(),
-                        deprecatedFieldNames);
+                        deprecatedFieldNames, "");
                 if (CollectionUtils.isEmpty(deprecatedFieldNames)) {
                     LOGGER.debug("No deprecated fields found for class " + className);
                 }
@@ -138,61 +134,6 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
     private boolean isHandlerReturnTypeDeprecated(HandlerMethod handlerMethod) {
         return handlerMethod != null && (handlerMethod.getMethodAnnotation(Deprecated.class) == null)
                 && (handlerMethod.getMethodAnnotation(DeprecatedResponseFields.class) != null);
-    }
-
-    private void getAllDeprecatedFields(Class<?> clazz, Set<String> allDeprecatedFieldNames) {
-        if (clazz == null) {
-            return;
-        }
-
-        getAllDeprecatedFields(clazz.getSuperclass(), allDeprecatedFieldNames);
-
-        //get any normal field that is deprecated and could be returned in the JSON
-        List<String> filteredFieldNames = Arrays.stream(clazz.getDeclaredFields())
-          .filter(f -> f.getAnnotation(Deprecated.class) != null)
-          .map(f -> f.getName())
-          .collect(Collectors.toList());
-        allDeprecatedFieldNames.addAll(filteredFieldNames);
-
-        //get the property associated with any deprecated "getter" method that could also be returned in the json
-        try {
-            for (PropertyDescriptor propertyDescriptor
-                    : Introspector.getBeanInfo(clazz).getPropertyDescriptors()) {
-                Method readMethod = propertyDescriptor.getReadMethod();
-                if (readMethod != null && readMethod.getAnnotation(Deprecated.class) != null) {
-                    allDeprecatedFieldNames.add(propertyDescriptor.getDisplayName());
-                }
-            }
-        } catch (IntrospectionException ex) {
-            LOGGER.error("Could not introspect the class " + clazz.getName(), ex);
-        }
-
-        Set<Class<?>> nestedClassesToCheckForDeprecatedFields = getNestedClasses(clazz);
-        for (Class<?> nestedClass : nestedClassesToCheckForDeprecatedFields) {
-            getAllDeprecatedFields(nestedClass, allDeprecatedFieldNames);
-        }
-    }
-
-    private Set<Class<?>> getNestedClasses(Class<?> clazz) {
-        //this gets the classes that are regular non-deprecated non-primitive non-JDK types of objects
-        Set<Class<?>> nestedClassesToCheckForDeprecatedFields = Arrays.stream(clazz.getDeclaredFields())
-                .filter(field -> field.getAnnotation(Deprecated.class) == null)
-                .map(field -> field.getClass())
-                .filter(classItem -> classItem.getPackage().getName().startsWith(CHPL_PKG_BEGIN))
-                .collect(Collectors.toSet());
-
-        //this gets the classes that are nested in parameterized Collections (i.e. List<T>)
-        nestedClassesToCheckForDeprecatedFields.addAll(Arrays.stream(clazz.getDeclaredFields())
-                .filter(field -> field.getAnnotation(Deprecated.class) == null)
-                .filter(field ->  field.getGenericType() != null && field.getGenericType() instanceof ParameterizedType)
-                .map(field -> (ParameterizedType) field.getGenericType())
-                .map(field -> field.getActualTypeArguments())
-                .flatMap(fieldArr -> Stream.of(fieldArr))
-                .filter(type -> type != null && type instanceof Class<?>)
-                .map(type -> (Class<?>) type)
-                .filter(classItem -> classItem.getPackage().getName().startsWith(CHPL_PKG_BEGIN))
-                .collect(Collectors.toList()));
-        return nestedClassesToCheckForDeprecatedFields;
     }
 
     private ApiKey getApiKey(HttpServletRequest request) {
