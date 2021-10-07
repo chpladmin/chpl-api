@@ -77,8 +77,7 @@ public class PrivacyAndSecurityCriteriaReviewer implements ComparisonReviewer {
                 LOGGER.debug("Certification Status is not Active or Suspended, no further review required");
             }
         } catch (ValidationException e) {
-            LOGGER.warn("Treating null or empty Status as not Active or Suspended.");
-            e.printStackTrace();
+            LOGGER.warn("Treating null or empty Status as not Active or Suspended.", e);
         }
     }
 
