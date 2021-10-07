@@ -11,6 +11,7 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 
 public interface User extends UserDetails, Authentication {
 
+    Long DEFAULT_USER_ID = -1L;
     Long ADMIN_USER_ID = -2L;
     Long SYSTEM_USER_ID = -3L;
 
