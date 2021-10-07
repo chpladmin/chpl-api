@@ -66,7 +66,6 @@ public class ListingStatusAndUserRoleReviewer implements ComparisonReviewer {
     }
 
     private List<CertificationResult> subtractLists(List<CertificationResult> listA, List<CertificationResult> listB) {
-
         Predicate<CertificationResult> notInListB = crtfFromA -> !listB.stream()
                 .anyMatch(crtf -> doCriterionMatch(crtfFromA, crtf));
 
