@@ -12,6 +12,6 @@ public @interface DeprecatedResponseFields {
     /**
      *  The class containing deprecated fields that is being returned from the method.
      */
-    Class<?> responseClass() default Object.class;
+    Class<?>[] responseClass() default Object.class;
 }
 

@@ -23,6 +23,7 @@ import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchResponse;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -49,6 +50,7 @@ public class SearchController {
             + "Date parameters are required to be in the format "
             + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + ". ",
         security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+    @DeprecatedResponseFields(responseClass = SearchResponse.class)
     @RequestMapping(value = "/search/beta", method = RequestMethod.GET, produces = {
             "application/json; charset=utf-8", "application/xml"
     })
@@ -162,6 +164,7 @@ public class SearchController {
             description = "Search the CHPL by specifycing multiple fields of the data to search. "
                     + "If paging fields are not specified, the first 20 records are returned by default.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+    @DeprecatedResponseFields(responseClass = SearchResponse.class)
     @RequestMapping(value = "/search/beta", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public @ResponseBody SearchResponse search(@RequestBody SearchRequest searchRequest)

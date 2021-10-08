@@ -8,22 +8,41 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class DeprecatedFieldExplorer {
     private static final String CHPL_PKG_BEGIN = "gov.healthit.chpl";
+    private Map<Class<?>, Set<String>> classToDeprecatedFieldNamesMap;
 
-    //TODO: maybe store all the deprecated fields per class in a hashmap in here the first time they are looked up
-    //so we don't add any time to requests
-    public void getAllDeprecatedFields(Class<?> clazz, Set<String> allDeprecatedFieldNames, String fieldPrefix) {
+    public DeprecatedFieldExplorer() {
+        classToDeprecatedFieldNamesMap = new LinkedHashMap<Class<?>, Set<String>>();
+    }
+
+    public Set<String> getDeprecatedFieldsForClass(Class<?> clazz) {
+        if (classToDeprecatedFieldNamesMap.get(clazz) == null) {
+            LOGGER.debug("Finding all deprecated fields for class " + clazz.getName());
+            Set<String> deprecatedFieldNames = new LinkedHashSet<String>();
+            getAllDeprecatedFields(clazz, deprecatedFieldNames, "");
+            classToDeprecatedFieldNamesMap.put(clazz, deprecatedFieldNames);
+        }
+        return classToDeprecatedFieldNamesMap.get(clazz);
+    }
+
+    private void getAllDeprecatedFields(Class<?> clazz, Set<String> allDeprecatedFieldNames, String fieldPrefix) {
         if (clazz == null) {
             return;
+        } else {
+            LOGGER.debug("Getting all deprecated fields for " + fieldPrefix + ": " + clazz.getName());
         }
 
         getAllDeprecatedFields(clazz.getSuperclass(), allDeprecatedFieldNames, fieldPrefix);
@@ -49,34 +68,51 @@ public class DeprecatedFieldExplorer {
         }
 
         Map<String, Class<?>> nestedClassesToCheckForDeprecatedFields = getNestedClasses(clazz, fieldPrefix);
-        for (String nestedClassPrefix : nestedClassesToCheckForDeprecatedFields.keySet()) {
-            getAllDeprecatedFields(nestedClassesToCheckForDeprecatedFields.get(nestedClassPrefix), allDeprecatedFieldNames, nestedClassPrefix);
-        }
+        nestedClassesToCheckForDeprecatedFields.keySet().stream()
+            .forEach(nestedClassPrefix -> getAllDeprecatedFields(nestedClassesToCheckForDeprecatedFields.get(nestedClassPrefix), allDeprecatedFieldNames, nestedClassPrefix));
     }
 
     private Map<String, Class<?>> getNestedClasses(Class<?> clazz, String fieldPrefix) {
         //this gets the classes that are regular non-deprecated non-primitive non-JDK types of objects
-        Map<String, Class<?>> nestedClassesToCheckForDeprecatedFields = Arrays.stream(clazz.getDeclaredFields())
-                .filter(field -> field.getAnnotation(Deprecated.class) == null)
-                .filter(field -> field.getClass().getPackage().getName().startsWith(CHPL_PKG_BEGIN))
-                .collect(Collectors.toMap(field -> fieldPrefix + field.getName() + ".", Field::getClass));
+        Map<String, Class<?>> nestedClassesToCheckForDeprecatedFields = new LinkedHashMap<String, Class<?>>();
+        Arrays.stream(clazz.getDeclaredFields())
+            .filter(field -> isNotDeprecatedOrIgnoredUponSerialization(field))
+            .filter(field -> isFieldAChplClass(field))
+            .forEach(field -> addFieldToNestedClasses(field, fieldPrefix, nestedClassesToCheckForDeprecatedFields));
 
         //this gets the classes that are nested in parameterized Collections (i.e. List<T>)
         Arrays.stream(clazz.getDeclaredFields())
-                .filter(field -> field.getAnnotation(Deprecated.class) == null)
-                .filter(field ->  field.getGenericType() != null && field.getGenericType() instanceof ParameterizedType)
-                .forEach(field -> addParameterizedFieldToNestedClassesIfApplicable(field, fieldPrefix, nestedClassesToCheckForDeprecatedFields));
+            .filter(field -> isNotDeprecatedOrIgnoredUponSerialization(field))
+            .filter(field ->  field.getGenericType() != null && field.getGenericType() instanceof ParameterizedType)
+            .forEach(field -> addParameterizedFieldToNestedClassesIfApplicable(field, fieldPrefix, nestedClassesToCheckForDeprecatedFields));
         return nestedClassesToCheckForDeprecatedFields;
+    }
+
+    private boolean isNotDeprecatedOrIgnoredUponSerialization(Field field) {
+        return field.getAnnotation(Deprecated.class) == null
+                && field.getAnnotation(JsonIgnore.class) == null;
+    }
+
+    private boolean isFieldAChplClass(Field field) {
+        return field.getType() != null && field.getType().getPackage() != null
+                && field.getType().getPackage().getName().startsWith(CHPL_PKG_BEGIN);
+    }
+
+    private void addFieldToNestedClasses(Field field, String fieldPrefix, Map<String, Class<?>> nestedClassesToCheckForDeprecatedFields) {
+        if (field != null && field.getType() instanceof Class<?>
+            && !((Class<?>) field.getType()).isEnum()) {
+            nestedClassesToCheckForDeprecatedFields.put(fieldPrefix + field.getName() + ".", field.getType());
+        }
     }
 
     private void addParameterizedFieldToNestedClassesIfApplicable(Field field, String fieldPrefix, Map<String, Class<?>> nestedClassesToCheckForDeprecatedFields) {
         ParameterizedType ptype = (ParameterizedType) field.getGenericType();
         Type[] typeArgs = ptype.getActualTypeArguments();
         for (Type type : typeArgs) {
-            if (type != null && type instanceof Class<?>) {
+            if (type != null && type instanceof Class<?> && !((Class<?>) type).isEnum()) {
                 Class<?> clazz = (Class<?>) type;
                 if (clazz.getPackage().getName().startsWith(CHPL_PKG_BEGIN)) {
-                    nestedClassesToCheckForDeprecatedFields.put(fieldPrefix + field.getName() + ".", clazz.getClass());
+                    nestedClassesToCheckForDeprecatedFields.put(fieldPrefix + field.getName() + ".", clazz);
                 }
             }
         }

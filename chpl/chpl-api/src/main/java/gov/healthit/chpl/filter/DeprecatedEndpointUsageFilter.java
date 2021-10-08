@@ -1,7 +1,6 @@
 package gov.healthit.chpl.filter;
 
 import java.io.IOException;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,11 +13,11 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -91,21 +90,22 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
                         + " Request: " + request.getRequestURI());
                 }
             } else if (isHandlerReturnTypeDeprecated(handlerMethod)) {
-                String className = handlerMethod.getMethodAnnotation(DeprecatedResponseFields.class).responseClass().getName();
-                LOGGER.debug("Finding all deprecated fields for class " + className);
-                Set<String> deprecatedFieldNames = new LinkedHashSet<String>();
-                deprecatedFieldExplorer.getAllDeprecatedFields(
-                        handlerMethod.getMethodAnnotation(DeprecatedResponseFields.class).responseClass(),
-                        deprecatedFieldNames, "");
-                if (CollectionUtils.isEmpty(deprecatedFieldNames)) {
-                    LOGGER.debug("No deprecated fields found for class " + className);
-                }
-                deprecatedFieldNames.stream()
-                    .forEach(df -> System.out.println(df));
+                Class<?>[] clazzes = handlerMethod.getMethodAnnotation(DeprecatedResponseFields.class).responseClass();
+                Stream.of(clazzes)
+                    .forEach(responseClassWithDeprecatedFields -> logDeprecatedResponseUsage(responseClassWithDeprecatedFields, request));
             }
         }
 
         chain.doFilter(req, res);
+    }
+
+    private void logDeprecatedResponseUsage(Class<?> clazz, HttpServletRequest request) {
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(clazz);
+        if (CollectionUtils.isEmpty(deprecatedFieldNames)) {
+            LOGGER.debug("No deprecated fields found for class " + clazz.getName());
+        }
+        deprecatedFieldNames.stream()
+            .forEach(df -> System.out.println(df));
     }
 
     private RequestMappingInfo getRequestMappingForHttpServletRequest(HttpServletRequest request) {

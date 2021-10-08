@@ -26,6 +26,7 @@ import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
 import gov.healthit.chpl.web.controller.results.ChplJobsResults;
 import gov.healthit.chpl.web.controller.results.ScheduleOneTimeTriggersResults;
 import gov.healthit.chpl.web.controller.results.ScheduleTriggersResults;
@@ -49,6 +50,7 @@ public class SchedulerController {
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @DeprecatedResponseFields(responseClass = ScheduleTriggersResults.class)
     @RequestMapping(value = "/triggers", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody ScheduleTriggersResults createTrigger(@RequestBody(required = true)
         ChplRepeatableTrigger trigger) throws SchedulerException, ValidationException, EmailNotSentException {
@@ -61,6 +63,7 @@ public class SchedulerController {
     @Operation(summary = "Create a new trigger and return it",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @DeprecatedResponseFields(responseClass = ScheduleOneTimeTriggersResults.class)
     @RequestMapping(value = "/triggers/one_time", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody ScheduleOneTimeTriggersResults createOneTimeTrigger(@RequestBody(required = true)
         ChplOneTimeTrigger trigger) throws SchedulerException, ValidationException {
@@ -88,6 +91,7 @@ public class SchedulerController {
                     + "Note: The default jobType query parameter is set to '" + USER_JOB_TYPE + "'.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @DeprecatedResponseFields(responseClass = ScheduleTriggersResults.class)
     @RequestMapping(value = "/triggers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody Object getAllTriggersByJobType(@RequestParam(defaultValue = USER_JOB_TYPE) String jobType)
             throws SchedulerException {
@@ -109,6 +113,7 @@ public class SchedulerController {
                     + "the specified ONC-ACB.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @DeprecatedResponseFields(responseClass = ScheduleTriggersResults.class)
     @RequestMapping(value = "/triggers", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public @ResponseBody ScheduleTriggersResults updateTrigger(@RequestBody(required = true) ChplRepeatableTrigger trigger)
             throws SchedulerException, ValidationException, EmailNotSentException {
@@ -122,6 +127,7 @@ public class SchedulerController {
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and have administrative authority on the specified ONC-ACB",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @DeprecatedResponseFields(responseClass = ChplJobsResults.class)
     @RequestMapping(value = "/jobs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody ChplJobsResults getAllJobs() throws SchedulerException {
@@ -136,6 +142,7 @@ public class SchedulerController {
                     + "the specified ONC-ACB.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @DeprecatedResponseFields(responseClass = ChplJobsResults.class)
     @RequestMapping(value = "/jobs", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public @ResponseBody ChplJobsResults updateJob(@RequestBody(required = true) ChplJob job)
             throws SchedulerException {
