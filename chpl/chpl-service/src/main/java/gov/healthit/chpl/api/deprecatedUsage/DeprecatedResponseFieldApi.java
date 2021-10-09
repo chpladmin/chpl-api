@@ -1,5 +1,7 @@
 package gov.healthit.chpl.api.deprecatedUsage;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,10 +11,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeprecatedApi {
+public class DeprecatedResponseFieldApi {
     private Long id;
     private ApiOperation api;
-    private String requestParameter;
-    private String responseField;
-    private String changeDescription;
+    private List<DeprecatedResponseField> responseFields;
 }

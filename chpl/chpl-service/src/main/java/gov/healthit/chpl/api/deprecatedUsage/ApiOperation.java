@@ -1,5 +1,7 @@
 package gov.healthit.chpl.api.deprecatedUsage;
 
+import org.springframework.http.HttpMethod;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,10 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeprecatedApi {
-    private Long id;
-    private ApiOperation api;
-    private String requestParameter;
-    private String responseField;
-    private String changeDescription;
+public class ApiOperation {
+    private HttpMethod httpMethod;
+    private String apiOperation;
 }

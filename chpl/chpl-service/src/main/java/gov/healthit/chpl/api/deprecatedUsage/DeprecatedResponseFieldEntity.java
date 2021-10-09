@@ -1,5 +1,6 @@
 package gov.healthit.chpl.api.deprecatedUsage;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -10,28 +11,26 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.springframework.http.HttpMethod;
-
 import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "deprecated_api")
-public class DeprecatedApiEntity {
+@Table(name = "deprecated_response_field")
+public class DeprecatedResponseFieldEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "http_method")
-    private String httpMethod;
+    @Column(name = "deprecated_api_id")
+    private Long deprecatedApiId;
 
-    @Column(name = "api_operation")
-    private String apiOperation;
+    @Column(name = "response_field")
+    private String responseField;
 
-    @Column(name = "request_parameter")
-    private String requestParameter;
+    @Column(name = "removal_date")
+    private LocalDate removalDate;
 
     @Column(name = "change_description")
     private String changeDescription;
@@ -52,15 +51,12 @@ public class DeprecatedApiEntity {
     @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
     private Date lastModifiedDate;
 
-    public DeprecatedApi toDomain() {
-        return DeprecatedApi.builder()
+    public DeprecatedResponseField toDomain() {
+        return DeprecatedResponseField.builder()
                 .id(this.getId())
-                .api(ApiOperation.builder()
-                        .httpMethod(HttpMethod.valueOf(this.getHttpMethod().toUpperCase()))
-                        .apiOperation(this.getApiOperation())
-                        .build())
-                .requestParameter(this.getRequestParameter())
+                .responseField(this.getResponseField())
                 .changeDescription(this.getChangeDescription())
+                .removalDate(this.getRemovalDate())
                 .build();
     }
 }

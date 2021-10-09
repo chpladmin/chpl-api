@@ -17,7 +17,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -27,11 +26,13 @@ import gov.healthit.chpl.api.ApiKeyManager;
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedApi;
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedApiUsage;
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedApiUsageDao;
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseFieldApi;
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseFieldApiUsage;
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseFieldApiUsageDao;
 import gov.healthit.chpl.api.domain.ApiKey;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.util.ApiKeyUtil;
-import gov.healthit.chpl.util.DeprecatedFieldExplorer;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
 import lombok.extern.log4j.Log4j2;
 
@@ -44,17 +45,18 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
 
     private ApiKeyManager apiKeyManager;
     private DeprecatedApiUsageDao deprecatedApiUsageDao;
-    private DeprecatedFieldExplorer deprecatedFieldExplorer;
+    private DeprecatedResponseFieldApiUsageDao deprecatedResponseFieldApiUsageDao;
     private RequestMappingHandlerMapping requestMappingHandlerMapping;
 
     @Autowired
     public DeprecatedEndpointUsageFilter(ApiKeyManager apiKeyManager,
             DeprecatedApiUsageDao deprecatedApiUsageDao,
+            DeprecatedResponseFieldApiUsageDao deprecatedResponseFieldApiUsageDao,
             RequestMappingHandlerMapping requestMappingHandlerMapping) {
         this.apiKeyManager = apiKeyManager;
         this.deprecatedApiUsageDao = deprecatedApiUsageDao;
+        this.deprecatedResponseFieldApiUsageDao = deprecatedResponseFieldApiUsageDao;
         this.requestMappingHandlerMapping = requestMappingHandlerMapping;
-        this.deprecatedFieldExplorer = new DeprecatedFieldExplorer();
     }
 
     @Override
@@ -72,40 +74,53 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
         if (requestMapping != null) {
             HandlerMethod handlerMethod = requestMappingHandlerMapping.getHandlerMethods().get(requestMapping);
             if (isHandlerMethodDeprecated(handlerMethod)) {
-                Set<String> matchingUrlPatterns = requestMapping.getPatternsCondition().getPatterns();
-                if (matchingUrlPatterns != null && matchingUrlPatterns.size() > 0) {
-                    String matchingUrlPattern = matchingUrlPatterns.iterator().next();
-                    LOGGER.warn(request.getRequestURI() + " maps to deprecated endpoint " + matchingUrlPattern + ", handler: " + handlerMethod);
-                    ApiKey apiKey = getApiKey(request);
-                    DeprecatedApi deprecatedApi = getApi(request, matchingUrlPattern);
-                    if (apiKey != null && deprecatedApi != null) {
-                        DeprecatedApiUsage deprecatedApiUsage = DeprecatedApiUsage.builder()
-                                .apiKey(apiKey)
-                                .api(deprecatedApi)
-                                .build();
-                        deprecatedApiUsageDao.createOrUpdateDeprecatedApiUsage(deprecatedApiUsage);
-                    }
-                } else {
-                    LOGGER.error("Could not determine unique matching URL Pattern for " + request.getMethod()
-                        + " Request: " + request.getRequestURI());
-                }
-            } else if (isHandlerReturnTypeDeprecated(handlerMethod)) {
-                Class<?>[] clazzes = handlerMethod.getMethodAnnotation(DeprecatedResponseFields.class).responseClass();
-                Stream.of(clazzes)
-                    .forEach(responseClassWithDeprecatedFields -> logDeprecatedResponseUsage(responseClassWithDeprecatedFields, request));
+                logDeprecatedApiUsage(requestMapping, handlerMethod, request);
+            } else if (isHandlerResponseDeprecated(handlerMethod)) {
+                logDeprecatedResponseFieldApiUsage(requestMapping, handlerMethod, request);
             }
         }
 
         chain.doFilter(req, res);
     }
 
-    private void logDeprecatedResponseUsage(Class<?> clazz, HttpServletRequest request) {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(clazz);
-        if (CollectionUtils.isEmpty(deprecatedFieldNames)) {
-            LOGGER.debug("No deprecated fields found for class " + clazz.getName());
+    private void logDeprecatedApiUsage(RequestMappingInfo requestMapping, HandlerMethod handlerMethod, HttpServletRequest request) {
+        Set<String> matchingUrlPatterns = requestMapping.getPatternsCondition().getPatterns();
+        if (matchingUrlPatterns != null && matchingUrlPatterns.size() > 0) {
+            String matchingUrlPattern = matchingUrlPatterns.iterator().next();
+            LOGGER.warn(request.getRequestURI() + " maps to deprecated endpoint " + matchingUrlPattern + ", handler: " + handlerMethod);
+            ApiKey apiKey = getApiKey(request);
+            DeprecatedApi deprecatedApi = getDeprecatedApi(request, matchingUrlPattern);
+            if (apiKey != null && deprecatedApi != null) {
+                DeprecatedApiUsage deprecatedApiUsage = DeprecatedApiUsage.builder()
+                        .apiKey(apiKey)
+                        .api(deprecatedApi)
+                        .build();
+                deprecatedApiUsageDao.createOrUpdateDeprecatedApiUsage(deprecatedApiUsage);
+            }
+        } else {
+            LOGGER.error("Could not determine unique matching URL Pattern for " + request.getMethod()
+                + " Request: " + request.getRequestURI());
         }
-        deprecatedFieldNames.stream()
-            .forEach(df -> System.out.println(df));
+    }
+
+    private void logDeprecatedResponseFieldApiUsage(RequestMappingInfo requestMapping, HandlerMethod handlerMethod, HttpServletRequest request) {
+        Set<String> matchingUrlPatterns = requestMapping.getPatternsCondition().getPatterns();
+        if (matchingUrlPatterns != null && matchingUrlPatterns.size() > 0) {
+            String matchingUrlPattern = matchingUrlPatterns.iterator().next();
+            LOGGER.info(request.getRequestURI() + " maps to endpoint with deprecated response fields " + matchingUrlPattern + ", handler: " + handlerMethod);
+            ApiKey apiKey = getApiKey(request);
+            DeprecatedResponseFieldApi deprecatedResponseFieldApi = getDeprecatedResponseFieldApi(request, matchingUrlPattern);
+            if (apiKey != null && deprecatedResponseFieldApi != null) {
+                DeprecatedResponseFieldApiUsage deprecatedResponseFieldApiUsage = DeprecatedResponseFieldApiUsage.builder()
+                        .apiKey(apiKey)
+                        .api(deprecatedResponseFieldApi)
+                        .build();
+                deprecatedResponseFieldApiUsageDao.createOrUpdateUsage(deprecatedResponseFieldApiUsage);
+            }
+        } else {
+            LOGGER.error("Could not determine unique matching URL Pattern for " + request.getMethod()
+                + " Request: " + request.getRequestURI());
+        }
     }
 
     private RequestMappingInfo getRequestMappingForHttpServletRequest(HttpServletRequest request) {
@@ -131,7 +146,7 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
         return handlerMethod != null && handlerMethod.getMethodAnnotation(Deprecated.class) != null;
     }
 
-    private boolean isHandlerReturnTypeDeprecated(HandlerMethod handlerMethod) {
+    private boolean isHandlerResponseDeprecated(HandlerMethod handlerMethod) {
         return handlerMethod != null && (handlerMethod.getMethodAnnotation(Deprecated.class) == null)
                 && (handlerMethod.getMethodAnnotation(DeprecatedResponseFields.class) != null);
     }
@@ -154,7 +169,7 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
         return apiKey;
     }
 
-    private DeprecatedApi getApi(HttpServletRequest request, String matchingUrlPattern) {
+    private DeprecatedApi getDeprecatedApi(HttpServletRequest request, String matchingUrlPattern) {
         HttpMethod method = null;
         try {
             method = HttpMethod.valueOf(request.getMethod());
@@ -166,6 +181,22 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
         DeprecatedApi deprecatedApi = deprecatedApiUsageDao.getDeprecatedApi(method, matchingUrlPattern, null);
         if (deprecatedApi == null) {
             LOGGER.error("No deprecated API was found matching request method '" + method.name() + "', url pattern '" + matchingUrlPattern + "'.");
+        }
+        return deprecatedApi;
+    }
+
+    private DeprecatedResponseFieldApi getDeprecatedResponseFieldApi(HttpServletRequest request, String matchingUrlPattern) {
+        HttpMethod method = null;
+        try {
+            method = HttpMethod.valueOf(request.getMethod());
+        } catch (Exception ex) {
+            LOGGER.error("No HttpMethod found with value '" + request.getMethod() + "'.");
+            return null;
+        }
+
+        DeprecatedResponseFieldApi deprecatedApi = deprecatedResponseFieldApiUsageDao.getDeprecatedApi(method, matchingUrlPattern);
+        if (deprecatedApi == null) {
+            LOGGER.error("No deprecated response field API was found matching request method '" + method.name() + "', url pattern '" + matchingUrlPattern + "'.");
         }
         return deprecatedApi;
     }
