@@ -128,6 +128,9 @@ public class DeprecatedApiUsageEmailJob implements Job {
                 .sendEmail();
             LOGGER.info("Sent email to " + apiKey.getEmail() + ".");
             deprecatedApiUsage.stream().forEach(item -> deleteDeprecatedApiUsage(item));
+            LOGGER.info("Deleted " + deprecatedApiUsage.size() + " deprecated API usage records for " + apiKey.getEmail());
+            deprecatedResponseFieldUsage.stream().forEach(item -> deleteDeprecatedResponseFieldUsage(item));
+            LOGGER.info("Deleted " + deprecatedResponseFieldUsage.size() + " deprecated response field usage records for " + apiKey.getEmail());
         } catch (Exception ex) {
             LOGGER.error("Unable to send email to " + apiKey.getEmail() + ". "
                     + "User may not have been notified and database records will not be deleted.", ex);
@@ -190,12 +193,21 @@ public class DeprecatedApiUsageEmailJob implements Job {
         return DateUtil.formatInEasternTime(date, "MMM d, yyyy, hh:mm");
     }
 
-    private void deleteDeprecatedApiUsage(DeprecatedApiUsage deprecatedApiUsage) {
+    private void deleteDeprecatedApiUsage(DeprecatedApiUsage usage) {
         try {
-            deprecatedApiUsageDao.delete(deprecatedApiUsage.getId());
-            LOGGER.info("Deleted deprecated API usage with ID " + deprecatedApiUsage.getId());
+            deprecatedApiUsageDao.delete(usage.getId());
+            LOGGER.info("Deleted deprecated API usage with ID " + usage.getId());
         } catch (Exception ex) {
-            LOGGER.error("Error deleting deprecated API usage with ID " + deprecatedApiUsage.getId(), ex);
+            LOGGER.error("Error deleting deprecated API usage with ID " + usage.getId(), ex);
+        }
+    }
+
+    private void deleteDeprecatedResponseFieldUsage(DeprecatedResponseFieldApiUsage usage) {
+        try {
+            deprecatedResponseFieldApiUsageDao.delete(usage.getId());
+            LOGGER.info("Deleted deprecated response field usage with ID " + usage.getId());
+        } catch (Exception ex) {
+            LOGGER.error("Error deleting deprecated response field usage with ID " + usage.getId(), ex);
         }
     }
 }

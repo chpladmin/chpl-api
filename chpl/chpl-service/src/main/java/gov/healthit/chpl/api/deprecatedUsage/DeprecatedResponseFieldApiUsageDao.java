@@ -41,7 +41,7 @@ public class DeprecatedResponseFieldApiUsageDao extends BaseDAOImpl {
 
     @Transactional
     public List<DeprecatedResponseFieldApiUsage> getAllUsage() {
-        String hql = "SELECT apiUsage "
+        String hql = "SELECT DISTINCT apiUsage "
                 + "FROM DeprecatedResponseFieldApiUsageEntity apiUsage "
                 + "JOIN FETCH apiUsage.deprecatedResponseFieldApi api "
                 + "JOIN FETCH api.responseFields rf "
