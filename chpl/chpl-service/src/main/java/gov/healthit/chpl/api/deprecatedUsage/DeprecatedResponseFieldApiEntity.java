@@ -69,9 +69,9 @@ public class DeprecatedResponseFieldApiEntity {
 
         return DeprecatedResponseFieldApi.builder()
                 .id(this.getId())
-                .api(ApiOperation.builder()
+                .apiOperation(ApiOperation.builder()
                         .httpMethod(HttpMethod.valueOf(this.getHttpMethod().toUpperCase()))
-                        .apiOperation(this.getApiOperation())
+                        .endpoint(this.getApiOperation())
                         .build())
                 .responseFields(deprecatedFields)
                 .build();

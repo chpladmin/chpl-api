@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.Job;
@@ -143,12 +144,7 @@ public class DeprecatedApiUsageEmailJob implements Job {
         List<List<String>> apiUsageData = new ArrayList<List<String>>();
         deprecatedApiUsage.stream().forEach(api -> apiUsageData.add(createEndpointUsageData(api)));
 
-        List<String> responseFieldUsageHeading  = Stream.of("HTTP Method", "API Endpoint", "Usage Count", "Last Accessed", "Response Field", "Message", "Estimated Removal Date").collect(Collectors.toList());
-        List<List<String>> responseFieldUsageData = new ArrayList<List<String>>();
-        deprecatedResponseFieldUsage.stream()
-            .map(api -> createResponseFieldUsageData(api))
-            .flatMap(fieldUsageList -> fieldUsageList.stream())
-            .forEach(fieldUsage -> responseFieldUsageData.add(fieldUsage));
+        String deprecatedFieldHtml = buildDeprecatedResponseFieldHtml(deprecatedResponseFieldUsage);
 
         String htmlMessage = chplHtmlEmailBuilder.initialize()
                 .heading(deprecatedApiUsageEmailHeading)
@@ -158,7 +154,7 @@ public class DeprecatedApiUsageEmailJob implements Job {
                 .paragraph(null, deprecatedApiParagraph)
                 .table(apiUsageHeading, apiUsageData)
                 .paragraph(null, deprecatedResponseFieldParagraph)
-                .table(responseFieldUsageHeading, responseFieldUsageData)
+                .paragraph(null, deprecatedFieldHtml)
                 .paragraph("", String.format(chplEmailValediction, publicFeedbackUrl))
                 .footer(true)
                 .build();
@@ -167,21 +163,40 @@ public class DeprecatedApiUsageEmailJob implements Job {
     }
 
     private List<String> createEndpointUsageData(DeprecatedApiUsage deprecatedApiUsage) {
-        return Stream.of(deprecatedApiUsage.getApi().getApi().getHttpMethod().name(),
-                deprecatedApiUsage.getApi().getApi().getApiOperation(),
+        return Stream.of(deprecatedApiUsage.getApi().getApiOperation().getHttpMethod().name(),
+                deprecatedApiUsage.getApi().getApiOperation().getEndpoint(),
                 deprecatedApiUsage.getCallCount().toString(),
                 getEasternTimeDisplay(deprecatedApiUsage.getLastAccessedDate()),
                 deprecatedApiUsage.getApi().getChangeDescription()).collect(Collectors.toList());
     }
 
+    //break out deprecated response field usage by endpoint
+    //with a table of response fields under each endpoint
+    private String buildDeprecatedResponseFieldHtml(List<DeprecatedResponseFieldApiUsage> deprecatedResponseFieldUsage) {
+        StringBuffer htmlBuf = new StringBuffer("<ul>");
+        if (CollectionUtils.isEmpty(deprecatedResponseFieldUsage)) {
+            htmlBuf.append("<li>No Applicable Data</li>");
+        } else {
+            for (DeprecatedResponseFieldApiUsage usage : deprecatedResponseFieldUsage) {
+                htmlBuf.append("<li>" + usage.getApi().getApiOperation().getHttpMethod()
+                        + " of " + usage.getApi().getApiOperation().getEndpoint()
+                        + "<br/>API Call Count: " + usage.getCallCount()
+                        + "<br/>Last Accessed Date: " + getEasternTimeDisplay(usage.getLastAccessedDate())
+                        + "<br/>");
+                List<String> responseFieldUsageHeading  = Stream.of("Response Field", "Message", "Estimated Removal Date").collect(Collectors.toList());
+                List<List<String>> responseFieldUsageData = createResponseFieldUsageData(usage);
+                htmlBuf.append(chplHtmlEmailBuilder.getTableHtml(responseFieldUsageHeading, responseFieldUsageData, null));
+                htmlBuf.append("</li>");
+            }
+        }
+        htmlBuf.append("</ul>");
+        return htmlBuf.toString();
+    }
+
     private List<List<String>> createResponseFieldUsageData(DeprecatedResponseFieldApiUsage usage) {
         List<List<String>> data = new ArrayList<List<String>>();
         usage.getApi().getResponseFields().stream()
-            .forEach(responseField -> data.add(
-                    Stream.of(usage.getApi().getApi().getHttpMethod().name(),
-                    usage.getApi().getApi().getApiOperation(),
-                    usage.getCallCount().toString(),
-                    getEasternTimeDisplay(usage.getLastAccessedDate()),
+            .forEach(responseField -> data.add(Stream.of(
                     responseField.getResponseField(),
                     responseField.getChangeDescription(),
                     DateUtil.format(responseField.getRemovalDate()))

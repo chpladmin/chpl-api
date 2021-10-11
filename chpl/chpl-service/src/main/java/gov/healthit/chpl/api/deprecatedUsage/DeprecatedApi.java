@@ -11,8 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DeprecatedApi {
     private Long id;
-    private ApiOperation api;
+    private ApiOperation apiOperation;
     private String requestParameter;
-    private String responseField;
     private String changeDescription;
 }

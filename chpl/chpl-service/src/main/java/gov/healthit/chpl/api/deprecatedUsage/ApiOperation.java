@@ -13,5 +13,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ApiOperation {
     private HttpMethod httpMethod;
-    private String apiOperation;
+    private String endpoint;
 }

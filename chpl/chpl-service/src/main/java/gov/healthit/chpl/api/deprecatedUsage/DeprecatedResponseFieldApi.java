@@ -13,6 +13,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DeprecatedResponseFieldApi {
     private Long id;
-    private ApiOperation api;
+    private ApiOperation apiOperation;
     private List<DeprecatedResponseField> responseFields;
 }
