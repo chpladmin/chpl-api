@@ -65,9 +65,33 @@ public class ChplHtmlEmailBuilderTest {
     }
 
     @Test
+    public void testEmailWithParagraphWithHeadingAsH3_hasExpectedHtml() {
+        String html = emailBuilder
+                .paragraph("paragraph heading", "", "h3")
+                .build();
+        assertEquals("<html><div><h3>paragraph heading</h3></div><div></div></html>", html);
+    }
+
+    @Test
+    public void testEmailWithParagraphWithHeadingLevelAsNull_hasExpectedHtml() {
+        String html = emailBuilder
+                .paragraph("paragraph heading", "", null)
+                .build();
+        assertEquals("<html><div><h2>paragraph heading</h2></div><div></div></html>", html);
+    }
+
+    @Test
     public void testEmailWithParagraphWithContentOnly_hasExpectedHtml() {
         String html = emailBuilder
                 .paragraph("", "some text")
+                .build();
+        assertEquals("<html><div></div><div><p>some text</p></div></html>", html);
+    }
+
+    @Test
+    public void testEmailWithParagraphWithContentAndNullHeadingLevel_hasExpectedHtml() {
+        String html = emailBuilder
+                .paragraph("", "some text", null)
                 .build();
         assertEquals("<html><div></div><div><p>some text</p></div></html>", html);
     }

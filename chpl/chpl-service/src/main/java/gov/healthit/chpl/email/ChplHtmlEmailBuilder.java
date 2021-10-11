@@ -28,6 +28,7 @@ public class ChplHtmlEmailBuilder {
     private static final String BUTTON_BAR_TAG = "${buttons}";
     private static final String FEEDBACK_URL_TAG = "${feedback-url}";
     private static final String EMPTY_TABLE_DEFAULT_TEXT = "No Applicable Data";
+    private static final String DEFAULT_PARAGRAPH_HEADING_LEVEL = "h2";
 
     private String htmlSkeleton;
     private String htmlHeading;
@@ -77,22 +78,15 @@ public class ChplHtmlEmailBuilder {
     }
 
     public ChplHtmlEmailBuilder paragraph(String heading, String text) {
+        return paragraph(heading, text, "h2");
+    }
+
+    public ChplHtmlEmailBuilder paragraph(String heading, String text, String headingLevel) {
         if (StringUtils.isAllBlank(heading, text)) {
             return this;
         }
 
-        String modifiedHtmlParagraph = new String(htmlParagraph);
-        if (!StringUtils.isEmpty(heading)) {
-            modifiedHtmlParagraph = modifiedHtmlParagraph.replace(PARAGRAPH_HEADING_TAG, "<h2>" + heading + "</h2>");
-        } else {
-            modifiedHtmlParagraph = modifiedHtmlParagraph.replace(PARAGRAPH_HEADING_TAG, "");
-        }
-        if (!StringUtils.isEmpty(text)) {
-            modifiedHtmlParagraph = modifiedHtmlParagraph.replace(PARAGRAPH_TEXT_TAG, "<p>" + text + "</p>");
-        } else {
-            modifiedHtmlParagraph = modifiedHtmlParagraph.replace(PARAGRAPH_TEXT_TAG, "");
-        }
-
+        String modifiedHtmlParagraph = getParagraphHtml(heading, text, headingLevel);
         addItemToEmailContents(modifiedHtmlParagraph);
         return this;
     }
@@ -168,6 +162,11 @@ public class ChplHtmlEmailBuilder {
         return this;
     }
 
+    public ChplHtmlEmailBuilder customHtml(String htmlToAdd) {
+        addItemToEmailContents(htmlToAdd);
+        return this;
+    }
+
     public void addItemToEmailContents(String htmlToAdd) {
         emailContents = emailContents.replace(EMAIL_CONTENT_TAG, htmlToAdd + EMAIL_CONTENT_TAG);
     }
@@ -199,5 +198,25 @@ public class ChplHtmlEmailBuilder {
             customHtmlTable = customHtmlTable.replace(TABLE_DATA_TAG, "");
         }
         return customHtmlTable;
+    }
+
+    public String getParagraphHtml(String heading, String text, String headingLevel) {
+        if (StringUtils.isEmpty(headingLevel)) {
+            headingLevel = DEFAULT_PARAGRAPH_HEADING_LEVEL;
+        }
+
+        String customHtmlParagraph = new String(htmlParagraph);
+        if (!StringUtils.isEmpty(heading)) {
+            customHtmlParagraph = customHtmlParagraph.replace(PARAGRAPH_HEADING_TAG,
+                    "<" + headingLevel + ">" + heading + "</" + headingLevel + ">");
+        } else {
+            customHtmlParagraph = customHtmlParagraph.replace(PARAGRAPH_HEADING_TAG, "");
+        }
+        if (!StringUtils.isEmpty(text)) {
+            customHtmlParagraph = customHtmlParagraph.replace(PARAGRAPH_TEXT_TAG, "<p>" + text + "</p>");
+        } else {
+            customHtmlParagraph = customHtmlParagraph.replace(PARAGRAPH_TEXT_TAG, "");
+        }
+        return customHtmlParagraph;
     }
 }

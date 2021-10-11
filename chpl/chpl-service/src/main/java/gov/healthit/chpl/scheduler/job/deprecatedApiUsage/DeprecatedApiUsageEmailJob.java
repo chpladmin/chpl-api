@@ -2,6 +2,7 @@ package gov.healthit.chpl.scheduler.job.deprecatedApiUsage;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -22,6 +23,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedApiUsage;
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedApiUsageDao;
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseFieldApiUsage;
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseFieldApiUsageDao;
 import gov.healthit.chpl.api.domain.ApiKey;
@@ -151,10 +153,10 @@ public class DeprecatedApiUsageEmailJob implements Job {
                 .paragraph(
                         String.format(chplEmailGreeting, apiKey.getName()),
                         String.format(deprecatedApiUsageEmailBody, apiKey.getKey()))
-                .paragraph(null, deprecatedApiParagraph)
+                .paragraph(deprecatedApiParagraph, null, "h3")
                 .table(apiUsageHeading, apiUsageData)
-                .paragraph(null, deprecatedResponseFieldParagraph)
-                .paragraph(null, deprecatedFieldHtml)
+                .paragraph(deprecatedResponseFieldParagraph, null, "h3")
+                .customHtml(deprecatedFieldHtml)
                 .paragraph("", String.format(chplEmailValediction, publicFeedbackUrl))
                 .footer(true)
                 .build();
@@ -171,30 +173,35 @@ public class DeprecatedApiUsageEmailJob implements Job {
     }
 
     //break out deprecated response field usage by endpoint
-    //with a table of response fields under each endpoint
+    //with a table of response fields under a paragraph about each endpoint
     private String buildDeprecatedResponseFieldHtml(List<DeprecatedResponseFieldApiUsage> deprecatedResponseFieldUsage) {
-        StringBuffer htmlBuf = new StringBuffer("<ul>");
+        StringBuffer htmlBuf = new StringBuffer();
         if (CollectionUtils.isEmpty(deprecatedResponseFieldUsage)) {
-            htmlBuf.append("<li>No Applicable Data</li>");
+            htmlBuf.append(chplHtmlEmailBuilder.getParagraphHtml(null, "No Applicable Data", null));
         } else {
             for (DeprecatedResponseFieldApiUsage usage : deprecatedResponseFieldUsage) {
-                htmlBuf.append("<li>" + usage.getApi().getApiOperation().getHttpMethod()
+                String currUsageEndpointInfo = usage.getApi().getApiOperation().getHttpMethod()
                         + " of " + usage.getApi().getApiOperation().getEndpoint()
                         + "<br/>API Call Count: " + usage.getCallCount()
-                        + "<br/>Last Accessed Date: " + getEasternTimeDisplay(usage.getLastAccessedDate())
-                        + "<br/>");
+                        + "<br/>Last Accessed Date: " + getEasternTimeDisplay(usage.getLastAccessedDate());
+                htmlBuf.append(chplHtmlEmailBuilder.getParagraphHtml(null, currUsageEndpointInfo, null));
                 List<String> responseFieldUsageHeading  = Stream.of("Response Field", "Message", "Estimated Removal Date").collect(Collectors.toList());
                 List<List<String>> responseFieldUsageData = createResponseFieldUsageData(usage);
                 htmlBuf.append(chplHtmlEmailBuilder.getTableHtml(responseFieldUsageHeading, responseFieldUsageData, null));
-                htmlBuf.append("</li>");
             }
         }
-        htmlBuf.append("</ul>");
         return htmlBuf.toString();
     }
 
     private List<List<String>> createResponseFieldUsageData(DeprecatedResponseFieldApiUsage usage) {
         List<List<String>> data = new ArrayList<List<String>>();
+        usage.getApi().getResponseFields().sort(new Comparator<DeprecatedResponseField>() {
+            @Override
+            public int compare(DeprecatedResponseField o1, DeprecatedResponseField o2) {
+                return o1.getResponseField().compareTo(o2.getResponseField());
+            }
+        });
+
         usage.getApi().getResponseFields().stream()
             .forEach(responseField -> data.add(Stream.of(
                     responseField.getResponseField(),

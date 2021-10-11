@@ -21,6 +21,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class DeprecatedFieldExplorer {
+    public static final String FIELD_SEPARATOR = " -> ";
     private static final String CHPL_PKG_BEGIN = "gov.healthit.chpl";
     private Map<Class<?>, Set<String>> classToDeprecatedFieldNamesMap;
 
@@ -101,7 +102,7 @@ public class DeprecatedFieldExplorer {
     private void addFieldToNestedClasses(Field field, String fieldPrefix, Map<String, Class<?>> nestedClassesToCheckForDeprecatedFields) {
         if (field != null && field.getType() instanceof Class<?>
             && !((Class<?>) field.getType()).isEnum()) {
-            nestedClassesToCheckForDeprecatedFields.put(fieldPrefix + field.getName() + ".", field.getType());
+            nestedClassesToCheckForDeprecatedFields.put(fieldPrefix + field.getName() + FIELD_SEPARATOR, field.getType());
         }
     }
 
@@ -112,7 +113,7 @@ public class DeprecatedFieldExplorer {
             if (type != null && type instanceof Class<?> && !((Class<?>) type).isEnum()) {
                 Class<?> clazz = (Class<?>) type;
                 if (clazz.getPackage().getName().startsWith(CHPL_PKG_BEGIN)) {
-                    nestedClassesToCheckForDeprecatedFields.put(fieldPrefix + field.getName() + ".", clazz);
+                    nestedClassesToCheckForDeprecatedFields.put(fieldPrefix + field.getName() + FIELD_SEPARATOR, clazz);
                 }
             }
         }
