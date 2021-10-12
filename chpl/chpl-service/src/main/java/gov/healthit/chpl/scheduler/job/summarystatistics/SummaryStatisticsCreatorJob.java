@@ -5,13 +5,10 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
@@ -32,7 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
-import gov.healthit.chpl.dto.CertificationStatusEventDTO;
+import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.statistics.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -114,7 +111,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         Calendar endDateCal = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
         endDateCal.setTime(startDate);
 
-        Map<Long, List<CertificationStatusEventDTO>> statusesForAllListings = getAllStatusesForAllListings();
+        Map<Long, List<CertificationStatusEvent>> statusesForAllListings = getAllStatusesForAllListings();
 
         while (endDate.compareTo(endDateCal.getTime()) >= 0) {
             CsvStatistics historyStat = new CsvStatistics();
@@ -185,13 +182,8 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         return null;
     }
 
-    private Map<Long, List<CertificationStatusEventDTO>> getAllStatusesForAllListings() {
-        Map<Long, List<CertificationStatusEventDTO>> map = certificationStatusEventDAO.findAll().stream()
-                .collect(Collectors.groupingBy(CertificationStatusEventDTO::getCertifiedProductId));
-
-        Map<Long, List<CertificationStatusEventDTO>> syncdMap = new Hashtable<Long, List<CertificationStatusEventDTO>>();
-        syncdMap.putAll(map);
-        return syncdMap;
+    private Map<Long, List<CertificationStatusEvent>> getAllStatusesForAllListings() {
+        return certificationStatusEventDAO.findAllByListing();
     }
 
     private Boolean isGenerateStatisticsFlagOn(JobExecutionContext jobContext) {
