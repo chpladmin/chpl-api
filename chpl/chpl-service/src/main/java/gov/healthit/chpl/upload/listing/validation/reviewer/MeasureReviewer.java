@@ -15,6 +15,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
@@ -86,11 +87,11 @@ public class MeasureReviewer implements Reviewer {
                 .collect(Collectors.toList());
         if (validationUtils.hasCert(G2_CRITERIA_NUMBER, attestedCriteria)) {
             // must have at least one measure of type G1
-            long g1MeasureCount = listing.getMeasures().stream()
+            long g2MeasureCount = listing.getMeasures().stream()
                 .filter(measure -> measure.getMeasureType() != null
                         && measure.getMeasureType().getName().equals(MEASUREMENT_TYPE_G2))
                 .count();
-            if (g1MeasureCount == 0) {
+            if (g2MeasureCount == 0) {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.missingG2Measures"));
             }
         }
@@ -201,8 +202,11 @@ public class MeasureReviewer implements Reviewer {
         if (measure != null && measure.getMeasure() != null
                 && measure.getMeasure().getId() == null
                 && !StringUtils.isEmpty(measure.getMeasure().getLegacyMacraMeasureValue())) {
+            String typeName = measure.getMeasureType() == null ? "?" : measure.getMeasureType().getName();
             listing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.invalidMeasure", measure.getMeasure().getLegacyMacraMeasureValue()));
+                    msgUtil.getMessage("listing.measureNotFound", typeName,
+                            measure.getMeasure().getLegacyMacraMeasureValue(),
+                            measure.getAssociatedCriteria().stream().map(crit -> Util.formatCriteriaNumber(crit)).collect(Collectors.joining(", "))));
         }
     }
 }
