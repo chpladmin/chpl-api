@@ -8,14 +8,10 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntitySimple;
-import gov.healthit.chpl.util.Util;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -36,8 +32,6 @@ public class CertifiedProductDetailsDTO implements Serializable {
     private String reportFileLocation;
     private String sedReportFileLocation;
     private String sedIntendedUserDescription;
-    @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.NONE)
     private Date sedTestingEnd;
     private String acbCertificationId;
     private Long practiceTypeId;
@@ -46,8 +40,6 @@ public class CertifiedProductDetailsDTO implements Serializable {
     private String otherAcb;
     private Long certificationStatusId;
     private String certificationStatusName;
-    @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.NONE)
     private Date certificationStatusDate;
     private Boolean curesUpdate;
     private Long certificationEditionId;
@@ -60,14 +52,8 @@ public class CertifiedProductDetailsDTO implements Serializable {
     private DeveloperStatusEventDTO developerCurrentStatus;
     private ProductDTO product;
     private ProductVersionDTO version;
-    @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.NONE)
     private Date creationDate;
-    @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.NONE)
     private Date certificationDate;
-    @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.NONE)
     private Date decertificationDate;
     private Integer countCertifications;
     private Integer countCqms;
@@ -76,8 +62,6 @@ public class CertifiedProductDetailsDTO implements Serializable {
     private Integer countClosedSurveillance;
     private Integer countOpenNonconformities;
     private Integer countClosedNonconformities;
-    @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.NONE)
     private Date lastModifiedDate;
     private Boolean ics;
     private Boolean sedTesting;
@@ -304,60 +288,6 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.lastModifiedDate = entity.getLastModifiedDate();
     }
 
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Date getCertificationDate() {
-        return Util.getNewDate(certificationDate);
-    }
-
-    public void setCertificationDate(Date certificationDate) {
-        this.certificationDate = Util.getNewDate(certificationDate);
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Date getSedTestingEnd() {
-        return Util.getNewDate(sedTestingEnd);
-    }
-
-    public void setSedTestingEnd(Date sedTestingEnd) {
-        this.sedTestingEnd = Util.getNewDate(sedTestingEnd);
-    }
-
-    public Date getCertificationStatusDate() {
-        return Util.getNewDate(certificationStatusDate);
-    }
-
-    public void setCertificationStatusDate(Date certificationStatusDate) {
-        this.certificationStatusDate = Util.getNewDate(certificationStatusDate);
-    }
-
-    public Date getDecertificationDate() {
-        return Util.getNewDate(decertificationDate);
-    }
-
-    public void setDecertificationDate(Date decertificationDate) {
-        this.decertificationDate = Util.getNewDate(decertificationDate);
-    }
-
-
-    /**
-     * Return two digit year of Listing.
-     *
-     * @return two digit year
-     */
     public String getYearCode() {
         if (StringUtils.isEmpty(this.getYear())) {
             return "";
