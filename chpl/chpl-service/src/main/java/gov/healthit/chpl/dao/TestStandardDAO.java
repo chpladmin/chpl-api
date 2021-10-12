@@ -80,7 +80,7 @@ public class TestStandardDAO extends BaseDAOImpl {
                 + "FROM TestStandardEntity ts "
                 + "JOIN FETCH ts.certificationEdition edition "
                 + "WHERE ts.deleted <> true "
-                + "AND UPPER(ts.name) = :number "
+                + "AND UPPER(ts.name) LIKE :number "
                 + "AND edition.id = :editionId ";
         Query query = entityManager.createQuery(tsQuery, TestStandardEntity.class);
         query.setParameter("number", number.toUpperCase());

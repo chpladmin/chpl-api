@@ -1,5 +1,7 @@
 package gov.healthit.chpl.scheduler.job.onetime.teststandardconversion;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,8 +11,11 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -48,8 +53,12 @@ public class TestStandardConversionSpreadsheet {
     }
 
     public Map<Pair<CertificationCriterion, TestStandard>, TestStandard2OptionalStandardsMapping> getTestStandard2OptionalStandardsMap() {
-
-        return getDataFromSheet(null);
+        try (Workbook workbook = getWorkbook();) {
+            return getDataFromSheet(workbook.getSheetAt(0));
+        } catch (IOException e) {
+            LOGGER.catching(e);
+            return null;
+        }
     }
 
     private Map<Pair<CertificationCriterion, TestStandard>, TestStandard2OptionalStandardsMapping> getDataFromSheet(Sheet sheet) {
@@ -57,11 +66,11 @@ public class TestStandardConversionSpreadsheet {
 
         Row currentRow = sheet.getRow(1);
 
-        String criteriaNumber = currentRow.getCell(CRITERIA_NUMBER_IDX).getStringCellValue();
-        String criteriaTitle = currentRow.getCell(CRITERIA_TITLE_IDX).getStringCellValue();
-        String testStandardNumber = currentRow.getCell(TEST_STANDARD_NUMBER_IDX).getStringCellValue();
+        while (currentRow != null) {
+            String criteriaNumber = currentRow.getCell(CRITERIA_NUMBER_IDX).getStringCellValue();
+            String criteriaTitle = currentRow.getCell(CRITERIA_TITLE_IDX).getStringCellValue();
+            String testStandardNumber = getTestStandardNameFromRow(currentRow);
 
-        while (!StringUtils.isEmpty(criteriaTitle) && !StringUtils.isEmpty(criteriaNumber) && !StringUtils.isEmpty(testStandardNumber)) {
             CertificationCriterion criterion = getCriterion(criteriaNumber, criteriaTitle);
             TestStandard testStandard = getTestStandard(testStandardNumber);
             List<OptionalStandard> optionalStandards = getOptionalStandardsFromRow(currentRow);
@@ -71,9 +80,6 @@ public class TestStandardConversionSpreadsheet {
             LOGGER.info(mapping.toString());
 
             currentRow = sheet.getRow(currentRow.getRowNum() + 1);
-            criteriaNumber = currentRow.getCell(CRITERIA_NUMBER_IDX).getStringCellValue();
-            criteriaTitle = currentRow.getCell(CRITERIA_TITLE_IDX).getStringCellValue();
-            testStandardNumber = currentRow.getCell(TEST_STANDARD_NUMBER_IDX).getStringCellValue();
         }
 
         return map;
@@ -111,10 +117,13 @@ public class TestStandardConversionSpreadsheet {
    }
 
     private Optional<OptionalStandard> getOptionalStandardFromCell(Cell cell) {
-        String optionalStandard = cell.getStringCellValue();
+        if (cell == null) {
+            return Optional.empty();
+        }
 
-        if (!StringUtils.isEmpty(optionalStandard) && optionalStandard.toUpperCase().trim().equals("DELETE")) {
-            return Optional.of(optionalStandardDAO.getByCitation(optionalStandard));
+        String optionalStandard = cell.getStringCellValue();
+        if (!StringUtils.isEmpty(optionalStandard)) {
+            return Optional.ofNullable(optionalStandardDAO.getByCitation(optionalStandard));
         } else {
             return Optional.empty();
         }
@@ -126,5 +135,28 @@ public class TestStandardConversionSpreadsheet {
 
     private TestStandard getTestStandard(String number) {
         return new TestStandard(testStandardDAO.getByNumberAndEdition(number, CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId()));
+    }
+
+    private String getTestStandardNameFromRow(Row row) {
+        //This cell sometimes comes across as numeric -> convert it to string
+        Cell testStandardCell = row.getCell(TEST_STANDARD_NUMBER_IDX);
+        if (testStandardCell.getCellType().equals(CellType.STRING)) {
+            return testStandardCell.getStringCellValue()
+                    .replace("\u00a9", "(c)")
+                    .replace("ï¿½", "%");
+        } else if (testStandardCell.getCellType().equals(CellType.NUMERIC)) {
+            return String.valueOf(Double.valueOf(testStandardCell.getNumericCellValue()).intValue());
+        } else {
+            return "";
+        }
+    }
+
+    private Workbook getWorkbook() throws IOException {
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream("TestStandards2OptionalStandardsMapping.xlsx")) {
+            return new XSSFWorkbook(is);
+        } catch (IOException e) {
+            throw e;
+        }
+
     }
 }
