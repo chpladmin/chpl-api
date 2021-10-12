@@ -53,6 +53,7 @@ public class MeasureReviewer implements Reviewer {
             reviewMeasureExists(listing, measure);
             if (measure != null && measure.getMeasure() != null
                     && measure.getMeasure().getId() != null) {
+                //ICS + Removed check is only done for uploaded listings
                 reviewIcsAndRemovedMeasures(listing, measure);
                 reviewMeasureHasAssociatedCriteria(listing, measure);
                 reviewMeasureHasOnlyAllowedCriteria(listing, measure);
