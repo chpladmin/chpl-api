@@ -183,7 +183,7 @@ public class CertificationCriterionService {
     public List<CertificationCriterion> getUscdiCriteria() {
         return Arrays.asList(
                 get(Criteria2015.B_1_CURES),
-                get(Criteria2015.B_3_CURES),
+                get(Criteria2015.B_2_CURES),
                 get(Criteria2015.E_1_CURES),
                 get(Criteria2015.F_5_CURES),
                 get(Criteria2015.G_6_CURES),
