@@ -1,5 +1,6 @@
 package gov.healthit.chpl.api.deprecatedUsage;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -36,6 +37,9 @@ public class DeprecatedApiEntity {
     @Column(name = "change_description")
     private String changeDescription;
 
+    @Column(name = "removal_date")
+    private LocalDate removalDate;
+
     @Basic(optional = false)
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
@@ -61,6 +65,7 @@ public class DeprecatedApiEntity {
                         .build())
                 .requestParameter(this.getRequestParameter())
                 .changeDescription(this.getChangeDescription())
+                .removalDate(this.getRemovalDate())
                 .build();
     }
 }

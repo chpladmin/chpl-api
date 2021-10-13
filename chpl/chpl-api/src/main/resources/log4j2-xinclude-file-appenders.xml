@@ -505,7 +505,7 @@
     </RollingFile>
     <RollingFile name="promotingInteroperabilityUploadJob"
         fileName="${logDir}/scheduler/promotingInteroperabilityUploadJob.log"
-        filePattern="${logDir}/scheduler/historypromotingInteroperabilityUploadJob-%d{yyyy-MM-dd}.log"
+        filePattern="${logDir}/scheduler/history/promotingInteroperabilityUploadJob-%d{yyyy-MM-dd}.log"
         filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id} %X{dd.span_id} - %m%n</Pattern>

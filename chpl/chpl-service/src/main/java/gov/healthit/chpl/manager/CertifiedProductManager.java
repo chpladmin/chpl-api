@@ -102,8 +102,6 @@ import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
-import gov.healthit.chpl.dto.CertificationStatusDTO;
-import gov.healthit.chpl.dto.CertificationStatusEventDTO;
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -1041,16 +1039,13 @@ public class CertifiedProductManager extends SecuredManager {
 
         // if all this was successful, insert a certification status event for
         // the certification date
-        CertificationStatusDTO activeCertStatus = certStatusDao
-                .getByStatusName(CertificationStatusType.Active.toString());
-        CertificationStatusEventDTO certEvent = new CertificationStatusEventDTO();
-        certEvent.setCreationDate(new Date());
-        certEvent.setDeleted(false);
+        CertificationStatus activeCertStatus = certStatusDao.getByStatusName(CertificationStatusType.Active.toString());
         Date certificationDate = pendingCp.getCertificationDate();
-        certEvent.setEventDate(certificationDate);
-        certEvent.setStatus(activeCertStatus);
-        certEvent.setCertifiedProductId(newCertifiedProduct.getId());
-        statusEventDao.create(certEvent);
+        CertificationStatusEvent certEvent = CertificationStatusEvent.builder()
+                .eventDate(certificationDate.getTime())
+                .status(activeCertStatus)
+                .build();
+        statusEventDao.create(newCertifiedProduct.getId(), certEvent);
 
         CuresUpdateEventDTO curesEvent = new CuresUpdateEventDTO();
         curesEvent.setCreationDate(new Date());
@@ -1219,7 +1214,7 @@ public class CertifiedProductManager extends SecuredManager {
         if (ObjectUtils.notEqual(updatedStatus.getName(), existingStatus.getName())) {
             // look at the updated status and see if a developer ban is
             // appropriate
-            CertificationStatusDTO updatedStatusDto = certStatusDao.getById(updatedStatus.getId());
+            CertificationStatus updatedStatusObj = certStatusDao.getById(updatedStatus.getId());
             DeveloperDTO cpDeveloper = developerDao.getByVersion(productVersionId);
             if (cpDeveloper == null) {
                 LOGGER.error("Could not find developer for product version with id " + productVersionId);
@@ -1227,16 +1222,16 @@ public class CertifiedProductManager extends SecuredManager {
                         "No developer could be located for the certified product in the update. Update cannot continue.");
             }
             DeveloperStatusDTO newDevStatusDto = null;
-            switch (CertificationStatusType.getValue(updatedStatusDto.getStatus())) {
+            switch (CertificationStatusType.getValue(updatedStatusObj.getName())) {
             case SuspendedByOnc:
             case TerminatedByOnc:
                 // only onc admin can do this and it always triggers developer
                 // ban
                 if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
                     // find the new developer status
-                    if (updatedStatusDto.getStatus().equals(CertificationStatusType.SuspendedByOnc.toString())) {
+                    if (updatedStatusObj.getName().equals(CertificationStatusType.SuspendedByOnc.toString())) {
                         newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.SuspendedByOnc.toString());
-                    } else if (updatedStatusDto.getStatus()
+                    } else if (updatedStatusObj.getName()
                             .equals(CertificationStatusType.TerminatedByOnc.toString())) {
                         newDevStatusDto = devStatusDao
                                 .getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
@@ -1256,7 +1251,7 @@ public class CertifiedProductManager extends SecuredManager {
                 triggerDeveloperBan(updatedListing, reason);
                 break;
             default:
-                LOGGER.info("New listing status is " + updatedStatusDto.getStatus()
+                LOGGER.info("New listing status is " + updatedStatusObj.getName()
                         + " which does not trigger a developer ban.");
                 break;
             }
@@ -1854,11 +1849,11 @@ public class CertifiedProductManager extends SecuredManager {
     private void updateCertificationDate(Long listingId, Date existingCertDate, Date newCertDate)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
         if (existingCertDate != null && newCertDate != null && existingCertDate.getTime() != newCertDate.getTime()) {
-            CertificationStatusEventDTO certificationEvent = statusEventDao
+            CertificationStatusEvent certificationEvent = statusEventDao
                     .findInitialCertificationEventForCertifiedProduct(listingId);
             if (certificationEvent != null) {
-                certificationEvent.setEventDate(newCertDate);
-                statusEventDao.update(certificationEvent);
+                certificationEvent.setEventDate(newCertDate.getTime());
+                statusEventDao.update(listingId, certificationEvent);
             }
         }
     }
@@ -1921,29 +1916,30 @@ public class CertifiedProductManager extends SecuredManager {
 
         numChanges = statusEventsToAdd.size() + idsToRemove.size();
         for (CertificationStatusEvent toAdd : statusEventsToAdd) {
-            CertificationStatusEventDTO statusEventDto = new CertificationStatusEventDTO();
-            statusEventDto.setCertifiedProductId(listingId);
-            statusEventDto.setEventDate(new Date(toAdd.getEventDate()));
-            statusEventDto.setReason(toAdd.getReason());
+            CertificationStatusEvent statusEventToAdd = CertificationStatusEvent.builder()
+                    .eventDate(toAdd.getEventDate())
+                    .reason(toAdd.getReason())
+                    .build();
+            statusEventToAdd.setReason(toAdd.getReason());
             if (toAdd.getStatus() == null) {
                 String msg = msgUtil.getMessage("listing.missingCertificationStatus");
                 throw new EntityRetrievalException(msg);
             } else if (toAdd.getStatus().getId() != null) {
-                CertificationStatusDTO statusDto = certStatusDao.getById(toAdd.getStatus().getId());
-                if (statusDto == null) {
+                CertificationStatus status = certStatusDao.getById(toAdd.getStatus().getId());
+                if (status == null) {
                     String msg = msgUtil.getMessage("listing.badCertificationStatusId", toAdd.getStatus().getId());
                     throw new EntityRetrievalException(msg);
                 }
-                statusEventDto.setStatus(statusDto);
+                statusEventToAdd.setStatus(status);
             } else if (!StringUtils.isEmpty(toAdd.getStatus().getName())) {
-                CertificationStatusDTO statusDto = certStatusDao.getByStatusName(toAdd.getStatus().getName());
-                if (statusDto == null) {
+                CertificationStatus status = certStatusDao.getByStatusName(toAdd.getStatus().getName());
+                if (status == null) {
                     String msg = msgUtil.getMessage("listing.badCertificationStatusName", toAdd.getStatus().getName());
                     throw new EntityRetrievalException(msg);
                 }
-                statusEventDto.setStatus(statusDto);
+                statusEventToAdd.setStatus(status);
             }
-            statusEventDao.create(statusEventDto);
+            statusEventDao.create(listingId, statusEventToAdd);
         }
 
         for (CertificationStatusEventPair toUpdate : statusEventsToUpdate) {
@@ -1959,32 +1955,32 @@ public class CertifiedProductManager extends SecuredManager {
 
             if (hasChanged) {
                 CertificationStatusEvent cseToUpdate = toUpdate.getUpdated();
-                CertificationStatusEventDTO statusEventDto = new CertificationStatusEventDTO();
-                statusEventDto.setId(cseToUpdate.getId());
-                statusEventDto.setCertifiedProductId(listingId);
-                statusEventDto.setEventDate(new Date(cseToUpdate.getEventDate()));
-                statusEventDto.setReason(cseToUpdate.getReason());
+                CertificationStatusEvent updatedStatusEvent = CertificationStatusEvent.builder()
+                        .id(cseToUpdate.getId())
+                        .eventDate(cseToUpdate.getEventDate())
+                        .reason(cseToUpdate.getReason())
+                        .build();
                 if (cseToUpdate.getStatus() == null) {
                     String msg = msgUtil.getMessage("listing.missingCertificationStatus");
                     throw new EntityRetrievalException(msg);
                 } else if (cseToUpdate.getStatus().getId() != null) {
-                    CertificationStatusDTO statusDto = certStatusDao.getById(cseToUpdate.getStatus().getId());
-                    if (statusDto == null) {
+                    CertificationStatus status = certStatusDao.getById(cseToUpdate.getStatus().getId());
+                    if (status == null) {
                         String msg = msgUtil.getMessage("listing.badCertificationStatusId",
                                 cseToUpdate.getStatus().getId());
                         throw new EntityRetrievalException(msg);
                     }
-                    statusEventDto.setStatus(statusDto);
+                    updatedStatusEvent.setStatus(status);
                 } else if (!StringUtils.isEmpty(cseToUpdate.getStatus().getName())) {
-                    CertificationStatusDTO statusDto = certStatusDao.getByStatusName(cseToUpdate.getStatus().getName());
-                    if (statusDto == null) {
+                    CertificationStatus status = certStatusDao.getByStatusName(cseToUpdate.getStatus().getName());
+                    if (status == null) {
                         String msg = msgUtil.getMessage("listing.badCertificationStatusName",
                                 cseToUpdate.getStatus().getName());
                         throw new EntityRetrievalException(msg);
                     }
-                    statusEventDto.setStatus(statusDto);
+                    updatedStatusEvent.setStatus(status);
                 }
-                statusEventDao.update(statusEventDto);
+                statusEventDao.update(listingId, updatedStatusEvent);
                 numChanges++;
             }
         }

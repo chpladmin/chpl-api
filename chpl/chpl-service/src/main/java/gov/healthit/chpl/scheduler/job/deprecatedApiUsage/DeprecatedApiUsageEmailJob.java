@@ -142,7 +142,7 @@ public class DeprecatedApiUsageEmailJob implements Job {
 
     private String createHtmlMessage(ApiKey apiKey, List<DeprecatedApiUsage> deprecatedApiUsage,
             List<DeprecatedResponseFieldApiUsage> deprecatedResponseFieldUsage) throws IOException {
-        List<String> apiUsageHeading  = Stream.of("HTTP Method", "API Endpoint", "Usage Count", "Last Accessed", "Message").collect(Collectors.toList());
+        List<String> apiUsageHeading  = Stream.of("HTTP Method", "API Endpoint", "Usage Count", "Last Accessed", "Message", "Estimated Removal Date").collect(Collectors.toList());
         List<List<String>> apiUsageData = new ArrayList<List<String>>();
         deprecatedApiUsage.stream().forEach(api -> apiUsageData.add(createEndpointUsageData(api)));
 
@@ -169,7 +169,8 @@ public class DeprecatedApiUsageEmailJob implements Job {
                 deprecatedApiUsage.getApi().getApiOperation().getEndpoint(),
                 deprecatedApiUsage.getCallCount().toString(),
                 getEasternTimeDisplay(deprecatedApiUsage.getLastAccessedDate()),
-                deprecatedApiUsage.getApi().getChangeDescription()).collect(Collectors.toList());
+                deprecatedApiUsage.getApi().getChangeDescription(),
+                DateUtil.format(deprecatedApiUsage.getApi().getRemovalDate())).collect(Collectors.toList());
     }
 
     //break out deprecated response field usage by endpoint

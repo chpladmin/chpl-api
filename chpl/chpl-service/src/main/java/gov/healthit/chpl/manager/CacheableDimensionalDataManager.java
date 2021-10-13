@@ -19,6 +19,7 @@ import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
@@ -26,7 +27,6 @@ import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
-import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
@@ -104,11 +104,11 @@ public class CacheableDimensionalDataManager {
     @Cacheable(value = CacheNames.CERTIFICATION_STATUSES)
     public Set<KeyValueModel> getCertificationStatuses() {
         LOGGER.debug("Getting all certification statuses from the database (not cached).");
-        List<CertificationStatusDTO> certificationStatuses = certificationStatusDao.findAll();
+        List<CertificationStatus> certificationStatuses = certificationStatusDao.findAll();
         Set<KeyValueModel> results = new HashSet<KeyValueModel>();
 
-        for (CertificationStatusDTO dto : certificationStatuses) {
-            results.add(new KeyValueModel(dto.getId(), dto.getStatus()));
+        for (CertificationStatus cs : certificationStatuses) {
+            results.add(new KeyValueModel(cs.getId(), cs.getName()));
         }
 
         return results;

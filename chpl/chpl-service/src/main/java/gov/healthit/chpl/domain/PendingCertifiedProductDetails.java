@@ -33,6 +33,7 @@ import gov.healthit.chpl.dto.listing.pending.PendingCqmCertificationCriterionDTO
 import gov.healthit.chpl.dto.listing.pending.PendingCqmCriterionDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingTestParticipantDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingTestTaskDTO;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 
 public class PendingCertifiedProductDetails extends CertifiedProductSearchDetails implements Serializable {
@@ -156,6 +157,12 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 
         if (dto.getCertificationDate() != null) {
             this.setCertificationDate(dto.getCertificationDate().getTime());
+            this.getCertificationEvents().add(CertificationStatusEvent.builder()
+                    .eventDate(dto.getCertificationDate().getTime())
+                    .status(CertificationStatus.builder()
+                            .name(CertificationStatusType.Active.getName())
+                            .build())
+                    .build());
         }
 
         if (dto.getCertificationCriterion() == null) {
