@@ -3,7 +3,15 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 
 import gov.healthit.chpl.dto.TestStandardDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class TestStandard implements Serializable {
     private static final long serialVersionUID = 620315627813875501L;
     private Long id;
@@ -11,45 +19,10 @@ public class TestStandard implements Serializable {
     private String description;
     private String year;
 
-    public TestStandard() {
-    }
-
     public TestStandard(TestStandardDTO dto) {
         this.id = dto.getId();
         this.name = dto.getName();
         this.description = dto.getDescription();
         this.year = dto.getYear();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(final String description) {
-        this.description = description;
-    }
-
-    public String getYear() {
-        return year;
-    }
-
-    public void setYear(final String year) {
-        this.year = year;
     }
 }
