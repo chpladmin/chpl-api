@@ -28,6 +28,7 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
     private TestProcedureReviewer testProcedureReviewer;
     private TestFunctionalityReviewer testFunctionalityReviewer;
     private TestStandardReviewer testStandardReviewer;
+    private TestStandardAndOptionalStandardReviewer testStandardAndOptionalStandardReviewer;
     private UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
     private OldCriteriaWithoutIcsReviewer oldCriteriaWithoutIcsReviewer;
     private SedG32015Reviewer sedG3Reviewer;
@@ -45,6 +46,7 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
             @Qualifier("listingUploadTestProcedureReviewer") TestProcedureReviewer testProcedureReviewer,
             @Qualifier("listingUploadTestFunctionalityReviewer") TestFunctionalityReviewer testFunctionalityReviewer,
             @Qualifier("listingUploadTestStandardReviewer") TestStandardReviewer testStandardReviewer,
+            @Qualifier("listingUploadTestStandardAndOptionalStandardReviewer") TestStandardAndOptionalStandardReviewer testStandardAndOptionalStandardReviewer,
             @Qualifier("uploadedListingUnattestedCriteriaWithDataReviewer") UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer,
             @Qualifier("oldCriteriaWithoutIcsReviewer") OldCriteriaWithoutIcsReviewer oldCriteriaWithoutIcsReviewer,
             @Qualifier("sedG32015Reviewer") SedG32015Reviewer sedG3Reviewer,
@@ -60,6 +62,7 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
         this.testProcedureReviewer = testProcedureReviewer;
         this.testFunctionalityReviewer = testFunctionalityReviewer;
         this.testStandardReviewer = testStandardReviewer;
+        this.testStandardAndOptionalStandardReviewer = testStandardAndOptionalStandardReviewer;
         this.unattestedCriteriaWithDataReviewer = unattestedCriteriaWithDataReviewer;
         this.oldCriteriaWithoutIcsReviewer = oldCriteriaWithoutIcsReviewer;
         this.sedG3Reviewer = sedG3Reviewer;
@@ -89,15 +92,10 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
         testProcedureReviewer.review(listing);
         testFunctionalityReviewer.review(listing);
         testStandardReviewer.review(listing);
+        testStandardAndOptionalStandardReviewer.review(listing);
         unattestedCriteriaWithDataReviewer.review(listing);
         oldCriteriaWithoutIcsReviewer.review(listing);
         sedG3Reviewer.review(listing);
-    }
-
-    private boolean hasNoAttestedCriteria(CertifiedProductSearchDetails listing) {
-        return listing.getCertificationResults().stream()
-                .filter(certResult -> certResult != null && BooleanUtils.isTrue(certResult.isSuccess()))
-                .count() == 0;
     }
 
     private void reviewSuccessField(CertifiedProductSearchDetails listing, CertificationResult certResult) {
