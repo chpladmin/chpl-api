@@ -16,7 +16,7 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
-import gov.healthit.chpl.domain.CertificationResultTestStandard;
+import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -435,10 +435,12 @@ public class CertificationResultUploadHandlerTest {
         assertNotNull(certResult);
         assertNotNull(certResult.getTestStandards());
         assertEquals(0, certResult.getTestStandards().size());
+        assertNotNull(certResult.getOptionalStandards());
+        assertEquals(0, certResult.getOptionalStandards().size());
     }
 
     @Test
-    public void buildCertResult_TestStandardWithData_ParsesCorrectly() {
+    public void buildCertResult_TestStandardWithData_ParsesAsOptionalStandard() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
                 + ",Standard Tested Against").get(0);
         assertNotNull(headingRecord);
@@ -448,15 +450,17 @@ public class CertificationResultUploadHandlerTest {
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
         assertNotNull(certResult);
         assertNotNull(certResult.getTestStandards());
-        assertEquals(1, certResult.getTestStandards().size());
-        CertificationResultTestStandard std = certResult.getTestStandards().get(0);
+        assertEquals(0, certResult.getTestStandards().size());
+        assertNotNull(certResult.getOptionalStandards());
+        assertEquals(1, certResult.getOptionalStandards().size());
+        CertificationResultOptionalStandard std = certResult.getOptionalStandards().get(0);
         assertNotNull(std);
-        assertNotNull(std.getTestStandardName());
-        assertEquals("std", std.getTestStandardName());
+        assertNotNull(std.getCitation());
+        assertEquals("std", std.getCitation());
     }
 
     @Test
-    public void buildCertResult_TestStandardDuplicateData_ParsesFirstValue() {
+    public void buildCertResult_TestStandardDuplicateData_ParsesFirstValueAsOptionalStandard() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
                 + ",Standard Tested Against,Standard Tested Against").get(0);
         assertNotNull(headingRecord);
@@ -466,15 +470,16 @@ public class CertificationResultUploadHandlerTest {
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
         assertNotNull(certResult);
         assertNotNull(certResult.getTestStandards());
-        assertEquals(1, certResult.getTestStandards().size());
-        CertificationResultTestStandard std = certResult.getTestStandards().get(0);
+        assertEquals(0, certResult.getTestStandards().size());
+        assertNotNull(certResult.getOptionalStandards());
+        CertificationResultOptionalStandard std = certResult.getOptionalStandards().get(0);
         assertNotNull(std);
-        assertNotNull(std.getTestStandardName());
-        assertEquals("std", std.getTestStandardName());
+        assertNotNull(std.getCitation());
+        assertEquals("std", std.getCitation());
     }
 
     @Test
-    public void buildCertResult_TestStandardMultipleRowsWithData_ParsesCorrectly() {
+    public void buildCertResult_TestStandardMultipleRowsWithData_ParsesAsOptionalStandard() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
                 + ",Standard Tested Against").get(0);
         assertNotNull(headingRecord);
@@ -484,15 +489,96 @@ public class CertificationResultUploadHandlerTest {
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
         assertNotNull(certResult);
         assertNotNull(certResult.getTestStandards());
-        assertEquals(2, certResult.getTestStandards().size());
-        CertificationResultTestStandard std = certResult.getTestStandards().get(0);
+        assertEquals(0, certResult.getTestStandards().size());
+        assertNotNull(certResult.getOptionalStandards());
+        assertEquals(2, certResult.getOptionalStandards().size());
+        CertificationResultOptionalStandard std = certResult.getOptionalStandards().get(0);
         assertNotNull(std);
-        assertNotNull(std.getTestStandardName());
-        assertEquals("std", std.getTestStandardName());
-        std = certResult.getTestStandards().get(1);
+        assertNotNull(std.getCitation());
+        assertEquals("std", std.getCitation());
+        std = certResult.getOptionalStandards().get(1);
         assertNotNull(std);
-        assertNotNull(std.getTestStandardName());
-        assertEquals("std2", std.getTestStandardName());
+        assertNotNull(std.getCitation());
+        assertEquals("std2", std.getCitation());
+    }
+
+    @Test
+    public void buildCertResult_OptionalStandardEmptyData_ReturnsEmptyList() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
+                + ",Optional Standard").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,");
+        assertNotNull(certResultRecords);
+
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNotNull(certResult);
+        assertNotNull(certResult.getOptionalStandards());
+        assertEquals(0, certResult.getOptionalStandards().size());
+        assertNotNull(certResult.getTestStandards());
+        assertEquals(0, certResult.getTestStandards().size());
+    }
+
+    @Test
+    public void buildCertResult_OptionalStandardWithData_ParsesCorrectly() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
+                + ",Optional Standard").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,std");
+        assertNotNull(certResultRecords);
+
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNotNull(certResult);
+        assertNotNull(certResult.getTestStandards());
+        assertEquals(0, certResult.getTestStandards().size());
+        assertNotNull(certResult.getOptionalStandards());
+        assertEquals(1, certResult.getOptionalStandards().size());
+        CertificationResultOptionalStandard std = certResult.getOptionalStandards().get(0);
+        assertNotNull(std);
+        assertNotNull(std.getCitation());
+        assertEquals("std", std.getCitation());
+    }
+
+    @Test
+    public void buildCertResult_OptionalStandardDuplicateData_ParsesFirstValue() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
+                + ",Optional Standard,Optional Standard").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,std,std2");
+        assertNotNull(certResultRecords);
+
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNotNull(certResult);
+        assertNotNull(certResult.getTestStandards());
+        assertEquals(0, certResult.getTestStandards().size());
+        assertNotNull(certResult.getOptionalStandards());
+        CertificationResultOptionalStandard std = certResult.getOptionalStandards().get(0);
+        assertNotNull(std);
+        assertNotNull(std.getCitation());
+        assertEquals("std", std.getCitation());
+    }
+
+    @Test
+    public void buildCertResult_OptionalStandardMultipleRowsWithData_ParsesCorrectly() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
+                + ",Optional Standard").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,std\n,std2");
+        assertNotNull(certResultRecords);
+
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNotNull(certResult);
+        assertNotNull(certResult.getTestStandards());
+        assertEquals(0, certResult.getTestStandards().size());
+        assertNotNull(certResult.getOptionalStandards());
+        assertEquals(2, certResult.getOptionalStandards().size());
+        CertificationResultOptionalStandard std = certResult.getOptionalStandards().get(0);
+        assertNotNull(std);
+        assertNotNull(std.getCitation());
+        assertEquals("std", std.getCitation());
+        std = certResult.getOptionalStandards().get(1);
+        assertNotNull(std);
+        assertNotNull(std.getCitation());
+        assertEquals("std2", std.getCitation());
     }
 
     @Test
