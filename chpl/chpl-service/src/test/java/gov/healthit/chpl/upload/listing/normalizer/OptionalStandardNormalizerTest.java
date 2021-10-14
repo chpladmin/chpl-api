@@ -1,6 +1,7 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
@@ -13,9 +14,11 @@ import org.mockito.Mockito;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
 
 public class OptionalStandardNormalizerTest {
     private OptionalStandardDAO optionalStandardDao;
@@ -24,7 +27,29 @@ public class OptionalStandardNormalizerTest {
     @Before
     public void before() {
         optionalStandardDao = Mockito.mock(OptionalStandardDAO.class);
+        try {
+            Mockito.when(optionalStandardDao.getAllOptionalStandardCriteriaMap())
+                .thenReturn(buildOptionalStandardCriteriaMaps());
+        } catch (EntityRetrievalException ex) {
+            fail("Could not intiialize optional standard criteria maps");
+        }
         normalizer = new OptionalStandardNormalizer(optionalStandardDao);
+    }
+
+    private List<OptionalStandardCriteriaMap> buildOptionalStandardCriteriaMaps() {
+        List<OptionalStandardCriteriaMap> maps = new ArrayList<OptionalStandardCriteriaMap>();
+        maps.add(OptionalStandardCriteriaMap.builder()
+                .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .build())
+                .id(1L)
+                .optionalStandard(OptionalStandard.builder()
+                        .id(1L)
+                        .citation("valid")
+                        .build())
+                .build());
+        return maps;
     }
 
     @Test
@@ -76,6 +101,32 @@ public class OptionalStandardNormalizerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .build())
+                        .optionalStandards(optionalStandards)
+                        .build())
+                .build();
+        normalizer.normalize(listing);
+        assertEquals(1, listing.getCertificationResults().get(0).getOptionalStandards().size());
+        assertNull(listing.getCertificationResults().get(0).getOptionalStandards().get(0).getOptionalStandardId());
+    }
+
+    @Test
+    public void normalize_optionalStandardInDatabaseForDifferentCriteria_idIsNull() {
+        List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
+        optionalStandards.add(CertificationResultOptionalStandard.builder()
+                .optionalStandardId(null)
+                .citation("valid")
+                .build());
+
+        Mockito.when(optionalStandardDao.getByCitation(ArgumentMatchers.eq("notindb")))
+            .thenReturn(null);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .id(2L)
+                                .number("170.315 (a)(2)")
                                 .build())
                         .optionalStandards(optionalStandards)
                         .build())
