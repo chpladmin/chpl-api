@@ -72,12 +72,14 @@ public class TestStandardConversionSpreadsheet {
             String testStandardNumber = getTestStandardNameFromRow(currentRow);
 
             CertificationCriterion criterion = getCriterion(criteriaNumber, criteriaTitle);
-            TestStandard testStandard = getTestStandard(testStandardNumber);
+            List<TestStandard> testStandards = getTestStandard(testStandardNumber);
             List<OptionalStandard> optionalStandards = getOptionalStandardsFromRow(currentRow);
 
-            TestStandard2OptionalStandardsMapping mapping = new TestStandard2OptionalStandardsMapping(criterion, testStandard, optionalStandards);
-            map.put(mapping.getKey(), mapping);
-            LOGGER.info(mapping.toString());
+            for (TestStandard testStandard : testStandards) {
+                TestStandard2OptionalStandardsMapping mapping = new TestStandard2OptionalStandardsMapping(criterion, testStandard, optionalStandards);
+                map.put(mapping.getKey(), mapping);
+                LOGGER.info(mapping.toString());
+            }
 
             currentRow = sheet.getRow(currentRow.getRowNum() + 1);
         }
@@ -133,8 +135,8 @@ public class TestStandardConversionSpreadsheet {
         return new CertificationCriterion(certificationCriterionDAO.getByNumberAndTitle(number, title));
     }
 
-    private TestStandard getTestStandard(String number) {
-        return new TestStandard(testStandardDAO.getByNumberAndEdition(number, CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId()));
+    private List<TestStandard> getTestStandard(String number) {
+        return testStandardDAO.getAllByNumberAndEdition(number, CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId());
     }
 
     private String getTestStandardNameFromRow(Row row) {

@@ -3,6 +3,7 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 
 import gov.healthit.chpl.dto.TestStandardDTO;
+import gov.healthit.chpl.entity.TestStandardEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,5 +25,12 @@ public class TestStandard implements Serializable {
         this.name = dto.getName();
         this.description = dto.getDescription();
         this.year = dto.getYear();
+    }
+
+    public TestStandard(TestStandardEntity entity) {
+        this.id = entity.getId();
+        this.name = entity.getName();
+        this.description = entity.getDescription();
+        this.year = entity.getCertificationEdition().getYear();
     }
 }
