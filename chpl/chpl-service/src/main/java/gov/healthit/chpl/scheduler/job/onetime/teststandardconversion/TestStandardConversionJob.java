@@ -38,7 +38,7 @@ import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.scheduler.job.CertifiedProduct2015Gatherer;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "testStandardConversionJobLogger")
 public class TestStandardConversionJob extends CertifiedProduct2015Gatherer implements Job {
     @Autowired
     private JpaTransactionManager txManager;
