@@ -82,7 +82,7 @@ public class SearchController {
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "hasHadComplianceActivity") @RequestParam(value = "hasHadComplianceActivity", required = false, defaultValue = "") Boolean hasHadComplianceActivity,
             @Parameter(description = "A comma-separated list of nonconformity search options applied across surveillance and direct review activity. "
                     + "Valid options are OPEN_NONCONFORMITY, CLOSED_NONCONFORMITY, NEVER_NONCONFORMITY,"
-                    + "NOT_OPEN_NONCONFORMITY, NOT_CLOSED_NONCONFORMTY, and NOT_NEVER_NONCONFORMITY.",
+                    + "NOT_OPEN_NONCONFORMITY, NOT_CLOSED_NONCONFORMITY, and NOT_NEVER_NONCONFORMITY.",
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "nonconformityOptions") @RequestParam(value = "nonConformityOptions", required = false, defaultValue = "") String nonConformityOptionsDelimited,
             @Parameter(description = "Either AND or OR. Defaults to OR."
                     + "Indicates whether a listing must have met all nonconformityOptions "
