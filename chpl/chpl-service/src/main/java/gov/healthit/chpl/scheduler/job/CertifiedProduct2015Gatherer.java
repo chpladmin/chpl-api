@@ -27,8 +27,6 @@ public class CertifiedProduct2015Gatherer {
                 CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
 
         listings = listings.stream()
-                .skip(200)
-                .limit(100)
                 .collect(Collectors.toList());
 
         logger.info("Completed retreiving all 2015 listings");
