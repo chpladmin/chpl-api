@@ -1,0 +1,116 @@
+package gov.healthit.chpl.upload.listing.normalizer;
+
+import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
+
+import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
+import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
+
+public class OptionalStandardNormalizerTest {
+    private OptionalStandardDAO optionalStandardDao;
+    private OptionalStandardNormalizer normalizer;
+
+    @Before
+    public void before() {
+        optionalStandardDao = Mockito.mock(OptionalStandardDAO.class);
+        normalizer = new OptionalStandardNormalizer(optionalStandardDao);
+    }
+
+    @Test
+    public void normalize_nullOptionalStandard_noChanges() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .build())
+                        .build())
+                .build();
+        listing.getCertificationResults().get(0).setOptionalStandards(null);
+        normalizer.normalize(listing);
+        assertNull(listing.getCertificationResults().get(0).getOptionalStandards());
+    }
+
+    @Test
+    public void normalize_emptyOptionalStandard_noChanges() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .build())
+                        .optionalStandards(new ArrayList<CertificationResultOptionalStandard>())
+                        .build())
+                .build();
+        normalizer.normalize(listing);
+        assertEquals(0, listing.getCertificationResults().get(0).getOptionalStandards().size());
+    }
+
+    @Test
+    public void normalize_optionalStandardNotInDatabase_idIsNull() {
+        List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
+        optionalStandards.add(CertificationResultOptionalStandard.builder()
+                .optionalStandardId(null)
+                .citation("notindb")
+                .build());
+
+        Mockito.when(optionalStandardDao.getByCitation(ArgumentMatchers.eq("notindb")))
+            .thenReturn(null);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .build())
+                        .optionalStandards(optionalStandards)
+                        .build())
+                .build();
+        normalizer.normalize(listing);
+        assertEquals(1, listing.getCertificationResults().get(0).getOptionalStandards().size());
+        assertNull(listing.getCertificationResults().get(0).getOptionalStandards().get(0).getOptionalStandardId());
+    }
+
+    @Test
+    public void normalize_optionalStandardInDatabase_setsId() {
+        List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
+        optionalStandards.add(CertificationResultOptionalStandard.builder()
+                .optionalStandardId(null)
+                .citation("valid")
+                .build());
+
+        Mockito.when(optionalStandardDao.getByCitation(ArgumentMatchers.eq("valid")))
+            .thenReturn(OptionalStandard.builder()
+                    .id(1L)
+                    .citation("valid")
+                    .build());
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .build())
+                        .optionalStandards(optionalStandards)
+                        .build())
+                .build();
+        normalizer.normalize(listing);
+        assertEquals(1, listing.getCertificationResults().get(0).getOptionalStandards().size());
+        assertEquals(1L, listing.getCertificationResults().get(0).getOptionalStandards().get(0).getOptionalStandardId());
+    }
+}

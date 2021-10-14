@@ -16,6 +16,7 @@ public class CertificationResultNormalizer {
     private TestFunctionalityNormalizer testFunctionalityNormalizer;
     private TestProcedureNormalizer testProcedureNormalizer;
     private TestStandardNormalizer testStandardNormalizer;
+    private OptionalStandardNormalizer optionalStandardNormalizer;
     private TestToolNormalizer testToolNormalizer;
 
     @Autowired
@@ -25,6 +26,7 @@ public class CertificationResultNormalizer {
         TestFunctionalityNormalizer testFunctionalityNormalizer,
         TestProcedureNormalizer testProcedureNormalizer,
         TestStandardNormalizer testStandardNormalizer,
+        OptionalStandardNormalizer optionalStandardNormalizer,
         TestToolNormalizer testToolNormalizer) {
         this.criterionNormalizer = criterionNormalizer;
         this.additionalSoftwareNormalizer = additionalSoftwareNormalizer;
@@ -32,6 +34,7 @@ public class CertificationResultNormalizer {
         this.testFunctionalityNormalizer = testFunctionalityNormalizer;
         this.testProcedureNormalizer = testProcedureNormalizer;
         this.testStandardNormalizer = testStandardNormalizer;
+        this.optionalStandardNormalizer = optionalStandardNormalizer;
         this.testToolNormalizer = testToolNormalizer;
     }
 
@@ -42,6 +45,7 @@ public class CertificationResultNormalizer {
         this.testFunctionalityNormalizer.normalize(listing);
         this.testProcedureNormalizer.normalize(listing);
         this.testStandardNormalizer.normalize(listing);
+        this.optionalStandardNormalizer.normalize(listing);
         this.testToolNormalizer.normalize(listing);
 
         removeCertificationResultsWithNullCriterion(listing);
