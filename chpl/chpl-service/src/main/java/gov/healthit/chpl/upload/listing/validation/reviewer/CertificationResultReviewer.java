@@ -28,6 +28,7 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
     private TestProcedureReviewer testProcedureReviewer;
     private TestFunctionalityReviewer testFunctionalityReviewer;
     private TestStandardReviewer testStandardReviewer;
+    private OptionalStandardReviewer optionalStandardReviewer;
     private TestStandardAndOptionalStandardReviewer testStandardAndOptionalStandardReviewer;
     private UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
     private OldCriteriaWithoutIcsReviewer oldCriteriaWithoutIcsReviewer;
@@ -46,6 +47,7 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
             @Qualifier("listingUploadTestProcedureReviewer") TestProcedureReviewer testProcedureReviewer,
             @Qualifier("listingUploadTestFunctionalityReviewer") TestFunctionalityReviewer testFunctionalityReviewer,
             @Qualifier("listingUploadTestStandardReviewer") TestStandardReviewer testStandardReviewer,
+            @Qualifier("listingUploadOptionalStandardReviewer") OptionalStandardReviewer optionalStandardReviewer,
             @Qualifier("listingUploadTestStandardAndOptionalStandardReviewer") TestStandardAndOptionalStandardReviewer testStandardAndOptionalStandardReviewer,
             @Qualifier("uploadedListingUnattestedCriteriaWithDataReviewer") UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer,
             @Qualifier("oldCriteriaWithoutIcsReviewer") OldCriteriaWithoutIcsReviewer oldCriteriaWithoutIcsReviewer,
@@ -62,6 +64,7 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
         this.testProcedureReviewer = testProcedureReviewer;
         this.testFunctionalityReviewer = testFunctionalityReviewer;
         this.testStandardReviewer = testStandardReviewer;
+        this.optionalStandardReviewer = optionalStandardReviewer;
         this.testStandardAndOptionalStandardReviewer = testStandardAndOptionalStandardReviewer;
         this.unattestedCriteriaWithDataReviewer = unattestedCriteriaWithDataReviewer;
         this.oldCriteriaWithoutIcsReviewer = oldCriteriaWithoutIcsReviewer;
@@ -92,6 +95,7 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
         testProcedureReviewer.review(listing);
         testFunctionalityReviewer.review(listing);
         testStandardReviewer.review(listing);
+        optionalStandardReviewer.review(listing);
         testStandardAndOptionalStandardReviewer.review(listing);
         unattestedCriteriaWithDataReviewer.review(listing);
         oldCriteriaWithoutIcsReviewer.review(listing);

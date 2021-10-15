@@ -64,7 +64,6 @@ public class ListingUploadValidator {
     private CertificationResultReviewer certResultReviewer;
     private CqmResultReviewer cqmResultReviewer;
     private SedReviewer sedReviewer;
-    //TODO: measures, optional standards
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")

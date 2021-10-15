@@ -3,7 +3,6 @@ package gov.healthit.chpl.upload.listing.normalizer;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
@@ -22,11 +21,9 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.TestStandardDTO;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
-import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
 
 public class OptionalStandardNormalizerTest {
     private OptionalStandardDAO optionalStandardDao;
@@ -36,31 +33,8 @@ public class OptionalStandardNormalizerTest {
     @Before
     public void before() {
         optionalStandardDao = Mockito.mock(OptionalStandardDAO.class);
-        try {
-            Mockito.when(optionalStandardDao.getAllOptionalStandardCriteriaMap())
-                .thenReturn(buildOptionalStandardCriteriaMaps());
-        } catch (EntityRetrievalException ex) {
-            fail("Could not intiialize optional standard criteria maps");
-        }
-
         testStandardDao = Mockito.mock(TestStandardDAO.class);
         normalizer = new OptionalStandardNormalizer(optionalStandardDao, testStandardDao);
-    }
-
-    private List<OptionalStandardCriteriaMap> buildOptionalStandardCriteriaMaps() {
-        List<OptionalStandardCriteriaMap> maps = new ArrayList<OptionalStandardCriteriaMap>();
-        maps.add(OptionalStandardCriteriaMap.builder()
-                .criterion(CertificationCriterion.builder()
-                                .id(1L)
-                                .number("170.315 (a)(1)")
-                                .build())
-                .id(1L)
-                .optionalStandard(OptionalStandard.builder()
-                        .id(1L)
-                        .citation("valid")
-                        .build())
-                .build());
-        return maps;
     }
 
     @Test
@@ -103,6 +77,8 @@ public class OptionalStandardNormalizerTest {
                 .citation("notindb")
                 .build());
 
+        Mockito.when(optionalStandardDao.getByCitation(ArgumentMatchers.eq("notindb")))
+            .thenReturn(null);
         Mockito.when(testStandardDao.getByNumberAndEdition(ArgumentMatchers.eq("notindb"), ArgumentMatchers.anyLong()))
             .thenReturn(null);
 
@@ -131,6 +107,8 @@ public class OptionalStandardNormalizerTest {
                 .citation("teststandard")
                 .build());
 
+        Mockito.when(optionalStandardDao.getByCitation(ArgumentMatchers.eq("teststandard")))
+            .thenReturn(null);
         Mockito.when(testStandardDao.getByNumberAndEdition(ArgumentMatchers.eq("teststandard"), ArgumentMatchers.anyLong()))
             .thenReturn(TestStandardDTO.builder()
                     .id(1L)
@@ -145,67 +123,6 @@ public class OptionalStandardNormalizerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
-                                .build())
-                        .optionalStandards(optionalStandards)
-                        .build())
-                .build();
-        normalizer.normalize(listing);
-        assertEquals(1, listing.getCertificationResults().get(0).getOptionalStandards().size());
-        assertNull(listing.getCertificationResults().get(0).getOptionalStandards().get(0).getOptionalStandardId());
-        assertEquals(1, listing.getCertificationResults().get(0).getTestStandards().size());
-        assertNotNull(listing.getCertificationResults().get(0).getTestStandards().get(0).getTestStandardId());
-    }
-
-    @Test
-    public void normalize_optionalStandardInDatabaseForDifferentCriteriaAndNotATestStandard_idIsNull() {
-        List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
-        optionalStandards.add(CertificationResultOptionalStandard.builder()
-                .optionalStandardId(null)
-                .citation("valid")
-                .build());
-
-        Mockito.when(testStandardDao.getByNumberAndEdition(ArgumentMatchers.eq("valid"), ArgumentMatchers.anyLong()))
-            .thenReturn(null);
-
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
-                .certificationResult(CertificationResult.builder()
-                        .success(true)
-                        .criterion(CertificationCriterion.builder()
-                                .id(2L)
-                                .number("170.315 (a)(2)")
-                                .build())
-                        .optionalStandards(optionalStandards)
-                        .build())
-                .build();
-        normalizer.normalize(listing);
-        assertEquals(1, listing.getCertificationResults().get(0).getOptionalStandards().size());
-        assertNull(listing.getCertificationResults().get(0).getOptionalStandards().get(0).getOptionalStandardId());
-        assertTrue(CollectionUtils.isEmpty(listing.getCertificationResults().get(0).getTestStandards()));
-    }
-
-    @Test
-    public void normalize_optionalStandardInDatabaseForDifferentCriteriaAndIsATestStandard_idIsNullAndTestStandardAdded() {
-        List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
-        optionalStandards.add(CertificationResultOptionalStandard.builder()
-                .optionalStandardId(null)
-                .citation("valid")
-                .build());
-
-        Mockito.when(testStandardDao.getByNumberAndEdition(ArgumentMatchers.eq("valid"), ArgumentMatchers.anyLong()))
-        .thenReturn(TestStandardDTO.builder()
-                .id(1L)
-                .name("valid")
-                .description("valid desc")
-                .build());
-
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
-                .certificationResult(CertificationResult.builder()
-                        .success(true)
-                        .criterion(CertificationCriterion.builder()
-                                .id(2L)
-                                .number("170.315 (a)(2)")
                                 .build())
                         .optionalStandards(optionalStandards)
                         .build())
