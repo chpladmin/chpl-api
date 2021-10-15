@@ -15,7 +15,6 @@ public class CertificationResultNormalizer {
     private TestDataNormalizer testDataNormalizer;
     private TestFunctionalityNormalizer testFunctionalityNormalizer;
     private TestProcedureNormalizer testProcedureNormalizer;
-    private TestStandardNormalizer testStandardNormalizer;
     private OptionalStandardNormalizer optionalStandardNormalizer;
     private TestToolNormalizer testToolNormalizer;
 
@@ -25,7 +24,6 @@ public class CertificationResultNormalizer {
         TestDataNormalizer testDataNormalizer,
         TestFunctionalityNormalizer testFunctionalityNormalizer,
         TestProcedureNormalizer testProcedureNormalizer,
-        TestStandardNormalizer testStandardNormalizer,
         OptionalStandardNormalizer optionalStandardNormalizer,
         TestToolNormalizer testToolNormalizer) {
         this.criterionNormalizer = criterionNormalizer;
@@ -33,7 +31,6 @@ public class CertificationResultNormalizer {
         this.testDataNormalizer = testDataNormalizer;
         this.testFunctionalityNormalizer = testFunctionalityNormalizer;
         this.testProcedureNormalizer = testProcedureNormalizer;
-        this.testStandardNormalizer = testStandardNormalizer;
         this.optionalStandardNormalizer = optionalStandardNormalizer;
         this.testToolNormalizer = testToolNormalizer;
     }
@@ -44,7 +41,6 @@ public class CertificationResultNormalizer {
         this.testDataNormalizer.normalize(listing);
         this.testFunctionalityNormalizer.normalize(listing);
         this.testProcedureNormalizer.normalize(listing);
-        this.testStandardNormalizer.normalize(listing);
         this.optionalStandardNormalizer.normalize(listing);
         this.testToolNormalizer.normalize(listing);
 
