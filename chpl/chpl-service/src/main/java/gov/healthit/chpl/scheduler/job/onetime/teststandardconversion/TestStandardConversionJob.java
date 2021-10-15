@@ -86,7 +86,8 @@ public class TestStandardConversionJob extends CertifiedProduct2015Gatherer impl
                             LOGGER.info("Created " + mappings.size() + " mappings");
 
                             pool.submit(() -> listings.parallelStream()
-                                    .forEach(listing -> updateListing(listing)));
+                                    .map(listing -> updateListing(listing))
+                                    .collect(Collectors.toList())).get();
 
                         } catch (Exception e) {
                             LOGGER.error("Error inserting listing validation errors. Rolling back transaction.", e);
@@ -103,7 +104,7 @@ public class TestStandardConversionJob extends CertifiedProduct2015Gatherer impl
         LOGGER.info("********* Completed the Test Standard Conversion job. *********");
     }
 
-    private void updateListing(CertifiedProductSearchDetails listing) {
+    private Boolean updateListing(CertifiedProductSearchDetails listing) {
         Boolean converted = listing.getCertificationResults().stream()
                 .map(cr -> convertCertificationResult(cr))
                 .reduce(Boolean.FALSE, Boolean::logicalOr);
@@ -124,6 +125,7 @@ public class TestStandardConversionJob extends CertifiedProduct2015Gatherer impl
         } else {
             LOGGER.info(String.format("Listing Id: %s did not require any conversion.", listing.getId()));
         }
+        return converted;
     }
 
     private Boolean convertCertificationResult(CertificationResult cr) {
