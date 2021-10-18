@@ -12,6 +12,7 @@ import gov.healthit.chpl.validation.listing.reviewer.CertificationStatusReviewer
 import gov.healthit.chpl.validation.listing.reviewer.ChplNumberComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ChplNumberReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.DeprecatedFieldReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DeveloperBanComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DeveloperStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DuplicateDataReviewer;
@@ -49,8 +50,10 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Review
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionalityAllowedByCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestFunctionalityAllowedByRoleReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestTool2015Reviewer;
+import lombok.extern.log4j.Log4j2;
 
 @Component
+@Log4j2
 public class Edition2015ListingValidator extends Validator {
     @Autowired
     @Qualifier("chplNumberReviewer")
@@ -212,11 +215,15 @@ public class Edition2015ListingValidator extends Validator {
     @Qualifier("optionalStandardReviewer")
     private OptionalStandardReviewer optionalStandardReviewer;
 
+    @Autowired
+    @Qualifier("deprecatedFieldReviewer")
+    private DeprecatedFieldReviewer deprecatedFieldReviewer;
+
     private List<Reviewer> reviewers;
     private List<ComparisonReviewer> comparisonReviewers;
 
     @Override
-    public List<Reviewer> getReviewers() {
+    public synchronized List<Reviewer> getReviewers() {
         if (reviewers == null) {
             reviewers = new ArrayList<Reviewer>();
             reviewers.add(chplNumberReviewer);
@@ -267,6 +274,7 @@ public class Edition2015ListingValidator extends Validator {
             comparisonReviewers.add(realWorldTestingReviewer);
             comparisonReviewers.add(svapReviewer);
             comparisonReviewers.add(inheritanceComparisonReviewer);
+            comparisonReviewers.add(deprecatedFieldReviewer);
         }
         return comparisonReviewers;
     }

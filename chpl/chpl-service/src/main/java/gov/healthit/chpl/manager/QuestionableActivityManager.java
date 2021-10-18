@@ -228,6 +228,11 @@ public class QuestionableActivityManager implements EnvironmentAware {
                 createListingActivity(activity, origListing.getId(), activityDate, activityUser,
                         QuestionableActivityTriggerConcept.REAL_WORLD_TESTING_ADDED, activityReason);
             }
+            activity = listingQuestionableActivityProvider.checkPromotingInteroperabilityUpdatedByAcb(origListing, newListing);
+            if (activity != null) {
+                createListingActivity(activity, origListing.getId(), activityDate, activityUser,
+                        QuestionableActivityTriggerConcept.PROMOTING_INTEROPERABILITY_UPDATED_BY_ACB, activityReason);
+            }
 
             List<QuestionableActivityListingDTO> activities
                 = listingQuestionableActivityProvider.checkMeasuresAdded(origListing, newListing);

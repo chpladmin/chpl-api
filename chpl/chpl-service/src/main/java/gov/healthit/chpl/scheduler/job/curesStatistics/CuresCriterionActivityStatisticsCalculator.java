@@ -30,7 +30,6 @@ public class CuresCriterionActivityStatisticsCalculator {
     private CertificationResultActivityHistoryHelper activityStatisticsHelper;
     private CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO curesCriterionUpgradedWithoutOriginalStatisticDao;
     private Date curesEffectiveDate;
-    private Date currentDate;
     private List<CertificationStatusType> activeStatuses;
 
     @Autowired
@@ -44,7 +43,6 @@ public class CuresCriterionActivityStatisticsCalculator {
         this.certifiedProductDao = certifiedProductDao;
         this.curesCriterionUpgradedWithoutOriginalStatisticDao = curesCriterionUpgradedWithoutOriginalStatisticDao;
         curesEffectiveDate = specialProperties.getEffectiveRuleTimestamp();
-        currentDate = new Date();
         activeStatuses = Stream.of(CertificationStatusType.Active,
                 CertificationStatusType.SuspendedByAcb,
                 CertificationStatusType.SuspendedByOnc)
@@ -61,6 +59,7 @@ public class CuresCriterionActivityStatisticsCalculator {
     @Transactional
     public List<CuresCriterionUpgradedWithoutOriginalListingStatistic> calculateCurrentStatistics(LocalDate statisticDate) {
         LOGGER.info("Calculating cures criterion upgrade without original statistics for " + statisticDate);
+        Date currentDate = new Date();
         List<CuresCriterionUpgradedWithoutOriginalListingStatistic> results
             = new ArrayList<CuresCriterionUpgradedWithoutOriginalListingStatistic>();
 

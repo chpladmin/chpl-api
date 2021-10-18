@@ -12,6 +12,11 @@ public final class DateUtil {
     private static final String UTC_ZONE_ID = "UTC";
     private static final String ET_ZONE_ID = "America/New_York";
     private static final String ET_SUFFIX = " ET";
+    private static final int HOUR_MAX = 23;
+    private static final int MINUTE_MAX = 59;
+    private static final int SECOND_MAX = 59;
+    private static final int NANOSECOND_MAX = 999999999;
+
     private DateUtil() {
 
     }
@@ -31,9 +36,18 @@ public final class DateUtil {
         return formatInEasternTime(zdt);
     }
 
+    public static String format(LocalDate date) {
+        return date.format(DateTimeFormatter.ISO_LOCAL_DATE);
+    }
+
     public static String formatInEasternTime(Date date, String dtFormat) {
         ZonedDateTime zdt = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.of(UTC_ZONE_ID));
         return formatInEasternTime(zdt, dtFormat);
+    }
+
+    public static String formatInEasternTime(Long millis, String dtFormat) {
+        Date date = new Date(millis);
+        return formatInEasternTime(date, dtFormat);
     }
 
     public static Long toEpochMillis(LocalDateTime localDateTime) {
@@ -49,6 +63,15 @@ public final class DateUtil {
             return null;
         }
         Instant instant = localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
+        return instant.toEpochMilli();
+    }
+
+    public static Long toEpochMillisEndOfDay(LocalDate localDate) {
+        if (localDate == null) {
+            return null;
+        }
+        Instant instant = localDate.atTime(HOUR_MAX, MINUTE_MAX, SECOND_MAX, NANOSECOND_MAX)
+                .atZone(ZoneId.systemDefault()).toInstant();
         return instant.toEpochMilli();
     }
 

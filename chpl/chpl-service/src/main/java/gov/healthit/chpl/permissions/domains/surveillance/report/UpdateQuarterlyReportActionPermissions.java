@@ -3,6 +3,7 @@ package gov.healthit.chpl.permissions.domains.surveillance.report;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
+import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 
 @Component("surveillanceReportUpdateQuarterlyReportActionPermissions")
@@ -15,19 +16,25 @@ public class UpdateQuarterlyReportActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess(Object obj) {
-        if (!(obj instanceof QuarterlyReportDTO)) {
-            return false;
-        } else if (getResourcePermissions().isUserRoleAdmin()) {
+        if (obj instanceof QuarterlyReport) {
+            return hasAccess((QuarterlyReport) obj);
+        } else if (obj instanceof QuarterlyReportDTO) {
+            QuarterlyReport quarterlyReport = new QuarterlyReport((QuarterlyReportDTO) obj);
+            return hasAccess(quarterlyReport);
+        }
+        return false;
+    }
+
+    private boolean hasAccess(QuarterlyReport quarterlyReport) {
+        if (getResourcePermissions().isUserRoleAdmin()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
-            QuarterlyReportDTO toUpdate = (QuarterlyReportDTO) obj;
-            if (toUpdate.getAcb() == null || toUpdate.getAcb().getId() == null) {
+            if (quarterlyReport.getAcb() == null || quarterlyReport.getAcb().getId() == null) {
                 return false;
             }
-            return isAcbValidForCurrentUser(toUpdate.getAcb().getId());
+            return isAcbValidForCurrentUser(quarterlyReport.getAcb().getId());
         } else {
             return false;
         }
     }
-
 }

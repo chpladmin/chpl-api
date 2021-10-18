@@ -51,12 +51,14 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.upload.listing.ListingUploadManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.results.ListingUploadResponse;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 
-@Api(value = "listings")
+@Tag(name = "listing-upload", description = "Allows upload of listings.")
 @RestController
 @RequestMapping("/listings")
 @Log4j2
@@ -82,9 +84,11 @@ public class ListingUploadController {
         this.env = env;
     }
 
-    @ApiOperation(value = "Get all uploaded listings to which the current user has access.",
-            notes = "Security Restrictions: User will be presented the uploaded listings that "
-                    + "they have access to according to ONC-ACB(s) and CHPL permissions.")
+    @Operation(summary = "Get all uploaded listings to which the current user has access.",
+            description = "Security Restrictions: User will be presented the uploaded listings that "
+                    + "they have access to according to ONC-ACB(s) and CHPL permissions.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ListingUpload> getAll() {
         if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
@@ -93,9 +97,11 @@ public class ListingUploadController {
         return listingUploadManager.getAll();
     }
 
-    @ApiOperation(value = "Get the details of an uploaded listing.",
-            notes = "Security Restrictions: User must be authorized to view the uploaded listing "
-                    + "according to ONC-ACB(s) and CHPL permissions.")
+    @Operation(summary = "Get the details of an uploaded listing.",
+            description = "Security Restrictions: User must be authorized to view the uploaded listing "
+                    + "according to ONC-ACB(s) and CHPL permissions.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/pending/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public CertifiedProductSearchDetails geById(@PathVariable("id") Long id)
             throws ValidationException, EntityRetrievalException {
@@ -105,10 +111,12 @@ public class ListingUploadController {
         return listingUploadManager.getDetailsById(id);
     }
 
-    @ApiOperation(value = "Upload a file with certified products",
-            notes = "Accepts a CSV file with a valid set of fields to upload a listing. "
+    @Operation(summary = "Upload a file with certified products",
+            description = "Accepts a CSV file with a valid set of fields to upload a listing. "
                     + "Security Restrictions: ROLE_ADMIN or user uploading the file must have ROLE_ACB "
-                    + "and administrative authority on the ONC-ACB(s) specified in the file.")
+                    + "and administrative authority on the ONC-ACB(s) specified in the file.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<ListingUploadResponse> upload(@RequestParam("file") MultipartFile file) throws ValidationException, MaxUploadSizeExceededException {
         if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
@@ -189,9 +197,11 @@ public class ListingUploadController {
             .collect(Collectors.toSet());
     }
 
-    @ApiOperation(value = "Reject an uploaded listing.",
-            notes = "Deletes an uploaded listing. Security Restrictions: ROLE_ADMIN or have ROLE_ACB "
-                    + "and administrative authority on the ONC-ACB for each uploaded listing is required.")
+    @Operation(summary = "Reject an uploaded listing.",
+            description = "Deletes an uploaded listing. Security Restrictions: ROLE_ADMIN or have ROLE_ACB "
+                    + "and administrative authority on the ONC-ACB for each uploaded listing is required.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/pending/{id}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public void rejectListingUpload(@PathVariable("id") Long id)
@@ -207,9 +217,11 @@ public class ListingUploadController {
         listingUploadManager.delete(id);
     }
 
-    @ApiOperation(value = "Reject several uploaded listings.",
-            notes = "Marks a list of uploaded listings as deleted. ROLE_ADMIN or ROLE_ACB "
-                    + " and administrative authority on the ONC-ACB for each uploaded listing is required.")
+    @Operation(summary = "Reject several uploaded listings.",
+            description = "Marks a list of uploaded listings as deleted. ROLE_ADMIN or ROLE_ACB "
+                    + " and administrative authority on the ONC-ACB for each uploaded listing is required.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/pending", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public void rejectListingUploads(@RequestBody IdListContainer idList)

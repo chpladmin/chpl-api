@@ -1,5 +1,53 @@
 # Release Notes
 
+## Version 32.2.0
+_18 October 2021_
+
+### Features
+* Give users a date for when deprecated API endpoints may be removed
+* Update Questionable Activity Report to new HTML email template
+* Check listing updates for questionable activity when an ONC-ACB user updates promoting interoperability
+* Do not allow edit of Certification Date field via the API
+
+---
+
+## Version 32.1.0
+_5 October 2021_
+
+### Features
+* Upgrade Swagger library version
+* Revise list of test tools to select for a 2015 Edition listing
+* Update overnight job schedule and improve performance
+* Migrate surveillance and non-conformity timestamp fields to LocalDate
+* Remove "frequency" data from Scheduled Jobs
+
+### Flagged Features
+* Add CQM Validation to flexible upload
+* Add SED validation to flexible upload
+
+### Bug Fixes
+* Restore functionality of URL Status Data Collector job
+* Consistently handle valid/invalid/null ID fields during listing update
+
+---
+
+## Version 32.0.0
+_7 September 2021_
+
+### Breaking Change
+* Create and edit of Quarterly Surveillance elements must use new fields
+
+### Features
+* Remove Banned Developer errors from the Listing Validation Report
+* Automate Cures Reporting Phase 1 Charts
+* Use consistent names for Quarterly Surveillance data elements
+
+### Bug Fixes
+* Display consistent permissions error when splitting Products and Versions
+* Move stateful date field out of Spring component, allowing for Cures Statistics Reports to be generated correctly
+
+---
+
 ## Version 31.0.0
 _31 August 2021_
 

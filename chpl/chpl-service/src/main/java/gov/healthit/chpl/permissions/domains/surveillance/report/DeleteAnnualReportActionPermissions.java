@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.surveillance.report.AnnualReportDAO;
-import gov.healthit.chpl.surveillance.report.dto.AnnualReportDTO;
+import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
 
 @Component("surveillanceReportDeleteAnnualReportActionPermissions")
 public class DeleteAnnualReportActionPermissions extends ActionPermissions {
@@ -27,7 +27,7 @@ public class DeleteAnnualReportActionPermissions extends ActionPermissions {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             Long idToDelete = (Long) obj;
-            AnnualReportDTO toDelete = null;
+            AnnualReport toDelete = null;
             try {
                 toDelete = annualReportDao.getById(idToDelete);
                 return isAcbValidForCurrentUser(toDelete.getAcb().getId());

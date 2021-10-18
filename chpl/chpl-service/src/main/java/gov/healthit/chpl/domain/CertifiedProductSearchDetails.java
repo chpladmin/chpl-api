@@ -31,10 +31,13 @@ import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
+import org.apache.commons.collections.CollectionUtils;
+
 
 /**
  * Certified Product Search Details entity.
@@ -165,10 +168,7 @@ public class CertifiedProductSearchDetails implements Serializable {
     @Singular
     private List<CertifiedProductTestingLab> testingLabs = new ArrayList<CertifiedProductTestingLab>();
 
-    /**
-     * Certification date represented in milliseconds since epoch
-     */
-    @XmlElement(required = true)
+    @XmlTransient
     private Long certificationDate;
 
     @XmlTransient
@@ -345,6 +345,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElementWrapper(name = "cqmResults", nillable = true, required = false)
     @XmlElement(name = "cqmResult")
+    @Builder.Default
     private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
 
     /**
@@ -519,14 +520,6 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.certifyingBody = certifyingBody;
     }
 
-    public Long getCertificationDate() {
-        return certificationDate;
-    }
-
-    public void setCertificationDate(Long certificationDate) {
-        this.certificationDate = certificationDate;
-    }
-
     public String getCertificationDateStr() {
         return certificationDateStr;
     }
@@ -654,7 +647,6 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     @Deprecated
     public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
-        this.mandatoryDisclosures = transparencyAttestationUrl;
         this.transparencyAttestationUrl = transparencyAttestationUrl;
     }
 
@@ -664,7 +656,6 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     public void setMandatoryDisclosures(String mandatoryDisclosures) {
         this.mandatoryDisclosures = mandatoryDisclosures;
-        this.transparencyAttestationUrl = mandatoryDisclosures;
     }
 
     public List<CertifiedProductQmsStandard> getQmsStandards() {
@@ -854,11 +845,6 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.sed = sed;
     }
 
-    /**
-     * Retrieve current status.
-     *
-     * @return current status
-     */
     public CertificationStatusEvent getCurrentStatus() {
         if (this.getCertificationEvents() == null || this.getCertificationEvents().size() == 0) {
             return null;
@@ -873,11 +859,6 @@ public class CertifiedProductSearchDetails implements Serializable {
         return newest;
     }
 
-    /**
-     * Retrieve oldest status.
-     *
-     * @return the first status of the Listing
-     */
     public CertificationStatusEvent getOldestStatus() {
         if (this.getCertificationEvents() == null || this.getCertificationEvents().size() == 0) {
             return null;
@@ -892,11 +873,30 @@ public class CertifiedProductSearchDetails implements Serializable {
         return oldest;
     }
 
+    public void setCertificationDate(Long certificationDate) {
+        this.certificationDate = certificationDate;
+    }
+
     /**
-     * Retrieve certification status on a specific date.
-     *
-     * @return certification status
+     * Certification date represented in milliseconds since epoch
      */
+    @XmlElement(nillable = false, required = true)
+    public Long getCertificationDate() {
+        if (CollectionUtils.isEmpty(this.getCertificationEvents())) {
+            return this.certificationDate;
+        }
+
+        this.getCertificationEvents().sort(new CertificationStatusEventComparator());
+        CertificationStatusEvent result = null;
+        for (int i = 0; i < this.getCertificationEvents().size() && result == null; i++) {
+            CertificationStatusEvent currEvent = this.getCertificationEvents().get(i);
+            if (currEvent.getStatus().getName().equals(CertificationStatusType.Active.getName())) {
+                result = currEvent;
+            }
+        }
+        return result.getEventDate();
+    }
+
     public CertificationStatusEvent getStatusOnDate(Date date) {
         if (this.getCertificationEvents() == null || this.getCertificationEvents().size() == 0) {
             return null;

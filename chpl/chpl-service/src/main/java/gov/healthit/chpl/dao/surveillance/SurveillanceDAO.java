@@ -366,8 +366,8 @@ public class SurveillanceDAO extends BaseDAOImpl {
             toInsert.setCertifiedProductUniqueId(surv.getCertifiedProduct().getChplProductNumber());
         }
         toInsert.setNumRandomizedSites(surv.getRandomizedSitesUsed());
-        toInsert.setEndDate(surv.getEndDate());
-        toInsert.setStartDate(surv.getStartDate());
+        toInsert.setEndDate(surv.getEndDay());
+        toInsert.setStartDate(surv.getStartDay());
         if (surv.getType() != null) {
             toInsert.setSurveillanceType(surv.getType().getName());
         }
@@ -411,17 +411,17 @@ public class SurveillanceDAO extends BaseDAOImpl {
             for (SurveillanceNonconformity nc : req.getNonconformities()) {
                 PendingSurveillanceNonconformityEntity toInsertNc = new PendingSurveillanceNonconformityEntity();
 
-                toInsertNc.setCapApproval(nc.getCapApprovalDate());
-                toInsertNc.setCapEndDate(nc.getCapEndDate());
-                toInsertNc.setCapMustCompleteDate(nc.getCapMustCompleteDate());
-                toInsertNc.setCapStart(nc.getCapStartDate());
-                toInsertNc.setDateOfDetermination(nc.getDateOfDetermination());
+                toInsertNc.setCapApproval(nc.getCapApprovalDay());
+                toInsertNc.setCapEndDate(nc.getCapEndDay());
+                toInsertNc.setCapMustCompleteDate(nc.getCapMustCompleteDay());
+                toInsertNc.setCapStart(nc.getCapStartDay());
+                toInsertNc.setDateOfDetermination(nc.getDateOfDeterminationDay());
                 toInsertNc.setDeveloperExplanation(nc.getDeveloperExplanation());
                 toInsertNc.setFindings(nc.getFindings());
                 toInsertNc.setPendingSurveillanceRequirementId(toInsertReq.getId());
                 toInsertNc.setResolution(nc.getResolution());
                 toInsertNc.setSitesPassed(nc.getSitesPassed());
-                toInsertNc.setNonconformityCloseDate(nc.getNonconformityCloseDate());
+                toInsertNc.setNonconformityCloseDate(nc.getNonconformityCloseDay());
                 toInsertNc.setSummary(nc.getSummary());
                 toInsertNc.setTotalSites(nc.getTotalSites());
                 toInsertNc.setType(nc.getNonconformityType());
@@ -821,9 +821,9 @@ public class SurveillanceDAO extends BaseDAOImpl {
         if (from.getCertifiedProduct() != null) {
             to.setCertifiedProductId(from.getCertifiedProduct().getId());
         }
-        to.setEndDate(from.getEndDate());
+        to.setEndDate(from.getEndDay());
         to.setNumRandomizedSites(from.getRandomizedSitesUsed());
-        to.setStartDate(from.getStartDate());
+        to.setStartDate(from.getStartDay());
         if (from.getType() != null) {
             to.setSurveillanceTypeId(from.getType().getId());
         }
@@ -856,16 +856,16 @@ public class SurveillanceDAO extends BaseDAOImpl {
             to.setCertificationCriterionId(null);
         }
 
-        to.setCapApproval(from.getCapApprovalDate());
-        to.setCapEndDate(from.getCapEndDate());
-        to.setCapMustCompleteDate(from.getCapMustCompleteDate());
-        to.setCapStart(from.getCapStartDate());
-        to.setDateOfDetermination(from.getDateOfDetermination());
+        to.setCapApproval(from.getCapApprovalDay());
+        to.setCapEndDate(from.getCapEndDay());
+        to.setCapMustCompleteDate(from.getCapMustCompleteDay());
+        to.setCapStart(from.getCapStartDay());
+        to.setDateOfDetermination(from.getDateOfDeterminationDay());
         to.setDeveloperExplanation(from.getDeveloperExplanation());
         to.setFindings(from.getFindings());
         to.setResolution(from.getResolution());
         to.setSitesPassed(from.getSitesPassed());
-        to.setNonconformityCloseDate(from.getNonconformityCloseDate());
+        to.setNonconformityCloseDate(from.getNonconformityCloseDay());
         to.setSummary(from.getSummary());
         to.setTotalSites(from.getTotalSites());
         to.setType(from.getNonconformityType());

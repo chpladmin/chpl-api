@@ -13,10 +13,16 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.CertificationBodyEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name = "quarterly_report")
 public class QuarterlyReportEntity {
 
@@ -45,14 +51,14 @@ public class QuarterlyReportEntity {
     @Column(name = "activities_and_outcomes_summary")
     private String activitiesOutcomesSummary;
 
-    @Column(name = "reactive_summary")
-    private String reactiveSummary;
+    @Column(name = "reactive_surveillance_summary")
+    private String reactiveSurveillanceSummary;
 
     @Column(name = "prioritized_element_summary")
     private String prioritizedElementSummary;
 
-    @Column(name = "transparency_disclosure_summary")
-    private String disclosureSummary;
+    @Column(name = "disclosure_requirements_summary")
+    private String disclosureRequirementsSummary;
 
     @Column(name = "deleted", insertable = false)
     private Boolean deleted;
