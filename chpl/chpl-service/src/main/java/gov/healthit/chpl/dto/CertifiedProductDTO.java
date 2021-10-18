@@ -25,6 +25,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CertifiedProductDTO implements Serializable {
     private static final long serialVersionUID = 7918387302717979598L;
+    private static final String CERTIFIED_DATE_CODE_FORMAT = "yyMMdd";
+
     private Long id;
     private String productCode;
     private String versionCode;
@@ -46,7 +48,7 @@ public class CertifiedProductDTO implements Serializable {
     private String sedReportFileLocation;
     private String sedIntendedUserDescription;
     private Date sedTestingEnd;
-    private CertificationStatusDTO certificationStatus;
+    private CertificationStatus certificationStatus;
     private String otherAcb;
     private String mandatoryDisclosures;
     private Boolean ics;
@@ -110,13 +112,7 @@ public class CertifiedProductDTO implements Serializable {
             this.setProductClassificationTypeId(Long.valueOf(from.getClassificationType().get("id").toString()));
         }
         this.setProductVersionId(from.getVersion().getVersionId());
-
-        CertificationStatus fromStatus = from.getCurrentStatus().getStatus();
-        if (fromStatus != null) {
-            this.certificationStatus = new CertificationStatusDTO();
-            this.certificationStatus.setId(fromStatus.getId());
-            this.certificationStatus.setStatus(fromStatus.getName());
-        }
+        this.certificationStatus = from.getCurrentStatus().getStatus();
         this.setCertificationEditionId(
                 Long.valueOf(from.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString()));
         this.setReportFileLocation(from.getReportFileLocation());
@@ -151,12 +147,11 @@ public class CertifiedProductDTO implements Serializable {
                     this.setVersionCode(chplProductIdComponents[ChplProductNumberUtil.VERSION_CODE_INDEX]);
                     this.setIcsCode(chplProductIdComponents[ChplProductNumberUtil.ICS_CODE_INDEX]);
                     this.setAdditionalSoftwareCode(chplProductIdComponents[ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_INDEX]);
-                    this.setCertifiedDateCode(chplProductIdComponents[ChplProductNumberUtil.CERTIFIED_DATE_CODE_INDEX]);
                 }
 
                 if (from.getCertificationDate() != null) {
                     Date certDate = new Date(from.getCertificationDate());
-                    SimpleDateFormat dateCodeFormat = new SimpleDateFormat("yyMMdd");
+                    SimpleDateFormat dateCodeFormat = new SimpleDateFormat(CERTIFIED_DATE_CODE_FORMAT);
                     String dateCode = dateCodeFormat.format(certDate);
                     this.setCertifiedDateCode(dateCode);
                 }

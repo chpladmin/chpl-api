@@ -45,6 +45,11 @@ public final class DateUtil {
         return formatInEasternTime(zdt, dtFormat);
     }
 
+    public static String formatInEasternTime(Long millis, String dtFormat) {
+        Date date = new Date(millis);
+        return formatInEasternTime(date, dtFormat);
+    }
+
     public static Long toEpochMillis(LocalDateTime localDateTime) {
         if (localDateTime == null) {
             return null;

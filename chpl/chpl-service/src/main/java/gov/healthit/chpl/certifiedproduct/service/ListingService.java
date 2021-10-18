@@ -19,6 +19,7 @@ import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.domain.CertificationEdition;
+import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
@@ -34,7 +35,6 @@ import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
 import gov.healthit.chpl.domain.TransparencyAttestation;
 import gov.healthit.chpl.domain.compliance.DirectReview;
-import gov.healthit.chpl.dto.CertificationStatusEventDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -226,9 +226,9 @@ public class ListingService {
         if (edition != null) {
             cp.setEdition(edition.getYear());
         }
-        CertificationStatusEventDTO cseDTO = certificationStatusEventsService.getInitialCertificationEvent(dto.getId());
-        if (cseDTO != null) {
-            cp.setCertificationDate(cseDTO.getEventDate().getTime());
+        CertificationStatusEvent cse = certificationStatusEventsService.getInitialCertificationEvent(dto.getId());
+        if (cse != null) {
+            cp.setCertificationDate(cse.getEventDate());
         } else {
             cp.setCertificationDate(-1);
         }

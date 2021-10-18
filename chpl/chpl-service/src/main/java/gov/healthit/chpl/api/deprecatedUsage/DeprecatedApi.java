@@ -1,5 +1,7 @@
 package gov.healthit.chpl.api.deprecatedUsage;
 
+import java.time.LocalDate;
+
 import org.springframework.http.HttpMethod;
 
 import lombok.AllArgsConstructor;
@@ -17,4 +19,5 @@ public class DeprecatedApi {
     private String apiOperation;
     private String requestParameter;
     private String changeDescription;
+    private LocalDate removalDate;
 }

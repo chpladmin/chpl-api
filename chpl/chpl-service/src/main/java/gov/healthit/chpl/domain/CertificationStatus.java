@@ -7,7 +7,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import gov.healthit.chpl.dto.CertificationStatusDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -20,11 +19,6 @@ import lombok.NoArgsConstructor;
 public class CertificationStatus implements Serializable {
 
     private static final long serialVersionUID = 818896721132619130L;
-
-    public CertificationStatus(CertificationStatusDTO dto) {
-        this.id = dto.getId();
-        this.name = dto.getStatus();
-    }
 
     /**
      * Internal ID
