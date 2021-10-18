@@ -16,6 +16,7 @@ import gov.healthit.chpl.dao.statistics.CuresCriteriaStatisticsByAcbDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.statistics.CuresCriteriaStatisticsByAcb;
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.extern.log4j.Log4j2;
 
@@ -103,7 +104,7 @@ public class UscdiCriteriaByAcbWorksheet {
 
     private List<CertificationCriterion> getUscdiCriteria() {
         return certificationCriterionService.getUscdiCriteria().stream()
-                .sorted((c1, c2) -> c1.getNumber().compareTo(c2.getNumber()))
+                .sorted((c1, c2) -> certificationCriterionService.sortCriteria(new CertificationCriterionDTO(c1), new CertificationCriterionDTO(c2)))
                 .collect(Collectors.toList());
     }
 }
