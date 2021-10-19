@@ -130,6 +130,12 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
                         "listing.criteria.missingGap",
                         Util.formatCriteriaNumber(certResult.getCriterion()));
             }
+        } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.GAP)) {
+            if (certResult.isGap() != null | !StringUtils.isEmpty(certResult.getGapStr())) {
+                listing.getWarningMessages().add(
+                        msgUtil.getMessage("listing.criteria.gapNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
+            certResult.setGap(null);
         }
     }
 
@@ -156,6 +162,13 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
                         "listing.criteria.missingAttestationAnswer",
                         Util.formatCriteriaNumber(certResult.getCriterion()));
             }
+        } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.ATTESTATION_ANSWER)) {
+            if (!StringUtils.isEmpty(certResult.getAttestationAnswer())
+                    || !StringUtils.isEmpty(certResult.getAttestationAnswerStr())) {
+                listing.getWarningMessages().add(
+                        msgUtil.getMessage("listing.criteria.attestationAnswerNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
+            certResult.setAttestationAnswer(null);
         }
     }
 
@@ -164,6 +177,12 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
                 && StringUtils.isEmpty(certResult.getApiDocumentation())) {
             addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.missingApiDocumentation",
                     Util.formatCriteriaNumber(certResult.getCriterion()));
+        } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
+            if (!StringUtils.isEmpty(certResult.getApiDocumentation())) {
+                listing.getWarningMessages().add(
+                        msgUtil.getMessage("listing.criteria.apiDocumentationNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
+            certResult.setApiDocumentation(null);
         }
     }
 
@@ -172,6 +191,12 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
                 && StringUtils.isEmpty(certResult.getExportDocumentation())) {
             addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.missingExportDocumentation",
                     Util.formatCriteriaNumber(certResult.getCriterion()));
+        } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.EXPORT_DOCUMENTATION)) {
+            if (!StringUtils.isEmpty(certResult.getExportDocumentation())) {
+                listing.getWarningMessages().add(
+                        msgUtil.getMessage("listing.criteria.exportDocumentationNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
+            certResult.setExportDocumentation(null);
         }
     }
 
@@ -187,6 +212,12 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
             listing.getWarningMessages().add(
                     msgUtil.getMessage("listing.criteria.useCasesWithoutAttestation",
                             Util.formatCriteriaNumber(certResult.getCriterion())));
+        } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.USE_CASES)) {
+            if (!StringUtils.isEmpty(certResult.getUseCases())) {
+                listing.getWarningMessages().add(
+                        msgUtil.getMessage("listing.criteria.useCasesNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
+            certResult.setUseCases(null);
         }
     }
 
@@ -195,6 +226,12 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
                 && StringUtils.isEmpty(certResult.getServiceBaseUrlList())) {
             addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.missingServiceBaseUrlList",
                     Util.formatCriteriaNumber(certResult.getCriterion()));
+        } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.SERVICE_BASE_URL_LIST)) {
+            if (!StringUtils.isEmpty(certResult.getServiceBaseUrlList())) {
+                listing.getWarningMessages().add(
+                        msgUtil.getMessage("listing.criteria.serviceBaseUrlListNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
+            certResult.setServiceBaseUrlList(null);
         }
     }
 }
