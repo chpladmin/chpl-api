@@ -49,10 +49,10 @@ public class OptionalStandardReviewer implements Reviewer {
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
             .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
-            .forEach(certResult -> review(listing, certResult));
+            .forEach(certResult -> reviewCertificatinResult(listing, certResult));
     }
 
-    public void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    private void reviewCertificatinResult(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         reviewCriteriaCanHaveOptionalStandards(listing, certResult);
         if (!CollectionUtils.isEmpty(certResult.getOptionalStandards())) {
             certResult.getOptionalStandards().stream()
@@ -61,11 +61,12 @@ public class OptionalStandardReviewer implements Reviewer {
     }
 
     private void reviewCriteriaCanHaveOptionalStandards(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.OPTIONAL_STANDARD)
-                && !CollectionUtils.isEmpty(certResult.getOptionalStandards())) {
-            certResult.getOptionalStandards().clear();
-            listing.getWarningMessages().add(msgUtil.getMessage(
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.OPTIONAL_STANDARD)) {
+            if (!CollectionUtils.isEmpty(certResult.getOptionalStandards())) {
+                listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.optionalStandardsNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
+            certResult.setOptionalStandards(null);
         }
     }
 

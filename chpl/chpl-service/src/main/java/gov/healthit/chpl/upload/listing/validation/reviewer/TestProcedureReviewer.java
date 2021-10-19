@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -35,24 +36,26 @@ public class TestProcedureReviewer extends PermissionBasedReviewer {
     public void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         reviewCriteriaCanHaveTestProcedures(listing, certResult);
         reviewTestProceduresRequiredWhenCertResultIsNotGap(listing, certResult);
-        if (certResult.getTestProcedures() != null && certResult.getTestProcedures().size() > 0) {
+        if (!CollectionUtils.isEmpty(certResult.getTestProcedures())) {
             certResult.getTestProcedures().stream()
                 .forEach(testProcedure -> reviewTestProcedureFields(listing, certResult, testProcedure));
         }
     }
 
     private void reviewCriteriaCanHaveTestProcedures(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_PROCEDURE)
-                && certResult.getTestProcedures() != null && certResult.getTestProcedures().size() > 0) {
-            listing.getErrorMessages().add(msgUtil.getMessage(
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_PROCEDURE)) {
+            if (!CollectionUtils.isEmpty(certResult.getTestProcedures())) {
+                listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.testProcedureNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
+            certResult.setTestProcedures(null);
         }
     }
 
     private void reviewTestProceduresRequiredWhenCertResultIsNotGap(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!isGapEligibileAndHasGap(certResult)
                 && certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_PROCEDURE)
-                && (certResult.getTestProcedures() == null || certResult.getTestProcedures().size() == 0)) {
+                && CollectionUtils.isEmpty(certResult.getTestProcedures())) {
                 addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.missingTestProcedure",
                         Util.formatCriteriaNumber(certResult.getCriterion()));
         }

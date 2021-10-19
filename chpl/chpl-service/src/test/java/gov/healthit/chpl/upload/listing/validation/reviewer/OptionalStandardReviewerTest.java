@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -133,7 +134,7 @@ public class OptionalStandardReviewerTest {
     }
 
     @Test
-    public void optionalStandardsNotApplicableToCriteria_hasWarningAndStandardsRemoved() {
+    public void optionalStandardsNotApplicableToCriteria_hasWarningAndStandardsSetNull() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
             .thenReturn(false);
         List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
@@ -158,7 +159,7 @@ public class OptionalStandardReviewerTest {
         assertEquals(0, listing.getErrorMessages().size());
         assertTrue(listing.getWarningMessages().contains(
                 String.format(OPTIONAL_STANDARDS_NOT_APPLICABLE, "170.315 (a)(1)")));
-        assertEquals(0, listing.getCertificationResults().get(0).getOptionalStandards().size());
+        assertNull(listing.getCertificationResults().get(0).getOptionalStandards());
     }
 
     @Test

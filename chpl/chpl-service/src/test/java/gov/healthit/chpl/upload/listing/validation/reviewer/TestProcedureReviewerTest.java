@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -22,7 +23,7 @@ import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class TestProcedureReviewerTest {
-    private static final String TEST_PROCEDURE_NOT_APPLICABLE = "Test procedures are not applicable for the criterion %s.";
+    private static final String TEST_PROCEDURE_NOT_APPLICABLE = "Test procedures are not applicable for the criterion %s. They have been removed.";
     private static final String TEST_PROCEDURE_NAME_INVALID = "Certification %s contains an invalid test procedure name: '%s'.";
     private static final String TEST_PROCEDURE_REQUIRED = "Test procedures are required for certification criteria %s.";
     private static final String MISSING_TEST_PROCEDURE_NAME = "Test procedure name is missing for certification %s.";
@@ -157,7 +158,7 @@ public class TestProcedureReviewerTest {
     }
 
     @Test
-    public void review_testProcedureNotApplicableToCriteria_hasError() {
+    public void review_testProcedureNotApplicableToCriteria_hasWarningAndTestProceduresSetNull() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(true);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_PROCEDURE)))
@@ -183,11 +184,11 @@ public class TestProcedureReviewerTest {
                 .build();
         reviewer.review(listing);
 
-        assertEquals(1, listing.getCertificationResults().get(0).getTestProcedures().size());
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(
                 String.format(TEST_PROCEDURE_NOT_APPLICABLE, "170.315 (a)(1)")));
+        assertNull(listing.getCertificationResults().get(0).getTestProcedures());
     }
 
     @Test
