@@ -21,7 +21,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class TestStandardReviewerTest {
-    private static final String TEST_STANDARDS_NOT_ALLOWED = "Criteria %s contains a test standard '%s' which is not allowed and should be removed.";
+    private static final String TEST_STANDARDS_NOT_APPLICABLE = "Test standards are not applicable to criterion '%s'. They have been removed.";
 
     private ErrorMessageUtil msgUtil;
     private TestStandardReviewer reviewer;
@@ -29,9 +29,9 @@ public class TestStandardReviewerTest {
     @Before
     public void before() throws EntityRetrievalException {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testStandardNotAllowed"),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-            .thenAnswer(i -> String.format(TEST_STANDARDS_NOT_ALLOWED, i.getArgument(1), i.getArgument(2)));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testStandardsNotApplicable"),
+                ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(TEST_STANDARDS_NOT_APPLICABLE, i.getArgument(1), ""));
         reviewer = new TestStandardReviewer(msgUtil);
     }
 
@@ -72,7 +72,7 @@ public class TestStandardReviewerTest {
     }
 
     @Test
-    public void review_testStandardsPresent_hasError() {
+    public void review_testStandardsPresent_hasWarningAndRemovedTestStandard() {
         List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();
         testStandards.add(CertificationResultTestStandard.builder()
                 .testStandardName("test std")
@@ -91,14 +91,15 @@ public class TestStandardReviewerTest {
                 .build();
         reviewer.review(listing);
 
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(
-                String.format(TEST_STANDARDS_NOT_ALLOWED, "170.315 (a)(1)", "test std")));
+        assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+        assertTrue(listing.getWarningMessages().contains(
+                String.format(TEST_STANDARDS_NOT_APPLICABLE, "170.315 (a)(1)")));
+        assertEquals(0, listing.getCertificationResults().get(0).getTestStandards().size());
     }
 
     @Test
-    public void review_testStandardsPresentWithoutId_hasError() {
+    public void review_testStandardsPresentWithoutId_hasWarningAndRemovesTestStandard() {
         List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();
         testStandards.add(CertificationResultTestStandard.builder()
                 .testStandardName("test std")
@@ -117,14 +118,15 @@ public class TestStandardReviewerTest {
                 .build();
         reviewer.review(listing);
 
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(
-                String.format(TEST_STANDARDS_NOT_ALLOWED, "170.315 (a)(1)", "test std")));
+        assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+        assertTrue(listing.getWarningMessages().contains(
+                String.format(TEST_STANDARDS_NOT_APPLICABLE, "170.315 (a)(1)")));
+        assertEquals(0, listing.getCertificationResults().get(0).getTestStandards().size());
     }
 
     @Test
-    public void review_testStandardsPresentWithoutName_hasError() {
+    public void review_testStandardsPresentWithoutName_hasWarningAndRemovesTestStandard() {
         List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();
         testStandards.add(CertificationResultTestStandard.builder()
                 .testStandardName("")
@@ -143,10 +145,12 @@ public class TestStandardReviewerTest {
                 .build();
         reviewer.review(listing);
 
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(
-                String.format(TEST_STANDARDS_NOT_ALLOWED, "170.315 (a)(1)", "")));
+        assertEquals(1, listing.getWarningMessages().size());
+        System.out.println(listing.getWarningMessages().iterator().next());
+        assertEquals(0, listing.getErrorMessages().size());
+        assertTrue(listing.getWarningMessages().contains(
+                String.format(TEST_STANDARDS_NOT_APPLICABLE, "170.315 (a)(1)")));
+        assertEquals(0, listing.getCertificationResults().get(0).getTestStandards().size());
     }
 
     private Map<String, Object> create2015EditionMap() {
