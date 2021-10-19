@@ -144,12 +144,12 @@ public class ListingUploadValidator {
         certDateReviewer.review(listing);
         qmsReviewer.review(listing);
         accStdReviewer.review(listing);
-        duplicateDataReviewer.review(listing);
         urlReviewer.review(listing);
         fieldLengthReviewer.review(listing);
         unsupportedCharacterReviewer.review(listing);
         certResultReviewer.review(listing);
         cqmResultReviewer.review(listing);
         sedReviewer.review(listing);
+        duplicateDataReviewer.review(listing);
     }
 }

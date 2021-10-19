@@ -133,7 +133,7 @@ public class OptionalStandardReviewerTest {
     }
 
     @Test
-    public void optionalStandardsNotApplicableToCriteria_hasError() {
+    public void optionalStandardsNotApplicableToCriteria_hasWarningAndStandardsRemoved() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
             .thenReturn(false);
         List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
@@ -154,10 +154,11 @@ public class OptionalStandardReviewerTest {
                 .build();
         reviewer.review(listing);
 
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(
+        assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+        assertTrue(listing.getWarningMessages().contains(
                 String.format(OPTIONAL_STANDARDS_NOT_APPLICABLE, "170.315 (a)(1)")));
+        assertEquals(0, listing.getCertificationResults().get(0).getOptionalStandards().size());
     }
 
     @Test

@@ -29,7 +29,6 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
     private TestFunctionalityReviewer testFunctionalityReviewer;
     private TestStandardReviewer testStandardReviewer;
     private OptionalStandardReviewer optionalStandardReviewer;
-    private TestStandardAndOptionalStandardReviewer testStandardAndOptionalStandardReviewer;
     private UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
     private OldCriteriaWithoutIcsReviewer oldCriteriaWithoutIcsReviewer;
     private SedG32015Reviewer sedG3Reviewer;
@@ -48,7 +47,6 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
             @Qualifier("listingUploadTestFunctionalityReviewer") TestFunctionalityReviewer testFunctionalityReviewer,
             @Qualifier("listingUploadTestStandardReviewer") TestStandardReviewer testStandardReviewer,
             @Qualifier("listingUploadOptionalStandardReviewer") OptionalStandardReviewer optionalStandardReviewer,
-            @Qualifier("listingUploadTestStandardAndOptionalStandardReviewer") TestStandardAndOptionalStandardReviewer testStandardAndOptionalStandardReviewer,
             @Qualifier("uploadedListingUnattestedCriteriaWithDataReviewer") UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer,
             @Qualifier("oldCriteriaWithoutIcsReviewer") OldCriteriaWithoutIcsReviewer oldCriteriaWithoutIcsReviewer,
             @Qualifier("sedG32015Reviewer") SedG32015Reviewer sedG3Reviewer,
@@ -65,7 +63,6 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
         this.testFunctionalityReviewer = testFunctionalityReviewer;
         this.testStandardReviewer = testStandardReviewer;
         this.optionalStandardReviewer = optionalStandardReviewer;
-        this.testStandardAndOptionalStandardReviewer = testStandardAndOptionalStandardReviewer;
         this.unattestedCriteriaWithDataReviewer = unattestedCriteriaWithDataReviewer;
         this.oldCriteriaWithoutIcsReviewer = oldCriteriaWithoutIcsReviewer;
         this.sedG3Reviewer = sedG3Reviewer;
@@ -96,7 +93,6 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
         testFunctionalityReviewer.review(listing);
         testStandardReviewer.review(listing);
         optionalStandardReviewer.review(listing);
-        testStandardAndOptionalStandardReviewer.review(listing);
         unattestedCriteriaWithDataReviewer.review(listing);
         oldCriteriaWithoutIcsReviewer.review(listing);
         sedG3Reviewer.review(listing);
