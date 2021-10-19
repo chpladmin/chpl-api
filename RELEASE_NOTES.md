@@ -1,5 +1,16 @@
 # Release Notes
 
+## Version 32.2.0
+_18 October 2021_
+
+### Features
+* Give users a date for when deprecated API endpoints may be removed
+* Update Questionable Activity Report to new HTML email template
+* Check listing updates for questionable activity when an ONC-ACB user updates promoting interoperability
+* Do not allow edit of Certification Date field via the API
+
+---
+
 ## Version 32.1.0
 _5 October 2021_
 
