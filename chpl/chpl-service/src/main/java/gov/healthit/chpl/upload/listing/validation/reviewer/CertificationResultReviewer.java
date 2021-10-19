@@ -28,6 +28,7 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
     private TestProcedureReviewer testProcedureReviewer;
     private TestFunctionalityReviewer testFunctionalityReviewer;
     private TestStandardReviewer testStandardReviewer;
+    //TODO: optional standards, SVAP
     private UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
     private OldCriteriaWithoutIcsReviewer oldCriteriaWithoutIcsReviewer;
     private SedG32015Reviewer sedG3Reviewer;
