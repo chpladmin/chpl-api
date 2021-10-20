@@ -1,6 +1,6 @@
 package gov.healthit.chpl.api.deprecatedUsage;
 
-import java.time.LocalDate;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,10 +11,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeprecatedApi {
+public class DeprecatedResponseFieldApi {
     private Long id;
     private ApiOperation apiOperation;
-    private String requestParameter;
-    private String changeDescription;
-    private LocalDate removalDate;
+    private List<DeprecatedResponseField> responseFields;
 }

@@ -36,6 +36,7 @@ import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
 import gov.healthit.chpl.web.controller.results.CertificationIdLookupResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdVerifyResults;
@@ -94,6 +95,7 @@ public class CertificationIdController {
     @RequestMapping(value = "/search", method = RequestMethod.GET, produces = {
             MediaType.APPLICATION_JSON_VALUE
     })
+    @DeprecatedResponseFields(responseClass = CertificationIdResults.class)
     public @ResponseBody CertificationIdResults searchCertificationId(
             @RequestParam(required = false) final List<Long> ids) throws InvalidArgumentsException,
     CertificationIdException {
@@ -109,6 +111,7 @@ public class CertificationIdController {
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = {
             MediaType.APPLICATION_JSON_VALUE
     })
+    @DeprecatedResponseFields(responseClass = CertificationIdResults.class)
     public @ResponseBody CertificationIdResults createCertificationId(
             @RequestParam(required = true) final List<Long> ids) throws InvalidArgumentsException,
     CertificationIdException {

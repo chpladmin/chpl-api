@@ -11,10 +11,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeprecatedApi {
+public class DeprecatedResponseField {
     private Long id;
-    private ApiOperation apiOperation;
-    private String requestParameter;
+    private String responseField;
     private String changeDescription;
     private LocalDate removalDate;
 }

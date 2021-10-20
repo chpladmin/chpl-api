@@ -49,7 +49,8 @@ public class DeprecatedApiUsageDao extends BaseDAOImpl {
                 + "FROM DeprecatedApiUsageEntity apiUsage "
                 + "JOIN FETCH apiUsage.deprecatedApi api "
                 + "JOIN FETCH apiUsage.apiKey apiKey "
-                + "WHERE apiUsage.deleted = false ";
+                + "WHERE apiUsage.deleted = false "
+                + "ORDER BY apiUsage.apiCallCount DESC ";
         Query query = entityManager.createQuery(hql);
         List<DeprecatedApiUsageEntity> results = query.getResultList();
         return results.stream().map(result -> result.toDomain()).collect(Collectors.toList());
