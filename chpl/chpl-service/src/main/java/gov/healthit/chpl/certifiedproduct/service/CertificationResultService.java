@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.conformanceMethod.dao.ConformanceMethodDAO;
+import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
+import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodCriteriaMap;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -40,19 +43,21 @@ public class CertificationResultService {
     private CertificationResultDetailsDAO certificationResultDetailsDAO;
     private SvapDAO svapDao;
     private OptionalStandardDAO optionalStandardDAO;
+    private ConformanceMethodDAO conformanceMethodDAO;
     private TestToolDAO testToolDAO;
     private FF4j ff4j;
 
     @Autowired
     public CertificationResultService(CertificationResultRules certRules, CertificationResultManager certResultManager,
             TestingFunctionalityManager testFunctionalityManager, CertificationResultDetailsDAO certificationResultDetailsDAO,
-            SvapDAO svapDAO, OptionalStandardDAO optionalStandardDAO, TestToolDAO testToolDAO, FF4j ff4j) {
+            SvapDAO svapDAO, OptionalStandardDAO optionalStandardDAO, TestToolDAO testToolDAO, ConformanceMethodDAO conformanceMethodDAO, FF4j ff4j) {
         this.certRules = certRules;
         this.certResultManager = certResultManager;
         this.testFunctionalityManager = testFunctionalityManager;
         this.certificationResultDetailsDAO = certificationResultDetailsDAO;
         this.svapDao = svapDAO;
         this.optionalStandardDAO = optionalStandardDAO;
+        this.conformanceMethodDAO = conformanceMethodDAO;
         this.testToolDAO = testToolDAO;
         this.ff4j = ff4j;
     }
@@ -61,9 +66,10 @@ public class CertificationResultService {
         List<SvapCriteriaMap> svapCriteriaMap = svapDao.getAllSvapCriteriaMap();
         List<OptionalStandardCriteriaMap> optionalStandardCriteriaMap = optionalStandardDAO.getAllOptionalStandardCriteriaMap();
         List<TestToolCriteriaMap> testToolCriteriaMap = testToolDAO.getAllTestToolCriteriaMap();
+        List<ConformanceMethodCriteriaMap> conformanceMethodCriteriaMap = conformanceMethodDAO.getAllConformanceMethodCriteriaMap();
 
         return getCertificationResultDetailsDTOs(searchDetails.getId()).stream()
-                .map(dto -> getCertificationResult(dto, searchDetails, svapCriteriaMap, optionalStandardCriteriaMap, testToolCriteriaMap))
+                .map(dto -> getCertificationResult(dto, searchDetails, svapCriteriaMap, optionalStandardCriteriaMap, testToolCriteriaMap, conformanceMethodCriteriaMap))
                 .collect(Collectors.toList());
     }
 
@@ -80,8 +86,8 @@ public class CertificationResultService {
 
     private CertificationResult getCertificationResult(CertificationResultDetailsDTO certResult,
             CertifiedProductSearchDetails searchDetails, List<SvapCriteriaMap> svapCriteriaMap,
-            List<OptionalStandardCriteriaMap> optionalStandardCriteriaMap,
-            List<TestToolCriteriaMap> testToolCriteriaMap) {
+            List<OptionalStandardCriteriaMap> optionalStandardCriteriaMap, List<TestToolCriteriaMap> testToolCriteriaMap,
+            List<ConformanceMethodCriteriaMap> conformanceMethodCriteriaMap) {
 
         CertificationResult result = new CertificationResult(certResult, certRules);
 
@@ -89,6 +95,7 @@ public class CertificationResultService {
         populateSed(certResult, searchDetails, result, criteria);
         populateTestTasks(certResult, searchDetails, criteria);
 
+        result.setAllowedConformanceMethods(getAvailableConformanceMethodsForCriteria(result, conformanceMethodCriteriaMap));
         result.setAllowedOptionalStandards(getAvailableOptionalStandardsForCriteria(result, optionalStandardCriteriaMap));
         result.setAllowedSvaps(getAvailableSvapForCriteria(result, svapCriteriaMap));
         result.setAllowedTestFunctionalities(getAvailableTestFunctionalities(result, searchDetails));
@@ -136,6 +143,13 @@ public class CertificationResultService {
         } else {
             result.setSed(null);
         }
+    }
+
+    private List<ConformanceMethod> getAvailableConformanceMethodsForCriteria(CertificationResult result, List<ConformanceMethodCriteriaMap> conformanceMethodCriteriaMap) {
+        return conformanceMethodCriteriaMap.stream()
+                .filter(cmcm -> ff4j.check(FeatureList.CONFORMANCE_METHOD) && cmcm.getCriterion().getId().equals(result.getCriterion().getId()))
+                .map(cmcm -> cmcm.getConformanceMethod())
+                .collect(Collectors.toList());
     }
 
     private List<OptionalStandard> getAvailableOptionalStandardsForCriteria(CertificationResult result, List<OptionalStandardCriteriaMap> optionalStandardCriteriaMap) {

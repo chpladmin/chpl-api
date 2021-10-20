@@ -787,6 +787,7 @@ public class CertifiedProductController {
         for (PendingCertifiedProductDTO product : pcps) {
             PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(product);
             pcpManager.addAllVersionsToCmsCriterion(pcpDetails);
+            pcpManager.addAvailableConformanceMethods(pcpDetails);
             pcpManager.addAvailableTestFunctionalities(pcpDetails);
             pcpManager.addAvailableOptionalStandards(pcpDetails);
             result.add(pcpDetails);
