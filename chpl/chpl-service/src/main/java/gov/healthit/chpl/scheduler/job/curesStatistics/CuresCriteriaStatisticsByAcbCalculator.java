@@ -25,7 +25,6 @@ import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
-import one.util.streamex.StreamEx;
 
 @Log4j2(topic = "curesStatisticsCreatorJobLogger")
 @Component
@@ -69,18 +68,25 @@ public class CuresCriteriaStatisticsByAcbCalculator {
     public List<CuresCriteriaStatisticsByAcb> calculate(LocalDate statisticsDate) {
         List<CuresCriteriaStatisticsByAcb> curesCriteriaUpdateByAcbs = new ArrayList<CuresCriteriaStatisticsByAcb>();
         for (CuresCriteriaUpdate curesCriteriaUpdate : curesCriteriaUpdates) {
-            List<CertifiedProductDetailsDTO> listingsAttestingToCriterion = certifiedProductDAO.getListingsAttestingToCriterion(curesCriteriaUpdate.getCuresCriterion().getId(), activeStatuses);
 
-            List<Long> acbIds = getListOfAcbs(listingsAttestingToCriterion);
+            List<CertifiedProductDetailsDTO> listingsAttestingToCuresCriterion =
+                    certifiedProductDAO.getListingsAttestingToCriterion(curesCriteriaUpdate.getCuresCriterion().getId(), activeStatuses);
+
+            List<CertifiedProductDetailsDTO> listingsAttestingToOriginalCriterion =
+                            certifiedProductDAO.getListingsAttestingToCriterion(curesCriteriaUpdate.getOriginalCriterion().getId(), activeStatuses);
+
+            List<Long> acbIds = certificationBodyDAO.findAllActive().stream()
+                    .map(dto -> dto.getId())
+                    .collect(Collectors.toList());
 
             for (Long acbId : acbIds) {
                 CuresCriteriaStatisticsByAcb statistic = CuresCriteriaStatisticsByAcb.builder()
                         .certificationBody(getCertificationBody(acbId))
                         .originalCriterion(curesCriteriaUpdate.originalCriterion)
                         .curesCriterion(curesCriteriaUpdate.curesCriterion)
-                        .originalCriterionUpgradedCount(calculateUpgradeCriterionByAcb(acbId, listingsAttestingToCriterion, curesCriteriaUpdate.getOriginalCriterion()))
-                        .curesCriterionCreatedCount(calculateNewCriterionByAcb(acbId, listingsAttestingToCriterion, curesCriteriaUpdate.getOriginalCriterion()))
-                        .criteriaNeedingUpgradeCount(calculateCriteriaNeedingUpgradeCountByAcb(acbId, curesCriteriaUpdate.getOriginalCriterion()))
+                        .originalCriterionUpgradedCount(calculateUpgradeCriterionByAcb(acbId, listingsAttestingToCuresCriterion, curesCriteriaUpdate.getOriginalCriterion()))
+                        .curesCriterionCreatedCount(calculateNewCriterionByAcb(acbId, listingsAttestingToCuresCriterion, curesCriteriaUpdate.getOriginalCriterion()))
+                        .criteriaNeedingUpgradeCount(calculateCriteriaNeedingUpgradeCountByAcb(acbId, listingsAttestingToOriginalCriterion))
                         .statisticDate(statisticsDate)
                         .build();
 
@@ -130,14 +136,10 @@ public class CuresCriteriaStatisticsByAcbCalculator {
                 .collect(Collectors.counting());
     }
 
-    private Long calculateCriteriaNeedingUpgradeCountByAcb(Long acbId, CertificationCriterion criterion) {
-        return certifiedProductDAO.getListingsAttestingToCriterion(criterion.getId(), activeStatuses).stream()
+    private Long calculateCriteriaNeedingUpgradeCountByAcb(Long acbId, List<CertifiedProductDetailsDTO> listingsAttestingToOriginalCriterion) {
+        return listingsAttestingToOriginalCriterion.stream()
                 .filter(listing -> listing.getCertificationBodyId().equals(acbId))
                 .collect(Collectors.counting());
-    }
-
-    private List<Long> getListOfAcbs(List<CertifiedProductDetailsDTO> certifiedProductDetails) {
-        return StreamEx.of(certifiedProductDetails).map(det -> det.getCertificationBodyId()).distinct().toList();
     }
 
     private CertificationBody getCertificationBody(Long acbId) {

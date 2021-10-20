@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.auth.user.User;
@@ -36,7 +37,7 @@ public class CuresListingByAcbStatisticsCalculator {
     private CertifiedProductDAO certifiedProductDAO;
     private CuresListingStatisticsByAcbDAO curesListingStatisticsByAcbDAO;
     private CertificationBodyDAO certificationBodyDAO;
-
+    private Integer threadCount;
     private List<CertificationCriterion> curesCriteria;
     private List<String> activeStatusNames;
 
@@ -44,12 +45,13 @@ public class CuresListingByAcbStatisticsCalculator {
     @Autowired
     public CuresListingByAcbStatisticsCalculator(CertifiedProductDetailsManager certifiedProductDetailsManager, CertifiedProductDAO certifiedProductDAO,
             CuresUpdateService curesUpdateService, CertificationCriterionService certificationCriterionService, CuresListingStatisticsByAcbDAO curesListingStatisticsByAcbDAO,
-            CertificationBodyDAO certificationBodyDAO) {
+            CertificationBodyDAO certificationBodyDAO, @Value("${executorThreadCountForQuartzJobs}") Integer threadCount) {
 
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
         this.certifiedProductDAO = certifiedProductDAO;
         this.curesListingStatisticsByAcbDAO = curesListingStatisticsByAcbDAO;
         this.certificationBodyDAO = certificationBodyDAO;
+        this.threadCount = threadCount;
 
         populateCuresCriteria(certificationCriterionService);
 
@@ -64,7 +66,7 @@ public class CuresListingByAcbStatisticsCalculator {
                 .map(dto -> new CertificationBody(dto))
                 .collect(Collectors.toList());
 
-        ForkJoinPool pool = new ForkJoinPool(2);
+        ForkJoinPool pool = new ForkJoinPool(threadCount);
         try {
             List<CertifiedProductSearchDetails> listings = pool.submit(() -> get2015ListingDetails()).get();
 
