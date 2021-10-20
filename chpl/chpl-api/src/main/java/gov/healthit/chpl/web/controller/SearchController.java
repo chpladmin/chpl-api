@@ -41,7 +41,9 @@ public class SearchController {
         this.searchService = searchService;
     }
 
-    @SuppressWarnings({"checkstyle:methodlength", "checkstyle:parameternumber"})
+    @SuppressWarnings({
+            "checkstyle:methodlength", "checkstyle:parameternumber"
+    })
     @Operation(summary = "Search the CHPL",
         description = "If paging parameters are not specified, the first 20 records are returned by default. "
             + "All parameters are optional. "
@@ -49,87 +51,68 @@ public class SearchController {
             + "a comma-delimited list of those things (i.e. certificationStatuses = Active,Suspended). "
             + "Date parameters are required to be in the format "
             + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + ". ",
-        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+        security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @DeprecatedResponseFields(responseClass = SearchResponse.class)
     @RequestMapping(value = "/search/beta", method = RequestMethod.GET, produces = {
             "application/json; charset=utf-8", "application/xml"
     })
     public @ResponseBody SearchResponse search(
             @Parameter(description = "CHPL ID, Developer (or previous developer) Name, Product Name, ONC-ACB Certification ID",
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "searchTerm")
-            @RequestParam(value = "searchTerm", required = false, defaultValue = "") String searchTerm,
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "searchTerm") @RequestParam(value = "searchTerm", required = false, defaultValue = "") String searchTerm,
             @Parameter(description = "A comma-separated list of certification statuses (ex: \"Active,Retired,Withdrawn by Developer\"). Results may match any of the provided statuses.",
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationStatuses")
-            @RequestParam(value = "certificationStatuses", required = false, defaultValue = "") String certificationStatusesDelimited,
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationStatuses") @RequestParam(value = "certificationStatuses", required = false, defaultValue = "") String certificationStatusesDelimited,
             @Parameter(description = "A comma-separated list of certification edition years (ex: \"2014,2015\" finds listings with either edition 2014 or 2015). Results may match any of the provided edition years.",
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationEditions")
-            @RequestParam(value = "certificationEditions", required = false, defaultValue = "") String certificationEditionsDelimited,
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationEditions") @RequestParam(value = "certificationEditions", required = false, defaultValue = "") String certificationEditionsDelimited,
             @Parameter(description = "A comma-separated list of certification criteria IDs to be queried together (ex: \"1,2\" finds listings attesting to 170.315 (a)(1) or 170.315 (a)(2)).",
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationCriteriaIds")
-            @RequestParam(value = "certificationCriteriaIds", required = false, defaultValue = "") String certificationCriteriaIdsDelimited,
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationCriteriaIds") @RequestParam(value = "certificationCriteriaIds", required = false, defaultValue = "") String certificationCriteriaIdsDelimited,
             @Parameter(description = "Either AND or OR. Defaults to OR. "
                     + "Indicates whether a listing must have all certificationCriteriaIds or "
                     + "may have any one or more of the certificationCriteriaIds.",
-                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationCriteriaOperator")
-            @RequestParam(value = "certificationCriteriaOperator", required = false, defaultValue = "OR") String certificationCriteriaOperatorStr,
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationCriteriaOperator") @RequestParam(value = "certificationCriteriaOperator", required = false, defaultValue = "OR") String certificationCriteriaOperatorStr,
             @Parameter(description = "A comma-separated list of cqms to be queried together (ex: \"CMS2,CMS9\" "
                     + "finds listings with either CMS2 or CMS9).",
-                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "cqms")
-            @RequestParam(value = "cqms", required = false, defaultValue = "") String cqmsDelimited,
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "cqms") @RequestParam(value = "cqms", required = false, defaultValue = "") String cqmsDelimited,
             @Parameter(description = "Either AND or OR. Defaults to OR. "
                     + "Indicates whether a listing must have all cqms or may have any one or more of the cqms.",
-                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "cqmsOperator")
-            @RequestParam(value = "cqmsOperator", required = false, defaultValue = "OR") String cqmsOperatorStr,
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "cqmsOperator") @RequestParam(value = "cqmsOperator", required = false, defaultValue = "OR") String cqmsOperatorStr,
             @Parameter(description = "A comma-separated list of certification body names to be 'or'ed together "
                     + "(ex: \"Drummond,ICSA\" finds listings belonging to either Drummond or ICSA).",
-                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationBodies")
-            @RequestParam(value = "certificationBodies", required = false, defaultValue = "") String certificationBodiesDelimited,
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationBodies") @RequestParam(value = "certificationBodies", required = false, defaultValue = "") String certificationBodiesDelimited,
             @Parameter(description = "True or False if a listing has ever had surveillance or direct reviews.",
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "hasHadComplianceActivity")
-            @RequestParam(value = "hasHadComplianceActivity", required = false, defaultValue = "") Boolean hasHadComplianceActivity,
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "hasHadComplianceActivity") @RequestParam(value = "hasHadComplianceActivity", required = false, defaultValue = "") Boolean hasHadComplianceActivity,
             @Parameter(description = "A comma-separated list of nonconformity search options applied across surveillance and direct review activity. "
                     + "Valid options are OPEN_NONCONFORMITY, CLOSED_NONCONFORMITY, NEVER_NONCONFORMITY,"
-                    + "NOT_OPEN_NONCONFORMITY, NOT_CLOSED_NONCONFORMTIY, and NOT_NEVER_NONCONFORMITY.",
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "nonconformityOptions")
-            @RequestParam(value = "nonConformityOptions", required = false, defaultValue = "") String nonConformityOptionsDelimited,
+                    + "NOT_OPEN_NONCONFORMITY, NOT_CLOSED_NONCONFORMITY, and NOT_NEVER_NONCONFORMITY.",
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "nonconformityOptions") @RequestParam(value = "nonConformityOptions", required = false, defaultValue = "") String nonConformityOptionsDelimited,
             @Parameter(description = "Either AND or OR. Defaults to OR."
                     + "Indicates whether a listing must have met all nonconformityOptions "
                     + "specified or may have met any one or more of the nonconformityOptions",
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "nonconformityOptionsOperator")
-            @RequestParam(value = "nonConformityOptionsOperator", required = false, defaultValue = "") String nonConformityOptionsOperator,
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "nonconformityOptionsOperator") @RequestParam(value = "nonConformityOptionsOperator", required = false, defaultValue = "") String nonConformityOptionsOperator,
             @Parameter(description = "The full name of a developer.",
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "developer")
-            @RequestParam(value = "developer", required = false, defaultValue = "") String developer,
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "developer") @RequestParam(value = "developer", required = false, defaultValue = "") String developer,
             @Parameter(description = "The full name of a product.",
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "product")
-            @RequestParam(value = "product", required = false, defaultValue = "") String product,
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "product") @RequestParam(value = "product", required = false, defaultValue = "") String product,
             @Parameter(description = "The full name of a version.",
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "version")
-            @RequestParam(value = "version", required = false, defaultValue = "") String version,
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "version") @RequestParam(value = "version", required = false, defaultValue = "") String version,
             @Parameter(description = "A practice type (either Ambulatory or Inpatient). Valid only for 2014 listings.",
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "practiceType")
-            @RequestParam(value = "practiceType", required = false, defaultValue = "") String practiceType,
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "practiceType") @RequestParam(value = "practiceType", required = false, defaultValue = "") String practiceType,
             @Parameter(description = "To return only listings certified after this date. Required format is " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT,
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationDateStart")
-            @RequestParam(value = "certificationDateStart", required = false, defaultValue = "") String certificationDateStart,
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationDateStart") @RequestParam(value = "certificationDateStart", required = false, defaultValue = "") String certificationDateStart,
             @Parameter(description = "To return only listings certified before this date. Required format is " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT,
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationDateEnd")
-            @RequestParam(value = "certificationDateEnd", required = false, defaultValue = "") String certificationDateEnd,
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationDateEnd") @RequestParam(value = "certificationDateEnd", required = false, defaultValue = "") String certificationDateEnd,
             @Parameter(description = "Zero-based page number used in concert with pageSize. Defaults to 0.",
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "pageNumber")
-            @RequestParam(value = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "pageNumber") @RequestParam(value = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
             @Parameter(description = "Number of results to return used in concert with pageNumber. "
                     + "Defaults to 20. Maximum allowed page size is 100.",
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "pageSize")
-            @RequestParam(value = "pageSize", required = false, defaultValue = "20") Integer pageSize,
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "pageSize") @RequestParam(value = "pageSize", required = false, defaultValue = "20") Integer pageSize,
             @Parameter(description = "What to order by. Options are one of the following: CERTIFICATION_DATE, CHPL_ID, "
                     + "DEVELOPER, PRODUCT, VERSION, EDITION, or STATUS. Defaults to PRODUCT.",
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "orderBy")
-            @RequestParam(value = "orderBy", required = false, defaultValue = "product") String orderBy,
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "orderBy") @RequestParam(value = "orderBy", required = false, defaultValue = "product") String orderBy,
             @Parameter(description = "Use to specify the direction of the sort. Defaults to false (ascending sort).",
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "sortDescending")
-            @RequestParam(value = "sortDescending", required = false, defaultValue = "false") Boolean sortDescending)
-                    throws InvalidArgumentsException, ValidationException {
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "sortDescending") @RequestParam(value = "sortDescending", required = false, defaultValue = "false") Boolean sortDescending)
+            throws InvalidArgumentsException, ValidationException {
 
         SearchRequest searchRequest = SearchRequest.builder()
                 .searchTerm(searchTerm.trim())
@@ -163,10 +146,12 @@ public class SearchController {
     @Operation(summary = "Search the CHPL with an HTTP POST Request.",
             description = "Search the CHPL by specifycing multiple fields of the data to search. "
                     + "If paging fields are not specified, the first 20 records are returned by default.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @DeprecatedResponseFields(responseClass = SearchResponse.class)
     @RequestMapping(value = "/search/beta", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody SearchResponse search(@RequestBody SearchRequest searchRequest)
             throws ValidationException {
         return searchService.search(searchRequest);
