@@ -1,5 +1,6 @@
 package gov.healthit.chpl.svap.domain;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,7 +17,7 @@ import lombok.Singular;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class Svap {
+public class Svap implements Serializable {
 
     private Long svapId;
     private String regulatoryTextCitation;

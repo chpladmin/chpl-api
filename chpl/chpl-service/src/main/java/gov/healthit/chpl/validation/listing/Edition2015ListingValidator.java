@@ -12,6 +12,7 @@ import gov.healthit.chpl.validation.listing.reviewer.CertificationStatusReviewer
 import gov.healthit.chpl.validation.listing.reviewer.ChplNumberComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ChplNumberReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.ConformanceMethodReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DeprecatedFieldReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DeveloperBanComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DeveloperStatusReviewer;
@@ -216,6 +217,10 @@ public class Edition2015ListingValidator extends Validator {
     private OptionalStandardReviewer optionalStandardReviewer;
 
     @Autowired
+    @Qualifier("conformanceMethodReviewer")
+    private ConformanceMethodReviewer conformanceMethodReviewer;
+
+    @Autowired
     @Qualifier("deprecatedFieldReviewer")
     private DeprecatedFieldReviewer deprecatedFieldReviewer;
 
@@ -240,6 +245,7 @@ public class Edition2015ListingValidator extends Validator {
             reviewers.add(certDateReviewer);
             reviewers.add(unattestedCriteriaWithDataReviewer);
             reviewers.add(optionalStandardReviewer);
+            reviewers.add(conformanceMethodReviewer);
             reviewers.add(tsrReviewer);
             reviewers.add(tsReviewer);
             reviewers.add(tpReviewer);

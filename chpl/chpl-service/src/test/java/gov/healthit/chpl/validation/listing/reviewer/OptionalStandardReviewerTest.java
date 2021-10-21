@@ -1,4 +1,4 @@
-package gov.healthit.chpl.validation.listing.reviewer.edition2015;
+package gov.healthit.chpl.validation.listing.reviewer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

@@ -7,11 +7,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
@@ -33,6 +35,7 @@ public class TestProcedureReviewerTest {
     private ErrorMessageUtil msgUtil;
     private ResourcePermissions resourcePermissions;
     private TestProcedureReviewer reviewer;
+    private FF4j ff4j;
 
     @Before
     @SuppressWarnings("checkstyle:magicnumber")
@@ -56,7 +59,12 @@ public class TestProcedureReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.missingTestProcedureVersion"),
                 ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(MISSING_TEST_PROCEDURE_VERSION, i.getArgument(1), ""));
-        reviewer = new TestProcedureReviewer(certResultRules, msgUtil, resourcePermissions);
+
+        ff4j = Mockito.mock(FF4j.class);
+        Mockito.when(ff4j.check(FeatureList.CONFORMANCE_METHOD))
+        .thenReturn(false);
+
+        reviewer = new TestProcedureReviewer(certResultRules, msgUtil, resourcePermissions, ff4j);
     }
 
     @Test
