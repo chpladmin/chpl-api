@@ -23,6 +23,7 @@ import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchResponse;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -44,15 +45,16 @@ public class SearchController {
             "checkstyle:methodlength", "checkstyle:parameternumber"
     })
     @Operation(summary = "Search the CHPL",
-            description = "If paging parameters are not specified, the first 20 records are returned by default. "
-                    + "All parameters are optional. "
-                    + "Any parameter that can accept multiple things (i.e. certificationStatuses) expects "
-                    + "a comma-delimited list of those things (i.e. certificationStatuses = Active,Suspended). "
-                    + "Date parameters are required to be in the format "
-                    + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + ". ",
-            security = {
+        description = "If paging parameters are not specified, the first 20 records are returned by default. "
+            + "All parameters are optional. "
+            + "Any parameter that can accept multiple things (i.e. certificationStatuses) expects "
+            + "a comma-delimited list of those things (i.e. certificationStatuses = Active,Suspended). "
+            + "Date parameters are required to be in the format "
+            + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + ". ",
+        security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @DeprecatedResponseFields(responseClass = SearchResponse.class)
     @RequestMapping(value = "/search/beta", method = RequestMethod.GET, produces = {
             "application/json; charset=utf-8", "application/xml"
     })
@@ -147,6 +149,7 @@ public class SearchController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @DeprecatedResponseFields(responseClass = SearchResponse.class)
     @RequestMapping(value = "/search/beta", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public @ResponseBody SearchResponse search(@RequestBody SearchRequest searchRequest)

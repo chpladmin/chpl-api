@@ -11,6 +11,7 @@ import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ChplNumberComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.ConformanceMethodReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DeveloperBanComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DeveloperStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DuplicateDataReviewer;
@@ -122,6 +123,10 @@ public class Edition2014LegacyListingValidator extends Validator {
     @Qualifier("optionalStandardReviewer")
     private OptionalStandardReviewer optionalStandardReviewer;
 
+    @Autowired
+    @Qualifier("conformanceMethodReviewer")
+    private ConformanceMethodReviewer conformanceMethodReviewer;
+
     private List<Reviewer> reviewers;
     private List<ComparisonReviewer> comparisonReviewers;
 
@@ -138,6 +143,7 @@ public class Edition2014LegacyListingValidator extends Validator {
             reviewers.add(certDateReviewer);
             reviewers.add(unattestedCriteriaWithDataReviewer);
             reviewers.add(optionalStandardReviewer);
+            reviewers.add(conformanceMethodReviewer);
             reviewers.add(tsrReviewer);
             reviewers.add(ttReviewer);
             reviewers.add(tt2014Reviewer);

@@ -20,6 +20,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certifiedproduct.service.CertificationResultService;
+import gov.healthit.chpl.conformanceMethod.dao.ConformanceMethodDAO;
+import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
+import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodCriteriaMap;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
@@ -55,6 +58,7 @@ public class PendingCertifiedProductManager extends SecuredManager {
     private ListingValidatorFactory validatorFactory;
     private PendingCertifiedProductDAO pcpDao;
     private TestingFunctionalityManager testFunctionalityManager;
+    private ConformanceMethodDAO conformanceMethodDAO;
     private OptionalStandardDAO optionalStandardDAO;
     private UserDAO userDAO;
     private ActivityManager activityManager;
@@ -68,6 +72,7 @@ public class PendingCertifiedProductManager extends SecuredManager {
             ListingValidatorFactory validatorFactory,
             PendingCertifiedProductDAO pcpDao,
             TestingFunctionalityManager testFunctionalityManager,
+            ConformanceMethodDAO conformanceMethodDAO,
             OptionalStandardDAO optionalStandardDAO,
             UserDAO userDAO,
             ActivityManager activityManager,
@@ -80,6 +85,7 @@ public class PendingCertifiedProductManager extends SecuredManager {
         this.validatorFactory = validatorFactory;
         this.pcpDao = pcpDao;
         this.testFunctionalityManager = testFunctionalityManager;
+        this.conformanceMethodDAO = conformanceMethodDAO;
         this.optionalStandardDAO = optionalStandardDAO;
         this.userDAO = userDAO;
         this.activityManager = activityManager;
@@ -125,6 +131,7 @@ public class PendingCertifiedProductManager extends SecuredManager {
         PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(pendingCp);
         pcpDetails.setCuresUpdate(curesUpdateService.isCuresUpdate(pcpDetails));
         addAllVersionsToCmsCriterion(pcpDetails);
+        addAvailableConformanceMethods(pcpDetails);
         addAvailableTestFunctionalities(pcpDetails);
         addAvailableOptionalStandards(pcpDetails);
         addAvailableTestTools(pcpDetails);
@@ -463,6 +470,18 @@ public class PendingCertifiedProductManager extends SecuredManager {
         }
     }
 
+    public void addAvailableConformanceMethods(PendingCertifiedProductDetails pcpDetails) {
+        List<ConformanceMethodCriteriaMap> conformanceMethodCriteriaMap;
+        try {
+            conformanceMethodCriteriaMap = conformanceMethodDAO.getAllConformanceMethodCriteriaMap();
+            for (CertificationResult cert : pcpDetails.getCertificationResults()) {
+                cert.setAllowedConformanceMethods(getAvailableConformanceMethodsForCriteria(cert, conformanceMethodCriteriaMap));
+            }
+        } catch (EntityRetrievalException e) {
+            LOGGER.info("Error retrieving CM-criteria map", e.getMessage());
+        }
+    }
+
     public void addAvailableTestFunctionalities(final PendingCertifiedProductDetails pcpDetails) {
         // now add allMeasures for criteria
         for (CertificationResult cert : pcpDetails.getCertificationResults()) {
@@ -496,6 +515,13 @@ public class PendingCertifiedProductManager extends SecuredManager {
         } catch (EntityRetrievalException e) {
             LOGGER.info("Error retrieving OS-criteria map", e.getMessage());
         }
+    }
+
+    private List<ConformanceMethod> getAvailableConformanceMethodsForCriteria(CertificationResult result, List<ConformanceMethodCriteriaMap> conformanceMethodCriteriaMap) {
+        return conformanceMethodCriteriaMap.stream()
+                .filter(cmm -> ff4j.check(FeatureList.CONFORMANCE_METHOD) && cmm.getCriterion().getId().equals(result.getCriterion().getId()))
+                .map(cmm -> cmm.getConformanceMethod())
+                .collect(Collectors.toList());
     }
 
     private List<OptionalStandard> getAvailableOptionalStandardsForCriteria(CertificationResult result, List<OptionalStandardCriteriaMap> optionalStandardCriteriaMap) {
