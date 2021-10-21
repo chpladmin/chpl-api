@@ -373,6 +373,8 @@ public class DimensionalDataManager {
         result.add(new KeyValueModel(null, NonconformityType.K1.getName()));
         result.add(new KeyValueModel(null, NonconformityType.K2.getName()));
         result.add(new KeyValueModel(null, NonconformityType.L.getName()));
+        result.add(new KeyValueModel(null, NonconformityType.ANNUAL_RWT_PLAN.getName()));
+        result.add(new KeyValueModel(null, NonconformityType.ANNUAL_RWT_RESULTS.getName()));
         result.add(new KeyValueModel(null, NonconformityType.OTHER.getName()));
         return result;
     }
@@ -425,6 +427,14 @@ public class DimensionalDataManager {
         CertificationCriterion lType = new CertificationCriterion();
         lType.setNumber(NonconformityType.L.getName());
         result.add(lType);
+
+        CertificationCriterion rwtPlanType = new CertificationCriterion();
+        rwtPlanType.setNumber(NonconformityType.ANNUAL_RWT_PLAN.getName());
+        result.add(rwtPlanType);
+
+        CertificationCriterion rwtResultsType = new CertificationCriterion();
+        rwtResultsType.setNumber(NonconformityType.ANNUAL_RWT_RESULTS.getName());
+        result.add(rwtResultsType);
 
         CertificationCriterion otherType = new CertificationCriterion();
         otherType.setNumber(NonconformityType.OTHER.getName());
