@@ -81,6 +81,7 @@ import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.entity.OptionalStandardEntity;
 import gov.healthit.chpl.surveillance.report.QuarterDAO;
 import gov.healthit.chpl.surveillance.report.domain.Quarter;
+import gov.healthit.chpl.util.Removable;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -393,11 +394,11 @@ public class DimensionalDataManager {
             result.getCriteriaOptions2015().add(new CertificationCriterion(crit));
         }
 
-        result.getTransparencyOptions().add(RequirementTypeEnum.K1.getName());
-        result.getTransparencyOptions().add(RequirementTypeEnum.K2.getName());
+        result.getTransparencyOptions().add(new Removable<String>(RequirementTypeEnum.K1.getName(), RequirementTypeEnum.K1.getRemoved()));
+        result.getTransparencyOptions().add(new Removable<String>(RequirementTypeEnum.K2.getName(), RequirementTypeEnum.K2.getRemoved()));
 
-        result.getRealWorldTestingOptions().add(RequirementTypeEnum.ANNUAL_RWT_PLAN.getName());
-        result.getRealWorldTestingOptions().add(RequirementTypeEnum.ANNUAL_RWT_RESULTS.getName());
+        result.getRealWorldTestingOptions().add(new Removable<String>(RequirementTypeEnum.ANNUAL_RWT_PLAN.getName(), RequirementTypeEnum.ANNUAL_RWT_PLAN.getRemoved()));
+        result.getRealWorldTestingOptions().add(new Removable<String>(RequirementTypeEnum.ANNUAL_RWT_RESULTS.getName(), RequirementTypeEnum.ANNUAL_RWT_RESULTS.getRemoved()));
 
         return result;
     }
@@ -418,26 +419,32 @@ public class DimensionalDataManager {
 
         CertificationCriterion k1Type = new CertificationCriterion();
         k1Type.setNumber(NonconformityType.K1.getName());
+        k1Type.setRemoved(NonconformityType.K1.getRemoved());
         result.add(k1Type);
 
         CertificationCriterion k2Type = new CertificationCriterion();
         k2Type.setNumber(NonconformityType.K2.getName());
+        k2Type.setRemoved(NonconformityType.K2.getRemoved());
         result.add(k2Type);
 
         CertificationCriterion lType = new CertificationCriterion();
         lType.setNumber(NonconformityType.L.getName());
+        lType.setRemoved(NonconformityType.L.getRemoved());
         result.add(lType);
 
         CertificationCriterion rwtPlanType = new CertificationCriterion();
         rwtPlanType.setNumber(NonconformityType.ANNUAL_RWT_PLAN.getName());
+        rwtPlanType.setRemoved(NonconformityType.ANNUAL_RWT_PLAN.getRemoved());
         result.add(rwtPlanType);
 
         CertificationCriterion rwtResultsType = new CertificationCriterion();
         rwtResultsType.setNumber(NonconformityType.ANNUAL_RWT_RESULTS.getName());
+        rwtResultsType.setRemoved(NonconformityType.ANNUAL_RWT_RESULTS.getRemoved());
         result.add(rwtResultsType);
 
         CertificationCriterion otherType = new CertificationCriterion();
         otherType.setNumber(NonconformityType.OTHER.getName());
+        otherType.setRemoved(NonconformityType.OTHER.getRemoved());
         result.add(otherType);
         return result;
     }

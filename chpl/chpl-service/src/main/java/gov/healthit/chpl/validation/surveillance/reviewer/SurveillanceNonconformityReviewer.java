@@ -58,6 +58,7 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
                         checkSiteCountsValidityForRandomizedSurveillance(surv, req, nc);
                         checkSiteCountsValidityForNonRandomizedSurveillance(surv, req, nc);
                         checkResolution(surv, req, nc);
+                        checkForRemovedNonconformityTypeWhenAdding(surv, req, nc);
                     }
                 }
             } else {
@@ -239,6 +240,15 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
                                 req.getRequirementName(),
                                 nc.getNonconformityTypeName()));
             }
+        }
+    }
+
+    private void checkForRemovedNonconformityTypeWhenAdding(Surveillance surv, SurveillanceRequirement req, SurveillanceNonconformity nc) {
+        if (nc.getId() == null
+                && !StringUtils.isEmpty(nc.getNonconformityType())
+                && nc.getNonconformityType().equals(NonconformityType.K2.getName())) {
+            surv.getErrorMessages()
+                    .add(msgUtil.getMessage("surveillance.nonconformityTypeRemoved", nc.getNonconformityType()));
         }
     }
 }
