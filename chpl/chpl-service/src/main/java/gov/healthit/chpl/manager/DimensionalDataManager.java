@@ -393,6 +393,10 @@ public class DimensionalDataManager {
 
         result.getTransparencyOptions().add(RequirementTypeEnum.K1.getName());
         result.getTransparencyOptions().add(RequirementTypeEnum.K2.getName());
+
+        result.getRealWorldTestingOptions().add(RequirementTypeEnum.ANNUAL_RWT_PLAN.getName());
+        result.getRealWorldTestingOptions().add(RequirementTypeEnum.ANNUAL_RWT_RESULTS.getName());
+
         return result;
     }
 
