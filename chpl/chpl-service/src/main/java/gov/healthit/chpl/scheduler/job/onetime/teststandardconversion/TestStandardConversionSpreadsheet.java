@@ -69,8 +69,8 @@ public class TestStandardConversionSpreadsheet {
         while (currentRow != null) {
             if (canRowBeMapped(currentRow)) {
 
-                String criteriaNumber = currentRow.getCell(CRITERIA_NUMBER_IDX).getStringCellValue();
-                String criteriaTitle = currentRow.getCell(CRITERIA_TITLE_IDX).getStringCellValue();
+                String criteriaNumber = currentRow.getCell(CRITERIA_NUMBER_IDX).getStringCellValue().trim();
+                String criteriaTitle = currentRow.getCell(CRITERIA_TITLE_IDX).getStringCellValue().trim();
                 String testStandardNumber = getTestStandardNameFromRow(currentRow);
 
                 CertificationCriterion criterion = getCriterion(criteriaNumber, criteriaTitle);
@@ -130,7 +130,7 @@ public class TestStandardConversionSpreadsheet {
             return Optional.empty();
         }
 
-        String optionalStandard = cell.getStringCellValue();
+        String optionalStandard = cell.getStringCellValue().trim();
         if (!StringUtils.isEmpty(optionalStandard)) {
             return Optional.ofNullable(optionalStandardDAO.getByCitation(optionalStandard));
         } else {
