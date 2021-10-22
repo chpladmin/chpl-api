@@ -38,6 +38,7 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.scheduler.job.CertifiedProduct2015Gatherer;
+import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "testStandardConversionJobLogger")
@@ -85,10 +86,8 @@ public class TestStandardConversionJob extends CertifiedProduct2015Gatherer impl
                             mappings = testStandardConversionSpreadhseet.getTestStandard2OptionalStandardsMap(LOGGER);
                             LOGGER.info("Created " + mappings.size() + " mappings");
 
-                            pool.submit(() -> listings.parallelStream()
-                                    .map(listing -> updateListing(listing))
-                                    .collect(Collectors.toList())).get();
-
+                            listings.stream()
+                                    .forEach(listing -> updateListing(listing));
                         } catch (Exception e) {
                             LOGGER.error("Error inserting listing validation errors. Rolling back transaction.", e);
                             status.setRollbackOnly();
@@ -106,7 +105,7 @@ public class TestStandardConversionJob extends CertifiedProduct2015Gatherer impl
 
     private Boolean updateListing(CertifiedProductSearchDetails listing) {
         Boolean converted = listing.getCertificationResults().stream()
-                .map(cr -> convertCertificationResult(cr))
+                .map(cr -> convertCertificationResult(listing.getId(), cr))
                 .reduce(Boolean.FALSE, Boolean::logicalOr);
 
         if (converted) {
@@ -128,11 +127,11 @@ public class TestStandardConversionJob extends CertifiedProduct2015Gatherer impl
         return converted;
     }
 
-    private Boolean convertCertificationResult(CertificationResult cr) {
+    private Boolean convertCertificationResult(Long listingId, CertificationResult cr) {
         Boolean converted = false;
         if (cr.getTestStandards() != null) {
             converted = cr.getTestStandards().stream()
-                .map(crts -> convertTestStandardToOptionalStandards(cr, crts))
+                .map(crts -> convertTestStandardToOptionalStandards(listingId, cr, crts))
                 .reduce(Boolean.FALSE, Boolean::logicalOr);
 
             // This will delete the test standard
@@ -143,18 +142,25 @@ public class TestStandardConversionJob extends CertifiedProduct2015Gatherer impl
         return converted;
     }
 
-    private Boolean convertTestStandardToOptionalStandards(CertificationResult cr, CertificationResultTestStandard crts) {
+    private Boolean convertTestStandardToOptionalStandards(Long listingId, CertificationResult cr, CertificationResultTestStandard crts) {
         Boolean converted = false;
         Optional<TestStandard2OptionalStandardsMapping> mapping = getMapping(cr.getCriterion(), getTestStandard(crts));
         if (mapping.isPresent()) {
-            converted = true;
             for (OptionalStandard optionalStandard : mapping.get().getOptionalStandards()) {
-                cr.getOptionalStandards().add(CertificationResultOptionalStandard.builder()
-                        .optionalStandardId(optionalStandard.getId())
-                        .citation(optionalStandard.getCitation())
-                        .description(optionalStandard.getDescription())
-                        .build());
+                if (doesCriterionHaveOptionalStandard(cr.getOptionalStandards(), optionalStandard)) {
+                    cr.getOptionalStandards().add(CertificationResultOptionalStandard.builder()
+                            .optionalStandardId(optionalStandard.getId())
+                            .citation(optionalStandard.getCitation())
+                            .description(optionalStandard.getDescription())
+                            .build());
+                    LOGGER.info(String.format("Listing: %s | %s | %s | %s", listingId, Util.formatCriteriaNumber(cr.getCriterion()), crts.getTestStandardName(), optionalStandard.getCitation()));
+                    converted = true;
+                } else {
+                    LOGGER.info(String.format("Listing: %s | %s | %s | %s (already mapped by another test standard)", listingId, Util.formatCriteriaNumber(cr.getCriterion()), crts.getTestStandardName(), optionalStandard.getCitation()));
+                }
             }
+        } else {
+            LOGGER.info(String.format("Listing: %s | %s | %s | no mapping available", listingId, Util.formatCriteriaNumber(cr.getCriterion()), crts.getTestStandardName()));
         }
         return converted;
     }
