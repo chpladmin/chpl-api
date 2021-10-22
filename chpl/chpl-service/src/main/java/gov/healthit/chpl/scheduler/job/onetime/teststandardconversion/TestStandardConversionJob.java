@@ -170,6 +170,13 @@ public class TestStandardConversionJob extends CertifiedProduct2015Gatherer impl
         return Optional.ofNullable(mappings.get(key));
     }
 
+    private Boolean doesCriterionHaveOptionalStandard(List<CertificationResultOptionalStandard> certificationResultOptionalStandards, OptionalStandard optionalStandard) {
+            return certificationResultOptionalStandards.stream()
+                    .filter(cros -> cros.getOptionalStandardId().equals(optionalStandard.getId()))
+                    .findAny()
+                    .isPresent();
+    }
+
     private void setSecurityContext() {
         JWTAuthenticatedUser adminUser = new JWTAuthenticatedUser();
         adminUser.setFullName("Administrator");
