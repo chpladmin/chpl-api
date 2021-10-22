@@ -147,7 +147,7 @@ public class TestStandardConversionJob extends CertifiedProduct2015Gatherer impl
         Optional<TestStandard2OptionalStandardsMapping> mapping = getMapping(cr.getCriterion(), getTestStandard(crts));
         if (mapping.isPresent()) {
             for (OptionalStandard optionalStandard : mapping.get().getOptionalStandards()) {
-                if (doesCriterionHaveOptionalStandard(cr.getOptionalStandards(), optionalStandard)) {
+                if (!doesCriterionHaveOptionalStandard(cr.getOptionalStandards(), optionalStandard)) {
                     cr.getOptionalStandards().add(CertificationResultOptionalStandard.builder()
                             .optionalStandardId(optionalStandard.getId())
                             .citation(optionalStandard.getCitation())
