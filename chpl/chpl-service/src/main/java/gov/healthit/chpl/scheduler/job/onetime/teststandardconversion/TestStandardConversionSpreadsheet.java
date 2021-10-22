@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -26,9 +27,7 @@ import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 @Component
 public class TestStandardConversionSpreadsheet {
     private static final Integer CRITERIA_NUMBER_IDX = 0;
@@ -39,6 +38,7 @@ public class TestStandardConversionSpreadsheet {
     private static final Integer OPTIONAL_STANDARD_3_IDX = 6;
     private static final Integer OPTIONAL_STANDARD_4_IDX = 7;
     private static final Integer OPTIONAL_STANDARD_5_IDX = 8;
+    private static final String NOT_MAPPABLE = "NOT ENOUGH INFORMATION TO MAP";
 
 
     private CertificationCriterionDAO certificationCriterionDAO;
@@ -52,39 +52,46 @@ public class TestStandardConversionSpreadsheet {
         this.optionalStandardDAO = optionalStandardDAO;
     }
 
-    public Map<Pair<CertificationCriterion, TestStandard>, TestStandard2OptionalStandardsMapping> getTestStandard2OptionalStandardsMap() {
+    public Map<Pair<CertificationCriterion, TestStandard>, TestStandard2OptionalStandardsMapping> getTestStandard2OptionalStandardsMap(Logger logger) {
         try (Workbook workbook = getWorkbook();) {
-            return getDataFromSheet(workbook.getSheetAt(0));
+            return getDataFromSheet(workbook.getSheetAt(0), logger);
         } catch (IOException e) {
-            LOGGER.catching(e);
+            logger.catching(e);
             return null;
         }
     }
 
-    private Map<Pair<CertificationCriterion, TestStandard>, TestStandard2OptionalStandardsMapping> getDataFromSheet(Sheet sheet) {
+    private Map<Pair<CertificationCriterion, TestStandard>, TestStandard2OptionalStandardsMapping> getDataFromSheet(Sheet sheet, Logger logger) {
         Map<Pair<CertificationCriterion, TestStandard>, TestStandard2OptionalStandardsMapping> map = new HashMap<Pair<CertificationCriterion, TestStandard>, TestStandard2OptionalStandardsMapping>();
 
         Row currentRow = sheet.getRow(1);
 
         while (currentRow != null) {
-            String criteriaNumber = currentRow.getCell(CRITERIA_NUMBER_IDX).getStringCellValue();
-            String criteriaTitle = currentRow.getCell(CRITERIA_TITLE_IDX).getStringCellValue();
-            String testStandardNumber = getTestStandardNameFromRow(currentRow);
+            if (canRowBeMapped(currentRow)) {
 
-            CertificationCriterion criterion = getCriterion(criteriaNumber, criteriaTitle);
-            List<TestStandard> testStandards = getTestStandard(testStandardNumber);
-            List<OptionalStandard> optionalStandards = getOptionalStandardsFromRow(currentRow);
+                String criteriaNumber = currentRow.getCell(CRITERIA_NUMBER_IDX).getStringCellValue();
+                String criteriaTitle = currentRow.getCell(CRITERIA_TITLE_IDX).getStringCellValue();
+                String testStandardNumber = getTestStandardNameFromRow(currentRow);
 
-            for (TestStandard testStandard : testStandards) {
-                TestStandard2OptionalStandardsMapping mapping = new TestStandard2OptionalStandardsMapping(criterion, testStandard, optionalStandards);
-                map.put(mapping.getKey(), mapping);
-                LOGGER.info(mapping.toString());
+                CertificationCriterion criterion = getCriterion(criteriaNumber, criteriaTitle);
+                List<TestStandard> testStandards = getTestStandard(testStandardNumber);
+                List<OptionalStandard> optionalStandards = getOptionalStandardsFromRow(currentRow);
+
+                for (TestStandard testStandard : testStandards) {
+                    TestStandard2OptionalStandardsMapping mapping = new TestStandard2OptionalStandardsMapping(criterion, testStandard, optionalStandards);
+                    map.put(mapping.getKey(), mapping);
+                    logger.info(mapping.toString());
+                }
             }
-
             currentRow = sheet.getRow(currentRow.getRowNum() + 1);
         }
 
         return map;
+    }
+
+    private Boolean canRowBeMapped(Row row) {
+        return row.getCell(OPTIONAL_STANDARD_1_IDX).getCellType().equals(CellType.STRING)
+                && !row.getCell(OPTIONAL_STANDARD_1_IDX).getStringCellValue().trim().toUpperCase().equals(NOT_MAPPABLE);
     }
 
     private List<OptionalStandard> getOptionalStandardsFromRow(Row row) {

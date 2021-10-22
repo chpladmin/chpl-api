@@ -82,7 +82,7 @@ public class TestStandardConversionJob extends CertifiedProduct2015Gatherer impl
 
                             List<CertifiedProductSearchDetails> listings = pool.submit(() -> getAll2015CertifiedProducts(LOGGER)).get();
 
-                            mappings = testStandardConversionSpreadhseet.getTestStandard2OptionalStandardsMap();
+                            mappings = testStandardConversionSpreadhseet.getTestStandard2OptionalStandardsMap(LOGGER);
                             LOGGER.info("Created " + mappings.size() + " mappings");
 
                             pool.submit(() -> listings.parallelStream()
