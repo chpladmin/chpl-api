@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -117,7 +118,10 @@ public class CuresStatisticsChartSpreadsheet {
     static class CopyAndSortWorksheet {
         public static Sheet copy(Sheet origSheet, Sheet newSheet, Integer sortColumnIndex, Boolean includeHeaders) {
             Workbook workbook = origSheet.getWorkbook();
-            Sheet clonedSheet = workbook.cloneSheet(workbook.getSheetIndex(origSheet));
+            FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+            evaluator.evaluateAll();
+
+                        Sheet clonedSheet = workbook.cloneSheet(workbook.getSheetIndex(origSheet));
             List<Row> clonedRows = getRows(clonedSheet, includeHeaders);
 
             if (sortColumnIndex != null) {
