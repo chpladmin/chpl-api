@@ -16,7 +16,6 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.auth.UserPermissionDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityDocument;
@@ -347,17 +346,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
             return results;
     }
 
-    private Long getSurveillanceAuthority() throws UserPermissionRetrievalException {
-        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
-            return userPermissionDao.getIdFromAuthority(Authority.ROLE_ONC);
-        } else if (resourcePermissions.isUserRoleAcbAdmin()) {
-            return userPermissionDao.getIdFromAuthority(Authority.ROLE_ACB);
-        } else {
-            return null;
-        }
-    }
-
-
     public Long insertPendingSurveillance(Surveillance surv) throws UserPermissionRetrievalException {
         PendingSurveillanceEntity toInsert = new PendingSurveillanceEntity();
         toInsert.setSurvFriendlyIdToReplace(surv.getSurveillanceIdToReplace());
@@ -373,7 +361,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
         }
         toInsert.setLastModifiedUser(AuthUtil.getAuditId());
         toInsert.setDeleted(false);
-        toInsert.setUserPermissionId(getSurveillanceAuthority());
 
         entityManager.persist(toInsert);
         entityManager.flush();
@@ -827,7 +814,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
         if (from.getType() != null) {
             to.setSurveillanceTypeId(from.getType().getId());
         }
-        to.setUserPermissionId(userPermissionDao.getIdFromAuthority(from.getAuthority()));
     }
 
     private void populateSurveillanceRequirementEntity(SurveillanceRequirementEntity to,

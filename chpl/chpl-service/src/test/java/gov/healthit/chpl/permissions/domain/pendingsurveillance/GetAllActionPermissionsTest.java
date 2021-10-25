@@ -32,7 +32,6 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }
 
@@ -44,12 +43,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
         assertTrue(permissions.hasAccess());
 
         Surveillance surv = new Surveillance();
-        surv.setAuthority("ROLE_ONC");
         assertTrue(permissions.hasAccess(surv));
-
-        surv = new Surveillance();
-        surv.setAuthority("ROLE_ACB");
-        assertFalse(permissions.hasAccess(surv));
     }
 
     @Override
@@ -57,15 +51,8 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Onc() throws Exception {
         setupForOncUser(resourcePermissions);
 
-        assertTrue(permissions.hasAccess());
-
-        Surveillance surv = new Surveillance();
-        surv.setAuthority("ROLE_ONC");
-        assertTrue(permissions.hasAccess(surv));
-
-        surv = new Surveillance();
-        surv.setAuthority("ROLE_ACB");
-        assertFalse(permissions.hasAccess(surv));
+        assertFalse(permissions.hasAccess());
+        assertFalse(permissions.hasAccess(new Surveillance()));
     }
 
     @Override
@@ -73,15 +60,8 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_OncStaff() throws Exception {
         setupForOncStaffUser(resourcePermissions);
 
-        assertTrue(permissions.hasAccess());
-
-        Surveillance surv = new Surveillance();
-        surv.setAuthority("ROLE_ONC");
-        assertTrue(permissions.hasAccess(surv));
-
-        surv = new Surveillance();
-        surv.setAuthority("ROLE_ACB");
-        assertFalse(permissions.hasAccess(surv));
+        assertFalse(permissions.hasAccess());
+        assertFalse(permissions.hasAccess(new Surveillance()));
     }
 
     @Override
@@ -99,26 +79,16 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
         Surveillance surv = new Surveillance();
         surv.setCertifiedProduct(new CertifiedProduct());
         surv.getCertifiedProduct().setId(1L);
-        surv.setAuthority("ROLE_ACB");
         assertTrue(permissions.hasAccess(surv));
 
-        // With the above mock, the user should have access.
-        // The ACB is correct, and the authority is correct
-        surv = new Surveillance();
-        surv.setCertifiedProduct(new CertifiedProduct());
-        surv.getCertifiedProduct().setId(1L);
-        surv.setAuthority("ROLE_ONC");
-        assertFalse(permissions.hasAccess(surv));
-
         // Setup Mock
-        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getCertifiedProduct(1L, 3l));
+        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getCertifiedProduct(1L, 3L));
 
         // With the above mock, the user should NOT have access
         // The ACB is incorrect, but the authority is correct
         surv = new Surveillance();
         surv.setCertifiedProduct(new CertifiedProduct());
         surv.getCertifiedProduct().setId(1L);
-        surv.setAuthority("ROLE_ACB");
         assertFalse(permissions.hasAccess(surv));
     }
 
@@ -128,10 +98,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForAtlUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
-
-        // This should always return false
-        Surveillance surv = new Surveillance();
-        assertFalse(permissions.hasAccess(surv));
+        assertFalse(permissions.hasAccess(new Surveillance()));
     }
 
     @Override
@@ -140,21 +107,16 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForCmsUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
-
-        // This should always return false
-        Surveillance surv = new Surveillance();
-        assertFalse(permissions.hasAccess(surv));
+        assertFalse(permissions.hasAccess(new Surveillance()));
     }
 
     @Override
     @Test
     public void hasAccess_Anon() throws Exception {
         setupForAnonUser(resourcePermissions);
-        assertFalse(permissions.hasAccess());
 
-        // This should always return false
-        Surveillance surv = new Surveillance();
-        assertFalse(permissions.hasAccess(surv));
+        assertFalse(permissions.hasAccess());
+        assertFalse(permissions.hasAccess(new Surveillance()));
     }
 
 }

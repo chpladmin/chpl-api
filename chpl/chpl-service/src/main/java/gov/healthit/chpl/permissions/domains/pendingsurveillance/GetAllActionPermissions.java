@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
@@ -21,7 +20,7 @@ public class GetAllActionPermissions extends ActionPermissions {
     @Override
     public boolean hasAccess() {
         return getResourcePermissions().isUserRoleAcbAdmin() || getResourcePermissions().isUserRoleAdmin()
-                || getResourcePermissions().isUserRoleOnc() || getResourcePermissions().isUserRoleOncStaff();
+                || getResourcePermissions().isUserRoleOncStaff();
     }
 
     @Override
@@ -29,24 +28,13 @@ public class GetAllActionPermissions extends ActionPermissions {
         try {
             if (!(obj instanceof Surveillance)) {
                 return false;
+            } else if (getResourcePermissions().isUserRoleAdmin()) {
+                return true;
             } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
                 Surveillance surv = (Surveillance) obj;
-                // Make sure the pending surveillance belongs to the correct
-                // authority
-                if (!surv.getAuthority().equals(Authority.ROLE_ACB)) {
-                    return false;
-                } else {
-                    // Make sure the user has access to the pending surv acb
-                    CertifiedProductDTO dto = certifiedProductDAO.getById(surv.getCertifiedProduct().getId());
-                    return isAcbValidForCurrentUser(dto.getCertificationBodyId());
-                }
-            } else if (getResourcePermissions().isUserRoleOnc()
-                    || getResourcePermissions().isUserRoleAdmin()
-                    || getResourcePermissions().isUserRoleOncStaff()) {
-                Surveillance surv = (Surveillance) obj;
-                // Make sure the pending surveillance belongs to the correct
-                // authority
-                return surv.getAuthority().equals(Authority.ROLE_ONC);
+                // Make sure the user has access to the pending surv acb
+                CertifiedProductDTO dto = certifiedProductDAO.getById(surv.getCertifiedProduct().getId());
+                return isAcbValidForCurrentUser(dto.getCertificationBodyId());
             } else {
                 return false;
             }

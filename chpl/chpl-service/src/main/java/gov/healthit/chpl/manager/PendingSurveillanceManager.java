@@ -359,7 +359,7 @@ public class PendingSurveillanceManager extends SecuredManager {
                 .endDay(pr.getEndDate())
                 .endDate(pr.getEndDate() == null ? null : new Date(DateUtil.toEpochMillisEndOfDay(pr.getEndDate())))
                 .randomizedSitesUsed(pr.getNumRandomizedSites())
-                .authority(userPermissionDAO.findById(pr.getUserPermissionId()).getAuthority())
+                .authority(Surveillance.AUTHORITY_ACB)
                 .build();
 
         SurveillanceType survType = SurveillanceType.builder()
@@ -529,7 +529,7 @@ public class PendingSurveillanceManager extends SecuredManager {
         surv.setEndDay(entity.getEndDate());
         surv.setEndDate(entity.getEndDate() == null ? null : new Date(DateUtil.toEpochMillis(entity.getEndDate())));
         surv.setRandomizedSitesUsed(entity.getNumRandomizedSites());
-        surv.setAuthority(userPermissionDAO.findById(entity.getUserPermissionId()).getAuthority());
+        surv.setAuthority(Surveillance.AUTHORITY_ACB);
         surv.setLastModifiedDate(entity.getLastModifiedDate());
 
         if (entity.getCertifiedProduct() != null) {

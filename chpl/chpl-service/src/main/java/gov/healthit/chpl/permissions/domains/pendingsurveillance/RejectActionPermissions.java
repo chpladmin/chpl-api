@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.auth.UserPermissionDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
-import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
@@ -30,29 +29,13 @@ public class RejectActionPermissions extends ActionPermissions {
         try {
             if (!(obj instanceof Long)) {
                 return false;
+            } else if (getResourcePermissions().isUserRoleAdmin()) {
+                return true;
             } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
                 Long pendingSurveillanceId = (Long) obj;
-                PendingSurveillanceEntity entity = surveillanceDAO.getPendingSurveillanceById(pendingSurveillanceId,
-                        true);
-
-                // Make sure the user belongs to the same authority as the
-                // pending surveillance
-                String authority = userPermissionDAO.findById(entity.getUserPermissionId()).getAuthority();
-                if (!authority.equals(Authority.ROLE_ACB)) {
-                    return false;
-                } else {
-                    // Make sure the user has access to the pendingSurveillance
-                    return isAcbValidForCurrentUser(entity.getCertifiedProduct().getCertificationBodyId());
-                }
-            } else if (getResourcePermissions().isUserRoleOnc()
-                    || getResourcePermissions().isUserRoleAdmin()) {
-                Long pendingSurveillanceId = (Long) obj;
-                PendingSurveillanceEntity entity = surveillanceDAO.getPendingSurveillanceById(pendingSurveillanceId);
-
-                // Make sure the user belongs to the same authority as the
-                // pending surveillance
-                String authority = userPermissionDAO.findById(entity.getUserPermissionId()).getAuthority();
-                return authority.equals(Authority.ROLE_ONC);
+                PendingSurveillanceEntity entity = surveillanceDAO.getPendingSurveillanceById(pendingSurveillanceId, true);
+                // Make sure the user has access to the pendingSurveillance
+                return isAcbValidForCurrentUser(entity.getCertifiedProduct().getCertificationBodyId());
             } else {
                 return false;
             }

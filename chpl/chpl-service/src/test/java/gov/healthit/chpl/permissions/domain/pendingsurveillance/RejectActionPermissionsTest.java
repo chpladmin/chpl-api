@@ -13,7 +13,6 @@ import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.dao.auth.UserPermissionDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
-import gov.healthit.chpl.dto.auth.UserPermissionDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductSummaryEntity;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -40,12 +39,8 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
         MockitoAnnotations.initMocks(this);
 
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
-
         Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
-                .thenReturn(getPendingSurveillanceEntity(1L, 1L, 1L, ROLE_ACB_ID));
-
-        Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
-                .thenReturn(getUserPermissionDTO("", "", ""));
+                .thenReturn(getPendingSurveillanceEntity(1L, 1L, 1L));
     }
 
     @Override
@@ -58,23 +53,9 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
 
         Long id = 1L;
 
-        // Check where authority matches
         Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
-                .thenReturn(getPendingSurveillanceEntity(1L, 1L, 1L, ROLE_ONC_ID));
-
-        Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
-                .thenReturn(getUserPermissionDTO("ROLE_ONC", "", ""));
-
+                .thenReturn(getPendingSurveillanceEntity(1L, 1L, 1L));
         assertTrue(permissions.hasAccess(id));
-
-        // Check where authority is not correct for role
-        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
-                .thenReturn(getPendingSurveillanceEntity(1L, 1L, 1L, ROLE_ACB_ID));
-
-        Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
-                .thenReturn(getUserPermissionDTO("ROLE_ACB", "", ""));
-
-        assertFalse(permissions.hasAccess(id));
     }
 
     @Override
@@ -84,26 +65,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
 
         // This should always return false
         assertFalse(permissions.hasAccess());
-
-        Long id = 1L;
-
-        // Check where authority matches the user's role
-        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
-                .thenReturn(getPendingSurveillanceEntity(1L, 1L, 1L, ROLE_ONC_ID));
-
-        Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
-                .thenReturn(getUserPermissionDTO("ROLE_ONC", "", ""));
-
-        assertTrue(permissions.hasAccess(id));
-
-        // Check where authority does not match the user's role
-        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
-                .thenReturn(getPendingSurveillanceEntity(1L, 1L, 1L, ROLE_ACB_ID));
-
-        Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
-                .thenReturn(getUserPermissionDTO("ROLE_ACB", "", ""));
-
-        assertFalse(permissions.hasAccess(id));
+        assertFalse(permissions.hasAccess(1L));
     }
 
     @Override
@@ -112,13 +74,6 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForOncStaffUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
-        // Check where authority matches the user's role
-        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
-                .thenReturn(getPendingSurveillanceEntity(1L, 1L, 1L, ROLE_ONC_ID));
-
-        Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
-                .thenReturn(getUserPermissionDTO("ROLE_ONC", "", ""));
-
         assertFalse(permissions.hasAccess(1L));
     }
 
@@ -134,30 +89,13 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
 
         // The user does not have access to this acb
         Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
-                .thenReturn(getPendingSurveillanceEntity(1L, 1L, 3L, ROLE_ACB_ID));
-
-        Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
-                .thenReturn(getUserPermissionDTO("ROLE_ACB", "", ""));
-
+                .thenReturn(getPendingSurveillanceEntity(1L, 1L, 3L));
         assertFalse(permissions.hasAccess(id));
 
         // Should work...
         Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
-                .thenReturn(getPendingSurveillanceEntity(1L, 1L, 4L, ROLE_ACB_ID));
-
-        Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
-                .thenReturn(getUserPermissionDTO("ROLE_ACB", "", ""));
-
+                .thenReturn(getPendingSurveillanceEntity(1L, 1L, 4L));
         assertTrue(permissions.hasAccess(id));
-
-        // This one belongs to the wrong authority....
-        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
-                .thenReturn(getPendingSurveillanceEntity(1L, 1L, 4L, ROLE_ONC_ID));
-
-        Mockito.when(userPermissionDAO.findById(ArgumentMatchers.anyLong()))
-                .thenReturn(getUserPermissionDTO("ROLE_ONC", "", ""));
-
-        assertFalse(permissions.hasAccess(id));
     }
 
     @Override
@@ -167,9 +105,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
 
         // This should always return false
         assertFalse(permissions.hasAccess());
-
-        Long id = 1L;
-        assertFalse(permissions.hasAccess(id));
+        assertFalse(permissions.hasAccess(1L));
     }
 
     @Override
@@ -179,9 +115,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
 
         // This should always return false
         assertFalse(permissions.hasAccess());
-
-        Long id = 1L;
-        assertFalse(permissions.hasAccess(id));
+        assertFalse(permissions.hasAccess(1L));
     }
 
     @Override
@@ -191,29 +125,16 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
 
         // This should always return false
         assertFalse(permissions.hasAccess());
-
-        Long id = 1L;
-        assertFalse(permissions.hasAccess(id));
+        assertFalse(permissions.hasAccess(1L));
 
     }
 
-    private PendingSurveillanceEntity getPendingSurveillanceEntity(Long id, Long certifiedProductId, Long acbId,
-            Long userPermissionId) {
+    private PendingSurveillanceEntity getPendingSurveillanceEntity(Long id, Long certifiedProductId, Long acbId) {
         PendingSurveillanceEntity entity = new PendingSurveillanceEntity();
         entity.setId(id);
         entity.setCertifiedProduct(new CertifiedProductSummaryEntity());
         entity.getCertifiedProduct().setId(certifiedProductId);
         entity.getCertifiedProduct().setCertificationBodyId(acbId);
-        entity.setUserPermissionId(userPermissionId);
         return entity;
     }
-
-    private UserPermissionDTO getUserPermissionDTO(String authority, String name, String description) {
-        UserPermissionDTO dto = new UserPermissionDTO();
-        dto.setAuthority(authority);
-        dto.setName(name);
-        dto.setDescription(description);
-        return dto;
-    }
-
 }
