@@ -59,7 +59,6 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.validation.surveillance.reviewer.AuthorityReviewer;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
 import gov.healthit.chpl.web.controller.results.SurveillanceResults;
 import io.swagger.v3.oas.annotations.Operation;
@@ -76,7 +75,6 @@ public class SurveillanceController  {
     private SurveillanceManager survManager;
     private ActivityManager activityManager;
     private CertifiedProductDetailsManager cpdetailsManager;
-    private AuthorityReviewer survAuthorityReviewer;
     private PendingSurveillanceManager pendingSurveillanceManager;
     private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil errorMessageUtil;
@@ -86,14 +84,12 @@ public class SurveillanceController  {
             SurveillanceManager survManager,
             ActivityManager activityManager,
             CertifiedProductDetailsManager cpdetailsManager,
-            AuthorityReviewer survAuthorityReviewer,
             PendingSurveillanceManager pendingSurveillanceManager,
             ResourcePermissions resourcePermissions,
             ErrorMessageUtil errorMessageUtil) {
         this.survManager = survManager;
         this.activityManager = activityManager;
         this.cpdetailsManager = cpdetailsManager;
-        this.survAuthorityReviewer = survAuthorityReviewer;
         this.pendingSurveillanceManager = pendingSurveillanceManager;
         this.resourcePermissions = resourcePermissions;
         this.errorMessageUtil = errorMessageUtil;
@@ -288,11 +284,6 @@ public class SurveillanceController  {
 
         if (survToDelete == null) {
             throw new InvalidArgumentsException("Cannot find surveillance with id " + surveillanceId + " to delete.");
-        }
-
-        survAuthorityReviewer.review(survToDelete);
-        if (survToDelete.getErrorMessages() != null && survToDelete.getErrorMessages().size() > 0) {
-            throw new ValidationException(survToDelete.getErrorMessages(), null);
         }
 
         CertifiedProductSearchDetails beforeCp = cpdetailsManager
