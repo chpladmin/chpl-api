@@ -66,9 +66,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
 
         // This should always be false
         assertFalse(permissions.hasAccess());
-
-        // Since it is onc it has access to all - param value does not matter.
-        assertTrue(permissions.hasAccess(new Surveillance()));
+        assertFalse(permissions.hasAccess(new Surveillance()));
     }
 
     @Override
