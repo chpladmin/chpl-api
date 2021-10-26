@@ -28,7 +28,7 @@ public class ConfirmActionPermissions extends ActionPermissions {
         try {
             if (!(obj instanceof Surveillance)) {
                 return false;
-            } else if (getResourcePermissions().isUserRoleAdmin()) {
+            } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
                 return true;
             } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
                 Surveillance surv = (Surveillance) obj;

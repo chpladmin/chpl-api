@@ -29,7 +29,7 @@ public class RejectActionPermissions extends ActionPermissions {
         try {
             if (!(obj instanceof Long)) {
                 return false;
-            } else if (getResourcePermissions().isUserRoleAdmin()) {
+            } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
                 return true;
             } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
                 Long pendingSurveillanceId = (Long) obj;

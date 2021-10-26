@@ -65,7 +65,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
 
         // This should always return false
         assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(1L));
+        assertTrue(permissions.hasAccess(1L));
     }
 
     @Override

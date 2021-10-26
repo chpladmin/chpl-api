@@ -19,7 +19,8 @@ public class GetAllActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess() {
-        return getResourcePermissions().isUserRoleAcbAdmin() || getResourcePermissions().isUserRoleAdmin();
+        return getResourcePermissions().isUserRoleAcbAdmin() || getResourcePermissions().isUserRoleOnc()
+                || getResourcePermissions().isUserRoleAdmin();
     }
 
     @Override
@@ -27,7 +28,7 @@ public class GetAllActionPermissions extends ActionPermissions {
         try {
             if (!(obj instanceof Surveillance)) {
                 return false;
-            } else if (getResourcePermissions().isUserRoleAdmin()) {
+            } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
                 return true;
             } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
                 Surveillance surv = (Surveillance) obj;

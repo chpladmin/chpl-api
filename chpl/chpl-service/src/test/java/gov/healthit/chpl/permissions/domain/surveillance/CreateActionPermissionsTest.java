@@ -66,7 +66,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
 
         // This should always be false
         assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(new Surveillance()));
+        assertTrue(permissions.hasAccess(new Surveillance()));
     }
 
     @Override

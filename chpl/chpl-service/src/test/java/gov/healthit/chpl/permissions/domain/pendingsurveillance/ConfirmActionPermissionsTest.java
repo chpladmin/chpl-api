@@ -53,7 +53,7 @@ public class ConfirmActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForOncUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(new Surveillance()));
+        assertTrue(permissions.hasAccess(new Surveillance()));
     }
 
     @Override
