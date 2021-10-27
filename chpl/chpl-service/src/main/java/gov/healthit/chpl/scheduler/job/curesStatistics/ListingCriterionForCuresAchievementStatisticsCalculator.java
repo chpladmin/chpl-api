@@ -3,6 +3,8 @@ package gov.healthit.chpl.scheduler.job.curesStatistics;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -31,6 +33,7 @@ public class ListingCriterionForCuresAchievementStatisticsCalculator {
     private ListingToCriterionForCuresAchievementStatisticsDAO listingToCuresAchievementDao;
     private CertifiedProductDetailsManager cpdManager;
     private Long b6Id;
+    private Integer threadCount;
     private List<Long> privacyAndSecurityCriteriaIds;
     private List<Long> privacyAndSecurityRequiredCriteriaIds;
 
@@ -40,11 +43,13 @@ public class ListingCriterionForCuresAchievementStatisticsCalculator {
             ListingToCriterionForCuresAchievementStatisticsDAO listingToCuresAchievementDao,
             CertifiedProductDetailsManager cpdManager,
             @Value("${privacyAndSecurityCriteria}") String privacyAndSecurityCriteriaIdList,
-            @Value("${privacyAndSecurityRequiredCriteria}") String privacyAndSecurityRequiredCriteriaIdList) {
+            @Value("${privacyAndSecurityRequiredCriteria}") String privacyAndSecurityRequiredCriteriaIdList,
+            @Value("${executorThreadCountForQuartzJobs}") Integer threadCount) {
         this.certService = certService;
         this.curesUpdateService = curesUpdateService;
         this.listingToCuresAchievementDao = listingToCuresAchievementDao;
         this.cpdManager = cpdManager;
+        this.threadCount = threadCount;
 
         this.b6Id = certService.get(Criteria2015.B_6).getId();
         if (!StringUtils.isEmpty(privacyAndSecurityCriteriaIdList)) {
@@ -74,13 +79,22 @@ public class ListingCriterionForCuresAchievementStatisticsCalculator {
     public List<ListingToCriterionForCuresAchievementStatistic> calculateCurrentStatistics(LocalDate statisticDate) {
         List<Long> listingIdsWithoutCuresUpdate = listingToCuresAchievementDao.getListingIdsWithoutCuresUpdateStatus();
         LOGGER.info("There are " + listingIdsWithoutCuresUpdate.size() + " Active listings without cures update status.");
-        List<ListingToCriterionForCuresAchievementStatistic> statistics
-            = listingIdsWithoutCuresUpdate.stream()
-                .map(listingId -> getListingDetails(listingId))
-                .filter(listing -> listing != null)
-                .map(listing -> calculateCurrentStatistic(statisticDate, listing))
-                .flatMap(List::stream)
-                .collect(Collectors.toList());
+
+        ForkJoinPool pool = new ForkJoinPool(threadCount);
+
+        List<ListingToCriterionForCuresAchievementStatistic> statistics;
+        try {
+            statistics = pool.submit(() ->
+                    listingIdsWithoutCuresUpdate.parallelStream()
+                        .map(listingId -> getListingDetails(listingId))
+                        .filter(listing -> listing != null)
+                        .map(listing -> calculateCurrentStatistic(statisticDate, listing))
+                        .flatMap(List::stream)
+                        .collect(Collectors.toList())).get();
+        } catch (InterruptedException | ExecutionException e) {
+            LOGGER.catching(e);
+            return new ArrayList<ListingToCriterionForCuresAchievementStatistic>();
+        }
         return statistics;
     }
 

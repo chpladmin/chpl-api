@@ -19,21 +19,26 @@ import lombok.extern.log4j.Log4j2;
 public class ListingCuresStatusStatisticsHtmlCreator {
     private static final String HTML_DATE_FORMAT = "MM-dd-yyyy";
     private ListingCuresStatusStatisticsDAO listingCuresStatusStatisticsDao;
-    private String emailBody;
+    private String sectionHeader;
     private String emailStyles;
     private DateTimeFormatter dateFormatter;
 
     @Autowired
     public ListingCuresStatusStatisticsHtmlCreator(ListingCuresStatusStatisticsDAO listingCuresStatusStatisticsDao,
-            @Value("${curesStatisticsReport.listingCuresStatusStatistics.emailBody}") String emailBody,
+            @Value("${curesStatisticsReport.listingCuresStatusStatistics.sectionHeader}") String sectionHeader,
             @Value("${email_styles}") String emailStyles) {
         this.listingCuresStatusStatisticsDao = listingCuresStatusStatisticsDao;
-        this.emailBody = emailBody;
+        this.sectionHeader = sectionHeader;
         this.emailStyles = emailStyles;
         this.dateFormatter = DateTimeFormatter.ofPattern(HTML_DATE_FORMAT);
     }
 
-    public String createEmailBody() {
+    public String getSectionHeader() {
+        LocalDate statisticDate = listingCuresStatusStatisticsDao.getDateOfMostRecentStatistics();
+        return String.format(sectionHeader, formatStatisticsDate(statisticDate));
+    }
+
+    public String getSection() {
         List<ListingCuresStatusStatistic> statistics = null;
         LocalDate statisticDate = listingCuresStatusStatisticsDao.getDateOfMostRecentStatistics();
         if (statisticDate != null) {
@@ -54,7 +59,7 @@ public class ListingCuresStatusStatisticsHtmlCreator {
     }
 
     private String getBody(LocalDate statisticsDate, List<ListingCuresStatusStatistic> statistics) {
-        return String.format(emailBody, formatStatisticsDate(statisticsDate), getTable(statistics));
+        return getTable(statistics);
     }
 
     private String formatStatisticsDate(LocalDate statisticsDate) {
