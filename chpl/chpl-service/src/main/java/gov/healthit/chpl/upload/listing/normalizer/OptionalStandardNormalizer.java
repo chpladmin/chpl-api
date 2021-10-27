@@ -49,11 +49,14 @@ public class OptionalStandardNormalizer {
     }
 
     private void populateAllowedOptionalStandards(CertificationResult certResult) {
-        List<OptionalStandard> allowedOptionalStandards = optionalStandardCriteriaMap.stream()
-            .filter(osm -> osm.getCriterion().getId().equals(certResult.getCriterion().getId()))
-            .map(osm -> osm.getOptionalStandard())
-            .collect(Collectors.toList());
-        certResult.setAllowedOptionalStandards(allowedOptionalStandards);
+        if (certResult != null && certResult.getCriterion() != null
+                && certResult.getCriterion().getId() != null) {
+            List<OptionalStandard> allowedOptionalStandards = optionalStandardCriteriaMap.stream()
+                .filter(osm -> osm.getCriterion().getId().equals(certResult.getCriterion().getId()))
+                .map(osm -> osm.getOptionalStandard())
+                .collect(Collectors.toList());
+            certResult.setAllowedOptionalStandards(allowedOptionalStandards);
+        }
     }
 
     private void populateOptionalStandardsFields(List<CertificationResultOptionalStandard> optionalStandards) {

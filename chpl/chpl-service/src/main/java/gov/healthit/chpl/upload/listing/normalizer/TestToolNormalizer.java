@@ -49,11 +49,14 @@ public class TestToolNormalizer {
     }
 
     private void populateAllowedTestTools(CertificationResult certResult) {
-        List<TestTool> allowedTestTools = testToolCriteriaMap.stream()
-            .filter(ttcm -> ttcm.getCriterion().getId().equals(certResult.getCriterion().getId()))
-            .map(ttm -> ttm.getTestTool())
-            .collect(Collectors.toList());
-        certResult.setAllowedTestTools(allowedTestTools);
+        if (certResult != null && certResult.getCriterion() != null
+                && certResult.getCriterion().getId() != null) {
+            List<TestTool> allowedTestTools = testToolCriteriaMap.stream()
+                .filter(ttcm -> ttcm.getCriterion().getId().equals(certResult.getCriterion().getId()))
+                .map(ttm -> ttm.getTestTool())
+                .collect(Collectors.toList());
+            certResult.setAllowedTestTools(allowedTestTools);
+        }
     }
 
     private void populateTestToolIds(List<CertificationResultTestTool> testTools) {

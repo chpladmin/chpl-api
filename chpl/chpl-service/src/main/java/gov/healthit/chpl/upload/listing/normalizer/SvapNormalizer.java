@@ -46,11 +46,14 @@ public class SvapNormalizer {
     }
 
     private void populateAllowedSvaps(CertificationResult certResult) {
-        List<Svap> allowedSvaps = svapCriteriaMap.stream()
-                .filter(scm -> scm.getCriterion().getId().equals(certResult.getCriterion().getId()))
-                .map(scm -> scm.getSvap())
-                .collect(Collectors.toList());
-        certResult.setAllowedSvaps(allowedSvaps);
+        if (certResult != null && certResult.getCriterion() != null
+                && certResult.getCriterion().getId() != null) {
+            List<Svap> allowedSvaps = svapCriteriaMap.stream()
+                    .filter(scm -> scm.getCriterion().getId().equals(certResult.getCriterion().getId()))
+                    .map(scm -> scm.getSvap())
+                    .collect(Collectors.toList());
+            certResult.setAllowedSvaps(allowedSvaps);
+        }
     }
 
     private void populateSvapIds(List<CertificationResultSvap> svaps) {

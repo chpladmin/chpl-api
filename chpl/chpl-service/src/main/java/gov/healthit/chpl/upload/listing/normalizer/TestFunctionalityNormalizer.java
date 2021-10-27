@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -78,10 +79,14 @@ public class TestFunctionalityNormalizer {
         certResult.setAllowedTestFunctionalities(getAvailableTestFunctionalities(listing, certResult));
     }
 
-    private List<TestFunctionality> getAvailableTestFunctionalities(CertifiedProductSearchDetails listing, CertificationResult cr) {
+    private List<TestFunctionality> getAvailableTestFunctionalities(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         String edition = MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY);
         Long practiceTypeId = MapUtils.getLong(listing.getPracticeType(), PRACTICE_TYPE_ID_KEY);
-        return testFunctionalityManager.getTestFunctionalities(cr.getCriterion().getId(), edition, practiceTypeId);
+        if (certResult != null && certResult.getCriterion() != null
+                && certResult.getCriterion().getId() != null) {
+            return testFunctionalityManager.getTestFunctionalities(certResult.getCriterion().getId(), edition, practiceTypeId);
+        }
+        return new ArrayList<TestFunctionality>();
     }
 
     private void populateTestFunctionalityIds(CertifiedProductSearchDetails listing,

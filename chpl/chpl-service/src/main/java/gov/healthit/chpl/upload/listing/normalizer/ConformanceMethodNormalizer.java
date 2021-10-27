@@ -50,12 +50,15 @@ public class ConformanceMethodNormalizer {
     }
 
     private void populateAllowedConformanceMethods(CertificationResult certResult) {
-        List<ConformanceMethod> allowedConformanceMethds = conformanceMethodCriteriaMap.stream()
-                .filter(cmcm -> ff4j.check(FeatureList.CONFORMANCE_METHOD)
-                        && cmcm.getCriterion().getId().equals(certResult.getCriterion().getId()))
-                .map(cmcm -> cmcm.getConformanceMethod())
-                .collect(Collectors.toList());
-        certResult.setAllowedConformanceMethods(allowedConformanceMethds);
+        if (certResult != null && certResult.getCriterion() != null
+                && certResult.getCriterion().getId() != null) {
+            List<ConformanceMethod> allowedConformanceMethds = conformanceMethodCriteriaMap.stream()
+                    .filter(cmcm -> ff4j.check(FeatureList.CONFORMANCE_METHOD)
+                            && cmcm.getCriterion().getId().equals(certResult.getCriterion().getId()))
+                    .map(cmcm -> cmcm.getConformanceMethod())
+                    .collect(Collectors.toList());
+            certResult.setAllowedConformanceMethods(allowedConformanceMethds);
+        }
     }
 
     private void populateConformanceMethodIds(List<CertificationResultConformanceMethod> conformanceMethods) {
