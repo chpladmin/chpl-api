@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
@@ -33,6 +35,7 @@ public class SearchRequestValidator {
     private DirectReviewSearchService drService;
     private ErrorMessageUtil msgUtil;
     private DateTimeFormatter dateFormatter;
+    private Set<String> allowedCertificationEditions;
 
     @Autowired
     public SearchRequestValidator(DimensionalDataManager dimensionalDataManager,
@@ -42,6 +45,11 @@ public class SearchRequestValidator {
         this.drService = drService;
         this.msgUtil = msgUtil;
         dateFormatter = DateTimeFormatter.ofPattern(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+        allowedCertificationEditions = Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2011.getYear(),
+                CertificationEditionConcept.CERTIFICATION_EDITION_2014.getYear(),
+                CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear(),
+                CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear() + " Cures Update")
+                .collect(Collectors.toSet());
     }
 
     public void validate(SearchRequest request) throws ValidationException {
@@ -69,8 +77,12 @@ public class SearchRequestValidator {
         }
 
         Set<KeyValueModel> allCertificationStatuses = dimensionalDataManager.getCertificationStatuses();
+        Set<String> allCertificationStatusNames = new LinkedHashSet<String>();
+        if (!CollectionUtils.isEmpty(allCertificationStatuses)) {
+            allCertificationStatusNames = allCertificationStatuses.stream().map(kvm -> kvm.getName()).collect(Collectors.toSet());
+        }
         return certificationStatuses.stream()
-            .filter(certificationStatus -> !isInSet(certificationStatus, allCertificationStatuses))
+            .filter(certificationStatus -> !isInSet(certificationStatus, allCertificationStatusNames))
             .map(certificationStatus -> msgUtil.getMessage("search.certificationStatuses.invalid", certificationStatus))
             .collect(Collectors.toSet());
     }
@@ -80,9 +92,8 @@ public class SearchRequestValidator {
             return Collections.emptySet();
         }
 
-        Set<KeyValueModel> allCertificationEditions = dimensionalDataManager.getEditionNames(false);
         return certificationEditions.stream()
-            .filter(certificationEdition -> !isInSet(certificationEdition, allCertificationEditions))
+            .filter(certificationEdition -> !isInSet(certificationEdition, allowedCertificationEditions))
             .map(certificationEdition -> msgUtil.getMessage("search.certificationEdition.invalid", certificationEdition))
             .collect(Collectors.toSet());
     }
@@ -153,8 +164,12 @@ public class SearchRequestValidator {
         }
 
         Set<DescriptiveModel> allCqms = dimensionalDataManager.getCQMCriterionNumbers(false);
+        Set<String> allCqmNumbers = new LinkedHashSet<String>();
+        if (!CollectionUtils.isEmpty(allCqms)) {
+            allCqmNumbers = allCqms.stream().map(kvm -> kvm.getName()).collect(Collectors.toSet());
+        }
         return cqmNumbers.stream()
-                .filter(cqm -> !isInSet(cqm, allCqms))
+                .filter(cqm -> !isInSet(cqm, allCqmNumbers))
                 .map(cqm -> msgUtil.getMessage("search.cqms.invalid", cqm))
                 .collect(Collectors.toSet());
     }
@@ -198,8 +213,12 @@ public class SearchRequestValidator {
         }
 
         Set<KeyValueModel> allPracticeTypes = dimensionalDataManager.getPracticeTypeNames();
+        Set<String> allPracticeTypeNames = new LinkedHashSet<String>();
+        if (!CollectionUtils.isEmpty(allPracticeTypes)) {
+            allPracticeTypeNames = allPracticeTypes.stream().map(kvm -> kvm.getName()).collect(Collectors.toSet());
+        }
         return Stream.of(practiceType)
-                .filter(ptype -> !isInSet(ptype, allPracticeTypes))
+                .filter(ptype -> !isInSet(ptype, allPracticeTypeNames))
                 .map(ptype -> msgUtil.getMessage("search.practiceType.invalid", ptype))
                 .collect(Collectors.toSet());
     }
@@ -321,16 +340,6 @@ public class SearchRequestValidator {
         return Collections.emptySet();
     }
 
-
-    private boolean isInSet(String value, Set<? extends KeyValueModel> setToSearch) {
-        if (setToSearch == null) {
-            return false;
-        }
-        return setToSearch.stream()
-            .filter(item -> item.getName().equalsIgnoreCase(value))
-            .count() > 0;
-    }
-
     private boolean isInAcbSet(String value, Set<CertificationBody> setToSearch) {
         if (setToSearch == null) {
             return false;
@@ -346,6 +355,15 @@ public class SearchRequestValidator {
         }
         return setToSearch.stream()
             .filter(item -> item.getId().equals(value))
+            .count() > 0;
+    }
+
+    private boolean isInSet(String value, Set<String> setToSearch) {
+        if (setToSearch == null) {
+            return false;
+        }
+        return setToSearch.stream()
+            .filter(item -> item.equals(value))
             .count() > 0;
     }
 }

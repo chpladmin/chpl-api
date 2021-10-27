@@ -145,12 +145,10 @@ public class SearchRequestValidatorTest {
     }
 
     @Test
-    public void validate_invalidCertificationEditionNullDimensionalData_addsError() {
+    public void validate_invalidCertificationEdition_addsError() {
         SearchRequest request = SearchRequest.builder()
             .certificationEditions(Stream.of("2021").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getEditionNames(ArgumentMatchers.anyBoolean()))
-            .thenReturn(null);
 
         try {
             validator.validate(request);
@@ -163,30 +161,66 @@ public class SearchRequestValidatorTest {
     }
 
     @Test
-    public void validate_invalidCertificationEditionsDimensionalDataExists_addsError() {
+    public void validate_invalidCertificationEditions_addsError() {
         SearchRequest request = SearchRequest.builder()
-            .certificationEditions(Stream.of("2021").collect(Collectors.toSet()))
+            .certificationEditions(Stream.of("2016", "2021").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getEditionNames(ArgumentMatchers.anyBoolean()))
-            .thenReturn(Stream.of(new KeyValueModel(1L, "2011"), new KeyValueModel(2L, "2014")).collect(Collectors.toSet()));
 
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
-            assertEquals(1, ex.getErrorMessages().size());
+            assertEquals(2, ex.getErrorMessages().size());
             assertTrue(ex.getErrorMessages().contains(String.format(INVALID_CERTIFICATION_EDITION, "2021", "")));
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_CERTIFICATION_EDITION, "2016", "")));
             return;
         }
         fail("Should not execute.");
     }
 
     @Test
-    public void validate_validCertificationEdition_noErrors() {
+    public void validate_2011CertificationEdition_noErrors() {
+        SearchRequest request = SearchRequest.builder()
+            .certificationEditions(Stream.of("2011").collect(Collectors.toSet()))
+            .build();
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_2014CertificationEdition_noErrors() {
         SearchRequest request = SearchRequest.builder()
             .certificationEditions(Stream.of("2014").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getEditionNames(ArgumentMatchers.anyBoolean()))
-            .thenReturn(Stream.of(new KeyValueModel(1L, "2014")).collect(Collectors.toSet()));
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_2015CertificationEdition_noErrors() {
+        SearchRequest request = SearchRequest.builder()
+            .certificationEditions(Stream.of("2015").collect(Collectors.toSet()))
+            .build();
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_2015CuresUpdateCertificationEdition_noErrors() {
+        SearchRequest request = SearchRequest.builder()
+            .certificationEditions(Stream.of("2015 Cures Update").collect(Collectors.toSet()))
+            .build();
 
         try {
             validator.validate(request);
