@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +17,9 @@ import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
+import gov.healthit.chpl.manager.TestingFunctionalityManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import lombok.Data;
 import lombok.ToString;
@@ -25,15 +28,20 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 public class TestFunctionalityNormalizer {
+    private static final String PRACTICE_TYPE_ID_KEY = "id";
+
     private TestFunctionalityDAO testFunctionalityDao;
+    private TestingFunctionalityManager testFunctionalityManager;
     private ResourcePermissions resourcePermissions;
     private List<RestrictedCriteriaTestFunctionality> restrictedCriteriaTestFunctionality;
 
     @Autowired
     public TestFunctionalityNormalizer(TestFunctionalityDAO testFunctionalityDao,
+            TestingFunctionalityManager testFunctionalityManager,
             ResourcePermissions resourcePermissions,
             @Value("${testFunctionalities.restrictions}") String jsonRestrictions) {
         this.testFunctionalityDao = testFunctionalityDao;
+        this.testFunctionalityManager = testFunctionalityManager;
         this.resourcePermissions = resourcePermissions;
         initRestrictedCriteriaTestFunctionality(jsonRestrictions);
     }
@@ -52,13 +60,28 @@ public class TestFunctionalityNormalizer {
     public void normalize(CertifiedProductSearchDetails listing) {
         if (listing.getCertificationResults() != null && listing.getCertificationResults().size() > 0) {
             listing.getCertificationResults().stream()
-                .forEach(certResult -> populateTestFunctionalityIds(listing, certResult.getTestFunctionality()));
+                .forEach(certResult -> fillInTestFunctionalityData(listing, certResult));
 
             listing.getCertificationResults().stream()
                 .filter(certResult -> certResult.getTestFunctionality() != null && certResult.getTestFunctionality().size() > 0)
                 .forEach(certResult -> removeRestrictedTestFunctionalityBasedOnUserRule(certResult));
         }
 
+    }
+
+    private void fillInTestFunctionalityData(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        populateAllowedTestFunctionalities(listing, certResult);
+        populateTestFunctionalityIds(listing, certResult.getTestFunctionality());
+    }
+
+    private void populateAllowedTestFunctionalities(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        certResult.setAllowedTestFunctionalities(getAvailableTestFunctionalities(listing, certResult));
+    }
+
+    private List<TestFunctionality> getAvailableTestFunctionalities(CertifiedProductSearchDetails listing, CertificationResult cr) {
+        String edition = MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY);
+        Long practiceTypeId = MapUtils.getLong(listing.getPracticeType(), PRACTICE_TYPE_ID_KEY);
+        return testFunctionalityManager.getTestFunctionalities(cr.getCriterion().getId(), edition, practiceTypeId);
     }
 
     private void populateTestFunctionalityIds(CertifiedProductSearchDetails listing,
@@ -72,12 +95,10 @@ public class TestFunctionalityNormalizer {
     private void populateTestFunctionalityId(CertifiedProductSearchDetails listing,
             CertificationResultTestFunctionality testFunctionality) {
         if (!StringUtils.isEmpty(testFunctionality.getName())
-                && listing.getCertificationEdition() != null
-                && listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY) != null) {
+                && MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY) != null) {
             Long editionId = null;
             try {
-                editionId = Long.parseLong(
-                        listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString());
+                editionId = MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY);
             } catch (NumberFormatException ex) {
                 LOGGER.error("Could not get edition id as a number.", ex);
             }

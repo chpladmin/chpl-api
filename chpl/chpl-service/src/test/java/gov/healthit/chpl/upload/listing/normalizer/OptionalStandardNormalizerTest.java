@@ -16,9 +16,11 @@ import org.mockito.Mockito;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
 
 public class OptionalStandardNormalizerTest {
     private OptionalStandardDAO optionalStandardDao;
@@ -27,6 +29,33 @@ public class OptionalStandardNormalizerTest {
     @Before
     public void before() {
         optionalStandardDao = Mockito.mock(OptionalStandardDAO.class);
+        List<OptionalStandardCriteriaMap> allowedOptionalStandards = new ArrayList<OptionalStandardCriteriaMap>();
+        allowedOptionalStandards.add(OptionalStandardCriteriaMap.builder()
+                .criterion(CertificationCriterion.builder()
+                        .id(1L)
+                        .number("170.315 (a)(1)")
+                        .build())
+                .optionalStandard(OptionalStandard.builder()
+                        .id(1L)
+                        .citation("OPT1")
+                        .build())
+                .build());
+        allowedOptionalStandards.add(OptionalStandardCriteriaMap.builder()
+                .criterion(CertificationCriterion.builder()
+                        .id(1L)
+                        .number("170.315 (a)(1)")
+                        .build())
+                .optionalStandard(OptionalStandard.builder()
+                        .id(2L)
+                        .citation("OPT2")
+                        .build())
+                .build());
+
+        try {
+            Mockito.when(optionalStandardDao.getAllOptionalStandardCriteriaMap()).thenReturn(allowedOptionalStandards);
+        } catch (EntityRetrievalException e) {
+        }
+
         normalizer = new OptionalStandardNormalizer(optionalStandardDao);
     }
 
@@ -116,6 +145,36 @@ public class OptionalStandardNormalizerTest {
         normalizer.normalize(listing);
         assertEquals(1, listing.getCertificationResults().get(0).getOptionalStandards().size());
         assertEquals(1L, listing.getCertificationResults().get(0).getOptionalStandards().get(0).getOptionalStandardId());
+    }
+
+    @Test
+    public void normalize_criterionHasAllowedOptionalStandards_addsAllowedOptionalStandardsToCertificationResult() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                    .id(1L)
+                                    .number("170.315 (a)(1)")
+                                    .build())
+                        .optionalStandards(new ArrayList<CertificationResultOptionalStandard>())
+                        .build())
+                .build();
+        normalizer.normalize(listing);
+        assertEquals(2, listing.getCertificationResults().get(0).getAllowedOptionalStandards().size());
+    }
+
+    @Test
+    public void normalize_criterionHasNoAllowedOptionalStandards_noAllowedOptionalStandardsAdded() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                    .id(2L)
+                                    .number("170.315 (a)(2)")
+                                    .build())
+                        .optionalStandards(new ArrayList<CertificationResultOptionalStandard>())
+                        .build())
+                .build();
+        normalizer.normalize(listing);
+        assertEquals(0, listing.getCertificationResults().get(0).getAllowedOptionalStandards().size());
     }
 
     private Map<String, Object> create2015EditionMap() {
