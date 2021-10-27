@@ -12,12 +12,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
@@ -34,6 +36,7 @@ import lombok.extern.log4j.Log4j2;
 @NoArgsConstructor
 @Log4j2
 public class ListingSearchService {
+    private static final String CURES_UPDATE_EDITION = "2015 Cures Update";
     private SearchRequestValidator searchRequestValidator;
     private SearchRequestNormalizer searchRequestNormalizer;
     private CertifiedProductSearchManager cpSearchManager;
@@ -117,11 +120,29 @@ public class ListingSearchService {
     }
 
     private boolean matchesCertificationEditions(CertifiedProductBasicSearchResult listing, Set<String> certificationEditions) {
-        if (certificationEditions == null || certificationEditions.size() == 0) {
+        if (CollectionUtils.isEmpty(certificationEditions)) {
             return true;
         }
 
-        return !StringUtils.isEmpty(listing.getEdition()) && certificationEditions.contains(listing.getEdition());
+        return certificationEditions.stream()
+            .anyMatch(edition -> matchesCertificationEdition(listing, edition));
+    }
+
+    private boolean matchesCertificationEdition(CertifiedProductBasicSearchResult listing, String certificationEdition) {
+        boolean editionMatch = false;
+        if (certificationEdition.equals(CURES_UPDATE_EDITION)) {
+            editionMatch = !StringUtils.isEmpty(listing.getEdition())
+                    && listing.getEdition().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())
+                    && BooleanUtils.isTrue(listing.getCuresUpdate());
+        } else if (certificationEdition.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())) {
+            editionMatch = !StringUtils.isEmpty(listing.getEdition())
+                    && listing.getEdition().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())
+                    && BooleanUtils.isFalse(listing.getCuresUpdate());
+        } else {
+            editionMatch = !StringUtils.isEmpty(listing.getEdition())
+                    && certificationEdition.equals(listing.getEdition());
+        }
+        return editionMatch;
     }
 
     private boolean matchesDeveloper(CertifiedProductBasicSearchResult listing, String developer) {

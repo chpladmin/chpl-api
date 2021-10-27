@@ -659,14 +659,78 @@ public class ListingSearchServiceTest {
     }
 
     @Test
-    public void search_multipleCertificationEditionProvided_findsMatchingListings() throws ValidationException {
+    public void search_2015CertificationEditionProvided_finds2015ButNot2015CuresUpdateListings() throws ValidationException {
+        List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
+        allListings.get(0).setId(1L);
+        allListings.get(0).setEdition("2015");
+        allListings.get(0).setCuresUpdate(false);
+        allListings.get(1).setId(2L);
+        allListings.get(1).setEdition("2015");
+        allListings.get(1).setCuresUpdate(true);
+        allListings.get(2).setEdition("2014");
+        allListings.get(3).setEdition("2011");
+
+        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Set<String> editionNames = new LinkedHashSet<String>();
+        editionNames.add("2015");
+        SearchRequest searchRequest = SearchRequest.builder()
+            .certificationEditions(editionNames)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        SearchResponse searchResponse = listingSearchService.search(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+        assertTrue(searchResponse.getResults().get(0).getId().equals(1L));
+    }
+
+    @Test
+    public void search_2015CuresUpdateCertificationEditionProvided_finds2015CuresUpdateButNot2015Listings() throws ValidationException {
+        List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
+        allListings.get(0).setId(1L);
+        allListings.get(0).setEdition("2015");
+        allListings.get(1).setCuresUpdate(false);
+        allListings.get(1).setId(2L);
+        allListings.get(1).setEdition("2015");
+        allListings.get(1).setCuresUpdate(true);
+        allListings.get(2).setId(3L);
+        allListings.get(2).setEdition("2015");
+        allListings.get(2).setCuresUpdate(true);
+        allListings.get(3).setEdition("2014");
+        allListings.get(4).setEdition("2011");
+
+        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Set<String> editionNames = new LinkedHashSet<String>();
+        editionNames.add("2015 Cures Update");
+        SearchRequest searchRequest = SearchRequest.builder()
+            .certificationEditions(editionNames)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        SearchResponse searchResponse = listingSearchService.search(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(2, searchResponse.getRecordCount());
+        assertEquals(2, searchResponse.getResults().size());
+        assertTrue(searchResponse.getResults().stream().map(result -> result.getId()).collect(Collectors.toList())
+                .contains(2L));
+        assertTrue(searchResponse.getResults().stream().map(result -> result.getId()).collect(Collectors.toList())
+                .contains(3L));
+    }
+
+    @Test
+    public void search_2011And2015CertificationEditionProvided_findsMatchingListings() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         allListings.get(0).setEdition("2014");
         allListings.get(1).setEdition("2014");
         allListings.get(2).setEdition("2011");
         allListings.get(3).setEdition("2011");
         allListings.get(4).setEdition("2015");
+        allListings.get(4).setCuresUpdate(false);
         allListings.get(5).setEdition("2015");
+        allListings.get(5).setCuresUpdate(false);
 
         Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
         Set<String> editionNames = new LinkedHashSet<String>();
@@ -683,6 +747,64 @@ public class ListingSearchServiceTest {
         assertNotNull(searchResponse);
         assertEquals(4, searchResponse.getRecordCount());
         assertEquals(4, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_2011And2015CuresUpdateCertificationEditionProvided_findsMatchingListings() throws ValidationException {
+        List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
+        allListings.get(0).setEdition("2014");
+        allListings.get(1).setEdition("2014");
+        allListings.get(2).setEdition("2011");
+        allListings.get(3).setEdition("2011");
+        allListings.get(4).setEdition("2015");
+        allListings.get(4).setCuresUpdate(false);
+        allListings.get(5).setEdition("2015");
+        allListings.get(5).setCuresUpdate(true);
+
+        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Set<String> editionNames = new LinkedHashSet<String>();
+        editionNames.add("2011");
+        editionNames.add("2015 Cures Update");
+
+        SearchRequest searchRequest = SearchRequest.builder()
+            .certificationEditions(editionNames)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        SearchResponse searchResponse = listingSearchService.search(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(3, searchResponse.getRecordCount());
+        assertEquals(3, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_2015And2015CertificationEditionProvided_findsMatchingListings() throws ValidationException {
+        List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
+        allListings.get(0).setEdition("2014");
+        allListings.get(1).setEdition("2014");
+        allListings.get(2).setEdition("2011");
+        allListings.get(3).setEdition("2011");
+        allListings.get(4).setEdition("2015");
+        allListings.get(4).setCuresUpdate(false);
+        allListings.get(5).setEdition("2015");
+        allListings.get(5).setCuresUpdate(true);
+
+        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Set<String> editionNames = new LinkedHashSet<String>();
+        editionNames.add("2015");
+        editionNames.add("2015 Cures Update");
+
+        SearchRequest searchRequest = SearchRequest.builder()
+            .certificationEditions(editionNames)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        SearchResponse searchResponse = listingSearchService.search(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(2, searchResponse.getRecordCount());
+        assertEquals(2, searchResponse.getResults().size());
     }
 
     @Test

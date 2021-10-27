@@ -63,7 +63,7 @@ public class SearchController {
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "searchTerm") @RequestParam(value = "searchTerm", required = false, defaultValue = "") String searchTerm,
             @Parameter(description = "A comma-separated list of certification statuses (ex: \"Active,Retired,Withdrawn by Developer\"). Results may match any of the provided statuses.",
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationStatuses") @RequestParam(value = "certificationStatuses", required = false, defaultValue = "") String certificationStatusesDelimited,
-            @Parameter(description = "A comma-separated list of certification edition years (ex: \"2014,2015\" finds listings with either edition 2014 or 2015). Results may match any of the provided edition years.",
+            @Parameter(description = "A comma-separated list of certification edition years (ex: \"2014,2015\" finds listings with either edition 2014 or 2015). Allowable values are 2011, 2014, 2015, and \"2015 Cures Update\". Results may match any of the provided edition years.",
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationEditions") @RequestParam(value = "certificationEditions", required = false, defaultValue = "") String certificationEditionsDelimited,
             @Parameter(description = "A comma-separated list of certification criteria IDs to be queried together (ex: \"1,2\" finds listings attesting to 170.315 (a)(1) or 170.315 (a)(2)).",
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationCriteriaIds") @RequestParam(value = "certificationCriteriaIds", required = false, defaultValue = "") String certificationCriteriaIdsDelimited,

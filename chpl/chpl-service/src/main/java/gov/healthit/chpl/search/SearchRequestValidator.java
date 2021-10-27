@@ -77,9 +77,11 @@ public class SearchRequestValidator {
         }
 
         Set<KeyValueModel> allCertificationStatuses = dimensionalDataManager.getCertificationStatuses();
-        Set<String> allCertificationStatusNames = new LinkedHashSet<String>();
+        Set<String> allCertificationStatusNames;
         if (!CollectionUtils.isEmpty(allCertificationStatuses)) {
             allCertificationStatusNames = allCertificationStatuses.stream().map(kvm -> kvm.getName()).collect(Collectors.toSet());
+        } else {
+            allCertificationStatusNames = Collections.emptySet();
         }
         return certificationStatuses.stream()
             .filter(certificationStatus -> !isInSet(certificationStatus, allCertificationStatusNames))
@@ -164,9 +166,11 @@ public class SearchRequestValidator {
         }
 
         Set<DescriptiveModel> allCqms = dimensionalDataManager.getCQMCriterionNumbers(false);
-        Set<String> allCqmNumbers = new LinkedHashSet<String>();
+        Set<String> allCqmNumbers;
         if (!CollectionUtils.isEmpty(allCqms)) {
             allCqmNumbers = allCqms.stream().map(kvm -> kvm.getName()).collect(Collectors.toSet());
+        } else {
+            allCqmNumbers = Collections.emptySet();
         }
         return cqmNumbers.stream()
                 .filter(cqm -> !isInSet(cqm, allCqmNumbers))
@@ -213,9 +217,11 @@ public class SearchRequestValidator {
         }
 
         Set<KeyValueModel> allPracticeTypes = dimensionalDataManager.getPracticeTypeNames();
-        Set<String> allPracticeTypeNames = new LinkedHashSet<String>();
+        Set<String> allPracticeTypeNames;
         if (!CollectionUtils.isEmpty(allPracticeTypes)) {
             allPracticeTypeNames = allPracticeTypes.stream().map(kvm -> kvm.getName()).collect(Collectors.toSet());
+        } else {
+            allPracticeTypeNames = Collections.emptySet();
         }
         return Stream.of(practiceType)
                 .filter(ptype -> !isInSet(ptype, allPracticeTypeNames))
