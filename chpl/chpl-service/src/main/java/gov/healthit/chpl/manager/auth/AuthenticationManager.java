@@ -227,7 +227,7 @@ public class AuthenticationManager {
 
     private void logWhenUsername(LoginCredentials creds, UserDTO user) {
         if (!creds.getUserName().equals(user.getEmail())) {
-            LOGGER.warn(String.format("The following user logged in with username: %s / %s", creds.getUserName(), user.getEmail()));
+            LOGGER.warn(String.format("The user with email %s logged in using the username: %s ", user.getEmail(), creds.getUserName()));
         }
     }
 }
