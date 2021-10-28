@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,10 +26,9 @@ public class TestingFunctionalityManager {
     }
 
     public List<TestFunctionality> getTestFunctionalities(Long criteriaId, String certificationEdition, Long practiceTypeId) {
-
-        if (certificationEdition.equals("2014")) {
+        if (!StringUtils.isEmpty(certificationEdition) && certificationEdition.equals("2014")) {
             return get2014TestFunctionalities(criteriaId, practiceTypeId);
-        } else if (certificationEdition.equals("2015")) {
+        } else if (!StringUtils.isEmpty(certificationEdition) && certificationEdition.equals("2015")) {
             return get2015TestFunctionalities(criteriaId);
         } else {
             return new ArrayList<TestFunctionality>();
