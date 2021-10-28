@@ -20,6 +20,7 @@ import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResultLegacy;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResultLegacy;
 import gov.healthit.chpl.domain.search.SearchRequestLegacy;
@@ -28,6 +29,9 @@ import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.search.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.service.DirectReviewSearchService;
+import gov.healthit.chpl.service.RealWorldTestingEligibility;
+import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityService;
+import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityServiceFactory;
 import lombok.extern.log4j.Log4j2;
 
 @Service
@@ -35,12 +39,16 @@ import lombok.extern.log4j.Log4j2;
 public class CertifiedProductSearchManager {
     private static final String CERT_STATUS_EVENT_DATE_FORMAT = "yyyy-MM-dd";
     private CertifiedProductSearchDAO searchDao;
+    private RealWorldTestingEligiblityService rwtEligibilityService;
     private DirectReviewSearchService drService;
     private DateTimeFormatter dateFormatter;
 
     @Autowired
-    public CertifiedProductSearchManager(CertifiedProductSearchDAO searchDao, DirectReviewSearchService drService) {
+    public CertifiedProductSearchManager(CertifiedProductSearchDAO searchDao,
+            RealWorldTestingEligiblityServiceFactory rwtEligibilityServiceFactory,
+            DirectReviewSearchService drService) {
         this.searchDao = searchDao;
+        this.rwtEligibilityService = rwtEligibilityServiceFactory.getInstance();
         this.drService = drService;
         this.dateFormatter = DateTimeFormatter.ofPattern(CERT_STATUS_EVENT_DATE_FORMAT);
     }
@@ -58,12 +66,30 @@ public class CertifiedProductSearchManager {
     @Cacheable(value = CacheNames.COLLECTIONS_SEARCH)
     public List<CertifiedProductBasicSearchResult> getSearchListingCollection() {
         List<CertifiedProductBasicSearchResult> results = searchDao.getCertifiedProducts();
-        results.stream()
-            .forEach(searchResult -> populateDirectReviewFields(searchResult));
+        results.parallelStream()
+            .forEach(searchResult -> populateDerivedFields(searchResult));
         return results;
     }
 
-    private void populateDirectReviewFields(CertifiedProductBasicSearchResult searchResult) {
+    private void populateDerivedFields(CertifiedProductBasicSearchResult searchResult) {
+        populateRwtEligibility(searchResult);
+        populateDirectReviews(searchResult);
+    }
+
+    private void populateRwtEligibility(CertifiedProductBasicSearchResult searchResult) {
+        if (searchResult.getEdition().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())) {
+            RealWorldTestingEligibility rwtElig = rwtEligibilityService.getRwtEligibilityYearForListing(searchResult.getId(), LOGGER);
+            LOGGER.info(String.format("ListingId: %s, Elig Year %s, %s",
+                    searchResult.getId(),
+                    rwtElig.getEligibilityYear().isPresent() ? rwtElig.getEligibilityYear().get().toString() : "N/A",
+                    rwtElig.getReason().getReason()));
+            //searchResult.setIsRwtEligible(rwtElig.getEligibilityYear().isPresent());
+        } else {
+            //searchResult.setIsRwtEligible(false);
+        }
+    }
+
+    private void populateDirectReviews(CertifiedProductBasicSearchResult searchResult) {
         List<CertificationStatusEvent> statusEvents = createStatusEventsFromBasicSearchResult(searchResult);
         populateDirectReviewFields(searchResult, statusEvents);
     }

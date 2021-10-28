@@ -56,10 +56,16 @@ public class RealWorldTestingEligiblityService {
         this.rwtProgramFirstEligibilityYear = rwtProgramFirstEligibilityYear;
     }
 
+    public boolean isRwtEligible(Long listingId, Logger logger) {
+        RealWorldTestingEligibility eligibility = getRwtEligibilityYearForListing(listingId, logger);
+        return eligibility != null && eligibility.getEligibilityYear().isPresent();
+    }
+
     public RealWorldTestingEligibility getRwtEligibilityYearForListing(Long listingId, Logger logger) {
         //Check to see if we have already calculated the eligibility for this listing.  Because of the ICS
         //relationships, we need to use recursion and it can be very slow.
         if (memo.containsKey(listingId)) {
+            System.out.println("\tGot listing from memo " + memo);
             return memo.get(listingId);
         }
 
@@ -90,6 +96,7 @@ public class RealWorldTestingEligiblityService {
 
     private void addCalculatedResultsToMemo(Long listingId, RealWorldTestingEligibility eligibility) {
         memo.put(listingId, eligibility);
+        System.out.println("\tAdded listing to memo " + memo);
     }
 
 
