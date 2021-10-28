@@ -103,6 +103,12 @@ public class CertifiedProductBasicSearchResultEntity {
     @Column(name = "promoting_interoperability_user_count_date")
     private LocalDate promotingInteroperabilityUserCountDate;
 
+    @Column(name = "rwt_plans_url")
+    private String rwtPlansUrl;
+
+    @Column(name = "rwt_results_url")
+    private String rwtResultsUrl;
+
     @Column(name = "certs")
     private String certs; // comma-separated list of all certification criteria met by the certified product
 

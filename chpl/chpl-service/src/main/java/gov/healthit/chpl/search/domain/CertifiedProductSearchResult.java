@@ -146,6 +146,8 @@ public class CertifiedProductSearchResult implements Serializable {
     @Deprecated
     private String transparencyAttestationUrl;
     private String mandatoryDisclosures;
+    private String rwtPlansUrl;
+    private String rwtResultsUrl;
 
     public CertifiedProductSearchResult(CertifiedProductSearchResult other) {
         this.id = other.getId();
@@ -177,6 +179,8 @@ public class CertifiedProductSearchResult implements Serializable {
         this.promotingInteroperabilityUserDate = other.getPromotingInteroperabilityUserDate();
         this.transparencyAttestationUrl = other.getTransparencyAttestationUrl();
         this.mandatoryDisclosures = other.getMandatoryDisclosures();
+        this.rwtPlansUrl = other.getRwtPlansUrl();
+        this.rwtResultsUrl = other.getRwtResultsUrl();
     }
 
     @Override
