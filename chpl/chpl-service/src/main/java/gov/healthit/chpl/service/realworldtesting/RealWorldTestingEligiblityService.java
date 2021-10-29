@@ -65,7 +65,6 @@ public class RealWorldTestingEligiblityService {
         //Check to see if we have already calculated the eligibility for this listing.  Because of the ICS
         //relationships, we need to use recursion and it can be very slow.
         if (memo.containsKey(listingId)) {
-            System.out.println("\tGot listing from memo " + memo);
             return memo.get(listingId);
         }
 
@@ -96,9 +95,7 @@ public class RealWorldTestingEligiblityService {
 
     private void addCalculatedResultsToMemo(Long listingId, RealWorldTestingEligibility eligibility) {
         memo.put(listingId, eligibility);
-        System.out.println("\tAdded listing to memo " + memo);
     }
-
 
     private Optional<RealWorldTestingEligibility> getRwtEligBasedOnStandardRequirements(Long listingId) {
         //Initially try to determine the eligibility based on the beginning of the program

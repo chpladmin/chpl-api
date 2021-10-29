@@ -5,8 +5,6 @@ import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
@@ -34,7 +32,6 @@ public class AsynchronousCacheInitialization {
     }
 
     @Async
-    @Transactional
     public void initializeSearchOptions() throws EntityRetrievalException {
         LOGGER.info("Starting cache initialization for SearchViewController.getPopulateSearchData()");
         dimensionalDataManager.getSearchableDimensionalData(true);
@@ -45,24 +42,22 @@ public class AsynchronousCacheInitialization {
     }
 
     @Async
-    @Transactional
     public void initializeBasicSearchAndDirectReviews() throws IOException, EntityRetrievalException, InterruptedException {
         LOGGER.info("Starting cache initialization for Direct Reviews");
         drService.populateDirectReviewsCache();
         LOGGER.info("Finished cache initialization for Direct Reviews");
-        LOGGER.info("Starting cache initialization for CertifiedProductSearchManager.searchBasic()");
+        LOGGER.info("Starting cache initialization for searchable listing collection");
         certifiedProductSearchManager.getSearchListingCollection();
-        LOGGER.info("Finishing cache initialization for CertifiedProductSearchManager.searchBasic()");
-        LOGGER.info("Starting cache initialization for CertifiedProductSearchManager.search()");
+        LOGGER.info("Finishing cache initialization for searchable listing collection");
+        LOGGER.info("Starting cache initialization for listing collection");
         certifiedProductSearchManager.getFlatListingCollection();
-        LOGGER.info("Finished cache initialization for CertifiedProductSearchManager.search()");
-        LOGGER.info("Starting cache initialization for CertifiedProductSearchManager.searchLegacy()");
+        LOGGER.info("Finished cache initialization for listing collection");
+        LOGGER.info("Starting cache initialization for deprecated searchable listing collection");
         certifiedProductSearchManager.searchLegacy();
-        LOGGER.info("Finished cache initialization for CertifiedProductSearchManager.searchLegacy()");
+        LOGGER.info("Finished cache initialization for deprecated searchable listing collection");
     }
 
     @Async
-    @Transactional
     public void initializeCertificationIdsGetAll()
             throws IOException, EntityRetrievalException, InterruptedException {
         LOGGER.info("Starting cache initialization for CertificationIdManager.getAll()");
@@ -71,7 +66,6 @@ public class AsynchronousCacheInitialization {
     }
 
     @Async
-    @Transactional
     public void initializeCertificationIdsGetAllWithProducts()
             throws IOException, EntityRetrievalException, InterruptedException {
         LOGGER.info("Starting cache initialization for CertificationIdManager.getAllWithProducts()");
