@@ -5,6 +5,1061 @@
 	},
 	"item": [
 		{
+			"name": "ROLE_ONC",
+			"item": [
+				{
+					"name": "POST /surveillance/upload - ROLE_ONC user has access to upload surveillance activity",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"surveillance upload request by ROLE ONC user to upload surveillance activity should return Status code 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"surveillance upload by ROLE ONC user should be successful\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"pendingSurveillance\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "API-KEY",
+								"type": "text",
+								"value": "{{apiKey}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "chpl/chpl-api/e2e/data/SurveillanceUpload.csv"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/rest/surveillance/upload",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance",
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /surveillance/pending/confirm - RLE_ONC user has access to confirm surveillance",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ROLE_ONC users should have access to confirm surveillance\", function () {\r",
+									"    pm.response.to.not.have.status(401);\r",
+									" });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"id\":2280,\"surveillanceIdToReplace\":\"\",\"friendlyId\":null,\"certifiedProduct\":{\"id\":9608,\"chplProductNumber\":\"15.04.04.2087.Acui.02.00.1.180409\",\"lastModifiedDate\":null,\"edition\":\"2015\",\"certificationDate\":0,\"certificationStatus\":null,\"curesUpdate\":null},\"startDate\":1473724800000,\"startDay\":\"2016-09-13\",\"endDate\":null,\"endDay\":null,\"type\":{\"id\":null,\"name\":\"Reactive\"},\"randomizedSitesUsed\":null,\"requirements\":[{\"id\":3289,\"type\":{\"id\":null,\"name\":\"Transparency or Disclosure Requirement\"},\"requirement\":\"170.523 (k)(1)\",\"criterion\":null,\"result\":{\"id\":null,\"name\":\"Non-Conformity\"},\"nonconformities\":[{\"id\":2243,\"nonconformityType\":\"170.523 (k)(1)\",\"criterion\":null,\"status\":null,\"nonconformityStatus\":\"Open\",\"dateOfDetermination\":1475280000000,\"dateOfDeterminationDay\":\"2016-10-01\",\"capApprovalDate\":1476489600000,\"capApprovalDay\":\"2016-10-15\",\"capStartDate\":1476489600000,\"capStartDay\":\"2016-10-15\",\"capEndDate\":null,\"capEndDay\":null,\"capMustCompleteDate\":1477958399999,\"capMustCompleteDay\":\"2016-10-31\",\"nonconformityCloseDate\":null,\"nonconformityCloseDay\":null,\"summary\":\"Failure to disclose known material information pertaining to 170.314(b)(7) in marketing materials supplied to customers or prospective customers.\",\"findings\":\"Marketing materials obtained from multiple customers reveal that the developer's marketing materials provided to potential customers mention the capability to export data. Such capabilities are related to the data portability capabilities required by 45 CFR � 170.314(b)(7)  or are reasonably within the scope of intended uses for those capabilities. As such, the developer must disclose any and all known material limitations or types of costs in connection with the use of data portability and related capabilities. The marketing materials state only that \\\"costs or limitations may apply for unusual uses or volume.\\\" This statement omits specific information included in the developer's public disclosure statement on its website, which states that the technology can support the export of up to maximum of 100,000 records per day and that a fee of 10 cents per record applies after the first 500 records. [***We have separately documented our assessment of this limitation and pricing practice, which we have determined to be a non-conformity to the data portability criterion]. The statement that \\\"costs or limitations may apply for unusual uses or volume\\\" also fails to provide the degree of particularity and plain language required by 523(k)(1)  because it is vague and fails to explain what constitutes an \\\"unusual use\\\" or an \\\"unusual volume.\\\" Having reviewed the marketing materials in their entirety as well as other representations made during the sale and marketing of the developer's technology to the surveilled customers, we find that a customer could not reasonably understand what limitations may apply or what his costs might be to use the data portability capabilities of the certified health IT.\",\"sitesPassed\":null,\"totalSites\":null,\"developerExplanation\":\"The developer stated that the defective disclosures were an oversight by its marketing department, which did not understand the requirements at 45 CFR � 170.523(k)(1).\",\"resolution\":\"\",\"documents\":[],\"lastModifiedDate\":null,\"nonconformityTypeName\":\"170.523 (k)(1)\"}],\"requirementName\":\"170.523 (k)(1)\"}],\"authority\":\"ROLE_ACB\",\"errorMessages\":[],\"warningMessages\":[],\"lastModifiedDate\":null}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/surveillance/pending/confirm",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance",
+								"pending",
+								"confirm"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /surveillance/pending - RLE_ONC users should have access",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ROLE_ONC users should have access to view penidng surveillance\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									" });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/surveillance/pending",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance",
+								"pending"
+							]
+						},
+						"description": "ROLE_ONC users should have access to view penidng surveillance"
+					},
+					"response": []
+				},
+				{
+					"name": "POST /surveillance - ROLE_ONC user has access",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ROLE_ONC user should have access to create surveillance\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"ROLE_ONC user initiated surveillance is showing authority as ROLE_ACB\", function () {\r",
+									"    var responsejson = pm.response.json();\r",
+									"    pm.expect(responsejson.authority).to.eql(\"ROLE_ACB\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"id\":1020,\"surveillanceIdToReplace\":null,\"friendlyId\":\"SURV01\",\"certifiedProduct\":{\"id\":10533,\"chplProductNumber\":\"15.04.04.2913.GINS.20.00.1.210121\",\"lastModifiedDate\":1625011623204,\"edition\":\"2015\",\"certificationDate\":1611187200000,\"certificationStatus\":\"Active\",\"curesUpdate\":true},\"startDate\":1623196800000,\"startDay\":\"2021-06-09\",\"endDate\":1631145599999,\"endDay\":\"2021-09-08\",\"type\":{\"id\":1,\"name\":\"Reactive\",\"description\":null},\"randomizedSitesUsed\":null,\"requirements\":[{\"id\":1683,\"type\":{\"id\":1,\"name\":\"Certified Capability\",\"description\":null},\"requirement\":\"170.315 (g)(4)\",\"criterion\":{\"id\":54,\"number\":\"170.315 (g)(5)\",\"title\":\"Accessibility-Centered Design\",\"certificationEditionId\":3,\"certificationEdition\":\"2015\",\"description\":null,\"removed\":false},\"result\":{\"id\":2,\"name\":\"No Non-Conformity\",\"description\":null},\"nonconformities\":[],\"requirementName\":\"170.315 (g)(4)\",\"guiId\":1683}],\"authority\":\"ROLE_ACB\",\"errorMessages\":[],\"warningMessages\":[],\"lastModifiedDate\":1635457131673}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/surveillance",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance"
+							]
+						},
+						"description": "ROLE_ONC user has access to create surveillance"
+					},
+					"response": []
+				},
+				{
+					"name": "PUT /surveillance/{surveillanceId} - ROLE_ONC user has access",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ROLE_ONC user should have access to edit surveillance\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"id\":1006,\"surveillanceIdToReplace\":null,\"friendlyId\":\"SURV01\",\"certifiedProduct\":{\"id\":10533,\"chplProductNumber\":\"15.04.04.2913.GINS.20.00.1.210121\",\"lastModifiedDate\":1625011623204,\"edition\":\"2015\",\"certificationDate\":1611187200000,\"certificationStatus\":\"Active\",\"curesUpdate\":true},\"startDate\":1623196800000,\"startDay\":\"2021-06-09\",\"endDate\":1631145599999,\"endDay\":\"2021-09-08\",\"type\":{\"id\":1,\"name\":\"Reactive\",\"description\":null},\"randomizedSitesUsed\":null,\"requirements\":[{\"id\":1683,\"type\":{\"id\":1,\"name\":\"Certified Capability\",\"description\":null},\"requirement\":\"170.315 (g)(4)\",\"criterion\":{\"id\":54,\"number\":\"170.315 (g)(5)\",\"title\":\"Accessibility-Centered Design\",\"certificationEditionId\":3,\"certificationEdition\":\"2015\",\"description\":null,\"removed\":false},\"result\":{\"id\":2,\"name\":\"No Non-Conformity\",\"description\":null},\"nonconformities\":[],\"requirementName\":\"170.315 (g)(4)\",\"guiId\":1683}],\"authority\":\"ROLE_ACB\",\"errorMessages\":[],\"warningMessages\":[],\"lastModifiedDate\":1635457131673}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/surveillance/1006",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance",
+								"1006"
+							]
+						},
+						"description": "ROLE_ONC user should have access to edit surveillance"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE /surveillance/pending - ROLE_ONC user should have access",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ROLE_ONC users should have access to delete pending surveillance\", function () {\r",
+									"    pm.response.to.not.have.status(401);\r",
+									" });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"ids\": [\r\n    2200\r\n  ]\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/surveillance/pending",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance",
+								"pending"
+							]
+						},
+						"description": "ROLE_ONC users should have access to delete pending surveillance"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE /surveillance/{surveillanceId} - ROLE_ONC has access",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ROLE_ONC user should have access to delete surveillance\", function () {\r",
+									"    pm.response.to.not.have.status(401);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"reason\": \"Test\"\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/surveillance/1020",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance",
+								"1020"
+							]
+						},
+						"description": "ROLE_ONC user should have access to delete surveillance"
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var ReqBody= {",
+							"        userName:pm.environment.get(\"usernameONC\"),password:pm.environment.get(\"passwordONC\")",
+							"    };",
+							"pm.sendRequest({",
+							"    url: pm.environment.get(\"authurl\"),",
+							"    method: \"POST\",",
+							"    header: {",
+							"        \"Content-Type\": \"application/json\",",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")",
+							"    },",
+							"    body: JSON.stringify(ReqBody)",
+							"}, function (err, response) {",
+							"   var jsonData = response.json();",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "ROLE_ONC_STAFF",
+			"item": [
+				{
+					"name": "POST /surveillance/upload - ROLE_ONC_STAFF user should get 401 and access denied error",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"surveillance upload request by ONC_STAFF user should return Status code 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"ONC_STAFF user should be denied access to upload surveillance\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "chpl/chpl-api/e2e/data/SurveillanceUpload.csv"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/rest/surveillance/upload",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance",
+								"upload"
+							]
+						},
+						"description": "ROLE_ONC_STAFF user should get 401 and access denied error for surveillance upload"
+					},
+					"response": []
+				},
+				{
+					"name": "POST /surveillance/pending/confirm - ROLE_ONC_STAFF user should get 401 response and access denied error",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"surveillance confirm request by ONC_STAFF user should return Status code 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"ONC_STAFF user should be denied access to confirm surveillance\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"id\":2280,\"surveillanceIdToReplace\":\"\",\"friendlyId\":null,\"certifiedProduct\":{\"id\":9608,\"chplProductNumber\":\"15.04.04.2087.Acui.02.00.1.180409\",\"lastModifiedDate\":null,\"edition\":\"2015\",\"certificationDate\":0,\"certificationStatus\":null,\"curesUpdate\":null},\"startDate\":1473724800000,\"startDay\":\"2016-09-13\",\"endDate\":null,\"endDay\":null,\"type\":{\"id\":null,\"name\":\"Reactive\"},\"randomizedSitesUsed\":null,\"requirements\":[{\"id\":3289,\"type\":{\"id\":null,\"name\":\"Transparency or Disclosure Requirement\"},\"requirement\":\"170.523 (k)(1)\",\"criterion\":null,\"result\":{\"id\":null,\"name\":\"Non-Conformity\"},\"nonconformities\":[{\"id\":2243,\"nonconformityType\":\"170.523 (k)(1)\",\"criterion\":null,\"status\":null,\"nonconformityStatus\":\"Open\",\"dateOfDetermination\":1475280000000,\"dateOfDeterminationDay\":\"2016-10-01\",\"capApprovalDate\":1476489600000,\"capApprovalDay\":\"2016-10-15\",\"capStartDate\":1476489600000,\"capStartDay\":\"2016-10-15\",\"capEndDate\":null,\"capEndDay\":null,\"capMustCompleteDate\":1477958399999,\"capMustCompleteDay\":\"2016-10-31\",\"nonconformityCloseDate\":null,\"nonconformityCloseDay\":null,\"summary\":\"\",\"sitesPassed\":null,\"totalSites\":null,\"developerExplanation\":\"The developer stated that the defective disclosures were an oversight by its marketing department, which did not understand the requirements at 45 CFR � 170.523(k)(1).\",\"resolution\":\"\",\"documents\":[],\"lastModifiedDate\":null,\"nonconformityTypeName\":\"170.523 (k)(1)\"}],\"requirementName\":\"170.523 (k)(1)\"}],\"authority\":\"ROLE_ACB\",\"errorMessages\":[],\"warningMessages\":[],\"lastModifiedDate\":null}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/surveillance/pending/confirm",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance",
+								"pending",
+								"confirm"
+							]
+						},
+						"description": "ROLE_ONC_STAFF users should get 401 response and access denied error on requests for confirm surveillance"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /surveillance/pending - ROLE_ONC_STAFF user should get 401 response and access denied error",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"request to view pending surveillance activity by ROLE_ONC_STAFF user should return Status code 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"ROLE_ONC_STAFF user should be denied access to view pending surveillance\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/surveillance/pending",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance",
+								"pending"
+							]
+						},
+						"description": "ROLE_ONC_STAFF user should be denied access to view pending surveillance"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE /surveillance/pending - ROLE_ONC_STAFF should get 401 status and access denied error",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"delete pending surveillance request by ONC_STAFF user should return Status code 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"ONC_STAFF user should be denied access to delete pending surveillance\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"ids\": [\r\n    2200\r\n  ]\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/surveillance/pending",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance",
+								"pending"
+							]
+						},
+						"description": "ONC_STAFF user should be denied access to delete pending surveillance"
+					},
+					"response": []
+				},
+				{
+					"name": "PUT /surveillance/{surveillanceId} - ROLE_ONC_STAFF should get 401 status and access denied error",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"edit surveillance request by ONC_STAFF user should return Status code 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"ONC_STAFF user should be denied access to edit surveillance\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"id\":1006,\"surveillanceIdToReplace\":null,\"friendlyId\":\"SURV01\",\"certifiedProduct\":{\"id\":10533,\"chplProductNumber\":\"15.04.04.2913.GINS.20.00.1.210121\",\"lastModifiedDate\":1625011623204,\"edition\":\"2015\",\"certificationDate\":1611187200000,\"certificationStatus\":\"Active\",\"curesUpdate\":true},\"startDate\":1623196800000,\"startDay\":\"2021-06-09\",\"endDate\":1631145599999,\"endDay\":\"2021-09-08\",\"type\":{\"id\":1,\"name\":\"Reactive\",\"description\":null},\"randomizedSitesUsed\":null,\"requirements\":[{\"id\":1683,\"type\":{\"id\":1,\"name\":\"Certified Capability\",\"description\":null},\"requirement\":\"170.315 (g)(4)\",\"criterion\":{\"id\":54,\"number\":\"170.315 (g)(5)\",\"title\":\"Accessibility-Centered Design\",\"certificationEditionId\":3,\"certificationEdition\":\"2015\",\"description\":null,\"removed\":false},\"result\":{\"id\":2,\"name\":\"No Non-Conformity\",\"description\":null},\"nonconformities\":[],\"requirementName\":\"170.315 (g)(4)\",\"guiId\":1683}],\"authority\":\"ROLE_ACB\",\"errorMessages\":[],\"warningMessages\":[],\"lastModifiedDate\":1635457131673}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/surveillance/1006",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance",
+								"1006"
+							]
+						},
+						"description": "ONC_STAFF user should be denied access to edit surveillance"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE /surveillance/{surveillanceId} - ROLE_ONC_STAFF user should get 401 status and access denied error",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"delete surveillance request by ONC_STAFF user should return Status code 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"ONC_STAFF user should be denied access to delete surveillance\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"reason\": \"Test\"\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/surveillance/1020",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance",
+								"1020"
+							]
+						},
+						"description": "ONC_STAFF user should be denied access to delete surveillance"
+					},
+					"response": []
+				},
+				{
+					"name": "POST /surveillance - ROLE_ONC_STAFF user should get 401 status and access denied error",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"create surveillance request by ONC_STAFF user should return Status code 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"ONC_STAFF user should be denied access to create surveillance\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"id\":1020,\"surveillanceIdToReplace\":null,\"friendlyId\":\"SURV01\",\"certifiedProduct\":{\"id\":10533,\"chplProductNumber\":\"15.04.04.2913.GINS.20.00.1.210121\",\"lastModifiedDate\":1625011623204,\"edition\":\"2015\",\"certificationDate\":1611187200000,\"certificationStatus\":\"Active\",\"curesUpdate\":true},\"startDate\":1623196800000,\"startDay\":\"2021-06-09\",\"endDate\":1631145599999,\"endDay\":\"2021-09-08\",\"type\":{\"id\":1,\"name\":\"Reactive\",\"description\":null},\"randomizedSitesUsed\":null,\"requirements\":[{\"id\":1683,\"type\":{\"id\":1,\"name\":\"Certified Capability\",\"description\":null},\"requirement\":\"170.315 (g)(4)\",\"criterion\":{\"id\":54,\"number\":\"170.315 (g)(5)\",\"title\":\"Accessibility-Centered Design\",\"certificationEditionId\":3,\"certificationEdition\":\"2015\",\"description\":null,\"removed\":false},\"result\":{\"id\":2,\"name\":\"No Non-Conformity\",\"description\":null},\"nonconformities\":[],\"requirementName\":\"170.315 (g)(4)\",\"guiId\":1683}],\"authority\":\"ROLE_ACB\",\"errorMessages\":[],\"warningMessages\":[],\"lastModifiedDate\":1635457131673}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/surveillance",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance"
+							]
+						},
+						"description": "ROLE_ONC_STAFF user should be denied access to create surveillance"
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var ReqBody= {",
+							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")",
+							"    };",
+							"pm.sendRequest({",
+							"    url: pm.environment.get(\"authurl\"),",
+							"    method: \"POST\",",
+							"    header: {",
+							"        \"Content-Type\": \"application/json\",",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")",
+							"    },",
+							"    body: JSON.stringify(ReqBody)",
+							"}, function (err, response) {",
+							"   var jsonData = response.json();",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
 			"name": "POST /surveillance/upload - access denied to anonymous user",
 			"event": [
 				{
@@ -53,7 +1108,7 @@
 						"{{url}}"
 					],
 					"path": [
-					    "rest",
+						"rest",
 						"surveillance",
 						"upload"
 					]
@@ -143,7 +1198,7 @@
 						"{{url}}"
 					],
 					"path": [
-					    "rest",
+						"rest",
 						"surveillance",
 						"upload"
 					]
@@ -233,97 +1288,7 @@
 						"{{url}}"
 					],
 					"path": [
-					    "rest",
-						"surveillance",
-						"upload"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "POST /surveillance/upload - ROLE_ONC user has access to upload surveillance activity",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"var ReqBody= {\r",
-							"        userName:pm.environment.get(\"usernameONC\"),password:pm.environment.get(\"passwordONC\")\r",
-							"    };\r",
-							"pm.sendRequest({\r",
-							"    url: pm.environment.get(\"authurl\"),\r",
-							"    method: \"POST\",\r",
-							"    header: {\r",
-							"        \"Content-Type\": \"application/json\",\r",
-							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
-							"    },\r",
-							"    body: JSON.stringify(ReqBody)\r",
-							"}, function (err, response) {\r",
-							"   var jsonData = response.json();\r",
-							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"surveillance upload request by ROLE ONC user to upload surveillance activity should return Status code 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"surveillance upload by ROLE ONC user should be successful\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"pendingSurveillance\");\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{token}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "POST",
-				"header": [
-					{
-						"key": "API-KEY",
-						"type": "text",
-						"value": "{{apiKey}}"
-					},
-					{
-						"key": "Content-Type",
-						"type": "text",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "file",
-							"type": "file",
-							"src": "chpl/chpl-api/e2e/data/SurveillanceUpload.csv"
-						}
-					]
-				},
-				"url": {
-					"raw": "{{url}}/rest/surveillance/upload",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-					    "rest",
+						"rest",
 						"surveillance",
 						"upload"
 					]
@@ -350,7 +1315,7 @@
 					}
 				}
 			],
-			"request": {				
+			"request": {
 				"method": "GET",
 				"header": [
 					{
@@ -365,12 +1330,12 @@
 					}
 				],
 				"url": {
-					"raw": "{{url}}/surveillance/pending",
+					"raw": "{{url}}/rest/surveillance/pending",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
-					    "rest",
+						"rest",
 						"surveillance",
 						"pending"
 					]
