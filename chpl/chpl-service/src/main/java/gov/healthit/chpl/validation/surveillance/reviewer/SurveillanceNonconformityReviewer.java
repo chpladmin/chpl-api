@@ -58,7 +58,6 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
                         checkSiteCountsValidityForRandomizedSurveillance(surv, req, nc);
                         checkSiteCountsValidityForNonRandomizedSurveillance(surv, req, nc);
                         checkResolution(surv, req, nc);
-                        checkForRemovedNonconformityTypeWhenAdding(surv, req, nc);
                     }
                 }
             } else {
@@ -95,9 +94,7 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
             if (!NonconformityType.K1.getName().equals(nc.getNonconformityType())
                     && !NonconformityType.K2.getName().equals(nc.getNonconformityType())
                     && !NonconformityType.L.getName().equals(nc.getNonconformityType())
-                    && !NonconformityType.OTHER.getName().equals(nc.getNonconformityType())
-                    && !NonconformityType.ANNUAL_RWT_PLAN.getName().equals(nc.getNonconformityType())
-                    && !NonconformityType.ANNUAL_RWT_RESULTS.getName().equals(nc.getNonconformityType())) {
+                    && !NonconformityType.OTHER.getName().equals(nc.getNonconformityType())) {
                 surv.getErrorMessages()
                         .add(msgUtil.getMessage("surveillance.nonConformityTypeMatchException",
                                 nc.getNonconformityTypeName(), NonconformityType.K1.getName(),
@@ -240,15 +237,6 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
                                 req.getRequirementName(),
                                 nc.getNonconformityTypeName()));
             }
-        }
-    }
-
-    private void checkForRemovedNonconformityTypeWhenAdding(Surveillance surv, SurveillanceRequirement req, SurveillanceNonconformity nc) {
-        if (nc.getId() == null
-                && !StringUtils.isEmpty(nc.getNonconformityType())
-                && nc.getNonconformityType().equals(NonconformityType.K2.getName())) {
-            surv.getErrorMessages()
-                    .add(msgUtil.getMessage("surveillance.nonconformityTypeRemoved", nc.getNonconformityType()));
         }
     }
 }

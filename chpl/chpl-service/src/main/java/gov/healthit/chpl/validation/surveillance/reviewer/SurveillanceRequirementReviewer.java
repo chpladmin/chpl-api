@@ -2,7 +2,6 @@ package gov.healthit.chpl.validation.surveillance.reviewer;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -64,7 +63,6 @@ public class SurveillanceRequirementReviewer implements Reviewer {
 
             checkResultExistsIfSurveillanceClosed(surv, req);
             checkResultTypeValidity(surv, req);
-            checkForRemovedRequirementWhenAdding(surv, req);
         }
     }
 
@@ -169,21 +167,5 @@ public class SurveillanceRequirementReviewer implements Reviewer {
                 req.setResult(resType);
             }
         }
-    }
-
-    private void checkForRemovedRequirementWhenAdding(Surveillance surv, SurveillanceRequirement req) {
-        if (req.getId() == null
-                && !StringUtils.isEmpty(req.getRequirement())
-                && isRequirementRemoved(req.getRequirement())) {
-            surv.getErrorMessages()
-                    .add(msgUtil.getMessage("surveillance.requirementRemoved", req.getRequirement()));
-        }
-    }
-
-    private boolean isRequirementRemoved(String requirement) {
-        return Stream.of(RequirementTypeEnum.values())
-                .filter(req -> req.getName().equals(requirement) && req.getRemoved())
-                .findAny()
-                .isPresent();
     }
 }
