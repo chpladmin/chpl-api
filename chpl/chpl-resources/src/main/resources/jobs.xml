@@ -739,5 +739,15 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
+        
+        <!-- One time job to convert Test Standards to Optional Standards -->
+        <job>
+            <name>testStandards2OptionalStandardsConversion</name>
+            <group>systemJobs</group>
+            <description>One time job to convert Test Standards to Optional Standards</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.teststandardconversion.TestStandardConversionJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
     </schedule>
 </job-scheduling-data>
