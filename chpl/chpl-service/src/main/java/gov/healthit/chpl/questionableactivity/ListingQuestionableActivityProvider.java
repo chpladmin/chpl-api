@@ -27,10 +27,15 @@ import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.ListingMeasure;
+import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
 import gov.healthit.chpl.domain.auth.Authority;
+import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptions;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityServiceFactory;
@@ -47,14 +52,18 @@ public class ListingQuestionableActivityProvider {
     private CertificationCriterionService criterionService;
     private RealWorldTestingEligiblityServiceFactory rwtEligServiceFactory;
 
+    private SurveillanceRequirementOptions surveillanceRequirementOptions;
+
     @Autowired
     public ListingQuestionableActivityProvider(Environment env, ResourcePermissions resourcePermissions,
             CertificationCriterionService criterionService,
-            RealWorldTestingEligiblityServiceFactory rwtEligServiceFactory) {
+            RealWorldTestingEligiblityServiceFactory rwtEligServiceFactory,
+            DimensionalDataManager dimensionalDataManager) {
         this.env = env;
         this.resourcePermissions = resourcePermissions;
         this.criterionService = criterionService;
         this.rwtEligServiceFactory = rwtEligServiceFactory;
+        this.surveillanceRequirementOptions = dimensionalDataManager.getSurveillanceRequirementOptions();
     }
 
     public QuestionableActivityListingDTO check2011EditionUpdated(
@@ -592,6 +601,65 @@ public class ListingQuestionableActivityProvider {
         return measuresRemovedActivities;
     }
 
+    public List<QuestionableActivityListingDTO> checkForAddedRemovedRequirements(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+        List<QuestionableActivityListingDTO> questionableActivityListingDTOs = new ArrayList<QuestionableActivityListingDTO>();
+
+        List<SurveillanceRequirement> origRequirements = origListing.getSurveillance().stream()
+                .flatMap(surv -> surv.getRequirements().stream())
+                .map(req -> req)
+                .collect(Collectors.toList());
+
+        List<SurveillanceRequirement> newRequirements = newListing.getSurveillance().stream()
+                .flatMap(surv -> surv.getRequirements().stream())
+                .map(req -> req)
+                .collect(Collectors.toList());
+
+        subtractRequirementLists(newRequirements, origRequirements).stream()
+                .filter(req -> isSurveillanceRequirementRemoved(req))
+                .forEach(req -> {
+                    QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
+                    activity.setAfter(String.format("Surveillance Requirement of type %s is removed and was added to surveillance.", req.getRequirement()));
+                    activity.setBefore(null);
+                    questionableActivityListingDTOs.add(activity);
+                });
+
+        return questionableActivityListingDTOs;
+    }
+
+    private Boolean isSurveillanceRequirementRemoved(SurveillanceRequirement requirement) {
+        return surveillanceRequirementOptions.getTransparencyOptions().stream()
+                .filter(req -> req.getItem().equals(requirement.getRequirement()) && req.getRemoved())
+                .findAny()
+                .isPresent();
+    }
+
+    public List<QuestionableActivityListingDTO> checkForAddedRemovedNonconformites(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+        List<QuestionableActivityListingDTO> questionableActivityListingDTOs = new ArrayList<QuestionableActivityListingDTO>();
+
+        List<SurveillanceNonconformity> origNonconformities = origListing.getSurveillance().stream()
+                .flatMap(surv -> surv.getRequirements().stream())
+                .flatMap(req -> req.getNonconformities().stream())
+                .map(nc -> nc)
+                .collect(Collectors.toList());
+
+        List<SurveillanceNonconformity> newNonconformities = newListing.getSurveillance().stream()
+                .flatMap(surv -> surv.getRequirements().stream())
+                .flatMap(req -> req.getNonconformities().stream())
+                .map(nc -> nc)
+                .collect(Collectors.toList());
+
+        subtractNonConformityLists(newNonconformities, origNonconformities).stream()
+                .filter(nc -> NonconformityType.getByName(nc.getNonconformityType()).isPresent() ? NonconformityType.getByName(nc.getNonconformityType()).get().getRemoved() : false)
+                .forEach(nc -> {
+                    QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
+                    activity.setAfter(String.format("Non-conformity of type %s is removed and was added to surveillance.", nc.getNonconformityType()));
+                    activity.setBefore(null);
+                    questionableActivityListingDTOs.add(activity);
+                });
+
+        return questionableActivityListingDTOs;
+    }
+
     private Date getB3ChangeDate() throws ParseException {
         String dateAsString = env.getProperty(B3_CHANGE_DATE);
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
@@ -633,6 +701,26 @@ public class ListingQuestionableActivityProvider {
 
         return listA.stream()
                 .filter(notInListB)
+                .collect(Collectors.toList());
+    }
+
+    private List<SurveillanceNonconformity> subtractNonConformityLists(List<SurveillanceNonconformity> listA, List<SurveillanceNonconformity> listB) {
+        Predicate<SurveillanceNonconformity> notInListB = ncFromA -> !listB.stream()
+                .anyMatch(nc -> ncFromA.getId().equals(nc.getId()));
+
+        return listA.stream()
+                .filter(notInListB)
+                .peek(nc -> LOGGER.always().log(nc.toString()))
+                .collect(Collectors.toList());
+    }
+
+    private List<SurveillanceRequirement> subtractRequirementLists(List<SurveillanceRequirement> listA, List<SurveillanceRequirement> listB) {
+        Predicate<SurveillanceRequirement> notInListB = reqFromA -> !listB.stream()
+                .anyMatch(req -> reqFromA.getId().equals(req.getId()));
+
+        return listA.stream()
+                .filter(notInListB)
+                .peek(nc -> LOGGER.always().log(nc.toString()))
                 .collect(Collectors.toList());
     }
 

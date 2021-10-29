@@ -1,6 +1,7 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 import lombok.Getter;
 
@@ -19,5 +20,14 @@ public enum NonconformityType implements Serializable {
     NonconformityType(String name, Boolean removed) {
         this.name = name;
         this.removed = removed;
+    }
+
+    public static Optional<NonconformityType> getByName(String name) {
+        for (NonconformityType ncType : NonconformityType.values()) {
+            if (name.equals(ncType.getName())) {
+                return Optional.of(ncType);
+            }
+        }
+        return Optional.empty();
     }
 }

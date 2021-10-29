@@ -250,6 +250,18 @@ public class QuestionableActivityManager implements EnvironmentAware {
                 });
             }
 
+            activities = listingQuestionableActivityProvider.checkForAddedRemovedNonconformites(origListing, newListing);
+            if (activities != null && activities.size() > 0) {
+                activities.stream()
+                        .forEach(a -> createListingActivity(a, origListing.getId(), activityDate, activityUser, QuestionableActivityTriggerConcept.REMOVED_NONCONFORMITY_ADDED, activityReason));
+            }
+
+            activities = listingQuestionableActivityProvider.checkForAddedRemovedRequirements(origListing, newListing);
+            if (activities != null && activities.size() > 0) {
+                activities.stream()
+                        .forEach(a -> createListingActivity(a, origListing.getId(), activityDate, activityUser, QuestionableActivityTriggerConcept.REMOVED_REQUIREMENT_ADDED, activityReason));
+            }
+
             // finally check for other changes that are only questionable
             // outside of the acceptable activity threshold
 
