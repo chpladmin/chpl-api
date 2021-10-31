@@ -22,10 +22,9 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityProductDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityTriggerDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityVersionDTO;
-import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.questionableactivity.CertificationResultQuestionableActivityProvider;
 import gov.healthit.chpl.questionableactivity.DeveloperQuestionableActivityProvider;
-import gov.healthit.chpl.questionableactivity.ListingQuestionableActivityProvider;
+import gov.healthit.chpl.questionableactivity.ListingQuestionableActivityService;
 import gov.healthit.chpl.questionableactivity.ProductQuestionableActivityProvider;
 import gov.healthit.chpl.questionableactivity.VersionQuestionableActivityProvider;
 import gov.healthit.chpl.util.CertificationResultRules;
@@ -41,7 +40,7 @@ public class QuestionableActivityManager implements EnvironmentAware {
     private DeveloperQuestionableActivityProvider developerQuestionableActivityProvider;
     private ProductQuestionableActivityProvider productQuestionableActivityProvider;
     private VersionQuestionableActivityProvider versionQuestionableActivityProvider;
-    private ListingQuestionableActivityProvider listingQuestionableActivityProvider;
+    private ListingQuestionableActivityService listingQuestionableActivityService;
     private CertificationResultQuestionableActivityProvider certResultQuestionableActivityProvider;
     private CertificationResultRules certResultRules;
     private QuestionableActivityDAO questionableActivityDao;
@@ -53,7 +52,7 @@ public class QuestionableActivityManager implements EnvironmentAware {
             DeveloperQuestionableActivityProvider developerQuestionableActivityProvider,
             ProductQuestionableActivityProvider productQuestionableActivityProvider,
             VersionQuestionableActivityProvider versionQuestionableActivityProvider,
-            ListingQuestionableActivityProvider listingQuestionableActivityProvider,
+            ListingQuestionableActivityService listingQuestionableActivityService,
             CertificationResultQuestionableActivityProvider certResultQuestionableActivityProvider,
             CertificationResultRules certResultRules,
             QuestionableActivityDAO questionableActivityDao,
@@ -63,7 +62,7 @@ public class QuestionableActivityManager implements EnvironmentAware {
         this.developerQuestionableActivityProvider = developerQuestionableActivityProvider;
         this.productQuestionableActivityProvider = productQuestionableActivityProvider;
         this.versionQuestionableActivityProvider = versionQuestionableActivityProvider;
-        this.listingQuestionableActivityProvider = listingQuestionableActivityProvider;
+        this.listingQuestionableActivityService = listingQuestionableActivityService;
         this.certResultQuestionableActivityProvider = certResultQuestionableActivityProvider;
         this.certResultRules = certResultRules;
         this.questionableActivityDao = questionableActivityDao;
@@ -170,8 +169,12 @@ public class QuestionableActivityManager implements EnvironmentAware {
         }
     }
 
-    public void checkListingQuestionableActivityOnEdit(CertifiedProductSearchDetails origListing,
-            CertifiedProductSearchDetails newListing, Date activityDate, Long activityUser, String activityReason) {
+    public void checkListingQuestionableActivityOnEdit(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing,
+            Date activityDate, Long activityUser, String activityReason) {
+
+        listingQuestionableActivityService.processQuestionableActivity(origListing, newListing, activityReason);
+
+        /*
         QuestionableActivityListingDTO activity = listingQuestionableActivityProvider.check2011EditionUpdated(
                 origListing, newListing);
         if (activity != null) {
@@ -320,6 +323,7 @@ public class QuestionableActivityManager implements EnvironmentAware {
                 }
             }
         }
+        */
     }
 
     public void checkCertificationResultQuestionableActivity(CertificationResult origCertResult,

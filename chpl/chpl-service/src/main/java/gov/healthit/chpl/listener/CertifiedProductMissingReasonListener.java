@@ -19,7 +19,7 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.MissingReasonException;
-import gov.healthit.chpl.questionableactivity.ListingQuestionableActivityProvider;
+import gov.healthit.chpl.questionableactivity.ListingQuestionableActivityService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
@@ -29,7 +29,7 @@ public class CertifiedProductMissingReasonListener {
 
     private ErrorMessageUtil errorMessageUtil;
     private CertifiedProductDetailsManager cpdManager;
-    private ListingQuestionableActivityProvider listingQuestionableActivityProvider;
+    private ListingQuestionableActivityService listingQuestionableActivityProvider;
 
     /**
      * Autowired constructor for dependency injection.
@@ -46,7 +46,7 @@ public class CertifiedProductMissingReasonListener {
     @Autowired
     public CertifiedProductMissingReasonListener(final ErrorMessageUtil errorMessageUtil,
             final CertifiedProductDetailsManager cpdManager, final CertifiedProductDAO listingDao,
-            final ListingQuestionableActivityProvider listingQuestionableActivityProvider) {
+            final ListingQuestionableActivityService listingQuestionableActivityProvider) {
 
         this.errorMessageUtil = errorMessageUtil;
         this.cpdManager = cpdManager;
