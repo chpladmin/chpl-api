@@ -72,7 +72,6 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
-import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
 import gov.healthit.chpl.scheduler.job.SurveillanceUploadJob;
 import gov.healthit.chpl.util.AuthUtil;
@@ -211,7 +210,7 @@ public class PendingSurveillanceManager extends SecuredManager {
             + "#survToInsert)")
     public Surveillance confirmPendingSurveillance(Surveillance survToInsert)
             throws ValidationException, EntityRetrievalException, UserPermissionRetrievalException,
-            SurveillanceAuthorityAccessDeniedException, EntityCreationException, JsonProcessingException {
+            EntityCreationException, JsonProcessingException {
 
         if (survToInsert == null || survToInsert.getId() == null) {
             throw new ValidationException("A valid pending surveillance id must be provided.");
@@ -495,8 +494,7 @@ public class PendingSurveillanceManager extends SecuredManager {
         return true;
     }
 
-    private Long createSurveillance(Surveillance surv)
-            throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
+    private Long createSurveillance(Surveillance surv) throws UserPermissionRetrievalException {
         Long insertedId = null;
 
         try {
@@ -653,8 +651,7 @@ public class PendingSurveillanceManager extends SecuredManager {
         return cc;
     }
 
-    private void deleteSurveillance(Surveillance surv)
-            throws EntityRetrievalException, SurveillanceAuthorityAccessDeniedException {
+    private void deleteSurveillance(Surveillance surv) throws EntityRetrievalException {
         survDao.deleteSurveillance(surv);
     }
 

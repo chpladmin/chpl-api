@@ -132,8 +132,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
 
-    public Long updateSurveillance(Surveillance newSurv)
-            throws EntityRetrievalException, UserPermissionRetrievalException {
+    public Long updateSurveillance(Surveillance newSurv) throws EntityRetrievalException {
         SurveillanceEntity oldSurv = fetchSurveillanceById(newSurv.getId());
         populateSurveillanceEntity(oldSurv, newSurv);
         oldSurv.setLastModifiedUser(AuthUtil.getAuditId());
@@ -803,8 +802,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
         return result;
     }
 
-    private void populateSurveillanceEntity(SurveillanceEntity to, Surveillance from)
-            throws UserPermissionRetrievalException {
+    private void populateSurveillanceEntity(SurveillanceEntity to, Surveillance from) {
         if (from.getCertifiedProduct() != null) {
             to.setCertifiedProductId(from.getCertifiedProduct().getId());
         }

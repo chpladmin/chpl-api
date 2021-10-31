@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
-import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
@@ -30,15 +29,15 @@ public class DeleteActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess(Object obj) {
-        if (!(obj instanceof Surveillance)) {
+        if (!(obj instanceof Long)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
-            Surveillance surv = (Surveillance) obj;
+            Long survId = (Long) obj;
             SurveillanceEntity survEntity = null;
             try {
-                survEntity = survDao.getSurveillanceById(surv.getId());
+                survEntity = survDao.getSurveillanceById(survId);
             } catch (EntityRetrievalException ex) {
                 return false;
             }
@@ -46,7 +45,7 @@ public class DeleteActionPermissions extends ActionPermissions {
             if (isListing2014Edition(survEntity)) {
               //done instead of returning false to get a more customized message than Access is denied.
                 throw new AccessDeniedException(msgUtil.getMessage(
-                        "surveillance.noDelete2014", surv.getFriendlyId()));
+                        "surveillance.noDelete2014", survEntity.getFriendlyId()));
             }
             return isAcbValidForCurrentUser(survEntity.getCertifiedProduct().getCertificationBodyId());
         } else {

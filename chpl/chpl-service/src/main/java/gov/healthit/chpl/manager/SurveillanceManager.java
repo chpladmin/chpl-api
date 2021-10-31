@@ -51,11 +51,11 @@ import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
-import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceReportingActivityJob;
 import gov.healthit.chpl.util.AuthUtil;
@@ -147,8 +147,7 @@ public class SurveillanceManager extends SecuredManager {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
     public Long createSurveillance(Surveillance survToInsert)
-            throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException,
-            EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            throws UserPermissionRetrievalException, EntityRetrievalException, JsonProcessingException, EntityCreationException,
             ValidationException {
         CertifiedProductSearchDetails beforeListing = cpDetailsManager
                 .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
@@ -186,7 +185,6 @@ public class SurveillanceManager extends SecuredManager {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
     public void updateSurveillance(final Surveillance survToUpdate) throws EntityRetrievalException,
-            UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException,
             EntityCreationException, JsonProcessingException, ValidationException {
         CertifiedProductSearchDetails beforeListing = cpDetailsManager
                 .getCertifiedProductDetails(survToUpdate.getCertifiedProduct().getId());
@@ -200,25 +198,35 @@ public class SurveillanceManager extends SecuredManager {
         }
 
         if (beforeSurv.isPresent() && !beforeSurv.get().matches(survToUpdate)) {
-            try {
-                survDao.updateSurveillance(survToUpdate);
-            } catch (final UserPermissionRetrievalException ex) {
-                LOGGER.error("Error updating surveillance.", ex);
-                throw ex;
-            }
+            survDao.updateSurveillance(survToUpdate);
             logSurveillanceUpdateActivity(beforeListing);
         }
     }
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
-            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).DELETE, #surv)")
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).DELETE, #surveillanceId)")
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
-    public void deleteSurveillance(Surveillance surv)
-            throws EntityRetrievalException, SurveillanceAuthorityAccessDeniedException {
-        survDao.deleteSurveillance(surv);
+    public void deleteSurveillance(Long surveillanceId, String reason)
+            throws InvalidArgumentsException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
+        Surveillance survToDelete = getById(surveillanceId);
+
+        if (survToDelete == null) {
+            throw new InvalidArgumentsException("Cannot find surveillance with id " + surveillanceId + " to delete.");
+        }
+
+        CertifiedProductSearchDetails beforeCp = cpDetailsManager
+                .getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
+
+        survDao.deleteSurveillance(survToDelete);
+
+        CertifiedProductSearchDetails afterCp = cpDetailsManager
+                .getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, afterCp.getId(),
+                "Surveillance was delete from certified product " + afterCp.getChplProductNumber(),
+                beforeCp, afterCp, reason);
     }
 
     @Transactional
