@@ -663,8 +663,8 @@ public class PendingSurveillanceManager extends SecuredManager {
         alreadyDeletedEx.getErrorMessages()
                 .add("This pending surveillance has already been confirmed or rejected by another user.");
         alreadyDeletedEx.setObjectId(entity.getId().toString());
-        alreadyDeletedEx.setStartDate(new Date(DateUtil.toEpochMillis(entity.getStartDate())));
-        alreadyDeletedEx.setEndDate(new Date(DateUtil.toEpochMillisEndOfDay(entity.getEndDate())));
+        alreadyDeletedEx.setStartDate(entity.getStartDate() == null ? null : new Date(DateUtil.toEpochMillis(entity.getStartDate())));
+        alreadyDeletedEx.setEndDate(entity.getEndDate() == null ? null : new Date(DateUtil.toEpochMillisEndOfDay(entity.getEndDate())));
         try {
             UserDTO lastModifiedUserDto = userDao.getById(entity.getLastModifiedUser());
             if (lastModifiedUserDto != null) {
