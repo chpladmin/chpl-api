@@ -18,7 +18,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
-public class UpdatedCriteriaB3AndListingHasIcsActivity extends ListingActivity {
+public class UpdatedCriteriaB3AndListingHasIcsActivity implements ListingActivity {
     private static final String B3_CHANGE_DATE = "questionableActivity.b3ChangeDate";
     private static final String B3_CRITERIA_NUMER = "170.315 (b)(3)";
 

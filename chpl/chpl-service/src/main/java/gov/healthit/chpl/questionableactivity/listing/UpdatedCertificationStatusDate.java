@@ -14,7 +14,7 @@ import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 
 @Component
-public class UpdatedCertificationStatusDate extends ListingActivity {
+public class UpdatedCertificationStatusDate implements ListingActivity {
 
     @Override
     public List<QuestionableActivityListingDTO> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {

@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
@@ -16,7 +17,8 @@ import gov.healthit.chpl.manager.DimensionalDataManager;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-public class AddedRemovedSurveillanceRequirementActivity extends ListingActivity {
+@Component
+public class AddedRemovedSurveillanceRequirementActivity implements ListingActivity {
     private SurveillanceRequirementOptions surveillanceRequirementOptions;
 
     @Autowired

@@ -12,7 +12,7 @@ import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 
 @Component
-public class AddedCqmsActivity extends ListingActivity {
+public class AddedCqmsActivity implements ListingActivity {
 
     @Override
     public List<QuestionableActivityListingDTO> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {

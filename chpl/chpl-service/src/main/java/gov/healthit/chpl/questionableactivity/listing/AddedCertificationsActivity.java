@@ -12,7 +12,7 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO
 import gov.healthit.chpl.service.CertificationCriterionService;
 
 @Component
-public class AddedCertificationsActivity extends ListingActivity {
+public class AddedCertificationsActivity implements ListingActivity {
 
     @Override
     public List<QuestionableActivityListingDTO> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {

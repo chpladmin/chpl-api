@@ -19,7 +19,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
-public class UpdatedPromotingInteroperabilityActivity extends ListingActivity {
+public class UpdatedPromotingInteroperabilityActivity implements ListingActivity {
     private ResourcePermissions resourcePermissions;
 
     @Autowired

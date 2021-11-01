@@ -16,7 +16,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2
-public class AddedRemovedSurveillanceNonconformityActivity extends ListingActivity {
+public class AddedRemovedSurveillanceNonconformityActivity implements ListingActivity {
 
     @Override
     public List<QuestionableActivityListingDTO> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {

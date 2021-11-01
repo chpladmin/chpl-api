@@ -2,6 +2,7 @@ package gov.healthit.chpl.questionableactivity;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -32,9 +33,11 @@ import gov.healthit.chpl.questionableactivity.listing.Updated2011EditionListingA
 import gov.healthit.chpl.questionableactivity.listing.Updated2014EditionListingActivity;
 import gov.healthit.chpl.questionableactivity.listing.UpdatedCertificationStatusDate;
 import gov.healthit.chpl.questionableactivity.listing.UpdatedCertificationStatusHistoryActivity;
+import gov.healthit.chpl.questionableactivity.listing.UpdatedCertificationStatusWithdrawnByDeveloperUnderReviewActivity;
 import gov.healthit.chpl.questionableactivity.listing.UpdatedCriteriaB3AndListingHasIcsActivity;
 import gov.healthit.chpl.questionableactivity.listing.UpdatedPromotingInteroperabilityActivity;
 import gov.healthit.chpl.questionableactivity.listing.UpdatedTestingLabActivity;
+import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -65,7 +68,7 @@ public class ListingQuestionableActivityService {
             return;
         }
         processListingActivity(Updated2014EditionListingActivity.class.getName(), origListing, newListing, activityReason);
-        processListingActivity(UpdateCurrentCertificationStatusActivity.class.getName(), origListing, newListing, activityReason);
+        processListingActivity(UpdatedCertificationStatusWithdrawnByDeveloperUnderReviewActivity.class.getName(), origListing, newListing, activityReason);
         processListingActivity(UpdatedCertificationStatusHistoryActivity.class.getName(), origListing, newListing, activityReason);
         processListingActivity(UpdatedTestingLabActivity.class.getName(), origListing, newListing, activityReason);
         processListingActivity(UpdatedCriteriaB3AndListingHasIcsActivity.class.getName(), origListing, newListing, activityReason);
@@ -101,13 +104,20 @@ public class ListingQuestionableActivityService {
 
     private Integer processListingActivity(String className, CertifiedProductSearchDetails origListing,  CertifiedProductSearchDetails newListing, String activityReason) {
         Integer activitiesCreated = 0;
-        ListingActivity listingActivity = getListingActivity(className);
-
-        for (QuestionableActivityListingDTO dto : listingActivity.check(origListing, newListing)) {
-            //Need to ge the real user here
-            createListingActivity(dto, origListing.getId(), -1L, listingActivity.getTriggerType(), activityReason);
+        Optional<ListingActivity> listingActivity = getListingActivity(className);
+        if (!listingActivity.isPresent()) {
+            LOGGER.error("Could not find class: " + className);
+        } else {
+            List<QuestionableActivityListingDTO> activities = listingActivity.get().check(origListing, newListing);
+            if (activities != null && activities.size() > 0) {
+                for (QuestionableActivityListingDTO dto : activities) {
+                    if (dto != null) {
+                        //Need to ge the real user here
+                        createListingActivity(dto, origListing.getId(), AuthUtil.getAuditId(), listingActivity.get().getTriggerType(), activityReason);
+                    }
+                }
+            }
         }
-
         return activitiesCreated;
     }
 
@@ -132,11 +142,10 @@ public class ListingQuestionableActivityService {
         return result;
     }
 
-    private ListingActivity getListingActivity(String className) {
+    private Optional<ListingActivity> getListingActivity(String className) {
         return listingActivities.stream()
                 .filter(la -> la.getClass().getName().equals(className))
-                .findAny()
-                .get();
+                .findAny();
     }
 
     private Long getListingActivityThresholdInMillis() {

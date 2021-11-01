@@ -15,7 +15,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
-public class AddedRwtPlanNonEligibleListingActivity extends ListingActivity {
+public class AddedRwtPlanNonEligibleListingActivity implements ListingActivity {
     private RealWorldTestingEligiblityServiceFactory rwtEligServiceFactory;
 
     @Autowired

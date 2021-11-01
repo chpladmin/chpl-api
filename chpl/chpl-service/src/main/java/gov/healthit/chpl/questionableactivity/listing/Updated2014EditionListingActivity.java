@@ -10,7 +10,7 @@ import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 
 @Component
-public class Updated2014EditionListingActivity extends ListingActivity {
+public class Updated2014EditionListingActivity implements ListingActivity {
 
     @Override
     public List<QuestionableActivityListingDTO> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {

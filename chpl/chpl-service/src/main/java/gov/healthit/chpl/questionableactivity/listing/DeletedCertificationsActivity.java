@@ -3,13 +3,16 @@ package gov.healthit.chpl.questionableactivity.listing;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.service.CertificationCriterionService;
 
-public class DeletedCertificationsActivity extends ListingActivity {
+@Component
+public class DeletedCertificationsActivity implements ListingActivity {
 
     @Override
      public List<QuestionableActivityListingDTO> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {

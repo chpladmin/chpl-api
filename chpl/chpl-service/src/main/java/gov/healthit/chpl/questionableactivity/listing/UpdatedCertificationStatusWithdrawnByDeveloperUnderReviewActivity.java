@@ -5,24 +5,24 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
+import gov.healthit.chpl.entity.CertificationStatusType;
 
 @Component
-public class UpdateCurrentCertificationStatusActivity implements ListingActivity {
+public class UpdatedCertificationStatusWithdrawnByDeveloperUnderReviewActivity implements ListingActivity {
 
     @Override
     public List<QuestionableActivityListingDTO> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         QuestionableActivityListingDTO activity = null;
-        CertificationStatusEvent prev = origListing.getCurrentStatus();
-        CertificationStatusEvent curr = newListing.getCurrentStatus();
-        if (!prev.getStatus().getId().equals(curr.getStatus().getId())) {
+        CertificationStatusType withdrawnByDeveloperUnderReview = CertificationStatusType.WithdrawnByDeveloperUnderReview;
+        if (!origListing.getCurrentStatus().getStatus().getName().equals(withdrawnByDeveloperUnderReview.getName())
+                && newListing.getCurrentStatus().getStatus().getName().equals(withdrawnByDeveloperUnderReview.getName())) {
             activity = new QuestionableActivityListingDTO();
-            activity.setBefore(prev.getStatus().getName());
-            activity.setAfter(curr.getStatus().getName());
-            activity.setCertificationStatusChangeReason(curr.getReason());
+            activity.setBefore(origListing.getCurrentStatus().getStatus().getName());
+            activity.setAfter(newListing.getCurrentStatus().getStatus().getName());
+            activity.setCertificationStatusChangeReason(newListing.getCurrentStatus().getReason());
         }
 
         return Arrays.asList(activity);
@@ -30,7 +30,6 @@ public class UpdateCurrentCertificationStatusActivity implements ListingActivity
 
     @Override
     public QuestionableActivityTriggerConcept getTriggerType() {
-        //TODO: Make sure this is correct
         return QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_CURRENT;
     }
 }
