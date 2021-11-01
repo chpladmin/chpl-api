@@ -12,6 +12,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -22,6 +24,7 @@ import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
 import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
+import gov.healthit.chpl.search.domain.RwtSearchOptions;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchResponse;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
@@ -1706,6 +1709,144 @@ public class ListingSearchServiceTest {
         assertNotNull(searchResponse);
         assertEquals(1, searchResponse.getRecordCount());
         assertEquals(1, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_rwtEligible_findsMatchingListings() throws ValidationException {
+        List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(3);
+        allListings.get(0).setIsRwtEligible(true);
+        allListings.get(1).setIsRwtEligible(false);
+        allListings.get(2).setIsRwtEligible(null);
+
+        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .rwtOptions(Stream.of(RwtSearchOptions.IS_ELIGIBLE).collect(Collectors.toSet()))
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        SearchResponse searchResponse = listingSearchService.search(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+        searchResponse.getResults().forEach(result -> assertTrue(result.getIsRwtEligible()));
+    }
+
+    @Test
+    public void search_notRwtEligible_findsMatchingListings() throws ValidationException {
+        List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(3);
+        allListings.get(0).setIsRwtEligible(true);
+        allListings.get(1).setIsRwtEligible(false);
+        allListings.get(2).setIsRwtEligible(false);
+
+        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .rwtOptions(Stream.of(RwtSearchOptions.NOT_ELIGIBLE).collect(Collectors.toSet()))
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        SearchResponse searchResponse = listingSearchService.search(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(2, searchResponse.getRecordCount());
+        assertEquals(2, searchResponse.getResults().size());
+        searchResponse.getResults().forEach(result -> assertTrue(result.getIsRwtEligible() == null || BooleanUtils.isFalse(result.getIsRwtEligible())));
+    }
+
+    @Test
+    public void search_notRwtEligibleAndHasPlansUrl_findsMatchingListings() throws ValidationException {
+        List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(3);
+        allListings.get(0).setIsRwtEligible(true);
+        allListings.get(1).setIsRwtEligible(false);
+        allListings.get(2).setIsRwtEligible(false);
+        allListings.get(2).setRwtPlansUrl("someurl");
+
+        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .rwtOptions(Stream.of(RwtSearchOptions.NOT_ELIGIBLE, RwtSearchOptions.HAS_PLANS_URL).collect(Collectors.toSet()))
+            .rwtOperator(SearchSetOperator.AND)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        SearchResponse searchResponse = listingSearchService.search(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+        searchResponse.getResults().forEach(result -> assertFalse(result.getIsRwtEligible()));
+        searchResponse.getResults().forEach(result -> assertTrue(StringUtils.isNotBlank(result.getRwtPlansUrl())));
+    }
+
+    @Test
+    public void search_notRwtEligibleOrHasPlansUrl_findsMatchingListings() throws ValidationException {
+        List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(3);
+        allListings.get(0).setIsRwtEligible(true);
+        allListings.get(1).setIsRwtEligible(false);
+        allListings.get(2).setIsRwtEligible(false);
+        allListings.get(2).setRwtPlansUrl("someurl");
+
+        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .rwtOptions(Stream.of(RwtSearchOptions.NOT_ELIGIBLE, RwtSearchOptions.HAS_PLANS_URL).collect(Collectors.toSet()))
+            .rwtOperator(SearchSetOperator.OR)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        SearchResponse searchResponse = listingSearchService.search(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(2, searchResponse.getRecordCount());
+        assertEquals(2, searchResponse.getResults().size());
+        searchResponse.getResults().forEach(result -> assertTrue(!result.getIsRwtEligible() || !StringUtils.isBlank(result.getRwtPlansUrl())));
+    }
+
+    @Test
+    public void search_hasResultsUrlAndHasPlansUrl_findsMatchingListings() throws ValidationException {
+        List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(3);
+        allListings.get(0).setIsRwtEligible(true);
+        allListings.get(0).setRwtPlansUrl("someurl");
+        allListings.get(0).setRwtResultsUrl("someurl");
+        allListings.get(1).setIsRwtEligible(false);
+        allListings.get(1).setRwtResultsUrl("someurl");
+        allListings.get(2).setIsRwtEligible(false);
+        allListings.get(2).setRwtPlansUrl("someurl");
+
+        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .rwtOptions(Stream.of(RwtSearchOptions.HAS_RESULTS_URL, RwtSearchOptions.HAS_PLANS_URL).collect(Collectors.toSet()))
+            .rwtOperator(SearchSetOperator.AND)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        SearchResponse searchResponse = listingSearchService.search(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+        searchResponse.getResults().forEach(result -> assertTrue(!StringUtils.isBlank(result.getRwtPlansUrl()) && !StringUtils.isBlank(result.getRwtResultsUrl())));
+    }
+
+    @Test
+    public void search_hasResultsUrlAndNotHasResultsUrl_findsNoMatches() throws ValidationException {
+        List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(3);
+        allListings.get(0).setIsRwtEligible(true);
+        allListings.get(0).setRwtResultsUrl("test");
+        allListings.get(1).setIsRwtEligible(false);
+        allListings.get(2).setIsRwtEligible(false);
+        allListings.get(2).setRwtResultsUrl("someurl");
+
+        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .rwtOptions(Stream.of(RwtSearchOptions.HAS_RESULTS_URL, RwtSearchOptions.NO_RESULTS_URL).collect(Collectors.toSet()))
+            .rwtOperator(SearchSetOperator.AND)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        SearchResponse searchResponse = listingSearchService.search(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     private List<CertifiedProductBasicSearchResult> createBasicSearchResultCollection(int collectionSize) {

@@ -319,6 +319,10 @@ public class ListingSearchService {
         List<Boolean> nonNullFilters = Stream.of(filters)
                 .filter(booleanElement -> booleanElement != null)
                 .collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(nonNullFilters)) {
+            return false;
+        }
+
         if (operation == null || operation.equals(SearchSetOperator.AND)) {
             return BooleanUtils.and(nonNullFilters.toArray(new Boolean[nonNullFilters.size()]));
         } else if (operation.equals(SearchSetOperator.OR)) {
