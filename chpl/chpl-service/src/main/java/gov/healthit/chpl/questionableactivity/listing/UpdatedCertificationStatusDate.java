@@ -36,7 +36,6 @@ public class UpdatedCertificationStatusDate implements ListingActivity {
 
     @Override
     public QuestionableActivityTriggerConcept getTriggerType() {
-        //TODO: make sure this is correct
         return QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_DATE_EDITED_CURRENT;
     }
 

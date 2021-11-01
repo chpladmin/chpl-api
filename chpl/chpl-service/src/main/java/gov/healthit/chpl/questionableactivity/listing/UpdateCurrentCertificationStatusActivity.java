@@ -30,7 +30,6 @@ public class UpdateCurrentCertificationStatusActivity implements ListingActivity
 
     @Override
     public QuestionableActivityTriggerConcept getTriggerType() {
-        //TODO: Make sure this is correct
         return QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_CURRENT;
     }
 }
