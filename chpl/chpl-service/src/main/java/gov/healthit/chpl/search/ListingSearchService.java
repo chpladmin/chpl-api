@@ -25,6 +25,7 @@ import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
 import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
+import gov.healthit.chpl.search.domain.RwtSearchOptions;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchResponse;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
@@ -73,6 +74,7 @@ public class ListingSearchService {
             .filter(listing -> matchesCqms(listing, searchRequest.getCqms(), searchRequest.getCqmsOperator()))
             .filter(listing -> matchesCertificationDateRange(listing, searchRequest.getCertificationDateStart(), searchRequest.getCertificationDateEnd()))
             .filter(listing -> matchesComplianceFilter(listing, searchRequest.getComplianceActivity()))
+            .filter(listing -> matchesRwtFilter(listing, searchRequest.getRwtOptions(), searchRequest.getRwtOperator()))
             .collect(Collectors.toList());
         LOGGER.debug("Total filtered listings: " + filteredListings.size());
 
@@ -258,9 +260,9 @@ public class ListingSearchService {
 
         if (ObjectUtils.anyNotNull(matchesNeverNonConformityFilter, matchesOpenNonConformityFilter, matchesClosedNonConformityFilter,
                 matchesNotNeverNonConformityFilter, matchesNotOpenNonConformityFilter, matchesNotClosedNonConformityFilter)) {
-            boolean matchesNonConformityFilter = applyOperation(matchesNeverNonConformityFilter, matchesOpenNonConformityFilter,
-                    matchesClosedNonConformityFilter, matchesNotNeverNonConformityFilter, matchesNotOpenNonConformityFilter,
-                    matchesNotClosedNonConformityFilter, complianceFilter.getNonConformityOptionsOperator());
+            boolean matchesNonConformityFilter = applyOperation(complianceFilter.getNonConformityOptionsOperator(),
+                    matchesNeverNonConformityFilter, matchesOpenNonConformityFilter, matchesClosedNonConformityFilter,
+                    matchesNotNeverNonConformityFilter, matchesNotOpenNonConformityFilter, matchesNotClosedNonConformityFilter);
             return matchesHasHadComplianceActivityFilter && matchesNonConformityFilter;
         }
         return matchesHasHadComplianceActivityFilter;
@@ -277,14 +279,44 @@ public class ListingSearchService {
         }
     }
 
-    private boolean applyOperation(Boolean matchesNeverNonConformityFilter,
-            Boolean matchesOpenNonConformityFilter, Boolean matchesClosedNonConformityFilter,
-            Boolean matchesNotNeverNonConformityFilter,
-            Boolean matchesNotOpenNonConformityFilter, Boolean matchesNotClosedNonConformityFilter,
-            SearchSetOperator operation) {
-        List<Boolean> nonNullFilters = Stream.of(matchesNeverNonConformityFilter, matchesOpenNonConformityFilter,
-                matchesClosedNonConformityFilter, matchesNotNeverNonConformityFilter, matchesNotOpenNonConformityFilter,
-                matchesNotClosedNonConformityFilter)
+    private boolean matchesRwtFilter(CertifiedProductBasicSearchResult listing, Set<RwtSearchOptions> rwtOptions, SearchSetOperator rwtOperator) {
+        if (CollectionUtils.isEmpty(rwtOptions) && rwtOperator == null) {
+            return true;
+        }
+
+        Boolean matchesIsEligibleFilter = null;
+        if (rwtOptions.contains(RwtSearchOptions.IS_ELIGIBLE)) {
+            matchesIsEligibleFilter = listing.getIsRwtEligible();
+        }
+        Boolean matchesNotEligibleFilter = null;
+        if (rwtOptions.contains(RwtSearchOptions.NOT_ELIGIBLE)) {
+            matchesNotEligibleFilter = BooleanUtils.isFalse(listing.getIsRwtEligible());
+        }
+        Boolean matchesHasPlansFilter = null;
+        if (rwtOptions.contains(RwtSearchOptions.HAS_PLANS_URL)) {
+            matchesHasPlansFilter = StringUtils.isNotBlank(listing.getRwtPlansUrl());
+        }
+        Boolean matchesNoPlansFilter = null;
+        if (rwtOptions.contains(RwtSearchOptions.NO_PLANS_URL)) {
+            matchesNoPlansFilter = StringUtils.isBlank(listing.getRwtPlansUrl());
+        }
+        Boolean matchesResultsFilter = null;
+        if (rwtOptions.contains(RwtSearchOptions.HAS_RESULTS_URL)) {
+            matchesResultsFilter = StringUtils.isNotBlank(listing.getRwtResultsUrl());
+        }
+        Boolean matchesNoResultsFilter = null;
+        if (rwtOptions.contains(RwtSearchOptions.NO_RESULTS_URL)) {
+            matchesNoResultsFilter = StringUtils.isBlank(listing.getRwtResultsUrl());
+        }
+
+        boolean matchesRwtFilter = applyOperation(rwtOperator, matchesIsEligibleFilter, matchesNotEligibleFilter,
+                matchesHasPlansFilter, matchesNoPlansFilter, matchesResultsFilter,
+                matchesNoResultsFilter);
+        return matchesRwtFilter;
+    }
+
+    private boolean applyOperation(SearchSetOperator operation, Boolean... filters) {
+        List<Boolean> nonNullFilters = Stream.of(filters)
                 .filter(booleanElement -> booleanElement != null)
                 .collect(Collectors.toList());
         if (operation == null || operation.equals(SearchSetOperator.AND)) {

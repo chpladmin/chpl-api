@@ -90,6 +90,12 @@ public class SearchController {
                     + "Indicates whether a listing must have met all nonconformityOptions "
                     + "specified or may have met any one or more of the nonconformityOptions",
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "nonconformityOptionsOperator") @RequestParam(value = "nonConformityOptionsOperator", required = false, defaultValue = "") String nonConformityOptionsOperator,
+            @Parameter(description = "A comma-separated list of Real World Testing search options. "
+                    + "Valid options are IS_ELIGIBLE, HAS_PLANS_URL, HAS_RESULTS_URL, NOT_ELIGIBLE, NO_PLANS_URL, NO_RESULTS_URL",
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "rwtOptions") @RequestParam(value = "rwtOptions", required = false, defaultValue = "") String rwtOptionsDelimited,
+            @Parameter(description = "Either AND or OR. Defaults to OR."
+                    + "Indicates whether a listing must have met all rwtOptions specified or may have met any one or more of the rwtOptions",
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "rwtOperator") @RequestParam(value = "rwtOperator", required = false, defaultValue = "") String rwtOperator,
             @Parameter(description = "The full name of a developer.",
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "developer") @RequestParam(value = "developer", required = false, defaultValue = "") String developer,
             @Parameter(description = "The full name of a product.",
@@ -128,6 +134,8 @@ public class SearchController {
                         .nonConformityOptionsStrings(convertToSetWithDelimeter(nonConformityOptionsDelimited, ","))
                         .nonConformityOptionsOperatorString(nonConformityOptionsOperator)
                         .build())
+                .rwtOptionsStrings(convertToSetWithDelimeter(rwtOptionsDelimited, ","))
+                .rwtOperatorString(rwtOperator)
                 .developer(developer)
                 .product(product)
                 .version(version)
