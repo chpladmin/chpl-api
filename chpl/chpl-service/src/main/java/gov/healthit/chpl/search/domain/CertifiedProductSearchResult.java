@@ -4,12 +4,15 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import lombok.AllArgsConstructor;
@@ -206,5 +209,10 @@ public class CertifiedProductSearchResult implements Serializable {
             return -1;
         }
         return this.getId().hashCode();
+    }
+
+    @JsonIgnore
+    public String getEffectiveEdition() {
+        return getEdition() + (BooleanUtils.isTrue(getCuresUpdate()) ? CertificationEdition.CURES_SUFFIX : "");
     }
 }

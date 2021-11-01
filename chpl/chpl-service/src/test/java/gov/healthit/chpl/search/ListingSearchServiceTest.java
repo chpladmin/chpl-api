@@ -1,5 +1,6 @@
 package gov.healthit.chpl.search;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -96,9 +97,11 @@ public class ListingSearchServiceTest {
     public void search_sortByEditionAscending_ordersResults() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(5);
         allListings.get(0).setEdition("2015");
+        allListings.get(0).setCuresUpdate(false);
         allListings.get(1).setEdition("2011");
         allListings.get(2).setEdition("2014");
         allListings.get(3).setEdition("2015");
+        allListings.get(3).setCuresUpdate(true);
         allListings.get(4).setEdition("2011");
         Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
@@ -116,16 +119,20 @@ public class ListingSearchServiceTest {
         assertEquals("2011", searchResponse.getResults().get(1).getEdition());
         assertEquals("2014", searchResponse.getResults().get(2).getEdition());
         assertEquals("2015", searchResponse.getResults().get(3).getEdition());
+        assertFalse(searchResponse.getResults().get(3).getCuresUpdate());
         assertEquals("2015", searchResponse.getResults().get(4).getEdition());
+        assertTrue(searchResponse.getResults().get(4).getCuresUpdate());
     }
 
     @Test
     public void search_sortByEditionDescending_ordersResults() throws ValidationException {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(5);
         allListings.get(0).setEdition("2015");
+        allListings.get(0).setCuresUpdate(false);
         allListings.get(1).setEdition("2011");
         allListings.get(2).setEdition("2014");
         allListings.get(3).setEdition("2015");
+        allListings.get(3).setCuresUpdate(true);
         allListings.get(4).setEdition("2011");
         Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
@@ -140,7 +147,9 @@ public class ListingSearchServiceTest {
         assertEquals(5, searchResponse.getRecordCount());
         assertEquals(5, searchResponse.getResults().size());
         assertEquals("2015", searchResponse.getResults().get(0).getEdition());
+        assertTrue(searchResponse.getResults().get(0).getCuresUpdate());
         assertEquals("2015", searchResponse.getResults().get(1).getEdition());
+        assertFalse(searchResponse.getResults().get(1).getCuresUpdate());
         assertEquals("2014", searchResponse.getResults().get(2).getEdition());
         assertEquals("2011", searchResponse.getResults().get(3).getEdition());
         assertEquals("2011", searchResponse.getResults().get(4).getEdition());

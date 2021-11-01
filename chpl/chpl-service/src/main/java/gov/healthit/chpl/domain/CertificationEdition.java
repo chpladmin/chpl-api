@@ -18,6 +18,7 @@ import gov.healthit.chpl.dto.CertificationEditionDTO;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertificationEdition implements Serializable {
     private static final long serialVersionUID = 5732322243572571895L;
+    public static final String CURES_SUFFIX = " Cures Update";
 
     @XmlElement(required = false, nillable = true)
     private Long certificationEditionId;

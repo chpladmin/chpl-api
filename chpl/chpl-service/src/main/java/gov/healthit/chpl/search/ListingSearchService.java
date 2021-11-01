@@ -433,7 +433,7 @@ public class ListingSearchService {
                 return 0;
             }
             int sortFactor = descending ? -1 : 1;
-            return (listing1.getEdition().compareTo(listing2.getEdition())) * sortFactor;
+            return (listing1.getEffectiveEdition().compareTo(listing2.getEffectiveEdition())) * sortFactor;
         }
     }
 
