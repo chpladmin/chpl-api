@@ -55,6 +55,18 @@ public class SearchRequest implements Serializable {
     private String certificationDateEnd;
     @Builder.Default
     private ComplianceSearchFilter complianceActivity = new ComplianceSearchFilter();
+
+    @JsonIgnore
+    @XmlTransient
+    @Builder.Default
+    private Set<String> rwtOptionsStrings = new HashSet<String>();
+    @Builder.Default
+    private Set<RwtSearchOptions> rwtOptions = new HashSet<RwtSearchOptions>();
+    @JsonIgnore
+    @XmlTransient
+    private String rwtOperatorString;
+    private SearchSetOperator rwtOperator;
+
     @JsonIgnore
     @XmlTransient
     private String orderByString;

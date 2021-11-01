@@ -22,6 +22,7 @@ import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
 import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
+import gov.healthit.chpl.search.domain.RwtSearchOptions;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.service.DirectReviewSearchService;
@@ -43,6 +44,8 @@ public class SearchRequestValidatorTest {
     private static final String MISSING_NC_SEARCH_OPERATOR = "Multiple non-conformity search options were found without a search operator (AND/OR). A search operator is required.";
     private static final String INVALID_NONCONFORMITY_SEARCH_OPTION = "No non-conformity search option matches '%s'. Values must be one of %s.";
     private static final String DIRECT_REVIEWS_UNAVAILABLE = "Compliance and non-conformity filtering is unavailable at this time.";
+    private static final String RWT_OPERATOR_MISSING = "Multiple RWT search options were found without a search operator (AND/OR). A search operator is required.";
+    private static final String RWT_OPTION_INVALID = "No RWT search option matches '%s'. Values must be one of %s.";
     private static final String INVALID_ORDER_BY = "Order by parameter '%s' is invalid. Value must be one of %s.";
 
     private DimensionalDataManager dimensionalDataManager;
@@ -85,8 +88,12 @@ public class SearchRequestValidatorTest {
             .thenAnswer(i -> MISSING_NC_SEARCH_OPERATOR);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.nonconformitySearchOption.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_NONCONFORMITY_SEARCH_OPTION, i.getArgument(1), i.getArgument(2)));
-            Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.complianceFilter.unavailable")))
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.complianceFilter.unavailable")))
              .thenAnswer(i -> DIRECT_REVIEWS_UNAVAILABLE);
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.rwt.missingSearchOperator")))
+            .thenAnswer(i -> RWT_OPERATOR_MISSING);
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.rwtOption.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(RWT_OPTION_INVALID, i.getArgument(1), i.getArgument(2)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.orderBy.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_ORDER_BY, i.getArgument(1), i.getArgument(2)));
 
@@ -921,6 +928,120 @@ public class SearchRequestValidatorTest {
             return;
         }
         fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_rwtOperatorInvalid_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .rwtOperator(null)
+            .rwtOperatorString("BADVALUE")
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_OPERATOR, "BADVALUE",
+                    Stream.of(SearchSetOperator.values())
+                    .map(value -> value.name())
+                    .collect(Collectors.joining(",")))));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_rwtOperatorValidParsedFromString_noErrors() {
+        SearchRequest request = SearchRequest.builder()
+            .rwtOperator(SearchSetOperator.OR)
+            .rwtOperatorString("OR")
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_rwtOperatorValidWithoutString_noErrors() {
+        SearchRequest request = SearchRequest.builder()
+            .rwtOperator(SearchSetOperator.OR)
+            .rwtOperatorString(null)
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_hasRwtOptionObjectsAndMissingRwtOperator_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .rwtOptionsStrings(null)
+            .rwtOptions(Stream.of(RwtSearchOptions.HAS_PLANS_URL, RwtSearchOptions.IS_ELIGIBLE).collect(Collectors.toSet()))
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
+            assertTrue(ex.getErrorMessages().contains(RWT_OPERATOR_MISSING));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_rwtSearchOptionInvalid_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .rwtOptionsStrings(Stream.of("HAS_PLANS_URL", "BADVALUE").collect(Collectors.toSet()))
+            .rwtOptions(Stream.of(RwtSearchOptions.HAS_PLANS_URL).collect(Collectors.toSet()))
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
+            assertTrue(ex.getErrorMessages().contains(String.format(RWT_OPTION_INVALID,
+                    "BADVALUE",
+                    Stream.of(RwtSearchOptions.values())
+                    .map(value -> value.name())
+                    .collect(Collectors.joining(",")))));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_emptyOptionsStrings_noError() {
+        SearchRequest request = SearchRequest.builder()
+            .rwtOptionsStrings(Stream.of("HAS_PLANS_URL", " ", "", null).collect(Collectors.toSet()))
+            .rwtOptions(Stream.of(RwtSearchOptions.HAS_PLANS_URL).collect(Collectors.toSet()))
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+        assertEquals(1, request.getRwtOptions().size());
+    }
+
+    @Test
+    public void validate_validRwtOptionsParsedFromString_noErrors() {
+        SearchRequest request = SearchRequest.builder()
+            .rwtOptionsStrings(Stream.of("HAS_PLANS_URL", "HAS_RESULTS_URL", "IS_ELIGIBLE",
+                    "NO_PLANS_URL", "NO_RESULTS_URL", "NOT_ELIGIBLE").collect(Collectors.toSet()))
+            .rwtOptions(Stream.of(RwtSearchOptions.HAS_PLANS_URL,
+                    RwtSearchOptions.HAS_RESULTS_URL, RwtSearchOptions.IS_ELIGIBLE,
+                    RwtSearchOptions.NO_PLANS_URL, RwtSearchOptions.NO_RESULTS_URL,
+                    RwtSearchOptions.NOT_ELIGIBLE).collect(Collectors.toSet()))
+            .rwtOperator(SearchSetOperator.OR)
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+        assertEquals(6, request.getRwtOptions().size());
     }
 
     @Test

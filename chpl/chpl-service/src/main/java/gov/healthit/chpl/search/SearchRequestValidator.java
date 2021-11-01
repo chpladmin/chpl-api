@@ -24,6 +24,7 @@ import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
 import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
+import gov.healthit.chpl.search.domain.RwtSearchOptions;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.service.DirectReviewSearchService;
@@ -64,6 +65,8 @@ public class SearchRequestValidator {
         errors.addAll(getPracticeTypeErrors(request.getPracticeType()));
         errors.addAll(getCertificationDateErrors(request.getCertificationDateStart(), request.getCertificationDateEnd()));
         errors.addAll(getComplianceActivityErrors(request.getComplianceActivity()));
+        errors.addAll(getRwtOptionsErrors(request));
+        errors.addAll(getRwtOperatorErrors(request));
         errors.addAll(getPageSizeErrors(request.getPageSize()));
         errors.addAll(getOrderByErrors(request));
         if (errors != null && errors.size() > 0) {
@@ -319,6 +322,53 @@ public class SearchRequestValidator {
         boolean result = true;
         try {
             NonConformitySearchOptions.valueOf(option.toUpperCase().trim());
+        } catch (Exception ex) {
+            result = false;
+        }
+        return result;
+    }
+
+    private Set<String> getRwtOperatorErrors(SearchRequest searchRequest) {
+        if (searchRequest.getRwtOperator() == null
+                && !StringUtils.isBlank(searchRequest.getRwtOperatorString())) {
+            return Stream.of(msgUtil.getMessage("search.searchOperator.invalid",
+                    searchRequest.getRwtOperatorString(),
+                    Stream.of(SearchSetOperator.values())
+                        .map(value -> value.name())
+                        .collect(Collectors.joining(","))))
+                    .collect(Collectors.toSet());
+        } else if (searchRequest.getRwtOperator() == null
+                && StringUtils.isBlank(searchRequest.getRwtOperatorString())
+                && hasMultipleRwtOptionsToSearch(searchRequest)) {
+            return Stream.of(msgUtil.getMessage("search.rwt.missingSearchOperator")).collect(Collectors.toSet());
+        }
+        return Collections.emptySet();
+    }
+
+    private boolean hasMultipleRwtOptionsToSearch(SearchRequest searchRequest) {
+        return !CollectionUtils.isEmpty(searchRequest.getRwtOptions())
+                && searchRequest.getRwtOptions().size() > 1;
+    }
+
+    private Set<String> getRwtOptionsErrors(SearchRequest searchRequest) {
+        if (!CollectionUtils.isEmpty(searchRequest.getRwtOptionsStrings())) {
+            return searchRequest.getRwtOptionsStrings().stream()
+                .filter(option -> !StringUtils.isBlank(option))
+                .filter(option -> !isRwtOption(option))
+                .map(option -> msgUtil.getMessage("search.rwtOption.invalid",
+                        option,
+                        Stream.of(RwtSearchOptions.values())
+                        .map(value -> value.name())
+                        .collect(Collectors.joining(","))))
+                .collect(Collectors.toSet());
+        }
+        return Collections.emptySet();
+    }
+
+    private boolean isRwtOption(String option) {
+        boolean result = true;
+        try {
+            RwtSearchOptions.valueOf(option.toUpperCase().trim());
         } catch (Exception ex) {
             result = false;
         }
