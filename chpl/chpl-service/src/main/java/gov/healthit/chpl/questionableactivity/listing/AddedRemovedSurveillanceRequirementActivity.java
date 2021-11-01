@@ -2,6 +2,7 @@ package gov.healthit.chpl.questionableactivity.listing;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -14,16 +15,27 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptions;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.manager.DimensionalDataManager;
+import gov.healthit.chpl.util.Removable;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
 public class AddedRemovedSurveillanceRequirementActivity implements ListingActivity {
-    private SurveillanceRequirementOptions surveillanceRequirementOptions;
+    private List<Removable<String>> surveillanceRequirementOptions;
 
     @Autowired
     public AddedRemovedSurveillanceRequirementActivity(DimensionalDataManager dimensionalDataManager) {
-        this.surveillanceRequirementOptions = dimensionalDataManager.getSurveillanceRequirementOptions();
+        SurveillanceRequirementOptions options = dimensionalDataManager.getSurveillanceRequirementOptions();
+        surveillanceRequirementOptions = options.getCriteriaOptions2014().stream()
+                .map(req -> new Removable<String>(req.getNumber(), req.getRemoved()))
+                .collect(Collectors.toList());
+
+        surveillanceRequirementOptions.addAll(options.getCriteriaOptions2015().stream()
+                .map(req -> new Removable<String>(req.getNumber(), req.getRemoved()))
+                .collect(Collectors.toList()));
+
+        surveillanceRequirementOptions.addAll(options.getRealWorldTestingOptions());
+        surveillanceRequirementOptions.addAll(options.getTransparencyOptions());
     }
 
     @Override
@@ -53,13 +65,35 @@ public class AddedRemovedSurveillanceRequirementActivity implements ListingActiv
 
     }
 
+    private List<QuestionableActivityListingDTO> checkForSurveillanceRequirementsUpdatedwithRemoved(List<SurveillanceRequirement> origRequirements, List<SurveillanceRequirement> newRequirements) {
+        return origRequirements.stream()
+                .filter(req -> hasSurveillanceRequirementBeenUpdatedToRemovedRequirement(req, newRequirements))
+                .map(req -> QuestionableActivityListingDTO.builder().after(req.getRequirement()).build())
+                .collector(Collectors.toList());
+    }
+
+    private Boolean hasSurveillanceRequirementBeenUpdatedToRemovedRequirement(SurveillanceRequirement origRequirement, List<SurveillanceRequirement> newRequirements) {
+        Optional<SurveillanceRequirement> updatedRequirement = getMatchingSurveillanceRequirement(origRequirement, newRequirements);
+        if (updatedRequirement.isPresent()) {
+            return !updatedRequirement.get().getRequirement().equals(origRequirement.getRequirement())
+                    && isSurveillanceRequirementRemoved(updatedRequirement.get());
+        }
+        return false;
+    }
+
+    private Optional<SurveillanceRequirement> getMatchingSurveillanceRequirement(SurveillanceRequirement requirement, List<SurveillanceRequirement> requirements) {
+        return requirements.stream()
+                .filter(req -> req.getId().equals(requirement.getId()))
+                .findAny();
+    }
+
     @Override
     public QuestionableActivityTriggerConcept getTriggerType() {
         return QuestionableActivityTriggerConcept.REMOVED_REQUIREMENT_ADDED;
     }
 
     private Boolean isSurveillanceRequirementRemoved(SurveillanceRequirement requirement) {
-        return surveillanceRequirementOptions.getTransparencyOptions().stream()
+        return surveillanceRequirementOptions.stream()
                 .filter(req -> req.getItem().equals(requirement.getRequirement()) && req.getRemoved())
                 .findAny()
                 .isPresent();

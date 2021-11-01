@@ -5,7 +5,15 @@ import java.util.Date;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityEntity;
 import gov.healthit.chpl.util.Util;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 public abstract class QuestionableActivityDTO {
     private Long id;
     private Long triggerId;
@@ -17,9 +25,6 @@ public abstract class QuestionableActivityDTO {
     private UserDTO user;
 
     public abstract Class<?> getActivityObjectClass();
-
-    public QuestionableActivityDTO() {
-    }
 
     public QuestionableActivityDTO(QuestionableActivityEntity entity) {
         this.id = entity.getId();

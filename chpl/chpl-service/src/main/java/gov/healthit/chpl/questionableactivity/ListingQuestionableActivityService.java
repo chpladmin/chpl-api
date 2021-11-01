@@ -81,7 +81,6 @@ public class ListingQuestionableActivityService {
         processListingActivity(DeletedMeasuresActivity.class.getName(), origListing, newListing, activityReason);
         processListingActivity(AddedRemovedSurveillanceNonconformityActivity.class.getName(), origListing, newListing, activityReason);
         processListingActivity(AddedRemovedSurveillanceRequirementActivity.class.getName(), origListing, newListing, activityReason);
-        processListingActivity(AddedRwtPlanNonEligibleListingActivity.class.getName(), origListing, newListing, activityReason);
 
         // finally check for other changes that are only questionable
         // outside of the acceptable activity threshold
