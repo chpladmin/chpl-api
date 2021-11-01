@@ -1,5 +1,22 @@
 # Release Notes
 
+## Version 32.3.0
+_1 November 2021_
+
+### Features
+* Add job to convert Test Standards to Approved Standards
+* Improve Cures Reporting reports by adding 3 new charts
+* Track and report of usage of API endpoints with deprecated response fields
+* Update deprecated /search endpoint to not use nonconformity_status table
+
+### Flagged Features
+* Add "Conformance Method" to Listing details
+
+### Bug Fixes
+* Allow complaint to be associated to an open surveillance
+
+---
+
 ## Version 32.2.0
 _18 October 2021_
 

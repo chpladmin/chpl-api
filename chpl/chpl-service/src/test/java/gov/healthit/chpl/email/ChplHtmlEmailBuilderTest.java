@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -64,6 +65,22 @@ public class ChplHtmlEmailBuilderTest {
     }
 
     @Test
+    public void testEmailWithParagraphWithHeadingAsH3_hasExpectedHtml() {
+        String html = emailBuilder
+                .paragraph("paragraph heading", "", "h3")
+                .build();
+        assertEquals("<html><div><h3>paragraph heading</h3></div><div></div></html>", html);
+    }
+
+    @Test
+    public void testEmailWithParagraphWithHeadingLevelAsNull_hasExpectedHtml() {
+        String html = emailBuilder
+                .paragraph("paragraph heading", "", null)
+                .build();
+        assertEquals("<html><div><h2>paragraph heading</h2></div><div></div></html>", html);
+    }
+
+    @Test
     public void testEmailWithParagraphWithContentOnly_hasExpectedHtml() {
         String html = emailBuilder
                 .paragraph("", "some text")
@@ -72,7 +89,15 @@ public class ChplHtmlEmailBuilderTest {
     }
 
     @Test
-    public void testEmailWithTablerOnly_hasExpectedHtml() {
+    public void testEmailWithParagraphWithContentAndNullHeadingLevel_hasExpectedHtml() {
+        String html = emailBuilder
+                .paragraph("", "some text", null)
+                .build();
+        assertEquals("<html><div></div><div><p>some text</p></div></html>", html);
+    }
+
+    @Test
+    public void testEmailWithTableOnly_hasExpectedHtml() {
         List<String> headings = Stream.of("Col1", "Col2", "Col3").collect(Collectors.toList());
         List<List<String>> data = Stream.of(
                 Stream.of("11", "12", "13").collect(Collectors.toList()),
@@ -86,6 +111,20 @@ public class ChplHtmlEmailBuilderTest {
                 + "<tr><td>11</td><td>12</td><td>13</td></tr>"
                 + "<tr><td>21</td><td>22</td><td>23</td></tr>"
                 + "<tr><td>31</td><td>32</td><td>33</td></tr>"
+                + "</table></html>", html);
+    }
+
+    @Test
+    public void testEmailWithTableEmptyData_hasExpectedHtml() {
+        List<String> headings = Stream.of("Col1", "Col2", "Col3").collect(Collectors.toList());
+        List<List<String>> data = Collections.EMPTY_LIST;
+
+        String html = emailBuilder
+                .table(headings, data)
+                .build();
+        assertEquals("<html><table>"
+                + "<tr><th align=\"left\">Col1</th><th align=\"left\">Col2</th><th align=\"left\">Col3</th></tr>"
+                + "<tr><td colspan=\"3\">No Applicable Data</td></tr>"
                 + "</table></html>", html);
     }
 

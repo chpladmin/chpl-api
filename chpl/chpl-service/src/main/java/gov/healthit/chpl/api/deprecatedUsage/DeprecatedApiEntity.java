@@ -59,8 +59,10 @@ public class DeprecatedApiEntity {
     public DeprecatedApi toDomain() {
         return DeprecatedApi.builder()
                 .id(this.getId())
-                .apiOperation(this.getApiOperation())
-                .httpMethod(HttpMethod.valueOf(this.getHttpMethod().toUpperCase()))
+                .apiOperation(ApiOperation.builder()
+                        .httpMethod(HttpMethod.valueOf(this.getHttpMethod().toUpperCase()))
+                        .endpoint(this.getApiOperation())
+                        .build())
                 .requestParameter(this.getRequestParameter())
                 .changeDescription(this.getChangeDescription())
                 .removalDate(this.getRemovalDate())

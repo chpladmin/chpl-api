@@ -2,10 +2,12 @@ package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
 import java.util.List;
 
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -37,15 +39,17 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
     private TestDataDAO testDataDao;
     private ValidationUtils validationUtils;
+    private FF4j ff4j;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
     public RequiredData2015Reviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil,
             TestDataDAO testDataDao,
-            ValidationUtils validationUtils, ResourcePermissions resourcePermissions) {
+            ValidationUtils validationUtils, ResourcePermissions resourcePermissions, FF4j ff4j) {
         super(certRules, msgUtil, resourcePermissions);
         this.testDataDao = testDataDao;
         this.validationUtils = validationUtils;
+        this.ff4j = ff4j;
     }
 
     @Override
@@ -277,11 +281,18 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 }
 
                 // require at least one test procedure where gap does not exist
-                // or is false
+                // or is false, and criteria cannot have Conformance Methods
                 if (!gapEligibleAndTrue
-                        && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE)
+                        && (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE) && (!ff4j.check(FeatureList.CONFORMANCE_METHOD) || !certRules.hasCertOption(cert.getNumber(), CertificationResultRules.CONFORMANCE_METHOD)))
                         && (cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
                     addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestProcedure",
+                            Util.formatCriteriaNumber(cert.getCriterion()));
+                }
+
+                if (ff4j.check(FeatureList.CONFORMANCE_METHOD)
+                        && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.CONFORMANCE_METHOD)
+                        && (cert.getConformanceMethods() == null || cert.getConformanceMethods().size() == 0)) {
+                    addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.conformanceMethod.missingConformanceMethod",
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 

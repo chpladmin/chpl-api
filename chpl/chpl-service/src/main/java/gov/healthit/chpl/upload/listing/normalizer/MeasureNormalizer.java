@@ -149,11 +149,19 @@ public class MeasureNormalizer {
     }
 
     private boolean areMeasuresEqual(ListingMeasure listingMeasure1, ListingMeasure listingMeasure2) {
-        return ObjectUtils.allNotNull(listingMeasure1.getMeasure(), listingMeasure2.getMeasure(),
+        if (ObjectUtils.allNotNull(listingMeasure1.getMeasure(), listingMeasure2.getMeasure(),
                 listingMeasure1.getMeasure().getId(), listingMeasure2.getMeasure().getId(),
                 listingMeasure1.getMeasureType(), listingMeasure2.getMeasureType(),
-                listingMeasure1.getMeasureType().getId(), listingMeasure2.getMeasureType().getId())
-            && listingMeasure1.getMeasure().getId().equals(listingMeasure2.getMeasure().getId())
-            && listingMeasure1.getMeasureType().getId().equals(listingMeasure2.getMeasureType().getId());
+                listingMeasure1.getMeasureType().getId(), listingMeasure2.getMeasureType().getId())) {
+            return listingMeasure1.getMeasure().getId().equals(listingMeasure2.getMeasure().getId())
+                    && listingMeasure1.getMeasureType().getId().equals(listingMeasure2.getMeasureType().getId());
+        } else if (ObjectUtils.allNotNull(listingMeasure1.getMeasure(), listingMeasure2.getMeasure(),
+                listingMeasure1.getMeasureType(), listingMeasure2.getMeasureType(),
+                listingMeasure1.getMeasureType().getId(), listingMeasure2.getMeasureType().getId(),
+                listingMeasure1.getMeasure().getLegacyMacraMeasureValue(), listingMeasure2.getMeasure().getLegacyMacraMeasureValue())) {
+            return listingMeasure1.getMeasure().getLegacyMacraMeasureValue().equals(listingMeasure2.getMeasure().getLegacyMacraMeasureValue())
+                    && listingMeasure1.getMeasureType().getId().equals(listingMeasure2.getMeasureType().getId());
+        }
+        return false;
     }
 }

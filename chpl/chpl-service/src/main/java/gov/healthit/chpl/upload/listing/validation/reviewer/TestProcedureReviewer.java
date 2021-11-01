@@ -1,10 +1,12 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -17,12 +19,14 @@ import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 @Component("listingUploadTestProcedureReviewer")
 public class TestProcedureReviewer extends PermissionBasedReviewer {
     private CertificationResultRules certResultRules;
+    private FF4j ff4j;
 
     @Autowired
     public TestProcedureReviewer(CertificationResultRules certResultRules,
-            ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
+            ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions, FF4j ff4j) {
         super(msgUtil, resourcePermissions);
         this.certResultRules = certResultRules;
+        this.ff4j = ff4j;
     }
 
     @Override
@@ -69,9 +73,21 @@ public class TestProcedureReviewer extends PermissionBasedReviewer {
 
     private void reviewTestProcedureFields(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultTestProcedure testProcedure) {
+        reviewByFlag(listing, certResult, testProcedure);
         reviewIdRequired(listing, certResult, testProcedure);
         reviewNameRequired(listing, certResult, testProcedure);
         reviewVersionRequired(listing, certResult, testProcedure);
+    }
+
+    private void reviewByFlag(CertifiedProductSearchDetails listing,
+            CertificationResult certResult, CertificationResultTestProcedure testProcedure) {
+        if (!ff4j.check(FeatureList.CONFORMANCE_METHOD)) {
+            return;
+        }
+        if (testProcedure.getTestProcedure() != null && testProcedure.getTestProcedure().getId() == null) {
+            addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.testProcedureNotApplicable",
+                    Util.formatCriteriaNumber(certResult.getCriterion()));
+        }
     }
 
     private void reviewIdRequired(CertifiedProductSearchDetails listing,

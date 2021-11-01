@@ -30,6 +30,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
 import gov.healthit.chpl.web.controller.results.BooleanResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -96,6 +97,7 @@ public class ApiKeyController {
                 + "API key. It must be included in subsequent API calls via either a header with the name "
                 + "'API-Key' or as a URL parameter named 'api_key'.",
         security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+    @DeprecatedResponseFields(responseClass = ApiKey.class)
     @RequestMapping(value = "/confirm", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public ApiKey confirm(@RequestBody String apiKeyRequestToken) throws
         JsonProcessingException, ValidationException, EntityCreationException,
@@ -128,6 +130,7 @@ public class ApiKeyController {
             description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
+    @DeprecatedResponseFields(responseClass = ApiKey.class)
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ApiKey> listKeys(@RequestParam(required = false, defaultValue = "false") boolean includeDeleted) {
         return apiKeyManager.findAll(includeDeleted);

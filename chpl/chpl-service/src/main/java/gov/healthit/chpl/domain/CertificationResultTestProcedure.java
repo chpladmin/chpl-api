@@ -55,7 +55,7 @@ public class CertificationResultTestProcedure implements Serializable {
     public CertificationResultTestProcedure(CertificationResultTestProcedureDTO dto) {
         this.id = dto.getId();
         TestProcedure tp = new TestProcedure();
-        if(dto.getTestProcedure() == null) {
+        if (dto.getTestProcedure() == null) {
             tp.setId(dto.getTestProcedureId());
         } else {
             tp.setId(dto.getTestProcedure().getId());
