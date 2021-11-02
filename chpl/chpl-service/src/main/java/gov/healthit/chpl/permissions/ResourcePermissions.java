@@ -358,6 +358,9 @@ public class ResourcePermissions {
         } else if (isUserRoleOncStaff()) {
             return getRoleByUserId(user.getId()).getAuthority().equalsIgnoreCase(Authority.ROLE_ONC_STAFF);
         } else if (isUserRoleAcbAdmin()) {
+            if (getRoleByUserId(user.getId()).getAuthority().equalsIgnoreCase(Authority.ROLE_DEVELOPER)) {
+                return true;
+            }
             // is the user being checked on any of the same ACB(s) that the
             // current user is on?
             List<CertificationBodyDTO> currUserAcbs = getAllAcbsForCurrentUser();
