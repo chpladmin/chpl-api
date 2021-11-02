@@ -2,9 +2,11 @@ package gov.healthit.chpl.questionableactivity.listing;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.ListUtils;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -34,21 +36,50 @@ public class AddedRemovedSurveillanceNonconformityActivity implements ListingAct
                 .map(nc -> nc)
                 .collect(Collectors.toList());
 
-        subtractNonConformityLists(newNonconformities, origNonconformities).stream()
-                .filter(nc -> NonconformityType.getByName(nc.getNonconformityType()).isPresent() ? NonconformityType.getByName(nc.getNonconformityType()).get().getRemoved() : false)
-                .forEach(nc -> {
-                    QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
-                    activity.setAfter(String.format("Non-conformity of type %s is removed and was added to surveillance.", nc.getNonconformityType()));
-                    activity.setBefore(null);
-                    questionableActivityListingDTOs.add(activity);
-                });
-
-        return questionableActivityListingDTOs;
-    }
+        return ListUtils.union(
+                checkForRemovedNonconformityTypeAdded(origNonconformities, newNonconformities),
+                checkForNonconformityTypeUpdatedwithRemoved(origNonconformities, newNonconformities));
+     }
 
     @Override
     public QuestionableActivityTriggerConcept getTriggerType() {
         return QuestionableActivityTriggerConcept.REMOVED_NONCONFORMITY_ADDED;
+    }
+
+    private List<QuestionableActivityListingDTO> checkForRemovedNonconformityTypeAdded(List<SurveillanceNonconformity> origNonconformities, List<SurveillanceNonconformity> newNonconformities) {
+        return subtractNonConformityLists(newNonconformities, origNonconformities).stream()
+                .filter(nc -> isNonconformityTypeRemoved(nc.getNonconformityType()))
+                .map(nc -> QuestionableActivityListingDTO.builder()
+                        .after(String.format("Non-conformity of type %s is removed and was added to surveillance.", nc.getNonconformityType()))
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    private List<QuestionableActivityListingDTO> checkForNonconformityTypeUpdatedwithRemoved(List<SurveillanceNonconformity> origNonconformities, List<SurveillanceNonconformity> newNonconformities) {
+        return origNonconformities.stream()
+                .filter(nc -> hasNonconformityBeenUpdatedToRemovedNonconformity(nc, newNonconformities))
+                .map(nc -> QuestionableActivityListingDTO.builder()
+                        .after(String.format("Non-conformity of type %s is removed and was added to surveillance.", nc.getNonconformityType()))
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    private Boolean hasNonconformityBeenUpdatedToRemovedNonconformity(SurveillanceNonconformity origNonconformity, List<SurveillanceNonconformity> newNoncoformities) {
+        Optional<SurveillanceNonconformity> updatedNonconformity = getMatchingNonconformity(origNonconformity, newNoncoformities);
+        if (updatedNonconformity.isPresent()) {
+            return !updatedNonconformity.get().getNonconformityType().equals(origNonconformity.getNonconformityType())
+                    && isNonconformityTypeRemoved(updatedNonconformity.get().getNonconformityType());
+        }
+        return false;
+    }
+
+    private Boolean isNonconformityTypeRemoved(String nonconformity) {
+        return NonconformityType.getByName(nonconformity).isPresent() ? NonconformityType.getByName(nonconformity).get().getRemoved() : false;
+    }
+    private Optional<SurveillanceNonconformity> getMatchingNonconformity(SurveillanceNonconformity nonconformity, List<SurveillanceNonconformity> nonconformities) {
+        return nonconformities.stream()
+                .filter(nc -> nc.getId().equals(nonconformity.getId()))
+                .findAny();
     }
 
     private List<SurveillanceNonconformity> subtractNonConformityLists(List<SurveillanceNonconformity> listA, List<SurveillanceNonconformity> listB) {

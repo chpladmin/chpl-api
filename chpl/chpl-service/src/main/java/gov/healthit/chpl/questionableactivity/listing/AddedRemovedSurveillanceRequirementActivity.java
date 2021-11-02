@@ -61,26 +61,22 @@ public class AddedRemovedSurveillanceRequirementActivity implements ListingActiv
     }
 
     private List<QuestionableActivityListingDTO> checkForRemovedSurveillanceRequirementTypeAdded(List<SurveillanceRequirement> origRequirements, List<SurveillanceRequirement> newRequirements) {
-        List<QuestionableActivityListingDTO> x = subtractRequirementLists(newRequirements, origRequirements).stream()
+        return subtractRequirementLists(newRequirements, origRequirements).stream()
                 .filter(req -> isSurveillanceRequirementRemoved(req))
                 .map(req -> QuestionableActivityListingDTO.builder()
                         .after(String.format("Surveillance Requirement of type %s is removed and was added to surveillance.", req.getRequirement()))
                         .build())
                 .collect(Collectors.toList());
-        LOGGER.always().log("Added found: " + x.size());
-        return x;
     }
 
 
     private List<QuestionableActivityListingDTO> checkForSurveillanceRequirementsUpdatedwithRemoved(List<SurveillanceRequirement> origRequirements, List<SurveillanceRequirement> newRequirements) {
-        List<QuestionableActivityListingDTO> x = origRequirements.stream()
+        return origRequirements.stream()
                 .filter(req -> hasSurveillanceRequirementBeenUpdatedToRemovedRequirement(req, newRequirements))
                 .map(req -> QuestionableActivityListingDTO.builder()
                         .after(String.format("Surveillance Requirement of type %s is removed and was added to surveillance.", getMatchingSurveillanceRequirement(req, newRequirements).get().getRequirement()))
                         .build())
                 .collect(Collectors.toList());
-        LOGGER.always().log("Updated found: " + x.size());
-        return x;
     }
 
     private Boolean hasSurveillanceRequirementBeenUpdatedToRemovedRequirement(SurveillanceRequirement origRequirement, List<SurveillanceRequirement> newRequirements) {
@@ -109,7 +105,6 @@ public class AddedRemovedSurveillanceRequirementActivity implements ListingActiv
 
         return listA.stream()
                 .filter(notInListB)
-                .peek(req -> LOGGER.always().log(req.toString()))
                 .collect(Collectors.toList());
     }
 }
