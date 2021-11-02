@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
+import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
@@ -29,15 +30,15 @@ public class DeleteActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess(Object obj) {
-        if (!(obj instanceof Long)) {
+        if (!(obj instanceof Surveillance)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
-            Long survId = (Long) obj;
+            Surveillance surv = (Surveillance) obj;
             SurveillanceEntity survEntity = null;
             try {
-                survEntity = survDao.getSurveillanceById(survId);
+                survEntity = survDao.getSurveillanceById(surv.getId());
             } catch (EntityRetrievalException ex) {
                 return false;
             }

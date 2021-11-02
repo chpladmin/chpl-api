@@ -269,10 +269,15 @@ public class SurveillanceController  {
             @RequestBody(required = false) SimpleExplainableAction requestBody) throws
         InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
         JsonProcessingException, AccessDeniedException, MissingReasonException {
-
+        Surveillance survToDelete = null;
+        try {
+            survToDelete = survManager.getById(surveillanceId);
+        } catch (EntityRetrievalException ex) {
+            throw new InvalidArgumentsException("No surveillance with ID " + surveillanceId + " was found.");
+        }
         HttpHeaders responseHeaders = new HttpHeaders();
         // delete it
-        survManager.deleteSurveillance(surveillanceId, requestBody.getReason());
+        survManager.deleteSurveillance(survToDelete, requestBody.getReason());
         responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         return new ResponseEntity<String>("{\"success\" : true}", responseHeaders, HttpStatus.OK);
     }

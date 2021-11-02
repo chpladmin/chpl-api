@@ -205,16 +205,14 @@ public class SurveillanceManager extends SecuredManager {
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
-            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).DELETE, #surveillanceId)")
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).DELETE, #survToDelete)")
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
-    public void deleteSurveillance(Long surveillanceId, String reason)
+    public void deleteSurveillance(Surveillance survToDelete, String reason)
             throws InvalidArgumentsException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
-        Surveillance survToDelete = getById(surveillanceId);
-
         if (survToDelete == null) {
-            throw new InvalidArgumentsException("Cannot find surveillance with id " + surveillanceId + " to delete.");
+            throw new InvalidArgumentsException("Cannot find surveillance with id " + survToDelete.getId() + " to delete.");
         }
 
         CertifiedProductSearchDetails beforeCp = cpDetailsManager
