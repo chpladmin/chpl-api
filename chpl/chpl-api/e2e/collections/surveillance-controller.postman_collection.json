@@ -898,12 +898,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"delete surveillance request by ONC_STAFF user should return Status code 401\", function () {\r",
-									"    pm.response.to.have.status(401);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"ONC_STAFF user should be denied access to delete surveillance\", function () {\r",
-									"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+									"pm.test(\"ONC_STAFF user should not have access to delete surveillance\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([401,400]);\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -1165,58 +1161,6 @@
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "DELETE /surveillance/{surveillanceId} - Anonymous user has no access",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"delete surveillance request by anonymous user should return Status code 401\", function () {\r",
-									"    pm.response.to.have.status(401);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Anonymous user should be denied access to delete surveillance\", function () {\r",
-									"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "API-KEY",
-								"value": "{{apiKey}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"reason\": \"Test\"\r\n}"
-						},
-						"url": {
-							"raw": "{{url}}/rest/surveillance/1020",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"surveillance",
-								"1020"
-							]
-						},
-						"description": "Anonymous user should be denied access to delete surveillance"
-					},
-					"response": []
 				}
 			]
 		},
@@ -1296,73 +1240,6 @@
 								"upload"
 							]
 						}
-					},
-					"response": []
-				},
-				{
-					"name": "DELETE /surveillance/{surveillanceId} - ROLE_ADMIN user has access",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"ROLE_ADMIN user should have access to delete surveillance\", function () {\r",
-									"    pm.response.to.not.have.status(401);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "API-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"reason\": \"Test\"\r\n}"
-						},
-						"url": {
-							"raw": "{{url}}/rest/surveillance/1020",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"surveillance",
-								"1020"
-							]
-						},
-						"description": "ROLE_ADMIN user should have access to delete surveillance"
 					},
 					"response": []
 				}
@@ -1478,73 +1355,6 @@
 								"upload"
 							]
 						}
-					},
-					"response": []
-				},
-				{
-					"name": "DELETE /surveillance/{surveillanceId} - ROLE_ACB has access to delete surveillance on own listings",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"ROLE_ACB user should have access to delete surveillance activity on own listings\", function () {\r",
-									"    pm.response.to.not.have.status(401);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "API-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"reason\": \"Test\"\r\n}"
-						},
-						"url": {
-							"raw": "{{url}}/rest/surveillance/1035",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"surveillance",
-								"1035"
-							]
-						},
-						"description": "ROLE_ACB user should have access to delete surveillance activity on own listings"
 					},
 					"response": []
 				}
