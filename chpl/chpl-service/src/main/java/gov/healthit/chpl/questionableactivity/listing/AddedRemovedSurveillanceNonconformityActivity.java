@@ -88,7 +88,6 @@ public class AddedRemovedSurveillanceNonconformityActivity implements ListingAct
 
         return listA.stream()
                 .filter(notInListB)
-                .peek(nc -> LOGGER.always().log(nc.toString()))
                 .collect(Collectors.toList());
     }
 
