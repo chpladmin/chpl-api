@@ -1,12 +1,12 @@
 package gov.healthit.chpl.questionableactivity.listing;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -14,16 +14,22 @@ import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2
 public class AddedRemovedSurveillanceNonconformityActivity implements ListingActivity {
 
+    private CertificationCriterionService certificationCriterionService;
+
+    @Autowired
+    public AddedRemovedSurveillanceNonconformityActivity(CertificationCriterionService certificationCriterionService) {
+        this.certificationCriterionService = certificationCriterionService;
+    }
+
     @Override
     public List<QuestionableActivityListingDTO> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
-        List<QuestionableActivityListingDTO> questionableActivityListingDTOs = new ArrayList<QuestionableActivityListingDTO>();
-
         List<SurveillanceNonconformity> origNonconformities = origListing.getSurveillance().stream()
                 .flatMap(surv -> surv.getRequirements().stream())
                 .flatMap(req -> req.getNonconformities().stream())
@@ -74,8 +80,18 @@ public class AddedRemovedSurveillanceNonconformityActivity implements ListingAct
     }
 
     private Boolean isNonconformityTypeRemoved(String nonconformity) {
-        return NonconformityType.getByName(nonconformity).isPresent() ? NonconformityType.getByName(nonconformity).get().getRemoved() : false;
+        Optional<NonconformityType> ncType = NonconformityType.getByName(nonconformity);
+        if (ncType.isPresent()) {
+            return ncType.get().getRemoved();
+        } else {
+            return certificationCriterionService.getByNumber(nonconformity).stream()
+                    .filter(crit -> crit.getRemoved()
+                            && !CertificationCriterionService.hasCuresInTitle(crit))
+                    .findAny()
+                    .isPresent();
+        }
     }
+
     private Optional<SurveillanceNonconformity> getMatchingNonconformity(SurveillanceNonconformity nonconformity, List<SurveillanceNonconformity> nonconformities) {
         return nonconformities.stream()
                 .filter(nc -> nc.getId().equals(nonconformity.getId()))
