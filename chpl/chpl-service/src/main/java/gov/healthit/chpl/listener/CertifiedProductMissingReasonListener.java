@@ -19,7 +19,11 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.MissingReasonException;
-import gov.healthit.chpl.questionableactivity.ListingQuestionableActivityProvider;
+import gov.healthit.chpl.questionableactivity.listing.DeletedCertificationsActivity;
+import gov.healthit.chpl.questionableactivity.listing.DeletedCqmsActivity;
+import gov.healthit.chpl.questionableactivity.listing.UpdateCurrentCertificationStatusActivity;
+import gov.healthit.chpl.questionableactivity.listing.Updated2011EditionListingActivity;
+import gov.healthit.chpl.questionableactivity.listing.Updated2014EditionListingActivity;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
@@ -29,40 +33,30 @@ public class CertifiedProductMissingReasonListener {
 
     private ErrorMessageUtil errorMessageUtil;
     private CertifiedProductDetailsManager cpdManager;
-    private ListingQuestionableActivityProvider listingQuestionableActivityProvider;
+    private Updated2011EditionListingActivity updated2011EditionListingActivity;
+    private Updated2014EditionListingActivity updated2014EditionListingActivity;
+    private DeletedCqmsActivity deletedCqmsActivity;
+    private DeletedCertificationsActivity deletedCertificationsActivity;
+    private UpdateCurrentCertificationStatusActivity updatedCurrentCertificationStatusActivity;
 
-    /**
-     * Autowired constructor for dependency injection.
-     *
-     * @param errorMessageUtil
-     *            - Error message utility class
-     * @param cpdManager
-     *            - CertifiedProductDetailsManager
-     * @param listingDao
-     *            - CertifiedProductDAO
-     * @param listingQuestionableActivityProvider
-     *            - ListingQuestionableActivityProvider
-     */
     @Autowired
-    public CertifiedProductMissingReasonListener(final ErrorMessageUtil errorMessageUtil,
-            final CertifiedProductDetailsManager cpdManager, final CertifiedProductDAO listingDao,
-            final ListingQuestionableActivityProvider listingQuestionableActivityProvider) {
+    public CertifiedProductMissingReasonListener(ErrorMessageUtil errorMessageUtil,
+            CertifiedProductDetailsManager cpdManager, final CertifiedProductDAO listingDao,
+            Updated2011EditionListingActivity updated2011EditionListingActivity,
+            Updated2014EditionListingActivity updated2014EditionListingActivity,
+            DeletedCqmsActivity deletedCqmsActivity,
+            DeletedCertificationsActivity deletedCertificationsActivity,
+            UpdateCurrentCertificationStatusActivity updatedCurrentCertificationStatusActivity) {
 
         this.errorMessageUtil = errorMessageUtil;
         this.cpdManager = cpdManager;
-        this.listingQuestionableActivityProvider = listingQuestionableActivityProvider;
+        this.updated2011EditionListingActivity = updated2011EditionListingActivity;
+        this.updated2014EditionListingActivity = updated2014EditionListingActivity;
+        this.deletedCqmsActivity = deletedCqmsActivity;
+        this.deletedCertificationsActivity = deletedCertificationsActivity;
+        this.updatedCurrentCertificationStatusActivity = updatedCurrentCertificationStatusActivity;
     }
 
-    /**
-     * Looks for reason for listing update if required.
-     *
-     * @param updateRequest
-     *            the listing update object
-     * @throws EntityRetrievalException
-     *             if the listing cannot be found
-     * @throws MissingReasonException
-     *             if a reason was required but is not found
-     */
     @Before("execution(* gov.healthit.chpl.manager.CertifiedProductManager+.update(..)) && args(.., updateRequest)")
     public void checkReasonProvidedIfRequiredOnListingUpdate(final ListingUpdateRequest updateRequest)
             throws EntityRetrievalException, MissingReasonException {
@@ -70,34 +64,37 @@ public class CertifiedProductMissingReasonListener {
         CertifiedProductSearchDetails origListing = cpdManager.getCertifiedProductDetails(newListing.getId());
         List<QuestionableActivityListingDTO> activities;
 
-        QuestionableActivityListingDTO activity = listingQuestionableActivityProvider
-                .check2011EditionUpdated(origListing, newListing);
-        if (activity != null && StringUtils.isEmpty(updateRequest.getReason())) {
+        activities = updated2011EditionListingActivity.check(origListing, newListing);
+                if (activities != null
+                        && activities.size() > 0
+                        && StringUtils.isEmpty(updateRequest.getReason())) {
             throw new MissingReasonException(errorMessageUtil
                     .getMessage("listing.reasonRequired", "updating a 2011 Edition Certified Product"));
         }
 
-        activity = listingQuestionableActivityProvider
-                .check2014EditionUpdated(origListing, newListing);
-        if (activity != null && StringUtils.isEmpty(updateRequest.getReason())) {
+        activities = updated2014EditionListingActivity.check(origListing, newListing);
+        if (activities != null
+                && activities.size() > 0
+                && StringUtils.isEmpty(updateRequest.getReason())) {
             throw new MissingReasonException(errorMessageUtil
                     .getMessage("listing.reasonRequired", "updating a 2014 Edition Certified Product"));
         }
 
-        activities = listingQuestionableActivityProvider.checkCqmsRemoved(origListing, newListing);
+        activities = deletedCqmsActivity.check(origListing, newListing);
         if (activities.size() > 0 && StringUtils.isEmpty(updateRequest.getReason())) {
             throw new MissingReasonException(errorMessageUtil
                     .getMessage("listing.reasonRequired", "removing a Clinical Quality Measure"));
         }
 
-        activities = listingQuestionableActivityProvider.checkCertificationsRemoved(origListing, newListing);
+        activities = deletedCertificationsActivity.check(origListing, newListing);
         if (activities.size() > 0 && StringUtils.isEmpty(updateRequest.getReason())) {
             throw new MissingReasonException(errorMessageUtil
                     .getMessage("listing.reasonRequired", "removing a Certification Criteria"));
         }
 
-        activity = listingQuestionableActivityProvider.checkCertificationStatusUpdated(origListing, newListing);
-        if (activity != null
+        activities = updatedCurrentCertificationStatusActivity.check(origListing, newListing);
+        if (activities != null
+                && activities.size() > 0
                 && newListing.getCurrentStatus().getStatus().getName().toUpperCase(Locale.ENGLISH).equals(
                         CertificationStatusType.Active.getName().toUpperCase(Locale.ENGLISH))
                 && StringUtils.isEmpty(updateRequest.getReason())) {
@@ -105,5 +102,4 @@ public class CertifiedProductMissingReasonListener {
                     .getMessage("listing.reasonRequired", "changing Certification Status from anything to \"Active\""));
         }
     }
-
 }
