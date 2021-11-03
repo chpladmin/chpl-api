@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -12,6 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
@@ -48,13 +50,15 @@ public class ResourcePermissions {
     private TestingLabDAO atlDAO;
     private UserDAO userDAO;
     private DeveloperDAO developerDAO;
+    private FF4j ff4j;
 
     @SuppressWarnings({"checkstyle:parameternumber"})
     @Autowired
     public ResourcePermissions(UserCertificationBodyMapDAO userCertificationBodyMapDAO,
             UserDeveloperMapDAO userDeveloperMapDAO, CertificationBodyDAO acbDAO,
             UserTestingLabMapDAO userTestingLabMapDAO, TestingLabDAO atlDAO,
-            ErrorMessageUtil errorMessageUtil, UserDAO userDAO, DeveloperDAO developerDAO) {
+            ErrorMessageUtil errorMessageUtil, UserDAO userDAO, DeveloperDAO developerDAO,
+            FF4j ff4j) {
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
         this.acbDAO = acbDAO;
         this.userTestingLabMapDAO = userTestingLabMapDAO;
@@ -63,6 +67,7 @@ public class ResourcePermissions {
         this.userDAO = userDAO;
         this.developerDAO = developerDAO;
         this.userDeveloperMapDAO = userDeveloperMapDAO;
+        this.ff4j = ff4j;
     }
 
     @Transactional(readOnly = true)
@@ -358,8 +363,10 @@ public class ResourcePermissions {
         } else if (isUserRoleOncStaff()) {
             return getRoleByUserId(user.getId()).getAuthority().equalsIgnoreCase(Authority.ROLE_ONC_STAFF);
         } else if (isUserRoleAcbAdmin()) {
-            if (getRoleByUserId(user.getId()).getAuthority().equalsIgnoreCase(Authority.ROLE_DEVELOPER)) {
-                return true;
+            if (ff4j.check(FeatureList.ROLE_DEVELOPER)) {
+                if (getRoleByUserId(user.getId()).getAuthority().equalsIgnoreCase(Authority.ROLE_DEVELOPER)) {
+                    return true;
+                }
             }
             // is the user being checked on any of the same ACB(s) that the
             // current user is on?
