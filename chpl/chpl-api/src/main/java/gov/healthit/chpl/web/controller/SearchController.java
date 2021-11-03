@@ -82,14 +82,14 @@ public class SearchController {
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationBodies") @RequestParam(value = "certificationBodies", required = false, defaultValue = "") String certificationBodiesDelimited,
             @Parameter(description = "True or False if a listing has ever had surveillance or direct reviews.",
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "hasHadComplianceActivity") @RequestParam(value = "hasHadComplianceActivity", required = false, defaultValue = "") Boolean hasHadComplianceActivity,
-            @Parameter(description = "A comma-separated list of nonconformity search options applied across surveillance and direct review activity. "
+            @Parameter(description = "A comma-separated list of non-conformity search options applied across surveillance and direct review activity. "
                     + "Valid options are OPEN_NONCONFORMITY, CLOSED_NONCONFORMITY, NEVER_NONCONFORMITY,"
                     + "NOT_OPEN_NONCONFORMITY, NOT_CLOSED_NONCONFORMITY, and NOT_NEVER_NONCONFORMITY.",
-                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "nonconformityOptions") @RequestParam(value = "nonConformityOptions", required = false, defaultValue = "") String nonConformityOptionsDelimited,
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "nonConformityOptions") @RequestParam(value = "nonConformityOptions", required = false, defaultValue = "") String nonConformityOptionsDelimited,
             @Parameter(description = "Either AND or OR. Defaults to OR."
-                    + "Indicates whether a listing must have met all nonconformityOptions "
-                    + "specified or may have met any one or more of the nonconformityOptions",
-                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "nonconformityOptionsOperator") @RequestParam(value = "nonConformityOptionsOperator", required = false, defaultValue = "OR") String nonConformityOptionsOperator,
+                    + "Indicates whether a listing must have met all nonConformityOptions "
+                    + "specified or may have met any one or more of the nonConformityOptions",
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "nonConformityOptionsOperator") @RequestParam(value = "nonConformityOptionsOperator", required = false, defaultValue = "OR") String nonConformityOptionsOperator,
             @Parameter(description = "A comma-separated list of Real World Testing search options. "
                     + "Valid options are IS_ELIGIBLE, HAS_PLANS_URL, HAS_RESULTS_URL, NOT_ELIGIBLE, NO_PLANS_URL, NO_RESULTS_URL",
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "rwtOptions") @RequestParam(value = "rwtOptions", required = false, defaultValue = "") String rwtOptionsDelimited,

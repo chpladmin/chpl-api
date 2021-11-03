@@ -216,8 +216,7 @@ public class ListingSearchService {
     private boolean matchesComplianceFilter(CertifiedProductBasicSearchResult listing, ComplianceSearchFilter complianceFilter) {
         if (complianceFilter == null
                 || (complianceFilter.getHasHadComplianceActivity() == null
-                    && (complianceFilter.getNonConformityOptions() == null || complianceFilter.getNonConformityOptions().size() == 0)
-                    && complianceFilter.getNonConformityOptionsOperator() == null)) {
+                    && CollectionUtils.isEmpty(complianceFilter.getNonConformityOptions()))) {
             return true;
         }
 
@@ -280,7 +279,7 @@ public class ListingSearchService {
     }
 
     private boolean matchesRwtFilter(CertifiedProductBasicSearchResult listing, Set<RwtSearchOptions> rwtOptions, SearchSetOperator rwtOperator) {
-        if (CollectionUtils.isEmpty(rwtOptions) && rwtOperator == null) {
+        if (CollectionUtils.isEmpty(rwtOptions)) {
             return true;
         }
 

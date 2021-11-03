@@ -40,7 +40,7 @@ import lombok.extern.log4j.Log4j2;
 public class CertifiedProductSearchManager {
     private static final String CERT_STATUS_EVENT_DATE_FORMAT = "yyyy-MM-dd";
     private CertifiedProductSearchDAO searchDao;
-    private RealWorldTestingEligiblityService rwtService;
+    private RealWorldTestingEligiblityServiceFactory rwtServiceFactory;
     private DirectReviewSearchService drService;
     private DateTimeFormatter dateFormatter;
 
@@ -49,12 +49,11 @@ public class CertifiedProductSearchManager {
             RealWorldTestingEligiblityServiceFactory rwtEligibilityServiceFactory,
             DirectReviewSearchService drService) {
         this.searchDao = searchDao;
-        this.rwtService = rwtEligibilityServiceFactory.getInstance();
+        this.rwtServiceFactory = rwtEligibilityServiceFactory;
         this.drService = drService;
         this.dateFormatter = DateTimeFormatter.ofPattern(CERT_STATUS_EVENT_DATE_FORMAT);
     }
 
-    @Transactional(readOnly = true)
     @Cacheable(value = CacheNames.COLLECTIONS_LISTINGS, key = "'listings'")
     public List<CertifiedProductFlatSearchResult> getFlatListingCollection() {
         List<CertifiedProductFlatSearchResult> results = searchDao.getFlatCertifiedProducts();
@@ -64,20 +63,6 @@ public class CertifiedProductSearchManager {
             .forEach(searchResult -> populateDirectReviews(searchResult));
         Date end = new Date();
         LOGGER.info("Completed Populating Direct Review fields  for collections [ " + (end.getTime() - start.getTime()) + " ms ]");
-        LOGGER.info("Populating RWT Eligibility field for collections");
-        start = new Date();
-        results.parallelStream()
-            .filter(listing -> listing.getEdition().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()))
-            .forEach(listing -> populateRwtEligibility(listing));
-        end = new Date();
-        LOGGER.info("Completed Populating RWT Eligibility field for collections [ " + (end.getTime() - start.getTime()) + " ms ]");
-        LOGGER.info("Populating RWT Eligibility field for 2011/2014 listings for collections");
-        start = new Date();
-        results.parallelStream()
-            .filter(listing -> !listing.getEdition().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()))
-            .forEach(listing -> listing.setIsRwtEligible(false));
-        end = new Date();
-        LOGGER.info("Completed Populating RWT Eligibility field for 2011/2014 listings for collections [ " + (end.getTime() - start.getTime()) + " ms ]");
         return results;
     }
 
@@ -107,8 +92,9 @@ public class CertifiedProductSearchManager {
         return results;
     }
 
-    private void populateRwtEligibility(CertifiedProductSearchResult searchResult) {
+    private void populateRwtEligibility(CertifiedProductBasicSearchResult searchResult) {
         Date start = new Date();
+        RealWorldTestingEligiblityService rwtService = rwtServiceFactory.getInstance();
         RealWorldTestingEligibility rwtElig = rwtService.getRwtEligibilityYearForListing(searchResult.getId(), LOGGER);
         Date end = new Date();
         LOGGER.info(String.format("ListingId: %s, Elig Year %s, %s [ %s ms ]",
