@@ -65,41 +65,42 @@ public class CertifiedProductMissingReasonListener {
         List<QuestionableActivityListingDTO> activities;
 
         activities = updated2011EditionListingActivity.check(origListing, newListing);
-                if (activities != null
-                        && activities.size() > 0
-                        && StringUtils.isEmpty(updateRequest.getReason())) {
+                if (doActivitiesExist(activities) && StringUtils.isEmpty(updateRequest.getReason())) {
             throw new MissingReasonException(errorMessageUtil
                     .getMessage("listing.reasonRequired", "updating a 2011 Edition Certified Product"));
         }
 
         activities = updated2014EditionListingActivity.check(origListing, newListing);
-        if (activities != null
-                && activities.size() > 0
-                && StringUtils.isEmpty(updateRequest.getReason())) {
+        if (doActivitiesExist(activities) && StringUtils.isEmpty(updateRequest.getReason())) {
             throw new MissingReasonException(errorMessageUtil
                     .getMessage("listing.reasonRequired", "updating a 2014 Edition Certified Product"));
         }
 
         activities = deletedCqmsActivity.check(origListing, newListing);
-        if (activities.size() > 0 && StringUtils.isEmpty(updateRequest.getReason())) {
+        if (doActivitiesExist(activities) && StringUtils.isEmpty(updateRequest.getReason())) {
             throw new MissingReasonException(errorMessageUtil
                     .getMessage("listing.reasonRequired", "removing a Clinical Quality Measure"));
         }
 
         activities = deletedCertificationsActivity.check(origListing, newListing);
-        if (activities.size() > 0 && StringUtils.isEmpty(updateRequest.getReason())) {
+        if (doActivitiesExist(activities) && StringUtils.isEmpty(updateRequest.getReason())) {
             throw new MissingReasonException(errorMessageUtil
                     .getMessage("listing.reasonRequired", "removing a Certification Criteria"));
         }
 
         activities = updatedCurrentCertificationStatusActivity.check(origListing, newListing);
-        if (activities != null
-                && activities.size() > 0
+        if (doActivitiesExist(activities)
                 && newListing.getCurrentStatus().getStatus().getName().toUpperCase(Locale.ENGLISH).equals(
                         CertificationStatusType.Active.getName().toUpperCase(Locale.ENGLISH))
                 && StringUtils.isEmpty(updateRequest.getReason())) {
             throw new MissingReasonException(errorMessageUtil
                     .getMessage("listing.reasonRequired", "changing Certification Status from anything to \"Active\""));
         }
+    }
+
+    private Boolean doActivitiesExist(List<QuestionableActivityListingDTO> activities) {
+        return activities != null
+                && activities.size() > 0
+                && activities.get(0) != null;
     }
 }
