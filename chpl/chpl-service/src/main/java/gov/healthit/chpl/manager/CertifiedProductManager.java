@@ -16,6 +16,7 @@ import java.util.Objects;
 
 import javax.persistence.EntityNotFoundException;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
@@ -1060,8 +1061,7 @@ public class CertifiedProductManager extends SecuredManager {
         curesUpdateDao.create(curesEvent);
 
         pcpManager.confirm(pendingCp.getCertificationBodyId(), pendingCp.getId());
-        //TODO: also calculate for children?
-        //rwtCachingService.calculateRwtEligibility(newCertifiedProduct.getId());
+        rwtCachingService.calculateRwtEligibility(newCertifiedProduct.getId());
         return newCertifiedProduct;
     }
 
@@ -1165,7 +1165,7 @@ public class CertifiedProductManager extends SecuredManager {
         CertifiedProductDTO dtoToUpdate = new CertifiedProductDTO(updatedListing);
         CertifiedProductDTO result = cpDao.update(dtoToUpdate);
         updateListingsChildData(existingListing, updatedListing);
-
+        updateRwtEligibilityForListingAndChildren(updatedListing);
         // Log the activity
         logCertifiedProductUpdateActivity(existingListing, updateRequest.getReason());
 
@@ -1206,6 +1206,16 @@ public class CertifiedProductManager extends SecuredManager {
                 existingListing.getCertificationResults(), updatedListing.getCertificationResults());
         copyCriterionIdsToCqmMappings(updatedListing);
         updateCqms(updatedListing, existingListing.getCqmResults(), updatedListing.getCqmResults());
+    }
+
+    private void updateRwtEligibilityForListingAndChildren(CertifiedProductSearchDetails updatedListing) {
+        rwtCachingService.calculateRwtEligibility(updatedListing.getId());
+        if (updatedListing.getIcs() != null
+                && !CollectionUtils.isEmpty(updatedListing.getIcs().getChildren())) {
+            for (CertifiedProduct child : updatedListing.getIcs().getChildren()) {
+                rwtCachingService.calculateRwtEligibility(child.getId());
+            }
+        }
     }
 
     private void performSecondaryActionsBasedOnStatusChanges(CertifiedProductSearchDetails existingListing,
@@ -2436,7 +2446,6 @@ public class CertifiedProductManager extends SecuredManager {
         }
 
         CertificationStatusEventPair(CertificationStatusEvent orig, CertificationStatusEvent updated) {
-
             this.orig = orig;
             this.updated = updated;
         }
