@@ -5,13 +5,14 @@ import java.util.List;
 
 import javax.validation.ValidationException;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
-import gov.healthit.chpl.domain.CertificationResultTestStandard;
+import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 
@@ -51,7 +52,7 @@ public class CertificationResultUploadHandler {
                 .hasAdditionalSoftwareStr(parseHasAdditionalSoftwareStr(certHeadingRecord, certResultRecords))
                 .privacySecurityFramework(parsePrivacyAndSecurityFramework(certHeadingRecord, certResultRecords))
                 .testFunctionality(parseTestFunctionalities(certHeadingRecord, certResultRecords))
-                .testStandards(parseTestStandards(certHeadingRecord, certResultRecords))
+                .optionalStandards(parseOptionalStandards(certHeadingRecord, certResultRecords))
                 .additionalSoftware(additionalSoftwareHandler.handle(certHeadingRecord, certResultRecords))
                 .testDataUsed(testDataHandler.handle(certHeadingRecord, certResultRecords))
                 .testProcedures(testProcedureHandler.handle(certHeadingRecord, certResultRecords))
@@ -167,19 +168,19 @@ public class CertificationResultUploadHandler {
         return testFunctionalities;
     }
 
-    private List<CertificationResultTestStandard> parseTestStandards(
+    private List<CertificationResultOptionalStandard> parseOptionalStandards(
             CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
-        List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();
-        List<String> testStandardNames = uploadUtil.parseMultiRowFieldWithoutEmptyValues(
-                Headings.TEST_STANDARD, certHeadingRecord, certResultRecords);
-        if (testStandardNames != null && testStandardNames.size() > 0) {
-            testStandardNames.stream().forEach(testStandardName -> {
-                CertificationResultTestStandard testStandard = CertificationResultTestStandard.builder()
-                        .testStandardName(testStandardName)
-                        .build();
-                testStandards.add(testStandard);
-            });
+        List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
+            List<String> optionalStandardNames = uploadUtil.parseMultiRowFieldWithoutEmptyValues(
+                    Headings.OPTIONAL_STANDARD, certHeadingRecord, certResultRecords);
+            if (!CollectionUtils.isEmpty(optionalStandardNames)) {
+                optionalStandardNames.stream().forEach(optionalStandardName -> {
+                    CertificationResultOptionalStandard optionalStandard = CertificationResultOptionalStandard.builder()
+                            .citation(optionalStandardName)
+                            .build();
+                    optionalStandards.add(optionalStandard);
+                });
         }
-        return testStandards;
+        return optionalStandards;
     }
 }

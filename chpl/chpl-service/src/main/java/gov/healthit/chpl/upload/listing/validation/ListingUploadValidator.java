@@ -146,10 +146,10 @@ public class ListingUploadValidator {
         additionalSoftwareCodeReviewer.review(listing);
         certifiedDateCodeReviewer.review(listing);
         certDateReviewer.review(listing);
+        duplicateDataReviewer.review(listing);
         qmsReviewer.review(listing);
         accStdReviewer.review(listing);
         measureReviewer.review(listing);
-        duplicateDataReviewer.review(listing);
         urlReviewer.review(listing);
         fieldLengthReviewer.review(listing);
         unsupportedCharacterReviewer.review(listing);

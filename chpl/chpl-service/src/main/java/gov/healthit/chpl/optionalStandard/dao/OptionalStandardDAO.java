@@ -51,8 +51,10 @@ public class OptionalStandardDAO extends BaseDAOImpl {
     private OptionalStandardEntity getEntityById(Long id) {
         OptionalStandardEntity entity = null;
 
-        Query query = entityManager.createQuery("SELECT os " + "FROM OptionalStandardEntity os "
-                + "WHERE (NOT deleted = true) " + "AND (os.id = :entityid) ", OptionalStandardEntity.class);
+        Query query = entityManager.createQuery("SELECT os "
+                + "FROM OptionalStandardEntity os "
+                + "WHERE (NOT deleted = true) "
+                + "AND (os.id = :entityid) ", OptionalStandardEntity.class);
         query.setParameter("entityid", id);
         List<OptionalStandardEntity> result = query.getResultList();
 
@@ -63,8 +65,10 @@ public class OptionalStandardDAO extends BaseDAOImpl {
     }
 
     private List<OptionalStandardEntity> getEntitiesByCitation(String citation) {
-        String osQuery = "SELECT os " + "FROM OptionalStandardEntity os "
-                + "WHERE os.deleted <> true " + "AND UPPER(os.citation) = :citation ";
+        String osQuery = "SELECT os "
+                + "FROM OptionalStandardEntity os "
+                + "WHERE os.deleted <> true "
+                + "AND UPPER(os.citation) = :citation ";
         Query query = entityManager.createQuery(osQuery, OptionalStandardEntity.class);
         query.setParameter("citation", citation.toUpperCase());
 
