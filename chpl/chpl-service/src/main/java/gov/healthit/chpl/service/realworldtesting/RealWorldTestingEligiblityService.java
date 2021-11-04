@@ -13,7 +13,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
-
 import gov.healthit.chpl.activity.history.ListingActivityUtil;
 import gov.healthit.chpl.activity.history.explorer.RealWorldTestingEligibilityActivityExplorer;
 import gov.healthit.chpl.activity.history.query.RealWorldTestingEligibilityQuery;
@@ -54,11 +53,6 @@ public class RealWorldTestingEligiblityService {
         this.eligibleCriteriaKeys = eligibleCriteriaKeys;
         this.rwtProgramStartDate = rwtProgramStartDate;
         this.rwtProgramFirstEligibilityYear = rwtProgramFirstEligibilityYear;
-    }
-
-    public boolean isRwtEligible(Long listingId, Logger logger) {
-        RealWorldTestingEligibility eligibility = getRwtEligibilityYearForListing(listingId, logger);
-        return eligibility != null && eligibility.getEligibilityYear().isPresent();
     }
 
     public RealWorldTestingEligibility getRwtEligibilityYearForListing(Long listingId, Logger logger) {

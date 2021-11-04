@@ -31,8 +31,7 @@ import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.search.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.service.DirectReviewSearchService;
 import gov.healthit.chpl.service.RealWorldTestingEligibility;
-import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityService;
-import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityServiceFactory;
+import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityCachingService;
 import lombok.extern.log4j.Log4j2;
 
 @Service
@@ -40,16 +39,16 @@ import lombok.extern.log4j.Log4j2;
 public class CertifiedProductSearchManager {
     private static final String CERT_STATUS_EVENT_DATE_FORMAT = "yyyy-MM-dd";
     private CertifiedProductSearchDAO searchDao;
-    private RealWorldTestingEligiblityServiceFactory rwtServiceFactory;
+    private RealWorldTestingEligiblityCachingService rwtService;
     private DirectReviewSearchService drService;
     private DateTimeFormatter dateFormatter;
 
     @Autowired
     public CertifiedProductSearchManager(CertifiedProductSearchDAO searchDao,
-            RealWorldTestingEligiblityServiceFactory rwtEligibilityServiceFactory,
+            RealWorldTestingEligiblityCachingService rwtService,
             DirectReviewSearchService drService) {
         this.searchDao = searchDao;
-        this.rwtServiceFactory = rwtEligibilityServiceFactory;
+        this.rwtService = rwtService;
         this.drService = drService;
         this.dateFormatter = DateTimeFormatter.ofPattern(CERT_STATUS_EVENT_DATE_FORMAT);
     }
@@ -93,15 +92,7 @@ public class CertifiedProductSearchManager {
     }
 
     private void populateRwtEligibility(CertifiedProductBasicSearchResult searchResult) {
-        Date start = new Date();
-        RealWorldTestingEligiblityService rwtService = rwtServiceFactory.getInstance();
-        RealWorldTestingEligibility rwtElig = rwtService.getRwtEligibilityYearForListing(searchResult.getId(), LOGGER);
-        Date end = new Date();
-        LOGGER.info(String.format("ListingId: %s, Elig Year %s, %s [ %s ms ]",
-                searchResult.getId(),
-                rwtElig.getEligibilityYear().isPresent() ? rwtElig.getEligibilityYear().get().toString() : "N/A",
-                rwtElig.getReason().getReason(),
-                (end.getTime() - start.getTime())));
+        RealWorldTestingEligibility rwtElig = rwtService.getRwtEligibility(searchResult.getId());
         searchResult.setIsRwtEligible(rwtElig.getEligibilityYear().isPresent());
     }
 
