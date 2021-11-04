@@ -60,6 +60,7 @@ public class AuthenticationManager {
         if (user != null && user.isPasswordResetRequired()) {
             throw new UserRetrievalException(msgUtil.getMessage("auth.changePasswordRequired"));
         }
+        logWhenUsername(credentials, user);
         return jwt;
     }
 
@@ -222,5 +223,11 @@ public class AuthenticationManager {
     public String unimpersonateUser(User user) throws JWTCreationException, UserRetrievalException,
     MultipleUserAccountsException {
         return getJWT(getUserByNameOrEmail(user.getSubjectName()));
+    }
+
+    private void logWhenUsername(LoginCredentials creds, UserDTO user) {
+        if (!creds.getUserName().equals(user.getEmail())) {
+            LOGGER.warn(String.format("The user with email %s logged in using the username: %s ", user.getEmail(), creds.getUserName()));
+        }
     }
 }
