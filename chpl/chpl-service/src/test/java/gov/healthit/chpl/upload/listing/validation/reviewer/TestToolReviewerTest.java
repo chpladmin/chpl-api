@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -27,7 +28,7 @@ import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class TestToolReviewerTest {
-    private static final String TEST_TOOL_NOT_APPLICABLE = "Test tools are not applicable for the criterion %s.";
+    private static final String TEST_TOOL_NOT_APPLICABLE = "Test tools are not applicable for the criterion %s. They have been removed.";
     private static final String TEST_TOOL_NOT_FOUND_REMOVED = "Criteria %s contains an invalid test tool '%s'. It has been removed from the pending listing.";
     private static final String TEST_TOOLS_MISSING = "Test tools are required for certification criteria %s.";
     private static final String MISSING_TEST_TOOL_NAME = "There was no test tool name found for certification criteria %s.";
@@ -174,7 +175,7 @@ public class TestToolReviewerTest {
     }
 
     @Test
-    public void review_criteriaDoesNotSupportTestTools_hasError() {
+    public void review_criteriaDoesNotSupportTestTools_hasWarningAndTestToolsSetNull() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(true);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
@@ -198,11 +199,12 @@ public class TestToolReviewerTest {
                 .build();
         reviewer.review(listing);
 
-        assertEquals(1, listing.getCertificationResults().get(0).getTestToolsUsed().size());
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(
                 String.format(TEST_TOOL_NOT_APPLICABLE, "170.315 (a)(1)")));
+        assertNull(listing.getCertificationResults().get(0).getTestToolsUsed());
     }
 
     @Test

@@ -230,7 +230,7 @@ public class CertificationResult implements Serializable {
      */
     @XmlElementWrapper(name = "optionalStandards", nillable = true, required = false)
     @XmlElement(name = "optionalStandard")
-    @Singular
+    @Builder.Default
     private List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
 
     /**
@@ -279,11 +279,11 @@ public class CertificationResult implements Serializable {
         this.testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
         this.testToolsUsed = new ArrayList<CertificationResultTestTool>();
         this.testStandards = new ArrayList<CertificationResultTestStandard>();
+        this.optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
         this.additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
         this.testDataUsed = new ArrayList<CertificationResultTestData>();
         this.conformanceMethods = new ArrayList<CertificationResultConformanceMethod>();
         this.testProcedures = new ArrayList<CertificationResultTestProcedure>();
-        this.testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
         this.svaps = new ArrayList<CertificationResultSvap>();
     }
 

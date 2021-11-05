@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -21,7 +22,7 @@ import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class AdditionalSoftwareReviewerTest {
-    private static final String ADDITIONAL_SOFTWARE_NOT_APPLICABLE = "Additional Software is not applicable for the criterion %s.";
+    private static final String ADDITIONAL_SOFTWARE_NOT_APPLICABLE = "Additional Software is not applicable for the criterion %s. It has been removed.";
     private static final String HAS_ADDITIONAL_SOFTWARE_BUT_SHOULD_NOT = "Criteria %s contains additional software but it is not expected.";
     private static final String NO_ADDITIONAL_SOFTWARE_BUT_SHOULD = "Criteria %s contains no additional software but it is expected.";
     private static final String ADDITIONAL_SOFTWARE_INVALID = "No CHPL product was found matching additional software %s for %s.";
@@ -37,7 +38,7 @@ public class AdditionalSoftwareReviewerTest {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         resourcePermissions = Mockito.mock(ResourcePermissions.class);
         certResultRules = Mockito.mock(CertificationResultRules.class);
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.additionalSoftwareFrameworkNotApplicable"),
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.additionalSoftwareNotApplicable"),
                 ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(ADDITIONAL_SOFTWARE_NOT_APPLICABLE, i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.hasAdditionalSoftwareMismatch"),
@@ -98,7 +99,7 @@ public class AdditionalSoftwareReviewerTest {
     }
 
     @Test
-    public void review_additionalSoftwareNotAllowedForCriteria_hasError() {
+    public void review_additionalSoftwareNotAllowedForCriteria_hasWarningAdditionalSoftwareSetNull() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
             .thenReturn(false);
 
@@ -120,10 +121,11 @@ public class AdditionalSoftwareReviewerTest {
                 .build();
         reviewer.review(listing);
 
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(
+        assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+        assertTrue(listing.getWarningMessages().contains(
                 String.format(ADDITIONAL_SOFTWARE_NOT_APPLICABLE, "170.315 (a)(1)")));
+        assertNull(listing.getCertificationResults().get(0).getAdditionalSoftware());
     }
 
     @Test

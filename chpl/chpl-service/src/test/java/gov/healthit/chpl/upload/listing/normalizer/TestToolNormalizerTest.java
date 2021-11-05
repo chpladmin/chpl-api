@@ -14,10 +14,14 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.dao.TestToolDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.TestTool;
+import gov.healthit.chpl.domain.TestToolCriteriaMap;
 import gov.healthit.chpl.dto.TestToolDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public class TestToolNormalizerTest {
 
@@ -27,6 +31,27 @@ public class TestToolNormalizerTest {
     @Before
     public void setup() {
         testToolDao = Mockito.mock(TestToolDAO.class);
+        List<TestToolCriteriaMap> allowedTestTools = new ArrayList<TestToolCriteriaMap>();
+        allowedTestTools.add(TestToolCriteriaMap.builder()
+                .criterion(CertificationCriterion.builder()
+                        .id(1L)
+                        .number("170.315 (a)(1)")
+                        .build())
+                .testTool(new TestTool(1L, "TT1"))
+                .build());
+        allowedTestTools.add(TestToolCriteriaMap.builder()
+                .criterion(CertificationCriterion.builder()
+                        .id(1L)
+                        .number("170.315 (a)(1)")
+                        .build())
+                .testTool(new TestTool(2L, "TT2"))
+                .build());
+
+        try {
+            Mockito.when(testToolDao.getAllTestToolCriteriaMap()).thenReturn(allowedTestTools);
+        } catch (EntityRetrievalException e) {
+        }
+
         normalizer = new TestToolNormalizer(testToolDao);
     }
 
@@ -115,5 +140,35 @@ public class TestToolNormalizerTest {
         normalizer.normalize(listing);
         assertEquals(1, listing.getCertificationResults().get(0).getTestToolsUsed().size());
         assertNull(listing.getCertificationResults().get(0).getTestToolsUsed().get(0).getTestToolId());
+    }
+
+    @Test
+    public void normalize_criterionHasAllowedTestTools_addsAllowedTestToolsToCertificationResult() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                    .id(1L)
+                                    .number("170.315 (a)(1)")
+                                    .build())
+                        .testToolsUsed(new ArrayList<CertificationResultTestTool>())
+                        .build())
+                .build();
+        normalizer.normalize(listing);
+        assertEquals(2, listing.getCertificationResults().get(0).getAllowedTestTools().size());
+    }
+
+    @Test
+    public void normalize_criterionHasNoAllowedTestTools_noAllowedTestToolsAdded() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                    .id(2L)
+                                    .number("170.315 (a)(2)")
+                                    .build())
+                        .testToolsUsed(new ArrayList<CertificationResultTestTool>())
+                        .build())
+                .build();
+        normalizer.normalize(listing);
+        assertEquals(0, listing.getCertificationResults().get(0).getAllowedTestTools().size());
     }
 }
