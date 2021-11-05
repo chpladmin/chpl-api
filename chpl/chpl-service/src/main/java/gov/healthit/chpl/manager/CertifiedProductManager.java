@@ -1212,6 +1212,7 @@ public class CertifiedProductManager extends SecuredManager {
         rwtCachingService.calculateRwtEligibility(updatedListing.getId());
         if (updatedListing.getIcs() != null
                 && !CollectionUtils.isEmpty(updatedListing.getIcs().getChildren())) {
+            //TODO: this needs to recursively go through the children in case they also have children
             for (CertifiedProduct child : updatedListing.getIcs().getChildren()) {
                 rwtCachingService.calculateRwtEligibility(child.getId());
             }
