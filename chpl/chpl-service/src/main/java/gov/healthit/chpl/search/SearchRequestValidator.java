@@ -36,7 +36,7 @@ public class SearchRequestValidator {
     private DirectReviewSearchService drService;
     private ErrorMessageUtil msgUtil;
     private DateTimeFormatter dateFormatter;
-    private Set<String> allowedCertificationEditions;
+    private Set<String> allowedDerivedCertificationEditions;
 
     @Autowired
     public SearchRequestValidator(DimensionalDataManager dimensionalDataManager,
@@ -46,16 +46,18 @@ public class SearchRequestValidator {
         this.drService = drService;
         this.msgUtil = msgUtil;
         dateFormatter = DateTimeFormatter.ofPattern(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
-        allowedCertificationEditions = Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2011.getYear(),
+        allowedDerivedCertificationEditions = Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2011.getYear(),
                 CertificationEditionConcept.CERTIFICATION_EDITION_2014.getYear(),
                 CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear(),
                 CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear() + " Cures Update")
+                .map(editionName -> editionName.toUpperCase())
                 .collect(Collectors.toSet());
     }
 
     public void validate(SearchRequest request) throws ValidationException {
         Set<String> errors = new LinkedHashSet<String>();
         errors.addAll(getCertificationStatusErrors(request.getCertificationStatuses()));
+        errors.addAll(getDerivedCertificationEditionErrors(request.getDerivedCertificationEditions()));
         errors.addAll(getCertificationEditionErrors(request.getCertificationEditions()));
         errors.addAll(getCertificationCriteriaErrors(request));
         errors.addAll(getCertificationCriteriaOperatorErrors(request));
@@ -92,13 +94,31 @@ public class SearchRequestValidator {
             .collect(Collectors.toSet());
     }
 
+    private Set<String> getDerivedCertificationEditionErrors(Set<String> derivedCertificationEditions) {
+        if (CollectionUtils.isEmpty(derivedCertificationEditions)) {
+            return Collections.emptySet();
+        }
+
+        return derivedCertificationEditions.stream()
+            .filter(certificationEdition -> !isInSet(certificationEdition.toUpperCase(), allowedDerivedCertificationEditions))
+            .map(certificationEdition -> msgUtil.getMessage("search.derivedCertificationEdition.invalid", certificationEdition))
+            .collect(Collectors.toSet());
+    }
+
     private Set<String> getCertificationEditionErrors(Set<String> certificationEditions) {
         if (certificationEditions == null || certificationEditions.size() == 0) {
             return Collections.emptySet();
         }
 
+        Set<String> allYears = new LinkedHashSet<String>();
+        Set<KeyValueModel> allCertificationEditions = dimensionalDataManager.getEditionNames(false);
+        if (!CollectionUtils.isEmpty(allCertificationEditions)) {
+            allYears.addAll(allCertificationEditions.stream()
+                    .map(keyValueModel -> keyValueModel.getName().toUpperCase())
+                    .collect(Collectors.toList()));
+        }
         return certificationEditions.stream()
-            .filter(certificationEdition -> !isInSet(certificationEdition, allowedCertificationEditions))
+            .filter(certificationEdition -> !isInSet(certificationEdition.toUpperCase(), allYears))
             .map(certificationEdition -> msgUtil.getMessage("search.certificationEdition.invalid", certificationEdition))
             .collect(Collectors.toSet());
     }

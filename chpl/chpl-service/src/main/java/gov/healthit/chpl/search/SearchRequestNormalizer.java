@@ -16,6 +16,7 @@ public class SearchRequestNormalizer {
 
     public void normalize(SearchRequest request) {
         normalizeCertificationStatuses(request);
+        normalizeDerivedCertificationEditions(request);
         normalizeCertificationEditions(request);
         normalizeCertificationCriterionIds(request);
         normalizeCertificationCriterionOperator(request);
@@ -39,11 +40,22 @@ public class SearchRequestNormalizer {
         }
     }
 
+    private void normalizeDerivedCertificationEditions(SearchRequest request) {
+        if (!CollectionUtils.isEmpty(request.getDerivedCertificationEditions())) {
+            request.setDerivedCertificationEditions(request.getDerivedCertificationEditions().stream()
+                    .filter(certificationEdition -> !StringUtils.isBlank(certificationEdition))
+                    .map(certificationEdition -> certificationEdition.trim())
+                    .map(certificationEdition -> certificationEdition.toUpperCase())
+                    .collect(Collectors.toSet()));
+        }
+    }
+
     private void normalizeCertificationEditions(SearchRequest request) {
-        if (request.getCertificationEditions() != null && request.getCertificationEditions().size() > 0) {
+        if (!CollectionUtils.isEmpty(request.getCertificationEditions())) {
             request.setCertificationEditions(request.getCertificationEditions().stream()
                     .filter(certificationEdition -> !StringUtils.isBlank(certificationEdition))
                     .map(certificationEdition -> certificationEdition.trim())
+                    .map(certificationEdition -> certificationEdition.toUpperCase())
                     .collect(Collectors.toSet()));
         }
     }

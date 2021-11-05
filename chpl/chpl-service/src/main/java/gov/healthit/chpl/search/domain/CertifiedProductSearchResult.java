@@ -206,7 +206,7 @@ public class CertifiedProductSearchResult implements Serializable {
     }
 
     @JsonIgnore
-    public String getEffectiveEdition() {
+    public String getDerivedEdition() {
         return getEdition() + (BooleanUtils.isTrue(getCuresUpdate()) ? CertificationEdition.CURES_SUFFIX : "");
     }
 }

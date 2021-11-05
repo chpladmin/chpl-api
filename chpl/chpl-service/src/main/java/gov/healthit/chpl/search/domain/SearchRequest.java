@@ -27,6 +27,8 @@ public class SearchRequest implements Serializable {
     @Builder.Default
     private Set<String> certificationStatuses = new HashSet<String>();
     @Builder.Default
+    private Set<String> derivedCertificationEditions = new HashSet<String>();
+    @Builder.Default
     private Set<String> certificationEditions = new HashSet<String>();
     @Builder.Default
     @JsonIgnore

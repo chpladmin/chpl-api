@@ -37,7 +37,7 @@ import lombok.extern.log4j.Log4j2;
 @NoArgsConstructor
 @Log4j2
 public class ListingSearchService {
-    private static final String CURES_UPDATE_EDITION = "2015 Cures Update";
+    private static final String CURES_UPDATE_EDITION = "2015 CURES UPDATE";
     private SearchRequestValidator searchRequestValidator;
     private SearchRequestNormalizer searchRequestNormalizer;
     private CertifiedProductSearchManager cpSearchManager;
@@ -65,6 +65,7 @@ public class ListingSearchService {
             .filter(listing -> matchesSearchTerm(listing, searchRequest.getSearchTerm()))
             .filter(listing -> matchesAcbNames(listing, searchRequest.getCertificationBodies()))
             .filter(listing -> matchesCertificationStatuses(listing, searchRequest.getCertificationStatuses()))
+            .filter(listing -> matchesDerivedCertificationEditions(listing, searchRequest.getDerivedCertificationEditions()))
             .filter(listing -> matchesCertificationEditions(listing, searchRequest.getCertificationEditions()))
             .filter(listing -> matchesDeveloper(listing, searchRequest.getDeveloper()))
             .filter(listing -> matchesProduct(listing, searchRequest.getProduct()))
@@ -126,23 +127,31 @@ public class ListingSearchService {
             return true;
         }
 
-        return certificationEditions.stream()
-            .anyMatch(edition -> matchesCertificationEdition(listing, edition));
+        return !StringUtils.isEmpty(listing.getEdition()) && certificationEditions.contains(listing.getEdition());
     }
 
-    private boolean matchesCertificationEdition(CertifiedProductBasicSearchResult listing, String certificationEdition) {
+    private boolean matchesDerivedCertificationEditions(CertifiedProductBasicSearchResult listing, Set<String> derivedCertificationEditions) {
+        if (CollectionUtils.isEmpty(derivedCertificationEditions)) {
+            return true;
+        }
+
+        return derivedCertificationEditions.stream()
+            .anyMatch(edition -> matchesDerivedCertificationEdition(listing, edition));
+    }
+
+    private boolean matchesDerivedCertificationEdition(CertifiedProductBasicSearchResult listing, String derivedCertificationEdition) {
         boolean editionMatch = false;
-        if (certificationEdition.equals(CURES_UPDATE_EDITION)) {
+        if (derivedCertificationEdition.equalsIgnoreCase(CURES_UPDATE_EDITION)) {
             editionMatch = !StringUtils.isEmpty(listing.getEdition())
                     && listing.getEdition().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())
                     && BooleanUtils.isTrue(listing.getCuresUpdate());
-        } else if (certificationEdition.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())) {
+        } else if (derivedCertificationEdition.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())) {
             editionMatch = !StringUtils.isEmpty(listing.getEdition())
                     && listing.getEdition().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())
                     && BooleanUtils.isFalse(listing.getCuresUpdate());
         } else {
             editionMatch = !StringUtils.isEmpty(listing.getEdition())
-                    && certificationEdition.equals(listing.getEdition());
+                    && derivedCertificationEdition.equals(listing.getEdition());
         }
         return editionMatch;
     }
@@ -396,6 +405,9 @@ public class ListingSearchService {
         }
 
         switch (orderBy) {
+            case DERIVED_EDITION:
+                listings.sort(new DerivedEditionComparator(descending));
+                break;
             case EDITION:
                 listings.sort(new EditionComparator(descending));
                 break;
@@ -423,6 +435,23 @@ public class ListingSearchService {
         }
     }
 
+    private class DerivedEditionComparator implements Comparator<CertifiedProductBasicSearchResult> {
+        private boolean descending = false;
+
+        DerivedEditionComparator(boolean descending) {
+            this.descending = descending;
+        }
+
+        @Override
+        public int compare(CertifiedProductBasicSearchResult listing1, CertifiedProductBasicSearchResult listing2) {
+            if (StringUtils.isAnyEmpty(listing1.getEdition(), listing2.getEdition())) {
+                return 0;
+            }
+            int sortFactor = descending ? -1 : 1;
+            return (listing1.getDerivedEdition().compareTo(listing2.getDerivedEdition())) * sortFactor;
+        }
+    }
+
     private class EditionComparator implements Comparator<CertifiedProductBasicSearchResult> {
         private boolean descending = false;
 
@@ -436,7 +465,7 @@ public class ListingSearchService {
                 return 0;
             }
             int sortFactor = descending ? -1 : 1;
-            return (listing1.getEffectiveEdition().compareTo(listing2.getEffectiveEdition())) * sortFactor;
+            return (listing1.getEdition().compareTo(listing2.getEdition())) * sortFactor;
         }
     }
 

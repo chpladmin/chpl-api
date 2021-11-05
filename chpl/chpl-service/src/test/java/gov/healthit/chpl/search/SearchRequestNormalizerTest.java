@@ -62,6 +62,21 @@ public class SearchRequestNormalizerTest {
     }
 
     @Test
+    public void normalize_derivedCertificationEditions_trimsCorrectly() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .derivedCertificationEditions(Stream.of("2011 ", " 2015 ", "", " ", null, "2014", " 2015 Cures Update  ").collect(Collectors.toSet()))
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(4, searchRequest.getDerivedCertificationEditions().size());
+        assertTrue(searchRequest.getDerivedCertificationEditions().contains("2011"));
+        assertTrue(searchRequest.getDerivedCertificationEditions().contains("2015"));
+        assertTrue(searchRequest.getDerivedCertificationEditions().contains("2014"));
+        assertTrue(searchRequest.getDerivedCertificationEditions().contains("2015 CURES UPDATE"));
+    }
+
+
+    @Test
     public void normalize_certificationCriteriaIdStrings_trimsCorrectly() {
         SearchRequest searchRequest = SearchRequest.builder()
                 .certificationCriteriaIdStrings(Stream.of("1 ", " 2 ", "", " ", null, "3", "notanumber").collect(Collectors.toSet()))
