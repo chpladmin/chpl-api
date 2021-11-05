@@ -53,7 +53,7 @@ public abstract class PermissionBasedReviewer implements Reviewer {
         if (certResult.getCriterion() != null && certResult.getCriterion().getRemoved() != null
                 && certResult.getCriterion().getRemoved().equals(Boolean.TRUE)
                 && (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc())) {
-                listing.getWarningMessages().add(message);
+            listing.getWarningMessages().add(message);
                 //ACBs do not get any error or warning about removed criteria validation issues
         } else if (certResult.getCriterion() != null && (certResult.getCriterion().getRemoved() == null
                 || certResult.getCriterion().getRemoved().equals(Boolean.FALSE))) {

@@ -11,6 +11,7 @@ import gov.healthit.chpl.validation.listing.reviewer.duplicate.AdditionalSoftwar
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.AtlDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.IcsSourceDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.MeasureDuplicateReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.duplicate.OptionalStandardDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.PromotingInteroperabilityUserCountReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.QmsStandardDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TargetedUserDuplicateReviewer;
@@ -27,6 +28,7 @@ public class DuplicateDataReviewer implements Reviewer {
     private TestToolDuplicateReviewer testToolDuplicateReviewer;
     private TestProcedureDuplicateReviewer testProcedureDuplicateReviewer;
     private TestStandardDuplicateReviewer testStandardDuplicateReviewer;
+    private OptionalStandardDuplicateReviewer optionalStandardDuplicateReviewer;
     private AdditionalSoftwareDuplicateReviewer additionalSoftwareDuplicateReviewer;
     private AccessibilityStandardDuplicateReviewer accessibilityStandardDuplicateReviewer;
     private QmsStandardDuplicateReviewer qmsStandardDuplicateReviewer;
@@ -44,6 +46,7 @@ public class DuplicateDataReviewer implements Reviewer {
             @Qualifier("testToolDuplicateReviewer") TestToolDuplicateReviewer testToolDuplicateReviewer,
             @Qualifier("testProcedureDuplicateReviewer") TestProcedureDuplicateReviewer testProcedureDuplicateReviewer,
             @Qualifier("testStandardDuplicateReviewer") TestStandardDuplicateReviewer testStandardDuplicateReviewer,
+            @Qualifier("optionalStandardDuplicateReviewer") OptionalStandardDuplicateReviewer optionalStandardDuplicateReviewer,
             @Qualifier("additionalSoftwareDuplicateReviewer") AdditionalSoftwareDuplicateReviewer additionalSoftwareDuplicateReviewer,
             @Qualifier("accessibilityStandardDuplicateReviewer") AccessibilityStandardDuplicateReviewer accessibilityStandardDuplicateReviewer,
             @Qualifier("qmsStandardDuplicateReviewer") QmsStandardDuplicateReviewer qmsStandardDuplicateReviewer,
@@ -57,6 +60,7 @@ public class DuplicateDataReviewer implements Reviewer {
         this.testToolDuplicateReviewer = testToolDuplicateReviewer;
         this.testProcedureDuplicateReviewer = testProcedureDuplicateReviewer;
         this.testStandardDuplicateReviewer = testStandardDuplicateReviewer;
+        this.optionalStandardDuplicateReviewer = optionalStandardDuplicateReviewer;
         this.additionalSoftwareDuplicateReviewer = additionalSoftwareDuplicateReviewer;
         this.accessibilityStandardDuplicateReviewer = accessibilityStandardDuplicateReviewer;
         this.qmsStandardDuplicateReviewer = qmsStandardDuplicateReviewer;
@@ -83,6 +87,7 @@ public class DuplicateDataReviewer implements Reviewer {
             testProcedureDuplicateReviewer.review(listing, cr);
             testDataDuplicateReviewer.review(listing, cr);
             testStandardDuplicateReviewer.review(listing, cr);
+            optionalStandardDuplicateReviewer.review(listing, cr);
             testFunctionalityDuplicateReviewer.review(listing, cr);
         }
     }

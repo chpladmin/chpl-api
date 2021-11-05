@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,15 +55,17 @@ public class TestFunctionalityReviewer extends PermissionBasedReviewer {
     }
 
     private void reviewCriteriaCanHaveTestFunctionalityData(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)
-                && certResult.getTestFunctionality() != null && certResult.getTestFunctionality().size() > 0) {
-            listing.getErrorMessages().add(msgUtil.getMessage(
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
+            if (!CollectionUtils.isEmpty(certResult.getTestFunctionality())) {
+                listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.testFunctionalityNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
+            certResult.setTestFunctionality(null);
         }
     }
 
     private void removeTestFunctionalityWithoutIds(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (certResult.getTestFunctionality() == null || certResult.getTestFunctionality().size() == 0) {
+        if (CollectionUtils.isEmpty(certResult.getTestFunctionality())) {
             return;
         }
         Iterator<CertificationResultTestFunctionality> testFunctionalityIter = certResult.getTestFunctionality().iterator();
@@ -77,7 +80,7 @@ public class TestFunctionalityReviewer extends PermissionBasedReviewer {
     }
 
     private void removeTestFunctionalityMismatchedToCriteria(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (certResult.getTestFunctionality() == null || certResult.getTestFunctionality().size() == 0) {
+        if (CollectionUtils.isEmpty(certResult.getTestFunctionality())) {
             return;
         }
         String year = MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY);

@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -18,7 +19,7 @@ import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class PrivacyAndSecurityFrameworkReviewerTest {
-    private static final String PANDS_NOT_APPLICABLE = "Privacy and Security Framework is not applicable for the criterion %s.";
+    private static final String PANDS_NOT_APPLICABLE = "Privacy and Security Framework is not applicable for the criterion %s. It has been removed.";
     private static final String PANDS_REQUIRED_NOT_FOUND = "Privacy and Security Framework is required for certification %s.";
     private static final String PANDS_INVALID_NOT_FOUND = "Certification %s contains Privacy and Security Framework value '%s' which must match one of %s.";
 
@@ -149,10 +150,11 @@ public class PrivacyAndSecurityFrameworkReviewerTest {
                 .build();
         reviewer.review(listing);
 
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(
+        assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+        assertTrue(listing.getWarningMessages().contains(
                 String.format(PANDS_NOT_APPLICABLE, "170.315 (a)(1)")));
+        assertNull(listing.getCertificationResults().get(0).getPrivacySecurityFramework());
     }
 
     @Test
