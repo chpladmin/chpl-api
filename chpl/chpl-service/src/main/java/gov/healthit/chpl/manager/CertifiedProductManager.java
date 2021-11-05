@@ -1165,7 +1165,8 @@ public class CertifiedProductManager extends SecuredManager {
         CertifiedProductDTO dtoToUpdate = new CertifiedProductDTO(updatedListing);
         CertifiedProductDTO result = cpDao.update(dtoToUpdate);
         updateListingsChildData(existingListing, updatedListing);
-        updateRwtEligibilityForListingAndChildren(updatedListing);
+        updateRwtEligibilityForListingAndChildren(updatedListing.getId());
+
         // Log the activity
         logCertifiedProductUpdateActivity(existingListing, updateRequest.getReason());
 
@@ -1208,13 +1209,13 @@ public class CertifiedProductManager extends SecuredManager {
         updateCqms(updatedListing, existingListing.getCqmResults(), updatedListing.getCqmResults());
     }
 
-    private void updateRwtEligibilityForListingAndChildren(CertifiedProductSearchDetails updatedListing) {
-        rwtCachingService.calculateRwtEligibility(updatedListing.getId());
-        if (updatedListing.getIcs() != null
-                && !CollectionUtils.isEmpty(updatedListing.getIcs().getChildren())) {
-            //TODO: this needs to recursively go through the children in case they also have children
-            for (CertifiedProduct child : updatedListing.getIcs().getChildren()) {
-                rwtCachingService.calculateRwtEligibility(child.getId());
+    private void updateRwtEligibilityForListingAndChildren(Long listingId) {
+        rwtCachingService.calculateRwtEligibility(listingId);
+
+        List<CertifiedProductDTO> listingChildren = listingGraphDao.getChildren(listingId);
+        if (!CollectionUtils.isEmpty(listingChildren)) {
+            for (CertifiedProductDTO child : listingChildren) {
+                updateRwtEligibilityForListingAndChildren(child.getId());
             }
         }
     }
