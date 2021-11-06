@@ -272,6 +272,31 @@ public class CsvHeaderReviewerTest {
     }
 
     @Test
+    public void review_oneDuplicateCriterion_hasWarnings() {
+        ListingUpload listingUploadMetadata = ListingUpload.builder()
+                .records(ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,CRITERIA_170_315_A_8__C,Test Data,Test Procedure,CRITERIA_170_315_A_8__C,GAP,Additional Software,Privacy and Security Framework"))
+                .build();
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
+        reviewer.review(listingUploadMetadata, listing);
+
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(CSV_DUPLICATE_HEADER, "CRITERIA_170_315_A_8__C")));
+    }
+
+    @Test
+    public void review_twoDuplicateCriteria_hasWarnings() {
+        ListingUpload listingUploadMetadata = ListingUpload.builder()
+                .records(ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,CRITERIA_170_315_A_8__C,Test Data,Test Procedure,CRITERIA_170_315_A_8__C,GAP,Additional Software,Privacy and Security Framework,CRITERIA_170_315_A_1__C,CRITERIA_170_315_A_1__C"))
+                .build();
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
+        reviewer.review(listingUploadMetadata, listing);
+
+        assertEquals(2, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(CSV_DUPLICATE_HEADER, "CRITERIA_170_315_A_8__C")));
+        assertTrue(listing.getWarningMessages().contains(String.format(CSV_DUPLICATE_HEADER, "CRITERIA_170_315_A_1__C")));
+    }
+
+    @Test
     public void review_multipleDuplicateListingAndCertResultLevelHeadings_hasWarnings() {
         ListingUpload listingUploadMetadata = ListingUpload.builder()
                 .records(ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,VENDOR__C,CRITERIA_170_315_A_8__C,GAP,Test Data,Test Procedure,GAP,CRITERIA_170_315_A_9__C,GAP,Privacy and Security Framework,GAP,Additional Software,Privacy and Security Framework"))

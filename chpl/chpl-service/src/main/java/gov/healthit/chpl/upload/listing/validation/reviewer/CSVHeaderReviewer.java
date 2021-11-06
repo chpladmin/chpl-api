@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -46,6 +47,7 @@ public class CSVHeaderReviewer {
 
     private void reviewDuplicateHeadings(CertifiedProductSearchDetails listing, CSVRecord headingRecord) {
         List<String> allHeadingColumns = uploadUtil.convertToList(headingRecord);
+        List<String> allCriteriaColumns = new ArrayList<String>();
         //get each criteria heading start/end, check for duplicates
         int nextCertResultIndex = uploadUtil.getNextIndexOfCertificationResult(0, headingRecord);
         while (nextCertResultIndex >= 0) {
@@ -56,6 +58,7 @@ public class CSVHeaderReviewer {
             //add warning messages for this set of cert result headings
             listing.getWarningMessages().addAll(getDuplicateCriteriaLevelHeadingMessages(uploadUtil.convertToList(certHeadingRecord), certHeadingRecord.get(0)));
             //remove these items from the set of all columns so we don't check them again
+            allCriteriaColumns.add(allHeadingColumns.get(nextCertResultIndex));
             allHeadingColumns.subList(nextCertResultIndex, nextCertResultIndex + certHeadingRecord.size()).clear();
             headingRecord = uploadUtil.convertToCsvRecord(allHeadingColumns);
             nextCertResultIndex = uploadUtil.getNextIndexOfCertificationResult(0, headingRecord);
@@ -68,6 +71,8 @@ public class CSVHeaderReviewer {
 
         //look for duplicates outside of criteria headings
         listing.getWarningMessages().addAll(getDuplicateHeadingMessages(allHeadingColumns));
+        //look for duplicate criteria headings
+        listing.getWarningMessages().addAll(getDuplicateHeadingMessages(allCriteriaColumns));
     }
 
     private Set<String> getDuplicateHeadingMessages(List<String> headings) {
