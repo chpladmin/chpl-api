@@ -37,7 +37,7 @@ public class OptionalStandardReviewer implements Reviewer {
             optionalStandardCriteriaMap = optionalStandardDao.getAllOptionalStandardCriteriaMap().stream()
                     .collect(Collectors.groupingBy(scm -> scm.getCriterion().getId()));
         } catch (EntityRetrievalException ex) {
-            LOGGER.error("Could not normalize Optional Standards", ex);
+            LOGGER.error("Could not load Optional Standard Criteria maps", ex);
             return;
         }
 
@@ -49,10 +49,10 @@ public class OptionalStandardReviewer implements Reviewer {
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
             .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
-            .forEach(certResult -> reviewCertificatinResult(listing, certResult));
+            .forEach(certResult -> reviewCertificationResult(listing, certResult));
     }
 
-    private void reviewCertificatinResult(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    private void reviewCertificationResult(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         reviewCriteriaCanHaveOptionalStandards(listing, certResult);
         if (!CollectionUtils.isEmpty(certResult.getOptionalStandards())) {
             certResult.getOptionalStandards().stream()

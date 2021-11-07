@@ -17,6 +17,7 @@ import org.mockito.Mockito;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
+import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -579,6 +580,78 @@ public class CertificationResultUploadHandlerTest {
         assertNotNull(std);
         assertNotNull(std.getCitation());
         assertEquals("std2", std.getCitation());
+    }
+
+    @Test
+    public void buildCertResult_SvapsEmptyData_ReturnsEmptyList() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
+                + ",Regulatory Text Citation").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,");
+        assertNotNull(certResultRecords);
+
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNotNull(certResult);
+        assertNotNull(certResult.getSvaps());
+        assertEquals(0, certResult.getSvaps().size());
+    }
+
+    @Test
+    public void buildCertResult_SvapWithData_ParsesCorrectly() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
+                + ",Regulatory Text Citation").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,svap1");
+        assertNotNull(certResultRecords);
+
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNotNull(certResult);
+        assertNotNull(certResult.getSvaps());
+        assertEquals(1, certResult.getSvaps().size());
+        CertificationResultSvap svap = certResult.getSvaps().get(0);
+        assertNotNull(svap);
+        assertNotNull(svap.getRegulatoryTextCitation());
+        assertEquals("svap1", svap.getRegulatoryTextCitation());
+    }
+
+    @Test
+    public void buildCertResult_SvapDuplicateData_ParsesFirstValue() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
+                + ",Regulatory Text Citation,Regulatory Text Citation").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,svap1,svap2");
+        assertNotNull(certResultRecords);
+
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNotNull(certResult);
+        assertNotNull(certResult.getSvaps());
+        assertEquals(1, certResult.getSvaps().size());
+        CertificationResultSvap svap = certResult.getSvaps().get(0);
+        assertNotNull(svap);
+        assertNotNull(svap.getRegulatoryTextCitation());
+        assertEquals("svap1", svap.getRegulatoryTextCitation());
+    }
+
+    @Test
+    public void buildCertResult_SvapMultipleRowsWithData_ParsesCorrectly() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
+                + ",Regulatory Text Citation").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,svap1\n,svap2");
+        assertNotNull(certResultRecords);
+
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        assertNotNull(certResult);
+        assertNotNull(certResult.getSvaps());
+        assertEquals(2, certResult.getSvaps().size());
+        CertificationResultSvap svap = certResult.getSvaps().get(0);
+        assertNotNull(svap);
+        assertNotNull(svap.getRegulatoryTextCitation());
+        assertEquals("svap1", svap.getRegulatoryTextCitation());
+        svap = certResult.getSvaps().get(1);
+        assertNotNull(svap);
+        assertNotNull(svap.getRegulatoryTextCitation());
+        assertEquals("svap2", svap.getRegulatoryTextCitation());
     }
 
     @Test
