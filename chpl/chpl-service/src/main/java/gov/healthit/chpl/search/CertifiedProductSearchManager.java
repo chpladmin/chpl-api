@@ -53,6 +53,7 @@ public class CertifiedProductSearchManager {
         this.dateFormatter = DateTimeFormatter.ofPattern(CERT_STATUS_EVENT_DATE_FORMAT);
     }
 
+    @Deprecated
     @Cacheable(value = CacheNames.COLLECTIONS_LISTINGS, key = "'listings'")
     public List<CertifiedProductFlatSearchResult> getFlatListingCollection() {
         List<CertifiedProductFlatSearchResult> results = searchDao.getFlatCertifiedProducts();

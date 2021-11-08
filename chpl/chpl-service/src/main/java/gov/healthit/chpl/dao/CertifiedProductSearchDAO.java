@@ -103,6 +103,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         }
     }
 
+    @Deprecated
     public List<CertifiedProductFlatSearchResult> getFlatCertifiedProducts() {
         LOGGER.info("Starting basic search query.");
         Query query = entityManager.createQuery("SELECT cps "

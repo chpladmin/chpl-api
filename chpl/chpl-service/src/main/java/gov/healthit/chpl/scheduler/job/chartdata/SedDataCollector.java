@@ -18,7 +18,7 @@ import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
-import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
 
 /**
  * Retrieves all of the 2015 SED Products and their details. Details are
@@ -53,9 +53,9 @@ public class SedDataCollector {
      *            initial set of Listings
      * @return List of CertifiedProductSearchDetails
      */
-    public List<CertifiedProductSearchDetails> retreiveData(List<CertifiedProductFlatSearchResult> listings) {
+    public List<CertifiedProductSearchDetails> retreiveData(List<CertifiedProductBasicSearchResult> listings) {
 
-        List<CertifiedProductFlatSearchResult> certifiedProducts = filterData(listings);
+        List<CertifiedProductBasicSearchResult> certifiedProducts = filterData(listings);
         LOGGER.info("2015/SED Certified Product Count: " + certifiedProducts.size());
 
         List<CertifiedProductSearchDetails> certifiedProductsWithDetails = getCertifiedProductDetailsForAll(
@@ -64,11 +64,10 @@ public class SedDataCollector {
         return certifiedProductsWithDetails;
     }
 
-    private List<CertifiedProductFlatSearchResult> filterData(
-            final List<CertifiedProductFlatSearchResult> certifiedProducts) {
+    private List<CertifiedProductBasicSearchResult> filterData(List<CertifiedProductBasicSearchResult> certifiedProducts) {
         List<CertificationCriterionDTO> g3Criteria = criteriaDao.getAllByNumber(CRITERION_G_3);
-        List<CertifiedProductFlatSearchResult> results = new ArrayList<CertifiedProductFlatSearchResult>();
-        for (CertifiedProductFlatSearchResult result : certifiedProducts) {
+        List<CertifiedProductBasicSearchResult> results = new ArrayList<CertifiedProductBasicSearchResult>();
+        for (CertifiedProductBasicSearchResult result : certifiedProducts) {
             if (result.getEdition().equalsIgnoreCase(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())
                     && containsAnyCriterion(result, g3Criteria)) {
                 results.add(result);
@@ -77,13 +76,12 @@ public class SedDataCollector {
         return results;
     }
 
-    private boolean containsAnyCriterion(CertifiedProductFlatSearchResult listing, List<CertificationCriterionDTO> criteria) {
+    private boolean containsAnyCriterion(CertifiedProductBasicSearchResult listing, List<CertificationCriterionDTO> criteria) {
         boolean result = false;
-        String[] certIdStrings = listing.getCriteriaMet().split(CertifiedProductFlatSearchResult.SMILEY_SPLIT_CHAR);
+        Long[] certIds = listing.getCriteriaMet().toArray(new Long[0]);
         for (CertificationCriterionDTO criterion : criteria) {
-            for (int i = 0; i < certIdStrings.length && !result; i++) {
-                String certIdStr = certIdStrings[i];
-                Long certId = Long.parseLong(certIdStr);
+            for (int i = 0; i < certIds.length && !result; i++) {
+                Long certId = certIds[i];
                 if (criterion.getId().equals(certId)) {
                     result = true;
                 }
@@ -92,13 +90,12 @@ public class SedDataCollector {
         return result;
     }
 
-    private List<CertifiedProductSearchDetails> getCertifiedProductDetailsForAll(
-            final List<CertifiedProductFlatSearchResult> certifiedProducts) {
+    private List<CertifiedProductSearchDetails> getCertifiedProductDetailsForAll(List<CertifiedProductBasicSearchResult> certifiedProducts) {
 
         List<CertifiedProductSearchDetails> details = new ArrayList<CertifiedProductSearchDetails>();
         List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
 
-        for (CertifiedProductFlatSearchResult certifiedProduct : certifiedProducts) {
+        for (CertifiedProductBasicSearchResult certifiedProduct : certifiedProducts) {
             try {
                     futures.add(cpsdAsync.getCertifiedProductDetail(certifiedProduct.getId(),
                             certifiedProductDetailsManager));
