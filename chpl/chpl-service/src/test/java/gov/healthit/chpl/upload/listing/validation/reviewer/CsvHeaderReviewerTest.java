@@ -147,167 +147,167 @@ public class CsvHeaderReviewerTest {
     }
 
     @Test
-    public void review_oneDuplicateListingLevelHeading_HeadingsApart_hasWarning() {
+    public void review_oneDuplicateListingLevelHeading_HeadingsApart_hasError() {
         ListingUpload listingUploadMetadata = ListingUpload.builder()
                 .records(ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,VENDOR_WEBSITE,VENDOR_EMAIL,VENDOR_PHONE,VENDOR__C"))
                 .build();
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
         reviewer.review(listingUploadMetadata, listing);
 
-        assertEquals(1, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(String.format(CSV_DUPLICATE_HEADER, "VENDOR__C", "")));
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CSV_DUPLICATE_HEADER, "VENDOR__C", "")));
     }
 
     @Test
-    public void review_oneDuplicateListingLevelHeading_HeadingsAdjacent_hasWarning() {
+    public void review_oneDuplicateListingLevelHeading_HeadingsAdjacent_hasError() {
         ListingUpload listingUploadMetadata = ListingUpload.builder()
                 .records(ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,PRODUCT__C,VENDOR_WEBSITE,VENDOR_EMAIL,VENDOR_PHONE"))
                 .build();
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
         reviewer.review(listingUploadMetadata, listing);
 
-        assertEquals(1, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(String.format(CSV_DUPLICATE_HEADER, "PRODUCT__C", "")));
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CSV_DUPLICATE_HEADER, "PRODUCT__C", "")));
     }
 
     @Test
-    public void review_oneDuplicateListingLevelHeading_HeadingsAdjacentAtBeginning_hasWarning() {
+    public void review_oneDuplicateListingLevelHeading_HeadingsAdjacentAtBeginning_hasError() {
         ListingUpload listingUploadMetadata = ListingUpload.builder()
                 .records(ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,VENDOR_WEBSITE,VENDOR_EMAIL,VENDOR_PHONE"))
                 .build();
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
         reviewer.review(listingUploadMetadata, listing);
 
-        assertEquals(1, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(String.format(CSV_DUPLICATE_HEADER, "UNIQUE_CHPL_ID__C", "")));
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CSV_DUPLICATE_HEADER, "UNIQUE_CHPL_ID__C", "")));
     }
 
     @Test
-    public void review_oneDuplicateListingLevelHeading_HeadingsAdjacentAtEnd_hasWarning() {
+    public void review_oneDuplicateListingLevelHeading_HeadingsAdjacentAtEnd_hasError() {
         ListingUpload listingUploadMetadata = ListingUpload.builder()
                 .records(ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,VENDOR_WEBSITE,VENDOR_EMAIL,VENDOR_PHONE,VENDOR_PHONE"))
                 .build();
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
         reviewer.review(listingUploadMetadata, listing);
 
-        assertEquals(1, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(String.format(CSV_DUPLICATE_HEADER, "VENDOR_PHONE", "")));
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CSV_DUPLICATE_HEADER, "VENDOR_PHONE", "")));
     }
 
     @Test
-    public void review_multipleDuplicateListingLevelHeadings_hasWarnings() {
+    public void review_multipleDuplicateListingLevelHeadings_hasErrors() {
         ListingUpload listingUploadMetadata = ListingUpload.builder()
                 .records(ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,VENDOR_WEBSITE,VENDOR__C,PRODUCT__C,UNIQUE_CHPL_ID__C,VENDOR_WEBSITE,VENDOR_EMAIL,VENDOR_PHONE,VENDOR_PHONE"))
                 .build();
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
         reviewer.review(listingUploadMetadata, listing);
 
-        assertEquals(3, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(String.format(CSV_DUPLICATE_HEADER, "VENDOR_PHONE", "")));
-        assertTrue(listing.getWarningMessages().contains(String.format(CSV_DUPLICATE_HEADER, "VENDOR_WEBSITE", "")));
-        assertTrue(listing.getWarningMessages().contains(String.format(CSV_DUPLICATE_HEADER, "UNIQUE_CHPL_ID__C", "")));
+        assertEquals(3, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CSV_DUPLICATE_HEADER, "VENDOR_PHONE", "")));
+        assertTrue(listing.getErrorMessages().contains(String.format(CSV_DUPLICATE_HEADER, "VENDOR_WEBSITE", "")));
+        assertTrue(listing.getErrorMessages().contains(String.format(CSV_DUPLICATE_HEADER, "UNIQUE_CHPL_ID__C", "")));
     }
 
     @Test
-    public void review_oneDuplicateCertResultLevelHeading_SingleCriteriaAndHeadingsAdjacent_hasWarning() {
+    public void review_oneDuplicateCertResultLevelHeading_SingleCriteriaAndHeadingsAdjacent_hasError() {
         ListingUpload listingUploadMetadata = ListingUpload.builder()
                 .records(ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,CRITERIA_170_315_A_8__C,GAP,GAP,Test Data,Test Procedure"))
                 .build();
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
         reviewer.review(listingUploadMetadata, listing);
 
-        assertEquals(1, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(String.format(CSV_DUPLICATE_CRITERIA_HEADER, "GAP", "CRITERIA_170_315_A_8__C")));
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CSV_DUPLICATE_CRITERIA_HEADER, "GAP", "CRITERIA_170_315_A_8__C")));
     }
 
     @Test
-    public void review_oneDuplicateCertResultLevelHeading_SingleCriteriaAndHeadingsApart_hasWarning() {
+    public void review_oneDuplicateCertResultLevelHeading_SingleCriteriaAndHeadingsApart_hasError() {
         ListingUpload listingUploadMetadata = ListingUpload.builder()
                 .records(ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,CRITERIA_170_315_A_8__C,GAP,Test Data,Test Procedure,GAP"))
                 .build();
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
         reviewer.review(listingUploadMetadata, listing);
 
-        assertEquals(1, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(String.format(CSV_DUPLICATE_CRITERIA_HEADER, "GAP", "CRITERIA_170_315_A_8__C")));
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CSV_DUPLICATE_CRITERIA_HEADER, "GAP", "CRITERIA_170_315_A_8__C")));
     }
 
     @Test
-    public void review_oneDuplicateCertResultLevelHeading_MultipleCriteriaAndHeadingsApart_hasWarning() {
+    public void review_oneDuplicateCertResultLevelHeading_MultipleCriteriaAndHeadingsApart_hasError() {
         ListingUpload listingUploadMetadata = ListingUpload.builder()
                 .records(ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,CRITERIA_170_315_A_8__C,GAP,Test Data,Test Procedure,GAP,CRITERIA_170_315_A_9__C,Additional Software,Privacy and Security Framework"))
                 .build();
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
         reviewer.review(listingUploadMetadata, listing);
 
-        assertEquals(1, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(String.format(CSV_DUPLICATE_CRITERIA_HEADER, "GAP", "CRITERIA_170_315_A_8__C")));
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CSV_DUPLICATE_CRITERIA_HEADER, "GAP", "CRITERIA_170_315_A_8__C")));
     }
 
     @Test
-    public void review_twoDuplicateCertResultLevelHeadings_MultipleCriteria_hasWarnings() {
+    public void review_twoDuplicateCertResultLevelHeadings_MultipleCriteria_hasErrors() {
         ListingUpload listingUploadMetadata = ListingUpload.builder()
                 .records(ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,CRITERIA_170_315_A_8__C,GAP,Test Data,Test Procedure,GAP,CRITERIA_170_315_A_9__C,Privacy and Security Framework,GAP,Additional Software,Privacy and Security Framework"))
                 .build();
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
         reviewer.review(listingUploadMetadata, listing);
 
-        assertEquals(2, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(String.format(CSV_DUPLICATE_CRITERIA_HEADER, "GAP", "CRITERIA_170_315_A_8__C")));
-        assertTrue(listing.getWarningMessages().contains(String.format(CSV_DUPLICATE_CRITERIA_HEADER, "Privacy and Security Framework", "CRITERIA_170_315_A_9__C")));
+        assertEquals(2, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CSV_DUPLICATE_CRITERIA_HEADER, "GAP", "CRITERIA_170_315_A_8__C")));
+        assertTrue(listing.getErrorMessages().contains(String.format(CSV_DUPLICATE_CRITERIA_HEADER, "Privacy and Security Framework", "CRITERIA_170_315_A_9__C")));
     }
 
     @Test
-    public void review_multipleDuplicateCertResultLevelHeadings_MultipleCriteriaWithSameDuplicatedColumn_hasWarnings() {
+    public void review_multipleDuplicateCertResultLevelHeadings_MultipleCriteriaWithSameDuplicatedColumn_hasErrors() {
         ListingUpload listingUploadMetadata = ListingUpload.builder()
                 .records(ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,CRITERIA_170_315_A_8__C,GAP,Test Data,Test Procedure,GAP,CRITERIA_170_315_A_9__C,GAP,Privacy and Security Framework,GAP,Additional Software,Privacy and Security Framework"))
                 .build();
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
         reviewer.review(listingUploadMetadata, listing);
 
-        assertEquals(3, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(String.format(CSV_DUPLICATE_CRITERIA_HEADER, "GAP", "CRITERIA_170_315_A_8__C")));
-        assertTrue(listing.getWarningMessages().contains(String.format(CSV_DUPLICATE_CRITERIA_HEADER, "GAP", "CRITERIA_170_315_A_9__C")));
-        assertTrue(listing.getWarningMessages().contains(String.format(CSV_DUPLICATE_CRITERIA_HEADER, "Privacy and Security Framework", "CRITERIA_170_315_A_9__C")));
+        assertEquals(3, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CSV_DUPLICATE_CRITERIA_HEADER, "GAP", "CRITERIA_170_315_A_8__C")));
+        assertTrue(listing.getErrorMessages().contains(String.format(CSV_DUPLICATE_CRITERIA_HEADER, "GAP", "CRITERIA_170_315_A_9__C")));
+        assertTrue(listing.getErrorMessages().contains(String.format(CSV_DUPLICATE_CRITERIA_HEADER, "Privacy and Security Framework", "CRITERIA_170_315_A_9__C")));
     }
 
     @Test
-    public void review_oneDuplicateCriterion_hasWarnings() {
+    public void review_oneDuplicateCriterion_hasErrors() {
         ListingUpload listingUploadMetadata = ListingUpload.builder()
                 .records(ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,CRITERIA_170_315_A_8__C,Test Data,Test Procedure,CRITERIA_170_315_A_8__C,GAP,Additional Software,Privacy and Security Framework"))
                 .build();
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
         reviewer.review(listingUploadMetadata, listing);
 
-        assertEquals(1, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(String.format(CSV_DUPLICATE_HEADER, "CRITERIA_170_315_A_8__C")));
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CSV_DUPLICATE_HEADER, "CRITERIA_170_315_A_8__C")));
     }
 
     @Test
-    public void review_twoDuplicateCriteria_hasWarnings() {
+    public void review_twoDuplicateCriteria_hasErrors() {
         ListingUpload listingUploadMetadata = ListingUpload.builder()
                 .records(ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,CRITERIA_170_315_A_8__C,Test Data,Test Procedure,CRITERIA_170_315_A_8__C,GAP,Additional Software,Privacy and Security Framework,CRITERIA_170_315_A_1__C,CRITERIA_170_315_A_1__C"))
                 .build();
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
         reviewer.review(listingUploadMetadata, listing);
 
-        assertEquals(2, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(String.format(CSV_DUPLICATE_HEADER, "CRITERIA_170_315_A_8__C")));
-        assertTrue(listing.getWarningMessages().contains(String.format(CSV_DUPLICATE_HEADER, "CRITERIA_170_315_A_1__C")));
+        assertEquals(2, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CSV_DUPLICATE_HEADER, "CRITERIA_170_315_A_8__C")));
+        assertTrue(listing.getErrorMessages().contains(String.format(CSV_DUPLICATE_HEADER, "CRITERIA_170_315_A_1__C")));
     }
 
     @Test
-    public void review_multipleDuplicateListingAndCertResultLevelHeadings_hasWarnings() {
+    public void review_multipleDuplicateListingAndCertResultLevelHeadings_hasErrors() {
         ListingUpload listingUploadMetadata = ListingUpload.builder()
                 .records(ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,VENDOR__C,CRITERIA_170_315_A_8__C,GAP,Test Data,Test Procedure,GAP,CRITERIA_170_315_A_9__C,GAP,Privacy and Security Framework,GAP,Additional Software,Privacy and Security Framework"))
                 .build();
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
         reviewer.review(listingUploadMetadata, listing);
 
-        assertEquals(4, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(String.format(CSV_DUPLICATE_HEADER, "VENDOR__C", "")));
-        assertTrue(listing.getWarningMessages().contains(String.format(CSV_DUPLICATE_CRITERIA_HEADER, "GAP", "CRITERIA_170_315_A_8__C")));
-        assertTrue(listing.getWarningMessages().contains(String.format(CSV_DUPLICATE_CRITERIA_HEADER, "GAP", "CRITERIA_170_315_A_9__C")));
-        assertTrue(listing.getWarningMessages().contains(String.format(CSV_DUPLICATE_CRITERIA_HEADER, "Privacy and Security Framework", "CRITERIA_170_315_A_9__C")));
+        assertEquals(4, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CSV_DUPLICATE_HEADER, "VENDOR__C", "")));
+        assertTrue(listing.getErrorMessages().contains(String.format(CSV_DUPLICATE_CRITERIA_HEADER, "GAP", "CRITERIA_170_315_A_8__C")));
+        assertTrue(listing.getErrorMessages().contains(String.format(CSV_DUPLICATE_CRITERIA_HEADER, "GAP", "CRITERIA_170_315_A_9__C")));
+        assertTrue(listing.getErrorMessages().contains(String.format(CSV_DUPLICATE_CRITERIA_HEADER, "Privacy and Security Framework", "CRITERIA_170_315_A_9__C")));
     }
 }
