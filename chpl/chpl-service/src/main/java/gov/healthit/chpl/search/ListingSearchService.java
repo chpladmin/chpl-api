@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
@@ -37,7 +38,7 @@ import lombok.extern.log4j.Log4j2;
 @NoArgsConstructor
 @Log4j2
 public class ListingSearchService {
-    private static final String CURES_UPDATE_EDITION = "2015 CURES UPDATE";
+    private static final String CURES_UPDATE_EDITION = "2015" + CertificationEdition.CURES_SUFFIX;
     private SearchRequestValidator searchRequestValidator;
     private SearchRequestNormalizer searchRequestNormalizer;
     private CertifiedProductSearchManager cpSearchManager;

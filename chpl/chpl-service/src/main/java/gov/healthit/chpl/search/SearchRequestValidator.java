@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
@@ -49,7 +50,7 @@ public class SearchRequestValidator {
         allowedDerivedCertificationEditions = Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2011.getYear(),
                 CertificationEditionConcept.CERTIFICATION_EDITION_2014.getYear(),
                 CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear(),
-                CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear() + " Cures Update")
+                CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear() + CertificationEdition.CURES_SUFFIX)
                 .map(editionName -> editionName.toUpperCase())
                 .collect(Collectors.toSet());
     }

@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 import org.ff4j.FF4j;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
@@ -185,7 +186,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
     protected String formatEdition(CertifiedProductSearchDetails listing) {
         String edition = listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
         if (listing.getCuresUpdate() != null && listing.getCuresUpdate()) {
-            edition = edition + " Cures Update";
+            edition = edition + CertificationEdition.CURES_SUFFIX;
         }
         return edition;
     }
