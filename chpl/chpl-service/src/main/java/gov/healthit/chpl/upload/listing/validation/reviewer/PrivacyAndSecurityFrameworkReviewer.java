@@ -39,10 +39,12 @@ public class PrivacyAndSecurityFrameworkReviewer extends PermissionBasedReviewer
     }
 
     private void reviewCriteriaCanHavePrivacyAndSecurity(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.PRIVACY_SECURITY)
-                && !StringUtils.isEmpty(certResult.getPrivacySecurityFramework())) {
-            listing.getErrorMessages().add(msgUtil.getMessage(
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.PRIVACY_SECURITY)) {
+            if (!StringUtils.isEmpty(certResult.getPrivacySecurityFramework())) {
+                listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.privacyAndSecurityFrameworkNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
+            certResult.setPrivacySecurityFramework(null);
         }
     }
 

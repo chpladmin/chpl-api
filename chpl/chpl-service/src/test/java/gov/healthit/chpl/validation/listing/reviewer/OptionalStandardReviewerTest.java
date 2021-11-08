@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.ff4j.FF4j;
 import org.junit.Before;
@@ -66,10 +68,10 @@ public class OptionalStandardReviewerTest {
                                 .number("170.315 (a)(6)")
                                 .id(1L)
                                 .build())
-                        .optionalStandard(CertificationResultOptionalStandard.builder()
+                        .optionalStandards(Stream.of(CertificationResultOptionalStandard.builder()
                                 .optionalStandardId(1L)
                                 .citation("std1")
-                                .build())
+                                .build()).collect(Collectors.toList()))
                         .build())
                 .certificationEdition(certEdition)
                 .build();
@@ -93,10 +95,10 @@ public class OptionalStandardReviewerTest {
                                 .number("170.315 (a)(6)")
                                 .id(1L)
                                 .build())
-                        .optionalStandard(CertificationResultOptionalStandard.builder()
+                        .optionalStandards(Stream.of(CertificationResultOptionalStandard.builder()
                                 .optionalStandardId(2L)
                                 .citation("bad std1")
-                                .build())
+                                .build()).collect(Collectors.toList()))
                         .build())
                 .certificationEdition(certEdition)
                 .build();

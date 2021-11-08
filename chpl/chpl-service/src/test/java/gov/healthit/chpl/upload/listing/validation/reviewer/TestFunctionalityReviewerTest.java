@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -26,7 +27,7 @@ import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class TestFunctionalityReviewerTest {
-    private static final String TEST_FUNCTIONALITY_NOT_APPLICABLE = "Test functionality is not applicable for the criterion %s.";
+    private static final String TEST_FUNCTIONALITY_NOT_APPLICABLE = "Test functionality is not applicable for the criterion %s. It has been removed.";
     private static final String TEST_FUNCTIONALITY_NOT_FOUND_REMOVED = "Criteria %s contains an invalid test functionality '%s'. It has been removed from the pending listing.";
     private static final String MISSING_TEST_FUNCTIONALITY_NAME = "There was no test functionality name found for certification criteria %s.";
     private static final String TEST_FUNCTIONALITY_CRITERION_MISMATCH = "In Criteria %s, Test Functionality %s is for Criteria %s and is not valid for Criteria %s. The invalid Test Functionality has been removed.";
@@ -107,7 +108,7 @@ public class TestFunctionalityReviewerTest {
     }
 
     @Test
-    public void review_testFunctionalityNotApplicableToCriteria_hasError() {
+    public void review_testFunctionalityNotApplicableToCriteria_hasWarningAndTestFunctionalitySetNull() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
             .thenReturn(false);
         List<CertificationResultTestFunctionality> testFuncs = new ArrayList<CertificationResultTestFunctionality>();
@@ -128,10 +129,12 @@ public class TestFunctionalityReviewerTest {
                 .build();
         reviewer.review(listing);
 
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(
                 String.format(TEST_FUNCTIONALITY_NOT_APPLICABLE, "170.315 (a)(1)")));
+        assertNull(listing.getCertificationResults().get(0).getTestFunctionality());
     }
 
     @Test

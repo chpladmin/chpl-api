@@ -3,6 +3,7 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -48,25 +49,27 @@ public class TestToolReviewer extends PermissionBasedReviewer {
     }
 
     public void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        removeTestToolsWithoutIds(listing, certResult);
         reviewCriteriaCanHaveTestToolData(listing, certResult);
+        removeTestToolsWithoutIds(listing, certResult);
         reviewTestToolsRequiredWhenCertResultIsNotGap(listing, certResult);
-        if (certResult.getTestToolsUsed() != null && certResult.getTestToolsUsed().size() > 0) {
+        if (!CollectionUtils.isEmpty(certResult.getTestToolsUsed())) {
             certResult.getTestToolsUsed().stream()
                 .forEach(testTool -> reviewTestToolFields(listing, certResult, testTool));
         }
     }
 
     private void reviewCriteriaCanHaveTestToolData(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_TOOLS_USED)
-                && certResult.getTestToolsUsed() != null && certResult.getTestToolsUsed().size() > 0) {
-            listing.getErrorMessages().add(msgUtil.getMessage(
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_TOOLS_USED)) {
+            if (!CollectionUtils.isEmpty(certResult.getTestToolsUsed())) {
+                listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.testToolsNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
+            certResult.setTestToolsUsed(null);
         }
     }
 
     private void removeTestToolsWithoutIds(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (certResult.getTestToolsUsed() == null || certResult.getTestToolsUsed().size() == 0) {
+        if (CollectionUtils.isEmpty(certResult.getTestToolsUsed())) {
             return;
         }
         Iterator<CertificationResultTestTool> testToolIter = certResult.getTestToolsUsed().iterator();
@@ -83,7 +86,7 @@ public class TestToolReviewer extends PermissionBasedReviewer {
     private void reviewTestToolsRequiredWhenCertResultIsNotGap(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!isGapEligibileAndHasGap(certResult)
                 && certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_TOOLS_USED)
-                && (certResult.getTestToolsUsed() == null || certResult.getTestToolsUsed().size() == 0)) {
+                && CollectionUtils.isEmpty(certResult.getTestToolsUsed())) {
                     addCriterionErrorOrWarningByPermission(listing, certResult,
                             "listing.criteria.missingTestTool",
                             Util.formatCriteriaNumber(certResult.getCriterion()));
