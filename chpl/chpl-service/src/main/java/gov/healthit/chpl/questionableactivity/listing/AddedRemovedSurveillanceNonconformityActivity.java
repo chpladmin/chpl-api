@@ -65,7 +65,7 @@ public class AddedRemovedSurveillanceNonconformityActivity implements ListingAct
         return origNonconformities.stream()
                 .filter(nc -> hasNonconformityBeenUpdatedToRemovedNonconformity(nc, newNonconformities))
                 .map(nc -> QuestionableActivityListingDTO.builder()
-                        .after(String.format("Non-conformity of type %s is removed and was added to surveillance.", nc.getNonconformityType()))
+                        .after(String.format("Non-conformity of type %s is removed and was added to surveillance.", getMatchingNonconformity(nc, newNonconformities).get().getNonconformityType()))
                         .build())
                 .collect(Collectors.toList());
     }
