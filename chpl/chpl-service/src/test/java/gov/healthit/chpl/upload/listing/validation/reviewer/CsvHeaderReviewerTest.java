@@ -195,6 +195,31 @@ public class CsvHeaderReviewerTest {
     }
 
     @Test
+    public void review_oneDuplicateListingLevelHeading_HeadingsHaveDifferentStringsMappedToSameValue_hasError() {
+        ListingUpload listingUploadMetadata = ListingUpload.builder()
+                .records(ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,PRODUCT,VENDOR_WEBSITE,VENDOR_EMAIL,VENDOR_PHONE"))
+                .build();
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
+        reviewer.review(listingUploadMetadata, listing);
+
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CSV_DUPLICATE_HEADER, "PRODUCT", "")));
+    }
+
+    @Test
+    public void review_twoDuplicateListingLevelHeading_HeadingsHaveDifferentStringsMappedToSameValue_hasError() {
+        ListingUpload listingUploadMetadata = ListingUpload.builder()
+                .records(ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,DEVELOPER,VENDOR__C,PRODUCT__C,PRODUCT,VENDOR_WEBSITE,VENDOR_EMAIL,VENDOR_PHONE"))
+                .build();
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
+        reviewer.review(listingUploadMetadata, listing);
+
+        assertEquals(2, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CSV_DUPLICATE_HEADER, "PRODUCT", "")));
+        assertTrue(listing.getErrorMessages().contains(String.format(CSV_DUPLICATE_HEADER, "VENDOR__C", "")));
+    }
+
+    @Test
     public void review_multipleDuplicateListingLevelHeadings_hasErrors() {
         ListingUpload listingUploadMetadata = ListingUpload.builder()
                 .records(ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,VENDOR_WEBSITE,VENDOR__C,PRODUCT__C,UNIQUE_CHPL_ID__C,VENDOR_WEBSITE,VENDOR_EMAIL,VENDOR_PHONE,VENDOR_PHONE"))
@@ -242,6 +267,18 @@ public class CsvHeaderReviewerTest {
 
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(String.format(CSV_DUPLICATE_CRITERIA_HEADER, "GAP", "CRITERIA_170_315_A_8__C")));
+    }
+
+    @Test
+    public void review_oneDuplicateCertResultLevelHeading_HeadingsHaveDifferentStringsMappedToSameValue_hasError() {
+        ListingUpload listingUploadMetadata = ListingUpload.builder()
+                .records(ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,CRITERIA_170_315_A_8__C,GAP,Test Data,Test Procedure,Standard Tested Against,Optional Standard"))
+                .build();
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
+        reviewer.review(listingUploadMetadata, listing);
+
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CSV_DUPLICATE_CRITERIA_HEADER, "Optional Standard", "CRITERIA_170_315_A_8__C")));
     }
 
     @Test

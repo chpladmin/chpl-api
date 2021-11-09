@@ -93,10 +93,12 @@ public class CSVHeaderReviewer {
 
     public Set<String> findDuplicates(List<String> originalValues) {
         Set<String> setOfDuplicates = new LinkedHashSet<String>();
-        Set<String> setToTest = new LinkedHashSet<String>();
+        Set<Headings> setToTest = new LinkedHashSet<Headings>();
         for (String value : originalValues) {
-            if (!setToTest.add(value)) {
-                setOfDuplicates.add(value);
+            if (!StringUtils.isEmpty(value) && Headings.getHeading(value) != null) {
+                if (!setToTest.add(Headings.getHeading(value))) {
+                    setOfDuplicates.add(value);
+                }
             }
         }
         return setOfDuplicates;
