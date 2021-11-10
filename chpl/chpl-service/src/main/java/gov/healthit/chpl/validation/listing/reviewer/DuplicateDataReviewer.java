@@ -11,6 +11,8 @@ import gov.healthit.chpl.validation.listing.reviewer.duplicate.AdditionalSoftwar
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.AtlDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.IcsSourceDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.MeasureDuplicateReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.duplicate.OptionalStandardDuplicateReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.duplicate.PromotingInteroperabilityUserCountReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.QmsStandardDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TargetedUserDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestDataDuplicateReviewer;
@@ -26,6 +28,7 @@ public class DuplicateDataReviewer implements Reviewer {
     private TestToolDuplicateReviewer testToolDuplicateReviewer;
     private TestProcedureDuplicateReviewer testProcedureDuplicateReviewer;
     private TestStandardDuplicateReviewer testStandardDuplicateReviewer;
+    private OptionalStandardDuplicateReviewer optionalStandardDuplicateReviewer;
     private AdditionalSoftwareDuplicateReviewer additionalSoftwareDuplicateReviewer;
     private AccessibilityStandardDuplicateReviewer accessibilityStandardDuplicateReviewer;
     private QmsStandardDuplicateReviewer qmsStandardDuplicateReviewer;
@@ -33,6 +36,7 @@ public class DuplicateDataReviewer implements Reviewer {
     private IcsSourceDuplicateReviewer icsSourceDuplicateReviewer;
     private AtlDuplicateReviewer atlDuplicateReviewer;
     private TargetedUserDuplicateReviewer targetedUserDuplicateReviewer;
+    private PromotingInteroperabilityUserCountReviewer piuReviewer;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
@@ -42,18 +46,21 @@ public class DuplicateDataReviewer implements Reviewer {
             @Qualifier("testToolDuplicateReviewer") TestToolDuplicateReviewer testToolDuplicateReviewer,
             @Qualifier("testProcedureDuplicateReviewer") TestProcedureDuplicateReviewer testProcedureDuplicateReviewer,
             @Qualifier("testStandardDuplicateReviewer") TestStandardDuplicateReviewer testStandardDuplicateReviewer,
+            @Qualifier("optionalStandardDuplicateReviewer") OptionalStandardDuplicateReviewer optionalStandardDuplicateReviewer,
             @Qualifier("additionalSoftwareDuplicateReviewer") AdditionalSoftwareDuplicateReviewer additionalSoftwareDuplicateReviewer,
             @Qualifier("accessibilityStandardDuplicateReviewer") AccessibilityStandardDuplicateReviewer accessibilityStandardDuplicateReviewer,
             @Qualifier("qmsStandardDuplicateReviewer") QmsStandardDuplicateReviewer qmsStandardDuplicateReviewer,
             @Qualifier("measureDuplicateReviewer") MeasureDuplicateReviewer measureDuplicateReviewer,
             @Qualifier("icsSourceDuplicateReviewer") IcsSourceDuplicateReviewer icsSourceDuplicateReviewer,
             @Qualifier("atlDuplicateReviewer") AtlDuplicateReviewer atlDuplicateReviewer,
-            @Qualifier("targetedUserDuplicateReviewer") TargetedUserDuplicateReviewer targetedUserDuplicateReviewer) {
+            @Qualifier("targetedUserDuplicateReviewer") TargetedUserDuplicateReviewer targetedUserDuplicateReviewer,
+            @Qualifier("promotingInteroperabilityUserCountDuplicateReviewer") PromotingInteroperabilityUserCountReviewer piuReviewer) {
         this.testFunctionalityDuplicateReviewer = testFunctionalityDuplicateReviewer;
         this.testDataDuplicateReviewer = testDataDuplicateReviewer;
         this.testToolDuplicateReviewer = testToolDuplicateReviewer;
         this.testProcedureDuplicateReviewer = testProcedureDuplicateReviewer;
         this.testStandardDuplicateReviewer = testStandardDuplicateReviewer;
+        this.optionalStandardDuplicateReviewer = optionalStandardDuplicateReviewer;
         this.additionalSoftwareDuplicateReviewer = additionalSoftwareDuplicateReviewer;
         this.accessibilityStandardDuplicateReviewer = accessibilityStandardDuplicateReviewer;
         this.qmsStandardDuplicateReviewer = qmsStandardDuplicateReviewer;
@@ -61,6 +68,7 @@ public class DuplicateDataReviewer implements Reviewer {
         this.icsSourceDuplicateReviewer = icsSourceDuplicateReviewer;
         this.atlDuplicateReviewer = atlDuplicateReviewer;
         this.targetedUserDuplicateReviewer = targetedUserDuplicateReviewer;
+        this.piuReviewer = piuReviewer;
     }
 
     @Override
@@ -71,6 +79,7 @@ public class DuplicateDataReviewer implements Reviewer {
         measureDuplicateReviewer.review(listing);
         icsSourceDuplicateReviewer.review(listing);
         targetedUserDuplicateReviewer.review(listing);
+        piuReviewer.review(listing);
 
         for (CertificationResult cr : listing.getCertificationResults()) {
             additionalSoftwareDuplicateReviewer.review(listing, cr);
@@ -78,6 +87,7 @@ public class DuplicateDataReviewer implements Reviewer {
             testProcedureDuplicateReviewer.review(listing, cr);
             testDataDuplicateReviewer.review(listing, cr);
             testStandardDuplicateReviewer.review(listing, cr);
+            optionalStandardDuplicateReviewer.review(listing, cr);
             testFunctionalityDuplicateReviewer.review(listing, cr);
         }
     }

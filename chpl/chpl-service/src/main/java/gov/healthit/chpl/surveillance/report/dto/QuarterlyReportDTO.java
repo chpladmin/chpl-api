@@ -1,37 +1,43 @@
 package gov.healthit.chpl.surveillance.report.dto;
 
-import java.util.Calendar;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.surveillance.report.domain.Quarter;
 import gov.healthit.chpl.surveillance.report.entity.QuarterlyReportEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class QuarterlyReportDTO {
 
     private Long id;
     private CertificationBodyDTO acb;
     private Integer year;
-    private QuarterDTO quarter;
+    private Quarter quarter;
     private String activitiesOutcomesSummary;
-    private String reactiveSummary;
+    private String reactiveSurveillanceSummary;
     private String prioritizedElementSummary;
-    private String disclosureSummary;
+    private String disclosureRequirementsSummary;
 
     public QuarterlyReportDTO(QuarterlyReportEntity entity) {
         this();
         this.id = entity.getId();
         this.year = entity.getYear();
         this.activitiesOutcomesSummary = entity.getActivitiesOutcomesSummary();
-        this.reactiveSummary = entity.getReactiveSummary();
+        this.reactiveSurveillanceSummary = entity.getReactiveSurveillanceSummary();
         this.prioritizedElementSummary = entity.getPrioritizedElementSummary();
-        this.disclosureSummary = entity.getDisclosureSummary();
+        this.disclosureRequirementsSummary = entity.getDisclosureRequirementsSummary();
 
         if (entity.getAcb() != null) {
             this.acb = new CertificationBodyDTO(entity.getAcb());
@@ -41,40 +47,40 @@ public class QuarterlyReportDTO {
         }
 
         if (entity.getQuarter() != null) {
-            this.quarter = new QuarterDTO(entity.getQuarter());
+            this.quarter = new Quarter(entity.getQuarter());
         } else {
-            this.quarter = new QuarterDTO();
+            this.quarter = new Quarter();
             this.quarter.setId(entity.getQuarterId());
         }
     }
 
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         if (getYear() == null || getQuarter() == null) {
             return null;
         }
-        Calendar quarterStartCal = Calendar.getInstance();
-        quarterStartCal.set(Calendar.YEAR, getYear());
-        quarterStartCal.set(Calendar.MONTH, getQuarter().getStartMonth() - 1);
-        quarterStartCal.set(Calendar.DAY_OF_MONTH, getQuarter().getStartDay());
-        quarterStartCal.set(Calendar.HOUR_OF_DAY, 0);
-        quarterStartCal.set(Calendar.MINUTE, 0);
-        quarterStartCal.set(Calendar.SECOND, 0);
-        quarterStartCal.set(Calendar.MILLISECOND, 0);
-        return quarterStartCal.getTime();
+        return LocalDate.of(getYear(), getQuarter().getStartMonth(), getQuarter().getStartDay());
     }
 
-    public Date getEndDate() {
+    public Date getStartDateTime() {
+        LocalDate localDate = getStartDate();
+        if (localDate == null) {
+            return null;
+        }
+        return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    }
+
+    public LocalDate getEndDate() {
         if (getYear() == null || getQuarter() == null) {
             return null;
         }
-        Calendar quarterEndCal = Calendar.getInstance();
-        quarterEndCal.set(Calendar.YEAR, getYear());
-        quarterEndCal.set(Calendar.MONTH, getQuarter().getEndMonth() - 1);
-        quarterEndCal.set(Calendar.DAY_OF_MONTH, getQuarter().getEndDay());
-        quarterEndCal.set(Calendar.HOUR_OF_DAY, 23);
-        quarterEndCal.set(Calendar.MINUTE, 59);
-        quarterEndCal.set(Calendar.SECOND, 59);
-        quarterEndCal.set(Calendar.MILLISECOND, 999);
-        return quarterEndCal.getTime();
+        return LocalDate.of(getYear(), getQuarter().getEndMonth(), getQuarter().getEndDay());
+    }
+
+    public Date getEndDateTime() {
+        LocalDate localDate = getEndDate();
+        if (localDate == null) {
+            return null;
+        }
+        return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 }

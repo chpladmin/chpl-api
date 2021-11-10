@@ -3,8 +3,6 @@ package gov.healthit.chpl.scheduler;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import javax.mail.MessagingException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -14,10 +12,11 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
+import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.HtmlEmailTemplate;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
-import gov.healthit.chpl.util.EmailBuilder;
-import gov.healthit.chpl.util.HtmlEmailTemplate;
 import lombok.extern.log4j.Log4j2;
 
 @Service
@@ -42,7 +41,7 @@ public class ChplRepeatableTriggerChangeEmailer {
         this.emailStyles = emailStyles;
     }
 
-    public void sendEmail(ChplRepeatableTrigger trigger, ChplJob job, String action) throws MessagingException {
+    public void sendEmail(ChplRepeatableTrigger trigger, ChplJob job, String action) throws EmailNotSentException {
         EmailBuilder email = new EmailBuilder(environment);
         email.recipient(trigger.getEmail())
                 .subject(emailSubject)

@@ -2,7 +2,6 @@ package gov.healthit.chpl;
 
 import java.io.IOException;
 
-import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,9 +12,8 @@ import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
@@ -24,6 +22,7 @@ import gov.healthit.chpl.domain.error.ObjectMissingValidationErrorResponse;
 import gov.healthit.chpl.domain.error.ObjectsMissingValidationErrorResponse;
 import gov.healthit.chpl.domain.error.ValidationErrorResponse;
 import gov.healthit.chpl.exception.CertificationBodyAccessException;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -40,14 +39,10 @@ import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
 import lombok.extern.log4j.Log4j2;
 
-/**
- * Catch thrown exceptions to return the proper response code and message back to the client.
- * @author kekey
- *
- */
-@ControllerAdvice
+@RestControllerAdvice
 @Log4j2
 public class ApiExceptionControllerAdvice {
+
     @ExceptionHandler(NotImplementedException.class)
     public ResponseEntity<ErrorResponse> exception(NotImplementedException e) {
         return new ResponseEntity<ErrorResponse>(new ErrorResponse(e.getMessage()), HttpStatus.NOT_IMPLEMENTED);
@@ -143,10 +138,9 @@ public class ApiExceptionControllerAdvice {
         return new ResponseEntity<ErrorResponse>(new ErrorResponse("Access Denied"), HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler(MessagingException.class)
-    public ResponseEntity<ErrorResponse> exception(MessagingException e) {
-        LOGGER.error("Could not send email", e);
-        return new ResponseEntity<ErrorResponse>(new ErrorResponse("Could not send email. " + e.getMessage()),
+    @ExceptionHandler(EmailNotSentException.class)
+    public ResponseEntity<ErrorResponse> exception(EmailNotSentException e) {
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse(e.getMessage()),
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -227,11 +221,9 @@ public class ApiExceptionControllerAdvice {
     }
 
     @ExceptionHandler(IOException.class)
-    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     public ResponseEntity<ErrorResponse> exceptionHandler(IOException e, HttpServletRequest request) {
         if (StringUtils.containsIgnoreCase(ExceptionUtils.getRootCauseMessage(e), "Broken pipe")) {
-            LOGGER.info("Broke Pipe IOException occurred: " + request.getMethod() + " " + request.getRequestURL());
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.warn("Broke Pipe IOException occurred: " + request.getMethod() + " " + request.getRequestURL());
             return null; //socket is closed, cannot return any response
         } else {
             return new ResponseEntity<ErrorResponse>(

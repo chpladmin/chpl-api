@@ -20,6 +20,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
+import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityStatus;
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
@@ -153,9 +156,11 @@ public class SurveillanceUploadManager extends SecuredManager {
                                     SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
                                     Surveillance pendingSurv = handler.handle();
                                     List<String> errors = checkUploadedSurveillanceOwnership(pendingSurv);
+                                    errors.addAll(checkNonConformityStatusAndCloseDate(pendingSurv));
                                     for (String error : errors) {
                                         pendingSurv.getErrorMessages().add(error);
                                     }
+                                    setNonConformityCloseDate(pendingSurv);
                                     pendingSurvs.add(pendingSurv);
                                 } catch (final InvalidArgumentsException ex) {
                                     handlerErrors.add(ex.getMessage());
@@ -175,9 +180,11 @@ public class SurveillanceUploadManager extends SecuredManager {
                         SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
                         Surveillance pendingSurv = handler.handle();
                         List<String> errors = checkUploadedSurveillanceOwnership(pendingSurv);
+                        errors.addAll(checkNonConformityStatusAndCloseDate(pendingSurv));
                         for (String error : errors) {
                             pendingSurv.getErrorMessages().add(error);
                         }
+                        setNonConformityCloseDate(pendingSurv);
                         pendingSurvs.add(pendingSurv);
                     } catch (final InvalidArgumentsException ex) {
                         handlerErrors.add(ex.getMessage());
@@ -222,6 +229,19 @@ public class SurveillanceUploadManager extends SecuredManager {
         return pendingSurvs;
     }
 
+    public List<String> checkNonConformityStatusAndCloseDate(Surveillance pendingSurv) {
+        List<String> errors = new ArrayList<String>();
+        for (SurveillanceRequirement req : pendingSurv.getRequirements()) {
+            for (SurveillanceNonconformity nc : req.getNonconformities()) {
+                if (nc.getStatus() != null
+                        && nc.getStatus().getName().equalsIgnoreCase(SurveillanceNonconformityStatus.CLOSED)
+                        && nc.getCapEndDay() == null) {
+                    errors.add(errorMessageUtil.getMessage("surveillance.nonconformity.closedStatusInvalid", pendingSurv.getCertifiedProduct().getChplProductNumber()));
+                }
+            }
+        }
+        return errors;
+    }
 
     public List<String> checkUploadedSurveillanceOwnership(Surveillance pendingSurv) {
         List<String> errors = new ArrayList<String>();
@@ -242,4 +262,17 @@ public class SurveillanceUploadManager extends SecuredManager {
         return errors;
     }
 
+    public Surveillance setNonConformityCloseDate(Surveillance pendingSurv) {
+        for (SurveillanceRequirement req : pendingSurv.getRequirements()) {
+            for (SurveillanceNonconformity nc : req.getNonconformities()) {
+                if (nc.getStatus() != null
+                        && nc.getStatus().getName().equalsIgnoreCase(SurveillanceNonconformityStatus.CLOSED)
+                        && nc.getCapEndDay() != null) {
+                    nc.setNonconformityCloseDate(nc.getCapEndDay());
+                    nc.setNonconformityCloseDay(nc.getCapEndDay());
+                }
+            }
+        }
+        return pendingSurv;
+    }
 }

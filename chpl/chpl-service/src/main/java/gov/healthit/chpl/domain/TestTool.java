@@ -2,6 +2,8 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 
+import gov.healthit.chpl.entity.TestToolEntity;
+
 public class TestTool extends KeyValueModel implements Serializable {
     private static final long serialVersionUID = -3761135258251736516L;
     private boolean retired;
@@ -12,6 +14,11 @@ public class TestTool extends KeyValueModel implements Serializable {
 
     public TestTool(Long id, String name) {
         super(id, name);
+    }
+
+    public TestTool(TestToolEntity entity) {
+        super(entity.getId(), entity.getName());
+        this.retired = entity.getRetired();
     }
 
     public TestTool(Long id, String name, String description) {

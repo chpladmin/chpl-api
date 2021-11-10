@@ -49,6 +49,7 @@ import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTargetedU
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTestingLabMapEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCqmCriterionEntity;
 import gov.healthit.chpl.listing.measure.PendingListingMeasureEntity;
+import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -109,7 +110,7 @@ public class PendingCertifiedProductDTO implements Serializable {
     private Boolean hasQms;
     private Boolean accessibilityCertified;
     private TransparencyAttestationDTO transparencyAttestation;
-    private String transparencyAttestationUrl;
+    private String mandatoryDisclosures;
     private String svapNoticeUrl;
 
     @Singular
@@ -223,7 +224,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         if (details.getTransparencyAttestation() != null) {
             this.transparencyAttestation = new TransparencyAttestationDTO(details.getTransparencyAttestation());
         }
-        this.transparencyAttestationUrl = details.getTransparencyAttestationUrl();
+        this.mandatoryDisclosures = details.getMandatoryDisclosures();
         this.accessibilityCertified = details.getAccessibilityCertified();
         this.svapNoticeUrl = details.getSvapNoticeUrl();
 
@@ -347,6 +348,17 @@ public class PendingCertifiedProductDTO implements Serializable {
                     as.setVersion(software.getVersion());
                     as.setGrouping(software.getGrouping());
                     certDto.getAdditionalSoftware().add(as);
+                }
+            }
+
+            if (crResult.getOptionalStandards() != null && crResult.getOptionalStandards().size() > 0) {
+                for (CertificationResultOptionalStandard std : crResult.getOptionalStandards()) {
+                    PendingCertificationResultOptionalStandardDTO stdDto = PendingCertificationResultOptionalStandardDTO.builder()
+                            .citation(std.getCitation())
+                            .optionalStandardId(std.getOptionalStandardId())
+                            .id(std.getId())
+                            .build();
+                    certDto.getOptionalStandards().add(stdDto);
                 }
             }
 
@@ -601,7 +613,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         if (entity.getTransparencyAttestation() != null) {
             this.transparencyAttestation = new TransparencyAttestationDTO(entity.getTransparencyAttestation().toString());
         }
-        this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
+        this.mandatoryDisclosures = entity.getMandatoryDisclosures();
 
         this.uploadDate = entity.getCreationDate();
 

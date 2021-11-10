@@ -6,7 +6,7 @@ import java.util.Arrays;
 import org.apache.logging.log4j.Logger;
 import org.springframework.core.env.Environment;
 
-import gov.healthit.chpl.util.EmailBuilder;
+import gov.healthit.chpl.email.EmailBuilder;
 
 public class JobResponseStatusUpdateEmail {
 

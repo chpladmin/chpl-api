@@ -41,6 +41,8 @@ import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.dto.auth.InvitationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserInvitationDTO;
+import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -58,12 +60,13 @@ import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.auth.AuthenticationManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.util.AuthUtil;
-import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Api(value = "users")
+@Tag(name = "users", description = "Allows management of users.")
 @RestController
 @RequestMapping("/users")
 @Loggable
@@ -93,18 +96,19 @@ public class UserManagementController {
         this.msgUtil = errorMessageUtil;
     }
 
-    @ApiOperation(value = "Create a new user account from an invitation.",
-            notes = "An individual who has been invited to the CHPL has a special user key in their invitation email. "
+    @Operation(summary = "Create a new user account from an invitation.",
+            description = "An individual who has been invited to the CHPL has a special user key in their invitation email. "
                     + "That user key along with all the information needed to create a new user's account "
                     + "can be passed in here. The account is created but cannot be used until that user "
                     + "confirms that their email address is valid. The correct order to call invitation requests is "
-                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
+                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm ",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public @ResponseBody User createUser(@RequestBody CreateUserFromInvitationRequest userInfo)
             throws ValidationException, EntityRetrievalException, InvalidArgumentsException,
             UserRetrievalException, MultipleUserAccountsException, UserCreationException,
-            MessagingException, JsonProcessingException, EntityCreationException {
+            EmailNotSentException, JsonProcessingException, EntityCreationException {
 
         if (userInfo.getUser() == null || userInfo.getUser().getEmail() == null) {
             throw new ValidationException(msgUtil.getMessage("user.email.required"));
@@ -130,7 +134,7 @@ public class UserManagementController {
                 + "Please click the link below to activate your account: <br/>" + env.getProperty("chplUrlBegin")
                 + "/#/registration/confirm-user/" + invitation.getConfirmToken() + "</p>"
                 + "<p>If you have any issues completing the registration, "
-                + "please visit the <a href=\"https://inquiry.healthit.gov/\">Health IT Feedback and Inquiry Portal</a> and select \"Certified Health IT Product List (CHPL)\" to submit a ticket.</p>"
+                + "please visit the <a href=\"https://inquiry.healthit.gov/support/plugins/servlet/loginfreeRedirMain?portalid=2&request=51\">Health IT Feedback and Inquiry Portal</a> and select \"Certified Health IT Product List (CHPL)\" to submit a ticket.</p>"
                 + "<p>The CHPL Team</p>";
 
         String[] toEmails = {
@@ -180,13 +184,14 @@ public class UserManagementController {
         return validationErrors;
     }
 
-    @ApiOperation(value = "Confirm that a user's email address is valid.",
-            notes = "When a new user accepts their invitation to the CHPL they have to provide "
+    @Operation(summary = "Confirm that a user's email address is valid.",
+            description = "When a new user accepts their invitation to the CHPL they have to provide "
                     + "an email address. They then receive an email prompting them to confirm "
                     + "that this email address is valid. Confirming the email address must be done "
                     + "via this request before the user will be allowed to log in with "
                     + "the credentials they selected. " + "The correct order to call invitation requests is "
-                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
+                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm ",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/confirm", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public User confirmUser(@RequestBody String hash) throws InvalidArgumentsException, UserRetrievalException,
@@ -203,11 +208,13 @@ public class UserManagementController {
         return new User(createdUser);
     }
 
-    @ApiOperation(value = "Update an existing user account with new permissions.",
-            notes = "Gives the user permission on the object in the invitation (usually an additional ACB or ATL)."
+    @Operation(summary = "Update an existing user account with new permissions.",
+            description = "Gives the user permission on the object in the invitation (usually an additional ACB or ATL)."
                     + "The correct order to call invitation requests is "
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm.  Security Restrictions: ROLE_ADMIN "
-                    + "or ROLE_ONC.")
+                    + "or ROLE_ONC.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/{userId}/authorize", method = RequestMethod.POST,
     consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
@@ -251,20 +258,22 @@ public class UserManagementController {
         return "{\"token\": \"" + authenticationManager.getJWT(updatedUser) + "\"}";
     }
 
-    @ApiOperation(value = "Invite a user to the CHPL.",
-            notes = "This request creates an invitation that is sent to the email address provided. "
+    @Operation(summary = "Invite a user to the CHPL.",
+            description = "This request creates an invitation that is sent to the email address provided. "
                     + "The recipient of this invitation can then choose to create a new account "
                     + "or add the permissions contained within the invitation to an existing account "
                     + "if they have one. Said another way, an invitation can be used to create or "
                     + "modify CHPL user accounts." + "The correct order to call invitation requests is "
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm. "
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC can invite users to any organization.  "
-                    + "ROLE_ACB and ROLE_ATL can add users to their own organization.")
+                    + "ROLE_ACB and ROLE_ATL can add users to their own organization.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/invite", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public UserInvitation inviteUser(@RequestBody UserInvitation invitation)
             throws InvalidArgumentsException, UserCreationException, UserRetrievalException,
-            UserPermissionRetrievalException, AddressException, MessagingException {
+            UserPermissionRetrievalException, AddressException, EmailNotSentException {
 
         if (!ff4j.check(FeatureList.ROLE_DEVELOPER) && invitation.getRole().equals(Authority.ROLE_DEVELOPER)) {
             throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
@@ -301,7 +310,7 @@ public class UserManagementController {
                 + env.getProperty("chplUrlBegin") + "/#/registration/create-user/" + createdInvite.getInviteToken()
                 + "</p>"
                 + "<p>If you have any issues completing the registration, "
-                + "please visit the <a href=\"https://inquiry.healthit.gov/\">Health IT Feedback and Inquiry Portal</a> and select \"Certified Health IT Product List (CHPL)\" to submit a ticket.</p>"
+                + "please visit the <a href=\"https://inquiry.healthit.gov/support/plugins/servlet/loginfreeRedirMain?portalid=2&request=51\">Health IT Feedback and Inquiry Portal</a> and select \"Certified Health IT Product List (CHPL)\" to submit a ticket.</p>"
                 + "<p>Take care,<br/> " + "The CHPL Team</p>";
 
         String[] toEmails = {
@@ -318,7 +327,9 @@ public class UserManagementController {
         return result;
     }
 
-    @ApiOperation(value = "Modify user information.", notes = "")
+    @Operation(summary = "Modify user information.", description = "",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/{userId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = "application/json; charset=utf-8")
     public User updateUserDetails(@RequestBody User userInfo)
@@ -334,9 +345,11 @@ public class UserManagementController {
         return new User(updated);
     }
 
-    @ApiOperation(value = "Delete a user.",
-            notes = "Deletes a user account and all associated authorities on ACBs and ATLs. "
-                    + "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
+    @Operation(summary = "Delete a user.",
+            description = "Deletes a user account and all associated authorities on ACBs and ATLs. "
+                    + "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public String deleteUser(@PathVariable("userId") Long userId)
@@ -361,9 +374,11 @@ public class UserManagementController {
         return "{\"deletedUser\" : true}";
     }
 
-    @ApiOperation(value = "View users of the system.",
-            notes = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can see all users.  ROLE_ACB, ROLE_ATL, "
-                    + "and ROLE_CMS_STAFF can see their self.")
+    @Operation(summary = "View users of the system.",
+            description = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can see all users.  ROLE_ACB, ROLE_ATL, "
+                    + "and ROLE_CMS_STAFF can see themselves.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @PreAuthorize("isAuthenticated()")
     public @ResponseBody UsersResponse getUsers() {
@@ -381,11 +396,14 @@ public class UserManagementController {
     }
 
     @Deprecated
-    @ApiOperation(value = "DEPRECATED. View a specific user's details.",
-            notes = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
-                    + "have ROLE_ACB.")
+    @Operation(summary = "DEPRECATED. View a specific user's details.",
+            description = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
+                    + "have ROLE_ACB.",
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/{userName}/details", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     public @ResponseBody User getUserByUsername(@PathVariable("userName") String userName)
             throws UserRetrievalException, MultipleUserAccountsException {
         UserDTO user = userManager.getByNameOrEmail(userName);
@@ -395,9 +413,11 @@ public class UserManagementController {
         throw new UsernameNotFoundException("The user " + userName + " was not found.");
     }
 
-    @ApiOperation(value = "View a specific user's details.",
-            notes = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
-                    + "have ROLE_ACB.")
+    @Operation(summary = "View a specific user's details.",
+            description = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
+                    + "have ROLE_ACB.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/beta/{id}/details", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody User getUser(@PathVariable("id") Long id)

@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.mail.MessagingException;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.quartz.Job;
@@ -24,11 +22,13 @@ import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
 import gov.healthit.chpl.realworldtesting.manager.RealWorldTestingReportService;
-import gov.healthit.chpl.util.EmailBuilder;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "realWorldTestingReportEmailJobLogger")
@@ -42,6 +42,9 @@ public class RealWorldTestingReportEmailJob implements Job {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
 
     private List<Long> acbIds = new ArrayList<Long>();
 
@@ -67,15 +70,23 @@ public class RealWorldTestingReportEmailJob implements Job {
                 .collect(Collectors.toList());
     }
 
-    private void sendEmail(JobExecutionContext context, List<RealWorldTestingReport> rows) throws MessagingException {
+    private void sendEmail(JobExecutionContext context, List<RealWorldTestingReport> rows) throws EmailNotSentException {
         LOGGER.info("Sending email to: " + context.getMergedJobDataMap().getString("email"));
         EmailBuilder emailBuilder = new EmailBuilder(env);
         emailBuilder.recipient(context.getMergedJobDataMap().getString("email"))
                 .subject(env.getProperty("rwt.report.subject"))
-                .htmlMessage(String.format(env.getProperty("rwt.report.body"), getAcbNamesAsCommaSeparatedList(context)))
+                .htmlMessage(createHtmlMessage(context))
                 .fileAttachments(new ArrayList<File>(Arrays.asList(generateCsvFile(context, rows))))
                 .sendEmail();
         LOGGER.info("Completed Sending email to: " + context.getMergedJobDataMap().getString("email"));
+    }
+
+    private String createHtmlMessage(JobExecutionContext context) {
+        return chplHtmlEmailBuilder.initialize()
+                .heading(env.getProperty("rwt.report.subject"))
+                .paragraph(String.format(env.getProperty("rwt.report.body")), getAcbNamesAsBrSeparatedList(context))
+                .footer(true)
+                .build();
     }
 
     private File generateCsvFile(JobExecutionContext context, List<RealWorldTestingReport> rows) {
@@ -119,12 +130,12 @@ public class RealWorldTestingReportEmailJob implements Job {
         return outputFile;
     }
 
-    private String getAcbNamesAsCommaSeparatedList(JobExecutionContext jobContext) {
+    private String getAcbNamesAsBrSeparatedList(JobExecutionContext jobContext) {
         if (Objects.nonNull(jobContext.getMergedJobDataMap().getString("acb"))) {
             return Arrays.asList(
                     jobContext.getMergedJobDataMap().getString("acb").split(SchedulerManager.DATA_DELIMITER)).stream()
                     .map(acbId -> getAcbName(Long.valueOf(acbId)))
-                    .collect(Collectors.joining(", "));
+                    .collect(Collectors.joining("<br />"));
         } else {
             return "";
         }

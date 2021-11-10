@@ -17,7 +17,6 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Where;
 
-import gov.healthit.chpl.util.Util;
 import lombok.Data;
 
 @Entity
@@ -71,8 +70,8 @@ public class CertifiedProductSummaryEntity implements Serializable {
     @Column(name = "other_acb")
     private String otherAcb;
 
-    @Column(name = "transparency_attestation_url")
-    private String transparencyAttestationUrl;
+    @Column(name = "mandatory_disclosures")
+    private String mandatoryDisclosures;
 
     @Column(name = "ics")
     private Boolean ics;
@@ -113,8 +112,8 @@ public class CertifiedProductSummaryEntity implements Serializable {
     @Column(name = "deleted")
     private Boolean deleted;
 
-    @Column(name = "meaningful_use_users")
-    private Long meaninigfulUseUsers;
+    @Column(name = "promoting_interoperability_user_count")
+    private Long promotingInteroperabilityUserCount;
 
     @Column(name = "pending_certified_product_id")
     private Long pendingCertifiedProductId;
@@ -167,9 +166,6 @@ public class CertifiedProductSummaryEntity implements Serializable {
     @Where(clause = "deleted <> 'true'")
     private Set<CertificationResultDetailsEntity> certificationResults = new HashSet<CertificationResultDetailsEntity>();
 
-    @Column(name = "rwt_eligibility_year")
-    private Integer rwtEligibilityYear;
-
     @Column(name = "rwt_plans_url")
     private String rwtPlansUrl;
 
@@ -184,28 +180,4 @@ public class CertifiedProductSummaryEntity implements Serializable {
 
     @Column(name = "svap_notice_url")
     private String svapNoticeUrl;
-
-    public Date getSedTestingEnd() {
-        return Util.getNewDate(sedTestingEnd);
-    }
-
-    public void setSedTestingEnd(Date sedTestingEnd) {
-        this.sedTestingEnd = Util.getNewDate(sedTestingEnd);
-    }
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
 }

@@ -3,7 +3,6 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,16 +25,19 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.compliance.DirectReview;
+import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
+import org.apache.commons.collections.CollectionUtils;
+
 
 /**
  * Certified Product Search Details entity.
@@ -166,10 +168,7 @@ public class CertifiedProductSearchDetails implements Serializable {
     @Singular
     private List<CertifiedProductTestingLab> testingLabs = new ArrayList<CertifiedProductTestingLab>();
 
-    /**
-     * Certification date represented in milliseconds since epoch
-     */
-    @XmlElement(required = true)
+    @XmlTransient
     private Long certificationDate;
 
     @XmlTransient
@@ -261,7 +260,14 @@ public class CertifiedProductSearchDetails implements Serializable {
      * A hyperlink to the mandatory disclosures required by 170.523(k)(1) for the Health IT Module
      */
     @XmlElement(required = false, nillable = true)
+    @Deprecated
     private String transparencyAttestationUrl;
+
+    /**
+     * A hyperlink to the mandatory disclosures required by 170.523(k)(1) for the Health IT Module
+     */
+    @XmlElement(required = false, nillable = true)
+    private String mandatoryDisclosures;
 
     /**
      * The last time this listing was modified in any way given in milliseconds since epoch.
@@ -339,6 +345,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElementWrapper(name = "cqmResults", nillable = true, required = false)
     @XmlElement(name = "cqmResult")
+    @Builder.Default
     private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
 
     /**
@@ -370,13 +377,18 @@ public class CertifiedProductSearchDetails implements Serializable {
     @XmlElement(required = false, nillable = true)
     private Boolean curesUpdate;
 
-    /**
-     * All current and historical values of meaningful use users for this listing along with the dates each meaningful
-     * use user count was valid. Dates are given in milliseconds since epoch.
-     */
-    @XmlElementWrapper(name = "meaningfulUseUserHistory", nillable = true, required = false)
-    @XmlElement(name = "meaningfulUseEntry")
+    @XmlTransient
+    @Deprecated
     private List<MeaningfulUseUser> meaningfulUseUserHistory = new ArrayList<MeaningfulUseUser>();
+
+    /**
+     * All current and historical values of promoting interoperability for this listing along with the dates each
+     * user count was valid.
+     */
+    @XmlElementWrapper(name = "promotingInteroperabilityUserHistory", nillable = true, required = false)
+    @XmlElement(name = "promotingInteroperabilityUserEntry")
+    @Builder.Default
+    private List<PromotingInteroperabilityUser> promotingInteroperabilityUserHistory = new ArrayList<PromotingInteroperabilityUser>();
 
     /**
      * All data related to safety-enhanced design for this listing.
@@ -413,12 +425,6 @@ public class CertifiedProductSearchDetails implements Serializable {
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     @XmlElement(name = "rwtResultsCheckDate", nillable = true, required = false)
     private LocalDate rwtResultsCheckDate;
-
-    /**
-     * First year that the listing is eligible for Real World Testing data
-     */
-    @XmlElement(name = "rwtEligibilityYear", nillable = true, required = false)
-    private Integer rwtEligibilityYear;
 
     /**
      * URL where the Listing's SVAP Notice URL is located
@@ -512,14 +518,6 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     public void setCertifyingBody(Map<String, Object> certifyingBody) {
         this.certifyingBody = certifyingBody;
-    }
-
-    public Long getCertificationDate() {
-        return certificationDate;
-    }
-
-    public void setCertificationDate(Long certificationDate) {
-        this.certificationDate = certificationDate;
     }
 
     public String getCertificationDateStr() {
@@ -642,12 +640,22 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.productAdditionalSoftware = productAdditionalSoftware;
     }
 
+    @Deprecated
     public String getTransparencyAttestationUrl() {
         return transparencyAttestationUrl;
     }
 
+    @Deprecated
     public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
         this.transparencyAttestationUrl = transparencyAttestationUrl;
+    }
+
+    public String getMandatoryDisclosures() {
+        return mandatoryDisclosures;
+    }
+
+    public void setMandatoryDisclosures(String mandatoryDisclosures) {
+        this.mandatoryDisclosures = mandatoryDisclosures;
     }
 
     public List<CertifiedProductQmsStandard> getQmsStandards() {
@@ -763,12 +771,22 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.directReviewsAvailable = directReviewsAvailable;
     }
 
+    @Deprecated
     public List<MeaningfulUseUser> getMeaningfulUseUserHistory() {
         return meaningfulUseUserHistory;
     }
 
+    @Deprecated
     public void setMeaningfulUseUserHistory(List<MeaningfulUseUser> meaningfulUseUserHistory) {
         this.meaningfulUseUserHistory = meaningfulUseUserHistory;
+    }
+
+    public List<PromotingInteroperabilityUser> getPromotingInteroperabilityUserHistory() {
+        return promotingInteroperabilityUserHistory;
+    }
+
+    public void setPromotingInteroperabilityUserHistory(List<PromotingInteroperabilityUser> promotingInteroperabilityUserHistory) {
+        this.promotingInteroperabilityUserHistory = promotingInteroperabilityUserHistory;
     }
 
     public Integer getCountSurveillance() {
@@ -827,11 +845,6 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.sed = sed;
     }
 
-    /**
-     * Retrieve current status.
-     *
-     * @return current status
-     */
     public CertificationStatusEvent getCurrentStatus() {
         if (this.getCertificationEvents() == null || this.getCertificationEvents().size() == 0) {
             return null;
@@ -846,11 +859,6 @@ public class CertifiedProductSearchDetails implements Serializable {
         return newest;
     }
 
-    /**
-     * Retrieve oldest status.
-     *
-     * @return the first status of the Listing
-     */
     public CertificationStatusEvent getOldestStatus() {
         if (this.getCertificationEvents() == null || this.getCertificationEvents().size() == 0) {
             return null;
@@ -865,11 +873,30 @@ public class CertifiedProductSearchDetails implements Serializable {
         return oldest;
     }
 
+    public void setCertificationDate(Long certificationDate) {
+        this.certificationDate = certificationDate;
+    }
+
     /**
-     * Retrieve certification status on a specific date.
-     *
-     * @return certification status
+     * Certification date represented in milliseconds since epoch
      */
+    @XmlElement(nillable = false, required = true)
+    public Long getCertificationDate() {
+        if (CollectionUtils.isEmpty(this.getCertificationEvents())) {
+            return this.certificationDate;
+        }
+
+        this.getCertificationEvents().sort(new CertificationStatusEventComparator());
+        CertificationStatusEvent result = null;
+        for (int i = 0; i < this.getCertificationEvents().size() && result == null; i++) {
+            CertificationStatusEvent currEvent = this.getCertificationEvents().get(i);
+            if (currEvent.getStatus().getName().equals(CertificationStatusType.Active.getName())) {
+                result = currEvent;
+            }
+        }
+        return result.getEventDate();
+    }
+
     public CertificationStatusEvent getStatusOnDate(Date date) {
         if (this.getCertificationEvents() == null || this.getCertificationEvents().size() == 0) {
             return null;
@@ -896,9 +923,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return result;
     }
 
-    /**
-     * Dynamically determine the current MUU count by finding the most recent MUU entry for this listing.
-     */
+    @Deprecated
     public MeaningfulUseUser getCurrentMeaningfulUseUsers() {
         if (this.getMeaningfulUseUserHistory() == null
                 || this.getMeaningfulUseUserHistory().size() == 0) {
@@ -952,14 +977,6 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     public void setRwtResultsCheckDate(LocalDate rwtResultsCheckDate) {
         this.rwtResultsCheckDate = rwtResultsCheckDate;
-    }
-
-    public Integer getRwtEligibilityYear() {
-        return rwtEligibilityYear;
-    }
-
-    public void setRwtEligibilityYear(Integer rwtEligibilityYear) {
-        this.rwtEligibilityYear = rwtEligibilityYear;
     }
 
     public String getSvapNoticeUrl() {

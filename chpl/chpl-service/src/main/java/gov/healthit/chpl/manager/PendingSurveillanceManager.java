@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -44,7 +45,6 @@ import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityDocument;
-import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
@@ -76,6 +76,7 @@ import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException
 import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
 import gov.healthit.chpl.scheduler.job.SurveillanceUploadJob;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceCreationValidator;
 import gov.healthit.chpl.validation.surveillance.SurveillanceUpdateValidator;
@@ -350,61 +351,72 @@ public class PendingSurveillanceManager extends SecuredManager {
     }
 
     private Surveillance convertToDomain(PendingSurveillanceEntity pr) {
-        Surveillance surv = new Surveillance();
-        surv.setId(pr.getId());
-        surv.setSurveillanceIdToReplace(pr.getSurvFriendlyIdToReplace());
-        surv.setStartDate(pr.getStartDate());
-        surv.setEndDate(pr.getEndDate());
-        surv.setRandomizedSitesUsed(pr.getNumRandomizedSites());
-        surv.setAuthority(userPermissionDAO.findById(pr.getUserPermissionId()).getAuthority());
+        Surveillance surv = Surveillance.builder()
+                .id(pr.getId())
+                .surveillanceIdToReplace(pr.getSurvFriendlyIdToReplace())
+                .startDay(pr.getStartDate())
+                .startDate(pr.getStartDate() == null ? null : new Date(DateUtil.toEpochMillis(pr.getStartDate())))
+                .endDay(pr.getEndDate())
+                .endDate(pr.getEndDate() == null ? null : new Date(DateUtil.toEpochMillisEndOfDay(pr.getEndDate())))
+                .randomizedSitesUsed(pr.getNumRandomizedSites())
+                .authority(userPermissionDAO.findById(pr.getUserPermissionId()).getAuthority())
+                .build();
 
-        SurveillanceType survType = new SurveillanceType();
-        survType.setName(pr.getSurveillanceType());
+        SurveillanceType survType = SurveillanceType.builder()
+                .name(pr.getSurveillanceType())
+                .build();
         surv.setType(survType);
 
         if (pr.getSurveilledRequirements() != null) {
             for (PendingSurveillanceRequirementEntity preq : pr.getSurveilledRequirements()) {
-                SurveillanceRequirement req = new SurveillanceRequirement();
-                req.setId(preq.getId());
-                req.setRequirement(preq.getSurveilledRequirement());
+                SurveillanceRequirement req = SurveillanceRequirement.builder()
+                        .id(preq.getId())
+                        .requirement(preq.getSurveilledRequirement())
+                        .build();
                 if (preq.getCertificationCriterionEntity() != null) {
                     req.setCriterion(convertToDomain(preq.getCertificationCriterionEntity()));
                 }
-                SurveillanceResultType result = new SurveillanceResultType();
-                result.setName(preq.getResult());
+                SurveillanceResultType result = SurveillanceResultType.builder()
+                        .name(preq.getResult())
+                        .build();
                 req.setResult(result);
-                SurveillanceRequirementType reqType = new SurveillanceRequirementType();
-                reqType.setName(preq.getRequirementType());
+                SurveillanceRequirementType reqType = SurveillanceRequirementType.builder()
+                        .name(preq.getRequirementType())
+                        .build();
                 req.setType(reqType);
 
-                CertifiedProduct cp = new CertifiedProduct();
-                cp.setId(pr.getCertifiedProductId());
-                cp.setChplProductNumber(pr.getCertifiedProductUniqueId());
-                cp.setEdition(pr.getCertifiedProduct().getYear());
+                CertifiedProduct cp = CertifiedProduct.builder()
+                        .id(pr.getCertifiedProductId())
+                        .chplProductNumber(pr.getCertifiedProductUniqueId())
+                        .edition(pr.getCertifiedProduct().getYear())
+                        .build();
                 surv.setCertifiedProduct(cp);
 
                 if (preq.getNonconformities() != null) {
                     for (PendingSurveillanceNonconformityEntity pnc : preq.getNonconformities()) {
-                        SurveillanceNonconformity nc = new SurveillanceNonconformity();
-                        nc.setCapApprovalDate(pnc.getCapApproval());
-                        nc.setCapEndDate(pnc.getCapEndDate());
-                        nc.setCapMustCompleteDate(pnc.getCapMustCompleteDate());
-                        nc.setCapStartDate(pnc.getCapStart());
-                        nc.setDateOfDetermination(pnc.getDateOfDetermination());
-                        nc.setDeveloperExplanation(pnc.getDeveloperExplanation());
-                        nc.setFindings(pnc.getFindings());
-                        nc.setId(pnc.getId());
-                        nc.setNonconformityType(pnc.getType());
-                        if (pnc.getCertificationCriterionEntity() != null) {
-                            nc.setCriterion(convertToDomain(pnc.getCertificationCriterionEntity()));
-                        }
-                        nc.setResolution(pnc.getResolution());
-                        nc.setSitesPassed(pnc.getSitesPassed());
-                        nc.setSummary(pnc.getSummary());
-                        nc.setTotalSites(pnc.getTotalSites());
-                        SurveillanceNonconformityStatus status = new SurveillanceNonconformityStatus();
-                        status.setName(pnc.getStatus());
-                        nc.setStatus(status);
+                        SurveillanceNonconformity nc = SurveillanceNonconformity.builder()
+                                .capApprovalDay(pnc.getCapApproval())
+                                .capApprovalDate(pnc.getCapApproval() == null ? null : new Date(DateUtil.toEpochMillis(pnc.getCapApproval())))
+                                .capEndDay(pnc.getCapEndDate())
+                                .capEndDate(pnc.getCapEndDate() == null ? null : new Date(DateUtil.toEpochMillisEndOfDay(pnc.getCapEndDate())))
+                                .capMustCompleteDay(pnc.getCapMustCompleteDate())
+                                .capMustCompleteDate(pnc.getCapMustCompleteDate() == null ? null : new Date(DateUtil.toEpochMillisEndOfDay(pnc.getCapMustCompleteDate())))
+                                .capStartDay(pnc.getCapStart())
+                                .capStartDate(pnc.getCapStart() == null ? null : new Date(DateUtil.toEpochMillis(pnc.getCapStart())))
+                                .dateOfDeterminationDay(pnc.getDateOfDetermination())
+                                .dateOfDetermination(pnc.getDateOfDetermination() == null ? null : new Date(DateUtil.toEpochMillis(pnc.getDateOfDetermination())))
+                                .developerExplanation(pnc.getDeveloperExplanation())
+                                .findings(pnc.getFindings())
+                                .id(pnc.getId())
+                                .nonconformityType(pnc.getType())
+                                .criterion(pnc.getCertificationCriterionEntity() != null ? pnc.getCertificationCriterionEntity().buildCertificationCriterion() : null)
+                                .resolution(pnc.getResolution())
+                                .sitesPassed(pnc.getSitesPassed())
+                                .summary(pnc.getSummary())
+                                .totalSites(pnc.getTotalSites())
+                                .nonconformityCloseDate(pnc.getNonconformityCloseDate())
+                                .nonconformityStatus(pnc.getNonconformityCloseDate() == null ? "Open" : "Closed")
+                                .build();
                         req.getNonconformities().add(nc);
                     }
                 }
@@ -462,8 +474,8 @@ public class PendingSurveillanceManager extends SecuredManager {
             alreadyDeletedEx.getErrorMessages()
                     .add("This pending surveillance has already been confirmed or rejected by another user.");
             alreadyDeletedEx.setObjectId(pendingSurv.getId().toString());
-            alreadyDeletedEx.setStartDate(pendingSurv.getStartDate());
-            alreadyDeletedEx.setEndDate(pendingSurv.getEndDate());
+            alreadyDeletedEx.setStartDate(new Date(DateUtil.toEpochMillis(pendingSurv.getStartDate())));
+            alreadyDeletedEx.setEndDate(new Date(DateUtil.toEpochMillisEndOfDay(pendingSurv.getEndDate())));
 
             try {
                 UserDTO lastModifiedUserDto = userDao.getById(pendingSurv.getLastModifiedUser());
@@ -512,8 +524,10 @@ public class PendingSurveillanceManager extends SecuredManager {
         Surveillance surv = new Surveillance();
         surv.setId(entity.getId());
         surv.setFriendlyId(entity.getFriendlyId());
-        surv.setStartDate(entity.getStartDate());
-        surv.setEndDate(entity.getEndDate());
+        surv.setStartDay(entity.getStartDate());
+        surv.setStartDate(new Date(DateUtil.toEpochMillis(entity.getStartDate())));
+        surv.setEndDay(entity.getEndDate());
+        surv.setEndDate(entity.getEndDate() == null ? null : new Date(DateUtil.toEpochMillis(entity.getEndDate())));
         surv.setRandomizedSitesUsed(entity.getNumRandomizedSites());
         surv.setAuthority(userPermissionDAO.findById(entity.getUserPermissionId()).getAuthority());
         surv.setLastModifiedDate(entity.getLastModifiedDate());
@@ -578,11 +592,16 @@ public class PendingSurveillanceManager extends SecuredManager {
                 if (reqEntity.getNonconformities() != null) {
                     for (SurveillanceNonconformityEntity ncEntity : reqEntity.getNonconformities()) {
                         SurveillanceNonconformity nc = new SurveillanceNonconformity();
-                        nc.setCapApprovalDate(ncEntity.getCapApproval());
-                        nc.setCapEndDate(ncEntity.getCapEndDate());
-                        nc.setCapMustCompleteDate(ncEntity.getCapMustCompleteDate());
-                        nc.setCapStartDate(ncEntity.getCapStart());
-                        nc.setDateOfDetermination(ncEntity.getDateOfDetermination());
+                        nc.setCapApprovalDay(ncEntity.getCapApproval());
+                        nc.setCapApprovalDate(ncEntity.getCapApproval() == null ? null : new Date(DateUtil.toEpochMillis(ncEntity.getCapApproval())));
+                        nc.setCapEndDay(ncEntity.getCapEndDate());
+                        nc.setCapEndDate(ncEntity.getCapEndDate() == null ? null : new Date(DateUtil.toEpochMillisEndOfDay(ncEntity.getCapEndDate())));
+                        nc.setCapMustCompleteDay(ncEntity.getCapMustCompleteDate());
+                        nc.setCapMustCompleteDate(ncEntity.getCapMustCompleteDate() == null ? null : new Date(DateUtil.toEpochMillisEndOfDay(ncEntity.getCapMustCompleteDate())));
+                        nc.setCapStartDay(ncEntity.getCapStart());
+                        nc.setCapStartDate(ncEntity.getCapStart() == null ? null : new Date(DateUtil.toEpochMillis(ncEntity.getCapStart())));
+                        nc.setDateOfDeterminationDay(ncEntity.getDateOfDetermination());
+                        nc.setDateOfDetermination(ncEntity.getDateOfDetermination() == null ? null : new Date(DateUtil.toEpochMillis(ncEntity.getDateOfDetermination())));
                         nc.setDeveloperExplanation(ncEntity.getDeveloperExplanation());
                         nc.setFindings(ncEntity.getFindings());
                         nc.setId(ncEntity.getId());
@@ -592,16 +611,8 @@ public class PendingSurveillanceManager extends SecuredManager {
                         nc.setSummary(ncEntity.getSummary());
                         nc.setTotalSites(ncEntity.getTotalSites());
                         nc.setLastModifiedDate(ncEntity.getLastModifiedDate());
-                        if (ncEntity.getNonconformityStatus() != null) {
-                            SurveillanceNonconformityStatus status = new SurveillanceNonconformityStatus();
-                            status.setId(ncEntity.getNonconformityStatus().getId());
-                            status.setName(ncEntity.getNonconformityStatus().getName());
-                            nc.setStatus(status);
-                        } else {
-                            SurveillanceNonconformityStatus status = new SurveillanceNonconformityStatus();
-                            status.setId(ncEntity.getNonconformityStatusId());
-                            nc.setStatus(status);
-                        }
+                        nc.setNonconformityCloseDate(ncEntity.getNonconformityCloseDate());
+                        nc.setNonconformityCloseDay(ncEntity.getNonconformityCloseDate());
                         req.getNonconformities().add(nc);
 
                         if (ncEntity.getDocuments() != null && ncEntity.getDocuments().size() > 0) {
@@ -652,8 +663,8 @@ public class PendingSurveillanceManager extends SecuredManager {
         alreadyDeletedEx.getErrorMessages()
                 .add("This pending surveillance has already been confirmed or rejected by another user.");
         alreadyDeletedEx.setObjectId(entity.getId().toString());
-        alreadyDeletedEx.setStartDate(entity.getStartDate());
-        alreadyDeletedEx.setEndDate(entity.getEndDate());
+        alreadyDeletedEx.setStartDate(new Date(DateUtil.toEpochMillis(entity.getStartDate())));
+        alreadyDeletedEx.setEndDate(new Date(DateUtil.toEpochMillisEndOfDay(entity.getEndDate())));
         try {
             UserDTO lastModifiedUserDto = userDao.getById(entity.getLastModifiedUser());
             if (lastModifiedUserDto != null) {

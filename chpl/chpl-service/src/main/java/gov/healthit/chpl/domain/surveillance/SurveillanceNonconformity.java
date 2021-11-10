@@ -1,6 +1,7 @@
 package gov.healthit.chpl.domain.surveillance;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -11,38 +12,50 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.util.LocalDateAdapter;
+import gov.healthit.chpl.util.LocalDateDeserializer;
+import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.Util;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 /**
- * Domain object for Nonconformities related to surveillance.
+ * Domain object for Non-conformities related to surveillance.
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SurveillanceNonconformity implements Serializable {
-    private static long serialVersionUID = -1116153210791576784L;
+    private static final long serialVersionUID = -1116153210791576784L;
 
     /**
-     * Nonconformity internal ID
+     * Non-conformity internal ID
      */
     @XmlElement(required = true)
     private Long id;
 
     /**
-     * Type of nonconformity; this is either a certification criteria number or
+     * Type of non-conformity; this is either a certification criteria number or
      * a textual description
      */
     @XmlElement(required = true)
     private String nonconformityType;
 
     /**
-     * If the nonconformity type is a certified capability
+     * If the non-conformity type is a certified capability
      * then this field will have the criterion details (number, title, etc).
      */
     @XmlElement(required = false)
@@ -52,47 +65,120 @@ public class SurveillanceNonconformity implements Serializable {
      * The status of a non-conformity found as a result of a surveillance
      * activity. Allowable values are "Open" or "Closed".
      */
-    @XmlElement(required = true)
+    @XmlTransient
+    @Deprecated
     private SurveillanceNonconformityStatus status;
 
     /**
-     * Date of determination of nonconformity
+     * The status of a non-conformity found as a result of a surveillance
+     * activity. Allowable values are "Open" or "Closed".
      */
     @XmlElement(required = true)
+    private String nonconformityStatus;
+
+    /**
+     * DEPRECATED. Date of determination of non-conformity
+     */
+    @Deprecated
+    @XmlTransient
     private Date dateOfDetermination;
 
     /**
-     * Corrective action plan approval date
+     * Date of determination of non-conformity
      */
-    @XmlElement(required = false, nillable = true)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    @XmlElement(required = true)
+    private LocalDate dateOfDeterminationDay;
+
+    /**
+     * DEPRECATED. Corrective action plan approval date
+     */
+    @Deprecated
+    @XmlTransient
     private Date capApprovalDate;
 
     /**
-     * Corrective action plan start date
+     * Corrective action plan approval day
      */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     @XmlElement(required = false, nillable = true)
+    private LocalDate capApprovalDay;
+
+    /**
+     * DEPRECATED. Corrective action plan start date
+     */
+    @Deprecated
+    @XmlTransient
     private Date capStartDate;
 
     /**
-     * Corrective action plan end date
+     * Corrective action plan start day
      */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     @XmlElement(required = false, nillable = true)
+    private LocalDate capStartDay;
+
+    /**
+     * DEPRECATED. Corrective action plan end date
+     */
+    @Deprecated
+    @XmlTransient
     private Date capEndDate;
+
+    /**
+     * Corrective action plan end day
+     */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    @XmlElement(required = false, nillable = true)
+    private LocalDate capEndDay;
+
+    /**
+     * DEPRECATED. Corrective action plan must complete date
+     */
+    @Deprecated
+    @XmlTransient
+    private Date capMustCompleteDate;
 
     /**
      * Corrective action plan must complete date
      */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     @XmlElement(required = false, nillable = true)
-    private Date capMustCompleteDate;
+    private LocalDate capMustCompleteDay;
+
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @Deprecated
+    @XmlTransient
+    private LocalDate nonconformityCloseDate;
 
     /**
-     * Nonconformity summary
+     * Date non-conformity was closed
+     */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    @XmlElement(required = false, nillable = true)
+    private LocalDate nonconformityCloseDay;
+
+    /**
+     * Non-conformity summary
      */
     @XmlElement(required = false, nillable = true)
     private String summary;
 
     /**
-     * Nonconformity findings.
+     * Non-conformity findings.
      */
     @XmlElement(required = false, nillable = true)
     private String findings;
@@ -110,22 +196,23 @@ public class SurveillanceNonconformity implements Serializable {
     private Integer totalSites;
 
     /**
-     * Developer explanation for the nonconformity
+     * Developer explanation for the non-conformity
      */
     @XmlElement(required = false, nillable = true)
     private String developerExplanation;
 
     /**
-     * Resolution description of the nonconformity
+     * Resolution description of the non-conformity
      */
     @XmlElement(required = false, nillable = true)
     private String resolution;
 
     /**
-     * Any documents associated with the nonconformity
+     * Any documents associated with the non-conformity
      */
     @XmlElementWrapper(name = "documents", nillable = true, required = false)
     @XmlElement(name = "document")
+    @Builder.Default
     private List<SurveillanceNonconformityDocument> documents = new ArrayList<SurveillanceNonconformityDocument>();
 
     /**
@@ -135,9 +222,9 @@ public class SurveillanceNonconformity implements Serializable {
     private Date lastModifiedDate;
 
     /**
-     * Determines if this nonconformity matches another nonconformity.
+     * Determines if this non-conformity matches another non-conformity.
      * @param anotherNonconformity
-     * @return whether the two nonconformity objects are the same
+     * @return whether the two non-conformity objects are the same
      */
     public boolean matches(SurveillanceNonconformity anotherNonconformity) {
         if (!propertiesMatch(anotherNonconformity)) {
@@ -189,7 +276,7 @@ public class SurveillanceNonconformity implements Serializable {
             }
         }
         //all checks passed and turned out to be matching
-        //so the two nonconformities must be identical
+        //so the two non-conformities must be identical
         return true;
     }
 
@@ -215,46 +302,46 @@ public class SurveillanceNonconformity implements Serializable {
                 && !this.criterion.getId().equals(anotherNonconformity.criterion.getId())) {
             return false;
         }
-        if (this.status == null && anotherNonconformity.status != null
-                || this.status != null && anotherNonconformity.status == null) {
+        if (this.dateOfDeterminationDay == null && anotherNonconformity.dateOfDeterminationDay != null
+                || this.dateOfDeterminationDay != null && anotherNonconformity.dateOfDeterminationDay == null) {
             return false;
-        } else if (this.status != null && anotherNonconformity.status != null
-                && !this.status.matches(anotherNonconformity.status)) {
-            return false;
-        }
-        if (this.dateOfDetermination == null && anotherNonconformity.dateOfDetermination != null
-                || this.dateOfDetermination != null && anotherNonconformity.dateOfDetermination == null) {
-            return false;
-        } else if (this.dateOfDetermination != null && anotherNonconformity.dateOfDetermination != null
-                && this.dateOfDetermination.getTime() != anotherNonconformity.dateOfDetermination.getTime()) {
+        } else if (this.dateOfDeterminationDay != null && anotherNonconformity.dateOfDeterminationDay != null
+                && !this.dateOfDeterminationDay.equals(anotherNonconformity.dateOfDeterminationDay)) {
             return false;
         }
-        if (this.capApprovalDate == null && anotherNonconformity.capApprovalDate != null
-                || this.capApprovalDate != null && anotherNonconformity.capApprovalDate == null) {
+        if (this.capApprovalDay == null && anotherNonconformity.capApprovalDay != null
+                || this.capApprovalDay != null && anotherNonconformity.capApprovalDay == null) {
             return false;
-        } else if (this.capApprovalDate != null && anotherNonconformity.capApprovalDate != null
-                && this.capApprovalDate.getTime() != anotherNonconformity.capApprovalDate.getTime()) {
-            return false;
-        }
-        if (this.capStartDate == null && anotherNonconformity.capStartDate != null
-                || this.capStartDate != null && anotherNonconformity.capStartDate == null) {
-            return false;
-        } else if (this.capStartDate != null && anotherNonconformity.capStartDate != null
-                && this.capStartDate.getTime() != anotherNonconformity.capStartDate.getTime()) {
+        } else if (this.capApprovalDay != null && anotherNonconformity.capApprovalDay != null
+                && !this.capApprovalDay.equals(anotherNonconformity.capApprovalDay)) {
             return false;
         }
-        if (this.capEndDate == null && anotherNonconformity.capEndDate != null
-                || this.capEndDate != null && anotherNonconformity.capEndDate == null) {
+        if (this.capStartDay == null && anotherNonconformity.capStartDay != null
+                || this.capStartDay != null && anotherNonconformity.capStartDay == null) {
             return false;
-        } else if (this.capEndDate != null && anotherNonconformity.capEndDate != null
-                && this.capEndDate.getTime() != anotherNonconformity.capEndDate.getTime()) {
+        } else if (this.capStartDay != null && anotherNonconformity.capStartDay != null
+                && !this.capStartDay.equals(anotherNonconformity.capStartDay)) {
             return false;
         }
-        if (this.capMustCompleteDate == null && anotherNonconformity.capMustCompleteDate != null
-                || this.capMustCompleteDate != null && anotherNonconformity.capMustCompleteDate == null) {
+        if (this.capEndDay == null && anotherNonconformity.capEndDay != null
+                || this.capEndDay != null && anotherNonconformity.capEndDay == null) {
             return false;
-        } else if (this.capMustCompleteDate != null && anotherNonconformity.capMustCompleteDate != null
-                && this.capMustCompleteDate.getTime() != anotherNonconformity.capMustCompleteDate.getTime()) {
+        } else if (this.capEndDay != null && anotherNonconformity.capEndDay != null
+                && !this.capEndDay.equals(anotherNonconformity.capEndDay)) {
+            return false;
+        }
+        if (this.capMustCompleteDay == null && anotherNonconformity.capMustCompleteDay != null
+                || this.capMustCompleteDay != null && anotherNonconformity.capMustCompleteDay == null) {
+            return false;
+        } else if (this.capMustCompleteDay != null && anotherNonconformity.capMustCompleteDay != null
+                && !this.capMustCompleteDay.equals(anotherNonconformity.capMustCompleteDay)) {
+            return false;
+        }
+        if (this.nonconformityCloseDay == null && anotherNonconformity.nonconformityCloseDay != null
+                || this.nonconformityCloseDay != null && anotherNonconformity.nonconformityCloseDay == null) {
+            return false;
+        } else if (this.nonconformityCloseDay != null && anotherNonconformity.nonconformityCloseDay != null
+                && !this.nonconformityCloseDay.equals(anotherNonconformity.nonconformityCloseDay)) {
             return false;
         }
         if (StringUtils.isEmpty(this.summary) && !StringUtils.isEmpty(anotherNonconformity.summary)
@@ -333,52 +420,130 @@ public class SurveillanceNonconformity implements Serializable {
         this.criterion = criterion;
     }
 
+    @Deprecated
     public SurveillanceNonconformityStatus getStatus() {
         return status;
     }
 
+    @Deprecated
     public void setStatus(SurveillanceNonconformityStatus status) {
         this.status = status;
     }
 
+    public String getNonconformityStatus() {
+        return nonconformityStatus;
+    }
+
+    public void setNonconformityStatus(String nonconformityStatus) {
+        this.nonconformityStatus = nonconformityStatus;
+    }
+
+    @Deprecated
     public Date getDateOfDetermination() {
         return Util.getNewDate(dateOfDetermination);
     }
 
+    @Deprecated
     public void setDateOfDetermination(Date dateOfDetermination) {
         this.dateOfDetermination = Util.getNewDate(dateOfDetermination);
     }
 
+    public LocalDate getDateOfDeterminationDay() {
+        return this.dateOfDeterminationDay;
+    }
+
+    public void setDateOfDeterminationDay(LocalDate dateOfDeterminationDay) {
+        this.dateOfDeterminationDay = dateOfDeterminationDay;
+    }
+
+    @Deprecated
     public Date getCapApprovalDate() {
         return Util.getNewDate(capApprovalDate);
     }
 
+    @Deprecated
     public void setCapApprovalDate(Date capApprovalDate) {
         this.capApprovalDate = Util.getNewDate(capApprovalDate);
     }
 
+    public LocalDate getCapApprovalDay() {
+        return this.capApprovalDay;
+    }
+
+    public void setCapApprovalDay(LocalDate capApprovalDay) {
+        this.capApprovalDay = capApprovalDay;
+    }
+
+    @Deprecated
     public Date getCapStartDate() {
         return Util.getNewDate(capStartDate);
     }
 
+    @Deprecated
     public void setCapStartDate(Date capStartDate) {
         this.capStartDate = Util.getNewDate(capStartDate);
     }
 
+    public LocalDate getCapStartDay() {
+        return this.capStartDay;
+    }
+
+    public void setCapStartDay(LocalDate capStartDay) {
+        this.capStartDay = capStartDay;
+    }
+
+    @Deprecated
     public Date getCapEndDate() {
         return Util.getNewDate(capEndDate);
     }
 
+    @Deprecated
     public void setCapEndDate(Date capEndDate) {
         this.capEndDate = Util.getNewDate(capEndDate);
     }
 
+    public LocalDate getCapEndDay() {
+        return this.capEndDay;
+    }
+
+    public void setCapEndDay(LocalDate capEndDay) {
+        this.capEndDay = capEndDay;
+    }
+
+    @Deprecated
     public Date getCapMustCompleteDate() {
         return Util.getNewDate(capMustCompleteDate);
     }
 
+    @Deprecated
     public void setCapMustCompleteDate(Date capMustCompleteDate) {
         this.capMustCompleteDate = Util.getNewDate(capMustCompleteDate);
+    }
+
+    public LocalDate getCapMustCompleteDay() {
+        return this.capMustCompleteDay;
+    }
+
+    public void setCapMustCompleteDay(LocalDate capMustCompleteDay) {
+        this.capMustCompleteDay = capMustCompleteDay;
+    }
+
+    @Deprecated
+    public LocalDate getNonconformityCloseDate() {
+        return nonconformityCloseDate;
+    }
+
+    @Deprecated
+    public void setNonconformityCloseDate(LocalDate nonconformityCloseDate) {
+        this.nonconformityCloseDate = nonconformityCloseDate;
+    }
+
+    public LocalDate getNonconformityCloseDay() {
+        return nonconformityCloseDay;
+    }
+
+    public void setNonconformityCloseDay(LocalDate nonconformityCloseDay) {
+        this.nonconformityCloseDay = nonconformityCloseDay;
     }
 
     public String getSummary() {

@@ -11,14 +11,17 @@ import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.ToString;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @AllArgsConstructor
+@ToString
 public class CertificationCriterion implements Serializable {
     private static final long serialVersionUID = 5732322243572571895L;
 
@@ -46,7 +49,7 @@ public class CertificationCriterion implements Serializable {
     public CertificationCriterion() {
     }
 
-    public CertificationCriterion(final CertificationCriterionDTO dto) {
+    public CertificationCriterion(CertificationCriterionDTO dto) {
         this.id = dto.getId();
         this.certificationEditionId = dto.getCertificationEditionId();
         this.certificationEdition = dto.getCertificationEdition();
@@ -54,6 +57,15 @@ public class CertificationCriterion implements Serializable {
         this.number = dto.getNumber();
         this.title = dto.getTitle();
         this.removed = dto.getRemoved();
+    }
+
+    public CertificationCriterion(CertificationCriterionEntity entity) {
+        this.id = entity.getId();
+        this.certificationEditionId = entity.getCertificationEditionId();
+        this.description = entity.getDescription();
+        this.number = entity.getNumber();
+        this.title = entity.getTitle();
+        this.removed = entity.getRemoved();
     }
 
     public String getCertificationEdition() {

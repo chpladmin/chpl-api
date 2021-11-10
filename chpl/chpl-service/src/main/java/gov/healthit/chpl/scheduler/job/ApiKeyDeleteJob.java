@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
 import org.apache.logging.log4j.LogManager;
@@ -17,11 +16,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.api.ApiKeyManager;
 import gov.healthit.chpl.api.dao.ApiKeyDAO;
-import gov.healthit.chpl.api.domain.ApiKeyDTO;
+import gov.healthit.chpl.api.domain.ApiKey;
+import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
+import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.EmailBuilder;
 
 public class ApiKeyDeleteJob implements Job {
 private static final Logger LOGGER = LogManager.getLogger("apiKeyDeleteJobLogger");
@@ -41,48 +44,47 @@ private static final Logger LOGGER = LogManager.getLogger("apiKeyDeleteJobLogger
         LOGGER.info("********* Starting the API Key Deletion job. *********");
         LOGGER.info("Looking for API keys where the warning email was sent " + getNumberOfDaysUntilDelete() + " days ago.");
 
-        List<ApiKeyDTO> apiKeyDTOs = apiKeyDAO.findAllToBeRevoked(getNumberOfDaysUntilDelete());
+        List<ApiKey> apiKeys = apiKeyDAO.findAllToBeRevoked(getNumberOfDaysUntilDelete());
 
-        LOGGER.info("Found " + apiKeyDTOs.size() + " API keys to delete.");
+        LOGGER.info("Found " + apiKeys.size() + " API keys to delete.");
 
-        for (ApiKeyDTO dto : apiKeyDTOs) {
+        for (ApiKey apiKey : apiKeys) {
 
             try {
-                updateDeleted(dto);
-                sendEmail(dto);
-            } catch (EntityRetrievalException e) {
-                LOGGER.error("Error updating api_key.deleted for id: " + dto.getId(), e);
-            } catch (MessagingException e) {
-                LOGGER.error("Error sending email to: " + dto.getEmail(), e);
+                delete(apiKey);
+                sendEmail(apiKey);
+            } catch (EntityRetrievalException | EntityCreationException | JsonProcessingException e) {
+                LOGGER.error("Error updating api_key.deleted for id: " + apiKey.getId(), e);
+            } catch (AddressException | EmailNotSentException e) {
+                LOGGER.error("Error sending email to: " + apiKey.getEmail(), e);
             }
         }
 
         LOGGER.info("********* Completed the API Key Deletion job. *********");
     }
 
-    private void updateDeleted(final ApiKeyDTO dto) throws EntityRetrievalException {
-        dto.setDeleted(true);
-        apiKeyManager.updateApiKey(dto);
+    private void delete(ApiKey apiKey) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+        apiKeyManager.deleteKey(apiKey.getId());
     }
 
-    private void sendEmail(final ApiKeyDTO dto) throws AddressException, MessagingException {
+    private void sendEmail(ApiKey apiKey) throws AddressException, EmailNotSentException {
         List<String> recipients = new ArrayList<String>();
-        recipients.add(dto.getEmail());
+        recipients.add(apiKey.getEmail());
 
         EmailBuilder emailBuilder = new EmailBuilder(env);
         emailBuilder.recipients(recipients)
                         .subject(getSubject())
-                        .htmlMessage(getHtmlMessage(dto))
+                        .htmlMessage(getHtmlMessage(apiKey))
                         .sendEmail();
-        LOGGER.info("Email sent to: " + dto.getEmail());
+        LOGGER.info("Email sent to: " + apiKey.getEmail());
     }
 
-    private String getHtmlMessage(final ApiKeyDTO dto) {
+    private String getHtmlMessage(ApiKey apiKey) {
         String message = String.format(
                 env.getProperty("job.apiKeyDeleteJob.config.message"),
-                dto.getNameOrganization(),
-                dto.getApiKey(),
-                getDateFormatter().format(dto.getLastUsedDate()),
+                apiKey.getName(),
+                apiKey.getKey(),
+                getDateFormatter().format(apiKey.getLastUsedDate()),
                 env.getProperty("chplUrlBegin"),
                 env.getProperty("chplUrlBegin"));
 

@@ -1,5 +1,7 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -33,7 +35,7 @@ public class TestDataReviewer extends PermissionBasedReviewer {
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess())
+            .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
             .forEach(certResult -> review(listing, certResult));
     }
 
@@ -48,15 +50,17 @@ public class TestDataReviewer extends PermissionBasedReviewer {
     }
 
     private void reviewCriteriaCanHaveTestData(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_DATA)
-                && certResult.getTestDataUsed() != null && certResult.getTestDataUsed().size() > 0) {
-            listing.getErrorMessages().add(msgUtil.getMessage(
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_DATA)) {
+            if (!CollectionUtils.isEmpty(certResult.getTestDataUsed())) {
+                listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.testDataNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
+            certResult.setTestDataUsed(null);
         }
     }
 
     private void reviewTestDataForReplacements(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (certResult.getTestDataUsed() == null || certResult.getTestDataUsed().size() == 0) {
+        if (CollectionUtils.isEmpty(certResult.getTestDataUsed())) {
             return;
         }
         certResult.getTestDataUsed().stream()

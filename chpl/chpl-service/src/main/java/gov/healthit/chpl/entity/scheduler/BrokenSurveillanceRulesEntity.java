@@ -1,5 +1,7 @@
 package gov.healthit.chpl.entity.scheduler;
 
+import java.time.LocalDate;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -103,8 +105,8 @@ public class BrokenSurveillanceRulesEntity {
     private Boolean nonconformity;
 
     @Basic(optional = true)
-    @Column(name = "nonconformity_status")
-    private String nonconformityStatus;
+    @Column(name = "non_conformity_close_date")
+    private LocalDate nonConformityCloseDate;
 
     @Basic(optional = true)
     @Column(name = "nonconformity_criteria")

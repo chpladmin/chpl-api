@@ -11,9 +11,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
-
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +32,8 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserResetTokenDTO;
+import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
@@ -47,7 +46,6 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
-import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -183,7 +181,8 @@ public class UserManager extends SecuredManager {
         return userDAO.getById(id);
     }
 
-    public void updateFailedLoginCount(UserDTO userToUpdate) throws UserRetrievalException, MultipleUserAccountsException {
+    public void updateFailedLoginCount(UserDTO userToUpdate) throws UserRetrievalException,
+        MultipleUserAccountsException, EmailNotSentException {
         userDAO.updateFailedLoginCount(userToUpdate.getUsername(), userToUpdate.getFailedLoginCount());
         String maxLoginsStr = env.getProperty("authMaximumLoginAttempts");
         int maxLogins = Integer.parseInt(maxLoginsStr);
@@ -192,11 +191,11 @@ public class UserManager extends SecuredManager {
             userToUpdate.setAccountLocked(true);
             try {
                 userDAO.updateAccountLockedStatus(userToUpdate.getUsername(), userToUpdate.isAccountLocked());
-                if (userToUpdate.getFailedLoginCount() == maxLogins) {
-                    sendAccountLockedEmail(userToUpdate);
-                }
             } catch (Exception ex) {
                 LOGGER.error("Unable to set account " + userToUpdate.getUsername() + " as locked.", ex);
+            }
+            if (userToUpdate.getFailedLoginCount() == maxLogins) {
+                sendAccountLockedEmail(userToUpdate);
             }
         }
     }
@@ -300,7 +299,7 @@ public class UserManager extends SecuredManager {
         userDAO.update(user);
     }
 
-    private void sendAccountLockedEmail(UserDTO user) throws AddressException, MessagingException {
+    private void sendAccountLockedEmail(UserDTO user) throws EmailNotSentException {
         String subject = "CHPL Account Locked";
         String htmlMessage = "<p>The account associated with " + user.getUsername()
                 + " has exceeded the maximum number of failed login attempts and is locked. "
@@ -312,10 +311,10 @@ public class UserManager extends SecuredManager {
 
         EmailBuilder emailBuilder = new EmailBuilder(env);
         emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
-        .subject(subject)
-        .htmlMessage(htmlMessage)
-        .publicHtmlFooter()
-        .sendEmail();
+            .subject(subject)
+            .htmlMessage(htmlMessage)
+            .publicHtmlFooter()
+            .sendEmail();
     }
 
     private Optional<ValidationException> validateUser(UserDTO user) {

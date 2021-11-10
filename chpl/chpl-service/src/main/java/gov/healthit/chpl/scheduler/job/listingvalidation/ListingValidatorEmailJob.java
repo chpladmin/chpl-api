@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.mail.MessagingException;
-
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -16,9 +14,11 @@ import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
-import gov.healthit.chpl.util.EmailBuilder;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "listingValidationReportEmailJobLogger")
@@ -29,6 +29,9 @@ public class ListingValidatorEmailJob  implements Job {
 
     @Autowired
     private CertificationBodyDAO certificationBodyDAO;
+
+    @Autowired
+    private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
 
     @Autowired
     private Environment env;
@@ -56,18 +59,29 @@ public class ListingValidatorEmailJob  implements Job {
                 .collect(Collectors.toList());
     }
 
-    private void sendEmail(JobExecutionContext context, List<ListingValidationReport> rows) throws MessagingException, IOException {
+    private void sendEmail(JobExecutionContext context, List<ListingValidationReport> rows) throws EmailNotSentException, IOException {
         LOGGER.info("Sending email to: " + context.getMergedJobDataMap().getString("email"));
         EmailBuilder emailBuilder = new EmailBuilder(env);
         emailBuilder.recipient(context.getMergedJobDataMap().getString("email"))
                 .subject(env.getProperty("listingValidationReport.subject"))
-                .htmlMessage(String.format(env.getProperty("listingValidationReport.body"), getAcbNamesAsCommaSeparatedList(context), rows.size()))
+                .htmlMessage(createHtmlMessage(context, rows.size()))
                 .fileAttachments(Arrays.asList(listingValidationReportCsvCreator.createCsvFile(rows)))
                 .sendEmail();
         LOGGER.info("Completed Sending email to: " + context.getMergedJobDataMap().getString("email"));
     }
 
-    private String getAcbNamesAsCommaSeparatedList(JobExecutionContext jobContext) {
+    private String createHtmlMessage(JobExecutionContext context, int errorCount) {
+        return chplHtmlEmailBuilder.initialize()
+                .heading(env.getProperty("listingValidationReport.subject"))
+                .paragraph(
+                        env.getProperty("listingValidationReport.paragraph1.heading"),
+                        getAcbNamesAsBrSeparatedList(context))
+                .paragraph("", String.format(env.getProperty("listingValidationReport.paragraph2.body"), errorCount))
+                .footer(true)
+                .build();
+    }
+
+    private String getAcbNamesAsBrSeparatedList(JobExecutionContext jobContext) {
         if (Objects.nonNull(jobContext.getMergedJobDataMap().getString("acb"))) {
             return getSelectedAcbIds(jobContext).stream()
                     .map(acbId -> {
@@ -78,7 +92,7 @@ public class ListingValidatorEmailJob  implements Job {
                             return "";
                         }
                     })
-                    .collect(Collectors.joining(", "));
+                    .collect(Collectors.joining("<br />"));
         } else {
             return "";
         }

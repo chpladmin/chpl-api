@@ -51,12 +51,11 @@ public class CertifiedProductDetailsEntitySimple {
     @Column(name = "sed_intended_user_description")
     private String sedIntendedUserDescription;
 
-    @Basic(optional = true)
-    @Column(name = "meaningful_use_users")
-    private Long meaningfulUseUsers;
+    @Column(name = "promoting_interoperability_user_count")
+    private Long promotingInteroperabilityUserCount;
 
-    @Column(name = "meaningful_use_users_date")
-    private Date meaningfulUseUsersDate;
+    @Column(name = "promoting_interoperability_user_count_date")
+    private LocalDate promotingInteroperabilityUserCountDate;
 
     @Basic(optional = true)
     @Column(name = "sed_testing_end")
@@ -233,8 +232,8 @@ public class CertifiedProductDetailsEntitySimple {
     @Column(name = "product_additional_software")
     private String productAdditionalSoftware;
 
-    @Column(name = "transparency_attestation_url")
-    private String transparencyAttestationUrl;
+    @Column(name = "mandatory_disclosures")
+    private String mandatoryDisclosures;
 
     @Column(name = "rwt_plans_url")
     private String rwtPlansUrl;
@@ -247,9 +246,6 @@ public class CertifiedProductDetailsEntitySimple {
 
     @Column(name = "rwt_results_check_date")
     private LocalDate rwtResultsCheckDate;
-
-    @Column(name = "rwt_eligibility_year")
-    private Integer rwtEligibilityYear;
 
     @Column(name = "svap_notice_url")
     private String svapNoticeUrl;

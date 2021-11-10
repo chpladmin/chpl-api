@@ -11,8 +11,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-import javax.mail.MessagingException;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,13 +27,14 @@ import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.HtmlEmailTemplate;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingType;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUpload;
-import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.util.HtmlEmailTemplate;
 
 public class RealWorldTestingUploadJob implements Job {
     private static final Logger LOGGER = LogManager.getLogger("realWorldTestingUploadJobLogger");
@@ -219,7 +218,7 @@ public class RealWorldTestingUploadJob implements Job {
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 
-    private void sendResults(List<RealWorldTestingUpload> rwts, String address) throws MessagingException {
+    private void sendResults(List<RealWorldTestingUpload> rwts, String address) throws EmailNotSentException {
         RwtEmail rwtEmail = new RwtEmail(env);
         List<String> addresses = new ArrayList<String>(Arrays.asList(address));
 

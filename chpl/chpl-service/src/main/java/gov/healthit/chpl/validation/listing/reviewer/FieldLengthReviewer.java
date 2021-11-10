@@ -1,5 +1,6 @@
 package gov.healthit.chpl.validation.listing.reviewer;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -79,6 +80,7 @@ public class FieldLengthReviewer implements Reviewer {
         checkAccessibilityStandardsFieldLength(listing);
         checkTargetedUsersFieldLength(listing);
         checkCriteria(listing);
+        checkSed(listing);
     }
 
     private void checkQmsStandardsFieldLength(CertifiedProductSearchDetails listing) {
@@ -142,6 +144,48 @@ public class FieldLengthReviewer implements Reviewer {
             certResult.getTestProcedures().stream()
                 .forEach(testProcedure -> {
                     checkFieldLength(listing, testProcedure.getTestProcedureVersion(), "testProcedureVersion");
+                });
+        }
+    }
+
+    private void checkSed(CertifiedProductSearchDetails listing) {
+        if (!StringUtils.isEmpty(listing.getSedReportFileLocation())) {
+            checkFieldLength(listing, listing.getSedReportFileLocation(), "sedReportHyperlink");
+        }
+        if (listing.getSed() != null) {
+            checkUcdProcesses(listing);
+            checkTestTasks(listing);
+            checkTestParticipants(listing);
+        }
+    }
+
+    private void checkUcdProcesses(CertifiedProductSearchDetails listing) {
+        if (!CollectionUtils.isEmpty(listing.getSed().getUcdProcesses())) {
+            listing.getSed().getUcdProcesses().stream()
+                .forEach(ucdProcess -> checkFieldLength(listing, ucdProcess.getName(), "ucdProcessName"));
+        }
+    }
+
+    private void checkTestTasks(CertifiedProductSearchDetails listing) {
+        if (!CollectionUtils.isEmpty(listing.getSed().getTestTasks())) {
+            listing.getSed().getTestTasks().stream()
+                .forEach(testTask -> {
+                    checkFieldLength(listing, testTask.getUniqueId(), "taskIdentifier");
+                    checkFieldLength(listing, testTask.getTaskRatingScale(), "taskRatingScale");
+                });
+        }
+    }
+
+    private void checkTestParticipants(CertifiedProductSearchDetails listing) {
+        if (!CollectionUtils.isEmpty(listing.getSed().getTestTasks())) {
+            listing.getSed().getTestTasks().stream()
+                .filter(testTask -> !CollectionUtils.isEmpty(testTask.getTestParticipants()))
+                .flatMap(testTask -> testTask.getTestParticipants().stream())
+                .forEach(testParticipant -> {
+                    checkFieldLength(listing, testParticipant.getUniqueId(), "participantIdentifier");
+                    checkFieldLength(listing, testParticipant.getGender(), "participantGender");
+                    checkFieldLength(listing, testParticipant.getOccupation(), "participantOccupation");
+                    checkFieldLength(listing, testParticipant.getAssistiveTechnologyNeeds(), "participantAssistiveTechnology");
                 });
         }
     }

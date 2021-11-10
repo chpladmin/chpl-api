@@ -97,13 +97,13 @@ public class RequiredAndRelatedCriteriaReviewer  extends PermissionBasedReviewer
         List<String> requiredByBCriteriaCertNumbers
             = requiredByBCriteria.stream().map(criterion -> criterion.getNumber()).distinct().collect(Collectors.toList());
 
-        List<String> errors = validationUtils.checkClassSubsetOfCriteriaForErrors(B_CRITERIA_NUMBERS_START,
+        List<String> errors = validationUtils.checkClassSubsetOfCriteriaForMissingComplementaryCriteriaNumberErrors(B_CRITERIA_NUMBERS_START,
                 attestedCriteria,
                 requiredByBCriteriaCertNumbers,
                 excludedCertNumbers);
         listing.getErrorMessages().addAll(errors);
 
-        List<String> warnings = validationUtils.checkClassSubsetOfCriteriaForWarnings(
+        List<String> warnings = validationUtils.checkClassSubsetOfCriteriaForMissingComplementaryCriteriaNumberWarnings(
                 B_CRITERIA_NUMBERS_START,
                 attestedCriteria,
                 requiredByBCriteriaCertNumbers,

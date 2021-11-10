@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.statistics.PrivacyAndSecurityListingStatisticsDAO;
 import gov.healthit.chpl.domain.statistics.PrivacyAndSecurityListingStatistic;
-import gov.healthit.chpl.util.HtmlEmailTemplate;
+import gov.healthit.chpl.email.HtmlEmailTemplate;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -19,24 +19,30 @@ import lombok.extern.log4j.Log4j2;
 public class PrivacyAndSecurityListingStatisticsHtmlCreator {
     private static final String HTML_DATE_FORMAT = "MM-dd-yyyy";
     private PrivacyAndSecurityListingStatisticsDAO privacyAndSecurityStatisticsDao;
-    private String emailBody;
+    private String sectionHeader;
     private String emailStyles;
     private DateTimeFormatter dateFormatter;
 
     @Autowired
     public PrivacyAndSecurityListingStatisticsHtmlCreator(PrivacyAndSecurityListingStatisticsDAO privacyAndSecurityStatisticsDao,
-            @Value("${curesStatisticsReport.privacyAndSecurityStatistics.emailBody}") String emailBody,
+            @Value("${curesStatisticsReport.privacyAndSecurityStatistics.sectionHeader}") String sectionHeader,
             @Value("${email_styles}") String emailStyles) {
         this.privacyAndSecurityStatisticsDao = privacyAndSecurityStatisticsDao;
-        this.emailBody = emailBody;
+        this.sectionHeader = sectionHeader;
         this.emailStyles = emailStyles;
         this.dateFormatter = DateTimeFormatter.ofPattern(HTML_DATE_FORMAT);
     }
 
-    public String createEmailBody() {
+    public String getSectionHeader() {
+        LocalDate statisticDate = privacyAndSecurityStatisticsDao.getDateOfMostRecentStatistics();
+        return String.format(sectionHeader, formatStatisticsDate(statisticDate));
+    }
+
+    public String getSection() {
         LocalDate statisticDate = privacyAndSecurityStatisticsDao.getDateOfMostRecentStatistics();
         List<PrivacyAndSecurityListingStatistic> statistics = null;
         if (statisticDate != null) {
+            LOGGER.info("Most recent statistic date for privacy and security is " + statisticDate);
             statistics = privacyAndSecurityStatisticsDao.getStatisticsForDate(statisticDate);
             LOGGER.info("Generating HTML email text for " + statistics.size() + " statistics.");
         } else {
@@ -53,7 +59,7 @@ public class PrivacyAndSecurityListingStatisticsHtmlCreator {
     }
 
     private String getBody(LocalDate statisticsDate, List<PrivacyAndSecurityListingStatistic> statistics) {
-        return String.format(emailBody, formatStatisticsDate(statisticsDate), getTable(statistics));
+        return getTable(statistics);
     }
 
     private String formatStatisticsDate(LocalDate statisticsDate) {

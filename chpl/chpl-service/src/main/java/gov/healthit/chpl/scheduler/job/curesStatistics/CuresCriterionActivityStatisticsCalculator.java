@@ -27,15 +27,14 @@ import lombok.extern.log4j.Log4j2;
 public class CuresCriterionActivityStatisticsCalculator {
     private CertificationCriterionService criteriaService;
     private CertifiedProductDAO certifiedProductDao;
-    private CriterionActivityStatisticsHelper activityStatisticsHelper;
+    private CertificationResultActivityHistoryHelper activityStatisticsHelper;
     private CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO curesCriterionUpgradedWithoutOriginalStatisticDao;
     private Date curesEffectiveDate;
-    private Date currentDate;
     private List<CertificationStatusType> activeStatuses;
 
     @Autowired
     public CuresCriterionActivityStatisticsCalculator(CertificationCriterionService criteriaService,
-            CriterionActivityStatisticsHelper activityStatisticsHelper,
+            CertificationResultActivityHistoryHelper activityStatisticsHelper,
             CertifiedProductDAO certifiedProductDao,
             CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO curesCriterionUpgradedWithoutOriginalStatisticDao,
             SpecialProperties specialProperties) {
@@ -44,7 +43,6 @@ public class CuresCriterionActivityStatisticsCalculator {
         this.certifiedProductDao = certifiedProductDao;
         this.curesCriterionUpgradedWithoutOriginalStatisticDao = curesCriterionUpgradedWithoutOriginalStatisticDao;
         curesEffectiveDate = specialProperties.getEffectiveRuleTimestamp();
-        currentDate = new Date();
         activeStatuses = Stream.of(CertificationStatusType.Active,
                 CertificationStatusType.SuspendedByAcb,
                 CertificationStatusType.SuspendedByOnc)
@@ -61,6 +59,7 @@ public class CuresCriterionActivityStatisticsCalculator {
     @Transactional
     public List<CuresCriterionUpgradedWithoutOriginalListingStatistic> calculateCurrentStatistics(LocalDate statisticDate) {
         LOGGER.info("Calculating cures criterion upgrade without original statistics for " + statisticDate);
+        Date currentDate = new Date();
         List<CuresCriterionUpgradedWithoutOriginalListingStatistic> results
             = new ArrayList<CuresCriterionUpgradedWithoutOriginalListingStatistic>();
 

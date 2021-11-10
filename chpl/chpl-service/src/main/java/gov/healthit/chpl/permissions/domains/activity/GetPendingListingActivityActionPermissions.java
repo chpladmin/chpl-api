@@ -10,7 +10,7 @@ public class GetPendingListingActivityActionPermissions extends ActionPermission
     @Override
     public boolean hasAccess() {
         return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
-                || getResourcePermissions().isUserRoleAcbAdmin();
+                || getResourcePermissions().isUserRoleOncStaff() || getResourcePermissions().isUserRoleAcbAdmin();
     }
 
     @Override

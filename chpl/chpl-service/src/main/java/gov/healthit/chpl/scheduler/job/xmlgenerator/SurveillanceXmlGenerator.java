@@ -41,13 +41,13 @@ public class SurveillanceXmlGenerator extends XmlGenerator {
         if (surveillance != null) {
             sw.writeStartElement(rootNodeName);
             CertifiedProductXmlGenerator.add(surveillance.getCertifiedProduct(), "certifiedProduct", sw);
-            createSimpleElement(surveillance.getEndDate(), "endDate", sw);
+            createSimpleElement(surveillance.getEndDay(), "endDay", sw);
             createSimpleElement(surveillance.getFriendlyId(), "friendlyId", sw);
             createSimpleElement(surveillance.getId(), "id", sw);
             createSimpleElement(surveillance.getLastModifiedDate(), "lastModifiedDate", sw);
             createSimpleElement(surveillance.getRandomizedSitesUsed(), "randomizedSitesUsed", sw);
             SurveillanceRequirementXmlGenerator.add(surveillance.getRequirements(), "surveilledRequirements", sw);
-            createSimpleElement(surveillance.getStartDate(), "startDate", sw);
+            createSimpleElement(surveillance.getStartDay(), "startDay", sw);
             SurveillanceTypeXmlGenerator.addSurveillanceType(surveillance.getType(), "type", sw);
             sw.writeEndElement();
         }

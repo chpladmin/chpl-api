@@ -9,9 +9,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
-import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
-import gov.healthit.chpl.dto.CertificationStatusEventDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.AuthUtil;
@@ -33,26 +31,34 @@ public class CertificationStatusEventsService {
 
     public List<CertificationStatusEvent> getCertificationStatusEvents(Long certifiedProductId) throws EntityRetrievalException {
         return certStatusEventDao.findByCertifiedProductId(certifiedProductId).stream()
-                .map(dto -> createCertificationStatusEventBasedOnDto(dto))
+                .map(cse -> createSecureCertificationStatusEvent(cse))
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public CertificationStatusEventDTO getInitialCertificationEvent(Long listingId) {
+    public CertificationStatusEvent getInitialCertificationEvent(Long listingId) {
         return certStatusEventDao.findInitialCertificationEventForCertifiedProduct(listingId);
     }
 
-    private CertificationStatusEvent createCertificationStatusEventBasedOnDto(CertificationStatusEventDTO certStatusDto) {
+    public CertificationStatusEvent getCurrentCertificationStatusEvent(Long certifiedProductId) throws EntityRetrievalException {
+        return certStatusEventDao.findByCertifiedProductId(certifiedProductId).stream()
+                .map(cse -> createSecureCertificationStatusEvent(cse))
+                .sorted((event1, event2) -> Long.compare(event1.getEventDate(), event2.getEventDate()))
+                .reduce((a, b) -> b) // get the last item in the list
+                .orElse(null);
+    }
+
+    private CertificationStatusEvent createSecureCertificationStatusEvent(CertificationStatusEvent certStatusEvent) {
         try {
             return CertificationStatusEvent.builder()
-                    .id(certStatusDto.getId())
-                    .eventDate(certStatusDto.getEventDate().getTime())
-                    .lastModifiedUser(certStatusDto.getLastModifiedUser())
-                    .lastModifiedDate(certStatusDto.getLastModifiedDate().getTime())
-                    .reason(canUserViewReason() ? certStatusDto.getReason() : null)
-                    .status(new CertificationStatus(certStatusDao.getById(certStatusDto.getStatus().getId())))
+                    .id(certStatusEvent.getId())
+                    .eventDate(certStatusEvent.getEventDate())
+                    .lastModifiedUser(certStatusEvent.getLastModifiedUser())
+                    .lastModifiedDate(certStatusEvent.getLastModifiedDate())
+                    .reason(canUserViewReason() ? certStatusEvent.getReason() : null)
+                    .status(certStatusDao.getById(certStatusEvent.getStatus().getId()))
                     .build();
         } catch (EntityRetrievalException e) {
-            LOGGER.error("There was an error retrieving CertificationStatus[" + certStatusDto.getStatus().getId() + "].");
+            LOGGER.error("There was an error retrieving CertificationStatus[" + certStatusEvent.getStatus().getId() + "].");
             return null;
         }
     }

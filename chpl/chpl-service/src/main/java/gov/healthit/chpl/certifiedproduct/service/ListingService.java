@@ -19,6 +19,7 @@ import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.domain.CertificationEdition;
+import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
@@ -28,11 +29,12 @@ import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
+import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
+import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
 import gov.healthit.chpl.domain.TransparencyAttestation;
 import gov.healthit.chpl.domain.compliance.DirectReview;
-import gov.healthit.chpl.dto.CertificationStatusEventDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -40,6 +42,7 @@ import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.service.DirectReviewSearchService;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -51,7 +54,7 @@ public class ListingService {
     private CqmResultsService cqmResultsService;
     private CertificationStatusEventsService certificationStatusEventsService;
     private DirectReviewSearchService drService;
-    private MeaningfulUseUserHistoryService meaningfulUseUserHistoryService;
+    private PromotingInteroperabilityUserHistoryService piuService;
 
     private ChplProductNumberUtil chplProductNumberUtil;
     private DimensionalDataManager dimensionalDataManager;
@@ -72,7 +75,7 @@ public class ListingService {
             CqmResultsService cqmResultsService,
             CertificationStatusEventsService certificationStatusEventsService,
             DirectReviewSearchService drService,
-            MeaningfulUseUserHistoryService meaningfulUseUserHistoryService,
+            PromotingInteroperabilityUserHistoryService piuService,
             ChplProductNumberUtil chplProductNumberUtil,
             DimensionalDataManager dimensionalDataManager,
             SurveillanceManager survManager,
@@ -88,7 +91,7 @@ public class ListingService {
         this.cqmResultsService = cqmResultsService;
         this.certificationStatusEventsService = certificationStatusEventsService;
         this.drService = drService;
-        this.meaningfulUseUserHistoryService = meaningfulUseUserHistoryService;
+        this.piuService = piuService;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.dimensionalDataManager = dimensionalDataManager;
         this.survManager = survManager;
@@ -107,7 +110,6 @@ public class ListingService {
 
         searchDetails.setCertificationResults(certificationResultService.getCertificationResults(searchDetails));
         searchDetails.setCqmResults(cqmResultsService.getCqmResultDetails(dto.getId(), dto.getYear()));
-        searchDetails.setMeaningfulUseUserHistory(meaningfulUseUserHistoryService.getMeaningfulUseUserHistory(dto.getId()));
 
         // get first-level parents and children
         searchDetails.getIcs().setParents(populateRelatedCertifiedProducts(getCertifiedProductParents(dto.getId())));
@@ -142,7 +144,8 @@ public class ListingService {
                 .product(new Product(dto.getProduct()))
                 .version(new ProductVersion(dto.getVersion()))
                 .productAdditionalSoftware(dto.getProductAdditionalSoftware())
-                .transparencyAttestationUrl(dto.getTransparencyAttestationUrl())
+                .transparencyAttestationUrl(dto.getMandatoryDisclosures())
+                .mandatoryDisclosures(dto.getMandatoryDisclosures())
                 .transparencyAttestation(dto.getTransparencyAttestation() != null ? new TransparencyAttestation(dto.getTransparencyAttestation()) : null)
                 .lastModifiedDate(dto.getLastModifiedDate().getTime())
                 .countCerts(dto.getCountCertifications())
@@ -161,11 +164,14 @@ public class ListingService {
                 .rwtPlansCheckDate(dto.getRwtPlansCheckDate())
                 .rwtResultsUrl(dto.getRwtResultsUrl())
                 .rwtResultsCheckDate(dto.getRwtResultsCheckDate())
-                .rwtEligibilityYear(dto.getRwtEligibilityYear())
                 .svapNoticeUrl(dto.getSvapNoticeUrl())
                 .sed(new CertifiedProductSed())
                 .testingLabs(getTestingLabs(dto.getId()))
                 .build();
+
+        List<PromotingInteroperabilityUser> promotingInteroperabilityUserHistory = piuService.getPromotingInteroperabilityUserHistory(dto.getId());
+        listing.setMeaningfulUseUserHistory(convertToMeaningfulUse(promotingInteroperabilityUserHistory));
+        listing.setPromotingInteroperabilityUserHistory(promotingInteroperabilityUserHistory);
 
         InheritedCertificationStatus ics = new InheritedCertificationStatus();
         ics.setInherits(dto.getIcs());
@@ -220,9 +226,9 @@ public class ListingService {
         if (edition != null) {
             cp.setEdition(edition.getYear());
         }
-        CertificationStatusEventDTO cseDTO = certificationStatusEventsService.getInitialCertificationEvent(dto.getId());
-        if (cseDTO != null) {
-            cp.setCertificationDate(cseDTO.getEventDate().getTime());
+        CertificationStatusEvent cse = certificationStatusEventsService.getInitialCertificationEvent(dto.getId());
+        if (cse != null) {
+            cp.setCertificationDate(cse.getEventDate());
         } else {
             cp.setCertificationDate(-1);
         }
@@ -292,4 +298,17 @@ public class ListingService {
                 .collect(Collectors.toList());
     }
 
+    private List<MeaningfulUseUser> convertToMeaningfulUse(List<PromotingInteroperabilityUser> promotingInteroperailityUserHistory) {
+        return promotingInteroperailityUserHistory.stream()
+                .map(piu -> buildMeaningfulUseUser(piu))
+                .collect(Collectors.toList());
+    }
+
+    private MeaningfulUseUser buildMeaningfulUseUser(PromotingInteroperabilityUser piu) {
+        return MeaningfulUseUser.builder()
+            .id(piu.getId())
+            .muuCount(piu.getUserCount())
+            .muuDate(DateUtil.toEpochMillis(piu.getUserCountDate()))
+            .build();
+    }
 }

@@ -15,29 +15,16 @@ import org.springframework.core.env.Environment;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
-import gov.healthit.chpl.service.CertificationCriterionService;
 
-/**
- * Writes out only surveillance records that resulted in nonconformities.
- *
- * @author kekey
- *
- */
 public class NonconformityCsvPresenter extends SurveillanceCsvPresenter {
     private static final Logger LOGGER = LogManager.getLogger(NonconformityCsvPresenter.class);
 
-    /**
-     * Constructor with properties.
-     * 
-     * @param props
-     *            the properties file
-     */
-    public NonconformityCsvPresenter(Environment env, CertificationCriterionService criterionService) {
-        super(env, criterionService);
+    public NonconformityCsvPresenter(Environment env) {
+        super(env);
     }
 
     @Override
-    public void presentAsFile(final File file, final List<CertifiedProductSearchDetails> cpList) {
+    public void presentAsFile(File file, List<CertifiedProductSearchDetails> cpList) {
         try (FileWriter writer = new FileWriter(file);
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
             writer.write('\ufeff');
@@ -49,8 +36,7 @@ public class NonconformityCsvPresenter extends SurveillanceCsvPresenter {
                         boolean hasNc = false;
                         if (currSurveillance.getRequirements() != null
                                 && currSurveillance.getRequirements().size() > 0) {
-                            // marks requirements for removal if they have no
-                            // nonconformities
+                            // marks requirements for removal if they have no non-conformities
                             List<SurveillanceRequirement> reqsToRemove = new ArrayList<SurveillanceRequirement>();
                             for (SurveillanceRequirement req : currSurveillance.getRequirements()) {
                                 if (req.getNonconformities() != null && req.getNonconformities().size() > 0) {
@@ -67,7 +53,7 @@ public class NonconformityCsvPresenter extends SurveillanceCsvPresenter {
                         }
 
                         if (hasNc) {
-                            // write out surveillance with nonconformities only
+                            // write out surveillance with non-conformities only
                             List<List<String>> rowValues = generateMultiRowValue(cp, currSurveillance);
                             for (List<String> rowValue : rowValues) {
                                 csvPrinter.printRecord(rowValue);

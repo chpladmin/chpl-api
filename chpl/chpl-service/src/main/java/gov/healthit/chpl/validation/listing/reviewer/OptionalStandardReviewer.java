@@ -2,8 +2,10 @@ package gov.healthit.chpl.validation.listing.reviewer;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,7 +16,9 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("optionalStandardReviewer")
@@ -49,11 +53,28 @@ public class OptionalStandardReviewer implements Reviewer {
 
             for (CertificationResult cr : certificationResultsWithOptionalStandards) {
                 for (CertificationResultOptionalStandard cros : cr.getOptionalStandards()) {
-                    if (!isOptionalStandardValidForCriteria(cros.getOptionalStandard().getId(), cr.getCriterion().getId(), optionalStandardCriteriaMap)) {
+                    populateOptionalStandardFields(cros, optionalStandardCriteriaMap);
+                    if (!isOptionalStandardValidForCriteria(cros.getOptionalStandardId(), cr.getCriterion().getId(), optionalStandardCriteriaMap)) {
                         listing.getErrorMessages().add(errorMessageUtil.getMessage("listing.criteria.optionalStandard.invalidCriteria",
-                                cros.getOptionalStandard().getCitation(), cr.getCriterion().getNumber()));
+                                cros.getCitation(), CertificationCriterionService.formatCriteriaNumber(cr.getCriterion())));
                     }
                 }
+            }
+        }
+    }
+
+    private void populateOptionalStandardFields(CertificationResultOptionalStandard cros, Map<Long, List<OptionalStandardCriteriaMap>> optionalStandardCriteriaMap) {
+        if (cros.getOptionalStandardId() != null) {
+            Optional<OptionalStandard> optionalStandard = getOptionalStandard(cros.getOptionalStandardId(), optionalStandardCriteriaMap);
+            if (optionalStandard.isPresent()) {
+                cros.setCitation(optionalStandard.get().getCitation());
+                cros.setDescription(optionalStandard.get().getDescription());
+            }
+        } else if (!StringUtils.isEmpty(cros.getCitation())) {
+            Optional<OptionalStandard> optionalStandard = getOptionalStandard(cros.getCitation(), optionalStandardCriteriaMap);
+            if (optionalStandard.isPresent()) {
+                cros.setOptionalStandardId(optionalStandard.get().getId());
+                cros.setDescription(optionalStandard.get().getDescription());
             }
         }
     }
@@ -67,5 +88,21 @@ public class OptionalStandardReviewer implements Reviewer {
         } else {
             return false;
         }
+    }
+
+    private Optional<OptionalStandard> getOptionalStandard(Long optionalStandardId, Map<Long, List<OptionalStandardCriteriaMap>> optionalStandardCriteriaMap) {
+        return optionalStandardCriteriaMap.values().stream()
+                .flatMap(List::stream)
+                .map(oscm -> oscm.getOptionalStandard())
+                .filter(os -> os.getId().equals(optionalStandardId))
+                .findAny();
+    }
+
+    private Optional<OptionalStandard> getOptionalStandard(String citation, Map<Long, List<OptionalStandardCriteriaMap>> optionalStandardCriteriaMap) {
+        return optionalStandardCriteriaMap.values().stream()
+                .flatMap(List::stream)
+                .map(oscm -> oscm.getOptionalStandard())
+                .filter(os -> os.getCitation().equals(citation))
+                .findAny();
     }
 }

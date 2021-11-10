@@ -23,13 +23,13 @@ const acbControllerTests = {
 };
 
 const apiKeyControllerTests = {
-    ...commonOptions,
-    collection: collection_path + '/api-key-controller.postman_collection.json',
-    reporter: {
-        junit: {
-            export: reports_path + '/api-key-controller-tests.xml',
-        },
+  ...commonOptions,
+  collection: collection_path + '/api-key-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/api-key-controller-tests.xml',
     },
+  },
 };
 
 const certifiedProductControllerDataTests = {
@@ -168,9 +168,40 @@ const searchControllerTests = {
   },
 };
 
+const promotinginteroperabilityControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/promoting-interoperability-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/promoting-interoperability-controller-tests.xml',
+    },
+  },
+};
+
+const certificationidControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/certification-id-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/certification-id-controller-tests.xml',
+    },
+  },
+};
+
+const activityControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/activity-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/activity-controller-tests.xml',
+    },
+  },
+};
+
 const jobs = [
   cb => newman.run(acbControllerTests,cb),
   cb => newman.run(apiKeyControllerTests,cb),
+  cb => newman.run(promotinginteroperabilityControllerTests,cb),
   cb => newman.run(certifiedProductControllerDataTests,cb),
   cb => newman.run(certifiedProductControllerNoDataTests,cb),
   cb => newman.run(complaintControllerTests,cb),
@@ -183,7 +214,9 @@ const jobs = [
   cb => newman.run(schedulerControllerTests,cb),
   cb => newman.run(dimensionaldataControllerTests,cb),
   cb => newman.run(surveillanceReportControllerTests,cb),
-  cb => newman.run(searchControllerTests,cb)
+  cb => newman.run(searchControllerTests,cb),
+  cb => newman.run(certificationidControllerTests,cb),
+  cb => newman.run(activityControllerTests,cb),
 ];
 
 const responseCallback = (err) => {

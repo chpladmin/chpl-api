@@ -38,10 +38,10 @@ public class SurveillanceDetailsReviewer implements Reviewer {
     public void review(Surveillance surv) {
         checkChplProductNumberValidity(surv);
         checkSurveillanceIdValidity(surv);
-        checkStartDateExists(surv);
+        checkStartDayExists(surv);
         checkSurveillanceTypeValidity(surv);
         checkRandomizedSitesValidity(surv);
-        checkSurveillanceEndDateRequired(surv);
+        checkSurveillanceEndDayRequired(surv);
     }
 
     private void checkChplProductNumberValidity(Surveillance surv) {
@@ -84,8 +84,8 @@ public class SurveillanceDetailsReviewer implements Reviewer {
         }
     }
 
-    private void checkStartDateExists(Surveillance surv) {
-        if (surv.getStartDate() == null) {
+    private void checkStartDayExists(Surveillance surv) {
+        if (surv.getStartDay() == null) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.startDateRequired"));
         }
     }
@@ -127,20 +127,19 @@ public class SurveillanceDetailsReviewer implements Reviewer {
         }
     }
 
-    private void checkSurveillanceEndDateRequired(Surveillance surv) {
+    private void checkSurveillanceEndDayRequired(Surveillance surv) {
         boolean survRequiresCloseDate = true;
         for (SurveillanceRequirement req : surv.getRequirements()) {
             for (SurveillanceNonconformity nc : req.getNonconformities()) {
                 survRequiresCloseDate = survRequiresCloseDate && doesNonconformityRequireCloseDate(nc);
             }
         }
-        if (survRequiresCloseDate && surv.getEndDate() == null) {
+        if (survRequiresCloseDate && surv.getEndDay() == null) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.endDateRequiredNoOpenNonConformities"));
         }
     }
 
     private boolean doesNonconformityRequireCloseDate(SurveillanceNonconformity nc) {
-        return !(nc.getStatus() != null && nc.getStatus().getName() != null
-                && nc.getStatus().getName().equalsIgnoreCase("Open"));
+        return nc.getNonconformityCloseDay() != null;
     }
 }

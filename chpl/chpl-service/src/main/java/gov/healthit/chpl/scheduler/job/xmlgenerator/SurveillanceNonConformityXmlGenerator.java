@@ -7,17 +7,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 
-/**
- * Generate &lt;nonconformities&gt;&lt;nonconformity&gt;&lt;/nonconformity&gt;&lt;/nonconformities&gt; nodes.
- */
 public class SurveillanceNonConformityXmlGenerator extends XmlGenerator {
-    /**
-     * Add nonconformities to root.
-     * @param sncs nonconformities
-     * @param rootNodeName root node name
-     * @param sw stream writer
-     * @throws XMLStreamException if exception during writing process
-     */
     public static void add(List<SurveillanceNonconformity> sncs, String rootNodeName,
             XMLStreamWriter sw) throws XMLStreamException {
         if (sncs != null) {
@@ -29,32 +19,26 @@ public class SurveillanceNonConformityXmlGenerator extends XmlGenerator {
         }
     }
 
-    /**
-     * Add a single nonconformity.
-     * @param snc the nonconformity
-     * @param rootNodeName root node name
-     * @param sw stream writer
-     * @throws XMLStreamException if exception during writing process
-     */
     public static void add(SurveillanceNonconformity snc, String rootNodeName, XMLStreamWriter sw)
             throws XMLStreamException {
         if (snc != null) {
             sw.writeStartElement(rootNodeName);
-            createSimpleElement(snc.getCapApprovalDate(), "capApprovalDate", sw);
-            createSimpleElement(snc.getCapEndDate(), "capEndDate", sw);
-            createSimpleElement(snc.getCapMustCompleteDate(), "capMustCompleteDate", sw);
-            createSimpleElement(snc.getCapStartDate(), "capStartDate", sw);
+            createSimpleElement(snc.getCapApprovalDay(), "capApprovalDay", sw);
+            createSimpleElement(snc.getCapEndDay(), "capEndDay", sw);
+            createSimpleElement(snc.getCapMustCompleteDay(), "capMustCompleteDay", sw);
+            createSimpleElement(snc.getCapStartDay(), "capStartDay", sw);
             CertificationCriterionXmlGenerator.add(snc.getCriterion(), "criterion", sw);
-            createSimpleElement(snc.getDateOfDetermination(), "dateOfDetermination", sw);
+            createSimpleElement(snc.getDateOfDeterminationDay(), "dateOfDeterminationDay", sw);
             createSimpleElement(snc.getDeveloperExplanation(), "developerExplanation", sw);
             SurveillanceNonConformityDocumentXmlGenerator.add(snc.getDocuments(), "documents", sw);
             createSimpleElement(snc.getFindings(), "findings", sw);
             createSimpleElement(snc.getId(), "id", sw);
             createSimpleElement(snc.getLastModifiedDate(), "lastModifiedDate", sw);
+            createSimpleElement(snc.getNonconformityCloseDay(), "nonconformityCloseDay", sw);
+            createSimpleElement(snc.getNonconformityStatus(), "nonconformityStatus", sw);
             createSimpleElement(snc.getNonconformityType(), "nonconformityType", sw);
             createSimpleElement(snc.getResolution(), "resolution", sw);
             createSimpleElement(snc.getSitesPassed(), "sitesPassed", sw);
-            SurveillanceNonConformityStatusXmlGenerator.add(snc.getStatus(), "status", sw);
             createSimpleElement(snc.getSummary(), "summary", sw);
             createSimpleElement(snc.getTotalSites(), "totalSites", sw);
             sw.writeEndElement();

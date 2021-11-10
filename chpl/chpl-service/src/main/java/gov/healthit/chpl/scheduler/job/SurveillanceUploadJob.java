@@ -8,8 +8,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.mail.MessagingException;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -31,6 +29,8 @@ import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.PendingSurveillanceManager;
@@ -38,7 +38,6 @@ import gov.healthit.chpl.manager.SurveillanceUploadManager;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandler;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandlerFactory;
 import gov.healthit.chpl.util.AuthUtil;
-import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -76,7 +75,7 @@ public class SurveillanceUploadJob implements Job {
             LOGGER.fatal("No user could be found in the job data.");
         } else {
             setSecurityContext(user);
-            String fileContents = (String) jobDataMap.getString(FILE_CONTENTS_KEY);
+            String fileContents = jobDataMap.getString(FILE_CONTENTS_KEY);
             Set<String> processingErrors = new LinkedHashSet<String>();
             Set<Surveillance> pendingSurvs = parseSurveillance(fileContents, processingErrors);
             processPendingSurveillance(pendingSurvs, processingErrors);
@@ -112,14 +111,15 @@ public class SurveillanceUploadJob implements Job {
                                     SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading,
                                             rows);
                                     Surveillance pendingSurv = handler.handle();
-                                    List<String> errors = survUploadManager
-                                            .checkUploadedSurveillanceOwnership(pendingSurv);
+                                    List<String> errors = survUploadManager.checkUploadedSurveillanceOwnership(pendingSurv);
+                                    errors.addAll(survUploadManager.checkNonConformityStatusAndCloseDate(pendingSurv));
                                     // Add any errors that were found when getting the Surveillance
                                     errors.addAll(pendingSurv.getErrorMessages());
 
                                     for (String error : errors) {
                                         processingErrors.add(error);
                                     }
+                                    survUploadManager.setNonConformityCloseDate(pendingSurv);
                                     pendingSurvs.add(pendingSurv);
                                 } catch (InvalidArgumentsException ex) {
                                     LOGGER.error(ex.getMessage());
@@ -199,14 +199,14 @@ public class SurveillanceUploadJob implements Job {
         String htmlBody = createHtmlEmailBody(pendingSurveillance, processingMessages);
         try {
             sendEmail(user.getEmail(), subject, htmlBody);
-        } catch (MessagingException ex) {
+        } catch (EmailNotSentException ex) {
             LOGGER.error("Unable to send email to " + user.getEmail());
             LOGGER.catching(ex);
         }
     }
 
     private void sendEmail(String recipientEmail, String subject, String htmlMessage)
-            throws MessagingException {
+            throws EmailNotSentException {
         LOGGER.info("Sending email to: " + recipientEmail);
         LOGGER.info("Message to be sent: " + htmlMessage);
 

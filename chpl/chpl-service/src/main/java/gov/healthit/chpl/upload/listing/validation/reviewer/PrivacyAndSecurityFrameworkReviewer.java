@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -27,7 +28,7 @@ public class PrivacyAndSecurityFrameworkReviewer extends PermissionBasedReviewer
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess())
+            .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
             .forEach(certResult -> review(listing, certResult));
     }
 
@@ -38,10 +39,12 @@ public class PrivacyAndSecurityFrameworkReviewer extends PermissionBasedReviewer
     }
 
     private void reviewCriteriaCanHavePrivacyAndSecurity(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.PRIVACY_SECURITY)
-                && !StringUtils.isEmpty(certResult.getPrivacySecurityFramework())) {
-            listing.getErrorMessages().add(msgUtil.getMessage(
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.PRIVACY_SECURITY)) {
+            if (!StringUtils.isEmpty(certResult.getPrivacySecurityFramework())) {
+                listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.privacyAndSecurityFrameworkNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
+            certResult.setPrivacySecurityFramework(null);
         }
     }
 

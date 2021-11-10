@@ -25,6 +25,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CertifiedProductDTO implements Serializable {
     private static final long serialVersionUID = 7918387302717979598L;
+    private static final String CERTIFIED_DATE_CODE_FORMAT = "yyMMdd";
+
     private Long id;
     private String productCode;
     private String versionCode;
@@ -46,9 +48,9 @@ public class CertifiedProductDTO implements Serializable {
     private String sedReportFileLocation;
     private String sedIntendedUserDescription;
     private Date sedTestingEnd;
-    private CertificationStatusDTO certificationStatus;
+    private CertificationStatus certificationStatus;
     private String otherAcb;
-    private String transparencyAttestationUrl;
+    private String mandatoryDisclosures;
     private Boolean ics;
     private Boolean sedTesting;
     private Boolean qmsTesting;
@@ -85,7 +87,7 @@ public class CertifiedProductDTO implements Serializable {
         this.sedReportFileLocation = entity.getSedReportFileLocation();
         this.sedIntendedUserDescription = entity.getSedIntendedUserDescription();
         this.sedTestingEnd = entity.getSedTestingEnd();
-        this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
+        this.mandatoryDisclosures = entity.getMandatoryDisclosures();
         this.otherAcb = entity.getOtherAcb();
         this.setIcs(entity.getIcs());
         this.setSedTesting(entity.getSedTesting());
@@ -96,7 +98,6 @@ public class CertifiedProductDTO implements Serializable {
         this.setRwtPlansCheckDate(entity.getRwtPlansCheckDate());
         this.setRwtResultsUrl(entity.getRwtResultsUrl());
         this.setRwtResultsCheckDate(entity.getRwtResultsCheckDate());
-        this.setRwtEligibilityYear(entity.getRwtEligibilityYear());
         this.setSvapNoticeUrl(entity.getSvapNoticeUrl());
     }
 
@@ -111,13 +112,7 @@ public class CertifiedProductDTO implements Serializable {
             this.setProductClassificationTypeId(Long.valueOf(from.getClassificationType().get("id").toString()));
         }
         this.setProductVersionId(from.getVersion().getVersionId());
-
-        CertificationStatus fromStatus = from.getCurrentStatus().getStatus();
-        if (fromStatus != null) {
-            this.certificationStatus = new CertificationStatusDTO();
-            this.certificationStatus.setId(fromStatus.getId());
-            this.certificationStatus.setStatus(fromStatus.getName());
-        }
+        this.certificationStatus = from.getCurrentStatus().getStatus();
         this.setCertificationEditionId(
                 Long.valueOf(from.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString()));
         this.setReportFileLocation(from.getReportFileLocation());
@@ -129,7 +124,7 @@ public class CertifiedProductDTO implements Serializable {
         this.setIcs(from.getIcs() == null || from.getIcs().getInherits() == null ? Boolean.FALSE : from.getIcs().getInherits());
         this.setAccessibilityCertified(from.getAccessibilityCertified());
         this.setProductAdditionalSoftware(from.getProductAdditionalSoftware());
-        this.setTransparencyAttestationUrl(from.getTransparencyAttestationUrl());
+        this.setMandatoryDisclosures(from.getMandatoryDisclosures());
         this.setRwtPlansUrl(from.getRwtPlansUrl());
         this.setRwtPlansCheckDate(from.getRwtPlansCheckDate());
         this.setRwtResultsUrl(from.getRwtResultsUrl());
@@ -152,12 +147,11 @@ public class CertifiedProductDTO implements Serializable {
                     this.setVersionCode(chplProductIdComponents[ChplProductNumberUtil.VERSION_CODE_INDEX]);
                     this.setIcsCode(chplProductIdComponents[ChplProductNumberUtil.ICS_CODE_INDEX]);
                     this.setAdditionalSoftwareCode(chplProductIdComponents[ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_INDEX]);
-                    this.setCertifiedDateCode(chplProductIdComponents[ChplProductNumberUtil.CERTIFIED_DATE_CODE_INDEX]);
                 }
 
                 if (from.getCertificationDate() != null) {
                     Date certDate = new Date(from.getCertificationDate());
-                    SimpleDateFormat dateCodeFormat = new SimpleDateFormat("yyMMdd");
+                    SimpleDateFormat dateCodeFormat = new SimpleDateFormat(CERTIFIED_DATE_CODE_FORMAT);
                     String dateCode = dateCodeFormat.format(certDate);
                     this.setCertifiedDateCode(dateCode);
                 }

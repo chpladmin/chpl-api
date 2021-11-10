@@ -2,9 +2,8 @@ package gov.healthit.chpl.surveillance.report.builder;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -141,17 +140,17 @@ public abstract class ReportInfoWorksheetBuilder {
         row = workbook.getRow(sheet, currRow++);
         cell = workbook.createCell(row, 1);
         //calculate the minimum start date and maximum end dates out of all reports passed in
-        Date minDate = null;
-        Date maxDate = null;
+        LocalDate minDate = null;
+        LocalDate maxDate = null;
         for (QuarterlyReportDTO report : reports) {
-            if (minDate == null || report.getStartDate().getTime() < minDate.getTime()) {
+            if (minDate == null || report.getStartDate().isBefore(minDate)) {
                 minDate = report.getStartDate();
             }
-            if (maxDate == null || report.getEndDate().getTime() > maxDate.getTime()) {
+            if (maxDate == null || report.getEndDate().isAfter(maxDate)) {
                 maxDate = report.getEndDate();
             }
         }
-        DateFormat dateFormatter = new SimpleDateFormat("d MMMM yyyy");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy");
         cell.setCellValue(dateFormatter.format(minDate) + " through " + dateFormatter.format(maxDate));
         pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 1),
                 BorderStyle.MEDIUM, BorderExtent.ALL);
@@ -227,16 +226,16 @@ public abstract class ReportInfoWorksheetBuilder {
         cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
 
         if (reports.size() == 1) {
-            cell.setCellValue(reports.get(0).getReactiveSummary());
+            cell.setCellValue(reports.get(0).getReactiveSurveillanceSummary());
         } else {
             StringBuffer buf = new StringBuffer();
             for (QuarterlyReportDTO report : reports) {
-                if (!StringUtils.isEmpty(report.getReactiveSummary())) {
+                if (!StringUtils.isEmpty(report.getReactiveSurveillanceSummary())) {
                     if (buf.length() > 0) {
                         buf.append("\n");
                     }
                     buf.append(report.getQuarter().getName()).append(":")
-                        .append(report.getReactiveSummary());
+                        .append(report.getReactiveSurveillanceSummary());
                 }
             }
             cell.setCellValue(buf.toString());
@@ -310,13 +309,13 @@ public abstract class ReportInfoWorksheetBuilder {
         row = workbook.getRow(sheet, currRow++);
         cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
         if (reports.size() == 1) {
-            cell.setCellValue(reports.get(0).getDisclosureSummary());
+            cell.setCellValue(reports.get(0).getDisclosureRequirementsSummary());
         } else {
             StringBuffer buf = new StringBuffer();
             for (QuarterlyReportDTO report : reports) {
-                if (!StringUtils.isEmpty(report.getDisclosureSummary())) {
+                if (!StringUtils.isEmpty(report.getDisclosureRequirementsSummary())) {
                     buf.append(report.getQuarter().getName()).append(":")
-                        .append(report.getDisclosureSummary())
+                        .append(report.getDisclosureRequirementsSummary())
                         .append("\n");
                 }
             }

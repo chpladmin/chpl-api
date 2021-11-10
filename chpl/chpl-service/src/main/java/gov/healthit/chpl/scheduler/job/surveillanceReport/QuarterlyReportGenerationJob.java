@@ -7,8 +7,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.mail.MessagingException;
-
 import org.apache.poi.ss.usermodel.Workbook;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
@@ -16,6 +14,7 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,6 +29,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -37,7 +39,6 @@ import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
 import gov.healthit.chpl.surveillance.report.builder.QuarterlyReportBuilderXlsx;
 import gov.healthit.chpl.surveillance.report.builder.ReportBuilderFactory;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
-import gov.healthit.chpl.util.EmailBuilder;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -47,6 +48,15 @@ public class QuarterlyReportGenerationJob implements Job {
     public static final String JOB_NAME = "quarterlyReportGenerationJob";
     public static final String QUARTERLY_REPORT_ID_KEY = "quarterLyReportId";
     public static final String USER_KEY = "user";
+
+    @Autowired
+    private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
+
+    @Value("${chpl.email.valediction}")
+    private String chplEmailValediction;
+
+    @Value("${footer.acbatlUrl}")
+    private String acbatlFeedbackUrl;
 
     @Autowired
     private JpaTransactionManager txManager;
@@ -212,19 +222,23 @@ public class QuarterlyReportGenerationJob implements Job {
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 
-    private void sendEmail(String recipientEmail, String subject, String htmlMessage, List<File> attachments)  {
+    private void sendEmail(String recipientEmail, String subject, String htmlContent, List<File> attachments)  {
         LOGGER.info("Sending email to: " + recipientEmail);
-        LOGGER.info("Message to be sent: " + htmlMessage);
+        LOGGER.info("Message to be sent: " + htmlContent);
 
         try {
             EmailBuilder emailBuilder = new EmailBuilder(env);
             emailBuilder.recipient(recipientEmail)
                     .subject(subject)
-                    .htmlMessage(htmlMessage)
+                    .htmlMessage(chplHtmlEmailBuilder.initialize()
+                            .heading(subject)
+                            .paragraph("", htmlContent)
+                            .paragraph("", String.format(chplEmailValediction, acbatlFeedbackUrl))
+                            .footer(true)
+                            .build())
                     .fileAttachments(attachments)
-                    .acbAtlHtmlFooter()
                     .sendEmail();
-        } catch (MessagingException ex) {
+        } catch (EmailNotSentException ex) {
             LOGGER.error("Could not send email to " + recipientEmail, ex);
         }
     }

@@ -36,15 +36,17 @@ public enum QuestionableActivityTriggerConcept implements Serializable {
     TESTING_LAB_CHANGED("Testing Lab Changed"),
     VERSION_NAME_EDITED("Version Name Edited"),
     REAL_WORLD_TESTING_REMOVED("Real World Testing Removed"),
-    REPLACED_SVAP_ADDED("Replaced SVAP Added");
+    REAL_WORLD_TESTING_ADDED("Real World Testing Added To Ineligible Listing"),
+    REPLACED_SVAP_ADDED("Replaced SVAP Added"),
+    PROMOTING_INTEROPERABILITY_UPDATED_BY_ACB("Promoting Interoperability Updated by ONC-ACB");
 
     private final String name;
 
-    QuestionableActivityTriggerConcept(final String input) {
+    QuestionableActivityTriggerConcept(String input) {
         this.name = input;
     }
 
-    public static QuestionableActivityTriggerConcept findByName(final String jobTypeName) {
+    public static QuestionableActivityTriggerConcept findByName(String jobTypeName) {
         QuestionableActivityTriggerConcept result = null;
         QuestionableActivityTriggerConcept[] availableValues = values();
         for (int i = 0; i < availableValues.length && result == null; i++) {

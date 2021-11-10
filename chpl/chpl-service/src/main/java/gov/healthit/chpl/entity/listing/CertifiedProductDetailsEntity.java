@@ -16,7 +16,6 @@ import org.hibernate.annotations.Type;
 
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.ProductEntity;
-import gov.healthit.chpl.util.Util;
 import lombok.Data;
 
 @Entity
@@ -60,12 +59,11 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "sed_intended_user_description")
     private String sedIntendedUserDescription;
 
-    @Basic(optional = true)
-    @Column(name = "meaningful_use_users")
-    private Long meaningfulUseUsers;
+    @Column(name = "promoting_interoperability_user_count")
+    private Long promotingInteroperabilityUserCount;
 
-    @Column(name = "meaningful_use_users_date")
-    private Date meaningfulUseUsersDate;
+    @Column(name = "promoting_interoperability_user_count_date")
+    private LocalDate promotingInteroperabilityUserCountDate;
 
     @Basic(optional = true)
     @Column(name = "sed_testing_end")
@@ -254,8 +252,8 @@ public class CertifiedProductDetailsEntity {
     })
     private AttestationType transparencyAttestation;
 
-    @Column(name = "transparency_attestation_url")
-    private String transparencyAttestationUrl;
+    @Column(name = "mandatory_disclosures")
+    private String mandatoryDisclosures;
 
     @Column(name = "rwt_plans_url")
     private String rwtPlansUrl;
@@ -269,66 +267,7 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "rwt_results_check_date")
     private LocalDate rwtResultsCheckDate;
 
-    @Column(name = "rwt_eligibility_year")
-    private Integer rwtEligibilityYear;
-
     @Column(name = "svap_notice_url")
     private String svapNoticeUrl;
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Date getCertificationStatusDate() {
-        return Util.getNewDate(certificationStatusDate);
-    }
-
-    public void setCertificationStatusDate(Date certificationStatusDate) {
-        this.certificationStatusDate = Util.getNewDate(certificationStatusDate);
-    }
-
-    public Date getDecertificationDate() {
-        return Util.getNewDate(decertificationDate);
-    }
-
-    public void setDecertificationDate(Date decertificationDate) {
-        this.decertificationDate = Util.getNewDate(decertificationDate);
-    }
-
-    public Date getCertificationDate() {
-        return Util.getNewDate(certificationDate);
-    }
-
-    public void setCertificationDate(Date certificationDate) {
-        this.certificationDate = Util.getNewDate(certificationDate);
-    }
-
-    public Date getDeveloperStatusDate() {
-        return Util.getNewDate(developerStatusDate);
-    }
-
-    public void setDeveloperStatusDate(Date developerStatusDate) {
-        this.developerStatusDate = Util.getNewDate(developerStatusDate);
-    }
-
-    public Date getMeaningfulUseUsersDate() {
-        return Util.getNewDate(meaningfulUseUsersDate);
-    }
-
-    public void setMeaningfulUseUsersDate(Date meaningfulUseUsersDate) {
-        this.meaningfulUseUsersDate = Util.getNewDate(meaningfulUseUsersDate);
-    }
-
 }
+

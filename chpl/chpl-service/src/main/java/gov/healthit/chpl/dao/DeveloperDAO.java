@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dao;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,11 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
-import gov.healthit.chpl.dto.DecertifiedDeveloperDTODeprecated;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
@@ -40,6 +44,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Repository("developerDAO")
@@ -431,7 +436,7 @@ public class DeveloperDAO extends BaseDAOImpl {
                     entity.getCountWithdrawnByDeveloperUnderSurveillanceListings());
             domain.getListingCounts().setWithdrawnByOncAcb(entity.getCountWithdrawnByOncAcbListings());
             domain.setAcbAttestations(entity.getAcbAttestations());
-            domain.setTransparencyAttestationUrls(entity.getTransparencyAttestationUrls());
+            domain.setMandatoryDisclosures(entity.getMandatoryDisclosures());
             domainResults.add(domain);
         }
         return domainResults;
@@ -553,60 +558,45 @@ public class DeveloperDAO extends BaseDAOImpl {
         return resultDtos;
     }
 
-    public List<DecertifiedDeveloperDTODeprecated> getDecertifiedDevelopers() {
-
-        Query bannedListingsQuery = entityManager.createQuery(
-                "FROM CertifiedProductDetailsEntity "
-                        + "WHERE developerStatusName IN (:banned) AND deleted = false AND acbIsRetired = false",
+    public List<DecertifiedDeveloperResult> getDecertifiedDevelopers() {
+        Query bannedListingsQuery = entityManager.createQuery("SELECT entity "
+                + "FROM CertifiedProductDetailsEntity entity "
+                + "WHERE developerStatusName IN (:banned) "
+                + "AND deleted = false AND acbIsRetired = false",
                 CertifiedProductDetailsEntity.class);
         bannedListingsQuery.setParameter("banned", String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc));
-        @SuppressWarnings("unchecked") List<CertifiedProductDetailsEntity> bannedListings = bannedListingsQuery.getResultList();
-        List<DecertifiedDeveloperDTODeprecated> decertifiedDevelopers = new ArrayList<DecertifiedDeveloperDTODeprecated>();
+        List<CertifiedProductDetailsEntity> bannedListings = bannedListingsQuery.getResultList();
+        List<DecertifiedDeveloperResult> decertifiedDevelopers = new ArrayList<DecertifiedDeveloperResult>();
         // populate dtoList from result
         for (CertifiedProductDetailsEntity currListing : bannedListings) {
-            LOGGER.debug("CertifiedProductDetailsEntity: " + currListing.getDeveloperId() + " "
-                    + currListing.getCertificationBodyId() + " " + currListing.getMeaningfulUseUsers());
             Boolean devExists = false;
             if (decertifiedDevelopers.size() > 0) {
-                for (DecertifiedDeveloperDTODeprecated currDev : decertifiedDevelopers) {
-                    LOGGER.debug("DeveloperDecertifiedDTO: " + currDev.getDeveloperId() + " " + currDev.getAcbIdList()
-                            + " " + currDev.getNumMeaningfulUse());
-                    // if developer already exists, update it to include ACB and
-                    // aggregate numMeaningfulUse
-                    if (currDev.getDeveloperId().equals(currListing.getDeveloperId())) {
-                        LOGGER.debug(currDev.getDeveloperId() + " == " + currListing.getDeveloperId());
-                        currDev.setDeveloperStatus(currListing.getDeveloperStatusName());
-                        LOGGER.debug("set dto dev status to " + currListing.getDeveloperStatusName());
+                for (DecertifiedDeveloperResult currDev : decertifiedDevelopers) {
+                    if (currDev.getDeveloper().getDeveloperId().equals(currListing.getDeveloperId())) {
+                        currDev.getDeveloper().setStatus(DeveloperStatus.builder().status(currListing.getDeveloperStatusName()).build());
                         currDev.setDecertificationDate(currListing.getDeveloperStatusDate());
-                        LOGGER.debug("set dev decert date to " + currListing.getDeveloperStatusDate());
-                        // If this developer is not associated with the ACB, add
-                        // the ACB
-                        if (!currDev.getAcbIdList().contains(currListing.getCertificationBodyId())) {
-                            LOGGER.debug("dto does not contain " + currListing.getCertificationBodyName());
-                            currDev.addAcb(currListing.getCertificationBodyId());
+                        if (!currDev.refersToAcbId(currListing.getCertificationBodyId())) {
+                            currDev.getCertifyingBody().add(CertificationBody.builder()
+                                    .id(currListing.getCertificationBodyId())
+                                    .name(currListing.getCertificationBodyName())
+                                    .build());
                         }
-                        LOGGER.debug("added acb " + currListing.getCertificationBodyId() + " to dto with dev id == "
-                                + currDev.getDeveloperId());
-                        // aggregate meaningful use count for existing developer
-                        if (currListing.getMeaningfulUseUsers() != null) {
-                            currDev.incrementNumMeaningfulUse(currListing.getMeaningfulUseUsers());
-                            LOGGER.debug(
-                                    "added numMeaningfulUse to dto with value " + currListing.getMeaningfulUseUsers());
+                        // aggregate promoting interoperability user count for existing developer
+                        if (currListing.getPromotingInteroperabilityUserCount() != null) {
+                            currDev.incrementPromotingInteroperabilityUserCount(currListing.getPromotingInteroperabilityUserCount());
                         }
-                        // check earliest vs latest meaningful use dates for
-                        // existing developer
-                        if (currListing.getMeaningfulUseUsersDate() != null) {
-                            if (currDev.getEarliestNumMeaningfulUseDate() == null) {
-                                currDev.setEarliestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
-                            } else if (currListing.getMeaningfulUseUsersDate().getTime() < currDev
-                                    .getEarliestNumMeaningfulUseDate().getTime()) {
-                                currDev.setEarliestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
+                        // check earliest vs latest promoting interoperability use dates for existing developer
+                        if (currListing.getPromotingInteroperabilityUserCountDate() != null) {
+                            LocalDate promotingInteroperabilityUserDate = currListing.getPromotingInteroperabilityUserCountDate();
+                            if (currDev.getEarliestPromotingInteroperabilityUserCountDate() == null
+                                    || promotingInteroperabilityUserDate.isBefore(currDev.getEarliestPromotingInteroperabilityUserCountDate())) {
+                                currDev.setEarliestPromotingInteroperabilityUserCountDate(promotingInteroperabilityUserDate);
+                                currDev.setEarliestMeaningfulUseDate(promotingInteroperabilityUserDate != null ? DateUtil.toEpochMillis(promotingInteroperabilityUserDate) : null);
                             }
-                            if (currDev.getLatestNumMeaningfulUseDate() == null) {
-                                currDev.setLatestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
-                            } else if (currListing.getMeaningfulUseUsersDate().getTime() > currDev
-                                    .getLatestNumMeaningfulUseDate().getTime()) {
-                                currDev.setLatestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
+                            if (currDev.getLatestPromotingInteroperabilityUserCountDate() == null
+                                    || promotingInteroperabilityUserDate.isAfter(promotingInteroperabilityUserDate)) {
+                                currDev.setLatestPromotingInteroperabilityUserCountDate(promotingInteroperabilityUserDate);
+                                currDev.setLatestMeaningfulUseDate(promotingInteroperabilityUserDate != null ? DateUtil.toEpochMillis(promotingInteroperabilityUserDate) : null);
                             }
                         }
                         devExists = true;
@@ -615,17 +605,27 @@ public class DeveloperDAO extends BaseDAOImpl {
                 }
             }
             if (!devExists) {
-                List<Long> acbList = new ArrayList<Long>();
-                acbList.add(currListing.getCertificationBodyId());
-                DecertifiedDeveloperDTODeprecated decertDev = new DecertifiedDeveloperDTODeprecated(
-                        currListing.getDeveloperId(), acbList, currListing.getDeveloperStatusName(),
-                        currListing.getDeveloperStatusDate(), currListing.getMeaningfulUseUsers());
-                decertDev.setEarliestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
-                decertDev.setLatestNumMeaningfulUseDate(currListing.getMeaningfulUseUsersDate());
-                decertifiedDevelopers.add(decertDev);
+                List<CertificationBody> acbList = new ArrayList<CertificationBody>();
+                acbList.add(CertificationBody.builder()
+                        .id(currListing.getCertificationBodyId())
+                        .name(currListing.getCertificationBodyName())
+                        .build());
+                Developer developer = Developer.builder()
+                        .developerId(currListing.getDeveloperId())
+                        .status(DeveloperStatus.builder().status(currListing.getDeveloperStatusName()).build())
+                        .name(currListing.getDeveloperName())
+                        .developerCode(currListing.getDeveloperCode())
+                        .selfDeveloper(currListing.getSelfDeveloper())
+                        .website(currListing.getDeveloperWebsite())
+                        .build();
+                DecertifiedDeveloperResult decertifiedDeveloper = new DecertifiedDeveloperResult(
+                        developer, acbList, currListing.getDeveloperStatusDate(),
+                        currListing.getPromotingInteroperabilityUserCount(),
+                        currListing.getPromotingInteroperabilityUserCountDate() != null ? new Date(DateUtil.toEpochMillis(currListing.getPromotingInteroperabilityUserCountDate())) : null,
+                        currListing.getPromotingInteroperabilityUserCountDate() != null ? new Date(DateUtil.toEpochMillis(currListing.getPromotingInteroperabilityUserCountDate())) : null);
+                decertifiedDevelopers.add(decertifiedDeveloper);
             }
         }
-
         return decertifiedDevelopers;
     }
 

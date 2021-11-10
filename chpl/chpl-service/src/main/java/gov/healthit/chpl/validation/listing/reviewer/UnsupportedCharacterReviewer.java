@@ -99,6 +99,8 @@ public class UnsupportedCharacterReviewer implements Reviewer {
                 for (TestTask task : sed.getTestTasks()) {
                     if (task != null) {
                         // not checking anything converted to a number
+                        addListingWarningIfNotValid(listing, task.getUniqueId(),
+                                "Test Task Unique ID '" + task.getUniqueId() + "'");
                         addListingWarningIfNotValid(listing, task.getDescription(),
                                 "Test Task Description '" + task.getDescription() + "'");
                         addListingWarningIfNotValid(listing, task.getTaskRatingScale(),
@@ -109,6 +111,8 @@ public class UnsupportedCharacterReviewer implements Reviewer {
                                 if (participant != null) {
                                     // not checking age range or education level because they have to map
                                     // to existing values. also not checking anything converted to a number
+                                    addListingWarningIfNotValid(listing, participant.getUniqueId(),
+                                            "Participant Unique ID '" + participant.getUniqueId() + "'");
                                     addListingWarningIfNotValid(listing, participant.getAssistiveTechnologyNeeds(),
                                             "Participant Assistive Technology Needs '"
                                                     + participant.getAssistiveTechnologyNeeds() + "'");
@@ -176,8 +180,8 @@ public class UnsupportedCharacterReviewer implements Reviewer {
             addListingWarningIfNotValid(listing, listing.getTransparencyAttestation().getTransparencyAttestation(),
                     "Transparency Attestation '" + listing.getTransparencyAttestation().getTransparencyAttestation() + "'");
         }
-        addListingWarningIfNotValid(listing, listing.getTransparencyAttestationUrl(),
-                "Mandatory Disclosures '" + listing.getTransparencyAttestationUrl() + "'");
+        addListingWarningIfNotValid(listing, listing.getMandatoryDisclosures(),
+                "Mandatory Disclosures '" + listing.getMandatoryDisclosures() + "'");
     }
 
     private void reviewDeveloperFields(CertifiedProductSearchDetails listing) {

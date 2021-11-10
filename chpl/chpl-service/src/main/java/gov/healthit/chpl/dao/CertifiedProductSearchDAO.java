@@ -41,8 +41,8 @@ import gov.healthit.chpl.search.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
-
 
 @Repository("certifiedProductSearchDAO")
 @Log4j2
@@ -416,25 +416,23 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
                 + "LEFT JOIN "
                 + "(SELECT certified_product_id, count(*) as \"count_open_nonconformities\" "
                 + "FROM " + SCHEMA_NAME + ".surveillance surv "
-                + "JOIN " + SCHEMA_NAME + ".surveillance_requirement surv_req ON surv.id = "
-                + "surv_req.surveillance_id AND surv_req.deleted <> true "
-                + "JOIN " + SCHEMA_NAME + ".surveillance_nonconformity surv_nc ON surv_req.id = "
-                + "surv_nc.surveillance_requirement_id AND surv_nc.deleted <> true "
-                + "JOIN " + SCHEMA_NAME + ".nonconformity_status nc_status ON surv_nc.nonconformity_status_id = nc_status.id "
-                + "WHERE surv.deleted <> true AND nc_status.name = 'Open' "
+                + "JOIN " + SCHEMA_NAME + ".surveillance_requirement surv_req "
+                + "ON surv.id = surv_req.surveillance_id AND surv_req.deleted <> true "
+                + "JOIN " + SCHEMA_NAME + ".surveillance_nonconformity surv_nc "
+                + "ON surv_req.id = surv_nc.surveillance_requirement_id AND surv_nc.deleted <> true "
+                + "WHERE surv.deleted <> true AND surv_nc.non_conformity_close_date IS NULL "
                 + "GROUP BY certified_product_id) nc_open "
                 + "ON cp.certified_product_id = nc_open.certified_product_id "
                 + "LEFT JOIN "
                 + "(SELECT certified_product_id, count(*) as \"count_closed_nonconformities\" "
                 + "FROM " + SCHEMA_NAME + ".surveillance surv "
-                + "JOIN " + SCHEMA_NAME + ".surveillance_requirement surv_req ON surv.id = "
-                + "surv_req.surveillance_id AND surv_req.deleted <> true "
-                + "JOIN " + SCHEMA_NAME + ".surveillance_nonconformity surv_nc ON surv_req.id = "
-                + "surv_nc.surveillance_requirement_id AND surv_nc.deleted <> true "
-                + "JOIN " + SCHEMA_NAME + ".nonconformity_status nc_status ON surv_nc.nonconformity_status_id = nc_status.id "
-                + "WHERE surv.deleted <> true AND nc_status.name = 'Closed' "
+                + "JOIN " + SCHEMA_NAME + ".surveillance_requirement surv_req "
+                + "ON surv.id = surv_req.surveillance_id AND surv_req.deleted <> true "
+                + "JOIN " + SCHEMA_NAME + ".surveillance_nonconformity surv_nc "
+                + "ON surv_req.id = surv_nc.surveillance_requirement_id AND surv_nc.deleted <> true "
+                + "WHERE surv.deleted <> true AND surv_nc.non_conformity_close_date IS NOT NULL "
                 + "GROUP BY certified_product_id) nc_closed "
-                + "ON cp.certified_product_id = nc_closed.certified_product_id";
+                + "ON cp.certified_product_id = nc_closed.certified_product_id ";
 
         //everything else is not joined in
         //but instead gets added after there WHERE
@@ -637,13 +635,15 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
                 .developerStatus(entity.getDeveloperStatus())
                 .product(entity.getProduct())
                 .version(entity.getVersion())
-                .numMeaningfulUse(entity.getMeaningfulUseUserCount())
-                .numMeaningfulUseDate(entity.getMeaningfulUseUserDate() != null
-                    ? entity.getMeaningfulUseUserDate().getTime() : null)
+                .promotingInteroperabilityUserCount(entity.getPromotingInteroperabilityUserCount())
+                .promotingInteroperabilityUserDate(entity.getPromotingInteroperabilityUserCountDate())
+                .numMeaningfulUse(entity.getPromotingInteroperabilityUserCount())
+                .numMeaningfulUseDate(DateUtil.toEpochMillis(entity.getPromotingInteroperabilityUserCountDate()))
                 .decertificationDate(entity.getDecertificationDate() == null ? null : entity.getDecertificationDate().getTime())
                 .certificationDate(entity.getCertificationDate().getTime())
                 .certificationStatus(entity.getCertificationStatus())
-                .transparencyAttestationUrl(entity.getTransparencyAttestationUrl())
+                .transparencyAttestationUrl(entity.getMandatoryDisclosures())
+                .mandatoryDisclosures(entity.getMandatoryDisclosures())
                 .apiDocumentation(entity.getApiDocumentation())
                 .serviceBaseUrlList(entity.getServiceBaseUrlList() != null ? entity.getServiceBaseUrlList() : "")
                 .surveillanceCount(entity.getSurveillanceCount())
@@ -681,13 +681,15 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
                 .developerStatus(entity.getDeveloperStatus())
                 .product(entity.getProduct())
                 .version(entity.getVersion())
-                .numMeaningfulUse(entity.getMeaningfulUseUserCount())
-                .numMeaningfulUseDate(entity.getMeaningfulUseUserDate() != null
-                    ? entity.getMeaningfulUseUserDate().getTime() : null)
+                .promotingInteroperabilityUserCount(entity.getPromotingInteroperabilityUserCount())
+                .promotingInteroperabilityUserDate(entity.getPromotingInteroperabilityUserCountDate())
+                .numMeaningfulUse(entity.getPromotingInteroperabilityUserCount())
+                .numMeaningfulUseDate(DateUtil.toEpochMillis(entity.getPromotingInteroperabilityUserCountDate()))
                 .decertificationDate(entity.getDecertificationDate() == null ? null : entity.getDecertificationDate().getTime())
                 .certificationDate(entity.getCertificationDate().getTime())
                 .certificationStatus(entity.getCertificationStatus())
-                .transparencyAttestationUrl(entity.getTransparencyAttestationUrl())
+                .transparencyAttestationUrl(entity.getMandatoryDisclosures())
+                .mandatoryDisclosures(entity.getMandatoryDisclosures())
                 .apiDocumentation(convertToSetOfStringsWithDelimiter(entity.getApiDocumentation(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
                 .serviceBaseUrlList(convertToSetOfStringsWithDelimiter(entity.getServiceBaseUrlList(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
                 .surveillanceCount(entity.getSurveillanceCount())
@@ -727,10 +729,9 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         listing.setId(queryResult.getId());
         listing.setChplProductNumber(queryResult.getChplProductNumber());
         listing.setCertificationStatus(queryResult.getCertificationStatus());
-        listing.setNumMeaningfulUse(queryResult.getMeaningfulUseUserCount());
-        listing.setNumMeaningfulUseDate(
-                queryResult.getMeaningfulUseUsersDate() != null ? queryResult.getMeaningfulUseUsersDate().getTime() : null);
-        listing.setTransparencyAttestationUrl(queryResult.getTransparencyAttestationUrl());
+        listing.setNumMeaningfulUse(queryResult.getPromotingInteroperabilityUserCount());
+        listing.setNumMeaningfulUseDate(DateUtil.toEpochMillis(queryResult.getPromotingInteroperabilityUserCountDate()));
+        listing.setTransparencyAttestationUrl(queryResult.getMandatoryDisclosures());
         listing.setEdition(queryResult.getEdition());
         listing.setCuresUpdate(queryResult.getCuresUpdate());
         listing.setAcb(queryResult.getAcbName());
@@ -782,14 +783,13 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
             result.setDeveloperStatus(dbResult.getDeveloperStatus());
             result.setProduct(dbResult.getProduct());
             result.setVersion(dbResult.getVersion());
-            result.setNumMeaningfulUse(dbResult.getMeaningfulUseUserCount());
-            result.setNumMeaningfulUseDate(dbResult.getMeaningfulUseUserDate() != null
-                    ? dbResult.getMeaningfulUseUserDate().getTime() : null);
+            result.setNumMeaningfulUse(dbResult.getPromotingInteroperabilityUserCount());
+            result.setNumMeaningfulUseDate(DateUtil.toEpochMillis(dbResult.getPromotingInteroperabilityUserCountDate()));
             result.setDecertificationDate(
                     dbResult.getDecertificationDate() == null ? null : dbResult.getDecertificationDate().getTime());
             result.setCertificationDate(dbResult.getCertificationDate().getTime());
             result.setCertificationStatus(dbResult.getCertificationStatus());
-            result.setTransparencyAttestationUrl(dbResult.getTransparencyAttestationUrl());
+            result.setTransparencyAttestationUrl(dbResult.getMandatoryDisclosures());
             result.setApiDocumentation(dbResult.getApiDocumentation());
             result.setSurveillanceCount(dbResult.getSurveillanceCount());
             result.setOpenSurveillanceCount(dbResult.getOpenSurveillanceCount());

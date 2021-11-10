@@ -29,6 +29,7 @@ import lombok.extern.log4j.Log4j2;
 public class CertificationResultRules {
     public static final String GAP = "gap";
     public static final String PRIVACY_SECURITY = "privacySecurity";
+    public static final String CONFORMANCE_METHOD = "conformanceMethod";
     public static final String OPTIONAL_STANDARD = "optionalStandard";
     public static final String STANDARDS_TESTED = "standardsTested";
     public static final String FUNCTIONALITY_TESTED = "functionalityTested";
@@ -91,13 +92,10 @@ public class CertificationResultRules {
                             String propName = propertyElement.getNodeName();
                             String propValue = propertyElement.getTextContent();
                             boolean canHaveProperty = Boolean.valueOf(propValue);
-                            CertificationResultOption option = new CertificationResultOption();
-                            option.setOptionName(propName);
-                            if (propName.equals("gap")) {
-                                option.setCanHaveOption(true);
-                            } else {
-                                option.setCanHaveOption(canHaveProperty);
-                            }
+                            CertificationResultOption option = CertificationResultOption.builder()
+                                    .canHaveOption(propName.equals("gap") || canHaveProperty)
+                                    .optionName(propName)
+                                    .build();
                             if (rules.get(certNumber) == null) {
                                 List<CertificationResultOption> options = new ArrayList<CertificationResultOption>();
                                 options.add(option);
@@ -119,29 +117,53 @@ public class CertificationResultRules {
     }
 
     private void setRulesUsingDatabase(CertificationCriterionAttributeDAO certificationCriterionAttributeDAO) {
-        List<CertificationCriterionAttributeEntity> serviceBaseUrlListCriteria = certificationCriterionAttributeDAO.getAllCriteriaAttributes();
-        for (CertificationCriterionAttributeEntity attribute : serviceBaseUrlListCriteria) {
+        List<CertificationCriterionAttributeEntity> attributes = certificationCriterionAttributeDAO.getAllCriteriaAttributes();
+        for (CertificationCriterionAttributeEntity attribute : attributes) {
             if (rules.get(attribute.getCriterion().getNumber()) == null) {
                 List<CertificationResultOption> options = new ArrayList<CertificationResultOption>();
                 rules.put(attribute.getCriterion().getNumber(), options);
             }
+            if (attribute.getConformanceMethod()) {
+                rules.get(attribute.getCriterion().getNumber()).add(
+                        CertificationResultOption.builder()
+                        .canHaveOption(true)
+                        .optionName(CONFORMANCE_METHOD)
+                        .build());
+            }
             if (attribute.getOptionalStandard()) {
-                CertificationResultOption option = new CertificationResultOption();
-                option.setOptionName(OPTIONAL_STANDARD);
-                option.setCanHaveOption(true);
-                rules.get(attribute.getCriterion().getNumber()).add(option);
+                rules.get(attribute.getCriterion().getNumber()).add(
+                        CertificationResultOption.builder()
+                        .canHaveOption(true)
+                        .optionName(OPTIONAL_STANDARD)
+                        .build());
             }
             if (attribute.getServiceBaseUrlList()) {
-                CertificationResultOption option = new CertificationResultOption();
-                option.setOptionName(SERVICE_BASE_URL_LIST);
-                option.setCanHaveOption(true);
-                rules.get(attribute.getCriterion().getNumber()).add(option);
+                rules.get(attribute.getCriterion().getNumber()).add(
+                        CertificationResultOption.builder()
+                        .canHaveOption(true)
+                        .optionName(SERVICE_BASE_URL_LIST)
+                        .build());
             }
             if (attribute.getSvap()) {
-                CertificationResultOption option = new CertificationResultOption();
-                option.setOptionName(SVAP);
-                option.setCanHaveOption(true);
-                rules.get(attribute.getCriterion().getNumber()).add(option);
+                rules.get(attribute.getCriterion().getNumber()).add(
+                        CertificationResultOption.builder()
+                        .canHaveOption(true)
+                        .optionName(SVAP)
+                        .build());
+            }
+            if (attribute.getTestProcedure()) {
+                rules.get(attribute.getCriterion().getNumber()).add(
+                        CertificationResultOption.builder()
+                        .canHaveOption(true)
+                        .optionName(TEST_PROCEDURE)
+                        .build());
+            }
+            if (attribute.getTestTool()) {
+                rules.get(attribute.getCriterion().getNumber()).add(
+                        CertificationResultOption.builder()
+                        .canHaveOption(true)
+                        .optionName(TEST_TOOLS_USED)
+                        .build());
             }
         }
     }

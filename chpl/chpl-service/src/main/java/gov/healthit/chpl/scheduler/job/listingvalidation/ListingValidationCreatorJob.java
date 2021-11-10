@@ -5,6 +5,8 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.quartz.Job;
@@ -51,6 +53,9 @@ public class ListingValidationCreatorJob implements Job {
     @Value("${executorThreadCountForQuartzJobs}")
     private Integer threadCount;
 
+    @Value("${listingValidation.report.bannedDeveloperMessageRegex}")
+    private String bannedDeveloperMessageRegex;
+
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
@@ -89,7 +94,6 @@ public class ListingValidationCreatorJob implements Job {
     }
 
     private List<CertifiedProductSearchDetails> getListingsWithErrors() {
-
         return getAll2015CertifiedProducts().parallelStream()
                 .map(listing -> getCertifiedProductSearchDetails(listing.getId()))
                 .map(detail -> validateListing(detail))
@@ -102,13 +106,14 @@ public class ListingValidationCreatorJob implements Job {
         List<CertifiedProductDetailsDTO> listings = certifiedProductDAO.findByEdition(
                 CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
         LOGGER.info("Completed retreiving all 2015 listings");
-        return listings;
+        return listings.stream()
+                .collect(Collectors.toList());
     }
 
     private CertifiedProductSearchDetails getCertifiedProductSearchDetails(Long certifiedProductId) {
         try {
             long start = (new Date()).getTime();
-            CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetails(certifiedProductId);
+            CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetailsUsingCache(certifiedProductId);
             LOGGER.info("Completed details for listing(" + ((new Date()).getTime() - start) + "ms): " + certifiedProductId);
             return listing;
         } catch (EntityRetrievalException e) {
@@ -119,10 +124,15 @@ public class ListingValidationCreatorJob implements Job {
     }
 
     private CertifiedProductSearchDetails validateListing(CertifiedProductSearchDetails listing) {
-        Validator validator = validatorFactory.getValidator(listing);
-        validator.validate(listing);
-        LOGGER.info("Completed validation of listing: " + listing.getId());
-        return listing;
+        try {
+            Validator validator = validatorFactory.getValidator(listing);
+            validator.validate(listing);
+            LOGGER.info("Completed validation of listing: " + listing.getId());
+            return listing;
+        } catch (Exception e) {
+            LOGGER.catching(e);
+            return listing;
+        }
     }
 
     private void deleteAllExistingListingValidationReports() {
@@ -138,6 +148,7 @@ public class ListingValidationCreatorJob implements Job {
 
     private List<ListingValidationReport> createListingValidationReport(CertifiedProductSearchDetails listing) {
         List<ListingValidationReport> reports = listing.getErrorMessages().stream()
+                .filter(error -> !isBannedDeveloperErrorMessage(error))
                 .map(error -> listingValidationReportDAO.create(ListingValidationReport.builder()
                     .certifiedProductId(listing.getId())
                     .chplProductNumber(listing.getChplProductNumber())
@@ -155,5 +166,17 @@ public class ListingValidationCreatorJob implements Job {
                 .collect(Collectors.toList());
         LOGGER.info("Completed save of report data for: " + listing.getId());
         return reports;
+    }
+
+    private boolean isBannedDeveloperErrorMessage(String message) {
+        try {
+            Pattern pattern = Pattern.compile(bannedDeveloperMessageRegex);
+            Matcher matcher = pattern.matcher(message);
+            return matcher.find();
+        } catch (Exception e) {
+            LOGGER.error("Message being test when error occurred: " + message);
+            LOGGER.catching(e);
+            return false;
+        }
     }
 }

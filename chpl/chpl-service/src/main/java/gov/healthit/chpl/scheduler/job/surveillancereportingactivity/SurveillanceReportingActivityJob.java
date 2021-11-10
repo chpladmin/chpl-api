@@ -8,8 +8,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.mail.MessagingException;
-
 import org.apache.commons.csv.CSVRecord;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -20,9 +18,10 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.excel.SurveillanceActivityReportWorkbook;
-import gov.healthit.chpl.util.EmailBuilder;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "surveillanceActivityReportJobLogger")
@@ -31,6 +30,7 @@ public class SurveillanceReportingActivityJob implements Job {
     public static final String START_DATE_KEY = "startDate";
     public static final String END_DATE_KEY = "endDate";
     public static final String USER_EMAIL = "email";
+    public static final DateTimeFormatter JOB_DATA_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Autowired
     private SurveillanceActivityReportDataGatherer dataGatherer;
@@ -69,7 +69,7 @@ public class SurveillanceReportingActivityJob implements Job {
         LOGGER.info("********* Completed the Surveillance Reporting Activity job. *********");
     }
 
-    private void sendSuccessEmail(File excelFile, JobExecutionContext context) throws MessagingException, UserRetrievalException {
+    private void sendSuccessEmail(File excelFile, JobExecutionContext context) throws EmailNotSentException, UserRetrievalException {
         EmailBuilder emailBuilder = new EmailBuilder(env);
         emailBuilder.recipient(getUserEmail(context))
                 .fileAttachments(Arrays.asList(excelFile))
@@ -100,10 +100,12 @@ public class SurveillanceReportingActivityJob implements Job {
     }
 
     private LocalDate getStartDate(JobExecutionContext context) {
-        return (LocalDate) context.getMergedJobDataMap().get(START_DATE_KEY);
+        String startDateStr = context.getMergedJobDataMap().get(START_DATE_KEY).toString();
+        return LocalDate.parse(startDateStr, JOB_DATA_DATE_FORMATTER);
     }
 
     private LocalDate getEndDate(JobExecutionContext context) {
-        return (LocalDate) context.getMergedJobDataMap().get(END_DATE_KEY);
+        String endDateStr = context.getMergedJobDataMap().get(END_DATE_KEY).toString();
+        return LocalDate.parse(endDateStr, JOB_DATA_DATE_FORMATTER);
     }
 }

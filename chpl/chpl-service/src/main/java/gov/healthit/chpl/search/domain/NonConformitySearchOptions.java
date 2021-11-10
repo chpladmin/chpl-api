@@ -1,6 +1,5 @@
 package gov.healthit.chpl.search.domain;
 
-
 public enum NonConformitySearchOptions {
     NEVER_NONCONFORMITY, OPEN_NONCONFORMITY, CLOSED_NONCONFORMITY,
     NOT_NEVER_NONCONFORMITY, NOT_OPEN_NONCONFORMITY, NOT_CLOSED_NONCONFORMITY;

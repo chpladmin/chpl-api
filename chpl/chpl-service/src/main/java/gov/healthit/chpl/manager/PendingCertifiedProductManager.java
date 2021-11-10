@@ -2,11 +2,11 @@ package gov.healthit.chpl.manager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -18,6 +18,11 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.certifiedproduct.service.CertificationResultService;
+import gov.healthit.chpl.conformanceMethod.dao.ConformanceMethodDAO;
+import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
+import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodCriteriaMap;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
@@ -37,43 +42,57 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
+import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
 import gov.healthit.chpl.service.CuresUpdateService;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.PendingValidator;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Service
 public class PendingCertifiedProductManager extends SecuredManager {
-    private static final Logger LOGGER = LogManager.getLogger(PendingCertifiedProductManager.class);
-
     private CertificationResultRules certRules;
     private ListingValidatorFactory validatorFactory;
     private PendingCertifiedProductDAO pcpDao;
     private TestingFunctionalityManager testFunctionalityManager;
+    private ConformanceMethodDAO conformanceMethodDAO;
+    private OptionalStandardDAO optionalStandardDAO;
     private UserDAO userDAO;
     private ActivityManager activityManager;
     private CuresUpdateService curesUpdateService;
     private DimensionalDataManager dimensionalDataManager;
+    private CertificationResultService certificationResultService;
+    private FF4j ff4j;
 
     @Autowired
     public PendingCertifiedProductManager(CertificationResultRules certRules,
             ListingValidatorFactory validatorFactory,
             PendingCertifiedProductDAO pcpDao,
             TestingFunctionalityManager testFunctionalityManager,
+            ConformanceMethodDAO conformanceMethodDAO,
+            OptionalStandardDAO optionalStandardDAO,
             UserDAO userDAO,
             ActivityManager activityManager,
             CuresUpdateService curesUpdateService,
-            DimensionalDataManager dimensionalDataManager) {
+            DimensionalDataManager dimensionalDataManager,
+            FF4j ff4j,
+            CertificationResultService certificationResultService) {
 
         this.certRules = certRules;
         this.validatorFactory = validatorFactory;
         this.pcpDao = pcpDao;
         this.testFunctionalityManager = testFunctionalityManager;
+        this.conformanceMethodDAO = conformanceMethodDAO;
+        this.optionalStandardDAO = optionalStandardDAO;
         this.userDAO = userDAO;
         this.activityManager = activityManager;
         this.curesUpdateService = curesUpdateService;
         this.dimensionalDataManager = dimensionalDataManager;
-    }
+        this.ff4j = ff4j;
+        this.certificationResultService = certificationResultService;    }
 
     @Transactional(readOnly = true)
     @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
@@ -112,7 +131,11 @@ public class PendingCertifiedProductManager extends SecuredManager {
         PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(pendingCp);
         pcpDetails.setCuresUpdate(curesUpdateService.isCuresUpdate(pcpDetails));
         addAllVersionsToCmsCriterion(pcpDetails);
+        addAvailableConformanceMethods(pcpDetails);
         addAvailableTestFunctionalities(pcpDetails);
+        addAvailableOptionalStandards(pcpDetails);
+        addAvailableTestTools(pcpDetails);
+
         return pcpDetails;
     }
 
@@ -366,6 +389,9 @@ public class PendingCertifiedProductManager extends SecuredManager {
                         CertificationResultRules.FUNCTIONALITY_TESTED)) {
                     certResult.setTestFunctionality(null);
                 }
+                if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.OPTIONAL_STANDARD)) {
+                    certResult.setOptionalStandards(null);
+                }
                 if (!certRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.STANDARDS_TESTED)) {
                     certResult.setTestStandards(null);
                 }
@@ -444,6 +470,18 @@ public class PendingCertifiedProductManager extends SecuredManager {
         }
     }
 
+    public void addAvailableConformanceMethods(PendingCertifiedProductDetails pcpDetails) {
+        List<ConformanceMethodCriteriaMap> conformanceMethodCriteriaMap;
+        try {
+            conformanceMethodCriteriaMap = conformanceMethodDAO.getAllConformanceMethodCriteriaMap();
+            for (CertificationResult cert : pcpDetails.getCertificationResults()) {
+                cert.setAllowedConformanceMethods(getAvailableConformanceMethodsForCriteria(cert, conformanceMethodCriteriaMap));
+            }
+        } catch (EntityRetrievalException e) {
+            LOGGER.info("Error retrieving CM-criteria map", e.getMessage());
+        }
+    }
+
     public void addAvailableTestFunctionalities(final PendingCertifiedProductDetails pcpDetails) {
         // now add allMeasures for criteria
         for (CertificationResult cert : pcpDetails.getCertificationResults()) {
@@ -457,5 +495,39 @@ public class PendingCertifiedProductManager extends SecuredManager {
             cert.setAllowedTestFunctionalities(
                     testFunctionalityManager.getTestFunctionalities(cert.getCriterion().getId(), edition, practiceTypeId));
         }
+    }
+
+    public void addAvailableTestTools(final PendingCertifiedProductDetails pcpDetails) throws EntityRetrievalException {
+        // now add allowed Test Tools for criteria
+        for (CertificationResult cert : pcpDetails.getCertificationResults()) {
+            cert.setAllowedTestTools(certificationResultService.getAvailableTestToolForCriteria(cert));
+        }
+    }
+
+    public void addAvailableOptionalStandards(PendingCertifiedProductDetails pcpDetails) {
+        // now add allMeasures for criteria
+        List<OptionalStandardCriteriaMap> optionalStandardCriteriaMap;
+        try {
+            optionalStandardCriteriaMap = optionalStandardDAO.getAllOptionalStandardCriteriaMap();
+            for (CertificationResult cert : pcpDetails.getCertificationResults()) {
+                cert.setAllowedOptionalStandards(getAvailableOptionalStandardsForCriteria(cert, optionalStandardCriteriaMap));
+            }
+        } catch (EntityRetrievalException e) {
+            LOGGER.info("Error retrieving OS-criteria map", e.getMessage());
+        }
+    }
+
+    private List<ConformanceMethod> getAvailableConformanceMethodsForCriteria(CertificationResult result, List<ConformanceMethodCriteriaMap> conformanceMethodCriteriaMap) {
+        return conformanceMethodCriteriaMap.stream()
+                .filter(cmm -> ff4j.check(FeatureList.CONFORMANCE_METHOD) && cmm.getCriterion().getId().equals(result.getCriterion().getId()))
+                .map(cmm -> cmm.getConformanceMethod())
+                .collect(Collectors.toList());
+    }
+
+    private List<OptionalStandard> getAvailableOptionalStandardsForCriteria(CertificationResult result, List<OptionalStandardCriteriaMap> optionalStandardCriteriaMap) {
+        return optionalStandardCriteriaMap.stream()
+                .filter(osm -> ff4j.check(FeatureList.OPTIONAL_STANDARDS) && osm.getCriterion().getId().equals(result.getCriterion().getId()))
+                .map(osm -> osm.getOptionalStandard())
+                .collect(Collectors.toList());
     }
 }

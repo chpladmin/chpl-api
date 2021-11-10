@@ -20,9 +20,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-/**
- * Certified Product Search Basic Details entity.
- */
 @Data
 @Builder
 @AllArgsConstructor
@@ -193,7 +190,13 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
     /**
      * A hyperlink to the mandatory disclosures required by 170.523(k)(1) for the Health IT Module
      */
+    @Deprecated
     private String transparencyAttestationUrl;
+
+    /**
+     * A hyperlink to the mandatory disclosures required by 170.523(k)(1) for the Health IT Module
+     */
+    private String mandatoryDisclosures;
 
     /**
      * The last time this listing was modified in any way given in milliseconds since epoch.
@@ -253,7 +256,14 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
      * All current and historical values of meaningful use users for this listing along with the dates each meaningful
      * use user count was valid. Dates are given in milliseconds since epoch.
      */
+    @Deprecated
     private List<MeaningfulUseUser> meaningfulUseUserHistory = new ArrayList<MeaningfulUseUser>();
+
+    /**
+     * All current and historical values of promoting interoperability user counts for this listing along with the dates each meaningful
+     * use user count was valid. Dates are given in milliseconds since epoch.
+     */
+    private List<PromotingInteroperabilityUser> promotingInteroperabilityUserHistory = new ArrayList<PromotingInteroperabilityUser>();
 
     /**
      * All data related to safety-enhanced design for this listing.
@@ -294,12 +304,6 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
      * Date the listing's Real World Testing Results was submitted
      */
     private LocalDate rwtResultsCheckDate;
-
-    /**
-     * First year that the listing is eligible for Real World Testing data
-     */
-    private Integer rwtEligibilityYear;
-
 
     public CertifiedProductSearchBasicDetails() {
         sed = new CertifiedProductSed();
@@ -399,9 +403,7 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
         return result;
     }
 
-    /**
-     * Dynamically determine the current MUU count by finding the most recent MUU entry for this listing.
-     */
+    @Deprecated
     public MeaningfulUseUser getCurrentMeaningfulUseUsers() {
         if (this.getMeaningfulUseUserHistory() == null
                 || this.getMeaningfulUseUserHistory().size() == 0) {
@@ -412,6 +414,21 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
         for (MeaningfulUseUser muuItem : this.getMeaningfulUseUserHistory()) {
             if (muuItem.getMuuDate() > newest.getMuuDate()) {
                 newest = muuItem;
+            }
+        }
+        return newest;
+    }
+
+    public PromotingInteroperabilityUser getCurrentPromotingInteroperabilityUsers() {
+        if (this.getPromotingInteroperabilityUserHistory() == null
+                || this.getPromotingInteroperabilityUserHistory().size() == 0) {
+            return null;
+        }
+
+        PromotingInteroperabilityUser newest = this.getPromotingInteroperabilityUserHistory().get(0);
+        for (PromotingInteroperabilityUser piItem : this.getPromotingInteroperabilityUserHistory()) {
+            if (piItem.getUserCountDate().isAfter(newest.getUserCountDate())) {
+                newest = piItem;
             }
         }
         return newest;

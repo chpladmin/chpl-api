@@ -1,5 +1,7 @@
 package gov.healthit.chpl.entity.surveillance;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -35,10 +37,10 @@ public class SurveillanceBasicEntity {
     private String chplProductNumber;
 
     @Column(name = "start_date")
-    private Date startDate;
+    private LocalDate startDate;
 
     @Column(name = "end_date")
-    private Date endDate;
+    private LocalDate endDate;
 
     @Column(name = "type_id")
     private Long surveillanceTypeId;
@@ -75,13 +77,15 @@ public class SurveillanceBasicEntity {
         return SurveillanceBasic.builder()
                 .certifiedProductId(this.getCertifiedProductId())
                 .chplProductNumber(this.getChplProductNumber())
-                .endDate(this.getEndDate())
+                .endDay(this.getEndDate())
+                .endDate(this.getEndDate() == null ? null : Date.from(this.getEndDate().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant()))
                 .friendlyId(this.getFriendlyId())
                 .id(this.getId())
                 .numClosedNonconformities(this.getNumClosedNonconformities())
                 .numOpenNonconformities(this.getNumOpenNonconformities())
                 .numRandomizedSites(this.getNumRandomizedSites())
-                .startDate(this.getStartDate())
+                .startDay(this.getStartDate())
+                .startDate(this.getStartDate() == null ? null : Date.from(this.getStartDate().atStartOfDay(ZoneId.systemDefault()).toInstant()))
                 .surveillanceType(this.getSurveillanceType() != null ? this.getSurveillanceType().buildSurveillanceType() : null)
                 .surveillanceTypeId(this.getSurveillanceTypeId())
                 .userPermissionId(this.getUserPermissionId())

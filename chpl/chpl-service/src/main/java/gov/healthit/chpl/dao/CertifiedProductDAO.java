@@ -82,7 +82,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             entity.setSedTesting(dto.getSedTesting());
             entity.setQmsTesting(dto.getQmsTesting());
             entity.setAccessibilityCertified(dto.getAccessibilityCertified());
-            entity.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
+            entity.setMandatoryDisclosures(dto.getMandatoryDisclosures());
             entity.setSvapNoticeUrl(dto.getSvapNoticeUrl());
 
             if (dto.getCertificationBodyId() != null) {
@@ -153,7 +153,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         entity.setSedTesting(dto.getSedTesting());
         entity.setQmsTesting(dto.getQmsTesting());
         entity.setAccessibilityCertified(dto.getAccessibilityCertified());
-        entity.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
+        entity.setMandatoryDisclosures(dto.getMandatoryDisclosures());
         entity.setCertificationBodyId(dto.getCertificationBodyId());
         entity.setCertificationEditionId(dto.getCertificationEditionId());
         entity.setProductVersionId(dto.getProductVersionId());
@@ -292,6 +292,24 @@ public class CertifiedProductDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
+    public List<CertifiedProductDetailsDTO> getListingsAttestingToCriterion(Long criterionId, List<CertificationStatusType> statuses) {
+        Query query = entityManager.createQuery("SELECT listing "
+                + "FROM CertifiedProductDetailsEntitySimple listing, CertificationResultEntity cre "
+                + "WHERE listing.id = cre.certifiedProductId "
+                + "AND listing.certificationStatusName IN (:statusNames) "
+                + "AND cre.deleted = false "
+                + "AND cre.certificationCriterionId = :criterionId "
+                + "AND cre.success = true "
+                + "AND listing.deleted = false ",
+                CertifiedProductDetailsEntitySimple.class);
+        query.setParameter("statusNames", statuses.stream().map(status -> status.getName()).collect(Collectors.toList()));
+        query.setParameter("criterionId", criterionId);
+        List<CertifiedProductDetailsEntitySimple> results = query.getResultList();
+        return results.stream()
+                .map(result -> new CertifiedProductDetailsDTO(result))
+                .collect(Collectors.toList());
+    }
+
     @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> findByEdition(final String edition) {
         Query query = entityManager.createQuery("SELECT cpd " + "FROM CertifiedProductDetailsEntity cpd "
@@ -310,10 +328,11 @@ public class CertifiedProductDAO extends BaseDAOImpl {
     @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> findWithSurveillance() {
 
-        List<CertifiedProductDetailsEntity> entities = entityManager.createQuery(
-                "SELECT DISTINCT cp " + "FROM CertifiedProductDetailsEntity cp, SurveillanceEntity surv "
-                        + "WHERE surv.certifiedProductId = cp.id " + "AND (NOT surv.deleted = true)",
-                        CertifiedProductDetailsEntity.class).getResultList();
+        List<CertifiedProductDetailsEntity> entities = entityManager.createQuery("SELECT DISTINCT cp "
+            + "FROM CertifiedProductDetailsEntity cp, SurveillanceEntity surv "
+            + "WHERE surv.certifiedProductId = cp.id "
+            + "AND (NOT surv.deleted = true)",
+            CertifiedProductDetailsEntity.class).getResultList();
 
         List<CertifiedProductDetailsDTO> products = new ArrayList<>();
 
@@ -322,6 +341,21 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             products.add(product);
         }
         return products;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Long> findListingIdsWithSvap() {
+        List<Long> listingIds = entityManager.createQuery("SELECT DISTINCT cp.id "
+                + "FROM CertifiedProductEntity cp, CertificationResultDetailsEntity cr "
+                + "LEFT JOIN cr.certificationResultSvaps crSvaps "
+                + "WHERE cr.certifiedProductId = cp.id "
+                + "AND cp.deleted = false "
+                + "AND cr.deleted = false "
+                + "AND cr.success = true "
+                + "AND ((cp.svapNoticeUrl IS NOT NULL AND cp.svapNoticeUrl != '') OR crSvaps.id IS NOT NULL)",
+                Long.class).getResultList();
+
+        return listingIds;
     }
 
     @Transactional(readOnly = true)
@@ -605,7 +639,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
                 + "WHERE cp.deleted = false ";
         switch (urlType) {
         case MANDATORY_DISCLOSURE:
-            queryStr += " AND cp.transparencyAttestationUrl = :url ";
+            queryStr += " AND cp.mandatoryDisclosures = :url ";
             break;
         case FULL_USABILITY_REPORT:
             queryStr += " AND cp.sedReportFileLocation = :url ";

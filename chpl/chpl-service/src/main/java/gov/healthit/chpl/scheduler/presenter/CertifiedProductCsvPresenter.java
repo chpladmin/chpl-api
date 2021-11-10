@@ -11,7 +11,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -109,7 +108,6 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         result.add("Version");
         result.add("Version Database ID");
         if (ff4j.check(FeatureList.RWT_ENABLED)) {
-            result.add("Real World Testing Eligibility Year");
             result.add("Real World Testing Plans URL");
             result.add("Real World Testing Results URL");
         }
@@ -154,7 +152,6 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         result.add(listing.getVersion().getVersion());
         result.add(listing.getVersion().getVersionId().toString());
         if (ff4j.check(FeatureList.RWT_ENABLED)) {
-            result.add(Objects.nonNull(listing.getRwtEligibilityYear()) ? listing.getRwtEligibilityYear().toString() : "");
             result.add(listing.getRwtPlansUrl());
             result.add(listing.getRwtResultsUrl());
         }

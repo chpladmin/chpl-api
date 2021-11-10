@@ -36,14 +36,20 @@ import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Api(value = "acbs")
+@Tag(name = "acbs", description = "Allows CRUD operations on certification bodies (ONC-ACBs).")
 @RestController
 @RequestMapping("/acbs")
 @Loggable
@@ -61,9 +67,18 @@ public class CertificationBodyController {
     @Autowired
     private UserManager userManager;
 
-    @ApiOperation(value = "List all certification bodies (ACBs).",
-            notes = "Setting the 'editable' parameter to true will return all ACBs that the logged in user has "
-                    + "edit permissions on. Security Restrictions:  All users can see all active ACBs.")
+    @Operation(summary = "List all certification bodies (ONC-ACBs).",
+            description = "Setting the 'editable' parameter to true will return all ONC-ACBs that the logged in user has "
+                    + "edit permissions on. Security Restrictions:  All users can see all active ONC-ACBs.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY) }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The ONC-ACBs request was successful.",
+              content = { @Content(mediaType = "application/json",
+                schema = @Schema(implementation = CertificationBodyResults.class)) }),
+            @ApiResponse(responseCode = "500", description = "There was an unexpected error getting all ONC-ACBs.",
+                content = @Content)
+    })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertificationBodyResults getAcbs(
@@ -85,20 +100,41 @@ public class CertificationBodyController {
         return results;
     }
 
-    @ApiOperation(value = "Get details about a specific certification body (ACB).",
-            notes = "")
+    @Operation(summary = "Get details about a specific ONC-ACB.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY) }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The ONC-ACB ID was valid.",
+              content = { @Content(mediaType = "application/json",
+                schema = @Schema(implementation = CertificationBody.class)) }),
+            @ApiResponse(responseCode = "404", description = "The ONC-ACB ID given on the URL is invalid.",
+                content = @Content),
+            @ApiResponse(responseCode = "500", description = "There was an unexpected error getting the ONC-ACB..",
+                content = @Content)
+    })
     @RequestMapping(value = "/{acbId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody CertificationBody getAcbById(@PathVariable("acbId") final Long acbId)
             throws EntityRetrievalException {
         CertificationBodyDTO acb = acbManager.getById(acbId);
-
         return new CertificationBody(acb);
     }
 
-    @ApiOperation(value = "Create a new ACB.",
-            notes = "Security Restrictions: ROLE_ADMIN or ROLE_ONC")
+    @Operation(summary = "Create a new ONC-ACB.",
+            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The ONC-ACB ID was valid.",
+              content = { @Content(mediaType = "application/json",
+                schema = @Schema(implementation = CertificationBody.class)) }),
+            @ApiResponse(responseCode = "401", description = "The authenticated user does not have permissions to create an ONC-ACB.",
+                content = @Content),
+            @ApiResponse(responseCode = "500", description = "There was an unexpected error creating the ONC-ACB.",
+                content = @Content)
+    })
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     public CertificationBody createAcb(@RequestBody final CertificationBody acbInfo)
             throws InvalidArgumentsException, UserRetrievalException, EntityRetrievalException, EntityCreationException,
             JsonProcessingException {
@@ -135,10 +171,24 @@ public class CertificationBodyController {
     }
 
 
-    @ApiOperation(value = "Update an existing ACB.",
-            notes = "Security Restriction:  ROLE_ADMIN, ROLE_ONC, or ROLE_ACB with administrative authority")
+    @Operation(summary = "Update an existing ONC-ACB.",
+            description = "Security Restriction: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB with administrative authority.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The ONC-ACB data was updated.",
+              content = { @Content(mediaType = "application/json",
+                schema = @Schema(implementation = CertificationBody.class)) }),
+            @ApiResponse(responseCode = "401", description = "The user making the request does not have permission to update the ONC-ACB.",
+                content = @Content),
+            @ApiResponse(responseCode = "404", description = "The ONC-ACB was not found in the CHPL database.",
+              content = @Content),
+            @ApiResponse(responseCode = "500", description = "There was an unexpected error when updating the ONC-ACB.",
+                content = @Content)
+    })
     @RequestMapping(value = "/{acbId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     public CertificationBody updateAcb(@RequestBody final CertificationBody acbInfo) throws InvalidArgumentsException,
             EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException,
             SchedulerException, ValidationException, MessagingException {
@@ -194,12 +244,26 @@ public class CertificationBodyController {
         return new CertificationBody(result);
     }
 
-    @ApiOperation(value = "Remove user permissions from an ACB.",
-            notes = "The logged in user must have ROLE_ADMIN or ROLE_ACB and have administrative authority on the "
-                    + " specified ACB. The user specified in the request will have all authorities "
-                    + " removed that are associated with the specified ACB.")
+    @Operation(summary = "Remove user permissions from an ONC-ACB.",
+            description = "The logged in user must have ROLE_ADMIN or ROLE_ACB and have administrative authority on the "
+                    + " specified ONC-ACB. The user specified in the request will have all authorities "
+                    + " removed that are associated with the specified ONC-ACB.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The permissions were successfully removed.",
+              content = { @Content(mediaType = "application/json",
+                schema = @Schema(implementation = String.class)) }),
+            @ApiResponse(responseCode = "401", description = "The authenticated user does not have permissions to complete the action.",
+                content = @Content),
+            @ApiResponse(responseCode = "404", description = "The ONC-ACB ID specified in the URL does not exist in the CHPL database.",
+                content = @Content),
+            @ApiResponse(responseCode = "500", description = "There was an unexpected error updating user permissions.",
+                content = @Content)
+    })
     @RequestMapping(value = "{acbId}/users/{userId}", method = RequestMethod.DELETE,
-    produces = "application/json; charset=utf-8")
+        produces = "application/json; charset=utf-8")
     public String deleteUserFromAcb(@PathVariable final Long acbId, @PathVariable final Long userId)
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException, EntityCreationException {
         UserDTO user = userManager.getById(userId);
@@ -215,9 +279,22 @@ public class CertificationBodyController {
         return "{\"userDeleted\" : true}";
     }
 
-    @ApiOperation(value = "List users with permissions on a specified ACB.",
-            notes = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or have administrative "
-                    + "or read authority on the specified ACB")
+    @Operation(summary = "List users with permissions on a specified ONC-ACB.",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or have administrative "
+                    + "or read authority on the specified ONC-ACB",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The request was successful.",
+              content = { @Content(mediaType = "application/json",
+                schema = @Schema(implementation = UsersResponse.class)) }),
+            @ApiResponse(responseCode = "401", description = "The authenticated user does not have permissions to get the user list.",
+                content = @Content),
+            @ApiResponse(responseCode = "404", description = "The ONC-ACB ID specified in the URL does not exist in the CHPL database.",
+                content = @Content),
+            @ApiResponse(responseCode = "500", description = "There was an unexpected error getting the user list.",
+                content = @Content)
+    })
     @RequestMapping(value = "/{acbId}/users", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody UsersResponse getUsers(@PathVariable("acbId") final Long acbId)

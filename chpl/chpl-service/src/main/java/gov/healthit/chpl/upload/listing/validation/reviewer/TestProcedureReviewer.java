@@ -1,9 +1,13 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -16,42 +20,46 @@ import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 @Component("listingUploadTestProcedureReviewer")
 public class TestProcedureReviewer extends PermissionBasedReviewer {
     private CertificationResultRules certResultRules;
+    private FF4j ff4j;
 
     @Autowired
     public TestProcedureReviewer(CertificationResultRules certResultRules,
-            ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
+            ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions, FF4j ff4j) {
         super(msgUtil, resourcePermissions);
         this.certResultRules = certResultRules;
+        this.ff4j = ff4j;
     }
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess())
+            .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
             .forEach(certResult -> review(listing, certResult));
     }
 
     public void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         reviewCriteriaCanHaveTestProcedures(listing, certResult);
         reviewTestProceduresRequiredWhenCertResultIsNotGap(listing, certResult);
-        if (certResult.getTestProcedures() != null && certResult.getTestProcedures().size() > 0) {
+        if (!CollectionUtils.isEmpty(certResult.getTestProcedures())) {
             certResult.getTestProcedures().stream()
                 .forEach(testProcedure -> reviewTestProcedureFields(listing, certResult, testProcedure));
         }
     }
 
     private void reviewCriteriaCanHaveTestProcedures(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_PROCEDURE)
-                && certResult.getTestProcedures() != null && certResult.getTestProcedures().size() > 0) {
-            listing.getErrorMessages().add(msgUtil.getMessage(
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_PROCEDURE)) {
+            if (!CollectionUtils.isEmpty(certResult.getTestProcedures())) {
+                listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.testProcedureNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
+            certResult.setTestProcedures(null);
         }
     }
 
     private void reviewTestProceduresRequiredWhenCertResultIsNotGap(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!isGapEligibileAndHasGap(certResult)
                 && certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_PROCEDURE)
-                && (certResult.getTestProcedures() == null || certResult.getTestProcedures().size() == 0)) {
+                && CollectionUtils.isEmpty(certResult.getTestProcedures())) {
                 addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.missingTestProcedure",
                         Util.formatCriteriaNumber(certResult.getCriterion()));
         }
@@ -68,9 +76,21 @@ public class TestProcedureReviewer extends PermissionBasedReviewer {
 
     private void reviewTestProcedureFields(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultTestProcedure testProcedure) {
+        reviewByFlag(listing, certResult, testProcedure);
         reviewIdRequired(listing, certResult, testProcedure);
         reviewNameRequired(listing, certResult, testProcedure);
         reviewVersionRequired(listing, certResult, testProcedure);
+    }
+
+    private void reviewByFlag(CertifiedProductSearchDetails listing,
+            CertificationResult certResult, CertificationResultTestProcedure testProcedure) {
+        if (!ff4j.check(FeatureList.CONFORMANCE_METHOD)) {
+            return;
+        }
+        if (testProcedure.getTestProcedure() != null && testProcedure.getTestProcedure().getId() == null) {
+            addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.testProcedureNotApplicable",
+                    Util.formatCriteriaNumber(certResult.getCriterion()));
+        }
     }
 
     private void reviewIdRequired(CertifiedProductSearchDetails listing,

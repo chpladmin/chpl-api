@@ -1,5 +1,129 @@
 # Release Notes
 
+## Version 32.3.0
+_1 November 2021_
+
+### Features
+* Add job to convert Test Standards to Approved Standards
+* Improve Cures Reporting reports by adding 3 new charts
+* Track and report of usage of API endpoints with deprecated response fields
+* Update deprecated /search endpoint to not use nonconformity_status table
+
+### Flagged Features
+* Add "Conformance Method" to Listing details
+
+### Bug Fixes
+* Allow complaint to be associated to an open surveillance
+
+---
+
+## Version 32.2.0
+_18 October 2021_
+
+### Features
+* Give users a date for when deprecated API endpoints may be removed
+* Update Questionable Activity Report to new HTML email template
+* Check listing updates for questionable activity when an ONC-ACB user updates promoting interoperability
+* Do not allow edit of Certification Date field via the API
+
+---
+
+## Version 32.1.0
+_5 October 2021_
+
+### Features
+* Upgrade Swagger library version
+* Revise list of test tools to select for a 2015 Edition listing
+* Update overnight job schedule and improve performance
+* Migrate surveillance and non-conformity timestamp fields to LocalDate
+* Remove "frequency" data from Scheduled Jobs
+
+### Flagged Features
+* Add CQM Validation to flexible upload
+* Add SED validation to flexible upload
+
+### Bug Fixes
+* Restore functionality of URL Status Data Collector job
+* Consistently handle valid/invalid/null ID fields during listing update
+
+---
+
+## Version 32.0.0
+_7 September 2021_
+
+### Breaking Change
+* Create and edit of Quarterly Surveillance elements must use new fields
+
+### Features
+* Remove Banned Developer errors from the Listing Validation Report
+* Automate Cures Reporting Phase 1 Charts
+* Use consistent names for Quarterly Surveillance data elements
+
+### Bug Fixes
+* Display consistent permissions error when splitting Products and Versions
+* Move stateful date field out of Spring component, allowing for Cures Statistics Reports to be generated correctly
+
+---
+
+## Version 31.0.0
+_31 August 2021_
+
+### Breaking Change
+* Use "Mandatory Disclosures" instead of "Transparency Attestation URL"
+
+### Feature
+* Update Real World Testing email to dynamically determine eligibility
+
+---
+
+## Version 30.6.0
+_23 August 2021_
+
+### Features
+* Generate SVAP Summary CSV and allow download of that file and schema
+* Add new Non-conformity close date field
+* Restrict Listings to have only valid Test Procedures on edit
+* Update email failure with custom exception and log message
+* Confirmed Listings with RWT eligible parents become RWT eligible on confirmation
+
+### User Interface Updates
+* Use updated link for ONC "Contact Us" form
+
+### Bug Fixes
+* Audit Data Retention jobs failing in PROD
+
+### Flagged Features
+* Provide appropriate errors/warnings on Test Standards on removed criteria based on ROLE
+
+---
+
+## Version 30.5.0
+_9 August 2021_
+
+### Features
+* Add Attestation change request
+* Track and notify of deprecated endpoint usage by API Key
+* Add "Suspended by *" statuses to ONC-ACB Questionable URL report
+* Require "Actions/Response" on closed Complaints
+* Validate Complaint dates for reasonableness
+
+### Bug Fixes
+* Filter ONC-ACB Questionable URL report by Status AND Edition, not Status OR Edition
+
+---
+
+## Version 30.4.0
+_2 August 2021_
+
+### Features
+* Change Meaningful Use User term to Promoting Interoperability; deprecated MUU fields and endpoints
+* Enable Real World Testing fields for all 2015 Edition Listings
+
+### Flagged Features
+* Treat Test Standards as Optional Standards on Upload/Confirm
+
+---
+
 ## Version 30.3.0
 _12 July 2021_
 

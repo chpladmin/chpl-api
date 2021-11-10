@@ -42,7 +42,7 @@ public class SurveillanceDataCreator {
                 .collect(Collectors.toList());
 
         Long totalDuration = surveillances.stream()
-                .map(surv -> Math.abs(ChronoUnit.DAYS.between(surv.getStartDate().toInstant(), surv.getEndDate().toInstant())))
+                .map(surv -> Math.abs(ChronoUnit.DAYS.between(surv.getStartDate(), surv.getEndDate())))
                 .collect(Collectors.summingLong(n -> n.longValue()));
         return totalDuration / surveillances.size();
     }

@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -27,6 +28,8 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
     private TestProcedureReviewer testProcedureReviewer;
     private TestFunctionalityReviewer testFunctionalityReviewer;
     private TestStandardReviewer testStandardReviewer;
+    private OptionalStandardReviewer optionalStandardReviewer;
+    //TODO: SVAP
     private UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
     private OldCriteriaWithoutIcsReviewer oldCriteriaWithoutIcsReviewer;
     private SedG32015Reviewer sedG3Reviewer;
@@ -44,6 +47,7 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
             @Qualifier("listingUploadTestProcedureReviewer") TestProcedureReviewer testProcedureReviewer,
             @Qualifier("listingUploadTestFunctionalityReviewer") TestFunctionalityReviewer testFunctionalityReviewer,
             @Qualifier("listingUploadTestStandardReviewer") TestStandardReviewer testStandardReviewer,
+            @Qualifier("listingUploadOptionalStandardReviewer") OptionalStandardReviewer optionalStandardReviewer,
             @Qualifier("uploadedListingUnattestedCriteriaWithDataReviewer") UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer,
             @Qualifier("oldCriteriaWithoutIcsReviewer") OldCriteriaWithoutIcsReviewer oldCriteriaWithoutIcsReviewer,
             @Qualifier("sedG32015Reviewer") SedG32015Reviewer sedG3Reviewer,
@@ -59,6 +63,7 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
         this.testProcedureReviewer = testProcedureReviewer;
         this.testFunctionalityReviewer = testFunctionalityReviewer;
         this.testStandardReviewer = testStandardReviewer;
+        this.optionalStandardReviewer = optionalStandardReviewer;
         this.unattestedCriteriaWithDataReviewer = unattestedCriteriaWithDataReviewer;
         this.oldCriteriaWithoutIcsReviewer = oldCriteriaWithoutIcsReviewer;
         this.sedG3Reviewer = sedG3Reviewer;
@@ -70,11 +75,14 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
         if (listing.getCertificationResults() == null) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.missingCertificationResults"));
             return;
-        } else if (listing.getCertificationResults().size() == 0 || hasNoAttestedCriteria(listing)) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.missingCertificationResults"));
         }
+
         listing.getCertificationResults().stream()
-            .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess())
+            .forEach(certResult -> reviewSuccessField(listing, certResult));
+
+        listing.getCertificationResults().stream()
+            .filter(certResult -> certResult != null && certResult.getCriterion() != null && certResult.getCriterion().getId() != null
+                        && BooleanUtils.isTrue(certResult.isSuccess()))
             .forEach(certResult -> reviewCertResultFields(listing, certResult));
         criteriaReviewer.review(listing);
         privacyAndSecurityFrameworkReviewer.review(listing);
@@ -85,18 +93,31 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
         testProcedureReviewer.review(listing);
         testFunctionalityReviewer.review(listing);
         testStandardReviewer.review(listing);
+        optionalStandardReviewer.review(listing);
         unattestedCriteriaWithDataReviewer.review(listing);
         oldCriteriaWithoutIcsReviewer.review(listing);
         sedG3Reviewer.review(listing);
     }
 
-    private boolean hasNoAttestedCriteria(CertifiedProductSearchDetails listing) {
-        return listing.getCertificationResults().stream()
-                .filter(certResult -> certResult.isSuccess())
-                .count() == 0;
+    private void reviewSuccessField(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        if (certResult.isSuccess() == null && !StringUtils.isEmpty(certResult.getSuccessStr())) {
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.invalidSuccess",
+                    Util.formatCriteriaNumber(certResult.getCriterion()),
+                    certResult.getSuccessStr()));
+        }
     }
 
     private void reviewCertResultFields(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        reviewGap(listing, certResult);
+        reviewAdditionalSoftwareString(listing, certResult);
+        reviewAttestationAnswer(listing, certResult);
+        reviewApiDocumentation(listing, certResult);
+        reviewExportDocumentation(listing, certResult);
+        reviewUseCases(listing, certResult);
+        reviewServiceBaseUrlList(listing, certResult);
+    }
+
+    private void reviewGap(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.GAP)
                 && certResult.isGap() == null) {
             if (!StringUtils.isEmpty(certResult.getGapStr())) {
@@ -109,8 +130,16 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
                         "listing.criteria.missingGap",
                         Util.formatCriteriaNumber(certResult.getCriterion()));
             }
+        } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.GAP)) {
+            if (certResult.isGap() != null | !StringUtils.isEmpty(certResult.getGapStr())) {
+                listing.getWarningMessages().add(
+                        msgUtil.getMessage("listing.criteria.gapNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
+            certResult.setGap(null);
         }
+    }
 
+    private void reviewAdditionalSoftwareString(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!StringUtils.isEmpty(certResult.getHasAdditionalSoftwareStr())
                 && certResult.getHasAdditionalSoftware() == null) {
             addCriterionErrorOrWarningByPermission(listing, certResult,
@@ -118,7 +147,9 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
                     Util.formatCriteriaNumber(certResult.getCriterion()),
                     certResult.getHasAdditionalSoftwareStr());
         }
+    }
 
+    private void reviewAttestationAnswer(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.ATTESTATION_ANSWER)
                 && certResult.getAttestationAnswer() == null) {
             if (!StringUtils.isEmpty(certResult.getAttestationAnswerStr())) {
@@ -131,19 +162,45 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
                         "listing.criteria.missingAttestationAnswer",
                         Util.formatCriteriaNumber(certResult.getCriterion()));
             }
+        } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.ATTESTATION_ANSWER)) {
+            if (!StringUtils.isEmpty(certResult.getAttestationAnswer())
+                    || !StringUtils.isEmpty(certResult.getAttestationAnswerStr())) {
+                listing.getWarningMessages().add(
+                        msgUtil.getMessage("listing.criteria.attestationAnswerNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
+            certResult.setAttestationAnswer(null);
         }
+    }
 
+    private void reviewApiDocumentation(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.API_DOCUMENTATION)
                 && StringUtils.isEmpty(certResult.getApiDocumentation())) {
             addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.missingApiDocumentation",
                     Util.formatCriteriaNumber(certResult.getCriterion()));
+        } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
+            if (!StringUtils.isEmpty(certResult.getApiDocumentation())) {
+                listing.getWarningMessages().add(
+                        msgUtil.getMessage("listing.criteria.apiDocumentationNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
+            certResult.setApiDocumentation(null);
         }
+    }
+
+    private void reviewExportDocumentation(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.EXPORT_DOCUMENTATION)
                 && StringUtils.isEmpty(certResult.getExportDocumentation())) {
             addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.missingExportDocumentation",
                     Util.formatCriteriaNumber(certResult.getCriterion()));
+        } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.EXPORT_DOCUMENTATION)) {
+            if (!StringUtils.isEmpty(certResult.getExportDocumentation())) {
+                listing.getWarningMessages().add(
+                        msgUtil.getMessage("listing.criteria.exportDocumentationNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
+            certResult.setExportDocumentation(null);
         }
+    }
 
+    private void reviewUseCases(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.USE_CASES)
                 && StringUtils.isEmpty(certResult.getUseCases())
                 && certResult.getAttestationAnswer() != null && certResult.getAttestationAnswer().equals(Boolean.TRUE)) {
@@ -155,12 +212,26 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
             listing.getWarningMessages().add(
                     msgUtil.getMessage("listing.criteria.useCasesWithoutAttestation",
                             Util.formatCriteriaNumber(certResult.getCriterion())));
+        } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.USE_CASES)) {
+            if (!StringUtils.isEmpty(certResult.getUseCases())) {
+                listing.getWarningMessages().add(
+                        msgUtil.getMessage("listing.criteria.useCasesNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
+            certResult.setUseCases(null);
         }
+    }
 
+    private void reviewServiceBaseUrlList(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.SERVICE_BASE_URL_LIST)
                 && StringUtils.isEmpty(certResult.getServiceBaseUrlList())) {
             addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.missingServiceBaseUrlList",
                     Util.formatCriteriaNumber(certResult.getCriterion()));
+        } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.SERVICE_BASE_URL_LIST)) {
+            if (!StringUtils.isEmpty(certResult.getServiceBaseUrlList())) {
+                listing.getWarningMessages().add(
+                        msgUtil.getMessage("listing.criteria.serviceBaseUrlListNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
+            certResult.setServiceBaseUrlList(null);
         }
     }
 }

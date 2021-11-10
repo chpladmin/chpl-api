@@ -5,8 +5,6 @@ import java.text.DateFormat;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
-import javax.mail.MessagingException;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +26,14 @@ import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
-import gov.healthit.chpl.util.EmailBuilder;
 
 @Component
 public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsService<ChangeRequestDeveloperDetails> {
@@ -155,7 +154,7 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
     }
 
     @Override
-    protected void sendApprovalEmail(ChangeRequest cr) throws MessagingException {
+    protected void sendApprovalEmail(ChangeRequest cr) throws EmailNotSentException {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         new EmailBuilder(env)
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
@@ -170,7 +169,7 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
     }
 
     @Override
-    protected void sendPendingDeveloperActionEmail(ChangeRequest cr) throws MessagingException {
+    protected void sendPendingDeveloperActionEmail(ChangeRequest cr) throws EmailNotSentException {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         new EmailBuilder(env)
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
@@ -186,7 +185,7 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
     }
 
     @Override
-    protected void sendRejectedEmail(ChangeRequest cr) throws MessagingException {
+    protected void sendRejectedEmail(ChangeRequest cr) throws EmailNotSentException {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         new EmailBuilder(env)
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()

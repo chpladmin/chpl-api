@@ -8,12 +8,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
-import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
-import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
@@ -23,14 +21,12 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 @Component
 public class SurveillanceNonconformityReviewer implements Reviewer {
     private CertificationResultDetailsDAO certResultDetailsDao;
-    private SurveillanceDAO survDao;
     private ErrorMessageUtil msgUtil;
     private CertificationCriterionService criterionService;
 
     @Autowired
-    public SurveillanceNonconformityReviewer(SurveillanceDAO survDao, CertificationResultDetailsDAO certResultDetailsDao,
+    public SurveillanceNonconformityReviewer(CertificationResultDetailsDAO certResultDetailsDao,
             ErrorMessageUtil msgUtil, CertificationCriterionService criterionService) {
-        this.survDao = survDao;
         this.certResultDetailsDao = certResultDetailsDao;
         this.msgUtil = msgUtil;
         this.criterionService = criterionService;
@@ -55,14 +51,13 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
                 } else {
                     for (SurveillanceNonconformity nc : req.getNonconformities()) {
                         checkNonconformityTypeValidity(surv, req, nc, certResults);
-                        checkNonconformityStatusValidity(surv, req, nc);
                         checkCorrectiveActionPlanDatesValidity(surv, req, nc);
                         checkDateOfDeterminationExists(surv, req, nc);
                         checkSummaryExists(surv, req, nc);
                         checkFindingsExists(surv, req, nc);
                         checkSiteCountsValidityForRandomizedSurveillance(surv, req, nc);
                         checkSiteCountsValidityForNonRandomizedSurveillance(surv, req, nc);
-                        checkStatusRequiredFields(surv, req, nc);
+                        checkResolution(surv, req, nc);
                     }
                 }
             } else {
@@ -116,62 +111,29 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
                 && certResult.getCriterion().getId().equals(criterion.getId());
     }
 
-    private void checkNonconformityStatusValidity(Surveillance surv,
-            SurveillanceRequirement req, SurveillanceNonconformity nc) {
-        if (nc.getStatus() == null) {
-            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.nonConformityStatusNotFound",
-                    req.getRequirementName(),
-                    nc.getNonconformityTypeName()));
-        } else if (nc.getStatus().getId() == null || nc.getStatus().getId().longValue() <= 0) {
-            SurveillanceNonconformityStatus ncStatus = survDao
-                    .findSurveillanceNonconformityStatusType(nc.getStatus().getName());
-            if (ncStatus == null) {
-                surv.getErrorMessages()
-                        .add(msgUtil.getMessage("surveillance.nonConformityStatusWithNameNotFound",
-                                nc.getStatus().getName(),
-                                req.getRequirementName(),
-                                nc.getNonconformityTypeName()));
-            } else {
-                nc.setStatus(ncStatus);
-            }
-        } else {
-            SurveillanceNonconformityStatus ncStatus = survDao
-                    .findSurveillanceNonconformityStatusType(nc.getStatus().getId());
-            if (ncStatus == null) {
-                surv.getErrorMessages()
-                        .add(msgUtil.getMessage("surveillance.nonConformityStatusWithIdNotFound",
-                                nc.getStatus().getId(),
-                                req.getRequirementName(),
-                                nc.getNonconformityTypeName()));
-            } else {
-                nc.setStatus(ncStatus);
-            }
-        }
-    }
-
     private void checkCorrectiveActionPlanDatesValidity(Surveillance surv, SurveillanceRequirement req,
             SurveillanceNonconformity nc) {
-        if (!StringUtils.isEmpty(nc.getCapApprovalDate())
-                && StringUtils.isEmpty(nc.getCapMustCompleteDate())) {
+        if (!StringUtils.isEmpty(nc.getCapApprovalDay())
+                && StringUtils.isEmpty(nc.getCapMustCompleteDay())) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.dateCAPMustCompleteIsRequired",
                     req.getRequirementName(),
                     nc.getNonconformityTypeName()));
         }
 
-        if (!StringUtils.isEmpty(nc.getCapEndDate()) && StringUtils.isEmpty(nc.getCapStartDate())) {
+        if (!StringUtils.isEmpty(nc.getCapEndDay()) && StringUtils.isEmpty(nc.getCapStartDay())) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.dateCAPStartIsRequired",
                     req.getRequirementName(),
                     nc.getNonconformityTypeName()));
         }
 
-        if (!StringUtils.isEmpty(nc.getCapEndDate()) && StringUtils.isEmpty(nc.getCapApprovalDate())) {
+        if (!StringUtils.isEmpty(nc.getCapEndDay()) && StringUtils.isEmpty(nc.getCapApprovalDay())) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.dateCAPApprovalIsRequired",
                     req.getRequirementName(),
                     nc.getNonconformityTypeName()));
         }
 
-        if (!StringUtils.isEmpty(nc.getCapEndDate()) && !StringUtils.isEmpty(nc.getCapStartDate())
-                && nc.getCapEndDate().compareTo(nc.getCapStartDate()) < 0) {
+        if (!StringUtils.isEmpty(nc.getCapEndDay()) && !StringUtils.isEmpty(nc.getCapStartDay())
+                && nc.getCapEndDay().compareTo(nc.getCapStartDay()) < 0) {
             surv.getErrorMessages()
                     .add(msgUtil.getMessage("surveillance.dateCAPEndNotGreaterThanDateCAPStart",
                             req.getRequirementName(),
@@ -181,7 +143,7 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
 
     private void checkDateOfDeterminationExists(Surveillance surv, SurveillanceRequirement req,
             SurveillanceNonconformity nc) {
-        if (nc.getDateOfDetermination() == null) {
+        if (nc.getDateOfDeterminationDay() == null) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.dateOfDeterminationIsRequired",
                     req.getRequirementName(),
                     nc.getNonconformityTypeName()));
@@ -259,18 +221,16 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
         }
     }
 
-    private void checkStatusRequiredFields(Surveillance surv, SurveillanceRequirement req,
+    private void checkResolution(Surveillance surv, SurveillanceRequirement req,
             SurveillanceNonconformity nc) {
-        if (nc.getStatus() != null && nc.getStatus().getName() != null
-                && nc.getStatus().getName().equalsIgnoreCase("Closed")) {
+        if (nc.getNonconformityCloseDay() != null) {
             if (StringUtils.isEmpty(nc.getResolution())) {
                 surv.getErrorMessages()
                         .add(msgUtil.getMessage("surveillance.resolutionDescriptionIsRequired",
                                 req.getRequirementName(),
                                 nc.getNonconformityTypeName()));
             }
-        } else if (nc.getStatus() != null && nc.getStatus().getName() != null
-                && nc.getStatus().getName().equalsIgnoreCase("Open")) {
+        } else if (nc.getNonconformityCloseDay() == null) {
             if (!StringUtils.isEmpty(nc.getResolution())) {
                 surv.getErrorMessages()
                         .add(msgUtil.getMessage("surveillance.resolutionDescriptionNotApplicable",
