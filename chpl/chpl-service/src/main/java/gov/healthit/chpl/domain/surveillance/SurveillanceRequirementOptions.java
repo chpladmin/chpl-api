@@ -5,40 +5,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.util.Removable;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Singular;
 
+@Data
+@Builder
+@AllArgsConstructor
 public class SurveillanceRequirementOptions implements Serializable {
     private static final long serialVersionUID = 500382005925313527L;
+
+    @Singular(value = "criteriaOption2014")
     private List<CertificationCriterion> criteriaOptions2014;
+
+    @Singular(value = "criteriaOption2015")
     private List<CertificationCriterion> criteriaOptions2015;
-    private List<String> transparencyOptions;
+
+    @Singular
+    private List<Removable<String>> transparencyOptions;
+
+    @Singular
+    private List<Removable<String>> realWorldTestingOptions;
 
     public SurveillanceRequirementOptions() {
         criteriaOptions2014 = new ArrayList<CertificationCriterion>();
         criteriaOptions2015 = new ArrayList<CertificationCriterion>();
-        transparencyOptions = new ArrayList<String>();
-    }
-
-    public List<String> getTransparencyOptions() {
-        return transparencyOptions;
-    }
-
-    public void setTransparencyOptions(final List<String> transparencyOptions) {
-        this.transparencyOptions = transparencyOptions;
-    }
-
-    public List<CertificationCriterion> getCriteriaOptions2014() {
-        return criteriaOptions2014;
-    }
-
-    public void setCriteriaOptions2014(final List<CertificationCriterion> criteriaOptions2014) {
-        this.criteriaOptions2014 = criteriaOptions2014;
-    }
-
-    public List<CertificationCriterion> getCriteriaOptions2015() {
-        return criteriaOptions2015;
-    }
-
-    public void setCriteriaOptions2015(final List<CertificationCriterion> criteriaOptions2015) {
-        this.criteriaOptions2015 = criteriaOptions2015;
+        transparencyOptions = new ArrayList<Removable<String>>();
+        realWorldTestingOptions = new ArrayList<Removable<String>>();
     }
 }
