@@ -183,4 +183,8 @@
         additivity="false">
         <AppenderRef ref="testStandardConversionJob" />
     </Logger>
+    <Logger name="removeCriteriaJobLogger" level="INFO"
+        additivity="false">
+        <AppenderRef ref="removeCriteriaJob" />
+    </Logger>
 </Loggers>
