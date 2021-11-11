@@ -55,7 +55,6 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.DeveloperStatusEventsHelper;
 import gov.healthit.chpl.manager.impl.SecuredManager;
@@ -74,7 +73,6 @@ import lombok.extern.log4j.Log4j2;
 @Lazy
 @Service
 @Log4j2
-@Loggable
 public class DeveloperManager extends SecuredManager {
     public static final String NEW_DEVELOPER_CODE = "XXXX";
 

@@ -15,7 +15,6 @@ import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.PromotingInteroperabilityManager;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
@@ -26,7 +25,6 @@ import lombok.extern.log4j.Log4j2;
 
 @Tag(name = "promoting-interoperability", description = "Allows upload of promoting interoperability user data.")
 @RestController
-@Loggable
 @Log4j2
 public class PromotingInteroperabilityController {
     private PromotingInteroperabilityManager piuManager;
@@ -41,8 +39,10 @@ public class PromotingInteroperabilityController {
             description = "Accepts a CSV file with chpl_product_number and user_count columns to update "
                     + "the number of promoting interoperability users for each CHPL Product Number."
                     + " The user uploading the file must have ROLE_ADMIN, ROLE_ONC. ",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @DeprecatedResponseFields(responseClass = ChplOneTimeTrigger.class)
     @RequestMapping(value = "/promoting-interoperability/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ChplOneTimeTrigger uploadPromotingInteroperabilityUsers(
@@ -55,12 +55,14 @@ public class PromotingInteroperabilityController {
 
     @Deprecated
     @Operation(summary = "DEPRECATED. Use /promoting-interoperability/upload instead."
-                + "Upload a file to update the number of meaningful use users for each CHPL Product Number",
-                description = "Accepts a CSV file with chpl_product_number and num_meaningful_use_users to update the number of meaningful use users for each CHPL Product Number."
-                + " The user uploading the file must have ROLE_ADMIN, ROLE_ONC.",
-                deprecated = true,
-                security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                        @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            + "Upload a file to update the number of meaningful use users for each CHPL Product Number",
+            description = "Accepts a CSV file with chpl_product_number and num_meaningful_use_users to update the number of meaningful use users for each CHPL Product Number."
+                    + " The user uploading the file must have ROLE_ADMIN, ROLE_ONC.",
+            deprecated = true,
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/meaningful_use/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ChplOneTimeTrigger uploadMeaningfulUseUsers(
             @RequestParam("file") MultipartFile file,

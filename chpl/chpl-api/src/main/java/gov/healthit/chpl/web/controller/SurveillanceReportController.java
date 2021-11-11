@@ -24,7 +24,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.ComplaintManager;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
 import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
@@ -49,7 +48,6 @@ import lombok.extern.log4j.Log4j2;
 @Tag(name = "surveillance-report", description = "Allows management of quarterly and annual surveillance reporting.")
 @RestController
 @RequestMapping("/surveillance-report")
-@Loggable
 @Log4j2
 public class SurveillanceReportController {
 
@@ -69,8 +67,10 @@ public class SurveillanceReportController {
     @Operation(summary = "Get all annual surveillance reports this user has access to.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/annual", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<AnnualReport> getAllAnnualReports() throws AccessDeniedException {
         List<AnnualReport> response = reportManager.getAnnualReports();
@@ -80,10 +80,12 @@ public class SurveillanceReportController {
     @Operation(summary = "Get a specific annual surveillance report by ID.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/annual/{annualReportId}",
-        method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+            method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody AnnualReport getAnnualReport(@PathVariable Long annualReportId)
             throws AccessDeniedException, EntityRetrievalException {
         AnnualReport report = reportManager.getAnnualReport(annualReportId);
@@ -93,26 +95,27 @@ public class SurveillanceReportController {
     @Operation(summary = "Create a new annual surveillance report.",
             description = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/annual", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public AnnualReport createAnnualReport(
-        @RequestBody(required = true) AnnualReport createRequest)
-                throws AccessDeniedException, InvalidArgumentsException, EntityCreationException,
-                JsonProcessingException, EntityRetrievalException {
+            @RequestBody(required = true) AnnualReport createRequest)
+            throws AccessDeniedException, InvalidArgumentsException, EntityCreationException,
+            JsonProcessingException, EntityRetrievalException {
         if (createRequest.getAcb() == null || createRequest.getAcb().getId() == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("report.annualSurveillance.missingAcb"));
         }
 
-        //at least one quarterly report must exist to create the annual report
-        List<QuarterlyReportDTO> quarterlyReports =
-                reportManager.getQuarterlyReports(createRequest.getAcb().getId(), createRequest.getYear());
+        // at least one quarterly report must exist to create the annual report
+        List<QuarterlyReportDTO> quarterlyReports = reportManager.getQuarterlyReports(createRequest.getAcb().getId(), createRequest.getYear());
         if (quarterlyReports == null || quarterlyReports.size() == 0) {
             throw new InvalidArgumentsException(msgUtil.getMessage("report.annualSurveillance.missingQuarterly",
                     createRequest.getYear(), "create"));
         }
 
-        //create the report
+        // create the report
         AnnualReport annualReport = AnnualReport.builder()
                 .acb(CertificationBody.builder()
                         .id(createRequest.getAcb().getId())
@@ -127,20 +130,22 @@ public class SurveillanceReportController {
 
     @Operation(summary = "Update an existing annual surveillance report.",
             description = "The associated ACB and year of the report cannot be changed. "
-                + "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
-                + "on the ACB associated with the report.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+                    + "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
+                    + "on the ACB associated with the report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/annual", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public AnnualReport updateAnnualReport(
-        @RequestBody(required = true) AnnualReport updateRequest)
-    throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
-    EntityCreationException {
+            @RequestBody(required = true) AnnualReport updateRequest)
+            throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
+            EntityCreationException {
         if (updateRequest.getId() == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("report.annualSurveillance.missingReportId"));
         }
         AnnualReport reportToUpdate = reportManager.getAnnualReport(updateRequest.getId());
-        //above line throws entity retrieval exception if bad id
+        // above line throws entity retrieval exception if bad id
         reportToUpdate.setPriorityChangesFromFindingsSummary(updateRequest.getPriorityChangesFromFindingsSummary());
         reportToUpdate.setObstacleSummary(updateRequest.getObstacleSummary());
         AnnualReport createdReport = reportManager.updateAnnualReport(reportToUpdate);
@@ -150,31 +155,33 @@ public class SurveillanceReportController {
     @Operation(summary = "Delete an annual report.",
             description = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
                     + "on the ACB associated with the report.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/annual/{annualReportId}", method = RequestMethod.DELETE,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public void deleteAnnualReport(@PathVariable Long annualReportId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         reportManager.deleteAnnualReport(annualReportId);
     }
 
-
     @Operation(summary = "Generates an annual report as an XLSX file as a background job "
             + "and emails the report to the logged in user",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative authority "
                     + "on the ACB associated with the report.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @DeprecatedResponseFields(responseClass = ChplOneTimeTrigger.class)
     @RequestMapping(value = "/export/annual/{annualReportId}", method = RequestMethod.GET)
     public ChplOneTimeTrigger exportAnnualReport(@PathVariable("annualReportId") Long annualReportId)
             throws ValidationException, SchedulerException, EntityRetrievalException,
             UserRetrievalException, InvalidArgumentsException {
         AnnualReport reportToExport = reportManager.getAnnualReport(annualReportId);
-        //at least one quarterly report must exist to export the annual report
-        List<QuarterlyReportDTO> quarterlyReports =
-                reportManager.getQuarterlyReports(reportToExport.getAcb().getId(), reportToExport.getYear());
+        // at least one quarterly report must exist to export the annual report
+        List<QuarterlyReportDTO> quarterlyReports = reportManager.getQuarterlyReports(reportToExport.getAcb().getId(), reportToExport.getYear());
         if (quarterlyReports == null || quarterlyReports.size() == 0) {
             throw new InvalidArgumentsException(msgUtil.getMessage("report.annualSurveillance.missingQuarterly",
                     reportToExport.getYear(), "export"));
@@ -186,8 +193,10 @@ public class SurveillanceReportController {
     @Operation(summary = "Get all quarterly surveillance reports this user has access to.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @DeprecatedResponseFields(responseClass = QuarterlyReport.class)
     @RequestMapping(value = "/quarterly", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<QuarterlyReport> getAllQuarterlyReports() throws AccessDeniedException {
@@ -202,11 +211,13 @@ public class SurveillanceReportController {
     @Operation(summary = "Get a specific quarterly surveillance report by ID.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @DeprecatedResponseFields(responseClass = QuarterlyReport.class)
     @RequestMapping(value = "/quarterly/{quarterlyReportId}",
-        method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+            method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody QuarterlyReport getQuarterlyReport(@PathVariable Long quarterlyReportId)
             throws AccessDeniedException, EntityRetrievalException {
         QuarterlyReportDTO reportDto = reportManager.getQuarterlyReport(quarterlyReportId);
@@ -214,20 +225,21 @@ public class SurveillanceReportController {
     }
 
     @Operation(summary = "Get listings that are relevant to a specific quarterly report. "
-                + "These are listings belonging to the ACB associated with the report "
-                + "that had an active status at any point during the quarter",
+            + "These are listings belonging to the ACB associated with the report "
+            + "that had an active status at any point during the quarter",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @DeprecatedResponseFields(responseClass = RelevantListing.class)
     @RequestMapping(value = "/quarterly/{quarterlyReportId}/listings",
-        method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+            method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<RelevantListing> getRelevantListings(@PathVariable Long quarterlyReportId)
             throws AccessDeniedException, EntityRetrievalException {
         QuarterlyReportDTO reportDto = reportManager.getQuarterlyReport(quarterlyReportId);
-        List<QuarterlyReportRelevantListingDTO> relevantListingDtos =
-                reportManager.getRelevantListings(reportDto);
+        List<QuarterlyReportRelevantListingDTO> relevantListingDtos = reportManager.getRelevantListings(reportDto);
 
         List<RelevantListing> relevantListings = new ArrayList<RelevantListing>();
         if (relevantListingDtos != null && relevantListingDtos.size() > 0) {
@@ -242,32 +254,35 @@ public class SurveillanceReportController {
             + "These are complaints that were open during the quarter.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @DeprecatedResponseFields(responseClass = ComplaintResults.class)
     @RequestMapping(value = "/quarterly/{quarterlyReportId}/complaints",
-        method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+            method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ComplaintResults getRelevantComplaints(@PathVariable Long quarterlyReportId)
             throws AccessDeniedException, EntityRetrievalException {
         QuarterlyReportDTO reportDto = reportManager.getQuarterlyReport(quarterlyReportId);
-        List<Complaint> relevantComplaints =
-                complaintManager.getAllComplaintsBetweenDates(reportDto.getAcb(), reportDto.getStartDate(), reportDto.getEndDate());
+        List<Complaint> relevantComplaints = complaintManager.getAllComplaintsBetweenDates(reportDto.getAcb(), reportDto.getStartDate(), reportDto.getEndDate());
         ComplaintResults results = new ComplaintResults();
         results.getResults().addAll(relevantComplaints);
         return results;
     }
 
     @Operation(summary = "Create a new quarterly surveillance report.",
-                description = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
-                        + "authority on the ACB associated with the report.",
-                security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                        @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            description = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
+                    + "authority on the ACB associated with the report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @DeprecatedResponseFields(responseClass = QuarterlyReport.class)
     @RequestMapping(value = "/quarterly", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public QuarterlyReport createQuarterlyReport(
             @RequestBody(required = true) QuarterlyReport createRequest)
-    throws AccessDeniedException, InvalidArgumentsException, EntityCreationException,
-    JsonProcessingException, EntityRetrievalException, ValidationException {
+            throws AccessDeniedException, InvalidArgumentsException, EntityCreationException,
+            JsonProcessingException, EntityRetrievalException, ValidationException {
         if (createRequest.getAcb() == null || createRequest.getAcb().getId() == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("report.quarterlySurveillance.missingAcb"));
         }
@@ -279,16 +294,18 @@ public class SurveillanceReportController {
     @Operation(summary = "Updates surveillance data that is tied to the quarterly report. ",
             description = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @DeprecatedResponseFields(responseClass = PrivilegedSurveillance.class)
     @RequestMapping(value = "/quarterly/{quarterlyReportId}/surveillance/{surveillanceId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public PrivilegedSurveillance updatePrivilegedSurveillanceData(
             @PathVariable Long quarterlyReportId,
             @PathVariable Long surveillanceId,
             @RequestBody(required = true) PrivilegedSurveillance updateRequest)
-                throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException,
-                EntityCreationException, JsonProcessingException {
+            throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException,
+            EntityCreationException, JsonProcessingException {
         QuarterlyReportDTO quarterlyReport = reportManager.getQuarterlyReport(quarterlyReportId);
         PrivilegedSurveillanceDTO toUpdate = new PrivilegedSurveillanceDTO();
         toUpdate.setQuarterlyReport(quarterlyReport);
@@ -317,8 +334,7 @@ public class SurveillanceReportController {
             toUpdate.setSurveillanceProcessType(processType);
         }
         toUpdate.setSurveillanceProcessTypeOther(updateRequest.getSurveillanceProcessTypeOther());
-        PrivilegedSurveillanceDTO updated =
-                reportManager.createOrUpdateQuarterlyReportSurveillanceMap(toUpdate);
+        PrivilegedSurveillanceDTO updated = reportManager.createOrUpdateQuarterlyReportSurveillanceMap(toUpdate);
         return new PrivilegedSurveillance(updated);
     }
 
@@ -326,38 +342,40 @@ public class SurveillanceReportController {
             + "report. If it's being excluded then the reason is required.",
             description = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the report.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @DeprecatedResponseFields(responseClass = RelevantListing.class)
     @RequestMapping(value = "/quarterly/{quarterlyReportId}/listings/{listingId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public RelevantListing updateRelevantListing(@PathVariable Long quarterlyReportId,
             @PathVariable Long listingId,
             @RequestBody(required = true) RelevantListing updateExclusionRequest)
-                throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, EntityCreationException,
-                JsonProcessingException {
+            throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, EntityCreationException,
+            JsonProcessingException {
         QuarterlyReportDTO quarterlyReport = reportManager.getQuarterlyReport(quarterlyReportId);
         if (updateExclusionRequest.isExcluded() && StringUtils.isEmpty(updateExclusionRequest.getReason())) {
             throw new InvalidArgumentsException(
                     msgUtil.getMessage("report.quarterlySurveillance.exclusion.missingReason", quarterlyReport.getQuarter().getName()));
         }
 
-        //see if a current exclusion exists for this listing to determine if it's being
-        //newly created with this request or just updated
+        // see if a current exclusion exists for this listing to determine if
+        // it's being
+        // newly created with this request or just updated
         QuarterlyReportExclusionDTO existingExclusion = reportManager.getExclusion(quarterlyReport, listingId);
         if (existingExclusion == null && updateExclusionRequest.isExcluded()) {
-            //no existing exclusion - create one
+            // no existing exclusion - create one
             reportManager.createQuarterlyReportExclusion(quarterlyReport, listingId,
                     updateExclusionRequest.getReason());
         } else if (existingExclusion != null && updateExclusionRequest.isExcluded()) {
-            //found existing exclusion for this listing - update the reason
+            // found existing exclusion for this listing - update the reason
             reportManager.updateQuarterlyReportExclusion(quarterlyReport, listingId, updateExclusionRequest.getReason());
         } else if (existingExclusion != null && !updateExclusionRequest.isExcluded()) {
             reportManager.deleteQuarterlyReportExclusion(quarterlyReportId, listingId);
         }
 
-        //get the relevant listing with its new exclusion fields
-        QuarterlyReportRelevantListingDTO updatedRelevantListing =
-                reportManager.getRelevantListing(quarterlyReport, listingId);
+        // get the relevant listing with its new exclusion fields
+        QuarterlyReportRelevantListingDTO updatedRelevantListing = reportManager.getRelevantListing(quarterlyReport, listingId);
         RelevantListing result = null;
         if (updatedRelevantListing != null) {
             result = new RelevantListing(updatedRelevantListing);
@@ -367,16 +385,18 @@ public class SurveillanceReportController {
 
     @Operation(summary = "Update an existing quarterly surveillance report.",
             description = "The associated ACB, year, and quarter of the report cannot be changed. "
-                + "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
-                + "on the ACB associated with the report.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+                    + "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
+                    + "on the ACB associated with the report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @DeprecatedResponseFields(responseClass = QuarterlyReport.class)
     @RequestMapping(value = "/quarterly", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public QuarterlyReport updateQuarterlyReport(
-        @RequestBody(required = true) QuarterlyReport updateRequest)
-    throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
-    EntityCreationException, ValidationException {
+            @RequestBody(required = true) QuarterlyReport updateRequest)
+            throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
+            EntityCreationException, ValidationException {
         if (updateRequest.getId() == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("report.quarterlySurveillance.missingReportId"));
         }
@@ -387,10 +407,12 @@ public class SurveillanceReportController {
     @Operation(summary = "Delete a quarterly report.",
             description = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
                     + "on the ACB associated with the report.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/quarterly/{quarterlyReportId}", method = RequestMethod.DELETE,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public void deleteQuarterlyReport(@PathVariable Long quarterlyReportId)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         reportManager.deleteQuarterlyReport(quarterlyReportId);
@@ -400,12 +422,14 @@ public class SurveillanceReportController {
             + "and emails the report to the logged in user",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative authority "
                     + "on the ACB associated with the report.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @DeprecatedResponseFields(responseClass = ChplOneTimeTrigger.class)
     @RequestMapping(value = "/export/quarterly/{quarterlyReportId}", method = RequestMethod.GET)
     public ChplOneTimeTrigger exportQuarterlyReport(@PathVariable("quarterlyReportId") Long quarterlyReportId)
-                throws ValidationException, SchedulerException, UserRetrievalException {
+            throws ValidationException, SchedulerException, UserRetrievalException {
         return reportManager.exportQuarterlyReportAsBackgroundJob(quarterlyReportId);
     }
 }

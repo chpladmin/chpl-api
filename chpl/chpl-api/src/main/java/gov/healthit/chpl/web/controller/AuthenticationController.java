@@ -36,7 +36,6 @@ import gov.healthit.chpl.exception.JWTValidationException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserRetrievalException;
-import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.auth.AuthenticationManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.util.AuthUtil;
@@ -49,7 +48,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "auth", description = "User authentication operations including login.")
 @RestController
 @RequestMapping("/auth")
-@Loggable
 public class AuthenticationController {
     private static final Logger LOGGER = LogManager.getLogger(AuthenticationController.class);
 
@@ -69,12 +67,14 @@ public class AuthenticationController {
     private Environment env;
 
     @Operation(summary = "Log in.",
-        description = "Call this method to authenticate a user. The value returned is that user's "
-                + "token which must be passed on all subsequent requests in the Authorization header. "
-                + "Specifically, the Authorization header must have a value of 'Bearer token-that-gets-returned'.",
-        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+            description = "Call this method to authenticate a user. The value returned is that user's "
+                    + "token which must be passed on all subsequent requests in the Authorization header. "
+                    + "Specifically, the Authorization header must have a value of 'Bearer token-that-gets-returned'.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST,
-        consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public String authenticateJSON(@RequestBody LoginCredentials credentials)
             throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
 
@@ -85,7 +85,7 @@ public class AuthenticationController {
 
     @Hidden
     @RequestMapping(value = "/keep_alive", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public String keepAlive() throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
         String jwt = authenticationManager.refreshJWT();
         String jwtJSON = "{\"token\": \"" + jwt + "\"}";
@@ -93,12 +93,14 @@ public class AuthenticationController {
     }
 
     @Operation(summary = "Change password.",
-        description = "Change the logged in user's password as long as the old password "
-                + "passed in matches what is stored in the database.",
-        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
+            description = "Change the logged in user's password as long as the old password "
+                    + "passed in matches what is stored in the database.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/change_password", method = RequestMethod.POST,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public UpdatePasswordResponse changePassword(@RequestBody UpdatePasswordRequest request)
             throws UserRetrievalException, MultipleUserAccountsException {
         UpdatePasswordResponse response = new UpdatePasswordResponse();
@@ -137,11 +139,13 @@ public class AuthenticationController {
     }
 
     @Operation(summary = "Change expired password.",
-        description = "Change a user's expired password as long as the old password "
-                + "passed in matches what is stored in the database.",
-        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+            description = "Change a user's expired password as long as the old password "
+                    + "passed in matches what is stored in the database.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/change_expired_password", method = RequestMethod.POST,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public UpdatePasswordResponse changeExpiredPassword(@RequestBody UpdateExpiredPasswordRequest request)
             throws UserRetrievalException, JWTCreationException, JWTValidationException,
             MultipleUserAccountsException {
@@ -185,8 +189,10 @@ public class AuthenticationController {
     }
 
     @Operation(summary = "Reset password.", description = "Reset the user's password.",
-        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/reset_password_request", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public UpdatePasswordResponse resetPassword(@RequestBody ResetPasswordRequest request)
             throws UserRetrievalException, MultipleUserAccountsException {
@@ -217,9 +223,11 @@ public class AuthenticationController {
     }
 
     @Operation(summary = "Reset a user's password.", description = "",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/email_reset_password", method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public String resetPassword(@RequestBody UserResetPasswordRequest userInfo)
             throws UserRetrievalException, EmailNotSentException {
 
@@ -232,23 +240,25 @@ public class AuthenticationController {
 
         EmailBuilder emailBuilder = new EmailBuilder(env);
         emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
-            .subject(env.getProperty("user.resetPassword.subject"))
-            .htmlMessage(htmlMessage)
-            .publicHtmlFooter()
-            .sendEmail();
+                .subject(env.getProperty("user.resetPassword.subject"))
+                .htmlMessage(htmlMessage)
+                .publicHtmlFooter()
+                .sendEmail();
 
         return "{\"passwordResetEmailSent\" : true }";
     }
 
     @Deprecated
     @Operation(summary = "DEPRECATED. Impersonate another user.", description = "",
-        deprecated = true,
-        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
+            deprecated = true,
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/impersonate", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public String impersonateUser(@RequestHeader(value = "Authorization", required = true) String userJwt,
             @RequestParam(value = "username", required = true) String username)
-                    throws UserRetrievalException, JWTCreationException, UserManagementException, JWTValidationException {
+            throws UserRetrievalException, JWTCreationException, UserManagementException, JWTValidationException {
 
         String jwt = authenticationManager.impersonateUserByUsername(username);
         String jwtJSON = "{\"token\": \"" + jwt + "\"}";
@@ -256,21 +266,26 @@ public class AuthenticationController {
     }
 
     @Operation(summary = "Impersonate another user.", description = "",
-        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/beta/impersonate", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public String impersonateUserById(@RequestHeader(value = "Authorization", required = true) String userJwt,
             @RequestParam(value = "id", required = true) Long id)
-                    throws UserRetrievalException, JWTCreationException, UserManagementException,
-                    JWTValidationException, MultipleUserAccountsException {
+            throws UserRetrievalException, JWTCreationException, UserManagementException,
+            JWTValidationException, MultipleUserAccountsException {
 
         String jwt = authenticationManager.impersonateUser(id);
         String jwtJSON = "{\"token\": \"" + jwt + "\"}";
         return jwtJSON;
     }
+
     @Operation(summary = "Stop impersonating another user.", description = "",
-        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/unimpersonate", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public String unimpersonateUser(@RequestHeader(value = "Authorization", required = true) String userJwt)
             throws JWTValidationException, JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
