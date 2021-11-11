@@ -338,16 +338,6 @@ public class ResourcePermissions {
         return hasPermissionOnUser(user);
     }
 
-    /**
-     * Determines if the current user has permissions to access the account of the passed-in user. Rules are: Admin and
-     * Onc can access all users. Onc_Staff can access any other Onc_Staff. Acb can access any other ROLE_ACB user who
-     * is also on their ACB. Atl can access any other ROLE_ATL user who is also on their ATL. Developer Admin can
-     * access any other ROLE_DEVELOPER user who is also on their developer. All users can access themselves.
-     *
-     * @param user
-     *            user to check permissions on
-     * @return
-     */
     @Transactional(readOnly = true)
     public boolean hasPermissionOnUser(UserDTO user) {
 
@@ -358,8 +348,10 @@ public class ResourcePermissions {
         } else if (isUserRoleOncStaff()) {
             return getRoleByUserId(user.getId()).getAuthority().equalsIgnoreCase(Authority.ROLE_ONC_STAFF);
         } else if (isUserRoleAcbAdmin()) {
-            // is the user being checked on any of the same ACB(s) that the
-            // current user is on?
+            if (getRoleByUserId(user.getId()).getAuthority().equalsIgnoreCase(Authority.ROLE_DEVELOPER)) {
+                return true;
+            }
+            // is the user being checked on any of the same ACB(s) that the current user is on?
             List<CertificationBodyDTO> currUserAcbs = getAllAcbsForCurrentUser();
             List<CertificationBodyDTO> otherUserAcbs = getAllAcbsForUser(user.getId());
             for (CertificationBodyDTO currUserAcb : currUserAcbs) {
@@ -370,8 +362,7 @@ public class ResourcePermissions {
                 }
             }
         } else if (isUserRoleAtlAdmin()) {
-            // is the user being checked on any of the same ATL(s) that the
-            // current user is on?
+            // is the user being checked on any of the same ATL(s) that the current user is on?
             List<TestingLabDTO> currUserAtls = getAllAtlsForCurrentUser();
             List<TestingLabDTO> otherUserAtls = getAllAtlsForUser(user.getId());
             for (TestingLabDTO currUserAtl : currUserAtls) {
@@ -382,8 +373,7 @@ public class ResourcePermissions {
                 }
             }
         } else if (isUserRoleDeveloperAdmin()) {
-            // is the user being checked on any of the same Developer(s) that
-            // the current user is on?
+            // is the user being checked on any of the same Developer(s) that the current user is on?
             List<DeveloperDTO> currUserDevs = getAllDevelopersForCurrentUser();
             List<DeveloperDTO> otherUserDevs = getAllDevelopersForUser(user.getId());
             for (DeveloperDTO currUserDev : currUserDevs) {
