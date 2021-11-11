@@ -118,7 +118,7 @@ public class ListingDetailsUploadHandler {
 
             prevCertResultIndex = nextCertResultIndex;
             nextCertResultIndex = uploadUtil.getNextIndexOfCertificationResult(
-                    nextCertResultIndex + certHeadingRecord.size() - 1, headingRecord);
+                    nextCertResultIndex + certHeadingRecord.size(), headingRecord);
         }
         listing.setCertificationResults(certResultList);
         return listing;
