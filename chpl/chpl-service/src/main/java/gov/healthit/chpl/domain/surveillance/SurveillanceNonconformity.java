@@ -28,6 +28,7 @@ import gov.healthit.chpl.util.Util;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * Domain object for Non-conformities related to surveillance.
@@ -38,6 +39,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class SurveillanceNonconformity implements Serializable {
     private static final long serialVersionUID = -1116153210791576784L;
 
