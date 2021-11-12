@@ -60,9 +60,6 @@ public class PrivilegedSurveillanceEntity {
     @Column(name = "closed_nonconformity_count")
     private Integer numClosedNonconformities;
 
-    @Column(name = "user_permission_id")
-    private Long userPermissionId;
-
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "surveillanceId")
     @Basic(optional = false)
     @Column(name = "surveillance_id", nullable = false)

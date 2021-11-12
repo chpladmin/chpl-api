@@ -72,9 +72,6 @@ public class SurveillanceEntity {
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
 
-    @Column(name = "user_permission_id")
-    private Long userPermissionId;
-
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "surveillanceId")
     @Basic(optional = false)
     @Column(name = "surveillance_id", nullable = false)
