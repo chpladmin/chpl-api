@@ -1165,7 +1165,7 @@ public class CertifiedProductManager extends SecuredManager {
         CertifiedProductDTO dtoToUpdate = new CertifiedProductDTO(updatedListing);
         CertifiedProductDTO result = cpDao.update(dtoToUpdate);
         updateListingsChildData(existingListing, updatedListing);
-        updateRwtEligibilityForListingAndChildren(updatedListing.getId());
+        updateRwtEligibilityForListingAndChildren(result);
 
         // Log the activity
         logCertifiedProductUpdateActivity(existingListing, updateRequest.getReason());
@@ -1209,13 +1209,16 @@ public class CertifiedProductManager extends SecuredManager {
         updateCqms(updatedListing, existingListing.getCqmResults(), updatedListing.getCqmResults());
     }
 
-    private void updateRwtEligibilityForListingAndChildren(Long listingId) {
-        rwtCachingService.calculateRwtEligibility(listingId);
+    private void updateRwtEligibilityForListingAndChildren(CertifiedProductDTO listing) {
+        rwtCachingService.calculateRwtEligibility(listing.getId());
 
-        List<CertifiedProductDTO> listingChildren = listingGraphDao.getChildren(listingId);
+        List<CertifiedProductDTO> listingChildren = listingGraphDao.getChildren(listing.getId());
         if (!CollectionUtils.isEmpty(listingChildren)) {
             for (CertifiedProductDTO child : listingChildren) {
-                updateRwtEligibilityForListingAndChildren(child.getId());
+                if (Integer.valueOf(listing.getIcsCode()) >= Integer.valueOf(child.getIcsCode())) {
+                    continue;
+                }
+                updateRwtEligibilityForListingAndChildren(child);
             }
         }
     }
