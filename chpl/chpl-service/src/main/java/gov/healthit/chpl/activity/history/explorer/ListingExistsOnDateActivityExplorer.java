@@ -55,7 +55,7 @@ public class ListingExistsOnDateActivityExplorer extends ListingActivityExplorer
         if (listingExistedBeforeDay(listingActivities, listingQuery.getListingId(), listingQuery.getDay())) {
             //get the activity representing the listing closest to and before the day in question
             //the "after" part of that activity will have the listing details as the listing looked on the day
-            activityNearestDay = getActivityNearestAndBeforeDay(listingActivities, listingQuery.getDay());
+            activityNearestDay = getActivityNearestAndBeforeDay(listingActivities, listingQuery.getListingId(), listingQuery.getDay());
         }
         return activityNearestDay;
     }

@@ -37,7 +37,8 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
 import org.apache.commons.collections.CollectionUtils;
-
+import org.apache.commons.lang3.StringUtils;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * Certified Product Search Details entity.
@@ -48,6 +49,7 @@ import org.apache.commons.collections.CollectionUtils;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Log4j2
 public class CertifiedProductSearchDetails implements Serializable {
 
     private static final long serialVersionUID = 2903219171127034775L;
@@ -882,7 +884,9 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElement(nillable = false, required = true)
     public Long getCertificationDate() {
-        if (CollectionUtils.isEmpty(this.getCertificationEvents())) {
+        if (CollectionUtils.isEmpty(this.getCertificationEvents())
+                || anyCertificationEventIsMissingNameField(this.getCertificationEvents())) {
+            LOGGER.info("Cannot derive certification date - using " + this.certificationDate);
             return this.certificationDate;
         }
 
@@ -895,6 +899,13 @@ public class CertifiedProductSearchDetails implements Serializable {
             }
         }
         return result.getEventDate();
+    }
+
+    private boolean anyCertificationEventIsMissingNameField(List<CertificationStatusEvent> certificationStatusEvents) {
+        return certificationStatusEvents.stream()
+            .filter(event -> event.getStatus() == null
+                || StringUtils.isEmpty(event.getStatus().getName()))
+            .findAny().isPresent();
     }
 
     public CertificationStatusEvent getStatusOnDate(Date date) {
