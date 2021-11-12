@@ -78,6 +78,7 @@ public class AddCuresUpdateToListingsJob extends CertifiedProduct2015Gatherer im
         try {
             if (isListingActive(listing)) {
                 Boolean isCuresUpdate = curesUpdateService.isCuresUpdate(listing);
+                LOGGER.info(String.format("Listing ID: %s     isCuresUpdated: %s" , listing.getId(), isCuresUpdate));
                 if (isCuresUpdate && !isCuresUpdate.equals(listing.getCuresUpdate())) {
                     LOGGER.info("************************** Updating " + listing.getId() + " as Cures Updated **************************");
                     updateListingAsCuresUpdated(listing);
