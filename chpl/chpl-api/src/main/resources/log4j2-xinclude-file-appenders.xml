@@ -108,6 +108,18 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
+    <RollingFile name="listingSnapshotDownloadableResourceCreatorJob"
+        fileName="${logDir}/scheduler/listingSnapshotDownloadableResourceCreatorJob.log"
+        filePattern="${logDir}/scheduler/history/listingSnapshotDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
+        <PatternLayout>
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id} %X{dd.span_id} - %m%n</Pattern>
+        </PatternLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+    </RollingFile>
     <RollingFile name="g3Sed2015DownloadableResourceCreatorJob"
         fileName="${logDir}/scheduler/g3Sed2015DownloadableResourceCreatorJob.log"
         filePattern="${logDir}/scheduler/history/g3Sed2015DownloadableResourceCreatorJob-%d{yyyy-MM-dd}.log"

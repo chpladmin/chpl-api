@@ -73,6 +73,25 @@
             </job-data-map>
         </job>
 
+        <job>
+            <name>listingSnapshotJob</name>
+            <group>systemJobs</group>
+            <description>Generate a CSV snapshot of listings in the system on a particular date.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.snapshot.ListingSnapshotDownloadableResourceCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>edition</key>
+                    <value>2015</value>
+                </entry>
+                <entry>
+                    <key>snapshotDate</key>
+                    <value>2020-01-01</value>
+                </entry>
+            </job-data-map>
+        </job>
+
         <!-- Daily G3/SED details generator -->
         <job>
             <name>g3Sed2015DownloadFileJob</name>

@@ -43,6 +43,11 @@
         <AppenderRef
             ref="certifiedProductDownloadableResourceCreatorJob" />
     </Logger>
+    <Logger name="listingSnapshotDownloadableResourceCreatorJobLogger"
+        level="INFO" additivity="false">
+        <AppenderRef
+            ref="listingSnapshotDownloadableResourceCreatorJob" />
+    </Logger>
     <Logger name="g3Sed2015DownloadableResourceCreatorJobLogger"
         level="INFO" additivity="false">
         <AppenderRef ref="g3Sed2015DownloadableResourceCreatorJob" />

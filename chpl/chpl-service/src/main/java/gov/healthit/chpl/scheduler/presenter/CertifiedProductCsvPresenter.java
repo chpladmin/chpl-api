@@ -178,6 +178,9 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
                     result.add(currCriteria.isSuccess().toString());
                 }
             }
+            if (!criteriaMatch) {
+                result.add("?");
+            }
         }
         return result;
     }
@@ -212,6 +215,9 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
     }
 
     protected String formatSelfDeveloper(CertifiedProductSearchDetails listing) {
+        if (listing.getDeveloper().getSelfDeveloper() == null) {
+            return "?";
+        }
         return listing.getDeveloper().getSelfDeveloper() ? "Yes" : "No";
     }
 
