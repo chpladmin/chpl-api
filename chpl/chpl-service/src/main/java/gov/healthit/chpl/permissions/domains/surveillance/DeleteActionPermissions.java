@@ -46,7 +46,7 @@ public class DeleteActionPermissions extends ActionPermissions {
             if (isListing2014Edition(survEntity)) {
               //done instead of returning false to get a more customized message than Access is denied.
                 throw new AccessDeniedException(msgUtil.getMessage(
-                        "surveillance.noDelete2014", surv.getFriendlyId()));
+                        "surveillance.noDelete2014", survEntity.getFriendlyId()));
             }
             return isAcbValidForCurrentUser(survEntity.getCertifiedProduct().getCertificationBodyId());
         } else {

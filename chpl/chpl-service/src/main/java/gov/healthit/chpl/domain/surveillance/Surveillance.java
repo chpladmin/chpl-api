@@ -41,6 +41,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Surveillance implements Serializable {
     private static final long serialVersionUID = 7018071250912371691L;
+    public static final String AUTHORITY_ACB = "ROLE_ACB";
 
     /**
      * Surveillance internal ID
@@ -123,6 +124,7 @@ public class Surveillance implements Serializable {
     private Set<SurveillanceRequirement> requirements = new LinkedHashSet<SurveillanceRequirement>();
 
     @XmlTransient
+    @Deprecated
     private String authority;
 
     @XmlTransient
@@ -366,10 +368,12 @@ public class Surveillance implements Serializable {
         this.friendlyId = friendlyId;
     }
 
+    @Deprecated
     public String getAuthority() {
         return authority;
     }
 
+    @Deprecated
     public void setAuthority(String authority) {
         this.authority = authority;
     }
