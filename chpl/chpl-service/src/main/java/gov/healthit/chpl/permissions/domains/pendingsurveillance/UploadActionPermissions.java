@@ -19,7 +19,8 @@ public class UploadActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess() {
-        return getResourcePermissions().isUserRoleAcbAdmin() || getResourcePermissions().isUserRoleAdmin();
+        return getResourcePermissions().isUserRoleAcbAdmin() || getResourcePermissions().isUserRoleOnc()
+                || getResourcePermissions().isUserRoleAdmin();
     }
 
     @Override
@@ -33,7 +34,7 @@ public class UploadActionPermissions extends ActionPermissions {
                 CertifiedProductDTO dto = certifiedProductDAO.getById(surv.getCertifiedProduct().getId());
                 return isAcbValidForCurrentUser(dto.getCertificationBodyId());
             } else {
-                return getResourcePermissions().isUserRoleAdmin();
+                return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc();
             }
         } catch (Exception e) {
             return false;

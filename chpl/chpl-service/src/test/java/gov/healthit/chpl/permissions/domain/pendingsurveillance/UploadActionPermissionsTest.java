@@ -47,7 +47,7 @@ public class UploadActionPermissionsTest extends ActionPermissionsBaseTest {
         assertTrue(permissions.hasAccess());
 
         Surveillance surv = new Surveillance();
-        assertTrue(permissions.hasAccess(surv));
+        assertTrue(permissions.hasAccess(new Surveillance()));
     }
 
     @Override
@@ -55,10 +55,8 @@ public class UploadActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Onc() throws Exception {
         setupForOncUser(resourcePermissions);
 
-        assertFalse(permissions.hasAccess());
-
-        Surveillance surv = new Surveillance();
-        assertFalse(permissions.hasAccess(surv));
+        assertTrue(permissions.hasAccess());
+        assertTrue(permissions.hasAccess(new Surveillance()));
     }
 
     @Override
@@ -84,7 +82,7 @@ public class UploadActionPermissionsTest extends ActionPermissionsBaseTest {
         Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getCertifiedProduct(1L, 2L));
         assertTrue(permissions.hasAccess(surv));
 
-        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getCertifiedProduct(1L, 3l));
+        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getCertifiedProduct(1L, 3L));
         assertFalse(permissions.hasAccess(surv));
     }
 
@@ -94,9 +92,7 @@ public class UploadActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForAtlUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
-
-        Surveillance surv = new Surveillance();
-        assertFalse(permissions.hasAccess(surv));
+        assertFalse(permissions.hasAccess(new Surveillance()));
     }
 
     @Override
@@ -105,9 +101,7 @@ public class UploadActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForCmsUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
-
-        Surveillance surv = new Surveillance();
-        assertFalse(permissions.hasAccess(surv));
+        assertFalse(permissions.hasAccess(new Surveillance()));
     }
 
     @Override
@@ -116,9 +110,7 @@ public class UploadActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForAnonUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
-
-        Surveillance surv = new Surveillance();
-        assertFalse(permissions.hasAccess(surv));
+        assertFalse(permissions.hasAccess(new Surveillance()));
     }
 
 }
