@@ -187,4 +187,8 @@
         additivity="false">
         <AppenderRef ref="removeCriteriaJob" />
     </Logger>
+    <Logger name="addCuresUpdateToListingsJobLogger" level="INFO"
+        additivity="false">
+        <AppenderRef ref="addCuresUpdateToListingsJob" />
+    </Logger>
 </Loggers>

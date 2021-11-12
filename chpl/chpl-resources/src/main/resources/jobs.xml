@@ -759,5 +759,15 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
+        
+        <!-- Updates Listing's Cures Updated indicator -->
+        <job>
+            <name>addCuresUpdateToListingsJob</name>
+            <group>systemJobs</group>
+            <description>Updates Listing's Cures Updated indicator</description>
+            <job-class>gov.healthit.chpl.scheduler.job.AddCuresUpdateToListingsJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
     </schedule>
 </job-scheduling-data>
