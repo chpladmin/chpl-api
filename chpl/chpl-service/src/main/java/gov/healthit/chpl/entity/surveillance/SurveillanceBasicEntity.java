@@ -70,9 +70,6 @@ public class SurveillanceBasicEntity {
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
 
-    @Column(name = "user_permission_id")
-    private Long userPermissionId;
-
     public SurveillanceBasic buildSurveillanceBasic() {
         return SurveillanceBasic.builder()
                 .certifiedProductId(this.getCertifiedProductId())
@@ -88,7 +85,7 @@ public class SurveillanceBasicEntity {
                 .startDate(this.getStartDate() == null ? null : Date.from(this.getStartDate().atStartOfDay(ZoneId.systemDefault()).toInstant()))
                 .surveillanceType(this.getSurveillanceType() != null ? this.getSurveillanceType().buildSurveillanceType() : null)
                 .surveillanceTypeId(this.getSurveillanceTypeId())
-                .userPermissionId(this.getUserPermissionId())
+                .userPermissionId(SurveillanceBasic.AUTHORITY_ACB)
             .build();
     }
 }
