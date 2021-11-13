@@ -77,7 +77,7 @@
             <name>listingSnapshotJob</name>
             <group>systemJobs</group>
             <description>Generate a CSV snapshot of listings in the system on a particular date.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.snapshot.ListingSnapshotDownloadableResourceCreatorJob</job-class>
+            <job-class>gov.healthit.chpl.scheduler.job.snapshot.ListingSnapshotCsvCreatorJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>
@@ -88,6 +88,30 @@
                 <entry>
                     <key>snapshotDate</key>
                     <value>2020-01-01</value>
+                </entry>
+            </job-data-map>
+        </job>
+
+        <job>
+            <name>listingsWithCriterionSnapshotJob</name>
+            <group>systemJobs</group>
+            <description>Generate a CSV snapshot of listings in the system attesting to a particular criterion on a particular date.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.snapshot.ListingsWithCriterionSnapshotCsvCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>edition</key>
+                    <value>2015</value>
+                </entry>
+                <entry>
+                    <key>snapshotDate</key>
+                    <value>2020-01-01</value>
+                </entry>
+                <!-- 170.315 (f)(5) -->
+                <entry>
+                    <key>criterionId</key>
+                    <value>47</value>
                 </entry>
             </job-data-map>
         </job>

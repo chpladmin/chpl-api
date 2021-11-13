@@ -18,22 +18,21 @@ public abstract class ListingActivityExplorer {
     public abstract ActivityDTO getActivity(ListingActivityQuery query);
 
     public ActivityDTO getActivityNearestAndBeforeDay(List<ActivityDTO> activities, Long listingId, LocalDate day) {
-        //TODO: this is not working
         sortOldestActivityFirst(activities);
         ActivityDTO result = null;
         ListIterator<ActivityDTO> activityIter = activities.listIterator();
-        while (result == null && activityIter.hasNext()) {
+        while (activityIter.hasNext()) {
             ActivityDTO currActivity = activityIter.next();
-            if (day.isBefore(DateUtil.toLocalDate(currActivity.getActivityDate().getTime()))) {
+            if (day.isAfter(DateUtil.toLocalDate(currActivity.getActivityDate().getTime()))) {
                 if (activityIter.hasPrevious()) {
                     result = activityIter.previous();
-                    LOGGER.info("Listing " + listingId + " activity nearest but before " + day + " occurred on " + DateUtil.toLocalDate(result.getActivityDate().getTime()));
                 } else {
-                    LOGGER.warn("There are no activities for listing " + listingId + " before " + day);
+                    result = currActivity;
                 }
                 activityIter.next();
             }
         }
+        LOGGER.info("Listing " + listingId + " activity nearest but before " + day + " occurred on " + DateUtil.toLocalDate(result.getActivityDate().getTime()));
         return result;
     }
 

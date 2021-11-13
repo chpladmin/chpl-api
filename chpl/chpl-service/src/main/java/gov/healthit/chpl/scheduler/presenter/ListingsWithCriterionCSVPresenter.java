@@ -1,16 +1,16 @@
 package gov.healthit.chpl.scheduler.presenter;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.BooleanUtils;
@@ -18,55 +18,23 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.ff4j.FF4j;
-
-import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
+import gov.healthit.chpl.domain.CertificationResultTestProcedure;
+import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 
-public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, AutoCloseable {
-    private static final String OPEN_STATUS = "open";
-
+public class ListingsWithCriterionCSVPresenter {
     private Logger logger;
-    private List<CertificationCriterionDTO> applicableCriteria = new ArrayList<CertificationCriterionDTO>();
-    private OutputStreamWriter writer = null;
-    private CSVPrinter csvPrinter = null;
-    private FF4j ff4j;
+    private CertificationCriterion criterion;
 
-    /**
-     * Required to setCriteriaNames before calling this function.
-     */
-    @Override
-    public void open(final File file) throws IOException {
-        getLogger().info("Opening file, initializing CSV doc.");
-        writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
-        writer.write('\ufeff');
-        csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
-        csvPrinter.printRecord(generateHeaderValues());
-        csvPrinter.flush();
+    public ListingsWithCriterionCSVPresenter(CertificationCriterion criterion) {
+        this.criterion = criterion;
     }
 
-    @Override
-    public synchronized void add(final CertifiedProductSearchDetails data) throws IOException {
-        getLogger().info("Adding CP to CSV file: " + data.getId());
-        List<String> rowValue = generateRowValue(data);
-        if (rowValue != null) { // a subclass could return null to skip a row
-            csvPrinter.printRecord(rowValue);
-            csvPrinter.flush();
-        }
-    }
-
-    @Override
-    public void close() throws IOException {
-        getLogger().info("Closing the CSV file.");
-        csvPrinter.close();
-        writer.close();
-    }
-
-    public void setLogger(final Logger logger) {
+    public void setLogger(Logger logger) {
         this.logger = logger;
     }
 
@@ -77,22 +45,28 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         return logger;
     }
 
-    public void setFf4j(FF4j ff4j) {
-        this.ff4j = ff4j;
+    public void presentAsFile(File file, List<CertifiedProductSearchDetails> listings) {
+        try (FileWriter writer = new FileWriter(file);
+                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
+            csvPrinter.printRecord(getHeaderValues());
+            for (CertifiedProductSearchDetails listing : listings) {
+                CertificationResult relevantCertResult = listing.getCertificationResults().stream()
+                        .filter(certResult -> certResult.getCriterion().getId().equals(this.criterion.getId()))
+                        .findAny().get();
+                List<List<String>> rowValues = generateMultiRowValue(listing, relevantCertResult);
+                for (List<String> rowValue : rowValues) {
+                    csvPrinter.printRecord(rowValue);
+                }
+            }
+        } catch (IOException ex) {
+            getLogger().error("Could not write file " + file.getName(), ex);
+        }
     }
 
-    protected List<String> generateHeaderValues() {
+    private List<String> getHeaderValues() {
         List<String> result = new ArrayList<String>();
-        result.add("Certification Edition");
         result.add("CHPL ID");
-        result.add("Listing Database ID");
-        result.add("ONC-ACB Certification ID");
-        result.add("Certification Date");
-        result.add("Inactive As Of Date");
-        result.add("Decertified As Of Date");
-        result.add("Certification Status");
         result.add("ACB Name");
-        result.add("Previous ACB Name");
         result.add("Developer Name");
         result.add("Developer Database ID");
         result.add("Vendor Street Address");
@@ -108,38 +82,80 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         result.add("Product Database ID");
         result.add("Version");
         result.add("Version Database ID");
-        if (ff4j.check(FeatureList.RWT_ENABLED)) {
-            result.add("Real World Testing Plans URL");
-            result.add("Real World Testing Results URL");
-        }
-        result.add("Total Surveillance Activities");
-        result.add("Total Surveillance Non-conformities");
-        result.add("Open Surveillance Non-conformities");
-        result.add("Total Direct Review Activities");
-        result.add("Total Direct Review Non-conformities");
-        result.add("Open Direct Review Non-conformities");
+        result.add("Certification Date");
+        result.add("Certification Status");
+        result.add(this.criterion.getNumber() + ": " + this.criterion.getTitle());
+        result.add("Privacy and Security Framework");
+        result.add("Test Standards");
+        result.add("Functionality Tested");
+        result.add("Test Procedures");
+        return result;
+    }
 
-        if (applicableCriteria != null) {
-            for (CertificationCriterionDTO criteria : applicableCriteria) {
-                result.add(criteria.getNumber() + ": " + criteria.getTitle());
+    protected List<List<String>> generateMultiRowValue(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        List<List<String>> result = new ArrayList<List<String>>();
+        List<String> listingFirstRow = getListingRowValues(listing);
+        listingFirstRow.add(certResult.isSuccess() ? "Yes" : "No");
+        listingFirstRow.add(certResult.getPrivacySecurityFramework());
+        result.add(listingFirstRow);
+
+        if (!CollectionUtils.isEmpty(certResult.getTestStandards())) {
+            for (int i = 0; i < certResult.getTestStandards().size(); i++) {
+                CertificationResultTestStandard testStandard = certResult.getTestStandards().get(i);
+                if (i == 0) {
+                    listingFirstRow.add(testStandard.getTestStandardName());
+                } else if (result.size() > i) {
+                    result.get(i).add(testStandard.getTestStandardName());
+                } else {
+                    List<String> newRow = createBlankRow(21);
+                    newRow.add(testStandard.getTestStandardName());
+                    result.add(newRow);
+                }
             }
+        } else {
+            listingFirstRow.add("");
+        }
+
+        if (!CollectionUtils.isEmpty(certResult.getTestFunctionality())) {
+            for (int i = 0; i < certResult.getTestFunctionality().size(); i++) {
+                CertificationResultTestFunctionality testFunc = certResult.getTestFunctionality().get(i);
+                if (i == 0) {
+                    listingFirstRow.add(testFunc.getName());
+                } else if (result.size() > i) {
+                    result.get(i).add(testFunc.getName());
+                } else {
+                    List<String> newRow = createBlankRow(22);
+                    newRow.add(testFunc.getName());
+                    result.add(newRow);
+                }
+            }
+        } else {
+            listingFirstRow.add("");
+        }
+
+        if (!CollectionUtils.isEmpty(certResult.getTestProcedures())) {
+            for (int i = 0; i < certResult.getTestProcedures().size(); i++) {
+                CertificationResultTestProcedure testProc = certResult.getTestProcedures().get(i);
+                if (i == 0) {
+                    listingFirstRow.add(testProc.getTestProcedure().getName() + "; " + testProc.getTestProcedureVersion());
+                } else if (result.size() > i) {
+                    result.get(i).add(testProc.getTestProcedure().getName() + "; " + testProc.getTestProcedureVersion());
+                } else {
+                    List<String> newRow = createBlankRow(23);
+                    newRow.add(testProc.getTestProcedure().getName() + "; " + testProc.getTestProcedureVersion());
+                    result.add(newRow);
+                }
+            }
+        } else {
+            listingFirstRow.add("");
         }
         return result;
     }
 
-    @SuppressWarnings("checkstyle:linelength")
-    protected List<String> generateRowValue(CertifiedProductSearchDetails listing) {
+    private List<String> getListingRowValues(CertifiedProductSearchDetails listing) {
         List<String> result = new ArrayList<String>();
-        result.add(formatEdition(listing));
         result.add(listing.getChplProductNumber());
-        result.add(listing.getId().toString());
-        result.add(listing.getAcbCertificationId());
-        result.add(formatDate(listing.getCertificationDate()));
-        result.add(formatInactiveDate(listing));
-        result.add(formatDecertificationDate(listing));
-        result.add(listing.getCurrentStatus().getStatus().getName());
         result.add(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
-        result.add(listing.getOtherAcb());
         result.add(listing.getDeveloper().getName());
         result.add(listing.getDeveloper().getDeveloperId().toString());
         result.addAll(getDeveloperAddressCells(listing));
@@ -154,39 +170,17 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         result.add(listing.getVersion() != null ? listing.getVersion().getVersion() : "?");
         result.add(ObjectUtils.allNotNull(listing.getVersion(), listing.getVersion().getVersionId())
                 ? listing.getVersion().getVersionId().toString() : "?");
-        if (ff4j.check(FeatureList.RWT_ENABLED)) {
-            result.add(listing.getRwtPlansUrl());
-            result.add(listing.getRwtResultsUrl());
-        }
-        result.add(listing.getCountSurveillance() != null ? listing.getCountSurveillance().toString() : "?");
-        result.add(ObjectUtils.allNotNull(listing.getCountOpenNonconformities(), listing.getCountClosedNonconformities())
-                ? (listing.getCountOpenNonconformities() + listing.getCountClosedNonconformities()) + "" : "?");
-        result.add(listing.getCountOpenNonconformities() != null ? listing.getCountOpenNonconformities().toString() : "?");
-        result.add(listing.getDirectReviews() != null ? listing.getDirectReviews().size() + "" : "?");
-        result.add(getCountOfDirectReviewNonconformitiesForListing(listing) + "");
-        result.add(getCountOfOpenDirectReviewNonconformitiesForListing(listing) + "");
-        List<String> criteria = generateCriteriaValues(listing);
-        result.addAll(criteria);
+        result.add(formatDate(listing.getCertificationDate()));
+        result.add(listing.getCurrentStatus().getStatus().getName());
         return result;
     }
 
-    protected List<String> generateCriteriaValues(final CertifiedProductSearchDetails data) {
-        List<String> result = new ArrayList<String>();
-
-        for (CertificationCriterionDTO criteria : applicableCriteria) {
-            boolean criteriaMatch = false;
-            for (int i = 0; i < data.getCertificationResults().size() && !criteriaMatch; i++) {
-                CertificationResult currCriteria = data.getCertificationResults().get(i);
-                if (currCriteria.getCriterion().getId().equals(criteria.getId())) {
-                    criteriaMatch = true;
-                    result.add(currCriteria.isSuccess().toString());
-                }
-            }
-            if (!criteriaMatch) {
-                result.add("?");
-            }
+    private List<String> createBlankRow(int size) {
+        List<String> blankRow = new ArrayList<String>();
+        for (int i = 0; i < size; i++) {
+            blankRow.add("");
         }
-        return result;
+        return blankRow;
     }
 
     protected String formatEdition(CertifiedProductSearchDetails listing) {
@@ -228,39 +222,6 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
     protected String formatDate(Long dateInMillis) {
         LocalDateTime localDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(dateInMillis), ZoneId.systemDefault());
         return DateTimeFormatter.ISO_LOCAL_DATE.format(localDate);
-    }
-
-    private long getCountOfDirectReviewNonconformitiesForListing(CertifiedProductSearchDetails listing) {
-        long count = 0;
-        if (listing.getDirectReviews() != null) {
-            count = listing.getDirectReviews().stream()
-                    .flatMap(dr -> dr.getNonConformities().stream())
-                    .filter(nc -> isNonconformityAssociatedWithListing(listing, nc))
-                    .count();
-        }
-        return count;
-    }
-
-    private long getCountOfOpenDirectReviewNonconformitiesForListing(CertifiedProductSearchDetails listing) {
-        long count = 0;
-        count = listing.getDirectReviews().stream()
-                .filter(dr -> dr.getNonConformities() != null && dr.getNonConformities().size() > 0)
-                .flatMap(dr -> dr.getNonConformities().stream())
-                .filter(nc -> isNonconformityAssociatedWithListing(listing, nc))
-                .filter(nc -> nc.getNonConformityStatus() != null && nc.getNonConformityStatus().equalsIgnoreCase(OPEN_STATUS))
-                .count();
-        return count;
-    }
-
-    private boolean isNonconformityAssociatedWithListing(CertifiedProductSearchDetails listing, DirectReviewNonConformity nc) {
-        if (nc == null || nc.getDeveloperAssociatedListings() == null
-                || nc.getDeveloperAssociatedListings().size() == 0) {
-            return false;
-        }
-
-        return nc.getDeveloperAssociatedListings().stream()
-                .filter(dal -> dal.getId() != null && dal.getId().equals(listing.getId()))
-                .findAny().isPresent();
     }
 
     protected List<String> getDeveloperAddressCells(CertifiedProductSearchDetails listing) {
@@ -321,13 +282,5 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
             result.add("");
         }
         return result;
-    }
-
-    public List<CertificationCriterionDTO> getApplicableCriteria() {
-        return applicableCriteria;
-    }
-
-    public void setApplicableCriteria(final List<CertificationCriterionDTO> applicableCriteria) {
-        this.applicableCriteria = applicableCriteria;
     }
 }

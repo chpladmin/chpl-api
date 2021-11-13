@@ -29,10 +29,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.healthit.chpl.activity.history.ListingActivityUtil;
-import gov.healthit.chpl.activity.history.explorer.ListingExistsOnDateActivityExplorer;
+import gov.healthit.chpl.activity.history.explorer.ListingOnDateActivityExplorer;
 import gov.healthit.chpl.activity.history.query.ListingOnDateActivityQuery;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.ActivityDTO;
@@ -44,14 +42,12 @@ import gov.healthit.chpl.scheduler.presenter.CertifiedProductPresenter;
 import gov.healthit.chpl.service.CertificationCriterionService;
 
 @DisallowConcurrentExecution
-public class ListingSnapshotDownloadableResourceCreatorJob extends DownloadableResourceCreatorJob {
-    private static final Logger LOGGER = LogManager.getLogger("listingSnapshotDownloadableResourceCreatorJobLogger");
-    private static final int MILLIS_PER_SECOND = 1000;
+public class ListingSnapshotCsvCreatorJob extends DownloadableResourceCreatorJob {
+    private static final Logger LOGGER = LogManager.getLogger("listingSnapshotCsvCreatorJobLogger");
     private static final String TEMP_DIR_NAME = "temp";
 
     private String edition;
     private LocalDate snapshotDate;
-    private ObjectMapper jsonMapper;
     private File tempDirectory, tempCsvFile;
     private ExecutorService executorService;
 
@@ -65,14 +61,13 @@ public class ListingSnapshotDownloadableResourceCreatorJob extends DownloadableR
     private ListingActivityUtil listingActivityUtil;
 
     @Autowired
-    private ListingExistsOnDateActivityExplorer activityExplorer;
+    private ListingOnDateActivityExplorer activityExplorer;
 
     @Autowired
     private Environment env;
 
-    public ListingSnapshotDownloadableResourceCreatorJob() throws Exception {
+    public ListingSnapshotCsvCreatorJob() throws Exception {
         super(LOGGER);
-        jsonMapper = new ObjectMapper();
     }
 
     @Override
@@ -84,7 +79,7 @@ public class ListingSnapshotDownloadableResourceCreatorJob extends DownloadableR
             return;
         }
 
-        LOGGER.info("********* Starting the Listing Snapshot Downloadable Resource Creator job for {} on {}. *********", edition, snapshotDate);
+        LOGGER.info("********* Starting the Listing Snapshot CSV Creator job for {} on {}. *********", edition, snapshotDate);
         try (CertifiedProductCsvPresenter csvPresenter = getCsvPresenter()) {
             initializeTempFiles();
             if (tempCsvFile != null) {
@@ -117,7 +112,7 @@ public class ListingSnapshotDownloadableResourceCreatorJob extends DownloadableR
         } finally {
             cleanupTempFiles();
             executorService.shutdown();
-            LOGGER.info("********* Completed the Listing Snapshot Downloadable Resource Creator job for {} on {}. *********", edition, snapshotDate);
+            LOGGER.info("********* Completed the Listing Snapshot CSV Creator job for {} on {}. *********", edition, snapshotDate);
         }
     }
 
@@ -148,7 +143,7 @@ public class ListingSnapshotDownloadableResourceCreatorJob extends DownloadableR
     }
 
     private Optional<CertifiedProductSearchDetails> getDetailsFromJson(String json) {
-        CertifiedProductSearchDetails listing = listingActivityUtil.getListing(json);
+        CertifiedProductSearchDetails listing = listingActivityUtil.getListing(json, true);
         if (listing != null) {
             return Optional.of(listing);
         }

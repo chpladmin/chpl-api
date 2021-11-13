@@ -18,13 +18,13 @@ import lombok.extern.log4j.Log4j2;
 
 @Service
 @Log4j2
-public class ListingExistsOnDateActivityExplorer extends ListingActivityExplorer {
+public class ListingOnDateActivityExplorer extends ListingActivityExplorer {
     private static final Date EPOCH = new Date(0);
 
     private ActivityDAO activityDao;
 
     @Autowired
-    public ListingExistsOnDateActivityExplorer(ActivityDAO activityDao) {
+    public ListingOnDateActivityExplorer(ActivityDAO activityDao) {
         this.activityDao = activityDao;
     }
 
