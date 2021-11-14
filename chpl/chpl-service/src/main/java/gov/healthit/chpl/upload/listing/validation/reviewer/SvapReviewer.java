@@ -57,6 +57,7 @@ public class SvapReviewer implements Reviewer {
             CertificationResult certResult, CertificationResultSvap svap) {
         reviewIdRequired(listing, certResult, svap);
         reviewRegulatoryTextCitationRequired(listing, certResult, svap);
+        reviewSvapMarkedAsReplaced(listing, certResult, svap);
     }
 
     private void reviewIdRequired(CertifiedProductSearchDetails listing,
@@ -76,6 +77,14 @@ public class SvapReviewer implements Reviewer {
             listing.getErrorMessages().add(
                     msgUtil.getMessage("listing.criteria.svap.missingCitation",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
+        }
+    }
+
+    private void reviewSvapMarkedAsReplaced(CertifiedProductSearchDetails listing,
+            CertificationResult certResult, CertificationResultSvap svap) {
+        if (svap.getSvapId() != null && BooleanUtils.isTrue(svap.getReplaced())) {
+            listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.svap.replaced",
+                    svap.getRegulatoryTextCitation(), certResult.getCriterion().getNumber()));
         }
     }
 }

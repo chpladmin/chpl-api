@@ -26,6 +26,7 @@ public class SvapReviewerTest {
     private static final String SVAPS_NOT_APPLICABLE = "Standards Version Advancement Process(es) are not applicable for the criterion %s. They have been removed.";
     private static final String SVAP_NOT_FOUND = "Standards Version Advancement Process %s is not valid for criteria %s.";
     private static final String SVAP_NAME_MISSING = "There was no Regulatory Text Citation found for SVAP(s) on criteria %s.";
+    private static final String SVAP_REPLACED = "Standards Version Advancement Process %s for criteria %s has been replaced.";
 
     private CertificationResultRules certResultRules;
     private ErrorMessageUtil msgUtil;
@@ -44,6 +45,10 @@ public class SvapReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.svap.missingCitation"),
                 ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(SVAP_NAME_MISSING, i.getArgument(1), ""));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.svap.replaced"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(SVAP_REPLACED, i.getArgument(1), i.getArgument(2)));
+
         reviewer = new SvapReviewer(certResultRules, msgUtil);
     }
 
@@ -217,6 +222,42 @@ public class SvapReviewerTest {
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(
                 String.format(SVAP_NAME_MISSING, "170.315 (a)(1)", "")));
+    }
+
+    @Test
+    public void review_validSvapMarkedReplaced_hasWarning() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
+        .thenReturn(true);
+
+        List<CertificationResultSvap> svaps = new ArrayList<CertificationResultSvap>();
+        svaps.add(CertificationResultSvap.builder()
+                .svapId(1L)
+                .regulatoryTextCitation("svap1")
+                .replaced(false)
+                .build());
+        svaps.add(CertificationResultSvap.builder()
+                .svapId(2L)
+                .regulatoryTextCitation("svap2")
+                .replaced(true)
+                .build());
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationEdition(create2015EditionMap())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .build())
+                        .success(true)
+                        .svaps(svaps)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(
+                String.format(SVAP_REPLACED, "svap2", "170.315 (a)(1)")));
     }
 
     @Test
