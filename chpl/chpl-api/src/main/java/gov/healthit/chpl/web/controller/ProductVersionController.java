@@ -28,7 +28,6 @@ import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
@@ -43,7 +42,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "versions", description = "Allows management of versions.")
 @RestController
 @RequestMapping("/versions")
-@Loggable
 public class ProductVersionController {
 
     @Autowired
@@ -59,7 +57,9 @@ public class ProductVersionController {
 
     @Operation(summary = "List all versions for a specific product.",
             description = "List all versions associated with a specific product.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ProductVersion> getVersionsByProduct(@RequestParam(required = true) final Long productId)
             throws InvalidArgumentsException {
@@ -67,7 +67,7 @@ public class ProductVersionController {
             throw new InvalidArgumentsException("Product " + productId + " does not exist.");
         }
 
-        //get the versions
+        // get the versions
         List<ProductVersionDTO> versionList = null;
         if (productId != null && productId > 0) {
             versionList = pvManager.getByProduct(productId);
@@ -86,7 +86,9 @@ public class ProductVersionController {
     }
 
     @Operation(summary = "Get information about a specific version.", description = "",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/{versionId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ProductVersion getProductVersionById(@PathVariable("versionId") final Long versionId)
             throws EntityRetrievalException {
@@ -108,14 +110,16 @@ public class ProductVersionController {
                     + "  The old versions are then deleted. "
                     + "Security Restrictions: Must have ROLE_ADMIN to merge or ROLE_ACB and have administrative "
                     + "authority on the specified ACB to do all actions except merge.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public ResponseEntity<ProductVersion> updateVersion(
             @RequestBody(required = true) final UpdateVersionsRequest versionInfo)
-                    throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
-                    JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
+            JsonProcessingException {
 
         ProductVersionDTO result = null;
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -170,16 +174,18 @@ public class ProductVersionController {
     }
 
     @Operation(summary = "Split a version - some listings stay with the existing version and some listings are moved "
-                    + "to a new version.",
-                description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB",
-                security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                        @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            + "to a new version.",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/{versionId}/split", method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public ResponseEntity<SplitVersionResponse> splitVersion(@PathVariable("versionId") final Long versionId,
             @RequestBody(required = true) final SplitVersionsRequest splitRequest)
-                    throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
-                    JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
+            JsonProcessingException {
         if (splitRequest.getNewVersionCode() != null) {
             splitRequest.setNewVersionCode(splitRequest.getNewVersionCode().trim());
         }

@@ -62,7 +62,6 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.CertifiedProductUploadManager;
@@ -86,11 +85,11 @@ import gov.healthit.chpl.web.controller.results.CertificationResults;
 import gov.healthit.chpl.web.controller.results.MeasureResults;
 import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 
@@ -98,7 +97,6 @@ import lombok.extern.log4j.Log4j2;
 @RestController
 @RequestMapping("/certified_products")
 @Log4j2
-@Loggable
 public class CertifiedProductController {
 
     @Value("${uploadErrorEmailRecipients}")
@@ -151,7 +149,9 @@ public class CertifiedProductController {
                     + " certified products that the logged in user has permission to edit as "
                     + " determined by ACB roles and authorities. Not all information about "
                     + " every certified product is returned. Call the /details service for more information.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertifiedProduct> getCertifiedProductsByVersion(
             @RequestParam(required = true) Long versionId,
@@ -170,7 +170,9 @@ public class CertifiedProductController {
 
     @Operation(summary = "Get all details for a specified certified product.",
             description = "Returns all information in the CHPL related to the specified certified product.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/details",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
@@ -193,7 +195,9 @@ public class CertifiedProductController {
                     + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid call "
                     + "to this service would look like "
                     + "/certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD/details",
-             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
             + "{addlSoftwareCode}.{certDateCode}/details",
             method = RequestMethod.GET,
@@ -227,7 +231,9 @@ public class CertifiedProductController {
             description = "Returns all information in the CHPL related to the specified certified product.  "
                     + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call "
                     + "to this service would look like /certified_products/CHP-999999.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/{chplPrefix}-{identifier}/details",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
@@ -248,16 +254,20 @@ public class CertifiedProductController {
             + "all collections that are in the 'certified_products/{identifier}/details' endpoint.",
             description = "Returns basic information in the CHPL related to the specified certified product.  "
                     + "Does not include all collections that are in the 'certified_products/{identifier}/details' endpoint.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY) })
-            @ApiResponses(value = {
-                    @ApiResponse(responseCode = "200", description = "The certified product ID was valid.",
-                      content = { @Content(mediaType = "application/json",
-                        schema = @Schema(implementation = CertifiedProductSearchBasicDetails.class)) }),
-                    @ApiResponse(responseCode = "404", description = "The certified product ID was not found in the CHPL database.",
-                      content = @Content),
-                    @ApiResponse(responseCode = "500", description = "The certified product ID is valid but there was an unexpected error retrieving its data.",
-                        content = @Content)
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The certified product ID was valid.",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = CertifiedProductSearchBasicDetails.class))
+                    }),
+            @ApiResponse(responseCode = "404", description = "The certified product ID was not found in the CHPL database.",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "The certified product ID is valid but there was an unexpected error retrieving its data.",
+                    content = @Content)
+    })
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
@@ -282,18 +292,22 @@ public class CertifiedProductController {
                     + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid "
                     + "call to this service would look like /certified_products/YY.99.99.9999.XXXX.99.99.9."
                     + "YYMMDD.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY) })
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The certified product ID was valid.",
-              content = { @Content(mediaType = "application/json",
-                schema = @Schema(implementation = CertifiedProductSearchBasicDetails.class)) }),
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = CertifiedProductSearchBasicDetails.class))
+                    }),
             @ApiResponse(responseCode = "404", description = "The certified product ID was not found in the CHPL database.",
-              content = @Content),
+                    content = @Content),
             @ApiResponse(responseCode = "500", description = "The certified product ID is valid but there was an unexpected error retrieving its data.",
-                content = @Content)
+                    content = @Content)
     })
     @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
-            + "{addlSoftwareCode}.{certDateCode}",  method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+            + "{addlSoftwareCode}.{certDateCode}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @DeprecatedResponseFields(responseClass = CertifiedProductSearchBasicDetails.class)
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchBasicDetails getCertifiedProductByChplProductNumberBasic(
@@ -321,16 +335,20 @@ public class CertifiedProductController {
                     + "Does not include all collections that are in the 'certified_products/{identifier}/details' endpoint.  "
                     + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call to "
                     + "this service would look like /certified_products/CHP-999999.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY) })
-            @ApiResponses(value = {
-                    @ApiResponse(responseCode = "200", description = "The certified product ID was valid.",
-                      content = { @Content(mediaType = "application/json",
-                        schema = @Schema(implementation = CertifiedProductSearchBasicDetails.class)) }),
-                    @ApiResponse(responseCode = "404", description = "The certified product ID was not found in the CHPL database.",
-                      content = @Content),
-                    @ApiResponse(responseCode = "500", description = "The certified product ID is valid but there was an unexpected error retrieving its data.",
-                        content = @Content)
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The certified product ID was valid.",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = CertifiedProductSearchBasicDetails.class))
+                    }),
+            @ApiResponse(responseCode = "404", description = "The certified product ID was not found in the CHPL database.",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "The certified product ID is valid but there was an unexpected error retrieving its data.",
+                    content = @Content)
+    })
     @RequestMapping(value = "/{chplPrefix}-{identifier}",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
@@ -349,15 +367,19 @@ public class CertifiedProductController {
 
     @Operation(summary = "Get all of the CQM results for a specified certified product.",
             description = "Returns all of the CQM results in the CHPL related to the specified certified product.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY) })
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The certified product ID was valid.",
-              content = { @Content(mediaType = "application/json",
-                schema = @Schema(implementation = CQMResultDetailResults.class)) }),
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = CQMResultDetailResults.class))
+                    }),
             @ApiResponse(responseCode = "404", description = "The certified product ID was not found in the CHPL database.",
-              content = @Content),
+                    content = @Content),
             @ApiResponse(responseCode = "500", description = "The certified product ID is valid but there was an unexpected error retrieving its CQMs.",
-                content = @Content)
+                    content = @Content)
     })
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/cqm_results", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
@@ -378,15 +400,19 @@ public class CertifiedProductController {
                     + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
                     + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid call to "
                     + "this service would look like /certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD/cqm_results.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY) })
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The certified product ID was valid.",
-              content = { @Content(mediaType = "application/json",
-                schema = @Schema(implementation = CQMResultDetailResults.class)) }),
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = CQMResultDetailResults.class))
+                    }),
             @ApiResponse(responseCode = "404", description = "The certified product ID was not found in the CHPL database.",
-              content = @Content),
+                    content = @Content),
             @ApiResponse(responseCode = "500", description = "The certified product ID is valid but there was an unexpected error retrieving its CQMs.",
-                content = @Content)
+                    content = @Content)
     })
     @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
             + "{addlSoftwareCode}.{certDateCode}/cqm_results", method = RequestMethod.GET,
@@ -415,15 +441,19 @@ public class CertifiedProductController {
             description = "\"Returns all of the CQM results in the CHPL related to the specified certified product.  "
                     + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call "
                     + "to this service would look like /certified_products/CHP-999999/cqm_results.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY) })
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The certified product ID was valid.",
-              content = { @Content(mediaType = "application/json",
-                schema = @Schema(implementation = CQMResultDetailResults.class)) }),
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = CQMResultDetailResults.class))
+                    }),
             @ApiResponse(responseCode = "404", description = "The certified product ID was not found in the CHPL database.",
-              content = @Content),
+                    content = @Content),
             @ApiResponse(responseCode = "500", description = "The certified product ID is valid but there was an unexpected error retrieving its CQMs.",
-                content = @Content)
+                    content = @Content)
     })
     @RequestMapping(value = "/{chplPrefix}-{identifier}/cqm_results", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
@@ -440,15 +470,19 @@ public class CertifiedProductController {
 
     @Operation(summary = "Get all of the Measures for a specified certified product.",
             description = "Returns all of the Measures in the CHPL related to the specified certified product.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY) })
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The certified product ID was valid.",
-              content = { @Content(mediaType = "application/json",
-                schema = @Schema(implementation = MeasureResults.class)) }),
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = MeasureResults.class))
+                    }),
             @ApiResponse(responseCode = "404", description = "The certified product ID was not found in the CHPL database.",
-              content = @Content),
+                    content = @Content),
             @ApiResponse(responseCode = "500", description = "The certified product ID is valid but there was an unexpected error retrieving its measures.",
-                content = @Content)
+                    content = @Content)
     })
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/measures", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
@@ -469,15 +503,19 @@ public class CertifiedProductController {
                     + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
                     + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid call to "
                     + "this service would look like /certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD/measures.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY) })
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The certified product ID was valid.",
-              content = { @Content(mediaType = "application/json",
-                schema = @Schema(implementation = MeasureResults.class)) }),
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = MeasureResults.class))
+                    }),
             @ApiResponse(responseCode = "404", description = "The certified product ID was not found in the CHPL database.",
-              content = @Content),
+                    content = @Content),
             @ApiResponse(responseCode = "500", description = "The certified product ID is valid but there was an unexpected error retrieving its measures.",
-                content = @Content)
+                    content = @Content)
     })
     @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/measures", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
@@ -504,15 +542,19 @@ public class CertifiedProductController {
             description = "Returns all of the Measures in the CHPL related to the specified certified product. "
                     + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call "
                     + "to this service would look like /certified_products/CHP-999999/measures.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY) })
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The certified product ID was valid.",
-              content = { @Content(mediaType = "application/json",
-                schema = @Schema(implementation = MeasureResults.class)) }),
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = MeasureResults.class))
+                    }),
             @ApiResponse(responseCode = "404", description = "The certified product ID was not found in the CHPL database.",
-              content = @Content),
+                    content = @Content),
             @ApiResponse(responseCode = "500", description = "The certified product ID is valid but there was an unexpected error retrieving its measures.",
-                content = @Content)
+                    content = @Content)
     })
     @RequestMapping(value = "/{chplPrefix}-{identifier}/measures", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
@@ -529,15 +571,19 @@ public class CertifiedProductController {
     @Operation(summary = "Get all of the certification results for a specified certified product.",
             description = "Returns all of the certification results in the CHPL related to the specified certified product."
                     + " This includes both attested and unattested criteria and any data associated with each.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY) })
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The certified product ID was valid.",
-              content = { @Content(mediaType = "application/json",
-                schema = @Schema(implementation = CertificationResults.class)) }),
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = CertificationResults.class))
+                    }),
             @ApiResponse(responseCode = "404", description = "The certified product ID was not found in the CHPL database.",
-              content = @Content),
+                    content = @Content),
             @ApiResponse(responseCode = "500", description = "The certified product ID is valid but there was an unexpected error retrieving its certification results.",
-                content = @Content)
+                    content = @Content)
     })
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/certification_results", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
@@ -561,15 +607,19 @@ public class CertifiedProductController {
                     + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number. "
                     + "A valid call to this service would look like "
                     + "/certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD/certification_results.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY) })
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The certified product ID was valid.",
-              content = { @Content(mediaType = "application/json",
-                schema = @Schema(implementation = CertificationResults.class)) }),
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = CertificationResults.class))
+                    }),
             @ApiResponse(responseCode = "404", description = "The certified product ID was not found in the CHPL database.",
-              content = @Content),
+                    content = @Content),
             @ApiResponse(responseCode = "500", description = "The certified product ID is valid but there was an unexpected error retrieving its certification results.",
-                content = @Content)
+                    content = @Content)
     })
     @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}"
             + ".{certDateCode}/certification_results", method = RequestMethod.GET,
@@ -600,15 +650,19 @@ public class CertifiedProductController {
             description = "Returns all of the certification results in the CHPL related to the specified certified product.  "
                     + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call to this "
                     + "service would look like /certified_products/CHP-999999/certification_results.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY) })
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The certified product ID was valid.",
-              content = { @Content(mediaType = "application/json",
-                schema = @Schema(implementation = CertificationResults.class)) }),
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = CertificationResults.class))
+                    }),
             @ApiResponse(responseCode = "404", description = "The certified product ID was not found in the CHPL database.",
-              content = @Content),
+                    content = @Content),
             @ApiResponse(responseCode = "500", description = "The certified product ID is valid but there was an unexpected error retrieving its certification results.",
-                content = @Content)
+                    content = @Content)
     })
     @RequestMapping(value = "/{chplPrefix}-{identifier}/certification_results", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
@@ -627,7 +681,9 @@ public class CertifiedProductController {
 
     @Operation(summary = "Get the ICS family tree for the specified certified product.",
             description = "Returns all members of the family tree connected to the specified certified product.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY) })
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/ics_relationships", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -646,7 +702,9 @@ public class CertifiedProductController {
                     + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid call to this "
                     + "service would look like /certified_products/YY.99.99.9999.XXXX.99.99.9."
                     + "YYMMDD/ics_relationships.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY) })
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
             + "{addlSoftwareCode}.{certDateCode}/ics_relationships",
             method = RequestMethod.GET,
@@ -674,7 +732,9 @@ public class CertifiedProductController {
     @Operation(summary = "Get the ICS family tree for the specified certified product based on a legacy CHPL Product Number",
             description = "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call to this "
                     + "service would look like /certified_products/CHP-999999/ics_relationships.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY) })
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/{chplPrefix}-{identifier}/ics_relationships", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -693,7 +753,9 @@ public class CertifiedProductController {
                     + "ACB is passed in as part of the request, an ownership change will take place.  "
                     + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and have administrative "
                     + "authority on the ACB that certified the product.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY) })
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/{certifiedProductId}", method = RequestMethod.PUT,
             produces = "application/json; charset=utf-8")
     @DeprecatedResponseFields(responseClass = CertifiedProductSearchDetails.class)
@@ -745,8 +807,10 @@ public class CertifiedProductController {
             description = "Pending listings are created via CSV file upload and are left in the 'pending' state "
                     + " until validated and confirmed.  Security Restrictions: ROLE_ADMIN, ROLE_ACB and have "
                     + "administrative authority on the ACB that uploaded the product.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/pending/metadata", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<PendingCertifiedProductMetadata> getPendingCertifiedProductMetadata()
             throws AccessDeniedException {
@@ -765,8 +829,10 @@ public class CertifiedProductController {
                     + " until validated and approved.  Security Restrictions: ROLE_ADMIN, ROLE_ACB and have "
                     + "administrative authority on the ACB that uploaded the product.",
             deprecated = true,
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts()
             throws EntityRetrievalException, AccessDeniedException {
@@ -800,8 +866,10 @@ public class CertifiedProductController {
     @Operation(summary = "List a specific pending certified product.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ACB and administrative authority "
                     + "on the ACB for each pending certified product is required.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @DeprecatedResponseFields(responseClass = PendingCertifiedProductDetails.class)
     @RequestMapping(value = "/pending/{pcpId:^-?\\d+$}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
@@ -823,8 +891,10 @@ public class CertifiedProductController {
     @Operation(summary = "Reject a pending certified product.",
             description = "Essentially deletes a pending certified product. Security Restrictions: ROLE_ADMIN or have ROLE_ACB "
                     + "and administrative authority on the ACB for each pending certified product is required.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/pending/{pcpId:^-?\\d+$}", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingCertifiedProduct(@PathVariable("pcpId") Long pcpId)
@@ -837,8 +907,10 @@ public class CertifiedProductController {
     @Operation(summary = "Reject several pending certified products.",
             description = "Marks a list of pending certified products as deleted. ROLE_ADMIN or ROLE_ACB "
                     + " and administrative authority on the ACB for each pending certified product is required.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/pending", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingCertifiedProducts(@RequestBody IdListContainer idList)
@@ -869,15 +941,17 @@ public class CertifiedProductController {
     // should be re-evaluated
     @Deprecated
     @Operation(summary = "DEPRECATED. Confirm a pending certified product.",
-        description = "Creates a new certified product in the system based on all of the information "
-                + "passed in on the request. This information may differ from what was previously "
-                + "entered for the pending certified product during upload. It will first be validated "
-                + "to check for errors, then a new certified product is created, and the old pending certified"
-                + "product will be removed. Security Restrictions:  ROLE_ADMIN or have ROLE_ACB and "
-                + "administrative authority on the ACB for each pending certified product is required.",
-        deprecated = true,
-        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            description = "Creates a new certified product in the system based on all of the information "
+                    + "passed in on the request. This information may differ from what was previously "
+                    + "entered for the pending certified product during upload. It will first be validated "
+                    + "to check for errors, then a new certified product is created, and the old pending certified"
+                    + "product will be removed. Security Restrictions:  ROLE_ADMIN or have ROLE_ACB and "
+                    + "administrative authority on the ACB for each pending certified product is required.",
+            deprecated = true,
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/pending/{pcpId:^-?\\d+$}/confirm", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     public ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProduct(
@@ -899,8 +973,10 @@ public class CertifiedProductController {
                     + "to check for errors, then a new certified product is created, and the old pending certified"
                     + "product will be removed. Security Restrictions:  ROLE_ADMIN or have ROLE_ACB and "
                     + "administrative authority on the ACB for each pending certified product is required.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/pending/{pcpId:^-?\\d+$}/beta/confirm", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     @DeprecatedResponseFields(responseClass = CertifiedProductSearchDetails.class)
@@ -979,8 +1055,10 @@ public class CertifiedProductController {
             description = "Accepts a CSV file with very specific fields to create pending certified products. "
                     + "Security Restrictions: ROLE_ADMIN or user uploading the file must have ROLE_ACB "
                     + "and administrative authority on the ACB(s) specified in the file.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @DeprecatedResponseFields(responseClass = PendingCertifiedProductResults.class)
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<PendingCertifiedProductResults> upload(@RequestParam("file") MultipartFile file)

@@ -30,7 +30,6 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
-import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.manager.auth.UserManager;
@@ -48,7 +47,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "atls", description = "Allows management of testing labs (ONC-ATLs).")
 @RestController
 @RequestMapping("/atls")
-@Loggable
 public class TestingLabController {
 
     @Autowired
@@ -67,8 +65,10 @@ public class TestingLabController {
             description = "Setting the 'editable' parameter to true will return all ATLs that the logged in user has edit "
                     + "permissions on.  Security Restrictions: When 'editable' is 'true' ROLE_ADMIN or ROLE_ONC can see all ATLs.  ROLE_ATL "
                     + "can see their own ATL.  When 'editable' is 'false' all users can see all ATLs.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody TestingLabResults getAtls(
@@ -91,7 +91,9 @@ public class TestingLabController {
 
     @Operation(summary = "Get details about a specific testing lab (ATL).",
             description = "",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/{atlId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody TestingLab getAtlById(@PathVariable("atlId") final Long atlId)
             throws EntityRetrievalException {
@@ -102,10 +104,12 @@ public class TestingLabController {
 
     @Operation(summary = "Create a new testing lab.",
             description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC to create a new testing lab.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public TestingLab createAtl(@RequestBody final TestingLab atlInfo)
             throws InvalidArgumentsException, UserRetrievalException, EntityRetrievalException,
             EntityCreationException, JsonProcessingException {
@@ -114,7 +118,7 @@ public class TestingLabController {
     }
 
     private TestingLab create(final TestingLab atlInfo) throws InvalidArgumentsException, UserRetrievalException,
-    EntityRetrievalException, EntityCreationException, JsonProcessingException {
+            EntityRetrievalException, EntityCreationException, JsonProcessingException {
         TestingLabDTO toCreate = new TestingLabDTO();
         toCreate.setTestingLabCode(atlInfo.getAtlCode());
         toCreate.setAccredidationNumber(atlInfo.getAccredidationNumber());
@@ -143,10 +147,12 @@ public class TestingLabController {
     @Operation(summary = "Update an existing ATL.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ATL and have administrative "
                     + "authority on the testing lab whose data is being updated.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/{atlId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public ResponseEntity<TestingLab> updateAtl(@RequestBody final TestingLab atlInfo)
             throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateTestingLabException {
@@ -155,21 +161,23 @@ public class TestingLabController {
     }
 
     private ResponseEntity<TestingLab> update(final TestingLab updatedAtl) throws InvalidArgumentsException,
-    EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateTestingLabException {
-        //get the ATL as it is currently in the database to find out if
-        //the retired flag was changed.
-        //Retirement and un-retirement is done as a separate manager action because
-        //security is different from normal ATL updates - only admins are allowed
-        //whereas an ATL admin can update other info
-        TestingLabDTO existingAtl =  resourcePermissions.getAtlIfPermissionById(updatedAtl.getId());
+            EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateTestingLabException {
+        // get the ATL as it is currently in the database to find out if
+        // the retired flag was changed.
+        // Retirement and un-retirement is done as a separate manager action
+        // because
+        // security is different from normal ATL updates - only admins are
+        // allowed
+        // whereas an ATL admin can update other info
+        TestingLabDTO existingAtl = resourcePermissions.getAtlIfPermissionById(updatedAtl.getId());
         if (updatedAtl.isRetired()) {
-            //we are retiring this ATL and no other changes can be made
+            // we are retiring this ATL and no other changes can be made
             existingAtl.setRetired(true);
             existingAtl.setRetirementDate(updatedAtl.getRetirementDate());
             atlManager.retire(existingAtl);
         } else {
             if (existingAtl.isRetired()) {
-                //unretire the ATL
+                // unretire the ATL
                 atlManager.unretire(updatedAtl.getId());
             }
             TestingLabDTO toUpdate = new TestingLabDTO();
@@ -210,10 +218,12 @@ public class TestingLabController {
             description = "The user specified in the request will have all authorities "
                     + "removed that are associated with the specified ATL.  Security Restrictions: ROLE_ADMIN, "
                     + "ROLE_ONC, or ROLE_ATL and have administrative authority on the specified ATL.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "{atlId}/users/{userId}", method = RequestMethod.DELETE,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public String deleteUserFromAtl(@PathVariable final Long atlId, @PathVariable final Long userId)
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException, EntityCreationException {
 
@@ -239,10 +249,12 @@ public class TestingLabController {
     @Operation(summary = "List users with permissions on a specified ATL.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or have administrative "
                     + "or read authority on the specified ATL.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/{atlId}/users", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody UsersResponse getUsers(@PathVariable("atlId") final Long atlId)
             throws InvalidArgumentsException, EntityRetrievalException {
         TestingLabDTO atl = resourcePermissions.getAtlIfPermissionById(atlId);
