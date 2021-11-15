@@ -183,9 +183,11 @@
     <Logger name="removeCriteriaJobLogger" level="INFO"
         additivity="false">
         <AppenderRef ref="removeCriteriaJob" />
+        <AppenderRef ref="removeCriteriaJobJson" />
     </Logger>
     <Logger name="addCuresUpdateToListingsJobLogger" level="INFO"
         additivity="false">
         <AppenderRef ref="addCuresUpdateToListingsJob" />
+        <AppenderRef ref="addCuresUpdateToListingsJobJson" />
     </Logger>
 </Loggers>
