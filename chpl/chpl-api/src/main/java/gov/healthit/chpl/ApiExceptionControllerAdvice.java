@@ -34,7 +34,6 @@ import gov.healthit.chpl.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.exception.UserAccountExistsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
 import lombok.extern.log4j.Log4j2;
@@ -123,12 +122,6 @@ public class ApiExceptionControllerAdvice {
     @ExceptionHandler(UpdateTestingLabException.class)
     public ResponseEntity<ErrorResponse> exception(UpdateTestingLabException e) {
         LOGGER.error("Could not update testing lab - access denied.");
-        return new ResponseEntity<ErrorResponse>(new ErrorResponse("Access Denied"), HttpStatus.FORBIDDEN);
-    }
-
-    @ExceptionHandler(SurveillanceAuthorityAccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> exception(SurveillanceAuthorityAccessDeniedException e) {
-        LOGGER.error("Could not update surveillance activity - access denied.");
         return new ResponseEntity<ErrorResponse>(new ErrorResponse("Access Denied"), HttpStatus.FORBIDDEN);
     }
 

@@ -22,10 +22,9 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityProductDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityTriggerDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityVersionDTO;
-import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.questionableactivity.CertificationResultQuestionableActivityProvider;
 import gov.healthit.chpl.questionableactivity.DeveloperQuestionableActivityProvider;
-import gov.healthit.chpl.questionableactivity.ListingQuestionableActivityProvider;
+import gov.healthit.chpl.questionableactivity.ListingQuestionableActivityService;
 import gov.healthit.chpl.questionableactivity.ProductQuestionableActivityProvider;
 import gov.healthit.chpl.questionableactivity.VersionQuestionableActivityProvider;
 import gov.healthit.chpl.util.CertificationResultRules;
@@ -41,7 +40,7 @@ public class QuestionableActivityManager implements EnvironmentAware {
     private DeveloperQuestionableActivityProvider developerQuestionableActivityProvider;
     private ProductQuestionableActivityProvider productQuestionableActivityProvider;
     private VersionQuestionableActivityProvider versionQuestionableActivityProvider;
-    private ListingQuestionableActivityProvider listingQuestionableActivityProvider;
+    private ListingQuestionableActivityService listingQuestionableActivityService;
     private CertificationResultQuestionableActivityProvider certResultQuestionableActivityProvider;
     private CertificationResultRules certResultRules;
     private QuestionableActivityDAO questionableActivityDao;
@@ -53,7 +52,7 @@ public class QuestionableActivityManager implements EnvironmentAware {
             DeveloperQuestionableActivityProvider developerQuestionableActivityProvider,
             ProductQuestionableActivityProvider productQuestionableActivityProvider,
             VersionQuestionableActivityProvider versionQuestionableActivityProvider,
-            ListingQuestionableActivityProvider listingQuestionableActivityProvider,
+            ListingQuestionableActivityService listingQuestionableActivityService,
             CertificationResultQuestionableActivityProvider certResultQuestionableActivityProvider,
             CertificationResultRules certResultRules,
             QuestionableActivityDAO questionableActivityDao,
@@ -63,7 +62,7 @@ public class QuestionableActivityManager implements EnvironmentAware {
         this.developerQuestionableActivityProvider = developerQuestionableActivityProvider;
         this.productQuestionableActivityProvider = productQuestionableActivityProvider;
         this.versionQuestionableActivityProvider = versionQuestionableActivityProvider;
-        this.listingQuestionableActivityProvider = listingQuestionableActivityProvider;
+        this.listingQuestionableActivityService = listingQuestionableActivityService;
         this.certResultQuestionableActivityProvider = certResultQuestionableActivityProvider;
         this.certResultRules = certResultRules;
         this.questionableActivityDao = questionableActivityDao;
@@ -170,144 +169,9 @@ public class QuestionableActivityManager implements EnvironmentAware {
         }
     }
 
-    public void checkListingQuestionableActivityOnEdit(CertifiedProductSearchDetails origListing,
-            CertifiedProductSearchDetails newListing, Date activityDate, Long activityUser, String activityReason) {
-        QuestionableActivityListingDTO activity = listingQuestionableActivityProvider.check2011EditionUpdated(
-                origListing, newListing);
-        if (activity != null) {
-            createListingActivity(activity, origListing.getId(), activityDate, activityUser,
-                    QuestionableActivityTriggerConcept.EDITION_2011_EDITED, activityReason);
-        } else {
-            // it wasn't a 2011 update, check for any changes that are questionable at any time
-            activity = listingQuestionableActivityProvider.check2014EditionUpdated(
-                    origListing, newListing);
-            if (activity != null) {
-                createListingActivity(activity, origListing.getId(), activityDate, activityUser,
-                        QuestionableActivityTriggerConcept.EDITION_2014_EDITED, activityReason);
-            }
-            activity = listingQuestionableActivityProvider.checkCertificationStatusUpdated(
-                    CertificationStatusType.WithdrawnByDeveloperUnderReview, origListing, newListing);
-            if (activity != null) {
-                createListingActivity(activity, origListing.getId(), activityDate, activityUser,
-                        QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_CURRENT, activityReason);
-            }
-            activity = listingQuestionableActivityProvider.checkCertificationStatusHistoryUpdated(
-                    origListing, newListing);
-            if (activity != null) {
-                createListingActivity(activity, origListing.getId(), activityDate, activityUser,
-                        QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_HISTORY, activityReason);
-            }
-            activity = listingQuestionableActivityProvider.checkTestingLabChanged(
-                    origListing, newListing);
-            if (activity != null) {
-                createListingActivity(activity, origListing.getId(), activityDate, activityUser,
-                        QuestionableActivityTriggerConcept.TESTING_LAB_CHANGED, activityReason);
-            }
-            activity = listingQuestionableActivityProvider.checkCriteriaB3WithIcsChangedOnEdit(origListing, newListing);
-            if (activity != null) {
-                createListingActivity(activity, origListing.getId(), activityDate, activityUser,
-                        QuestionableActivityTriggerConcept.CRITERIA_B3_ADDED_TO_EXISTING_LISTING_WITH_ICS, activityReason);
-            }
-            activity = listingQuestionableActivityProvider.checkRealWorldTestingPlanRemoved(origListing, newListing);
-            if (activity != null) {
-                createListingActivity(activity, origListing.getId(), activityDate, activityUser,
-                        QuestionableActivityTriggerConcept.REAL_WORLD_TESTING_REMOVED, activityReason);
-            }
-            activity = listingQuestionableActivityProvider.checkRealWorldTestingResultsRemoved(origListing, newListing);
-            if (activity != null) {
-                createListingActivity(activity, origListing.getId(), activityDate, activityUser,
-                        QuestionableActivityTriggerConcept.REAL_WORLD_TESTING_REMOVED, activityReason);
-            }
-            activity = listingQuestionableActivityProvider.checkRealWorldTestingPlanAddedForNotEligibleListing(origListing, newListing);
-            if (activity != null) {
-                createListingActivity(activity, origListing.getId(), activityDate, activityUser,
-                        QuestionableActivityTriggerConcept.REAL_WORLD_TESTING_ADDED, activityReason);
-            }
-            activity = listingQuestionableActivityProvider.checkRealWorldTestingResultsAddedForNotEligibleListing(origListing, newListing);
-            if (activity != null) {
-                createListingActivity(activity, origListing.getId(), activityDate, activityUser,
-                        QuestionableActivityTriggerConcept.REAL_WORLD_TESTING_ADDED, activityReason);
-            }
-            activity = listingQuestionableActivityProvider.checkPromotingInteroperabilityUpdatedByAcb(origListing, newListing);
-            if (activity != null) {
-                createListingActivity(activity, origListing.getId(), activityDate, activityUser,
-                        QuestionableActivityTriggerConcept.PROMOTING_INTEROPERABILITY_UPDATED_BY_ACB, activityReason);
-            }
-
-            List<QuestionableActivityListingDTO> activities
-                = listingQuestionableActivityProvider.checkMeasuresAdded(origListing, newListing);
-            if (activities != null && activities.size() > 0) {
-                activities.stream().forEach(measureActivity -> {
-                    createListingActivity(measureActivity, origListing.getId(), activityDate, activityUser,
-                            QuestionableActivityTriggerConcept.MEASURE_ADDED, activityReason);
-                });
-            }
-            activities = listingQuestionableActivityProvider.checkMeasuresRemoved(origListing, newListing);
-            if (activities != null && activities.size() > 0) {
-                activities.stream().forEach(measureActivity -> {
-                    createListingActivity(measureActivity, origListing.getId(), activityDate, activityUser,
-                            QuestionableActivityTriggerConcept.MEASURE_REMOVED, activityReason);
-                });
-            }
-
-            // finally check for other changes that are only questionable
-            // outside of the acceptable activity threshold
-
-            // get the confirm date of the listing to check against the threshold
-            Date confirmDate = listingDao.getConfirmDate(origListing.getId());
-            if (confirmDate != null && newListing.getLastModifiedDate() != null
-                    && (newListing.getLastModifiedDate().longValue()
-                            - confirmDate.getTime() > listingActivityThresholdMillis)) {
-                activity = listingQuestionableActivityProvider.checkCertificationStatusUpdated(origListing, newListing);
-                if (activity != null) {
-                    createListingActivity(activity, origListing.getId(), activityDate,
-                            activityUser, QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_CURRENT,
-                            activityReason);
-                }
-                activity = listingQuestionableActivityProvider.checkCertificationStatusDateUpdated(
-                        origListing, newListing);
-                if (activity != null) {
-                    createListingActivity(activity, origListing.getId(), activityDate,
-                            activityUser, QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_DATE_EDITED_CURRENT,
-                            activityReason);
-                }
-                activity = listingQuestionableActivityProvider.checkSurveillanceDeleted(origListing, newListing);
-                if (activity != null) {
-                    createListingActivity(activity, origListing.getId(), activityDate,
-                            activityUser, QuestionableActivityTriggerConcept.SURVEILLANCE_REMOVED,
-                            activityReason);
-                }
-
-                activities = listingQuestionableActivityProvider
-                        .checkCqmsAdded(origListing, newListing);
-                for (QuestionableActivityListingDTO currActivity : activities) {
-                    createListingActivity(currActivity, origListing.getId(), activityDate,
-                            activityUser, QuestionableActivityTriggerConcept.CQM_ADDED,
-                            activityReason);
-                }
-
-                activities = listingQuestionableActivityProvider.checkCqmsRemoved(origListing, newListing);
-                for (QuestionableActivityListingDTO currActivity : activities) {
-                    createListingActivity(currActivity, origListing.getId(), activityDate,
-                            activityUser, QuestionableActivityTriggerConcept.CQM_REMOVED,
-                            activityReason);
-                }
-
-                activities = listingQuestionableActivityProvider.checkCertificationsAdded(origListing, newListing);
-                for (QuestionableActivityListingDTO currActivity : activities) {
-                    createListingActivity(currActivity, origListing.getId(), activityDate,
-                            activityUser, QuestionableActivityTriggerConcept.CRITERIA_ADDED,
-                            activityReason);
-                }
-
-                activities = listingQuestionableActivityProvider.checkCertificationsRemoved(origListing, newListing);
-                for (QuestionableActivityListingDTO currActivity : activities) {
-                    createListingActivity(currActivity, origListing.getId(), activityDate,
-                            activityUser, QuestionableActivityTriggerConcept.CRITERIA_REMOVED,
-                            activityReason);
-                }
-            }
-        }
+    public void checkListingQuestionableActivityOnEdit(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing,
+            Date activityDate, Long activityUser, String activityReason) {
+        listingQuestionableActivityService.processQuestionableActivity(origListing, newListing, activityReason);
     }
 
     public void checkCertificationResultQuestionableActivity(CertificationResult origCertResult,
