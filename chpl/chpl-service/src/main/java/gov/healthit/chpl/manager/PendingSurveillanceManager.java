@@ -72,7 +72,6 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
-import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
 import gov.healthit.chpl.scheduler.job.SurveillanceUploadJob;
 import gov.healthit.chpl.util.AuthUtil;
@@ -211,7 +210,7 @@ public class PendingSurveillanceManager extends SecuredManager {
             + "#survToInsert)")
     public Surveillance confirmPendingSurveillance(Surveillance survToInsert)
             throws ValidationException, EntityRetrievalException, UserPermissionRetrievalException,
-            SurveillanceAuthorityAccessDeniedException, EntityCreationException, JsonProcessingException {
+            EntityCreationException, JsonProcessingException {
 
         if (survToInsert == null || survToInsert.getId() == null) {
             throw new ValidationException("A valid pending surveillance id must be provided.");
@@ -359,7 +358,7 @@ public class PendingSurveillanceManager extends SecuredManager {
                 .endDay(pr.getEndDate())
                 .endDate(pr.getEndDate() == null ? null : new Date(DateUtil.toEpochMillisEndOfDay(pr.getEndDate())))
                 .randomizedSitesUsed(pr.getNumRandomizedSites())
-                .authority(userPermissionDAO.findById(pr.getUserPermissionId()).getAuthority())
+                .authority(Surveillance.AUTHORITY_ACB)
                 .build();
 
         SurveillanceType survType = SurveillanceType.builder()
@@ -495,8 +494,7 @@ public class PendingSurveillanceManager extends SecuredManager {
         return true;
     }
 
-    private Long createSurveillance(Surveillance surv)
-            throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
+    private Long createSurveillance(Surveillance surv) throws UserPermissionRetrievalException {
         Long insertedId = null;
 
         try {
@@ -529,7 +527,7 @@ public class PendingSurveillanceManager extends SecuredManager {
         surv.setEndDay(entity.getEndDate());
         surv.setEndDate(entity.getEndDate() == null ? null : new Date(DateUtil.toEpochMillis(entity.getEndDate())));
         surv.setRandomizedSitesUsed(entity.getNumRandomizedSites());
-        surv.setAuthority(userPermissionDAO.findById(entity.getUserPermissionId()).getAuthority());
+        surv.setAuthority(Surveillance.AUTHORITY_ACB);
         surv.setLastModifiedDate(entity.getLastModifiedDate());
 
         if (entity.getCertifiedProduct() != null) {
@@ -653,8 +651,7 @@ public class PendingSurveillanceManager extends SecuredManager {
         return cc;
     }
 
-    private void deleteSurveillance(Surveillance surv)
-            throws EntityRetrievalException, SurveillanceAuthorityAccessDeniedException {
+    private void deleteSurveillance(Surveillance surv) throws EntityRetrievalException {
         survDao.deleteSurveillance(surv);
     }
 
@@ -663,8 +660,8 @@ public class PendingSurveillanceManager extends SecuredManager {
         alreadyDeletedEx.getErrorMessages()
                 .add("This pending surveillance has already been confirmed or rejected by another user.");
         alreadyDeletedEx.setObjectId(entity.getId().toString());
-        alreadyDeletedEx.setStartDate(new Date(DateUtil.toEpochMillis(entity.getStartDate())));
-        alreadyDeletedEx.setEndDate(new Date(DateUtil.toEpochMillisEndOfDay(entity.getEndDate())));
+        alreadyDeletedEx.setStartDate(entity.getStartDate() == null ? null : new Date(DateUtil.toEpochMillis(entity.getStartDate())));
+        alreadyDeletedEx.setEndDate(entity.getEndDate() == null ? null : new Date(DateUtil.toEpochMillisEndOfDay(entity.getEndDate())));
         try {
             UserDTO lastModifiedUserDto = userDao.getById(entity.getLastModifiedUser());
             if (lastModifiedUserDto != null) {

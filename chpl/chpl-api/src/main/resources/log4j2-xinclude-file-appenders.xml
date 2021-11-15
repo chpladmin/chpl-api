@@ -48,6 +48,17 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
+    <RollingFile name="summaryStatisticsCreatorJobJson"
+        fileName="${logDir}/scheduler/summaryStatisticsCreatorJob.json.log"
+        filePattern="${logDir}/scheduler/history/summaryStatisticsCreatorJob.json-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" >
+            <KeyValuePair key="service" value="CHPL Dev - summaryStatisticsCreatorJob.log" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+        </Policies>
+    </RollingFile>
     <RollingFile name="curesStatisticsCreatorJob"
         fileName="${logDir}/scheduler/curesStatisticsCreatorJob.log"
         filePattern="${logDir}/scheduler/history/curesStatisticsCreatorJob-%d{yyyy-MM-dd}.log"
