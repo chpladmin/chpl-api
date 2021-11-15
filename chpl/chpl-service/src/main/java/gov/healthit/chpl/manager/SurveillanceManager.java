@@ -19,8 +19,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
@@ -33,7 +31,6 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
@@ -46,7 +43,6 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.dto.auth.UserPermissionDTO;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
@@ -55,11 +51,11 @@ import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
-import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceReportingActivityJob;
 import gov.healthit.chpl.util.AuthUtil;
@@ -67,7 +63,7 @@ import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceCreationValidator;
 import gov.healthit.chpl.validation.surveillance.SurveillanceReadValidator;
-import gov.healthit.chpl.validation.surveillance.SurveillanceUpdateWithAuthorityValidator;
+import gov.healthit.chpl.validation.surveillance.SurveillanceUpdateValidator;
 
 @Service
 public class SurveillanceManager extends SecuredManager {
@@ -79,12 +75,11 @@ public class SurveillanceManager extends SecuredManager {
     private ActivityManager activityManager;
     private SchedulerManager schedulerManager;
     private SurveillanceReadValidator survReadValidator;
-    private SurveillanceUpdateWithAuthorityValidator survWithAuthorityValidator;
+    private SurveillanceUpdateValidator survUpdateValidator;
     private SurveillanceCreationValidator survCreationValidator;
     private UserPermissionDAO userPermissionDao;
     private FileUtils fileUtils;
     private Environment env;
-    private ResourcePermissions resourcePermissions;
     private UserDAO userDAO;
 
     @SuppressWarnings("checkstyle:parameterNumber")
@@ -93,7 +88,7 @@ public class SurveillanceManager extends SecuredManager {
             @Lazy CertifiedProductDetailsManager cpDetailsManager, ActivityManager activityManager,
             SchedulerManager schedulerManager, SurveillanceReadValidator survReadValidator,
             SurveillanceCreationValidator survCreationValidator,
-            SurveillanceUpdateWithAuthorityValidator survWithAuthorityValidator,
+            SurveillanceUpdateValidator survUpdateValidator,
             UserPermissionDAO userPermissionDao,
             FileUtils fileUtils, Environment env, ResourcePermissions resourcePermissions,
             UserDAO userDAO) {
@@ -102,13 +97,12 @@ public class SurveillanceManager extends SecuredManager {
         this.cpDetailsManager = cpDetailsManager;
         this.activityManager = activityManager;
         this.schedulerManager = schedulerManager;
-        this.survWithAuthorityValidator = survWithAuthorityValidator;
+        this.survUpdateValidator = survUpdateValidator;
         this.survCreationValidator = survCreationValidator;
         this.survReadValidator = survReadValidator;
         this.userPermissionDao = userPermissionDao;
         this.fileUtils = fileUtils;
         this.env = env;
-        this.resourcePermissions = resourcePermissions;
         this.userDAO = userDAO;
     }
 
@@ -153,8 +147,7 @@ public class SurveillanceManager extends SecuredManager {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
     public Long createSurveillance(Surveillance survToInsert)
-            throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException,
-            EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            throws UserPermissionRetrievalException, EntityRetrievalException, JsonProcessingException, EntityCreationException,
             ValidationException {
         CertifiedProductSearchDetails beforeListing = cpDetailsManager
                 .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
@@ -165,9 +158,6 @@ public class SurveillanceManager extends SecuredManager {
         }
 
         Long insertedId = null;
-        checkSurveillanceAuthority(survToInsert);
-        updateNullAuthority(survToInsert);
-
         try {
             insertedId = survDao.insertSurveillance(survToInsert);
         } catch (final UserPermissionRetrievalException ex) {
@@ -195,7 +185,6 @@ public class SurveillanceManager extends SecuredManager {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
     public void updateSurveillance(final Surveillance survToUpdate) throws EntityRetrievalException,
-            UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException,
             EntityCreationException, JsonProcessingException, ValidationException {
         CertifiedProductSearchDetails beforeListing = cpDetailsManager
                 .getCertifiedProductDetails(survToUpdate.getCertifiedProduct().getId());
@@ -209,37 +198,33 @@ public class SurveillanceManager extends SecuredManager {
         }
 
         if (beforeSurv.isPresent() && !beforeSurv.get().matches(survToUpdate)) {
-            SurveillanceEntity dbSurvEntity = new SurveillanceEntity();
-            try {
-                dbSurvEntity = survDao.getSurveillanceById(survToUpdate.getId());
-            } catch (final NullPointerException e) {
-                LOGGER.debug("Surveillance id is null");
-            }
-            Surveillance dbSurv = new Surveillance();
-            dbSurv.setId(dbSurvEntity.getId());
-            UserPermissionDTO upDto = userPermissionDao.findById(dbSurvEntity.getUserPermissionId());
-            dbSurv.setAuthority(upDto.getAuthority());
-            checkSurveillanceAuthority(dbSurv);
-            try {
-                survDao.updateSurveillance(survToUpdate);
-            } catch (final UserPermissionRetrievalException ex) {
-                LOGGER.error("Error updating surveillance.", ex);
-                throw ex;
-            }
+            survDao.updateSurveillance(survToUpdate);
             logSurveillanceUpdateActivity(beforeListing);
         }
     }
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
-            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).DELETE, #surv)")
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).DELETE, #survToDelete)")
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
-    public void deleteSurveillance(Surveillance surv)
-            throws EntityRetrievalException, SurveillanceAuthorityAccessDeniedException {
-        checkSurveillanceAuthority(surv);
-        survDao.deleteSurveillance(surv);
+    public void deleteSurveillance(Surveillance survToDelete, String reason)
+            throws InvalidArgumentsException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
+        if (survToDelete == null) {
+            throw new InvalidArgumentsException("Cannot find surveillance with id " + survToDelete.getId() + " to delete.");
+        }
+
+        CertifiedProductSearchDetails beforeCp = cpDetailsManager
+                .getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
+
+        survDao.deleteSurveillance(survToDelete);
+
+        CertifiedProductSearchDetails afterCp = cpDetailsManager
+                .getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, afterCp.getId(),
+                "Surveillance was delete from certified product " + afterCp.getChplProductNumber(),
+                beforeCp, afterCp, reason);
     }
 
     @Transactional
@@ -279,7 +264,7 @@ public class SurveillanceManager extends SecuredManager {
 
     private void validateSurveillanceUpdate(Surveillance existingSurv, Surveillance updatedSurv) {
         updatedSurv.getErrorMessages().clear();
-        survWithAuthorityValidator.validate(existingSurv, updatedSurv);
+        survUpdateValidator.validate(existingSurv, updatedSurv);
     }
 
     private void validateSurveillanceCreation(Surveillance createdSurv) {
@@ -323,7 +308,7 @@ public class SurveillanceManager extends SecuredManager {
         surv.setEndDay(entity.getEndDate());
         surv.setEndDate(entity.getEndDate() == null ? null : new Date(DateUtil.toEpochMillisEndOfDay(entity.getEndDate())));
         surv.setRandomizedSitesUsed(entity.getNumRandomizedSites());
-        surv.setAuthority(userPermissionDao.findById(entity.getUserPermissionId()).getAuthority());
+        surv.setAuthority(Surveillance.AUTHORITY_ACB);
         surv.setLastModifiedDate(entity.getLastModifiedDate());
 
         if (entity.getCertifiedProduct() != null) {
@@ -452,46 +437,6 @@ public class SurveillanceManager extends SecuredManager {
         criterion.setRemoved(criterionEntity.getRemoved());
         criterion.setTitle(criterionEntity.getTitle());
         return criterion;
-    }
-
-    private void checkSurveillanceAuthority(final Surveillance surv) throws SurveillanceAuthorityAccessDeniedException {
-        Boolean hasOncAdmin = resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc();
-        Boolean hasAcbAdmin = resourcePermissions.isUserRoleAcbAdmin();
-        if (StringUtils.isEmpty(surv.getAuthority())) {
-            // If user has ROLE_ADMIN and ROLE_ACB return 403
-            if (hasOncAdmin && hasAcbAdmin) {
-                String errorMsg = "Surveillance cannot be created by user having " + Authority.ROLE_ADMIN + " and "
-                        + Authority.ROLE_ACB;
-                LOGGER.error(errorMsg);
-                throw new SurveillanceAuthorityAccessDeniedException(errorMsg);
-            }
-        } else {
-            // Cannot have surveillance authority as ROLE_ONC for user lacking ROLE_ADMIN or ROLE_ONC
-            if (surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ONC) && !hasOncAdmin) {
-                String errorMsg = "User must have authority " + Authority.ROLE_ADMIN + " or " + Authority.ROLE_ONC;
-                LOGGER.error(errorMsg);
-                throw new SurveillanceAuthorityAccessDeniedException(errorMsg);
-            } else if (surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB)) {
-                // Cannot have surveillance authority as ACB for user lacking ONC and ACB roles
-                if (!hasOncAdmin && !hasAcbAdmin) {
-                    String errorMsg = "User must have ONC or ACB roles for a surveillance authority created by ACB";
-                    LOGGER.error(errorMsg);
-                    throw new SurveillanceAuthorityAccessDeniedException(errorMsg);
-                }
-            }
-        }
-    }
-
-    private void updateNullAuthority(final Surveillance surv) {
-        Boolean hasOncAdmin = resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc();
-        Boolean hasAcbAdmin = resourcePermissions.isUserRoleAcbAdmin();
-        if (StringUtils.isEmpty(surv.getAuthority())) {
-            if (hasOncAdmin) {
-                surv.setAuthority(Authority.ROLE_ADMIN);
-            } else if (hasAcbAdmin) {
-                surv.setAuthority(Authority.ROLE_ACB);
-            }
-        }
     }
 
     private void logSurveillanceUpdateActivity(CertifiedProductSearchDetails existingListing)

@@ -53,12 +53,10 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.PendingSurveillanceManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
-import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.validation.surveillance.reviewer.AuthorityReviewer;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
 import gov.healthit.chpl.web.controller.results.SurveillanceResults;
 import io.swagger.v3.oas.annotations.Operation;
@@ -74,7 +72,6 @@ public class SurveillanceController {
     private SurveillanceManager survManager;
     private ActivityManager activityManager;
     private CertifiedProductDetailsManager cpdetailsManager;
-    private AuthorityReviewer survAuthorityReviewer;
     private PendingSurveillanceManager pendingSurveillanceManager;
     private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil errorMessageUtil;
@@ -84,14 +81,12 @@ public class SurveillanceController {
             SurveillanceManager survManager,
             ActivityManager activityManager,
             CertifiedProductDetailsManager cpdetailsManager,
-            AuthorityReviewer survAuthorityReviewer,
             PendingSurveillanceManager pendingSurveillanceManager,
             ResourcePermissions resourcePermissions,
             ErrorMessageUtil errorMessageUtil) {
         this.survManager = survManager;
         this.activityManager = activityManager;
         this.cpdetailsManager = cpdetailsManager;
-        this.survAuthorityReviewer = survAuthorityReviewer;
         this.pendingSurveillanceManager = pendingSurveillanceManager;
         this.resourcePermissions = resourcePermissions;
         this.errorMessageUtil = errorMessageUtil;
@@ -120,8 +115,8 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "/document/{documentId}", method = RequestMethod.GET)
-    public void streamDocumentContents(@PathVariable("documentId") final Long documentId,
-            final HttpServletResponse response) throws EntityRetrievalException, IOException {
+    public void streamDocumentContents(@PathVariable("documentId") Long documentId,
+            HttpServletResponse response) throws EntityRetrievalException, IOException {
         SurveillanceNonconformityDocument doc = survManager.getDocumentById(documentId, true);
 
         if (doc != null && doc.getFileContents() != null && doc.getFileContents().length > 0) {
@@ -168,17 +163,14 @@ public class SurveillanceController {
     @DeprecatedResponseFields(responseClass = Surveillance.class)
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<Surveillance> createSurveillance(
-            @RequestBody(required = true) final Surveillance survToInsert) throws ValidationException,
+            @RequestBody(required = true) Surveillance survToInsert) throws ValidationException,
             EntityRetrievalException, CertificationBodyAccessException, UserPermissionRetrievalException,
-            EntityCreationException, JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
+            EntityCreationException, JsonProcessingException {
         HttpHeaders responseHeaders = new HttpHeaders();
         Long insertedSurv = null;
         try {
             insertedSurv = survManager.createSurveillance(survToInsert);
             responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-        } catch (final SurveillanceAuthorityAccessDeniedException ex) {
-            LOGGER.error("User lacks authority to create surveillance");
-            throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to create surveillance");
         } catch (ValidationException ex) {
             throw ex;
         }
@@ -199,9 +191,9 @@ public class SurveillanceController {
     @RequestMapping(value = "/{surveillanceId}/nonconformity/{nonconformityId}/document",
             method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody String uploadNonconformityDocument(
-            @PathVariable("surveillanceId") final Long surveillanceId,
-            @PathVariable("nonconformityId") final Long nonconformityId,
-            @RequestParam("file") final MultipartFile file)
+            @PathVariable("surveillanceId") Long surveillanceId,
+            @PathVariable("nonconformityId") Long nonconformityId,
+            @RequestParam("file") MultipartFile file)
             throws InvalidArgumentsException, MaxUploadSizeExceededException, EntityRetrievalException,
             EntityCreationException, IOException {
 
@@ -209,9 +201,9 @@ public class SurveillanceController {
     }
 
     private String createNonconformityDocumentForSurveillance(
-            final Long surveillanceId,
-            final Long nonconformityId,
-            final MultipartFile file)
+            Long surveillanceId,
+            Long nonconformityId,
+            MultipartFile file)
             throws InvalidArgumentsException, MaxUploadSizeExceededException, EntityRetrievalException,
             EntityCreationException, IOException {
 
@@ -255,19 +247,13 @@ public class SurveillanceController {
     @RequestMapping(value = "/{surveillanceId}", method = RequestMethod.PUT,
             produces = "application/json; charset=utf-8")
     public ResponseEntity<Surveillance> updateSurveillance(
-            @RequestBody(required = true) final Surveillance survToUpdate) throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
-            JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
+            @RequestBody(required = true) Surveillance survToUpdate) throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
+            JsonProcessingException {
         // update the surveillance
         HttpHeaders responseHeaders = new HttpHeaders();
         try {
             survManager.updateSurveillance(survToUpdate);
             responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-        } catch (SurveillanceAuthorityAccessDeniedException ex) {
-            LOGGER.error("User lacks authority to update surveillance");
-            throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to update surveillance");
-        } catch (UserPermissionRetrievalException ex) {
-            String error = "Cannot find user permission for the surveillance.";
-            throw new EntityRetrievalException(error);
         } catch (ValidationException ex) {
             throw ex;
         }
@@ -288,40 +274,19 @@ public class SurveillanceController {
     @RequestMapping(value = "/{surveillanceId}", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
     public @ResponseBody ResponseEntity<String> deleteSurveillance(
-            @PathVariable(value = "surveillanceId") final Long surveillanceId,
-            @RequestBody(required = false) final SimpleExplainableAction requestBody) throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
-            JsonProcessingException, AccessDeniedException, SurveillanceAuthorityAccessDeniedException,
-            MissingReasonException {
-        Surveillance survToDelete = survManager.getById(surveillanceId);
-
-        if (survToDelete == null) {
-            throw new InvalidArgumentsException("Cannot find surveillance with id " + surveillanceId + " to delete.");
+            @PathVariable(value = "surveillanceId") Long surveillanceId,
+            @RequestBody(required = false) SimpleExplainableAction requestBody) throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
+            JsonProcessingException, AccessDeniedException, MissingReasonException {
+        Surveillance survToDelete = null;
+        try {
+            survToDelete = survManager.getById(surveillanceId);
+        } catch (EntityRetrievalException ex) {
+            throw new InvalidArgumentsException("No surveillance with ID " + surveillanceId + " was found.");
         }
-
-        survAuthorityReviewer.review(survToDelete);
-        if (survToDelete.getErrorMessages() != null && survToDelete.getErrorMessages().size() > 0) {
-            throw new ValidationException(survToDelete.getErrorMessages(), null);
-        }
-
-        CertifiedProductSearchDetails beforeCp = cpdetailsManager
-                .getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
-
         HttpHeaders responseHeaders = new HttpHeaders();
         // delete it
-        try {
-            survManager.deleteSurveillance(survToDelete);
-            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-        } catch (SurveillanceAuthorityAccessDeniedException ex) {
-            LOGGER.error("User lacks authority to delete surveillance");
-            throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to delete surveillance");
-        }
-
-        CertifiedProductSearchDetails afterCp = cpdetailsManager
-                .getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
-        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, afterCp.getId(),
-                "Surveillance was delete from certified product " + afterCp.getChplProductNumber(),
-                beforeCp, afterCp, requestBody.getReason());
-
+        survManager.deleteSurveillance(survToDelete, requestBody.getReason());
+        responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         return new ResponseEntity<String>("{\"success\" : true}", responseHeaders, HttpStatus.OK);
     }
 
@@ -335,15 +300,15 @@ public class SurveillanceController {
     @RequestMapping(value = "/{surveillanceId}/document/{docId}", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
     public String deleteNonconformityDocumentFromSurveillance(
-            @PathVariable("surveillanceId") final Long surveillanceId,
-            @PathVariable("docId") final Long docId)
+            @PathVariable("surveillanceId") Long surveillanceId,
+            @PathVariable("docId") Long docId)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
             InvalidArgumentsException {
 
         return deleteNonconformityDocument(surveillanceId, docId);
     }
 
-    private String deleteNonconformityDocument(final Long surveillanceId, final Long docId)
+    private String deleteNonconformityDocument(Long surveillanceId, Long docId)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
             InvalidArgumentsException {
 
@@ -375,7 +340,7 @@ public class SurveillanceController {
             })
     @RequestMapping(value = "/pending/{pendingSurvId}", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
-    public @ResponseBody String rejectPendingSurveillance(@PathVariable("pendingSurvId") final Long id)
+    public @ResponseBody String rejectPendingSurveillance(@PathVariable("pendingSurvId") Long id)
             throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException,
             JsonProcessingException, EntityRetrievalException, EntityCreationException {
 
@@ -393,13 +358,13 @@ public class SurveillanceController {
             })
     @RequestMapping(value = "/pending", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
-    public @ResponseBody String rejectPendingSurveillance(@RequestBody final IdListContainer idList)
+    public @ResponseBody String rejectPendingSurveillance(@RequestBody IdListContainer idList)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, InvalidArgumentsException, ObjectsMissingValidationException {
         return deletePendingSurveillance(idList);
     }
 
-    private @ResponseBody String deletePendingSurveillance(final IdListContainer idList)
+    private @ResponseBody String deletePendingSurveillance(IdListContainer idList)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, InvalidArgumentsException, ObjectsMissingValidationException {
         if (idList == null || idList.getIds() == null || idList.getIds().size() == 0) {
@@ -411,7 +376,7 @@ public class SurveillanceController {
         for (Long id : idList.getIds()) {
             try {
                 pendingSurveillanceManager.rejectPendingSurveillance(id);
-            } catch (final ObjectMissingValidationException ex) {
+            } catch (ObjectMissingValidationException ex) {
                 possibleExceptions.getExceptions().add(ex);
             }
         }
@@ -439,11 +404,8 @@ public class SurveillanceController {
     @DeprecatedResponseFields(responseClass = Surveillance.class)
     @RequestMapping(value = "/pending/confirm", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
-    public ResponseEntity<Surveillance> confirmPendingSurveillance(
-            @RequestBody(required = true) final Surveillance survToInsert)
-            throws ValidationException, EntityRetrievalException, EntityCreationException,
-            JsonProcessingException, UserPermissionRetrievalException,
-            SurveillanceAuthorityAccessDeniedException {
+    public ResponseEntity<Surveillance> confirmPendingSurveillance(@RequestBody(required = true) Surveillance survToInsert)
+            throws ValidationException, EntityRetrievalException, EntityCreationException, JsonProcessingException, UserPermissionRetrievalException {
 
         Surveillance newSurveillance = pendingSurveillanceManager.confirmPendingSurveillance(survToInsert);
         if (newSurveillance != null) {
@@ -467,7 +429,7 @@ public class SurveillanceController {
             ChplOneTimeTrigger.class, SurveillanceResults.class
     })
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public @ResponseBody ResponseEntity<?> upload(@RequestParam("file") final MultipartFile file)
+    public @ResponseBody ResponseEntity<?> upload(@RequestParam("file") MultipartFile file)
             throws ValidationException, MaxUploadSizeExceededException, EntityRetrievalException,
             EntityCreationException, IOException, SchedulerException {
         SurveillanceUploadResult uploadResult = pendingSurveillanceManager.uploadPendingSurveillance(file);

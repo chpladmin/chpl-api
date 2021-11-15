@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SurveillanceBasic implements Serializable {
     private static final long serialVersionUID = 3750079664886758825L;
+    public static final Long AUTHORITY_ACB = 2L;
 
     private Long id;
     private String friendlyId;
@@ -43,6 +44,8 @@ public class SurveillanceBasic implements Serializable {
     private Integer numRandomizedSites;
     private Integer numOpenNonconformities;
     private Integer numClosedNonconformities;
+
+    @Deprecated
     private Long userPermissionId;
     private String chplProductNumber;
 
