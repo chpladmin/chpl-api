@@ -8,9 +8,6 @@
         <AppenderRef ref="cacheListenerActivity" />
         <AppenderRef ref="cacheListenerActivity" />
     </Logger>
-    <Logger name="loggableLogger" level="INFO" additivity="false">
-        <AppenderRef ref="loggable" />
-    </Logger>
     <Logger name="summaryStatisticsEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="summaryStatisticsEmailJob" />
         <AppenderRef ref="summaryStatisticsEmailJobJson" />
