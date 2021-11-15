@@ -791,4 +791,40 @@
             </Delete>
         </DefaultRolloverStrategy>
     </RollingFile>
+    <RollingFile name="removeCriteriaJobJson"
+        fileName="${logDir}/scheduler/removeCriteriaJob.json"
+        filePattern="${logDir}/scheduler/history/removeCriteriaJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" >
+            <KeyValuePair key="service" value="removeCriteriaJob" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="removeCriteriaJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="addCuresUpdateToListingsJobJson"
+        fileName="${logDir}/scheduler/addCuresUpdateToListingsJob.json"
+        filePattern="${logDir}/scheduler/history/addCuresUpdateToListingsJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" >
+            <KeyValuePair key="service" value="addCuresUpdateToListingsJob" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="addCuresUpdateToListingsJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
 </Appenders>
