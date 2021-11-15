@@ -4,7 +4,7 @@
         fileName="${logDir}/scheduler/chartDataCreatorJob.json"
         filePattern="${logDir}/scheduler/history/chartDataCreatorJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="chartDataCreatorJob" />
         </JsonLayout>
         <Policies>
@@ -22,7 +22,7 @@
         fileName="${logDir}/scheduler/summaryStatisticsEmailJob.json"
         filePattern="${logDir}/scheduler/history/summaryStatisticsEmailJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="summaryStatisticsEmailJob" />
         </JsonLayout>
         <Policies>
@@ -40,7 +40,7 @@
         fileName="${logDir}/scheduler/summaryStatisticsCreatorJob.json"
         filePattern="${logDir}/scheduler/history/summaryStatisticsCreatorJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="summaryStatisticsCreatorJob" />
         </JsonLayout>
         <Policies>
@@ -57,7 +57,7 @@
         fileName="${logDir}/scheduler/curesStatisticsCreatorJob.json"
         filePattern="${logDir}/scheduler/history/curesStatisticsCreatorJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="curesStatisticsCreatorJob" />
         </JsonLayout>
         <Policies>
@@ -75,7 +75,7 @@
         fileName="${logDir}/scheduler/curesStatisticsEmailJob.json"
         filePattern="${logDir}/scheduler/history/curesStatisticsEmailJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="curesStatisticsEmailJob" />
         </JsonLayout>
         <Policies>
@@ -93,7 +93,7 @@
         fileName="${logDir}/scheduler/urlStatusDataCollectorJob.json"
         filePattern="${logDir}/scheduler/history/urlStatusDataCollectorJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="urlStatusDataCollectorJob" />
         </JsonLayout>
         <Policies>
@@ -111,7 +111,7 @@
         fileName="${logDir}/scheduler/questionableUrlReportGeneratorJob.json"
         filePattern="${logDir}/scheduler/history/questionableUrlReportGeneratorJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="questionableUrlReportGeneratorJob" />
         </JsonLayout>
         <Policies>
@@ -129,7 +129,7 @@
         fileName="${logDir}/scheduler/certifiedProductDownloadableResourceCreatorJob.json"
         filePattern="${logDir}/scheduler/history/certifiedProductDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="certifiedProductDownloadableResourceCreatorJob" />
         </JsonLayout>
         <Policies>
@@ -147,7 +147,7 @@
         fileName="${logDir}/scheduler/g3Sed2015DownloadableResourceCreatorJob.json"
         filePattern="${logDir}/scheduler/history/g3Sed2015DownloadableResourceCreatorJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="g3Sed2015DownloadableResourceCreatorJob" />
         </JsonLayout>
         <Policies>
@@ -165,7 +165,7 @@
         fileName="${logDir}/scheduler/surveillanceDownloadableResourceCreatorJob.json"
         filePattern="${logDir}/scheduler/history/surveillanceDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="surveillanceDownloadableResourceCreatorJob" />
         </JsonLayout>
         <Policies>
@@ -183,7 +183,7 @@
         fileName="${logDir}/scheduler/directReviewDownloadableResourceCreatorJob.json"
         filePattern="${logDir}/scheduler/history/directReviewDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="directReviewDownloadableResourceCreatorJob" />
         </JsonLayout>
         <Policies>
@@ -201,7 +201,7 @@
         fileName="${logDir}/scheduler/svapActivityDownloadableResourceCreatorJob.json"
         filePattern="${logDir}/scheduler/history/svapActivityDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="svapActivityDownloadableResourceCreatorJob" />
         </JsonLayout>
         <Policies>
@@ -219,7 +219,7 @@
         fileName="${logDir}/scheduler/brokenSurveillanceRulesCreatorJob.json"
         filePattern="${logDir}/scheduler/history/brokenSurveillanceRulesCreatorJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="brokenSurveillanceRulesCreatorJob" />
         </JsonLayout>
         <Policies>
@@ -237,7 +237,7 @@
         fileName="${logDir}/scheduler/brokenSurveillanceRulesEmailJob.json"
         filePattern="${logDir}/scheduler/history/brokenSurveillanceRulesEmailJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="brokenSurveillanceRulesEmailJob" />
         </JsonLayout>
         <Policies>
@@ -255,7 +255,7 @@
         fileName="${logDir}/scheduler/inheritanceErrorsReportCreatorJob.json"
         filePattern="${logDir}/scheduler/history/inheritanceErrorsReportCreatorJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="inheritanceErrorsReportCreatorJob" />
         </JsonLayout>
         <Policies>
@@ -273,7 +273,7 @@
         fileName="${logDir}/scheduler/inheritanceErrorsReportEmailJob.json"
         filePattern="${logDir}/scheduler/history/inheritanceErrorsReportEmailJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="inheritanceErrorsReportEmailJob" />
         </JsonLayout>
         <Policies>
@@ -291,7 +291,7 @@
         fileName="${logDir}/scheduler/cacheStatusAgeJob.json"
         filePattern="${logDir}/scheduler/history/cacheStatusAgeJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="cacheStatusAgeJob" />
         </JsonLayout>
         <Policies>
@@ -309,7 +309,7 @@
         fileName="${logDir}/scheduler/triggerDeveloperBanJob.json"
         filePattern="${logDir}/scheduler/history/triggerDeveloperBanJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="triggerDeveloperBanJob" />
         </JsonLayout>
         <Policies>
@@ -327,7 +327,7 @@
         fileName="${logDir}/scheduler/splitDeveloperJob.json"
         filePattern="${logDir}/scheduler/history/splitDeveloperJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="splitDeveloperJob" />
         </JsonLayout>
         <Policies>
@@ -345,7 +345,7 @@
         fileName="${logDir}/scheduler/mergeDeveloperJob.json"
         filePattern="${logDir}/scheduler/history/mergeDeveloperJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="mergeDeveloperJob" />
         </JsonLayout>
         <Policies>
@@ -363,7 +363,7 @@
         fileName="${logDir}/scheduler/apiKeyWarningEmailJob.json"
         filePattern="${logDir}/scheduler/history/apiKeyWarningEmailJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="apiKeyWarningEmailJob" />
         </JsonLayout>
         <Policies>
@@ -381,7 +381,7 @@
         fileName="${logDir}/scheduler/apiKeyDeleteJob.json"
         filePattern="${logDir}/scheduler/history/apiKeyDeleteJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="apiKeyDeleteJob" />
         </JsonLayout>
         <Policies>
@@ -399,7 +399,7 @@
         fileName="${logDir}/scheduler/questionableActivityEmailJob.json"
         filePattern="${logDir}/scheduler/history/questionableActivityEmailJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="questionableActivityEmailJob" />
         </JsonLayout>
         <Policies>
@@ -417,7 +417,7 @@
         fileName="${logDir}/scheduler/pendingChangeRequestEmailJob.json"
         filePattern="${logDir}/scheduler/history/pendingChangeRequestEmailJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="pendingChangeRequestEmailJob" />
         </JsonLayout>
         <Policies>
@@ -435,7 +435,7 @@
         fileName="${logDir}/scheduler/interruptJob.json"
         filePattern="${logDir}/scheduler/history/interruptJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="interruptJob" />
         </JsonLayout>
         <Policies>
@@ -453,7 +453,7 @@
         fileName="${logDir}/scheduler/massRequirePasswordChangeJob.json"
         filePattern="${logDir}/scheduler/history/massRequirePasswordChangeJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="massRequirePasswordChangeJob" />
         </JsonLayout>
         <Policies>
@@ -471,7 +471,7 @@
         fileName="${logDir}/scheduler/updateListingStatusJob.json"
         filePattern="${logDir}/scheduler/history/updateListingStatusJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="updateListingStatusJob" />
         </JsonLayout>
         <Policies>
@@ -489,7 +489,7 @@
         fileName="${logDir}/scheduler/directReviewCacheRefreshJob.json"
         filePattern="${logDir}/scheduler/history/directReviewCacheRefreshJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="directReviewCacheRefreshJob" />
         </JsonLayout>
         <Policies>
@@ -507,7 +507,7 @@
         fileName="${logDir}/scheduler/developerAccessEmailJob.json"
         filePattern="${logDir}/scheduler/history/developerAccessEmailJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="developerAccessEmailJob" />
         </JsonLayout>
         <Policies>
@@ -525,7 +525,7 @@
                  fileName="${logDir}/cache/cacheListenerActivity.json"
                  filePattern="${logDir}/cache/history/cacheListenerActivity-%d{yyyy-MM-dd}.json"
                  filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="cacheListenerActivity" />
         </JsonLayout>
         <Policies>
@@ -543,7 +543,7 @@
         fileName="${logDir}/scheduler/realWorldTestingUploadJob.json"
         filePattern="${logDir}/scheduler/history/realWorldTestingUploadJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="realWorldTestingUploadJob" />
         </JsonLayout>
         <Policies>
@@ -561,7 +561,7 @@
         fileName="${logDir}/scheduler/auditDataRetentionJob.json"
         filePattern="${logDir}/scheduler/history/auditDataRetentionJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="auditDataRetentionJob" />
         </JsonLayout>
         <Policies>
@@ -579,7 +579,7 @@
         fileName="${logDir}/scheduler/listingValidationReportCreatorJob.json"
         filePattern="${logDir}/scheduler/history/listingValidationReportCreatorJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="listingValidationReportCreatorJob" />
         </JsonLayout>
         <Policies>
@@ -597,7 +597,7 @@
         fileName="${logDir}/scheduler/listingValidationReportEmailJob.json"
         filePattern="${logDir}/scheduler/history/listingValidationReportEmailJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="listingValidationReportEmailJob" />
         </JsonLayout>
         <Policies>
@@ -615,7 +615,7 @@
         fileName="${logDir}/scheduler/realWorldTestingReportEmailJob.json"
         filePattern="${logDir}/scheduler/history/realWorldTestingReportEmailJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="realWorldTestingReportEmailJob" />
         </JsonLayout>
         <Policies>
@@ -633,7 +633,7 @@
         fileName="${logDir}/scheduler/quarterlyReportGenerationJob.json"
         filePattern="${logDir}/scheduler/history/quarterlyReportGenerationJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="quarterlyReportGenerationJob" />
         </JsonLayout>
         <Policies>
@@ -651,7 +651,7 @@
         fileName="${logDir}/scheduler/annualReportGenerationJob.json"
         filePattern="${logDir}/scheduler/history/annualReportGenerationJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="annualReportGenerationJob" />
         </JsonLayout>
         <Policies>
@@ -669,7 +669,7 @@
             fileName="${logDir}/scheduler/userDefinedTriggersEmailJob.json"
             filePattern="${logDir}/scheduler/history/userDefinedTriggersEmailJob-%d{yyyy-MM-dd}.json"
             filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="userDefinedTriggersEmailJob" />
         </JsonLayout>
         <Policies>
@@ -686,7 +686,7 @@
     <RollingFile name="listingUploadValidationJobJson"
         fileName="${logDir}/scheduler/listingUploadValidationJob.json"
         filePattern="${logDir}/scheduler/history/listingUploadValidationJob-%d{yyyy-MM-dd}.json">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="listingUploadValidationJob" />
         </JsonLayout>
         <Policies>
@@ -704,7 +704,7 @@
         fileName="${logDir}/scheduler/surveillanceActivityReportJob.json"
         filePattern="${logDir}/scheduler/history/surveillanceActivityReportJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="surveillanceActivityReportJob" />
         </JsonLayout>
         <Policies>
@@ -722,7 +722,7 @@
         fileName="${logDir}/scheduler/surveillanceUploadJob.json"
         filePattern="${logDir}/scheduler/history/surveillanceUploadJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="surveillanceUploadJob" />
         </JsonLayout>
         <Policies>
@@ -740,7 +740,7 @@
         fileName="${logDir}/scheduler/promotingInteroperabilityUploadJob.json"
         filePattern="${logDir}/scheduler/history/promotingInteroperabilityUploadJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="promotingInteroperabilityUploadJob" />
         </JsonLayout>
         <Policies>
@@ -759,7 +759,7 @@
         fileName="${logDir}/scheduler/deprecatedApiUsageEmailJob.json"
         filePattern="${logDir}/scheduler/history/deprecatedApiUsageEmailJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="deprecatedApiUsageEmailJob" />
         </JsonLayout>
         <Policies>
@@ -777,7 +777,7 @@
         fileName="${logDir}/scheduler/testStandardConversionJob.json"
         filePattern="${logDir}/scheduler/history/testStandardConversionJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="testStandardConversionJob" />
         </JsonLayout>
         <Policies>
@@ -795,7 +795,7 @@
         fileName="${logDir}/scheduler/removeCriteriaJob.json"
         filePattern="${logDir}/scheduler/history/removeCriteriaJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="removeCriteriaJob" />
         </JsonLayout>
         <Policies>
@@ -813,7 +813,7 @@
         fileName="${logDir}/scheduler/addCuresUpdateToListingsJob.json"
         filePattern="${logDir}/scheduler/history/addCuresUpdateToListingsJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" >
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="addCuresUpdateToListingsJob" />
         </JsonLayout>
         <Policies>
