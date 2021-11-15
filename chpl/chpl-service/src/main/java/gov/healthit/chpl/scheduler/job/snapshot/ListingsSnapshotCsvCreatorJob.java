@@ -2,21 +2,17 @@ package gov.healthit.chpl.scheduler.job.snapshot;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -35,6 +31,9 @@ import gov.healthit.chpl.activity.history.query.ListingOnDateActivityQuery;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.DownloadableResourceCreatorJob;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductCsvPresenter;
@@ -42,13 +41,11 @@ import gov.healthit.chpl.scheduler.presenter.CertifiedProductPresenter;
 import gov.healthit.chpl.service.CertificationCriterionService;
 
 @DisallowConcurrentExecution
-public class ListingSnapshotCsvCreatorJob extends DownloadableResourceCreatorJob {
-    private static final Logger LOGGER = LogManager.getLogger("listingSnapshotCsvCreatorJobLogger");
-    private static final String TEMP_DIR_NAME = "temp";
+public class ListingsSnapshotCsvCreatorJob extends DownloadableResourceCreatorJob {
+    private static final Logger LOGGER = LogManager.getLogger("listingsSnapshotCsvCreatorJobLogger");
 
     private String edition;
     private LocalDate snapshotDate;
-    private File tempDirectory, tempCsvFile;
     private ExecutorService executorService;
 
     @Autowired
@@ -64,9 +61,12 @@ public class ListingSnapshotCsvCreatorJob extends DownloadableResourceCreatorJob
     private ListingOnDateActivityExplorer activityExplorer;
 
     @Autowired
+    private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
+
+    @Autowired
     private Environment env;
 
-    public ListingSnapshotCsvCreatorJob() throws Exception {
+    public ListingsSnapshotCsvCreatorJob() throws Exception {
         super(LOGGER);
     }
 
@@ -79,41 +79,34 @@ public class ListingSnapshotCsvCreatorJob extends DownloadableResourceCreatorJob
             return;
         }
 
-        LOGGER.info("********* Starting the Listing Snapshot CSV Creator job for {} on {}. *********", edition, snapshotDate);
+        LOGGER.info("********* Starting the Listings Snapshot CSV Creator job for {} on {}. *********", edition, snapshotDate);
         try (CertifiedProductCsvPresenter csvPresenter = getCsvPresenter()) {
-            initializeTempFiles();
-            if (tempCsvFile != null) {
-                initializeWritingToFiles(csvPresenter);
-                initializeExecutorService();
+            File downloadFolder = getDownloadFolder();
+            String csvFilename = downloadFolder.getAbsolutePath()
+                    + File.separator
+                    + "chpl-snapshot-" + this.edition + "-" + this.snapshotDate + ".csv";
+            File csvFile = getFile(csvFilename);
+            initializeWritingToFiles(csvPresenter, csvFile);
 
-                List<CertifiedProductPresenter> presenters = new ArrayList<CertifiedProductPresenter>(
-                        Arrays.asList(csvPresenter));
-                List<CompletableFuture<Void>> futures = getCertifiedProductSearchFutures(getRelevantListings(), presenters);
-                CompletableFuture<Void> combinedFutures = CompletableFuture
-                        .allOf(futures.toArray(new CompletableFuture[futures.size()]));
+            initializeExecutorService();
+            List<CertifiedProductPresenter> presenters = new ArrayList<CertifiedProductPresenter>(
+                    Arrays.asList(csvPresenter));
+            List<CompletableFuture<Void>> futures = getCertifiedProductSearchFutures(getRelevantListings(), presenters);
+            CompletableFuture<Void> combinedFutures = CompletableFuture
+                    .allOf(futures.toArray(new CompletableFuture[futures.size()]));
 
-                // This is not blocking - presumably because the job executes using it's own ExecutorService
-                // This is necessary so that the system can indicate that the job and it's threads are still running
-                combinedFutures.get();
-            }
+            // This is not blocking - presumably because the job executes using it's own ExecutorService
+            // This is necessary so that the system can indicate that the job and it's threads are still running
+            combinedFutures.get();
+            sendEmail(jobContext, Stream.of(csvFile).collect(Collectors.toList()));
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         } finally {
             LOGGER.info("All processes have completed");
         }
 
-        try {
-            //has to happen in a separate try block because of the presenters
-            //using auto-close - can't move the files until they are closed by the presenters
-            swapFiles();
-        } catch (Exception ex) {
-            LOGGER.error(ex.getMessage(), ex);
-            cleanupTempFiles();
-        } finally {
-            cleanupTempFiles();
-            executorService.shutdown();
-            LOGGER.info("********* Completed the Listing Snapshot CSV Creator job for {} on {}. *********", edition, snapshotDate);
-        }
+        executorService.shutdown();
+        LOGGER.info("********* Completed the Listings Snapshot CSV Creator job for {} on {}. *********", edition, snapshotDate);
     }
 
     private List<CompletableFuture<Void>> getCertifiedProductSearchFutures(List<Long> listingIds,
@@ -161,17 +154,16 @@ public class ListingSnapshotCsvCreatorJob extends DownloadableResourceCreatorJob
                 });
     }
 
-    private void initializeWritingToFiles(CertifiedProductCsvPresenter csvPresenter)
+    private void initializeWritingToFiles(CertifiedProductCsvPresenter csvPresenter, File csvFile)
             throws IOException {
         csvPresenter.setLogger(LOGGER);
         csvPresenter.setFf4j(ff4j);
         List<CertificationCriterionDTO> criteria = getCriteriaDao().findByCertificationEditionYear(edition)
                 .stream()
-                .filter(cr -> !cr.getRemoved())
                 .sorted((crA, crB) -> criterionService.sortCriteria(crA, crB))
                 .collect(Collectors.<CertificationCriterionDTO>toList());
         csvPresenter.setApplicableCriteria(criteria);
-        csvPresenter.open(tempCsvFile);
+        csvPresenter.open(csvFile);
     }
 
     private List<Long> getRelevantListings() throws EntityRetrievalException {
@@ -185,50 +177,39 @@ public class ListingSnapshotCsvCreatorJob extends DownloadableResourceCreatorJob
        return new CertifiedProductCsvPresenter();
     }
 
-    private void initializeTempFiles() throws IOException {
-        File downloadFolder = getDownloadFolder();
-        Path tempDirBasePath = Paths.get(downloadFolder.getAbsolutePath());
-        Path tempDir = Files.createTempDirectory(tempDirBasePath, TEMP_DIR_NAME);
-        this.tempDirectory = tempDir.toFile();
-
-        Path csvPath = Files.createTempFile(tempDir, "chpl-" + edition + "-" + snapshotDate, ".csv");
-        tempCsvFile = csvPath.toFile();
-    }
-
-    private void swapFiles() throws IOException {
-        LOGGER.info("Swapping temporary files.");
-        File downloadFolder = getDownloadFolder();
-
-        if (tempCsvFile != null) {
-            String csvFilename = getFileName(downloadFolder.getAbsolutePath(),
-                    getFilenameTimestampFormat().format(new Date()), "csv");
-            LOGGER.info("Moving " + tempCsvFile.getAbsolutePath() + " to " + csvFilename);
-            Path targetFile = Files.move(tempCsvFile.toPath(), Paths.get(csvFilename), StandardCopyOption.ATOMIC_MOVE);
-            if (targetFile == null) {
-                LOGGER.warn("CSV file move may not have succeeded. Check file system.");
+    private File getFile(String fileName) throws IOException {
+        File file = new File(fileName);
+        if (file.exists()) {
+            if (!file.delete()) {
+                throw new IOException("File exists; cannot delete");
             }
-        } else {
-            LOGGER.warn("Temp CSV File was null and could not be moved.");
         }
+        if (!file.createNewFile()) {
+            throw new IOException("File can not be created");
+        }
+        return file;
     }
 
-    private void cleanupTempFiles() {
-        LOGGER.info("Deleting temporary files.");
-        if (tempCsvFile != null && tempCsvFile.exists()) {
-            tempCsvFile.delete();
-        } else {
-            LOGGER.warn("Temp CSV File was null and could not be deleted.");
-        }
-
-        if (tempDirectory != null && tempDirectory.exists()) {
-            tempDirectory.delete();
-        } else {
-            LOGGER.warn("Temp directory for download files was null and could not be deleted.");
-        }
+    private void sendEmail(JobExecutionContext context, List<File> attachments) throws EmailNotSentException {
+        String emailAddress = context.getMergedJobDataMap().getString(JOB_DATA_KEY_EMAIL);
+        LOGGER.info("Sending email to: " + emailAddress);
+        EmailBuilder emailBuilder = new EmailBuilder(env);
+        emailBuilder.recipient(emailAddress)
+                .subject(env.getProperty("listingsSnapshot.subject"))
+                .htmlMessage(createHtmlMessage())
+                .fileAttachments(attachments)
+                .sendEmail();
+        LOGGER.info("Completed Sending email to: " + emailAddress);
     }
 
-    private String getFileName(String path, String timestamp, String extension) {
-        return path + File.separator + "chpl-" + edition + "-" + snapshotDate + "-" + timestamp + "." + extension;
+    private String createHtmlMessage() {
+        return chplHtmlEmailBuilder.initialize()
+                .heading("Listings With Criterion Snapshot")
+                .paragraph(null,
+                        String.format(env.getProperty("listingsSnapshot.body"),
+                                this.edition, this.snapshotDate.toString()))
+                .footer(true)
+                .build();
     }
 
     private void parseParametersFromContext(JobExecutionContext jobContext) {

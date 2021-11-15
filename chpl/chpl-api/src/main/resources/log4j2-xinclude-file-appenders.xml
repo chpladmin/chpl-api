@@ -108,9 +108,9 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
-    <RollingFile name="listingSnapshotCsvCreatorJob"
-        fileName="${logDir}/scheduler/listingSnapshotCsvCreatorJob.log"
-        filePattern="${logDir}/scheduler/history/listingSnapshotCsvCreatorJob-%d{yyyy-MM-dd}.log"
+    <RollingFile name="listingsSnapshotCsvCreatorJob"
+        fileName="${logDir}/scheduler/listingsSnapshotCsvCreatorJob.log"
+        filePattern="${logDir}/scheduler/history/listingsSnapshotCsvCreatorJob-%d{yyyy-MM-dd}.log"
         filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id} %X{dd.span_id} - %m%n</Pattern>

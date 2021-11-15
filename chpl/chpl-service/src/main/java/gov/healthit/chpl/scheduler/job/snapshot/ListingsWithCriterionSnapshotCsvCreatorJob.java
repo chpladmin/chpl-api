@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -26,6 +29,9 @@ import gov.healthit.chpl.activity.history.query.ListingOnDateActivityQuery;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.DownloadableResourceCreatorJob;
 import gov.healthit.chpl.scheduler.presenter.ListingsWithCriterionCSVPresenter;
@@ -35,12 +41,10 @@ import gov.healthit.chpl.util.Util;
 @DisallowConcurrentExecution
 public class ListingsWithCriterionSnapshotCsvCreatorJob extends DownloadableResourceCreatorJob {
     private static final Logger LOGGER = LogManager.getLogger("listingsWithCriterionSnapshotCsvCreatorJobLogger");
-    private static final String TEMP_DIR_NAME = "temp";
 
     private String edition;
     private CertificationCriterion criterion;
     private LocalDate snapshotDate;
-    private File tempDirectory, tempCsvFile;
     private ExecutorService executorService;
 
     @Autowired
@@ -51,6 +55,9 @@ public class ListingsWithCriterionSnapshotCsvCreatorJob extends DownloadableReso
 
     @Autowired
     private ListingOnDateActivityExplorer activityExplorer;
+
+    @Autowired
+    private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
 
     @Autowired
     private Environment env;
@@ -79,10 +86,11 @@ public class ListingsWithCriterionSnapshotCsvCreatorJob extends DownloadableReso
             File downloadFolder = getDownloadFolder();
             String csvFilename = downloadFolder.getAbsolutePath()
                     + File.separator
-                    + "chpl-snapshot-" + this.snapshotDate + ".csv";
+                    + "chpl-criteria-snapshot-" + this.edition + "-" + this.snapshotDate + ".csv";
             File csvFile = getFile(csvFilename);
             csvPresenter.presentAsFile(csvFile, listings);
-            LOGGER.info("Wrote listings snapshot CSV file.");
+            LOGGER.info("Wrote listings with criterion snapshot CSV file.");
+            sendEmail(jobContext, Stream.of(csvFile).collect(Collectors.toList()));
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         } finally {
@@ -90,7 +98,7 @@ public class ListingsWithCriterionSnapshotCsvCreatorJob extends DownloadableReso
         }
 
         executorService.shutdown();
-        LOGGER.info("********* Completed the Listing Snapshot Downloadable Resource Creator job for {} on {}. *********", Util.formatCriteriaNumber(criterion), snapshotDate);
+        LOGGER.info("********* Completed the Listings With Criterion Snapshot CSV Creator job for {} on {}. *********", Util.formatCriteriaNumber(criterion), snapshotDate);
     }
 
     private List<CertifiedProductSearchDetails> getListingDetails(List<Long> listingIds) {
@@ -158,6 +166,28 @@ public class ListingsWithCriterionSnapshotCsvCreatorJob extends DownloadableReso
             throw new IOException("File can not be created");
         }
         return file;
+    }
+
+    private void sendEmail(JobExecutionContext context, List<File> attachments) throws EmailNotSentException {
+        String emailAddress = context.getMergedJobDataMap().getString(JOB_DATA_KEY_EMAIL);
+        LOGGER.info("Sending email to: " + emailAddress);
+        EmailBuilder emailBuilder = new EmailBuilder(env);
+        emailBuilder.recipient(emailAddress)
+                .subject(env.getProperty("listingsWithCriterionSnapshot.subject"))
+                .htmlMessage(createHtmlMessage())
+                .fileAttachments(attachments)
+                .sendEmail();
+        LOGGER.info("Completed Sending email to: " + emailAddress);
+    }
+
+    private String createHtmlMessage() {
+        return chplHtmlEmailBuilder.initialize()
+                .heading("Listings With Criterion Snapshot")
+                .paragraph(null,
+                        String.format(env.getProperty("listingsWithCriterionSnapshot.body"),
+                                this.edition, Util.formatCriteriaNumber(this.criterion), this.snapshotDate.toString()))
+                .footer(true)
+                .build();
     }
 
     private void parseParametersFromContext(JobExecutionContext jobContext) {

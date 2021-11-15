@@ -94,65 +94,66 @@ public class ListingsWithCriterionCSVPresenter {
 
     protected List<List<String>> generateMultiRowValue(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         List<List<String>> result = new ArrayList<List<String>>();
-        List<String> listingFirstRow = getListingRowValues(listing);
-        listingFirstRow.add(certResult.isSuccess() ? "Yes" : "No");
-        listingFirstRow.add(certResult.getPrivacySecurityFramework());
-        result.add(listingFirstRow);
+        List<String> certificationResultFirstRow = getSingleValuedCertificationResultData(listing, certResult);
+        result.add(certificationResultFirstRow);
 
         if (!CollectionUtils.isEmpty(certResult.getTestStandards())) {
             for (int i = 0; i < certResult.getTestStandards().size(); i++) {
                 CertificationResultTestStandard testStandard = certResult.getTestStandards().get(i);
                 if (i == 0) {
-                    listingFirstRow.add(testStandard.getTestStandardName());
+                    certificationResultFirstRow.add(testStandard.getTestStandardName());
                 } else if (result.size() > i) {
                     result.get(i).add(testStandard.getTestStandardName());
                 } else {
-                    List<String> newRow = createBlankRow(21);
+                    List<String> newRow = getSingleValuedCertificationResultData(listing, certResult);
                     newRow.add(testStandard.getTestStandardName());
                     result.add(newRow);
                 }
             }
         } else {
-            listingFirstRow.add("");
+            certificationResultFirstRow.add("");
         }
 
         if (!CollectionUtils.isEmpty(certResult.getTestFunctionality())) {
             for (int i = 0; i < certResult.getTestFunctionality().size(); i++) {
                 CertificationResultTestFunctionality testFunc = certResult.getTestFunctionality().get(i);
                 if (i == 0) {
-                    listingFirstRow.add(testFunc.getName());
+                    certificationResultFirstRow.add(testFunc.getName());
                 } else if (result.size() > i) {
                     result.get(i).add(testFunc.getName());
                 } else {
-                    List<String> newRow = createBlankRow(22);
+                    List<String> newRow = getSingleValuedCertificationResultData(listing, certResult);
+                    newRow.add(""); //blank space for test standards
                     newRow.add(testFunc.getName());
                     result.add(newRow);
                 }
             }
         } else {
-            listingFirstRow.add("");
+            certificationResultFirstRow.add("");
         }
 
         if (!CollectionUtils.isEmpty(certResult.getTestProcedures())) {
             for (int i = 0; i < certResult.getTestProcedures().size(); i++) {
                 CertificationResultTestProcedure testProc = certResult.getTestProcedures().get(i);
                 if (i == 0) {
-                    listingFirstRow.add(testProc.getTestProcedure().getName() + "; " + testProc.getTestProcedureVersion());
+                    certificationResultFirstRow.add(testProc.getTestProcedure().getName() + "; " + testProc.getTestProcedureVersion());
                 } else if (result.size() > i) {
                     result.get(i).add(testProc.getTestProcedure().getName() + "; " + testProc.getTestProcedureVersion());
                 } else {
-                    List<String> newRow = createBlankRow(23);
+                    List<String> newRow = getSingleValuedCertificationResultData(listing, certResult);
+                    newRow.add(""); //blank space for test standards
+                    newRow.add(""); //blank space for test functionality
                     newRow.add(testProc.getTestProcedure().getName() + "; " + testProc.getTestProcedureVersion());
                     result.add(newRow);
                 }
             }
         } else {
-            listingFirstRow.add("");
+            certificationResultFirstRow.add("");
         }
         return result;
     }
 
-    private List<String> getListingRowValues(CertifiedProductSearchDetails listing) {
+    private List<String> getSingleValuedCertificationResultData(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         List<String> result = new ArrayList<String>();
         result.add(listing.getChplProductNumber());
         result.add(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
@@ -172,15 +173,9 @@ public class ListingsWithCriterionCSVPresenter {
                 ? listing.getVersion().getVersionId().toString() : "?");
         result.add(formatDate(listing.getCertificationDate()));
         result.add(listing.getCurrentStatus().getStatus().getName());
+        result.add(certResult.isSuccess() ? "Yes" : "No");
+        result.add(certResult.getPrivacySecurityFramework());
         return result;
-    }
-
-    private List<String> createBlankRow(int size) {
-        List<String> blankRow = new ArrayList<String>();
-        for (int i = 0; i < size; i++) {
-            blankRow.add("");
-        }
-        return blankRow;
     }
 
     protected String formatEdition(CertifiedProductSearchDetails listing) {
