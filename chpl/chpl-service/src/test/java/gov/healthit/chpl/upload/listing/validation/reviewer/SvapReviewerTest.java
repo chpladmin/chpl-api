@@ -18,13 +18,14 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class SvapReviewerTest {
     private static final String SVAPS_NOT_APPLICABLE = "Standards Version Advancement Process(es) are not applicable for the criterion %s. They have been removed.";
-    private static final String SVAP_NOT_FOUND = "Standards Version Advancement Process %s is not valid for criteria %s.";
+    private static final String SVAP_NOT_FOUND_AND_REMOVED = "Standards Version Advancement Process %s is not valid for criteria %s. It has been removed.";
     private static final String SVAP_NAME_MISSING = "There was no Regulatory Text Citation found for SVAP(s) on criteria %s.";
     private static final String SVAP_REPLACED = "Standards Version Advancement Process %s for criteria %s has been replaced.";
 
@@ -39,9 +40,9 @@ public class SvapReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.svapsNotApplicable"),
                 ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(SVAPS_NOT_APPLICABLE, i.getArgument(1), ""));
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.svap.invalidCriteria"),
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.svap.invalidCriteriaAndRemoved"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-            .thenAnswer(i -> String.format(SVAP_NOT_FOUND, i.getArgument(1), i.getArgument(2)));
+            .thenAnswer(i -> String.format(SVAP_NOT_FOUND_AND_REMOVED, i.getArgument(1), i.getArgument(2)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.svap.missingCitation"),
                 ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(SVAP_NAME_MISSING, i.getArgument(1), ""));
@@ -49,7 +50,7 @@ public class SvapReviewerTest {
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(SVAP_REPLACED, i.getArgument(1), i.getArgument(2)));
 
-        reviewer = new SvapReviewer(certResultRules, msgUtil);
+        reviewer = new SvapReviewer(certResultRules, Mockito.mock(ResourcePermissions.class), msgUtil);
     }
 
     @Test
@@ -148,12 +149,14 @@ public class SvapReviewerTest {
                         .svaps(svaps)
                         .build())
                 .build();
+        assertEquals(2, listing.getCertificationResults().get(0).getSvaps().size());
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(
-                String.format(SVAP_NOT_FOUND, "bad name", "170.315 (a)(1)")));
+                String.format(SVAP_NOT_FOUND_AND_REMOVED, "bad name", "170.315 (a)(1)")));
+        assertEquals(1, listing.getCertificationResults().get(0).getSvaps().size());
     }
 
     @Test
@@ -187,7 +190,7 @@ public class SvapReviewerTest {
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(
-                String.format(SVAP_NAME_MISSING, "170.315 (a)(1)", "")));
+                String.format(SVAP_NOT_FOUND_AND_REMOVED, "", "170.315 (a)(1)")));
     }
 
     @Test

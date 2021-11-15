@@ -1,5 +1,7 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import java.util.Iterator;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,22 +10,25 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
-import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 import lombok.extern.log4j.Log4j2;
 
 @Component("listingUploadSvapReviewer")
 @Log4j2
-public class SvapReviewer implements Reviewer {
+public class SvapReviewer extends PermissionBasedReviewer {
     private CertificationResultRules certResultRules;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
     public SvapReviewer(CertificationResultRules certResultRules,
+            ResourcePermissions resourcePermissions,
             ErrorMessageUtil msgUtil) {
+        super(msgUtil, resourcePermissions);
         this.certResultRules = certResultRules;
         this.msgUtil = msgUtil;
     }
@@ -38,6 +43,7 @@ public class SvapReviewer implements Reviewer {
     private void reviewCertificationResult(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         reviewCriteriaCanHaveSvaps(listing, certResult);
         if (!CollectionUtils.isEmpty(certResult.getSvaps())) {
+            removeSvapsWithoutIds(listing, certResult);
             certResult.getSvaps().stream()
                 .forEach(svap -> reviewSvapFields(listing, certResult, svap));
         }
@@ -53,22 +59,27 @@ public class SvapReviewer implements Reviewer {
         }
     }
 
-    private void reviewSvapFields(CertifiedProductSearchDetails listing,
-            CertificationResult certResult, CertificationResultSvap svap) {
-        reviewIdRequired(listing, certResult, svap);
-        reviewRegulatoryTextCitationRequired(listing, certResult, svap);
-        reviewSvapMarkedAsReplaced(listing, certResult, svap);
+    private void removeSvapsWithoutIds(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        if (CollectionUtils.isEmpty(certResult.getSvaps())) {
+            return;
+        }
+        Iterator<CertificationResultSvap> svapIter = certResult.getSvaps().iterator();
+        while (svapIter.hasNext()) {
+            CertificationResultSvap svap = svapIter.next();
+            if (svap.getSvapId() == null) {
+                svapIter.remove();
+                addCriterionErrorOrWarningByPermission(listing, certResult,
+                        "listing.criteria.svap.invalidCriteriaAndRemoved",
+                        svap.getRegulatoryTextCitation(),
+                        Util.formatCriteriaNumber(certResult.getCriterion()));
+            }
+        }
     }
 
-    private void reviewIdRequired(CertifiedProductSearchDetails listing,
+    private void reviewSvapFields(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultSvap svap) {
-        if (svap.getSvapId() == null
-                && !StringUtils.isEmpty(svap.getRegulatoryTextCitation())) {
-            listing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.criteria.svap.invalidCriteria",
-                    svap.getRegulatoryTextCitation(),
-                    Util.formatCriteriaNumber(certResult.getCriterion())));
-        }
+        reviewRegulatoryTextCitationRequired(listing, certResult, svap);
+        reviewSvapMarkedAsReplaced(listing, certResult, svap);
     }
 
     private void reviewRegulatoryTextCitationRequired(CertifiedProductSearchDetails listing,
