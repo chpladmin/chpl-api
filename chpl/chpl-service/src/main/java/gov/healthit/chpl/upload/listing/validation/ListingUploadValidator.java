@@ -21,6 +21,7 @@ import gov.healthit.chpl.upload.listing.validation.reviewer.DeveloperReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.EditionCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.EditionReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.IcsCodeReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.MeasureReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.ProductReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.QmsStandardReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.SedReviewer;
@@ -57,6 +58,7 @@ public class ListingUploadValidator {
     private InheritanceReviewer inheritanceReviewer;
     private QmsStandardReviewer qmsReviewer;
     private AccessibilityStandardReviewer accStdReviewer;
+    private MeasureReviewer measureReviewer;
     private DuplicateDataReviewer duplicateDataReviewer;
     private UrlReviewer urlReviewer;
     private FieldLengthReviewer fieldLengthReviewer;
@@ -64,7 +66,6 @@ public class ListingUploadValidator {
     private CertificationResultReviewer certResultReviewer;
     private CqmResultReviewer cqmResultReviewer;
     private SedReviewer sedReviewer;
-    //TODO: measures, optional standards
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
@@ -88,6 +89,7 @@ public class ListingUploadValidator {
             InheritanceReviewer inheritanceReviewer,
             QmsStandardReviewer qmsReviewer,
             AccessibilityStandardReviewer accStdReviewer,
+            @Qualifier("listingUploadMeasureReviewer") MeasureReviewer measureReviewer,
             DuplicateDataReviewer duplicateDataReviewer,
             UrlReviewer urlReviewer,
             FieldLengthReviewer fieldLengthReviewer,
@@ -115,6 +117,7 @@ public class ListingUploadValidator {
         this.inheritanceReviewer = inheritanceReviewer;
         this.qmsReviewer = qmsReviewer;
         this.accStdReviewer = accStdReviewer;
+        this.measureReviewer = measureReviewer;
         this.duplicateDataReviewer = duplicateDataReviewer;
         this.urlReviewer = urlReviewer;
         this.fieldLengthReviewer = fieldLengthReviewer;
@@ -143,9 +146,10 @@ public class ListingUploadValidator {
         additionalSoftwareCodeReviewer.review(listing);
         certifiedDateCodeReviewer.review(listing);
         certDateReviewer.review(listing);
+        duplicateDataReviewer.review(listing);
         qmsReviewer.review(listing);
         accStdReviewer.review(listing);
-        duplicateDataReviewer.review(listing);
+        measureReviewer.review(listing);
         urlReviewer.review(listing);
         fieldLengthReviewer.review(listing);
         unsupportedCharacterReviewer.review(listing);

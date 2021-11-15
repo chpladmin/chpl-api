@@ -70,25 +70,22 @@ public class SurveillanceBasicEntity {
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
 
-    @Column(name = "user_permission_id")
-    private Long userPermissionId;
-
     public SurveillanceBasic buildSurveillanceBasic() {
         return SurveillanceBasic.builder()
                 .certifiedProductId(this.getCertifiedProductId())
                 .chplProductNumber(this.getChplProductNumber())
                 .endDay(this.getEndDate())
-                .endDate(Date.from(this.getEndDate().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                .endDate(this.getEndDate() == null ? null : Date.from(this.getEndDate().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant()))
                 .friendlyId(this.getFriendlyId())
                 .id(this.getId())
                 .numClosedNonconformities(this.getNumClosedNonconformities())
                 .numOpenNonconformities(this.getNumOpenNonconformities())
                 .numRandomizedSites(this.getNumRandomizedSites())
                 .startDay(this.getStartDate())
-                .startDate(Date.from(this.getStartDate().atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                .startDate(this.getStartDate() == null ? null : Date.from(this.getStartDate().atStartOfDay(ZoneId.systemDefault()).toInstant()))
                 .surveillanceType(this.getSurveillanceType() != null ? this.getSurveillanceType().buildSurveillanceType() : null)
                 .surveillanceTypeId(this.getSurveillanceTypeId())
-                .userPermissionId(this.getUserPermissionId())
+                .userPermissionId(SurveillanceBasic.AUTHORITY_ACB)
             .build();
     }
 }

@@ -39,6 +39,7 @@ import gov.healthit.chpl.surveillance.report.dto.SurveillanceOutcomeDTO;
 import gov.healthit.chpl.surveillance.report.dto.SurveillanceProcessTypeDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
 import gov.healthit.chpl.web.controller.results.ComplaintResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -165,6 +166,7 @@ public class SurveillanceReportController {
                     + "on the ACB associated with the report.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @DeprecatedResponseFields(responseClass = ChplOneTimeTrigger.class)
     @RequestMapping(value = "/export/annual/{annualReportId}", method = RequestMethod.GET)
     public ChplOneTimeTrigger exportAnnualReport(@PathVariable("annualReportId") Long annualReportId)
             throws ValidationException, SchedulerException, EntityRetrievalException,
@@ -186,6 +188,7 @@ public class SurveillanceReportController {
                     + "authority on the ACB associated with the report.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @DeprecatedResponseFields(responseClass = QuarterlyReport.class)
     @RequestMapping(value = "/quarterly", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<QuarterlyReport> getAllQuarterlyReports() throws AccessDeniedException {
         List<QuarterlyReportDTO> allReports = reportManager.getQuarterlyReports();
@@ -201,6 +204,7 @@ public class SurveillanceReportController {
                     + "authority on the ACB associated with the report.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @DeprecatedResponseFields(responseClass = QuarterlyReport.class)
     @RequestMapping(value = "/quarterly/{quarterlyReportId}",
         method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody QuarterlyReport getQuarterlyReport(@PathVariable Long quarterlyReportId)
@@ -216,6 +220,7 @@ public class SurveillanceReportController {
                     + "authority on the ACB associated with the report.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @DeprecatedResponseFields(responseClass = RelevantListing.class)
     @RequestMapping(value = "/quarterly/{quarterlyReportId}/listings",
         method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<RelevantListing> getRelevantListings(@PathVariable Long quarterlyReportId)
@@ -239,6 +244,7 @@ public class SurveillanceReportController {
                     + "authority on the ACB associated with the report.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @DeprecatedResponseFields(responseClass = ComplaintResults.class)
     @RequestMapping(value = "/quarterly/{quarterlyReportId}/complaints",
         method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ComplaintResults getRelevantComplaints(@PathVariable Long quarterlyReportId)
@@ -256,6 +262,7 @@ public class SurveillanceReportController {
                         + "authority on the ACB associated with the report.",
                 security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                         @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @DeprecatedResponseFields(responseClass = QuarterlyReport.class)
     @RequestMapping(value = "/quarterly", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public QuarterlyReport createQuarterlyReport(
             @RequestBody(required = true) QuarterlyReport createRequest)
@@ -274,6 +281,7 @@ public class SurveillanceReportController {
                     + "authority on the ACB associated with the report.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @DeprecatedResponseFields(responseClass = PrivilegedSurveillance.class)
     @RequestMapping(value = "/quarterly/{quarterlyReportId}/surveillance/{surveillanceId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public PrivilegedSurveillance updatePrivilegedSurveillanceData(
             @PathVariable Long quarterlyReportId,
@@ -320,6 +328,7 @@ public class SurveillanceReportController {
                     + "authority on the ACB associated with the report.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @DeprecatedResponseFields(responseClass = RelevantListing.class)
     @RequestMapping(value = "/quarterly/{quarterlyReportId}/listings/{listingId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public RelevantListing updateRelevantListing(@PathVariable Long quarterlyReportId,
             @PathVariable Long listingId,
@@ -362,6 +371,7 @@ public class SurveillanceReportController {
                 + "on the ACB associated with the report.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @DeprecatedResponseFields(responseClass = QuarterlyReport.class)
     @RequestMapping(value = "/quarterly", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public QuarterlyReport updateQuarterlyReport(
         @RequestBody(required = true) QuarterlyReport updateRequest)
@@ -392,6 +402,7 @@ public class SurveillanceReportController {
                     + "on the ACB associated with the report.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @DeprecatedResponseFields(responseClass = ChplOneTimeTrigger.class)
     @RequestMapping(value = "/export/quarterly/{quarterlyReportId}", method = RequestMethod.GET)
     public ChplOneTimeTrigger exportQuarterlyReport(@PathVariable("quarterlyReportId") Long quarterlyReportId)
                 throws ValidationException, SchedulerException, UserRetrievalException {

@@ -80,6 +80,7 @@ import gov.healthit.chpl.validation.listing.Validator;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
 import gov.healthit.chpl.web.controller.results.CQMResultDetailResults;
 import gov.healthit.chpl.web.controller.results.CertificationResults;
 import gov.healthit.chpl.web.controller.results.MeasureResults;
@@ -173,6 +174,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/details",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
+    @DeprecatedResponseFields(responseClass = CertifiedProductSearchDetails.class)
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
@@ -196,6 +198,7 @@ public class CertifiedProductController {
             + "{addlSoftwareCode}.{certDateCode}/details",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
+    @DeprecatedResponseFields(responseClass = CertifiedProductSearchDetails.class)
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumber(
             @PathVariable("year") String year,
@@ -228,6 +231,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{chplPrefix}-{identifier}/details",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
+    @DeprecatedResponseFields(responseClass = CertifiedProductSearchDetails.class)
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumber2(
             @PathVariable("chplPrefix") String chplPrefix,
@@ -257,6 +261,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
+    @DeprecatedResponseFields(responseClass = CertifiedProductSearchBasicDetails.class)
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchBasicDetails getCertifiedProductByIdBasic(
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
@@ -289,6 +294,7 @@ public class CertifiedProductController {
     })
     @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
             + "{addlSoftwareCode}.{certDateCode}",  method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @DeprecatedResponseFields(responseClass = CertifiedProductSearchBasicDetails.class)
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchBasicDetails getCertifiedProductByChplProductNumberBasic(
             @PathVariable("year") String year,
@@ -328,6 +334,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{chplPrefix}-{identifier}",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
+    @DeprecatedResponseFields(responseClass = CertifiedProductSearchBasicDetails.class)
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchBasicDetails getCertifiedProductByChplProductNumberBasic2(
             @PathVariable("chplPrefix") String chplPrefix,
@@ -534,6 +541,7 @@ public class CertifiedProductController {
     })
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/certification_results", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
+    @DeprecatedResponseFields(responseClass = CertificationResults.class)
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertificationResults getCertificationResultsByCertifiedProductId(
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
@@ -566,6 +574,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}"
             + ".{certDateCode}/certification_results", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
+    @DeprecatedResponseFields(responseClass = CertificationResults.class)
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertificationResults getCertificationResultsByCertifiedProductId(
             @PathVariable("year") String year,
@@ -603,6 +612,7 @@ public class CertifiedProductController {
     })
     @RequestMapping(value = "/{chplPrefix}-{identifier}/certification_results", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
+    @DeprecatedResponseFields(responseClass = CertificationResults.class)
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertificationResults getCertificationResultsByCertifiedProductId(
             @PathVariable("chplPrefix") String chplPrefix,
@@ -686,6 +696,7 @@ public class CertifiedProductController {
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY) })
     @RequestMapping(value = "/{certifiedProductId}", method = RequestMethod.PUT,
             produces = "application/json; charset=utf-8")
+    @DeprecatedResponseFields(responseClass = CertifiedProductSearchDetails.class)
     public ResponseEntity<CertifiedProductSearchDetails> updateCertifiedProduct(
             @RequestBody(required = true) ListingUpdateRequest updateRequest)
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
@@ -776,6 +787,7 @@ public class CertifiedProductController {
         for (PendingCertifiedProductDTO product : pcps) {
             PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(product);
             pcpManager.addAllVersionsToCmsCriterion(pcpDetails);
+            pcpManager.addAvailableConformanceMethods(pcpDetails);
             pcpManager.addAvailableTestFunctionalities(pcpDetails);
             pcpManager.addAvailableOptionalStandards(pcpDetails);
             result.add(pcpDetails);
@@ -790,6 +802,7 @@ public class CertifiedProductController {
                     + "on the ACB for each pending certified product is required.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @DeprecatedResponseFields(responseClass = PendingCertifiedProductDetails.class)
     @RequestMapping(value = "/pending/{pcpId:^-?\\d+$}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody PendingCertifiedProductDetails getPendingCertifiedProductById(
@@ -890,6 +903,7 @@ public class CertifiedProductController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/pending/{pcpId:^-?\\d+$}/beta/confirm", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
+    @DeprecatedResponseFields(responseClass = CertifiedProductSearchDetails.class)
     public ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProductRequest(
             @RequestBody(required = true) ConfirmCertifiedProductRequest request)
             throws InvalidArgumentsException, ValidationException,
@@ -967,6 +981,7 @@ public class CertifiedProductController {
                     + "and administrative authority on the ACB(s) specified in the file.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @DeprecatedResponseFields(responseClass = PendingCertifiedProductResults.class)
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<PendingCertifiedProductResults> upload(@RequestParam("file") MultipartFile file)
             throws ValidationException, JsonProcessingException, InvalidArgumentsException, MaxUploadSizeExceededException {

@@ -2,12 +2,14 @@ package gov.healthit.chpl.dao;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.entity.TestStandardEntity;
 
@@ -45,6 +47,14 @@ public class TestStandardDAO extends BaseDAOImpl {
         return dto;
     }
 
+    public List<TestStandard> getAllByNumberAndEdition(String number, Long editionId) {
+        List<TestStandardEntity> entities = getEntitiesByNumberAndYear(number, editionId);
+
+        return entities.stream()
+                .map(entity -> new TestStandard(entity))
+                .collect(Collectors.toList());
+    }
+
     public TestStandardDTO getByIdAndEdition(Long testStandardId, Long editionId) {
         TestStandardDTO dto = null;
         List<TestStandardEntity> entities = getEntitiesByIdAndYear(testStandardId, editionId);
@@ -80,7 +90,7 @@ public class TestStandardDAO extends BaseDAOImpl {
                 + "FROM TestStandardEntity ts "
                 + "JOIN FETCH ts.certificationEdition edition "
                 + "WHERE ts.deleted <> true "
-                + "AND UPPER(ts.name) = :number "
+                + "AND UPPER(ts.name) LIKE :number "
                 + "AND edition.id = :editionId ";
         Query query = entityManager.createQuery(tsQuery, TestStandardEntity.class);
         query.setParameter("number", number.toUpperCase());

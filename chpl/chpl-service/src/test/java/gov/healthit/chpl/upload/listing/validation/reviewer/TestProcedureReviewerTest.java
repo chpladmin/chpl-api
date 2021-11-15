@@ -1,16 +1,19 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
@@ -22,7 +25,7 @@ import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class TestProcedureReviewerTest {
-    private static final String TEST_PROCEDURE_NOT_APPLICABLE = "Test procedures are not applicable for the criterion %s.";
+    private static final String TEST_PROCEDURE_NOT_APPLICABLE = "Test procedures are not applicable for the criterion %s. They have been removed.";
     private static final String TEST_PROCEDURE_NAME_INVALID = "Certification %s contains an invalid test procedure name: '%s'.";
     private static final String TEST_PROCEDURE_REQUIRED = "Test procedures are required for certification criteria %s.";
     private static final String MISSING_TEST_PROCEDURE_NAME = "Test procedure name is missing for certification %s.";
@@ -32,6 +35,7 @@ public class TestProcedureReviewerTest {
     private ErrorMessageUtil msgUtil;
     private ResourcePermissions resourcePermissions;
     private TestProcedureReviewer reviewer;
+    private FF4j ff4j;
 
     @Before
     @SuppressWarnings("checkstyle:magicnumber")
@@ -55,7 +59,12 @@ public class TestProcedureReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.missingTestProcedureVersion"),
                 ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(MISSING_TEST_PROCEDURE_VERSION, i.getArgument(1), ""));
-        reviewer = new TestProcedureReviewer(certResultRules, msgUtil, resourcePermissions);
+
+        ff4j = Mockito.mock(FF4j.class);
+        Mockito.when(ff4j.check(FeatureList.CONFORMANCE_METHOD))
+        .thenReturn(false);
+
+        reviewer = new TestProcedureReviewer(certResultRules, msgUtil, resourcePermissions, ff4j);
     }
 
     @Test
@@ -157,7 +166,7 @@ public class TestProcedureReviewerTest {
     }
 
     @Test
-    public void review_testProcedureNotApplicableToCriteria_hasError() {
+    public void review_testProcedureNotApplicableToCriteria_hasWarningAndTestProceduresSetNull() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(true);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_PROCEDURE)))
@@ -183,11 +192,11 @@ public class TestProcedureReviewerTest {
                 .build();
         reviewer.review(listing);
 
-        assertEquals(1, listing.getCertificationResults().get(0).getTestProcedures().size());
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(
                 String.format(TEST_PROCEDURE_NOT_APPLICABLE, "170.315 (a)(1)")));
+        assertNull(listing.getCertificationResults().get(0).getTestProcedures());
     }
 
     @Test

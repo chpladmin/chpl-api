@@ -520,9 +520,14 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         } else if (activity.getTrigger().getName()
                 .equals(QuestionableActivityTriggerConcept.REAL_WORLD_TESTING_REMOVED.getName())) {
             currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getBefore());
-        }
-        else if (activity.getTrigger().getName()
+        } else if (activity.getTrigger().getName()
                 .equals(QuestionableActivityTriggerConcept.PROMOTING_INTEROPERABILITY_UPDATED_BY_ACB.getName())) {
+            currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getAfter());
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.REMOVED_NONCONFORMITY_ADDED.getName())) {
+            currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getAfter());
+        } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.REMOVED_REQUIREMENT_ADDED.getName())) {
             currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getAfter());
         }
         currRow.set(ACTIVITY_REASON_COL, activity.getReason());
