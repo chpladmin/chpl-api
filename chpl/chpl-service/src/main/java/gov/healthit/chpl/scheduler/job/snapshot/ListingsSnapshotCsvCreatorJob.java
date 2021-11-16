@@ -204,7 +204,7 @@ public class ListingsSnapshotCsvCreatorJob extends DownloadableResourceCreatorJo
 
     private String createHtmlMessage() {
         return chplHtmlEmailBuilder.initialize()
-                .heading("Listings With Criterion Snapshot")
+                .heading("Listings Snapshot")
                 .paragraph(null,
                         String.format(env.getProperty("listingsSnapshot.body"),
                                 this.edition, this.snapshotDate.toString()))

@@ -753,7 +753,7 @@
         <job>
             <name>Listings Snapshot</name>
             <group>chplJobs</group>
-            <description>Generate a CSV snapshot of listings in the system on January 2, 2020.</description>
+            <description>Generate a CSV snapshot of listings in the system on January 1, 2020.</description>
             <job-class>gov.healthit.chpl.scheduler.job.snapshot.ListingsSnapshotCsvCreatorJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
