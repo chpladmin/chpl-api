@@ -27,6 +27,8 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.entity.CertificationStatusType;
 
 public class ListingsWithCriterionCSVPresenter {
+    private static final String UNKNOWN_VALUE = "?";
+
     private Logger logger;
     private CertificationCriterion criterion;
 
@@ -165,12 +167,12 @@ public class ListingsWithCriterionCSVPresenter {
                 : listing.getDeveloper().getWebsite());
         result.add(formatSelfDeveloper(listing));
         result.addAll(getContactCells(listing));
-        result.add(listing.getProduct() != null ? listing.getProduct().getName() : "?");
+        result.add(listing.getProduct() != null ? listing.getProduct().getName() : UNKNOWN_VALUE);
         result.add(ObjectUtils.allNotNull(listing.getProduct(), listing.getProduct().getProductId())
-                ? listing.getProduct().getProductId().toString() : "?");
-        result.add(listing.getVersion() != null ? listing.getVersion().getVersion() : "?");
+                ? listing.getProduct().getProductId().toString() : UNKNOWN_VALUE);
+        result.add(listing.getVersion() != null ? listing.getVersion().getVersion() : UNKNOWN_VALUE);
         result.add(ObjectUtils.allNotNull(listing.getVersion(), listing.getVersion().getVersionId())
-                ? listing.getVersion().getVersionId().toString() : "?");
+                ? listing.getVersion().getVersionId().toString() : UNKNOWN_VALUE);
         result.add(formatDate(listing.getCertificationDate()));
         result.add(listing.getCurrentStatus().getStatus().getName());
         result.add(certResult.isSuccess() ? "Yes" : "No");
@@ -211,7 +213,7 @@ public class ListingsWithCriterionCSVPresenter {
         if (ObjectUtils.allNotNull(listing.getDeveloper(), listing.getDeveloper().getSelfDeveloper())) {
             return BooleanUtils.isTrue(listing.getDeveloper().getSelfDeveloper()) ? "Yes" : "No";
         }
-        return "?";
+        return UNKNOWN_VALUE;
     }
 
     protected String formatDate(Long dateInMillis) {
