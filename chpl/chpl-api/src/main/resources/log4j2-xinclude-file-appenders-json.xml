@@ -6,6 +6,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="chartDataCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />          
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -24,6 +26,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="summaryStatisticsEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -42,6 +46,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="summaryStatisticsCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy interval="1" modulate="true" />
@@ -59,6 +65,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="curesStatisticsCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -77,6 +85,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="curesStatisticsEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -95,6 +105,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="urlStatusDataCollectorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -113,6 +125,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="questionableUrlReportGeneratorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -131,6 +145,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="certifiedProductDownloadableResourceCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -149,6 +165,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="g3Sed2015DownloadableResourceCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -167,6 +185,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="surveillanceDownloadableResourceCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -185,6 +205,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="directReviewDownloadableResourceCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -203,6 +225,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="svapActivityDownloadableResourceCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -221,6 +245,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="brokenSurveillanceRulesCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -239,6 +265,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="brokenSurveillanceRulesEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -257,6 +285,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="inheritanceErrorsReportCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -275,6 +305,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="inheritanceErrorsReportEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -293,6 +325,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="cacheStatusAgeJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -311,6 +345,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="triggerDeveloperBanJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -329,6 +365,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="splitDeveloperJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -347,6 +385,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="mergeDeveloperJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -365,6 +405,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="apiKeyWarningEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -383,6 +425,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="apiKeyDeleteJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -401,6 +445,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="questionableActivityEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -419,6 +465,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="pendingChangeRequestEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -437,6 +485,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="interruptJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -455,6 +505,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="massRequirePasswordChangeJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -473,6 +525,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="updateListingStatusJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -491,6 +545,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="directReviewCacheRefreshJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -509,6 +565,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="developerAccessEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -527,6 +585,8 @@
                  filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="cacheListenerActivity" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -545,6 +605,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="realWorldTestingUploadJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -563,6 +625,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="auditDataRetentionJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -581,6 +645,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="listingValidationReportCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -599,6 +665,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="listingValidationReportEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -617,6 +685,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="realWorldTestingReportEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -635,6 +705,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="quarterlyReportGenerationJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -653,6 +725,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="annualReportGenerationJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -671,6 +745,8 @@
             filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="userDefinedTriggersEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -688,6 +764,8 @@
         filePattern="${logDir}/scheduler/history/listingUploadValidationJob-%d{yyyy-MM-dd}.json">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="listingUploadValidationJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -706,6 +784,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="surveillanceActivityReportJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -724,6 +804,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="surveillanceUploadJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -742,6 +824,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="promotingInteroperabilityUploadJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -761,6 +845,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="deprecatedApiUsageEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -779,6 +865,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="testStandardConversionJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -797,6 +885,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="removeCriteriaJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" /> 
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
@@ -815,6 +905,8 @@
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="addCuresUpdateToListingsJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
         </JsonLayout>
         <Policies>
             <TimeBasedTriggeringPolicy
