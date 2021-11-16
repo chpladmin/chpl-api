@@ -1,5 +1,19 @@
 # Release Notes
 
+## Version 32.4.0
+_15 November 2021_
+
+### Features
+* Deprecate "authority", "userPermissionId" fields for surveillance and update ROLE_ONC permissions to allow surveillance management
+* Update security so ONC-ACBs have the ability to edit Developer users
+* Modify values in "Requirement" dropdown and "Non-Conformity Type" dropdown under surveillance activity
+* Add logging message when user logs in using user name
+
+### Flagged Features
+* Optional Standard parsing, validation in flexible upload
+
+---
+
 ## Version 32.3.0
 _1 November 2021_
 
