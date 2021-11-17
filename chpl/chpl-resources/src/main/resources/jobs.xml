@@ -749,5 +749,16 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
+        
+        <!-- One time job to remove a defined set of Measures -->
+        <job>
+            <name>removeMeasuresJob</name>
+            <group>systemJobs</group>
+            <description>One time job to remove a defined set of Measures</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.measureremoval.RemoveMeasuresJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+        
     </schedule>
 </job-scheduling-data>
