@@ -1,7 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -13,7 +12,6 @@ import javax.mail.internet.AddressException;
 import org.apache.commons.lang3.NotImplementedException;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -32,16 +30,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
-import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.auth.AuthorizeCredentials;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UserInvitation;
 import gov.healthit.chpl.domain.auth.UsersResponse;
-import gov.healthit.chpl.dto.auth.InvitationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserInvitationDTO;
-import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -55,7 +50,6 @@ import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.logging.Loggable;
-import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.auth.AuthenticationManager;
 import gov.healthit.chpl.manager.auth.UserManager;
@@ -77,22 +71,18 @@ public class UserManagementController {
     private UserManager userManager;
     private InvitationManager invitationManager;
     private AuthenticationManager authenticationManager;
-    private ActivityManager activityManager;
     private FF4j ff4j;
-    private Environment env;
     private ErrorMessageUtil msgUtil;
 
 
     @Autowired
     public UserManagementController(UserManager userManager, InvitationManager invitationManager,
-            AuthenticationManager authenticationManager, ActivityManager activityManager, FF4j ff4j,
-            Environment env, ErrorMessageUtil errorMessageUtil) {
+            AuthenticationManager authenticationManager, FF4j ff4j,
+            ErrorMessageUtil errorMessageUtil) {
         this.userManager = userManager;
         this.invitationManager = invitationManager;
         this.authenticationManager = authenticationManager;
-        this.activityManager = activityManager;
         this.ff4j = ff4j;
-        this.env = env;
         this.msgUtil = errorMessageUtil;
     }
 
@@ -119,40 +109,12 @@ public class UserManagementController {
             throw new ValidationException(errors, null);
         }
 
-        InvitationDTO invitation = invitationManager.getByInvitationHash(userInfo.getHash());
+        UserInvitation invitation = invitationManager.getByInvitationHash(userInfo.getHash());
         if (invitation == null || invitation.isOlderThan(VALID_INVITATION_LENGTH)) {
             throw new ValidationException(msgUtil.getMessage("user.providerKey.invalid"));
         }
 
-        UserDTO createdUser = invitationManager.createUserFromInvitation(invitation, userInfo.getUser());
-
-        // get the invitation again to get the new hash
-        invitation = invitationManager.getById(invitation.getId());
-
-        // send email for user to confirm email address
-        String htmlMessage = "<p>Thank you for setting up your administrator account on ONC's Certified Health IT Product List (CHPL). "
-                + "Please click the link below to activate your account: <br/>" + env.getProperty("chplUrlBegin")
-                + "/#/registration/confirm-user/" + invitation.getConfirmToken() + "</p>"
-                + "<p>If you have any issues completing the registration, "
-                + "please visit the <a href=\"https://inquiry.healthit.gov/support/plugins/servlet/loginfreeRedirMain?portalid=2&request=51\">Health IT Feedback and Inquiry Portal</a> and select \"Certified Health IT Product List (CHPL)\" to submit a ticket.</p>"
-                + "<p>The CHPL Team</p>";
-
-        String[] toEmails = {
-                createdUser.getEmail()
-        };
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
-        .subject("Confirm CHPL Administrator Account")
-        .htmlMessage(htmlMessage)
-        .sendEmail();
-
-        String activityDescription = "User " + createdUser.getEmail() + " was created.";
-        activityManager.addActivity(ActivityConcept.USER, createdUser.getId(), activityDescription,
-                null, createdUser, createdUser.getId());
-
-        User result = new User(createdUser);
-        result.setHash(invitation.getConfirmToken());
-        return result;
+        return invitationManager.createUserFromInvitation(invitation, userInfo.getUser());
     }
 
     private Set<String> validateCreateUserFromInvitationRequest(CreateUserFromInvitationRequest request) {
@@ -197,7 +159,7 @@ public class UserManagementController {
     public User confirmUser(@RequestBody String hash) throws InvalidArgumentsException, UserRetrievalException,
     EntityRetrievalException, MessagingException, JsonProcessingException, EntityCreationException,
     MultipleUserAccountsException {
-        InvitationDTO invitation = invitationManager.getByConfirmationHash(hash);
+        UserInvitation invitation = invitationManager.getByConfirmationHash(hash);
 
         if (invitation == null || invitation.isOlderThan(VALID_INVITATION_LENGTH)) {
             throw new InvalidArgumentsException(
@@ -233,7 +195,7 @@ public class UserManagementController {
                     "Username and Password are required since no user is currently logged in.");
         }
 
-        InvitationDTO invitation = invitationManager.getByInvitationHash(credentials.getHash());
+        UserInvitation invitation = invitationManager.getByInvitationHash(credentials.getHash());
         if (invitation == null || invitation.isOlderThan(VALID_CONFIRMATION_LENGTH)) {
             throw new InvalidArgumentsException(
                     "Provided user key is not valid in the database. The user key is valid for up to 3 days from when "
@@ -279,52 +241,29 @@ public class UserManagementController {
             throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
 
-        InvitationDTO createdInvite = null;
+        UserInvitation createdInvitiation = null;
         if (invitation.getRole().equals(Authority.ROLE_ADMIN)) {
-            createdInvite = invitationManager.inviteAdmin(invitation.getEmailAddress());
+            createdInvitiation = invitationManager.inviteAdmin(invitation.getEmailAddress());
         } else if (invitation.getRole().equals(Authority.ROLE_ONC)) {
-            createdInvite = invitationManager.inviteOnc(invitation.getEmailAddress());
+            createdInvitiation = invitationManager.inviteOnc(invitation.getEmailAddress());
         } else if (invitation.getRole().equals(Authority.ROLE_ONC_STAFF)) {
-            createdInvite = invitationManager.inviteOncStaff(invitation.getEmailAddress());
+            createdInvitiation = invitationManager.inviteOncStaff(invitation.getEmailAddress());
         } else if (invitation.getRole().equals(Authority.ROLE_CMS_STAFF)) {
-            createdInvite = invitationManager.inviteCms(invitation.getEmailAddress());
+            createdInvitiation = invitationManager.inviteCms(invitation.getEmailAddress());
         } else if (invitation.getRole().equals(Authority.ROLE_ACB)
                 && invitation.getPermissionObjectId() != null) {
-            createdInvite = invitationManager.inviteWithAcbAccess(invitation.getEmailAddress(),
+            createdInvitiation = invitationManager.inviteWithAcbAccess(invitation.getEmailAddress(),
                     invitation.getPermissionObjectId());
         } else if (invitation.getRole().equals(Authority.ROLE_ATL)
                 && invitation.getPermissionObjectId() != null) {
-            createdInvite = invitationManager.inviteWithAtlAccess(invitation.getEmailAddress(),
+            createdInvitiation = invitationManager.inviteWithAtlAccess(invitation.getEmailAddress(),
                     invitation.getPermissionObjectId());
         } else if (invitation.getRole().equals(Authority.ROLE_DEVELOPER)
                 && invitation.getPermissionObjectId() != null) {
-            createdInvite = invitationManager.inviteWithDeveloperAccess(invitation.getEmailAddress(),
+            createdInvitiation = invitationManager.inviteWithDeveloperAccess(invitation.getEmailAddress(),
                     invitation.getPermissionObjectId());
         }
-
-        // send email
-        String htmlMessage = "<p>Hi,</p>"
-                + "<p>You have been granted a new role on ONC's Certified Health IT Product List (CHPL) "
-                + "which will allow you to manage certified product listings on the CHPL. "
-                + "Please click the link below to create or update your account: <br/>"
-                + env.getProperty("chplUrlBegin") + "/#/registration/create-user/" + createdInvite.getInviteToken()
-                + "</p>"
-                + "<p>If you have any issues completing the registration, "
-                + "please visit the <a href=\"https://inquiry.healthit.gov/support/plugins/servlet/loginfreeRedirMain?portalid=2&request=51\">Health IT Feedback and Inquiry Portal</a> and select \"Certified Health IT Product List (CHPL)\" to submit a ticket.</p>"
-                + "<p>Take care,<br/> " + "The CHPL Team</p>";
-
-        String[] toEmails = {
-                createdInvite.getEmail()
-        };
-
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
-        .subject("CHPL Administrator Invitation")
-        .htmlMessage(htmlMessage)
-        .sendEmail();
-
-        UserInvitation result = new UserInvitation(createdInvite);
-        return result;
+        return createdInvitiation;
     }
 
     @Operation(summary = "Modify user information.", description = "",
@@ -352,7 +291,7 @@ public class UserManagementController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
-    public String deleteUser(@PathVariable("userId") Long userId)
+    public DeletedUser deleteUser(@PathVariable("userId") Long userId)
             throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException,
             JsonProcessingException, EntityCreationException, EntityRetrievalException {
 
@@ -365,13 +304,7 @@ public class UserManagementController {
             throw new UserRetrievalException("Could not find user with id " + userId);
         }
         userManager.delete(toDelete);
-        //db soft delete trigger takes care of deleting things associated with this user.
-
-        String activityDescription = "Deleted user " + toDelete.getUsername() + ".";
-        activityManager.addActivity(ActivityConcept.USER, toDelete.getId(), activityDescription,
-                toDelete, null);
-
-        return "{\"deletedUser\" : true}";
+        return new DeletedUser(true);
     }
 
     @Operation(summary = "View users of the system.",
@@ -424,5 +357,17 @@ public class UserManagementController {
             throws UserRetrievalException {
 
         return userManager.getUserInfo(id);
+    }
+
+    private class DeletedUser {
+        private Boolean deletedUser;
+
+        DeletedUser(Boolean deletedUser) {
+            this.deletedUser = deletedUser;
+        }
+
+       public Boolean getDeletedUser() {
+            return deletedUser;
+       }
     }
 }

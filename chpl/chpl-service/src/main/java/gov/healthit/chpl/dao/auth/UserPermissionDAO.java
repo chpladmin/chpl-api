@@ -1,42 +1,31 @@
 package gov.healthit.chpl.dao.auth;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.auth.UserPermissionDTO;
+import gov.healthit.chpl.domain.auth.UserPermission;
 import gov.healthit.chpl.entity.auth.UserPermissionEntity;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 
 @Repository(value = "userPermissionDAO")
 public class UserPermissionDAO extends BaseDAOImpl {
 
-    public List<UserPermissionDTO> findAll() {
-
+    public List<UserPermission> findAll() {
         List<UserPermissionEntity> results = entityManager
                 .createQuery("from UserPermissionEntity where (NOT deleted = true) ", UserPermissionEntity.class)
                 .getResultList();
-        List<UserPermissionDTO> permissions = new ArrayList<UserPermissionDTO>();
-
-        for (UserPermissionEntity entity : results) {
-
-            UserPermissionDTO permission = new UserPermissionDTO(entity);
-            permission.setDescription(entity.getDescription());
-            permission.setName(entity.getName());
-            permissions.add(permission);
-        }
-
-        return permissions;
+        return results.stream()
+                    .map(entity -> entity.toDomain())
+                    .collect(Collectors.toList());
     }
 
-    public UserPermissionDTO getPermissionFromAuthority(String authority) throws UserPermissionRetrievalException {
-
+    public UserPermission getPermissionFromAuthority(String authority) throws UserPermissionRetrievalException {
         UserPermissionEntity permissionEntity = null;
-
         Query query = entityManager.createQuery(
                 "from UserPermissionEntity where (NOT deleted = true) AND (authority = :authority) ",
                 UserPermissionEntity.class);
@@ -52,7 +41,7 @@ public class UserPermissionDAO extends BaseDAOImpl {
         } else {
             throw new UserPermissionRetrievalException("Permission does not exist.");
         }
-        return new UserPermissionDTO(permissionEntity);
+        return permissionEntity.toDomain();
     }
 
     public Long getIdFromAuthority(String authority) throws UserPermissionRetrievalException {
@@ -76,19 +65,4 @@ public class UserPermissionDAO extends BaseDAOImpl {
 
         return permissionEntity.getId();
     }
-
-    private UserPermissionEntity getById(Long permissionId) {
-
-        Query query = entityManager.createQuery(
-                "SELECT e FROM UserPermissionEntity e " + "WHERE user_permission_id = :permissionId",
-                UserPermissionEntity.class);
-        query.setParameter("permissionId", permissionId);
-
-        List<UserPermissionEntity> results = query.getResultList();
-        if (results == null || results.size() == 0) {
-            return null;
-        }
-        return results.get(0);
-    }
-
 }

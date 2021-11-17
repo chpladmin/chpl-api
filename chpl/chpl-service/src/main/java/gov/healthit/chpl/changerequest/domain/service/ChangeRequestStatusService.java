@@ -17,7 +17,6 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.domain.auth.UserPermission;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -64,8 +63,7 @@ public class ChangeRequestStatusService {
         ChangeRequestStatus crStatus = new ChangeRequestStatus();
         crStatus.setStatusChangeDate(new Date());
         crStatus.setChangeRequestStatusType(crStatusType);
-        crStatus.setUserPermission(
-                new UserPermission(resourcePermissions.getRoleByUserId(AuthUtil.getCurrentUser().getId())));
+        crStatus.setUserPermission(resourcePermissions.getRoleByUserId(AuthUtil.getCurrentUser().getId()));
 
         return crStatusDAO.create(cr, crStatus);
     }
@@ -147,8 +145,7 @@ public class ChangeRequestStatusService {
         crStatus.setChangeRequestStatusType(crStatusType);
         crStatus.setComment(comment);
         crStatus.setStatusChangeDate(new Date());
-        crStatus.setUserPermission(
-                new UserPermission(resourcePermissions.getRoleByUserId(AuthUtil.getCurrentUser().getId())));
+        crStatus.setUserPermission(resourcePermissions.getRoleByUserId(AuthUtil.getCurrentUser().getId()));
         if (resourcePermissions.isUserRoleAcbAdmin()) {
             crStatus.setCertificationBody(getCertificationBodyForCurrentUser());
         }

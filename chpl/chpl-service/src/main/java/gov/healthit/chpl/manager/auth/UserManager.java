@@ -78,7 +78,7 @@ public class UserManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).CREATE)")
     public UserDTO create(UserDTO userDto, String password)
-            throws UserCreationException {
+            throws UserCreationException, JsonProcessingException, EntityRetrievalException, EntityCreationException {
 
         Strength strength = getPasswordStrength(userDto, password);
         if (strength.getScore() < UserManager.MIN_PASSWORD_STRENGTH) {
@@ -87,8 +87,13 @@ public class UserManager extends SecuredManager {
                     strength.getScore(), strength.getCrackTimesDisplay().getOfflineFastHashing1e10PerSecond());
             throw new UserCreationException("Password is not strong enough");
         }
-        UserDTO newUser = userDAO.create(userDto, encodePassword(password));
-        return newUser;
+        UserDTO createdUser = userDAO.create(userDto, encodePassword(password));
+
+        String activityDescription = "User " + createdUser.getEmail() + " was created.";
+        activityManager.addActivity(ActivityConcept.USER, createdUser.getId(), activityDescription,
+                null, createdUser, createdUser.getId());
+
+        return createdUser;
     }
 
     @Transactional
@@ -158,8 +163,14 @@ public class UserManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).DELETE)")
     public void delete(UserDTO user)
-            throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
+            throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException,
+            JsonProcessingException, EntityCreationException, EntityRetrievalException {
         userDAO.delete(user.getId());
+
+        //db soft delete trigger takes care of deleting things associated with this user.
+        String activityDescription = "Deleted user " + user.getUsername() + ".";
+        activityManager.addActivity(ActivityConcept.USER, user.getId(), activityDescription,
+                user, null);
     }
 
     @Transactional
