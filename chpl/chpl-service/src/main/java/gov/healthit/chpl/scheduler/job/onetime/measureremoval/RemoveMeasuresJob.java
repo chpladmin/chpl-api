@@ -89,7 +89,6 @@ public class RemoveMeasuresJob extends QuartzJob {
             }
         });
 
-
         LOGGER.info("********* Completed the Remove Criteria job. *********");
     }
 
