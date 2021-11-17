@@ -100,15 +100,19 @@ public class RemoveMeasuresJob extends QuartzJob {
 
     private List<Measure> getMeasuresToRemove() {
         Set<Measure> allMeasures = measureDAO.findAll();
-        return Stream.of(MEASURES_TO_REMOVE)
+        List<Measure> ms = Stream.of(MEASURES_TO_REMOVE)
                 .map(str -> getMeasureFromString(str, allMeasures))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
+
+        LOGGER.always().log(String.format("Found %s measure for removal.", ms.size()));
+
+        return ms;
     }
 
     private Optional<Measure> getMeasureFromString(String measureString, Set<Measure> measures) {
-        String[] measureParts = measureString.split("|");
+        String[] measureParts = measureString.split("\\|");
         return measures.stream()
                 .filter(m -> m.getDomain().getName().equals(measureParts[0])
                         && m.getName().equals(measureParts[1]))
