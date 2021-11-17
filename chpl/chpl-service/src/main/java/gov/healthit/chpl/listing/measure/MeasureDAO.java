@@ -75,4 +75,31 @@ public class MeasureDAO extends BaseDAOImpl {
         }
         return results;
     }
+
+    public Measure update(Measure measure) {
+        MeasureEntity result = getEntity(measure.getId());
+        result.setAbbreviation(measure.getAbbreviation());
+        result.setName(measure.getName());
+        result.setRemoved(measure.getRemoved());
+
+        update(result);
+
+        return getById(result.getId());
+    }
+
+    private MeasureEntity getEntity(Long id) {
+        Query query = entityManager.createQuery(
+                MEASURE_HQL_BEGIN
+                + "WHERE measure.deleted = false "
+                + "AND measure.id = :id ",
+                MeasureEntity.class);
+        query.setParameter("id", id);
+        List<MeasureEntity> entities = query.getResultList();
+
+        MeasureEntity result = null;
+        if (entities != null && entities.size() > 0) {
+            result = entities.get(0);
+        }
+        return result;
+    }
 }
