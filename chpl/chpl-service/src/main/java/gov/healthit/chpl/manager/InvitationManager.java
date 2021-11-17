@@ -100,7 +100,8 @@ public class InvitationManager extends SecuredManager {
                 .hash(Util.md5(emailAddress + System.currentTimeMillis()))
                 .permission(userPermission.get())
                 .build();
-        UserInvitation createdInvitation = invitationDao.create(invitation);
+        Long createdInvitationId = invitationDao.create(invitation);
+        UserInvitation createdInvitation = invitationDao.getById(createdInvitationId);
         emailInvitedUser(createdInvitation);
         return createdInvitation;
     }
@@ -119,7 +120,8 @@ public class InvitationManager extends SecuredManager {
                 .hash(Util.md5(emailAddress + System.currentTimeMillis()))
                 .permission(userPermission.get())
                 .build();
-        UserInvitation createdInvitation = invitationDao.create(invitation);
+        Long createdInvitationId = invitationDao.create(invitation);
+        UserInvitation createdInvitation = invitationDao.getById(createdInvitationId);
         emailInvitedUser(createdInvitation);
         return createdInvitation;
     }
@@ -138,7 +140,8 @@ public class InvitationManager extends SecuredManager {
                 .hash(Util.md5(emailAddress + System.currentTimeMillis()))
                 .permission(userPermission.get())
                 .build();
-        UserInvitation createdInvitation = invitationDao.create(invitation);
+        Long createdInvitationId = invitationDao.create(invitation);
+        UserInvitation createdInvitation = invitationDao.getById(createdInvitationId);
         emailInvitedUser(createdInvitation);
         return createdInvitation;
     }
@@ -157,7 +160,8 @@ public class InvitationManager extends SecuredManager {
                 .hash(Util.md5(emailAddress + System.currentTimeMillis()))
                 .permission(userPermission.get())
                 .build();
-        UserInvitation createdInvitation = invitationDao.create(invitation);
+        Long createdInvitationId = invitationDao.create(invitation);
+        UserInvitation createdInvitation = invitationDao.getById(createdInvitationId);
         emailInvitedUser(createdInvitation);
         return createdInvitation;
     }
@@ -177,7 +181,8 @@ public class InvitationManager extends SecuredManager {
                 .hash(Util.md5(emailAddress + System.currentTimeMillis()))
                 .permission(userPermission.get())
                 .build();
-        UserInvitation createdInvitation = invitationDao.create(invitation);
+        Long createdInvitationId = invitationDao.create(invitation);
+        UserInvitation createdInvitation = invitationDao.getById(createdInvitationId);
         emailInvitedUser(createdInvitation);
         return createdInvitation;
     }
@@ -197,7 +202,8 @@ public class InvitationManager extends SecuredManager {
                 .hash(Util.md5(emailAddress + System.currentTimeMillis()))
                 .permission(userPermission.get())
                 .build();
-        UserInvitation createdInvitation = invitationDao.create(invitation);
+        Long createdInvitationId = invitationDao.create(invitation);
+        UserInvitation createdInvitation = invitationDao.getById(createdInvitationId);
         emailInvitedUser(createdInvitation);
         return createdInvitation;
     }
@@ -217,7 +223,8 @@ public class InvitationManager extends SecuredManager {
                 .hash(Util.md5(emailAddress + System.currentTimeMillis()))
                 .permission(userPermission.get())
                 .build();
-        UserInvitation createdInvitation = invitationDao.create(invitation);
+        Long createdInvitationId = invitationDao.create(invitation);
+        UserInvitation createdInvitation = invitationDao.getById(createdInvitationId);
         emailInvitedUser(createdInvitation);
         return createdInvitation;
     }

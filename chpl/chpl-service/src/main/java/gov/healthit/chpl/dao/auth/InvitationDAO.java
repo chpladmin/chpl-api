@@ -18,7 +18,7 @@ import lombok.extern.log4j.Log4j2;
 @Repository(value = "invitationDAO")
 @Log4j2
 public class InvitationDAO extends BaseDAOImpl {
-    public UserInvitation create(UserInvitation invitation) throws UserCreationException {
+    public Long create(UserInvitation invitation) throws UserCreationException {
         InvitationEntity toCreate = new InvitationEntity();
         toCreate.setUserPermissionId(invitation.getPermission().getId());
         toCreate.setPermissionObjectId(invitation.getPermissionObjectId());
@@ -27,7 +27,7 @@ public class InvitationDAO extends BaseDAOImpl {
         toCreate.setDeleted(false);
         toCreate.setLastModifiedUser(AuthUtil.getAuditId());
         super.create(toCreate);
-        return toCreate.toDomain();
+        return toCreate.getId();
     }
 
     public UserInvitation update(UserInvitation invitation) throws UserRetrievalException {
