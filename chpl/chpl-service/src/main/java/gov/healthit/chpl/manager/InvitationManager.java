@@ -1,15 +1,11 @@
 package gov.healthit.chpl.manager;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,9 +28,6 @@ import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserInvitationDTO;
-import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
-import gov.healthit.chpl.email.EmailBuilder;
-import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -45,6 +38,7 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.service.InvitationEmailer;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
@@ -57,32 +51,26 @@ public class InvitationManager extends SecuredManager {
     private UserDAO userDao;
     private UserManager userManager;
     private UserPermissionsManager userPermissionsManager;
+    private InvitationEmailer invitationEmailer;
     private ActivityManager activityManager;
-    private ChplHtmlEmailBuilder htmlEmailBuilder;
     private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil msgUtil;
-    private Environment env;
-    private String chplUrlBegin;
     private List<UserPermission> userPermissions;
 
     @Autowired
     @SuppressWarnings({"checkstyle:parameternumber"})
     public InvitationManager(UserPermissionDAO userPermissionDao, InvitationDAO invitationDao,
             UserDAO userDao, UserManager userManager, UserPermissionsManager userPermissionsManager,
-            ActivityManager activityManager, ChplHtmlEmailBuilder htmlEmailBuilder,
-            ResourcePermissions resourcePermissions, ErrorMessageUtil msgUtil, Environment env,
-            @Value("${chplUrlBegin}") String chplUrlBegin) {
+            InvitationEmailer invitationEmailer, ActivityManager activityManager,
+            ResourcePermissions resourcePermissions, ErrorMessageUtil msgUtil) {
         this.invitationDao = invitationDao;
         this.userDao = userDao;
         this.userManager = userManager;
         this.userPermissionsManager = userPermissionsManager;
-        this.htmlEmailBuilder = htmlEmailBuilder;
+        this.invitationEmailer = invitationEmailer;
         this.activityManager = activityManager;
         this.resourcePermissions = resourcePermissions;
         this.msgUtil = msgUtil;
-        this.env = env;
-        this.chplUrlBegin = chplUrlBegin;
-
         this.userPermissions = userPermissionDao.findAll();
     }
 
@@ -91,19 +79,7 @@ public class InvitationManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ADMIN)")
     public UserInvitation inviteAdmin(String emailAddress)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
-        Optional<UserPermission> userPermission = this.userPermissions.stream().filter(perm -> perm.getAuthority().equals(Authority.ROLE_ADMIN)).findAny();
-        if (!userPermission.isPresent()) {
-            throw new UserPermissionRetrievalException("No User Permission was found for authority " + Authority.ROLE_ADMIN);
-        }
-        UserInvitation invitation = UserInvitation.builder()
-                .emailAddress(emailAddress)
-                .hash(Util.md5(emailAddress + System.currentTimeMillis()))
-                .permission(userPermission.get())
-                .build();
-        Long createdInvitationId = invitationDao.create(invitation);
-        UserInvitation createdInvitation = invitationDao.getById(createdInvitationId);
-        emailInvitedUser(createdInvitation);
-        return createdInvitation;
+        return inviteToAccount(Authority.ROLE_ADMIN, null, emailAddress);
     }
 
     @Transactional
@@ -111,19 +87,7 @@ public class InvitationManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ONC)")
     public UserInvitation inviteOnc(String emailAddress)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
-        Optional<UserPermission> userPermission = this.userPermissions.stream().filter(perm -> perm.getAuthority().equals(Authority.ROLE_ONC)).findAny();
-        if (!userPermission.isPresent()) {
-            throw new UserPermissionRetrievalException("No User Permission was found for authority " + Authority.ROLE_ONC);
-        }
-        UserInvitation invitation = UserInvitation.builder()
-                .emailAddress(emailAddress)
-                .hash(Util.md5(emailAddress + System.currentTimeMillis()))
-                .permission(userPermission.get())
-                .build();
-        Long createdInvitationId = invitationDao.create(invitation);
-        UserInvitation createdInvitation = invitationDao.getById(createdInvitationId);
-        emailInvitedUser(createdInvitation);
-        return createdInvitation;
+        return inviteToAccount(Authority.ROLE_ONC, null, emailAddress);
     }
 
     @Transactional
@@ -131,19 +95,7 @@ public class InvitationManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ONC_STAFF)")
     public UserInvitation inviteOncStaff(String emailAddress)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
-        Optional<UserPermission> userPermission = this.userPermissions.stream().filter(perm -> perm.getAuthority().equals(Authority.ROLE_ONC_STAFF)).findAny();
-        if (!userPermission.isPresent()) {
-            throw new UserPermissionRetrievalException("No User Permission was found for authority " + Authority.ROLE_ONC_STAFF);
-        }
-        UserInvitation invitation = UserInvitation.builder()
-                .emailAddress(emailAddress)
-                .hash(Util.md5(emailAddress + System.currentTimeMillis()))
-                .permission(userPermission.get())
-                .build();
-        Long createdInvitationId = invitationDao.create(invitation);
-        UserInvitation createdInvitation = invitationDao.getById(createdInvitationId);
-        emailInvitedUser(createdInvitation);
-        return createdInvitation;
+        return inviteToAccount(Authority.ROLE_ONC_STAFF, null, emailAddress);
     }
 
     @Transactional
@@ -151,19 +103,8 @@ public class InvitationManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_CMS)")
     public UserInvitation inviteCms(String emailAddress)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
-        Optional<UserPermission> userPermission = this.userPermissions.stream().filter(perm -> perm.getAuthority().equals(Authority.ROLE_CMS_STAFF)).findAny();
-        if (!userPermission.isPresent()) {
-            throw new UserPermissionRetrievalException("No User Permission was found for authority " + Authority.ROLE_CMS_STAFF);
-        }
-        UserInvitation invitation = UserInvitation.builder()
-                .emailAddress(emailAddress)
-                .hash(Util.md5(emailAddress + System.currentTimeMillis()))
-                .permission(userPermission.get())
-                .build();
-        Long createdInvitationId = invitationDao.create(invitation);
-        UserInvitation createdInvitation = invitationDao.getById(createdInvitationId);
-        emailInvitedUser(createdInvitation);
-        return createdInvitation;
+        return inviteToAccount(Authority.ROLE_CMS_STAFF, null, emailAddress);
+
     }
 
     @Transactional
@@ -171,20 +112,7 @@ public class InvitationManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ACB, #acbId)")
     public UserInvitation inviteWithAcbAccess(String emailAddress, Long acbId)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
-        Optional<UserPermission> userPermission = this.userPermissions.stream().filter(perm -> perm.getAuthority().equals(Authority.ROLE_ACB)).findAny();
-        if (!userPermission.isPresent()) {
-            throw new UserPermissionRetrievalException("No User Permission was found for authority " + Authority.ROLE_ACB);
-        }
-        UserInvitation invitation = UserInvitation.builder()
-                .emailAddress(emailAddress)
-                .permissionObjectId(acbId)
-                .hash(Util.md5(emailAddress + System.currentTimeMillis()))
-                .permission(userPermission.get())
-                .build();
-        Long createdInvitationId = invitationDao.create(invitation);
-        UserInvitation createdInvitation = invitationDao.getById(createdInvitationId);
-        emailInvitedUser(createdInvitation);
-        return createdInvitation;
+        return inviteToAccount(Authority.ROLE_ACB, acbId, emailAddress);
     }
 
     @Transactional
@@ -192,20 +120,8 @@ public class InvitationManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ATL, #atlId)")
     public UserInvitation inviteWithAtlAccess(String emailAddress, Long atlId)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
-        Optional<UserPermission> userPermission = this.userPermissions.stream().filter(perm -> perm.getAuthority().equals(Authority.ROLE_ATL)).findAny();
-        if (!userPermission.isPresent()) {
-            throw new UserPermissionRetrievalException("No User Permission was found for authority " + Authority.ROLE_ATL);
-        }
-        UserInvitation invitation = UserInvitation.builder()
-                .emailAddress(emailAddress)
-                .permissionObjectId(atlId)
-                .hash(Util.md5(emailAddress + System.currentTimeMillis()))
-                .permission(userPermission.get())
-                .build();
-        Long createdInvitationId = invitationDao.create(invitation);
-        UserInvitation createdInvitation = invitationDao.getById(createdInvitationId);
-        emailInvitedUser(createdInvitation);
-        return createdInvitation;
+        return inviteToAccount(Authority.ROLE_ATL, atlId, emailAddress);
+
     }
 
     @Transactional
@@ -213,46 +129,26 @@ public class InvitationManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_DEVELOPER, #developerId)")
     public UserInvitation inviteWithDeveloperAccess(String emailAddress, Long developerId)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
-        Optional<UserPermission> userPermission = this.userPermissions.stream().filter(perm -> perm.getAuthority().equals(Authority.ROLE_DEVELOPER)).findAny();
+        return inviteToAccount(Authority.ROLE_DEVELOPER, developerId, emailAddress);
+    }
+
+    private UserInvitation inviteToAccount(String authority, Long permissionObjectId, String emailAddress)
+            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
+        Optional<UserPermission> userPermission = this.userPermissions.stream().filter(perm -> perm.getAuthority().equals(authority)).findAny();
         if (!userPermission.isPresent()) {
-            throw new UserPermissionRetrievalException("No User Permission was found for authority " + Authority.ROLE_DEVELOPER);
+            throw new UserPermissionRetrievalException("No User Permission was found for authority " + authority);
         }
+
         UserInvitation invitation = UserInvitation.builder()
                 .emailAddress(emailAddress)
-                .permissionObjectId(developerId)
+                .permissionObjectId(permissionObjectId)
                 .hash(Util.md5(emailAddress + System.currentTimeMillis()))
                 .permission(userPermission.get())
                 .build();
         Long createdInvitationId = invitationDao.create(invitation);
         UserInvitation createdInvitation = invitationDao.getById(createdInvitationId);
-        emailInvitedUser(createdInvitation);
+        invitationEmailer.emailInvitedUser(createdInvitation);
         return createdInvitation;
-    }
-
-    private void emailInvitedUser(UserInvitation invitation) {
-        String htmlMessage = "<p>Hi,</p>"
-                + "<p>You have been granted a new role on ONC's Certified Health IT Product List (CHPL) "
-                + "which will allow you to manage certified product listings on the CHPL. "
-                + "Please click the link below to create or update your account: <br/>"
-                + chplUrlBegin + "/#/registration/create-user/" + invitation.getHash()
-                + "</p>"
-                + "<p>If you have any issues completing the registration, "
-                + "please visit the <a href=\"https://inquiry.healthit.gov/support/plugins/servlet/loginfreeRedirMain?portalid=2&request=51\">Health IT Feedback and Inquiry Portal</a> and select \"Certified Health IT Product List (CHPL)\" to submit a ticket.</p>"
-                + "<p>Take care,<br/> " + "The CHPL Team</p>";
-
-        String[] toEmails = {
-                invitation.getEmailAddress()
-        };
-
-        try {
-            EmailBuilder emailBuilder = new EmailBuilder(env);
-            emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
-                .subject("CHPL Administrator Invitation")
-                .htmlMessage(htmlMessage)
-                .sendEmail();
-        } catch (EmailNotSentException ex) {
-            LOGGER.error(ex.getMessage(), ex);
-        }
     }
 
     @Transactional
@@ -302,7 +198,7 @@ public class InvitationManager extends SecuredManager {
             Date now = new Date();
             invitation.setConfirmationToken(Util.md5(invitation.getEmailAddress() + now.getTime()));
             invitationDao.update(invitation);
-            emailNewUser(newUser, invitation);
+            invitationEmailer.emailNewUser(newUser, invitation);
 
             User result = new User(newUser);
             result.setHash(invitation.getConfirmationToken());
@@ -311,29 +207,6 @@ public class InvitationManager extends SecuredManager {
             SecurityContextHolder.getContext().setAuthentication(null);
         }
 
-    }
-
-    private void emailNewUser(UserDTO newUser, UserInvitation invitation) {
-        // send email for user to confirm email address
-        String htmlMessage = "<p>Thank you for setting up your administrator account on ONC's Certified Health IT Product List (CHPL). "
-                + "Please click the link below to activate your account: <br/>"
-                + chplUrlBegin + "/#/registration/confirm-user/" + invitation.getConfirmationToken() + "</p>"
-                + "<p>If you have any issues completing the registration, "
-                + "please visit the <a href=\"https://inquiry.healthit.gov/support/plugins/servlet/loginfreeRedirMain?portalid=2&request=51\">Health IT Feedback and Inquiry Portal</a> and select \"Certified Health IT Product List (CHPL)\" to submit a ticket.</p>"
-                + "<p>The CHPL Team</p>";
-
-        String[] toEmails = {
-                newUser.getEmail()
-        };
-        try {
-            EmailBuilder emailBuilder = new EmailBuilder(env);
-            emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
-            .subject("Confirm CHPL Administrator Account")
-            .htmlMessage(htmlMessage)
-            .sendEmail();
-        } catch (EmailNotSentException ex) {
-            LOGGER.error(ex.getMessage(), ex);
-        }
     }
 
     @Transactional
