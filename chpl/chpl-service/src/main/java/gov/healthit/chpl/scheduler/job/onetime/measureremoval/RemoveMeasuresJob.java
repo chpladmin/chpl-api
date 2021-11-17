@@ -9,6 +9,11 @@ import java.util.stream.Stream;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.domain.Measure;
@@ -23,6 +28,9 @@ public class RemoveMeasuresJob extends QuartzJob {
 
     @Autowired
     private MeasureDAO measureDAO;
+
+    @Autowired
+    private JpaTransactionManager txManager;
 
     //Format: domain|measure
     private static final String[] MEASURES_TO_REMOVE = {
@@ -57,19 +65,31 @@ public class RemoveMeasuresJob extends QuartzJob {
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Remove Criteria job. *********");
+        // We need to manually create a transaction in this case because of how AOP works. When a method is
+        // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
+        // The object's proxy is not called when the method is called from within this class. The object's proxy
+        // is called when the method is public and is called from a different object.
+        // https://stackoverflow.com/questions/3037006/starting-new-transaction-in-spring-bean
+        TransactionTemplate txTemplate = new TransactionTemplate(txManager);
+        txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        txTemplate.execute(new TransactionCallbackWithoutResult() {
 
-        try {
-        getMeasuresToRemove().stream()
-                .forEach(measure -> {
-                    Measure m = removeMeasure(measure);
-                    LOGGER.always().log(String.format("%s    |     %s     |     %s     -- Has been removed", m.getId(), m.getDomain().getName(), m.getName()));
-                });
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                try {
+                    getMeasuresToRemove().stream()
+                            .forEach(measure -> {
+                                Measure m = removeMeasure(measure);
+                                LOGGER.always().log(String.format("%s    |     %s     |     %s     -- Has been removed", m.getId(), m.getDomain().getName(), m.getName()));
+                            });
+                    CacheManager.getInstance().clearAll();
+                } catch (final Exception ex) {
+                    LOGGER.error("Exception updating measures.", ex);
+                }
+            }
+        });
 
-        } catch (final Exception ex) {
-            LOGGER.error("Exception updating measures.", ex);
-        }
 
-        CacheManager.getInstance().clearAll();
         LOGGER.info("********* Completed the Remove Criteria job. *********");
     }
 
