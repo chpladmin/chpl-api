@@ -27,6 +27,7 @@ import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.UserDeveloperMapDTO;
@@ -69,7 +70,7 @@ public class InviteDevelopersJob implements Job {
             LOGGER.info("There are " + allDevelopers.size() + " in the system.");
             allDevelopers.stream()
                 .peek(developer -> LOGGER.info("Processing Developer '" + developer.getName() + "' (id: " + developer.getId() + ")."))
-                .filter(developer -> doesDeveloperHaveAnyActiveListings(developer))
+                .filter(developer -> doesDeveloperHaveAny2015EditionActiveListings(developer))
                 .filter(developer -> !doesDeveloperHaveUserAccounts(developer))
                 .forEach(developerWithoutAccount -> inviteDeveloperPoc(developerWithoutAccount));
         } catch (Exception e) {
@@ -79,12 +80,14 @@ public class InviteDevelopersJob implements Job {
         }
     }
 
-    private boolean doesDeveloperHaveAnyActiveListings(DeveloperDTO developer) {
+    private boolean doesDeveloperHaveAny2015EditionActiveListings(DeveloperDTO developer) {
         List<CertificationStatusType> certificationStatuses = Stream.of(CertificationStatusType.Active,
                 CertificationStatusType.SuspendedByAcb,
                 CertificationStatusType.SuspendedByOnc).collect(Collectors.toList());
         List<CertifiedProductDetailsDTO> activeListings
-            = developerListingMapDao.getListingsForDeveloperWithStatus(developer.getId(), certificationStatuses);
+            = developerListingMapDao.getListingsForDeveloperWithEditionAndStatus(developer.getId(),
+                    CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId(),
+                    certificationStatuses);
         LOGGER.info("Developer '" + developer.getName() + "' (id: " + developer.getId() + ") has " + activeListings.size() + " active listings.");
         return !CollectionUtils.isEmpty(activeListings);
     }
@@ -100,7 +103,7 @@ public class InviteDevelopersJob implements Job {
     private void inviteDeveloperPoc(DeveloperDTO developer) {
         if (developer.getContact() == null || StringUtils.isEmpty(developer.getContact().getEmail())) {
             LOGGER.warn("Developer '" + developer.getName() + "' (id: " + developer.getId() + ") has no POC. No invitation can be sent.");
-        } else if (EmailValidator.getInstance().isValid(developer.getContact().getEmail())) {
+        } else if (!EmailValidator.getInstance().isValid(developer.getContact().getEmail())) {
             LOGGER.warn("Developer '" + developer.getName() + "' (id: " + developer.getId() + ") "
                     + "has a POC with an invalid email address: '" + developer.getContact().getEmail() + "'."
                     + "No invitation can be sent.");
@@ -134,11 +137,14 @@ public class InviteDevelopersJob implements Job {
     private static class DeveloperListingMapDao extends BaseDAOImpl {
 
         @Transactional
-        public List<CertifiedProductDetailsDTO> getListingsForDeveloperWithStatus(Long developerId, List<CertificationStatusType> certificationStatuses) {
+        public List<CertifiedProductDetailsDTO> getListingsForDeveloperWithEditionAndStatus(Long developerId,
+                Long certificationEditionId,
+                List<CertificationStatusType> certificationStatuses) {
                 String hql = "SELECT cpd "
                         + "FROM DeveloperEntity dev, CertifiedProductDetailsEntity cpd "
                         + "WHERE cpd.developerId = dev.id "
                         + "AND cpd.developerId = :developerId "
+                        + "AND cpd.certificationEditionId = :certificationEditionId "
                         + "AND cpd.certificationStatusName IN (:certificationStatusNames) "
                         + "AND cpd.deleted = false ";
                 Query query = entityManager.createQuery(hql, CertifiedProductDetailsEntity.class);
@@ -146,6 +152,7 @@ public class InviteDevelopersJob implements Job {
                         .map(CertificationStatusType::getName)
                         .collect(Collectors.toList());
                 query.setParameter("developerId", developerId);
+                query.setParameter("certificationEditionId", certificationEditionId);
                 query.setParameter("certificationStatusNames", certificationStatusNames);
 
                 List<CertifiedProductDetailsEntity> queryResults = query.getResultList();
