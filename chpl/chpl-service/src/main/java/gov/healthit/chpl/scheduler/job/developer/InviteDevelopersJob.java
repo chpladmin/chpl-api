@@ -1,6 +1,7 @@
 package gov.healthit.chpl.scheduler.job.developer;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -68,6 +69,13 @@ public class InviteDevelopersJob implements Job {
         try {
             List<DeveloperDTO> allDevelopers = developerDao.findAll();
             LOGGER.info("There are " + allDevelopers.size() + " in the system.");
+            allDevelopers.sort(new Comparator<DeveloperDTO>() {
+                @Override
+                public int compare(DeveloperDTO dev1, DeveloperDTO dev2) {
+                    return dev1.getName().compareTo(dev2.getName());
+                }
+            });
+
             allDevelopers.stream()
                 .peek(developer -> LOGGER.info("Processing Developer '" + developer.getName() + "' (id: " + developer.getId() + ")."))
                 .filter(developer -> doesDeveloperHaveAny2015EditionActiveListings(developer))
@@ -75,9 +83,9 @@ public class InviteDevelopersJob implements Job {
                 .forEach(developerWithoutAccount -> inviteDeveloperPoc(developerWithoutAccount));
         } catch (Exception e) {
             LOGGER.catching(e);
-        } finally {
-            LOGGER.info("********* Completed the Invite Developers job *********");
         }
+        LOGGER.info("********* Completed the Invite Developers job *********");
+
     }
 
     private boolean doesDeveloperHaveAny2015EditionActiveListings(DeveloperDTO developer) {
