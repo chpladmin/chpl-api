@@ -10,6 +10,7 @@ import javax.transaction.Transactional;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.ff4j.FF4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -84,17 +85,13 @@ public class InviteDevelopersJob implements Job {
                 CertificationStatusType.SuspendedByOnc).collect(Collectors.toList());
         List<CertifiedProductDetailsDTO> activeListings
             = developerListingMapDao.getListingsForDeveloperWithStatus(developer.getId(), certificationStatuses);
-        if (CollectionUtils.isEmpty(activeListings)) {
-            LOGGER.info("\tDeveloper '" + developer.getName() + "' (id: " + developer.getId() + ") has NO active listings.");
-        } else {
-            LOGGER.info("\tDeveloper '" + developer.getName() + "' (id: " + developer.getId() + ") has " + activeListings.size() + " active listings.");
-        }
+        LOGGER.info("Developer '" + developer.getName() + "' (id: " + developer.getId() + ") has " + activeListings.size() + " active listings.");
         return !CollectionUtils.isEmpty(activeListings);
     }
 
     private boolean doesDeveloperHaveUserAccounts(DeveloperDTO developer) {
         List<UserDeveloperMapDTO> userDeveloperMaps = userDeveloperMapDao.getByDeveloperId(developer.getId());
-        LOGGER.info(String.format("\tDeveloper '" + developer.getName() + "' (id: "
+        LOGGER.info(String.format("Developer '" + developer.getName() + "' (id: "
                 + developer.getId() + ") has " + userDeveloperMaps.size() + " user%s",
                 userDeveloperMaps.size() == 1 ? "" : "s"));
         return !CollectionUtils.isEmpty(userDeveloperMaps);
@@ -102,15 +99,19 @@ public class InviteDevelopersJob implements Job {
 
     private void inviteDeveloperPoc(DeveloperDTO developer) {
         if (developer.getContact() == null || StringUtils.isEmpty(developer.getContact().getEmail())) {
-            LOGGER.warn("\tDeveloper '" + developer.getName() + "' (id: " + developer.getId() + ") has no POC. No invitation can be sent.");
+            LOGGER.warn("Developer '" + developer.getName() + "' (id: " + developer.getId() + ") has no POC. No invitation can be sent.");
+        } else if (EmailValidator.getInstance().isValid(developer.getContact().getEmail())) {
+            LOGGER.warn("Developer '" + developer.getName() + "' (id: " + developer.getId() + ") "
+                    + "has a POC with an invalid email address: '" + developer.getContact().getEmail() + "'."
+                    + "No invitation can be sent.");
         } else {
             try {
                 setSecurityContext();
                 invitationManager.inviteWithDeveloperAccess(developer.getContact().getEmail(), developer.getId());
-                LOGGER.error("\tInvited user " + developer.getContact().getEmail() + " for developer '"
+                LOGGER.error("Invited user " + developer.getContact().getEmail() + " for developer '"
                         + developer.getName() + "' (id: " + developer.getId() + ").");
             } catch (Exception ex) {
-                LOGGER.error("\tError inviting user " + developer.getContact().getEmail() + " for developer '"
+                LOGGER.error("Error inviting user " + developer.getContact().getEmail() + " for developer '"
                         + developer.getName() + "' (id: " + developer.getId() + ").", ex);
             }
         }
