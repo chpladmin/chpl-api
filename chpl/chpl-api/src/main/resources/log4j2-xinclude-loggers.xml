@@ -183,4 +183,8 @@
         additivity="false">
         <AppenderRef ref="testStandardConversionJob" />
     </Logger>
+    <Logger name="inviteDevelopersJobLogger" level="INFO"
+        additivity="false">
+        <AppenderRef ref="inviteDevelopersJob" />
+    </Logger>
 </Loggers>
