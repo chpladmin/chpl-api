@@ -53,8 +53,6 @@ public class InviteDevelopersJob implements Job {
     @Autowired
     private FF4j ff4j;
 
-    private int emailCount = 0;
-
     @SuppressWarnings("checkstyle:linelength")
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -106,20 +104,14 @@ public class InviteDevelopersJob implements Job {
         if (developer.getContact() == null || StringUtils.isEmpty(developer.getContact().getEmail())) {
             LOGGER.warn("\tDeveloper '" + developer.getName() + "' (id: " + developer.getId() + ") has no POC. No invitation can be sent.");
         } else {
-            if (emailCount > 100 || developer.getContact().getEmail().contains("ainq.com")) {
-                LOGGER.info("\tNot inviting user " + developer.getContact().getEmail() + " for developer '"
+            try {
+                setSecurityContext();
+                invitationManager.inviteWithDeveloperAccess(developer.getContact().getEmail(), developer.getId());
+                LOGGER.error("\tInvited user " + developer.getContact().getEmail() + " for developer '"
                         + developer.getName() + "' (id: " + developer.getId() + ").");
-            } else {
-                try {
-                    setSecurityContext();
-                    invitationManager.inviteWithDeveloperAccess(developer.getContact().getEmail(), developer.getId());
-                    LOGGER.error("\tInvited user " + developer.getContact().getEmail() + " for developer '"
-                            + developer.getName() + "' (id: " + developer.getId() + ").");
-                    emailCount++;
-                } catch (Exception ex) {
-                    LOGGER.error("\tError inviting user " + developer.getContact().getEmail() + " for developer '"
-                            + developer.getName() + "' (id: " + developer.getId() + ").", ex);
-                }
+            } catch (Exception ex) {
+                LOGGER.error("\tError inviting user " + developer.getContact().getEmail() + " for developer '"
+                        + developer.getName() + "' (id: " + developer.getId() + ").", ex);
             }
         }
     }
