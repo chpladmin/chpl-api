@@ -119,7 +119,7 @@ public class InviteDevelopersJob implements Job {
             try {
                 setSecurityContext();
                 invitationManager.inviteWithDeveloperAccess(developer.getContact().getEmail(), developer.getId());
-                LOGGER.error("Invited user " + developer.getContact().getEmail() + " for developer '"
+                LOGGER.info("Invited user " + developer.getContact().getEmail() + " for developer '"
                         + developer.getName() + "' (id: " + developer.getId() + ").");
             } catch (Exception ex) {
                 LOGGER.error("Error inviting user " + developer.getContact().getEmail() + " for developer '"
