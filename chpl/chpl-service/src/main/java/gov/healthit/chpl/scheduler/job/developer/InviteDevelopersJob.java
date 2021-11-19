@@ -66,13 +66,14 @@ public class InviteDevelopersJob implements Job {
         }
 
         LOGGER.info("********* Starting the Invite Developers job *********");
+        setSecurityContext();
         try {
             List<DeveloperDTO> allDevelopers = developerDao.findAll();
             LOGGER.info("There are " + allDevelopers.size() + " in the system.");
             allDevelopers.sort(new Comparator<DeveloperDTO>() {
                 @Override
                 public int compare(DeveloperDTO dev1, DeveloperDTO dev2) {
-                    return dev1.getName().compareTo(dev2.getName());
+                    return dev1.getName().compareToIgnoreCase(dev2.getName());
                 }
             });
 
@@ -117,7 +118,7 @@ public class InviteDevelopersJob implements Job {
                     + "No invitation can be sent.");
         } else {
             try {
-                setSecurityContext();
+                LOGGER.info("Inviting " + developer.getContact().getEmail() + "...");
                 invitationManager.inviteWithDeveloperAccess(developer.getContact().getEmail(), developer.getId());
                 LOGGER.info("Invited user " + developer.getContact().getEmail() + " for developer '"
                         + developer.getName() + "' (id: " + developer.getId() + ").");

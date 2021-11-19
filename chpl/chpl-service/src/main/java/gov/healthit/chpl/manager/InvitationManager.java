@@ -145,9 +145,13 @@ public class InvitationManager extends SecuredManager {
                 .hash(Util.md5(emailAddress + System.currentTimeMillis()))
                 .permission(userPermission.get())
                 .build();
+        LOGGER.info("Creating invitation for " + emailAddress);
         Long createdInvitationId = invitationDao.create(invitation);
+        LOGGER.info("Created invitation for " + emailAddress + " with ID " + createdInvitationId);
         UserInvitation createdInvitation = invitationDao.getById(createdInvitationId);
+        LOGGER.info("Emailing user...");
         invitationEmailer.emailInvitedUser(createdInvitation);
+        LOGGER.info("Emaild " + emailAddress);
         return createdInvitation;
     }
 

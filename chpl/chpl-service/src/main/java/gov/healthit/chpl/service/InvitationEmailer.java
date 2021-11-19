@@ -74,13 +74,15 @@ public class InvitationEmailer {
         String[] toEmails = {
                 invitation.getEmailAddress()
         };
-
+        LOGGER.info("Created HTML Message for " + invitation.getEmailAddress());
         try {
             EmailBuilder emailBuilder = new EmailBuilder(env);
+            LOGGER.info("Created new email builder");
             emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
                 .subject(accountInvitationTitle)
                 .htmlMessage(htmlMessage)
                 .sendEmail();
+            LOGGER.info("Sent email to " + invitation.getEmailAddress());
         } catch (EmailNotSentException ex) {
             LOGGER.error(ex.getMessage(), ex);
         }
