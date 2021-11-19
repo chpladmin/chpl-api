@@ -193,7 +193,7 @@
 						"type": "text/javascript",
 						"exec": [
 							"var ReqBody= {",
-							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")",
+							"        email:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")",
 							"    };",
 							"pm.sendRequest({",
 							"    url: pm.environment.get(\"authurl\"),",
@@ -406,7 +406,7 @@
 						"type": "text/javascript",
 						"exec": [
 							"var ReqBody= {",
-							"        userName:pm.environment.get(\"usernameONC\"),password:pm.environment.get(\"passwordONC\")",
+							"        email:pm.environment.get(\"emailONC\"),password:pm.environment.get(\"passwordONC\")",
 							"    };",
 							"pm.sendRequest({",
 							"    url: pm.environment.get(\"authurl\"),",
@@ -502,7 +502,7 @@
 						"type": "text/javascript",
 						"exec": [
 							"var ReqBody= {",
-							"        userName:pm.environment.get(\"usernameADMIN\"),password:pm.environment.get(\"passwordADMIN\")",
+							"        email:pm.environment.get(\"emailADMIN\"),password:pm.environment.get(\"passwordADMIN\")",
 							"    };",
 							"pm.sendRequest({",
 							"    url: pm.environment.get(\"authurl\"),",

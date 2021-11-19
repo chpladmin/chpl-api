@@ -12,7 +12,7 @@
 					"script": {
 						"exec": [
 							"var ReqBody= {\r",
-							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")\r",
+							"        email:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")\r",
 							"    };\r",
 							"pm.sendRequest({\r",
 							"    url: pm.environment.get(\"authurl\"),\r",
@@ -94,7 +94,7 @@
 					"script": {
 						"exec": [
 							"var ReqBody= {\r",
-							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")\r",
+							"        email:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")\r",
 							"    };\r",
 							"pm.sendRequest({\r",
 							"    url: pm.environment.get(\"authurl\"),\r",
@@ -175,7 +175,7 @@
 					"script": {
 						"exec": [
 							"var ReqBody= {\r",
-							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")\r",
+							"        email:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")\r",
 							"    };\r",
 							"pm.sendRequest({\r",
 							"    url: pm.environment.get(\"authurl\"),\r",
@@ -256,7 +256,7 @@
 					"script": {
 						"exec": [
 							"var ReqBody= {\r",
-							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")\r",
+							"        email:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")\r",
 							"    };\r",
 							"pm.sendRequest({\r",
 							"    url: pm.environment.get(\"authurl\"),\r",
