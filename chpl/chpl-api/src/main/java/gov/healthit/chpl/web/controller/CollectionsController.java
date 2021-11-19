@@ -38,7 +38,6 @@ import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -62,11 +61,12 @@ public class CollectionsController {
         this.drService = drService;
     }
 
+    @Deprecated
     @Operation(summary = "Get basic data about all certified products in the system.", description = "",
+            deprecated = true,
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/certified-products", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = CertifiedProductFlatSearchResult.class)
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.SIX_HOURS)
     public @ResponseBody String getAllCertifiedProducts(
             @RequestParam(value = "fields", required = false) final String delimitedFieldNames)

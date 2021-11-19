@@ -33,6 +33,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
@@ -411,7 +412,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
             }
             String edition = listing.getCertificationEdition().get("name").toString();
             if (listing.getCuresUpdate() != null && listing.getCuresUpdate()) {
-                edition += " Cures Update";
+                edition += CertificationEdition.CURES_SUFFIX;
             }
             addDataCell(workbook, row, COL_CERT_EDITION, edition);
             addDataCell(workbook, row, COL_DEVELOPER_NAME, listing.getDeveloper().getName());
@@ -513,7 +514,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
             completeListingDetails.setChplProductNumber(listingDetails.getChplProductNumber());
             String edition = listingDetails.getYear();
             if (listingDetails.getCuresUpdate() != null && listingDetails.getCuresUpdate()) {
-                edition += " Cures Update";
+                edition += CertificationEdition.CURES_SUFFIX;
             }
             Map<String, Object> editionMap = new HashMap<String, Object>();
             editionMap.put("id", listingDetails.getCertificationEditionId());
