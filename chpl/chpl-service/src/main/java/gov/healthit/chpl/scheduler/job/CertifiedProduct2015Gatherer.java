@@ -39,8 +39,6 @@ public class CertifiedProduct2015Gatherer {
                 .collect(Collectors.toList());
     }
 
-
-
     private CertifiedProductSearchDetails getCertifiedProductSearchDetails(Long certifiedProductId, Logger logger) {
         try {
             long start = (new Date()).getTime();
