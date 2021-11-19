@@ -93,7 +93,7 @@ public class RealWorldTestingReportService {
 
         logger.info(String.format("ListingId: %s, Elig Year %s, %s",
                 listing.getId(),
-                rwtElig.getEligibilityYear().isPresent() ? rwtElig.getEligibilityYear().get().toString() : "N/A",
+                rwtElig.getEligibilityYear() != null ? rwtElig.getEligibilityYear().toString() : "N/A",
                 rwtElig.getReason().getReason()));
 
         CertificationStatusEvent currentStatus;
@@ -111,14 +111,14 @@ public class RealWorldTestingReportService {
                 .productId(listing.getProduct().getId())
                 .developerName(listing.getDeveloper().getName())
                 .developerId(listing.getDeveloper().getId())
-                .rwtEligibilityYear(rwtElig.getEligibilityYear().isPresent() ? rwtElig.getEligibilityYear().get() : null)
+                .rwtEligibilityYear(rwtElig.getEligibilityYear() != null ? rwtElig.getEligibilityYear() : null)
                 .rwtPlansUrl(listing.getRwtPlansUrl())
                 .rwtPlansCheckDate(listing.getRwtPlansCheckDate())
                 .rwtResultsUrl(listing.getRwtResultsUrl())
                 .rwtResultsCheckDate(listing.getRwtResultsCheckDate())
                 .build();
 
-        if (rwtElig.getEligibilityYear().isPresent()) {
+        if (rwtElig.getEligibilityYear() != null) {
             return addMessages(report);
         } else {
             return report;

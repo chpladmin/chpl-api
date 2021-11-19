@@ -41,6 +41,6 @@ public class AddedRwtResultsNonEligibleListingActivity implements ListingActivit
     }
 
     private boolean isListingRealWorldTestingEligible(Long listingId) {
-        return rwtEligServiceFactory.getInstance().getRwtEligibilityYearForListing(listingId, LOGGER).getEligibilityYear().isPresent();
+        return rwtEligServiceFactory.getInstance().getRwtEligibilityYearForListing(listingId, LOGGER).getEligibilityYear() != null;
     }
 }
