@@ -19,6 +19,8 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.scheduler.job.svap.ListingSvapActivity;
 import gov.healthit.chpl.svap.domain.Svap;
@@ -121,7 +123,7 @@ public class SvapActivityPresenter implements AutoCloseable {
     private String formatEdition(CertifiedProductSearchDetails listing) {
         String edition = MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY);
         if (listing.getCuresUpdate() != null && listing.getCuresUpdate()) {
-            edition = edition + " Cures Update";
+            edition = edition + CertificationEdition.CURES_SUFFIX;
         }
         return edition;
     }

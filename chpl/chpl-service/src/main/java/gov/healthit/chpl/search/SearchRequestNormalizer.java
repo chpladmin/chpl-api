@@ -2,11 +2,13 @@ package gov.healthit.chpl.search;
 
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
 import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
+import gov.healthit.chpl.search.domain.RwtSearchOptions;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 
@@ -14,6 +16,7 @@ public class SearchRequestNormalizer {
 
     public void normalize(SearchRequest request) {
         normalizeCertificationStatuses(request);
+        normalizeDerivedCertificationEditions(request);
         normalizeCertificationEditions(request);
         normalizeCertificationCriterionIds(request);
         normalizeCertificationCriterionOperator(request);
@@ -23,6 +26,8 @@ public class SearchRequestNormalizer {
         normalizePracticeType(request);
         normalizeCertificationDates(request);
         normalizeComplianceFilter(request);
+        normalizeRwtOptions(request);
+        normalizeRwtOptionsOperator(request);
         normalizeOrderBy(request);
     }
 
@@ -35,11 +40,22 @@ public class SearchRequestNormalizer {
         }
     }
 
+    private void normalizeDerivedCertificationEditions(SearchRequest request) {
+        if (!CollectionUtils.isEmpty(request.getDerivedCertificationEditions())) {
+            request.setDerivedCertificationEditions(request.getDerivedCertificationEditions().stream()
+                    .filter(certificationEdition -> !StringUtils.isBlank(certificationEdition))
+                    .map(certificationEdition -> certificationEdition.trim())
+                    .map(certificationEdition -> certificationEdition.toUpperCase())
+                    .collect(Collectors.toSet()));
+        }
+    }
+
     private void normalizeCertificationEditions(SearchRequest request) {
-        if (request.getCertificationEditions() != null && request.getCertificationEditions().size() > 0) {
+        if (!CollectionUtils.isEmpty(request.getCertificationEditions())) {
             request.setCertificationEditions(request.getCertificationEditions().stream()
                     .filter(certificationEdition -> !StringUtils.isBlank(certificationEdition))
                     .map(certificationEdition -> certificationEdition.trim())
+                    .map(certificationEdition -> certificationEdition.toUpperCase())
                     .collect(Collectors.toSet()));
         }
     }
@@ -163,6 +179,44 @@ public class SearchRequestNormalizer {
             try {
                 complianceSearchFilter.setNonConformityOptionsOperator(
                         SearchSetOperator.valueOf(complianceSearchFilter.getNonConformityOptionsOperatorString().toUpperCase().trim()));
+            } catch (Exception ignore) {
+            }
+        }
+    }
+
+    private void normalizeRwtOptions(SearchRequest request) {
+        if (!CollectionUtils.isEmpty(request.getRwtOptionsStrings())
+                && CollectionUtils.isEmpty(request.getRwtOptions())) {
+            try {
+                request.setRwtOptions(
+                        request.getRwtOptionsStrings().stream()
+                        .filter(option -> !StringUtils.isBlank(option))
+                        .map(option -> convertToRwtSearchOption(option))
+                        .filter(option -> option != null)
+                        .collect(Collectors.toSet()));
+            } catch (Exception ignore) {
+            }
+        }
+    }
+
+    private RwtSearchOptions convertToRwtSearchOption(String option) {
+        if (StringUtils.isBlank(option)) {
+            return null;
+        }
+        RwtSearchOptions convertedOption = null;
+        try {
+            convertedOption = RwtSearchOptions.valueOf(option.toUpperCase().trim());
+        } catch (Exception ex) {
+        }
+        return convertedOption;
+    }
+
+    private void normalizeRwtOptionsOperator(SearchRequest request) {
+        if (!StringUtils.isBlank(request.getRwtOperatorString())
+                && request.getRwtOperator() == null) {
+            try {
+                request.setRwtOperator(
+                        SearchSetOperator.valueOf(request.getRwtOperatorString().toUpperCase().trim()));
             } catch (Exception ignore) {
             }
         }

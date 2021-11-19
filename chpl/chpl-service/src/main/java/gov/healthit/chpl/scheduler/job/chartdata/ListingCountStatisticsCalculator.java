@@ -17,7 +17,7 @@ import gov.healthit.chpl.dao.ListingCountStatisticsDAO;
 import gov.healthit.chpl.dto.ListingCountStatisticsDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
 
 /**
  * Populates the listing_count_statistics table with summarized count
@@ -53,10 +53,10 @@ public class ListingCountStatisticsCalculator {
      *            incoming listings
      * @return list of listingCountStatisticsDTOs
      */
-    public List<ListingCountStatisticsDTO> getCounts(List<CertifiedProductFlatSearchResult> listings) {
+    public List<ListingCountStatisticsDTO> getCounts(List<CertifiedProductBasicSearchResult> listings) {
         HashMap<String, HashSet<String>> developers = new HashMap<String, HashSet<String>>();
         HashMap<String, HashSet<String>> products = new HashMap<String, HashSet<String>>();
-        for (CertifiedProductFlatSearchResult listing : listings) {
+        for (CertifiedProductBasicSearchResult listing : listings) {
             String devKey = listing.getEdition() + "\u263A" + listing.getDeveloper();
             String prodKey = listing.getEdition() + "\u263A" + listing.getDeveloper() + "\u263A" + listing.getProduct();
             if (!developers.containsKey(devKey)) {

@@ -15,6 +15,7 @@ import org.junit.Test;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
 import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
+import gov.healthit.chpl.search.domain.RwtSearchOptions;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 
@@ -59,6 +60,21 @@ public class SearchRequestNormalizerTest {
         assertTrue(searchRequest.getCertificationEditions().contains("2015"));
         assertTrue(searchRequest.getCertificationEditions().contains("2014"));
     }
+
+    @Test
+    public void normalize_derivedCertificationEditions_trimsCorrectly() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .derivedCertificationEditions(Stream.of("2011 ", " 2015 ", "", " ", null, "2014", " 2015 Cures Update  ").collect(Collectors.toSet()))
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(4, searchRequest.getDerivedCertificationEditions().size());
+        assertTrue(searchRequest.getDerivedCertificationEditions().contains("2011"));
+        assertTrue(searchRequest.getDerivedCertificationEditions().contains("2015"));
+        assertTrue(searchRequest.getDerivedCertificationEditions().contains("2014"));
+        assertTrue(searchRequest.getDerivedCertificationEditions().contains("2015 CURES UPDATE"));
+    }
+
 
     @Test
     public void normalize_certificationCriteriaIdStrings_trimsCorrectly() {
@@ -421,6 +437,127 @@ public class SearchRequestNormalizerTest {
         assertEquals(1, searchRequest.getComplianceActivity().getNonConformityOptions().size());
         assertTrue(searchRequest.getComplianceActivity().getNonConformityOptions().contains(NonConformitySearchOptions.CLOSED_NONCONFORMITY));
         assertEquals(2, searchRequest.getComplianceActivity().getNonConformityOptionsStrings().size());
+    }
+
+    @Test
+    public void normalize_rwtOperatorNull_noChanges() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .rwtOperator(null)
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertNull(searchRequest.getRwtOperator());
+    }
+
+    @Test
+    public void normalize_rwtOperatorEmpty_noChanges() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .rwtOperatorString("")
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals("", searchRequest.getRwtOperatorString());
+        assertNull(searchRequest.getRwtOperator());
+    }
+
+    @Test
+    public void normalize_rwtOperatorBlank_noChanges() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .rwtOperatorString("  ")
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals("  ", searchRequest.getRwtOperatorString());
+        assertNull(searchRequest.getRwtOperator());
+    }
+
+    @Test
+    public void normalize_rwtOperatorStringValid_resolvesCorrectly() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .rwtOperatorString("AND")
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(SearchSetOperator.AND, searchRequest.getRwtOperator());
+    }
+
+    @Test
+    public void normalize_rwtOperatorStringLowercase_resolvesCorrectly() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .rwtOperatorString("and")
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(SearchSetOperator.AND, searchRequest.getRwtOperator());
+    }
+
+    @Test
+    public void normalize_rwtOperator_noChanges() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .rwtOperator(SearchSetOperator.AND)
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(SearchSetOperator.AND, searchRequest.getRwtOperator());
+    }
+
+    @Test
+    public void normalize_rwtOperatorStringInvalid_setsFieldNull() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .rwtOperatorString("NOTVALID")
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertNull(searchRequest.getRwtOperator());
+    }
+
+    @Test
+    public void normalize_rwtOptionsNull_noChanges() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .rwtOptions(null)
+                .rwtOptionsStrings(null)
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertNull(searchRequest.getRwtOptions());
+        assertNull(searchRequest.getRwtOptionsStrings());
+    }
+
+    @Test
+    public void normalize_rwtOptionsEmpty_noChanges() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .rwtOptions(Collections.emptySet())
+                .rwtOptionsStrings(Collections.emptySet())
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(0, searchRequest.getRwtOptions().size());
+        assertEquals(0, searchRequest.getRwtOptions().size());
+    }
+
+    @Test
+    public void normalize_rwtOptionsValid_trimsCorrectly() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .rwtOptionsStrings(Stream.of("IS_eliGIBle ", " HAS_PLANS_URL ", null, " ", "").collect(Collectors.toSet()))
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(2, searchRequest.getRwtOptions().size());
+        assertTrue(searchRequest.getRwtOptions().contains(RwtSearchOptions.IS_ELIGIBLE));
+        assertTrue(searchRequest.getRwtOptions().contains(RwtSearchOptions.HAS_PLANS_URL));
+        assertEquals(5, searchRequest.getRwtOptionsStrings().size());
+    }
+
+    @Test
+    public void normalize_rwtOptionsInvalid_convertsValidValues() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .rwtOptionsStrings(Stream.of("HAS_RESULTS_URL ", " BADVALUE").collect(Collectors.toSet()))
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(1, searchRequest.getRwtOptions().size());
+        assertTrue(searchRequest.getRwtOptions().contains(RwtSearchOptions.HAS_RESULTS_URL));
+        assertEquals(2, searchRequest.getRwtOptionsStrings().size());
     }
 
     @Test
