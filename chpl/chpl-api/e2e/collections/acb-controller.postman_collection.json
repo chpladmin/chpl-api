@@ -203,7 +203,7 @@
 						"type": "text/javascript",
 						"exec": [
 							"var ReqBody= {",
-							"        email:pm.environment.get(\"emailACB\"),password:pm.environment.get(\"passwordACB\")",
+							"        userName:pm.environment.get(\"emailACB\"),password:pm.environment.get(\"passwordACB\")",
 							"    };",
 							"pm.sendRequest({",
 							"    url: pm.environment.get(\"authurl\"),",
@@ -677,7 +677,7 @@
 						"type": "text/javascript",
 						"exec": [
 							"var ReqBody= {",
-							"        email:pm.environment.get(\"emailONC\"),password:pm.environment.get(\"passwordONC\")",
+							"        userName:pm.environment.get(\"emailONC\"),password:pm.environment.get(\"passwordONC\")",
 							"    };",
 							"pm.sendRequest({",
 							"    url: pm.environment.get(\"authurl\"),",
@@ -962,7 +962,7 @@
 						"type": "text/javascript",
 						"exec": [
 							"var ReqBody= {",
-							"        email:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")",
+							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")",
 							"    };",
 							"pm.sendRequest({",
 							"    url: pm.environment.get(\"authurl\"),",
