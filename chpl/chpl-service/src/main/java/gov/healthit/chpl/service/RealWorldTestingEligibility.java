@@ -1,5 +1,6 @@
 package gov.healthit.chpl.service;
 
+import java.io.Serializable;
 import java.util.Optional;
 
 import lombok.AllArgsConstructor;
@@ -11,7 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RealWorldTestingEligibility {
+public class RealWorldTestingEligibility implements Serializable {
+    private static final long serialVersionUID = -3841996659410634722L;
+
     private RealWorldTestingEligiblityReason reason;
     private Optional<Integer> eligibilityYear;
 }

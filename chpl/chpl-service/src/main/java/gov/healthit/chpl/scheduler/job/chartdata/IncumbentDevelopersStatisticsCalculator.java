@@ -15,7 +15,7 @@ import gov.healthit.chpl.dao.IncumbentDevelopersStatisticsDAO;
 import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
 
 /**
  * Populates the criterion_product_statistics table with summarized count
@@ -49,8 +49,7 @@ public class IncumbentDevelopersStatisticsCalculator {
      *            incoming data
      * @return statistics objects
      */
-    public List<IncumbentDevelopersStatisticsDTO> getCounts(
-            final List<CertifiedProductFlatSearchResult> certifiedProducts) {
+    public List<IncumbentDevelopersStatisticsDTO> getCounts(List<CertifiedProductBasicSearchResult> certifiedProducts) {
 
         /**
          * Loop through every Listing. For each Listing, add that Listing's
@@ -65,7 +64,7 @@ public class IncumbentDevelopersStatisticsCalculator {
         HashSet<String> developers2011 = new HashSet<String>();
         HashSet<String> developers2014 = new HashSet<String>();
         HashSet<String> developers2015 = new HashSet<String>();
-        for (CertifiedProductFlatSearchResult listing : certifiedProducts) {
+        for (CertifiedProductBasicSearchResult listing : certifiedProducts) {
             switch (listing.getEdition()) {
             case "2011":
                 developers2011.add(listing.getDeveloper());

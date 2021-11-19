@@ -43,6 +43,10 @@ public class CertifiedProductBasicSearchResult extends CertifiedProductSearchRes
     //list of criteria with Service Base URL List and the corresponding value
     private Set<String> serviceBaseUrlList;
 
+    private Boolean isRwtEligible;
+    private String rwtPlansUrl;
+    private String rwtResultsUrl;
+
     public CertifiedProductBasicSearchResult() {
         this.setDirectReviewCount(0);
         this.setSurveillanceCount(0L);
@@ -59,6 +63,13 @@ public class CertifiedProductBasicSearchResult extends CertifiedProductSearchRes
         statusEvents = new HashSet<String>();
         apiDocumentation = new HashSet<String>();
         serviceBaseUrlList = new HashSet<String>();
+    }
+
+    public CertifiedProductBasicSearchResult(CertifiedProductBasicSearchResult other) {
+        super(other);
+        this.isRwtEligible = other.getIsRwtEligible();
+        this.rwtPlansUrl = other.getRwtPlansUrl();
+        this.rwtResultsUrl = other.getRwtResultsUrl();
     }
 
     @Override

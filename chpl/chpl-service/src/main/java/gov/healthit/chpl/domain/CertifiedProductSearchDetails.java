@@ -37,7 +37,7 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
 import org.apache.commons.collections.CollectionUtils;
-
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Certified Product Search Details entity.
@@ -882,7 +882,8 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElement(nillable = false, required = true)
     public Long getCertificationDate() {
-        if (CollectionUtils.isEmpty(this.getCertificationEvents())) {
+        if (CollectionUtils.isEmpty(this.getCertificationEvents())
+                || anyCertificationEventIsMissingNameField(this.getCertificationEvents())) {
             return this.certificationDate;
         }
 
@@ -895,6 +896,13 @@ public class CertifiedProductSearchDetails implements Serializable {
             }
         }
         return result.getEventDate();
+    }
+
+    private boolean anyCertificationEventIsMissingNameField(List<CertificationStatusEvent> certificationStatusEvents) {
+        return certificationStatusEvents.stream()
+            .filter(event -> event.getStatus() == null
+                || StringUtils.isEmpty(event.getStatus().getName()))
+            .findAny().isPresent();
     }
 
     public CertificationStatusEvent getStatusOnDate(Date date) {
