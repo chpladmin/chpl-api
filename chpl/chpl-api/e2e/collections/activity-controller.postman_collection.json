@@ -328,6 +328,533 @@
 				"description": "ONC_STAFF users should get 200 status and response is not null for /activity/metadata/beta/users end point"
 			},
 			"response": []
+		},
+		{
+			"name": "GET /activity/metadata/listings/{id}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"expect to see metadata about auditable records in the system for a specific listing\", function () {\r",
+							"    var actualResponseBody = pm.response.json();\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(actualResponseBody).not.eql(null);\r",
+							"    pm.expect(pm.response.text()).to.include(\"8496\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/activity/metadata/listings/8496",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"activity",
+						"metadata",
+						"listings",
+						"8496"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /activity/metadata/listings/{chplPrefix}-{identifier}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"expect to see metadata about auditable records in the system for a specific listing given its legacy CHPL product Number \", function () {\r",
+							"    var actualResponseBody = pm.response.json();\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(actualResponseBody).not.eql(null);\r",
+							"    pm.expect(pm.response.text()).to.include(\"CHP-019661\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/activity/metadata/listings/CHP-019661",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"activity",
+						"metadata",
+						"listings",
+						"CHP-019661"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /activity/metadata/listings/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"expect to see metadata about auditable records in the system for a specific listing given its new-style CHPL product Number \", function () {\r",
+							"    var actualResponseBody = pm.response.json();\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(actualResponseBody).not.eql(null);\r",
+							"    pm.expect(pm.response.text()).to.include(\"15.07.07.1447.EP03.03.04.1.170403\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/activity/metadata/listings/15.07.07.1447.EP03.03.04.1.170403",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"activity",
+						"metadata",
+						"listings",
+						"15.07.07.1447.EP03.03.04.1.170403"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /activity/metadata/beta/listings",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"expect to see metadata about auditable records in the system for listings\", function () {\r",
+							"    var actualResponseBody = pm.response.json();\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(actualResponseBody).not.eql(null);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/activity/metadata/beta/listings",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"activity",
+						"metadata",
+						"beta",
+						"listings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /activity/metadata/developers/{id}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"expect to see metadata about auditable records in the system for a specific developer\", function () {\r",
+							"    var actualResponseBody = pm.response.json();\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(actualResponseBody).not.eql(null);\r",
+							"    pm.expect(pm.response.text()).to.include(\"Epic Systems Corporation\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/activity/metadata/developers/448",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"activity",
+						"metadata",
+						"developers",
+						"448"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /activity/metadata/beta/developers",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"expect to see metadata about auditable records in the system for developers \", function () {\r",
+							"    var actualResponseBody = pm.response.json();\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(actualResponseBody).not.eql(null);\r",
+							"    pm.expect(pm.response.text()).to.include(\"DEVELOPER\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/activity/metadata/beta/developers",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"activity",
+						"metadata",
+						"beta",
+						"developers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /activity/metadata/products/{id}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"expect to see metadata about auditable records in the system for a specific product \", function () {\r",
+							"    var actualResponseBody = pm.response.json();\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(actualResponseBody).not.eql(null);\r",
+							"    pm.expect(pm.response.text()).to.include(\"Healthy Planet\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/activity/metadata/products/2957",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"activity",
+						"metadata",
+						"products",
+						"2957"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /activity/metadata/beta/products",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"expect to see metadata about auditable records in the system for products \", function () {\r",
+							"    var actualResponseBody = pm.response.json();\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(actualResponseBody).not.eql(null);\r",
+							"    pm.expect(pm.response.text()).to.include(\"PRODUCT\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/activity/metadata/beta/products",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"activity",
+						"metadata",
+						"beta",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /activity/metadata/versions/{id}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"expect to see metadata about auditable records in the system for a specific version \", function () {\r",
+							"    var actualResponseBody = pm.response.json();\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(actualResponseBody).not.eql(null);\r",
+							"    pm.expect(pm.response.text()).to.include(\"Epic 2017\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/activity/metadata/versions/7463",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"activity",
+						"metadata",
+						"versions",
+						"7463"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /activity/metadata/beta/versions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"expect to see metadata about auditable records in the system for versions \", function () {\r",
+							"    var actualResponseBody = pm.response.json();\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(actualResponseBody).not.eql(null);\r",
+							"    pm.expect(pm.response.text()).to.include(\"VERSION\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/activity/metadata/beta/versions",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"activity",
+						"metadata",
+						"beta",
+						"versions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /activity/metadata/beta/corrective-action-plans",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"expect to see metadata about auditable records in the system for corrective action plans \", function () {\r",
+							"    var actualResponseBody = pm.response.json();\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(actualResponseBody).not.eql(null);\r",
+							"    pm.expect(pm.response.text()).to.include(\"CORRECTIVE_ACTION_PLAN\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/activity/metadata/beta/corrective-action-plans",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"activity",
+						"metadata",
+						"beta",
+						"corrective-action-plans"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }

@@ -61,8 +61,12 @@ public class SearchController {
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "searchTerm") @RequestParam(value = "searchTerm", required = false, defaultValue = "") String searchTerm,
             @Parameter(description = "A comma-separated list of certification statuses (ex: \"Active,Retired,Withdrawn by Developer\"). Results may match any of the provided statuses.",
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationStatuses") @RequestParam(value = "certificationStatuses", required = false, defaultValue = "") String certificationStatusesDelimited,
-            @Parameter(description = "A comma-separated list of certification edition years (ex: \"2014,2015\" finds listings with either edition 2014 or 2015). Results may match any of the provided edition years.",
-                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationEditions") @RequestParam(value = "certificationEditions", required = false, defaultValue = "") String certificationEditionsDelimited,
+            @Parameter(description = "A comma-separated list of certification edition years (ex: \"2014,2015\" finds listings with either edition 2014 or 2015). Allowable values are 2011, 2014, 2015. Results may match any of the provided edition years.",
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationEditions", deprecated = true)
+                @RequestParam(value = "certificationEditions", required = false, defaultValue = "")
+                @Deprecated String certificationEditionsDelimited,
+            @Parameter(description = "A comma-separated list of derived certification editions (ex: \"2015,2015 Cures Update\" finds listings that are either 2015 or 2015 Cures Update). Allowable values are 2011, 2014, 2015, and \"2015 Cures Update\". Results may match any of the provided derived editions.",
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "derivedCertificationEditions") @RequestParam(value = "derivedCertificationEditions", required = false, defaultValue = "") String derivedCertificationEditionsDelimited,
             @Parameter(description = "A comma-separated list of certification criteria IDs to be queried together (ex: \"1,2\" finds listings attesting to 170.315 (a)(1) or 170.315 (a)(2)).",
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationCriteriaIds") @RequestParam(value = "certificationCriteriaIds", required = false, defaultValue = "") String certificationCriteriaIdsDelimited,
             @Parameter(description = "Either AND or OR. Defaults to OR. "
@@ -80,14 +84,20 @@ public class SearchController {
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationBodies") @RequestParam(value = "certificationBodies", required = false, defaultValue = "") String certificationBodiesDelimited,
             @Parameter(description = "True or False if a listing has ever had surveillance or direct reviews.",
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "hasHadComplianceActivity") @RequestParam(value = "hasHadComplianceActivity", required = false, defaultValue = "") Boolean hasHadComplianceActivity,
-            @Parameter(description = "A comma-separated list of nonconformity search options applied across surveillance and direct review activity. "
+            @Parameter(description = "A comma-separated list of non-conformity search options applied across surveillance and direct review activity. "
                     + "Valid options are OPEN_NONCONFORMITY, CLOSED_NONCONFORMITY, NEVER_NONCONFORMITY,"
                     + "NOT_OPEN_NONCONFORMITY, NOT_CLOSED_NONCONFORMITY, and NOT_NEVER_NONCONFORMITY.",
-                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "nonconformityOptions") @RequestParam(value = "nonConformityOptions", required = false, defaultValue = "") String nonConformityOptionsDelimited,
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "nonConformityOptions") @RequestParam(value = "nonConformityOptions", required = false, defaultValue = "") String nonConformityOptionsDelimited,
             @Parameter(description = "Either AND or OR. Defaults to OR."
-                    + "Indicates whether a listing must have met all nonconformityOptions "
-                    + "specified or may have met any one or more of the nonconformityOptions",
-                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "nonconformityOptionsOperator") @RequestParam(value = "nonConformityOptionsOperator", required = false, defaultValue = "") String nonConformityOptionsOperator,
+                    + "Indicates whether a listing must have met all nonConformityOptions "
+                    + "specified or may have met any one or more of the nonConformityOptions",
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "nonConformityOptionsOperator") @RequestParam(value = "nonConformityOptionsOperator", required = false, defaultValue = "OR") String nonConformityOptionsOperator,
+            @Parameter(description = "A comma-separated list of Real World Testing search options. "
+                    + "Valid options are IS_ELIGIBLE, HAS_PLANS_URL, HAS_RESULTS_URL, NOT_ELIGIBLE, NO_PLANS_URL, NO_RESULTS_URL",
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "rwtOptions") @RequestParam(value = "rwtOptions", required = false, defaultValue = "") String rwtOptionsDelimited,
+            @Parameter(description = "Either AND or OR. Defaults to OR."
+                    + "Indicates whether a listing must have met all rwtOptions specified or may have met any one or more of the rwtOptions",
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "rwtOperator") @RequestParam(value = "rwtOperator", required = false, defaultValue = "OR") String rwtOperator,
             @Parameter(description = "The full name of a developer.",
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "developer") @RequestParam(value = "developer", required = false, defaultValue = "") String developer,
             @Parameter(description = "The full name of a product.",
@@ -115,6 +125,7 @@ public class SearchController {
         SearchRequest searchRequest = SearchRequest.builder()
                 .searchTerm(searchTerm.trim())
                 .certificationStatuses(convertToSetWithDelimeter(certificationStatusesDelimited, ","))
+                .derivedCertificationEditions(convertToSetWithDelimeter(derivedCertificationEditionsDelimited, ","))
                 .certificationEditions(convertToSetWithDelimeter(certificationEditionsDelimited, ","))
                 .certificationCriteriaIdStrings(convertToSetWithDelimeter(certificationCriteriaIdsDelimited, ","))
                 .certificationCriteriaOperatorString(certificationCriteriaOperatorStr)
@@ -126,6 +137,8 @@ public class SearchController {
                         .nonConformityOptionsStrings(convertToSetWithDelimeter(nonConformityOptionsDelimited, ","))
                         .nonConformityOptionsOperatorString(nonConformityOptionsOperator)
                         .build())
+                .rwtOptionsStrings(convertToSetWithDelimeter(rwtOptionsDelimited, ","))
+                .rwtOperatorString(rwtOperator)
                 .developer(developer)
                 .product(product)
                 .version(version)

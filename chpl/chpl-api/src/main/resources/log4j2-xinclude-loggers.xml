@@ -190,4 +190,14 @@
         <AppenderRef ref="addCuresUpdateToListingsJob" />
         <AppenderRef ref="addCuresUpdateToListingsJobJson" />
     </Logger>
+    <Logger name="listingsSnapshotCsvCreatorJobLogger"
+        level="INFO" additivity="false">
+        <AppenderRef
+            ref="listingsSnapshotCsvCreatorJob" />
+    </Logger>
+    <Logger name="listingsWithCriterionSnapshotCsvCreatorJobLogger"
+        level="INFO" additivity="false">
+        <AppenderRef
+            ref="listingsWithCriterionSnapshotCsvCreatorJob" />
+    </Logger>
 </Loggers>
