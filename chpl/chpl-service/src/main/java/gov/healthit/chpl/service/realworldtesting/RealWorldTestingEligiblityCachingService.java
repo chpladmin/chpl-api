@@ -72,7 +72,7 @@ public class RealWorldTestingEligiblityCachingService {
         Date end = new Date();
         LOGGER.info(String.format("ListingId: %s, Elig Year %s, %s [ %s ms ]",
                 listingId,
-                rwtEligibility.getEligibilityYear().isPresent() ? rwtEligibility.getEligibilityYear().get().toString() : "N/A",
+                rwtEligibility.getEligibilityYear() != null ? rwtEligibility.getEligibilityYear().toString() : "N/A",
                         rwtEligibility.getReason().getReason(),
                 (end.getTime() - start.getTime())));
         return rwtEligibility;

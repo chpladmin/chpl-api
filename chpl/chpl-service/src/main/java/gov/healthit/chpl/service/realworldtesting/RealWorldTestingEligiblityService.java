@@ -62,8 +62,8 @@ public class RealWorldTestingEligiblityService {
             return memo.get(listingId);
         }
 
-        Optional<Integer> rwtEligYearBasedOnIcs = getRwtEligibilityYearBasedOnIcs(listingId, logger);
-        if (rwtEligYearBasedOnIcs.isPresent()) {
+        Integer rwtEligYearBasedOnIcs = getRwtEligibilityYearBasedOnIcs(listingId, logger);
+        if (rwtEligYearBasedOnIcs != null) {
             RealWorldTestingEligibility eligibility = new RealWorldTestingEligibility(RealWorldTestingEligiblityReason.ICS, rwtEligYearBasedOnIcs);
             addCalculatedResultsToMemo(listingId, eligibility);
             return eligibility;
@@ -71,10 +71,9 @@ public class RealWorldTestingEligiblityService {
             Optional<RealWorldTestingEligibility> rwtElig = getRwtEligBasedOnStandardRequirements(listingId);
             if (rwtElig.isPresent()) {
                 return rwtElig.get();
-
             }
         }
-        RealWorldTestingEligibility eligibility = new RealWorldTestingEligibility(RealWorldTestingEligiblityReason.NOT_ELIGIBLE, Optional.empty());
+        RealWorldTestingEligibility eligibility = new RealWorldTestingEligibility(RealWorldTestingEligiblityReason.NOT_ELIGIBLE, null);
         addCalculatedResultsToMemo(listingId, eligibility);
         return eligibility;
     }
@@ -98,7 +97,7 @@ public class RealWorldTestingEligiblityService {
         while (currentRwtEligStartDate.isBefore(LocalDate.now())) {
             Optional<CertifiedProductSearchDetails> listing = getListingAsOfDate(listingId, currentRwtEligStartDate);
             if (listing.isPresent() && isListingRwtEligible(listing.get(), currentRwtEligStartDate)) {
-                RealWorldTestingEligibility eligibility = new RealWorldTestingEligibility(RealWorldTestingEligiblityReason.SELF, Optional.of(currentRwtEligYear));
+                RealWorldTestingEligibility eligibility = new RealWorldTestingEligibility(RealWorldTestingEligiblityReason.SELF, currentRwtEligYear);
                 addCalculatedResultsToMemo(listingId, eligibility);
                 return Optional.of(eligibility);
             }
@@ -109,7 +108,7 @@ public class RealWorldTestingEligiblityService {
         return Optional.empty();
     }
 
-    private Optional<Integer> getRwtEligibilityYearBasedOnIcs(Long listingId, Logger logger) {
+    private Integer getRwtEligibilityYearBasedOnIcs(Long listingId, Logger logger) {
         try {
             Optional<CertifiedProductSearchDetails> listing = getListingInOriginalState(listingId);
             if (listing.isPresent()) {
@@ -132,19 +131,20 @@ public class RealWorldTestingEligiblityService {
                         }
                         //Get the eligiblity year for the parent...  Uh-oh - possible recursion...
                         RealWorldTestingEligibility parentEligibility = getRwtEligibilityYearForListing(cpParent.getId(), logger);
-                        if (parentEligibility.getEligibilityYear().isPresent()) {
-                            parentEligibilityYears.add(parentEligibility.getEligibilityYear().get());
+                        if (parentEligibility.getEligibilityYear() != null) {
+                            parentEligibilityYears.add(parentEligibility.getEligibilityYear());
                         }
                     }
                     if (parentEligibilityYears.size() > 0) {
-                        return parentEligibilityYears.stream()
+                        Optional<Integer> minEligibilityYear = parentEligibilityYears.stream()
                                 .min(Integer::compare);
+                        return minEligibilityYear.isPresent() ? minEligibilityYear.get() : null;
                     }
                 }
             }
-            return Optional.empty();
+            return null;
         } catch (EntityRetrievalException e) {
-            return Optional.empty();
+            return null;
         }
     }
 
