@@ -33,6 +33,7 @@ public class RealWorldTestingEligiblityCachingService {
 
     @Cacheable(CacheNames.RWT_ELIGIBILITY)
     public RealWorldTestingEligibility getRwtEligibility(Long listingId) {
+        LOGGER.info("DID NOT GET RWT ELIGIBILITY FROM CACHE");
         RealWorldTestingEligiblityService rwtService = rwtEligibilityServiceFactory.getInstance();
         return getRwtEligibility(listingId, rwtService);
     }
@@ -45,6 +46,7 @@ public class RealWorldTestingEligiblityCachingService {
 
     @CacheEvict(value = { CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH }, allEntries = true)
     public void populateRwtEligibilityCache() {
+        LOGGER.info("POPULATING THE WHOLE RWT ELIGBILITY CACHE");
         Ehcache rwtCache = getRwtEligibilityCache();
         LOGGER.info("Clearing the RWT Eligibility cache.");
         rwtCache.removeAll();

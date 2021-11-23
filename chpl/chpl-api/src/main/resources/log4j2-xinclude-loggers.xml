@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Loggers>
-    <Logger name="net.sf.ehcache" level="INFO" additivity="false">
+    <Logger name="net.sf.ehcache" level="TRACE" additivity="false">
         <AppenderRef ref="cacheListenerActivity" />
     </Logger>
     <Logger name="org.springframework.cache" level="INFO">
