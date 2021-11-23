@@ -65,12 +65,12 @@ public class InvitationEmailer {
 
     public void emailInvitedUser(UserInvitation invitation) {
         String htmlMessage = htmlEmailBuilder.initialize()
-            .heading(accountInvitationTitle)
-            .paragraph(accountInvitationHeading, accountInvitationBody)
-            .paragraph(null, String.format(accountInvitationLink, chplUrlBegin, invitation.getInvitationToken()))
-            .paragraph(null, chplEmailValediction)
-            .footer(true)
-            .build();
+                .heading(accountInvitationTitle)
+                .paragraph(accountInvitationHeading, accountInvitationBody)
+                .paragraph(null, String.format(accountInvitationLink, chplUrlBegin, invitation.getInvitationToken()))
+                .paragraph(null, chplEmailValediction)
+                .footer(true)
+                .build();
         String[] toEmails = {
                 invitation.getEmailAddress()
         };
