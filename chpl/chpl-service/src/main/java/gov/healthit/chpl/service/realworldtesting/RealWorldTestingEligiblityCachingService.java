@@ -2,6 +2,7 @@ package gov.healthit.chpl.service.realworldtesting;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -33,13 +34,16 @@ public class RealWorldTestingEligiblityCachingService {
 
     @Cacheable(CacheNames.RWT_ELIGIBILITY)
     public RealWorldTestingEligibility getRwtEligibility(Long listingId) {
-        LOGGER.info("DID NOT GET RWT ELIGIBILITY FROM CACHE");
+        Ehcache cache = getRwtEligibilityCache();
+        LOGGER.info("RWT Cache does not have a value for " + listingId + ". Keys are: " + cache.getKeys().stream().collect(Collectors.joining(",")));
         RealWorldTestingEligiblityService rwtService = rwtEligibilityServiceFactory.getInstance();
         return getRwtEligibility(listingId, rwtService);
     }
 
     @CachePut(CacheNames.RWT_ELIGIBILITY)
     public RealWorldTestingEligibility calculateRwtEligibility(Long listingId) {
+        Ehcache cache = getRwtEligibilityCache();
+        LOGGER.info("Putting RWT Value for " + listingId + " in RWT Cache. Keys are: " + cache.getKeys().stream().collect(Collectors.joining(",")));
         RealWorldTestingEligiblityService rwtService = rwtEligibilityServiceFactory.getInstance();
         return getRwtEligibility(listingId, rwtService);
     }
@@ -83,6 +87,7 @@ public class RealWorldTestingEligiblityCachingService {
     private Ehcache getRwtEligibilityCache() {
         CacheManager manager = CacheManager.getInstance();
         Ehcache cache = manager.getEhcache(CacheNames.RWT_ELIGIBILITY);
+        LOGGER.info("RWT Eligibility Cache: " + cache + " has " + cache.getKeys().size() + " keys");
         return cache;
     }
 }
