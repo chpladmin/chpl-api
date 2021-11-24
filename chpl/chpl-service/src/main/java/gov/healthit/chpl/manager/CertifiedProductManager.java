@@ -1061,6 +1061,8 @@ public class CertifiedProductManager extends SecuredManager {
         curesUpdateDao.create(curesEvent);
 
         pcpManager.confirm(pendingCp.getCertificationBodyId(), pendingCp.getId());
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, newCertifiedProduct.getId(),
+                "Created a certified product", null, newCertifiedProduct);
         rwtCachingService.calculateRwtEligibility(newCertifiedProduct.getId());
         return newCertifiedProduct;
     }

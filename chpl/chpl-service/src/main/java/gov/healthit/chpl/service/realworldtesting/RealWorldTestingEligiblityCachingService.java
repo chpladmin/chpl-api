@@ -32,23 +32,18 @@ public class RealWorldTestingEligiblityCachingService {
 
     @Cacheable(CacheNames.RWT_ELIGIBILITY)
     public RealWorldTestingEligibility getRwtEligibility(Long listingId) {
-        Ehcache cache = getRwtEligibilityCache();
-        LOGGER.info("RWT Cache does not have a value for " + listingId + ".");
         RealWorldTestingEligiblityService rwtService = rwtEligibilityServiceFactory.getInstance();
         return getRwtEligibility(listingId, rwtService);
     }
 
     @CachePut(CacheNames.RWT_ELIGIBILITY)
     public RealWorldTestingEligibility calculateRwtEligibility(Long listingId) {
-        Ehcache cache = getRwtEligibilityCache();
-        LOGGER.info("Putting RWT Value for " + listingId + " in RWT Cache.");
         RealWorldTestingEligiblityService rwtService = rwtEligibilityServiceFactory.getInstance();
         return getRwtEligibility(listingId, rwtService);
     }
 
     @CacheEvict(value = { CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH }, allEntries = true)
     public void populateRwtEligibilityCache() {
-        LOGGER.info("POPULATING THE WHOLE RWT ELIGBILITY CACHE");
         Ehcache rwtCache = getRwtEligibilityCache();
         LOGGER.info("Clearing the RWT Eligibility cache.");
         rwtCache.removeAll();
@@ -85,7 +80,6 @@ public class RealWorldTestingEligiblityCachingService {
     private Ehcache getRwtEligibilityCache() {
         CacheManager manager = CacheManager.getInstance();
         Ehcache cache = manager.getEhcache(CacheNames.RWT_ELIGIBILITY);
-        LOGGER.info("RWT Eligibility Cache: " + cache + " has " + cache.getKeys().size() + " keys");
         return cache;
     }
 }
