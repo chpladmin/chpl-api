@@ -1,5 +1,21 @@
 # Release Notes
 
+## Version 32.5.0
+_29 November 2021_
+
+### Features
+* Create two "snapshot" jobs to present a listing and/or criteria as it was at a certain point in history.
+* Deprecate certificationEditions request parameter for /search/beta API
+* Deprecated /collections/certified-products and related objects; remove their usage where possible
+* Add derivedCertificationEditions request parameter to /search/beta endpoint
+* Added rwtPlansUrl and rwtResultUrls fields to collections and search/beta endpoint responses
+* Add '2015 Cures Update' to /search/beta edition filters
+
+### Bug Fixes
+* Adjust /search/beta endpoint edition sort to take into account 2015 Cures Update
+
+---
+
 ## Version 32.4.0
 _15 November 2021_
 
