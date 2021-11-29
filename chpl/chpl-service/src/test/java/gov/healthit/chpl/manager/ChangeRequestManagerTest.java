@@ -6,12 +6,15 @@ import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.List;
 
+import org.ff4j.FF4j;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
@@ -34,6 +37,15 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
 public class ChangeRequestManagerTest {
+    private FF4j ff4j;
+
+    @Before
+    public void before() throws EntityRetrievalException {
+        ff4j = Mockito.mock(FF4j.class);
+        Mockito.when(ff4j.check(FeatureList.DEMOGRAPHIC_CHANGE_REQUEST))
+        .thenReturn(true);
+    }
+
     @Test
     public void getChangeRequest_ValidCrId_ReturnsValidObject() throws EntityRetrievalException {
         // Setup
@@ -42,7 +54,7 @@ public class ChangeRequestManagerTest {
                 .thenReturn(getBasicChangeRequest());
 
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(changeRequestDAO,
-                null, null, null, null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null, null, null, ff4j);
 
         // Run
         ChangeRequest cr = changeRequestManager.getChangeRequest(1l);
@@ -61,7 +73,7 @@ public class ChangeRequestManagerTest {
                 .thenThrow(EntityRetrievalException.class);
 
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(changeRequestDAO,
-                null, null, null, null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null, null, null, ff4j);
 
         // Run
         changeRequestManager.getChangeRequest(11l);
@@ -78,7 +90,7 @@ public class ChangeRequestManagerTest {
                 .thenReturn(Arrays.asList(getBasicChangeRequest(), getBasicChangeRequest(), getBasicChangeRequest()));
 
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(changeRequestDAO,
-                null, null, null, null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null, null, null, ff4j);
 
         // Run
         List<ChangeRequest> crs = changeRequestManager.getAllChangeRequestsForUser();
@@ -122,7 +134,8 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 resourcePermissions,
-                null);
+                null,
+                ff4j);
 
         // Run
         changeRequestManager.updateChangeRequest(getBasicChangeRequest());
@@ -157,7 +170,8 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 null,
-                null);
+                null,
+                ff4j);
 
         // Run
         changeRequestManager.updateChangeRequest(getBasicChangeRequest());
@@ -201,7 +215,8 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 resourcePermissions,
-                null);
+                null,
+                ff4j);
 
         // Run
         changeRequestManager.updateChangeRequest(getBasicChangeRequest());
@@ -246,7 +261,8 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 resourcePermissions,
-                null);
+                null,
+                ff4j);
 
         // Run
         ChangeRequest cr = getBasicChangeRequest();
