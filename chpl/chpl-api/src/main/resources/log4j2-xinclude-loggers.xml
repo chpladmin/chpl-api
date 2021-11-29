@@ -183,4 +183,14 @@
         additivity="false">
         <AppenderRef ref="testStandardConversionJob" />
     </Logger>
+    <Logger name="listingsSnapshotCsvCreatorJobLogger"
+        level="INFO" additivity="false">
+        <AppenderRef
+            ref="listingsSnapshotCsvCreatorJob" />
+    </Logger>
+    <Logger name="listingsWithCriterionSnapshotCsvCreatorJobLogger"
+        level="INFO" additivity="false">
+        <AppenderRef
+            ref="listingsWithCriterionSnapshotCsvCreatorJob" />
+    </Logger>
 </Loggers>

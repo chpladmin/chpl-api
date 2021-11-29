@@ -74,7 +74,7 @@ public class ChplCacheConfig {
         }
         Ehcache decoratedDrCache = createDirectReviewCache(drCache, CacheNames.DIRECT_REVIEWS);
         backingManager.replaceCacheWithDecoratedCache(drCache, decoratedDrCache);
-
+        backingManager.addCacheIfAbsent(createEternalCache(CacheNames.RWT_ELIGIBILITY));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.EDITIONS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.EDITION_NAMES));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.FIND_SURVEILLANCE_REQ_TYPE));

@@ -19,7 +19,7 @@ import gov.healthit.chpl.dto.CriterionProductStatisticsDTO;
 import gov.healthit.chpl.entity.statistics.CriterionProductStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
 
 /**
  * Populates the criterion_product_statistics table with summarized count
@@ -52,12 +52,12 @@ public class CriterionProductStatisticsCalculator {
      *            listings to parse
      * @return map of criteria to counts
      */
-    public Map<String, Long> getCounts(List<CertifiedProductFlatSearchResult> listings) {
-        Map<String, Long> criterionMap = new HashMap<String, Long>();
+    public Map<Long, Long> getCounts(List<CertifiedProductBasicSearchResult> listings) {
+        Map<Long, Long> criterionMap = new HashMap<Long, Long>();
         HashSet<String> uniqueProductSet = new HashSet<String>();
-        for (CertifiedProductFlatSearchResult listing : listings) {
+        for (CertifiedProductBasicSearchResult listing : listings) {
             if (listing.getCriteriaMet() != null && !listing.getCriteriaMet().isEmpty()) {
-                for (String certId : listing.getCriteriaMet().split(CertifiedProductFlatSearchResult.SMILEY_SPLIT_CHAR)) {
+                for (Long certId : listing.getCriteriaMet()) {
                     String key = certId + "-" + listing.getDeveloper() + '-' + listing.getProduct();
                     if (!uniqueProductSet.contains(key)) {
                         if (!criterionMap.containsKey(certId)) {
@@ -72,13 +72,13 @@ public class CriterionProductStatisticsCalculator {
         return criterionMap;
     }
 
-    public void logCounts(final Map<String, Long> productCounts) {
-        for (Entry<String, Long> entry : productCounts.entrySet()) {
+    public void logCounts(Map<Long, Long> productCounts) {
+        for (Entry<Long, Long> entry : productCounts.entrySet()) {
             LOGGER.info("Certification Criteria count: [" + entry.getKey() + " : " + entry.getValue() + "]");
         }
     }
 
-    public void save(final Map<String, Long> productCounts) throws NumberFormatException, EntityRetrievalException {
+    public void save(Map<Long, Long> productCounts) throws NumberFormatException, EntityRetrievalException {
         List<CriterionProductStatisticsEntity> entities =
         convertProductCountMapToListOfCriterionProductStatistics(productCounts);
         try {
@@ -94,10 +94,10 @@ public class CriterionProductStatisticsCalculator {
     }
 
     private List<CriterionProductStatisticsEntity> convertProductCountMapToListOfCriterionProductStatistics(
-            final Map<String, Long> productCounts) throws NumberFormatException, EntityRetrievalException {
+            Map<Long, Long> productCounts) throws NumberFormatException, EntityRetrievalException {
         List<CriterionProductStatisticsEntity> entities = new ArrayList<CriterionProductStatisticsEntity>();
-        for (Entry<String, Long> entry : productCounts.entrySet()) {
-            CertificationCriterionDTO criterion = certificationCriterionDAO.getById(Long.valueOf(entry.getKey()));
+        for (Entry<Long, Long> entry : productCounts.entrySet()) {
+            CertificationCriterionDTO criterion = certificationCriterionDAO.getById(entry.getKey());
             if (!criterion.getRemoved()) {
                 CriterionProductStatisticsEntity entity = new CriterionProductStatisticsEntity();
                 entity.setProductCount(entry.getValue());

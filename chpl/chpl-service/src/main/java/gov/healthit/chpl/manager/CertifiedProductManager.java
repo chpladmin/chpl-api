@@ -16,6 +16,7 @@ import java.util.Objects;
 
 import javax.persistence.EntityNotFoundException;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
@@ -167,6 +168,7 @@ import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CuresUpdateService;
+import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityCachingService;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
@@ -223,6 +225,7 @@ public class CertifiedProductManager extends SecuredManager {
     private ListingValidatorFactory validatorFactory;
     private CuresUpdateService curesUpdateService;
     private CertificationCriterionService criteriaService;
+    private RealWorldTestingEligiblityCachingService rwtCachingService;
 
     private static final int PROD_CODE_LOC = 4;
     private static final int VER_CODE_LOC = 5;
@@ -262,7 +265,8 @@ public class CertifiedProductManager extends SecuredManager {
             PendingCertifiedProductManager pcpManager,
             ActivityManager activityManager, ListingValidatorFactory validatorFactory,
             CuresUpdateService curesUpdateService,
-            CertificationCriterionService criteriaService) {
+            CertificationCriterionService criteriaService,
+            RealWorldTestingEligiblityCachingService rwtCachingService) {
 
         this.msgUtil = msgUtil;
         this.cpDao = cpDao;
@@ -309,6 +313,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.validatorFactory = validatorFactory;
         this.curesUpdateService = curesUpdateService;
         this.criteriaService = criteriaService;
+        this.rwtCachingService = rwtCachingService;
     }
 
     @Transactional(readOnly = true)
@@ -1056,7 +1061,16 @@ public class CertifiedProductManager extends SecuredManager {
         curesUpdateDao.create(curesEvent);
 
         pcpManager.confirm(pendingCp.getCertificationBodyId(), pendingCp.getId());
+        logCertifiedProductCreateActivity(newCertifiedProduct.getId());
+        rwtCachingService.calculateRwtEligibility(newCertifiedProduct.getId());
         return newCertifiedProduct;
+    }
+
+    private void logCertifiedProductCreateActivity(Long listingId) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+        CertifiedProductSearchDetails confirmedListing
+            = certifiedProductDetailsManager.getCertifiedProductDetails(listingId);
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, listingId,
+            "Created a certified product", null, confirmedListing);
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
@@ -1159,6 +1173,7 @@ public class CertifiedProductManager extends SecuredManager {
         CertifiedProductDTO dtoToUpdate = new CertifiedProductDTO(updatedListing);
         CertifiedProductDTO result = cpDao.update(dtoToUpdate);
         updateListingsChildData(existingListing, updatedListing);
+        updateRwtEligibilityForListingAndChildren(result);
 
         // Log the activity
         logCertifiedProductUpdateActivity(existingListing, updateRequest.getReason());
@@ -1200,6 +1215,20 @@ public class CertifiedProductManager extends SecuredManager {
                 existingListing.getCertificationResults(), updatedListing.getCertificationResults());
         copyCriterionIdsToCqmMappings(updatedListing);
         updateCqms(updatedListing, existingListing.getCqmResults(), updatedListing.getCqmResults());
+    }
+
+    private void updateRwtEligibilityForListingAndChildren(CertifiedProductDTO listing) {
+        rwtCachingService.calculateRwtEligibility(listing.getId());
+
+        List<CertifiedProductDTO> listingChildren = listingGraphDao.getChildren(listing.getId());
+        if (!CollectionUtils.isEmpty(listingChildren)) {
+            for (CertifiedProductDTO child : listingChildren) {
+                if (Integer.valueOf(listing.getIcsCode()) >= Integer.valueOf(child.getIcsCode())) {
+                    continue;
+                }
+                updateRwtEligibilityForListingAndChildren(child);
+            }
+        }
     }
 
     private void performSecondaryActionsBasedOnStatusChanges(CertifiedProductSearchDetails existingListing,
@@ -2430,7 +2459,6 @@ public class CertifiedProductManager extends SecuredManager {
         }
 
         CertificationStatusEventPair(CertificationStatusEvent orig, CertificationStatusEvent updated) {
-
             this.orig = orig;
             this.updated = updated;
         }
