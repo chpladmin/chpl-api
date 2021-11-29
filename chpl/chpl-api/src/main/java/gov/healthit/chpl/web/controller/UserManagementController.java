@@ -59,6 +59,7 @@ import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.Getter;
 
 @Tag(name = "users", description = "Allows management of users.")
 @RestController
@@ -360,14 +361,11 @@ public class UserManagementController {
     }
 
     private class DeletedUser {
+        @Getter
         private Boolean deletedUser;
 
         DeletedUser(Boolean deletedUser) {
             this.deletedUser = deletedUser;
         }
-
-       public Boolean getDeletedUser() {
-            return deletedUser;
-       }
     }
 }

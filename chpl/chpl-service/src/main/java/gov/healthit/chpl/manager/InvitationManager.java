@@ -151,7 +151,7 @@ public class InvitationManager extends SecuredManager {
         UserInvitation createdInvitation = invitationDao.getById(createdInvitationId);
         LOGGER.info("Emailing user...");
         invitationEmailer.emailInvitedUser(createdInvitation);
-        LOGGER.info("Emaild " + emailAddress);
+        LOGGER.info("Emailed " + emailAddress);
         return createdInvitation;
     }
 
