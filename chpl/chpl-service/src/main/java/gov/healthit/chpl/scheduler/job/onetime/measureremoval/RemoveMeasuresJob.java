@@ -22,8 +22,7 @@ import gov.healthit.chpl.scheduler.job.QuartzJob;
 import lombok.extern.log4j.Log4j2;
 import net.sf.ehcache.CacheManager;
 
-//@Log4j2(topic = "removeMeasuresJobLogger")
-@Log4j2
+@Log4j2(topic = "removeMeasuresJobLogger")
 public class RemoveMeasuresJob extends QuartzJob {
 
     @Autowired
