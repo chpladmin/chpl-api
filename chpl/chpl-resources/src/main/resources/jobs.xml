@@ -749,7 +749,6 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
-<<<<<<< HEAD
         
         <!-- One time job to remove 3 criteria -->
         <job>
