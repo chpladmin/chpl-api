@@ -1,5 +1,7 @@
 package gov.healthit.chpl.domain.auth;
 
+import java.io.Serializable;
+
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserPermission {
+public class UserPermission implements Serializable {
+    private static final long serialVersionUID = -394648579362879816L;
+
     private Long id;
     private String authority;
     private String name;
