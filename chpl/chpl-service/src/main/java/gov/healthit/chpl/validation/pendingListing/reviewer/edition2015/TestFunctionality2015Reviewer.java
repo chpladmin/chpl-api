@@ -60,7 +60,7 @@ public class TestFunctionality2015Reviewer extends PermissionBasedReviewer {
                         TestFunctionalityDTO tf =
                                 getTestFunctionality(crtf.getNumber(), getEdition(listing.getCertificationEdition()));
                         if (tf == null) {
-                            addErrorOrWarningByPermission(listing, cr, "listing.criteria.testFunctionalityNotFoundAndRemoved",
+                            addErrorIfCriterionIsNotRemoved(listing, cr, "listing.criteria.testFunctionalityNotFoundAndRemoved",
                                     Util.formatCriteriaNumber(cr.getCriterion()), crtf.getNumber());
                             crtfIter.remove();
                         } else {

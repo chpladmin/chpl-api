@@ -87,6 +87,11 @@ public class UnattestedCriteriaWithDataReviewer implements Reviewer {
                             msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                                     Util.formatCriteriaNumber(cert.getCriterion()), "Test Standards"));
                 }
+                if (cert.getOptionalStandards() != null && cert.getOptionalStandards().size() > 0) {
+                    listing.getWarningMessages().add(
+                            msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
+                                    Util.formatCriteriaNumber(cert.getCriterion()), "Optional Standards"));
+                }
                 if (cert.getTestTasks() != null && cert.getTestTasks().size() > 0) {
                     listing.getWarningMessages().add(
                             msgUtil.getMessage("listing.criteria.falseCriteriaHasData",

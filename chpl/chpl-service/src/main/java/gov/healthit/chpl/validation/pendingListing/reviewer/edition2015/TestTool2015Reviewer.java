@@ -26,7 +26,7 @@ public class TestTool2015Reviewer extends PermissionBasedReviewer {
                     && cert.getTestTools() != null && cert.getTestTools().size() > 0) {
                 for (PendingCertificationResultTestToolDTO testTool : cert.getTestTools()) {
                         if (!StringUtils.isEmpty(testTool.getName()) && StringUtils.isEmpty(testTool.getVersion())) {
-                            addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestToolVersion",
+                            addErrorIfCriterionIsNotRemoved(listing, cert, "listing.criteria.missingTestToolVersion",
                                 testTool.getName(), Util.formatCriteriaNumber(cert.getCriterion()));
                     }
                 }

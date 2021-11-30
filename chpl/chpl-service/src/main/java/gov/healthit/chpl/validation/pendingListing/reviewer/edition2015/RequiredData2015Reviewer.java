@@ -213,11 +213,11 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                     if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria().equals(Boolean.TRUE)
                             && cert.getCriterion().getNumber().equals(UCD_RELATED_CERTS[i])) {
                         if (cert.getUcdProcesses() == null || cert.getUcdProcesses().size() == 0) {
-                            addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingUcdProcess",
+                            addErrorIfCriterionIsNotRemoved(listing, cert, "listing.criteria.missingUcdProcess",
                                     Util.formatCriteriaNumber(cert.getCriterion()));
                         }
                         if (cert.getTestTasks() == null || cert.getTestTasks().size() == 0) {
-                            addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestTask",
+                            addErrorIfCriterionIsNotRemoved(listing, cert, "listing.criteria.missingTestTask",
                                     Util.formatCriteriaNumber(cert.getCriterion()));
                         }
 
@@ -619,32 +619,32 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
                 if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.ATTESTATION_ANSWER)
                         && cert.getAttestationAnswer() == null) {
-                    addErrorOrWarningByPermission(listing, cert,
+                    addErrorIfCriterionIsNotRemoved(listing, cert,
                             "listing.criteria.missingAttestationAnswer",
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 
                 if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.PRIVACY_SECURITY)
                         && StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
-                    addErrorOrWarningByPermission(listing, cert,
+                    addErrorIfCriterionIsNotRemoved(listing, cert,
                             "listing.criteria.missingPrivacySecurityFramework",
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
                 if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.API_DOCUMENTATION)
                         && StringUtils.isEmpty(cert.getApiDocumentation())) {
-                    addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingApiDocumentation",
+                    addErrorIfCriterionIsNotRemoved(listing, cert, "listing.criteria.missingApiDocumentation",
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
                 if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.EXPORT_DOCUMENTATION)
                         && StringUtils.isEmpty(cert.getExportDocumentation())) {
-                    addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingExportDocumentation",
+                    addErrorIfCriterionIsNotRemoved(listing, cert, "listing.criteria.missingExportDocumentation",
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 
                 if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.USE_CASES)
                         && StringUtils.isEmpty(cert.getUseCases())
                         && cert.getAttestationAnswer() != null && cert.getAttestationAnswer().equals(Boolean.TRUE)) {
-                    addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingUseCases",
+                    addErrorIfCriterionIsNotRemoved(listing, cert, "listing.criteria.missingUseCases",
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 } else if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.USE_CASES)
                         && !StringUtils.isEmpty(cert.getUseCases())
@@ -656,7 +656,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
                 if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.SERVICE_BASE_URL_LIST)
                         && StringUtils.isEmpty(cert.getServiceBaseUrlList())) {
-                    addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingServiceBaseUrlList",
+                    addErrorIfCriterionIsNotRemoved(listing, cert, "listing.criteria.missingServiceBaseUrlList",
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 
@@ -674,7 +674,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 if (!gapEligibleAndTrue
                         && certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.TEST_TOOLS_USED)
                         && (cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
-                    addErrorOrWarningByPermission(listing, cert,
+                    addErrorIfCriterionIsNotRemoved(listing, cert,
                             "listing.criteria.missingTestTool", Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 
@@ -688,7 +688,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                             TestFunctionalityDTO foundTestFunc = testFuncDao.getByNumberAndEdition(
                                     crtf.getNumber(), listing.getCertificationEditionId());
                             if (foundTestFunc == null || foundTestFunc.getId() == null) {
-                                addErrorOrWarningByPermission(listing, cert,
+                                addErrorIfCriterionIsNotRemoved(listing, cert,
                                         "listing.criteria.testFunctionalityNotFoundAndRemoved",
                                         Util.formatCriteriaNumber(cert.getCriterion()), crtf.getNumber());
                                 crtfIter.remove();
@@ -701,14 +701,14 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                         && cert.getTestProcedures() != null && cert.getTestProcedures().size() > 0) {
                     for (PendingCertificationResultTestProcedureDTO crTestProc : cert.getTestProcedures()) {
                         if (crTestProc.getTestProcedure() == null && crTestProc.getTestProcedureId() == null) {
-                            addErrorOrWarningByPermission(listing, cert, "listing.criteria.badTestProcedureName",
+                            addErrorIfCriterionIsNotRemoved(listing, cert, "listing.criteria.badTestProcedureName",
                                     Util.formatCriteriaNumber(cert.getCriterion()), crTestProc.getEnteredName());
                         } else if (crTestProc.getTestProcedure() != null && crTestProc.getTestProcedure().getId() == null) {
                             TestProcedureDTO foundTestProc =
                                     testProcDao.getByCriterionIdAndValue(cert.getCriterion().getId(),
                                             crTestProc.getTestProcedure().getName());
                             if (foundTestProc == null || foundTestProc.getId() == null) {
-                                addErrorOrWarningByPermission(listing, cert, "listing.criteria.badTestProcedureName",
+                                addErrorIfCriterionIsNotRemoved(listing, cert, "listing.criteria.badTestProcedureName",
                                         Util.formatCriteriaNumber(cert.getCriterion()), crTestProc.getTestProcedure().getName());
                             } else {
                                 crTestProc.getTestProcedure().setId(foundTestProc.getId());
@@ -716,7 +716,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                         }
 
                         if ((!StringUtils.isEmpty(crTestProc.getEnteredName()) || crTestProc.getTestProcedure() != null) && StringUtils.isEmpty(crTestProc.getVersion())) {
-                            addErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestProcedureVersion",
+                            addErrorIfCriterionIsNotRemoved(listing, cert, "listing.criteria.missingTestProcedureVersion",
                                     Util.formatCriteriaNumber(cert.getCriterion()));
                         }
                     }
@@ -749,7 +749,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                         }
 
                         if ((!StringUtils.isEmpty(crTestData.getEnteredName()) || crTestData.getTestData() != null) && StringUtils.isEmpty(crTestData.getVersion())) {
-                            addErrorOrWarningByPermission(listing, cert,
+                            addErrorIfCriterionIsNotRemoved(listing, cert,
                                     "listing.criteria.missingTestDataVersion",
                                     Util.formatCriteriaNumber(cert.getCriterion()));
                         }
