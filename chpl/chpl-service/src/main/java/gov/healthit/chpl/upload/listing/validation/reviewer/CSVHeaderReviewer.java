@@ -55,7 +55,7 @@ public class CSVHeaderReviewer {
                     nextCertResultIndex, headingRecord, Collections.emptyList());
             CSVRecord certHeadingRecord = uploadUtil.getHeadingRecord(parsedCertResultRecords);
 
-            //add warning messages for this set of cert result headings
+            //add error messages for this set of cert result headings
             listing.getErrorMessages().addAll(getDuplicateCriteriaLevelHeadingMessages(uploadUtil.convertToList(certHeadingRecord), certHeadingRecord.get(0)));
             //remove these items from the set of all columns so we don't check them again
             allCriteriaColumns.add(allHeadingColumns.get(nextCertResultIndex));
