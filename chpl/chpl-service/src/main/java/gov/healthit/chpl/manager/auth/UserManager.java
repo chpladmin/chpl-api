@@ -135,15 +135,7 @@ public class UserManager extends SecuredManager {
 
         UserDTO before = getById(user.getId());
         if (ObjectUtils.notEqual(before.getEmail(), user.getEmail())) {
-            try {
-                UserDTO existingUser = userDAO.getByNameOrEmail(user.getEmail());
-                if (existingUser != null) {
-                    throw new UserAccountExistsException(
-                            errorMessageUtil.getMessage("user.accountAlreadyExists", user.getEmail()));
-                }
-            } catch (UserRetrievalException ex) {
-                // discard; we don't want to find a user
-            }
+            throw new ValidationException(errorMessageUtil.getMessage("user.email.cannotchange"));
         }
 
         UserDTO updated = userDAO.update(user);
