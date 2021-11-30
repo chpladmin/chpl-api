@@ -1061,8 +1061,16 @@ public class CertifiedProductManager extends SecuredManager {
         curesUpdateDao.create(curesEvent);
 
         pcpManager.confirm(pendingCp.getCertificationBodyId(), pendingCp.getId());
+        logCertifiedProductCreateActivity(newCertifiedProduct.getId());
         rwtCachingService.calculateRwtEligibility(newCertifiedProduct.getId());
         return newCertifiedProduct;
+    }
+
+    private void logCertifiedProductCreateActivity(Long listingId) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+        CertifiedProductSearchDetails confirmedListing
+            = certifiedProductDetailsManager.getCertifiedProductDetails(listingId);
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, listingId,
+            "Created a certified product", null, confirmedListing);
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")

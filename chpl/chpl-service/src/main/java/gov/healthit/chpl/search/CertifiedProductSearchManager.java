@@ -94,7 +94,7 @@ public class CertifiedProductSearchManager {
 
     private void populateRwtEligibility(CertifiedProductBasicSearchResult searchResult) {
         RealWorldTestingEligibility rwtElig = rwtService.getRwtEligibility(searchResult.getId());
-        searchResult.setIsRwtEligible(rwtElig.getEligibilityYear().isPresent());
+        searchResult.setIsRwtEligible(rwtElig.getEligibilityYear() != null);
     }
 
     private void populateDirectReviews(CertifiedProductBasicSearchResult searchResult) {
