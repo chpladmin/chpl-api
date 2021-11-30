@@ -135,7 +135,7 @@ public class UserManager extends SecuredManager {
 
         UserDTO before = getById(user.getId());
         if (ObjectUtils.notEqual(before.getEmail(), user.getEmail())) {
-            throw new ValidationException(errorMessageUtil.getMessage("user.email.cannotchange"));
+            throw new ValidationException("Email cannot be changed on existing users.");
         }
 
         UserDTO updated = userDAO.update(user);
