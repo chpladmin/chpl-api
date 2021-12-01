@@ -10,10 +10,12 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.MeasureDomain;
+import lombok.Builder;
 import lombok.Data;
 
 @Entity
 @Data
+@Builder
 @Table(name = "measure_domain")
 public class MeasureDomainEntity {
 
