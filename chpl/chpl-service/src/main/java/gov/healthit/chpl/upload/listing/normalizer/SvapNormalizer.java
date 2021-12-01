@@ -2,12 +2,14 @@ package gov.healthit.chpl.upload.listing.normalizer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -15,17 +17,16 @@ import gov.healthit.chpl.svap.dao.SvapDAO;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
+import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2
 public class SvapNormalizer {
-    private SvapDAO svapDao;
     private List<SvapCriteriaMap> svapCriteriaMap = new ArrayList<SvapCriteriaMap>();
 
     @Autowired
     public SvapNormalizer(SvapDAO svapDao) {
-        this.svapDao = svapDao;
         try {
             svapCriteriaMap = svapDao.getAllSvapCriteriaMap();
         } catch (EntityRetrievalException ex) {
@@ -42,7 +43,7 @@ public class SvapNormalizer {
 
     private void fillInSvapData(CertificationResult certResult) {
         populateAllowedSvaps(certResult);
-        populateSvapIds(certResult.getSvaps());
+        populateSvapsFields(certResult.getCriterion(), certResult.getSvaps());
     }
 
     private void populateAllowedSvaps(CertificationResult certResult) {
@@ -56,14 +57,24 @@ public class SvapNormalizer {
         }
     }
 
-    private void populateSvapIds(List<CertificationResultSvap> svaps) {
+    private void populateSvapsFields(CertificationCriterion criterion, List<CertificationResultSvap> svaps) {
         if (!CollectionUtils.isEmpty(svaps)) {
             svaps.stream()
-                .forEach(svap -> populateSvapId(svap));
+                .forEach(svap -> populateSvapFields(criterion, svap));
         }
     }
 
-    private void populateSvapId(CertificationResultSvap svap) {
-        //TODO in OCD-3780
+    private void populateSvapFields(CertificationCriterion criterion, CertificationResultSvap certResultSvap) {
+        Optional<SvapCriteriaMap> matchedSvap = svapCriteriaMap.stream()
+            .filter(scm -> scm.getCriterion().getId().equals(criterion.getId()))
+            .filter(scm -> scm.getSvap().getRegulatoryTextCitation().equalsIgnoreCase(certResultSvap.getRegulatoryTextCitation()))
+            .findFirst();
+        if (matchedSvap.isPresent()) {
+            certResultSvap.setApprovedStandardVersion(matchedSvap.get().getSvap().getApprovedStandardVersion());
+            certResultSvap.setReplaced(matchedSvap.get().getSvap().isReplaced());
+            certResultSvap.setSvapId(matchedSvap.get().getSvap().getSvapId());
+        } else {
+            LOGGER.warn("Could not find SVAP for criteria " + Util.formatCriteriaNumber(criterion) + " and Regulatory Text " + certResultSvap.getRegulatoryTextCitation());
+        }
     }
 }

@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -78,11 +80,11 @@ public class SvapReviewerTest {
                                 .number("170.315 (a)(1)")
                                 .id(1L)
                                 .build())
-                        .svap(CertificationResultSvap.builder()
+                        .svaps(Stream.of(CertificationResultSvap.builder()
                                 .svapId(1L)
                                 .regulatoryTextCitation("reg1")
                                 .approvedStandardVersion("ver1")
-                                .build())
+                                .build()).collect(Collectors.toList()))
                         .build())
                 .certificationEdition(certEdition)
                 .build();
@@ -122,11 +124,11 @@ public class SvapReviewerTest {
                                 .number("170.315 (a)(1)")
                                 .id(1L)
                                 .build())
-                        .svap(CertificationResultSvap.builder()
+                        .svaps(Stream.of(CertificationResultSvap.builder()
                                 .svapId(1L)
                                 .regulatoryTextCitation("reg1")
                                 .approvedStandardVersion("ver1")
-                                .build())
+                                .build()).collect(Collectors.toList()))
                         .build())
                 .certificationEdition(certEdition)
                 .svapNoticeUrl("bad")
@@ -166,11 +168,11 @@ public class SvapReviewerTest {
                                 .number("170.315 (a)(2)")
                                 .id(2L)
                                 .build())
-                        .svap(CertificationResultSvap.builder()
+                        .svaps(Stream.of(CertificationResultSvap.builder()
                                 .svapId(1L)
                                 .regulatoryTextCitation("reg1")
                                 .approvedStandardVersion("ver1")
-                                .build())
+                                .build()).collect(Collectors.toList()))
                         .build())
                 .certificationEdition(certEdition)
                 .build();
@@ -208,11 +210,11 @@ public class SvapReviewerTest {
                                 .number("170.314 (a)(1)")
                                 .id(1L)
                                 .build())
-                        .svap(CertificationResultSvap.builder()
+                        .svaps(Stream.of(CertificationResultSvap.builder()
                                 .svapId(1L)
                                 .regulatoryTextCitation("reg1")
                                 .approvedStandardVersion("ver1")
-                                .build())
+                                .build()).collect(Collectors.toList()))
                         .build())
                 .certificationEdition(certEdition)
                 .build();
@@ -250,11 +252,11 @@ public class SvapReviewerTest {
                                 .number("170.315 (a)(2)")
                                 .id(2L)
                                 .build())
-                        .svap(CertificationResultSvap.builder()
+                        .svaps(Stream.of(CertificationResultSvap.builder()
                                 .svapId(1L)
                                 .regulatoryTextCitation("reg1")
                                 .approvedStandardVersion("ver1")
-                                .build())
+                                .build()).collect(Collectors.toList()))
                         .build())
                 .certificationEdition(certEdition)
                 .build();
