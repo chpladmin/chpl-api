@@ -227,6 +227,7 @@ public class RemoveMeasuresJob extends QuartzJob {
                 .requiredTest(requiredTest)
                 .name(name)
                 .requiresCriteriaSelection(criteriaSelectionReqd)
+                .removed(false)
                 .build();
         final Measure savedMeasure = measureDAO.create(measure);
 
