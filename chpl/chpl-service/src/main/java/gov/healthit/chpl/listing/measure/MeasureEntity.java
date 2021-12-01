@@ -20,10 +20,12 @@ import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.Measure;
+import lombok.Builder;
 import lombok.Data;
 
 @Entity
 @Data
+@Builder
 @Table(name = "measure")
 public class MeasureEntity {
 
