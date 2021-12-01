@@ -1,5 +1,7 @@
 package gov.healthit.chpl.scheduler.job.onetime.measureremoval;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -16,9 +18,13 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.domain.Measure;
+import gov.healthit.chpl.entity.MacraMeasureEntity;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.extern.log4j.Log4j2;
 import net.sf.ehcache.CacheManager;
 
@@ -124,5 +130,85 @@ public class RemoveMeasuresJob extends QuartzJob {
                         && m.getName().equals(measureParts[1]))
                 .findAny();
     }
-}
 
+    private List<MacraMeasureEntity> createLegacyMeasures() {
+        return new ArrayList<MacraMeasureEntity>(Arrays.asList(
+                createLegacyMeasure(certificationCriterionService.get(CertificationCriterionService.Criteria2015.B_1_CURES).getId(),
+                        "RT7 EH/CAH Medicare PI",
+                        "Support Electronic Referral Loops by Sending Health Information (formerly Patient Care Record Exchange):  Eligible Hospital/Critical Access Hospital",
+                        "Required Test 7: Medicare Promoting Interoperability Programs"),
+                createLegacyMeasure(certificationCriterionService.get(CertificationCriterionService.Criteria2015.B_1_OLD).getId(),
+                        "RT7 EH/CAH Medicare PI",
+                        "Support Electronic Referral Loops by Sending Health Information (formerly Patient Care Record Exchange):  Eligible Hospital/Critical Access Hospital",
+                        "Required Test 7: Medicare Promoting Interoperability Programs"),
+                createLegacyMeasure(certificationCriterionService.get(CertificationCriterionService.Criteria2015.B_3_CURES).getId(),
+                        "RT1 EH/CAH Medicare PI",
+                        "Electronic Prescribing: Eligible Hospital/Critical Access Hospital",
+                        "Required Test 1: Medicare Promoting Interoperability Programs"),
+                createLegacyMeasure(certificationCriterionService.get(CertificationCriterionService.Criteria2015.B_3_OLD).getId(),
+                        "RT1 EH/CAH Medicare PI",
+                        "Electronic Prescribing: Eligible Hospital/Critical Access Hospital",
+                        "Required Test 1: Medicare Promoting Interoperability Programs"),
+                createLegacyMeasure(certificationCriterionService.get(CertificationCriterionService.Criteria2015.E_1_CURES).getId(),
+                        "RT2a EH/CAH Medicare PI",
+                        "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital",
+                        "Required Test 2: Medicare Promoting Interoperability Programs"),
+                createLegacyMeasure(certificationCriterionService.get(CertificationCriterionService.Criteria2015.E_1_OLD).getId(),
+                        "RT2a EH/CAH Medicare PI",
+                        "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital",
+                        "Required Test 2: Medicare Promoting Interoperability Programs"),
+                createLegacyMeasure(certificationCriterionService.get(CertificationCriterionService.Criteria2015.E_1_CURES).getId(),
+                        "RT2b EH/CAH Medicare PI",
+                        "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital",
+                        "Required Test 2: Medicare Promoting Interoperability Programs"),
+                createLegacyMeasure(certificationCriterionService.get(CertificationCriterionService.Criteria2015.E_1_OLD).getId(),
+                        "RT2b EH/CAH Medicare PI",
+                        "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital",
+                        "Required Test 2: Medicare Promoting Interoperability Programs"),
+                createLegacyMeasure(certificationCriterionService.get(CertificationCriterionService.Criteria2015.G_8).getId(),
+                        "RT2a EH/CAH Medicare PI",
+                        "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital",
+                        "Required Test 2: Medicare Promoting Interoperability Programs"),
+                createLegacyMeasure(certificationCriterionService.get(CertificationCriterionService.Criteria2015.G_8).getId(),
+                        "RT2c EH/CAH Medicare PI",
+                        "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital",
+                        "Required Test 2: Medicare Promoting Interoperability Programs"),
+                createLegacyMeasure(certificationCriterionService.get(CertificationCriterionService.Criteria2015.G_9_CURES).getId(),
+                        "RT2a EH/CAH Medicare PI",
+                        "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital",
+                        "Required Test 2: Medicare Promoting Interoperability Programs"),
+                createLegacyMeasure(certificationCriterionService.get(CertificationCriterionService.Criteria2015.G_9_OLD).getId(),
+                        "RT2a EH/CAH Medicare PI",
+                        "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital",
+                        "Required Test 2: Medicare Promoting Interoperability Programs"),
+                createLegacyMeasure(certificationCriterionService.get(CertificationCriterionService.Criteria2015.G_9_CURES).getId(),
+                        "RT2c EH/CAH Medicare PI",
+                        "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital",
+                        "Required Test 2: Medicare Promoting Interoperability Programs"),
+                createLegacyMeasure(certificationCriterionService.get(CertificationCriterionService.Criteria2015.G_9_OLD).getId(),
+                        "RT2c EH/CAH Medicare PI",
+                        "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital",
+                        "Required Test 2: Medicare Promoting Interoperability Programs"),
+                createLegacyMeasure(certificationCriterionService.get(CertificationCriterionService.Criteria2015.G_10).getId(),
+                        "RT2a EH/CAH Medicare PI",
+                        "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Clinician",
+                        "Required Test 2: Medicare Promoting Interoperability Programs"),
+                createLegacyMeasure(certificationCriterionService.get(CertificationCriterionService.Criteria2015.G_10).getId(),
+                        "RT2c EH/CAH Medicare PI",
+                        "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital",
+                        "Required Test 2: Medicare Promoting Interoperability Programs")
+                ));
+    }
+
+    private MacraMeasureEntity createLegacyMeasure(Long criterionId, String value, String name, String description) {
+        MacraMeasureEntity entity = MacraMeasureEntity.builder()
+                .id(criterionId)
+                .value(value)
+                .name(name)
+                .description(description)
+                .lastModifiedUser(User.SYSTEM_USER_ID)
+                .build();
+
+        return macraMeasureDAO.create(entity);
+    }
+}
