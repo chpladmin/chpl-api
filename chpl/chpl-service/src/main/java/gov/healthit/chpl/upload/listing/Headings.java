@@ -96,6 +96,7 @@ public enum Headings {
     API_DOCUMENTATION_LINK("API Documentation Link"),
     UCD_PROCESS("UCD Process Selected"),
     UCD_PROCESS_DETAILS("UCD Process Details"),
+    SVAP_REG_TEXT("Regulatory Text Citation", "SVAP_REG_TEXT"),
 
     //all below included so we don't give errors of unrecognized col; should not used anywhere
     CRITERIA_170_315_A_1("CRITERIA_170_315_A_1__C"),

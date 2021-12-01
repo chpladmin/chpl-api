@@ -57,7 +57,7 @@ public class MeasureUploadHandler {
             }
             prevCertResultIndex = nextCertResultIndex;
             nextCertResultIndex = uploadUtil.getNextIndexOfCertificationResult(
-                    nextCertResultIndex + certHeadingRecord.size() - 1, headingRecord);
+                    nextCertResultIndex + certHeadingRecord.size(), headingRecord);
         }
         return listingMeasures;
     }

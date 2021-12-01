@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -46,6 +47,7 @@ public class CSVHeaderReviewer {
 
     private void reviewDuplicateHeadings(CertifiedProductSearchDetails listing, CSVRecord headingRecord) {
         List<String> allHeadingColumns = uploadUtil.convertToList(headingRecord);
+        List<String> allCriteriaColumns = new ArrayList<String>();
         //get each criteria heading start/end, check for duplicates
         int nextCertResultIndex = uploadUtil.getNextIndexOfCertificationResult(0, headingRecord);
         while (nextCertResultIndex >= 0) {
@@ -53,9 +55,10 @@ public class CSVHeaderReviewer {
                     nextCertResultIndex, headingRecord, Collections.emptyList());
             CSVRecord certHeadingRecord = uploadUtil.getHeadingRecord(parsedCertResultRecords);
 
-            //add warning messages for this set of cert result headings
-            listing.getWarningMessages().addAll(getDuplicateCriteriaLevelHeadingMessages(uploadUtil.convertToList(certHeadingRecord), certHeadingRecord.get(0)));
+            //add error messages for this set of cert result headings
+            listing.getErrorMessages().addAll(getDuplicateCriteriaLevelHeadingMessages(uploadUtil.convertToList(certHeadingRecord), certHeadingRecord.get(0)));
             //remove these items from the set of all columns so we don't check them again
+            allCriteriaColumns.add(allHeadingColumns.get(nextCertResultIndex));
             allHeadingColumns.subList(nextCertResultIndex, nextCertResultIndex + certHeadingRecord.size()).clear();
             headingRecord = uploadUtil.convertToCsvRecord(allHeadingColumns);
             nextCertResultIndex = uploadUtil.getNextIndexOfCertificationResult(0, headingRecord);
@@ -67,7 +70,9 @@ public class CSVHeaderReviewer {
         //at both the listing level and criteria level.
 
         //look for duplicates outside of criteria headings
-        listing.getWarningMessages().addAll(getDuplicateHeadingMessages(allHeadingColumns));
+        listing.getErrorMessages().addAll(getDuplicateHeadingMessages(allHeadingColumns));
+        //look for duplicate criteria headings
+        listing.getErrorMessages().addAll(getDuplicateHeadingMessages(allCriteriaColumns));
     }
 
     private Set<String> getDuplicateHeadingMessages(List<String> headings) {
@@ -88,10 +93,12 @@ public class CSVHeaderReviewer {
 
     public Set<String> findDuplicates(List<String> originalValues) {
         Set<String> setOfDuplicates = new LinkedHashSet<String>();
-        Set<String> setToTest = new LinkedHashSet<String>();
+        Set<Headings> setToTest = new LinkedHashSet<Headings>();
         for (String value : originalValues) {
-            if (!setToTest.add(value)) {
-                setOfDuplicates.add(value);
+            if (!StringUtils.isEmpty(value) && Headings.getHeading(value) != null) {
+                if (!setToTest.add(Headings.getHeading(value))) {
+                    setOfDuplicates.add(value);
+                }
             }
         }
         return setOfDuplicates;
