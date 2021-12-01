@@ -43,7 +43,7 @@ public class MacraMeasureDAO extends BaseDAOImpl {
                 + "LEFT OUTER JOIN FETCH mme.certificationCriterion cce "
                 + "LEFT OUTER JOIN FETCH cce.certificationEdition "
                 + "WHERE (NOT mme.deleted = true) "
-                + "AND mm.id = :id ",
+                + "AND mme.id = :id ",
                 MacraMeasureEntity.class);
         query.setParameter("id", id);
         List<MacraMeasureEntity> result = query.getResultList();

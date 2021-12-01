@@ -24,10 +24,10 @@ public class MeasureDomainDAO extends BaseDAOImpl {
     private MeasureDomainEntity getByDomain(String domain) throws EntityRetrievalException {
         Query query = entityManager.createQuery(
                 "SELECT md "
-                + "From MeasureDomainEntity md"
+                + "FROM MeasureDomainEntity md "
                 + "WHERE md.deleted = false "
-                + "AND dm.domain = :domain ",
-                MeasureEntity.class);
+                + "AND md.domain = :domain ",
+                MeasureDomainEntity.class);
         query.setParameter("domain", domain);
         List<MeasureDomainEntity> entities = query.getResultList();
 
