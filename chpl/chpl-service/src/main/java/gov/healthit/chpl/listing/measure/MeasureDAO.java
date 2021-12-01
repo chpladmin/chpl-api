@@ -8,6 +8,7 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.Measure;
 
@@ -85,6 +86,17 @@ public class MeasureDAO extends BaseDAOImpl {
         update(result);
 
         return getById(result.getId());
+    }
+
+    public Measure create(Measure measure) {
+        MeasureEntity entity = MeasureEntity.builder()
+                .requiredTest(measure.getRequiredTest())
+                .name(measure.getName())
+                .criteriaSelectionRequired(measure.getRemoved())
+                .lastModifiedUser(User.SYSTEM_USER_ID)
+                .build();
+        super.create(entity);
+        return getById(entity.getId());
     }
 
     private MeasureEntity getEntity(Long id) {
