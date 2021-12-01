@@ -100,7 +100,7 @@ public class MeasureDAO extends BaseDAOImpl {
         return getById(entity.getId());
     }
 
-    private MeasureEntity getEntity(Long id) {
+    public MeasureEntity getEntity(Long id) {
         Query query = entityManager.createQuery(
                 MEASURE_HQL_BEGIN
                 + "WHERE measure.deleted = false "
