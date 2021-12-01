@@ -20,9 +20,17 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.entity.MacraMeasureEntity;
+import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.ObjectNotFoundException;
+import gov.healthit.chpl.listing.measure.LegacyMacraMeasureCriterionMapDAO;
+import gov.healthit.chpl.listing.measure.LegacyMacraMeasureCriterionMapEntity;
+import gov.healthit.chpl.listing.measure.MeasureCriterionMapDAO;
+import gov.healthit.chpl.listing.measure.MeasureCriterionMapEntity;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
+import gov.healthit.chpl.listing.measure.MeasureDomainDAO;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.extern.log4j.Log4j2;
@@ -36,6 +44,15 @@ public class RemoveMeasuresJob extends QuartzJob {
 
     @Autowired
     private MacraMeasureDAO macraMeasureDAO;
+
+    @Autowired
+    private MeasureDomainDAO measureDomainDAO;
+
+    @Autowired
+    private MeasureCriterionMapDAO measureCriterionMapDAO;
+
+    @Autowired
+    private LegacyMacraMeasureCriterionMapDAO legacyMacraMeasureCriterionMapDAO;
 
     @Autowired
     private CertificationCriterionService certificationCriterionService;
@@ -95,6 +112,8 @@ public class RemoveMeasuresJob extends QuartzJob {
                                 Measure m = removeMeasure(measure);
                                 LOGGER.always().log(String.format("%s    |     %s     |     %s     -- Has been removed", m.getId(), m.getDomain().getName(), m.getName()));
                             });
+
+                    createLegacyMacraMeasureToMeasureMaps();
                     CacheManager.getInstance().clearAll();
                 } catch (final Exception ex) {
                     LOGGER.error("Exception updating measures.", ex);
@@ -131,15 +150,102 @@ public class RemoveMeasuresJob extends QuartzJob {
                 .findAny();
     }
 
+    private void createLegacyMacraMeasureToMeasureMaps() throws EntityRetrievalException, ObjectNotFoundException {
+        List<Measure> measures = createMeasures();
+        List<MacraMeasureEntity> legacyMeasures = createLegacyMeasures();
+
+        for (MacraMeasureEntity legacy : legacyMeasures) {
+
+            Optional<MeasureCriterionMapEntity> measureCriterionMap = getAllowedMeasureBasedOnLegacyMacraMeasure(legacy, measures);
+            if (measureCriterionMap.isEmpty()) {
+                throw new ObjectNotFoundException(String.format("Could not locate MeasureCriteriaMap for: %s", legacy.toString()));
+            }
+
+            legacyMacraMeasureCriterionMapDAO.create(LegacyMacraMeasureCriterionMapEntity.builder()
+                    .legacyMacraMeasureId(legacy.getId())
+                    .measureCriterionId(measureCriterionMap.get().getId())
+                    .lastModifiedUser(User.SYSTEM_USER_ID)
+                    .build());
+        }
+
+    }
+
+    private Optional<MeasureCriterionMapEntity> getAllowedMeasureBasedOnLegacyMacraMeasure(MacraMeasureEntity legacy, List<Measure> measures) {
+        return measures.stream()
+                .map(measure -> measureDAO.getEntity(measure.getId()))
+                .filter(entity -> legacy.getName().equals(entity.getName())
+                        && legacy.getDescription().equals(entity.getRequiredTest()))
+                .flatMap(measure -> measure.getAllowedCriteria().stream())
+                .filter(criterion -> criterion.getId().equals(legacy.getCertificationCriterion().getId()))
+                .findAny();
+    }
+
+    private List<Measure> createMeasures() throws EntityRetrievalException {
+        return new ArrayList<Measure>(Arrays.asList(
+                createMeasure("EH/CAH Medicare PI",
+                        "RT7",
+                        "Required Test 7: Medicare Promoting Interoperability Programs",
+                        "Support Electronic Referral Loops by Sending Health Information (formerly Patient Care Record Exchange): Eligible Hospital/Critical Access Hospital",
+                        false,
+                        new ArrayList<CertificationCriterion>(Arrays.asList(
+                                certificationCriterionService.get(CertificationCriterionService.Criteria2015.B_7_CURES),
+                                certificationCriterionService.get(CertificationCriterionService.Criteria2015.B_7_OLD)))),
+                createMeasure("EH/CAH Medicare PI",
+                        "RT1",
+                        "Required Test 1: Medicare Promoting Interopability Programs",
+                        "Electronic Prescribing: Eligible Hospital/Critical Access Hospital",
+                        false,
+                        new ArrayList<CertificationCriterion>(Arrays.asList(
+                                certificationCriterionService.get(CertificationCriterionService.Criteria2015.B_3_CURES),
+                                certificationCriterionService.get(CertificationCriterionService.Criteria2015.B_3_OLD)))),
+                createMeasure("EH/CAH Medicare PI",
+                        "RT2",
+                        "Required Test 2: Medicare Promoting Interoperability Programs ",
+                        "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital",
+                        true,
+                        new ArrayList<CertificationCriterion>(Arrays.asList(
+                                certificationCriterionService.get(CertificationCriterionService.Criteria2015.E_1_CURES),
+                                certificationCriterionService.get(CertificationCriterionService.Criteria2015.E_1_OLD),
+                                certificationCriterionService.get(CertificationCriterionService.Criteria2015.G_8),
+                                certificationCriterionService.get(CertificationCriterionService.Criteria2015.G_9_CURES),
+                                certificationCriterionService.get(CertificationCriterionService.Criteria2015.G_9_OLD),
+                                certificationCriterionService.get(CertificationCriterionService.Criteria2015.G_10)))),
+                createMeasure("EH/CAH Medicare PI",
+                        "RT2",
+                        "Required Test 2: Medicare Promoting Interoperability Programs ",
+                        "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Clinician",
+                        true,
+                        new ArrayList<CertificationCriterion>(Arrays.asList(
+                                certificationCriterionService.get(CertificationCriterionService.Criteria2015.G_10))))
+                ));
+    }
+
+    private Measure createMeasure(String domain, String abbr, String requiredTest, String name, Boolean criteriaSelectionReqd, List<CertificationCriterion> criteria) throws EntityRetrievalException {
+        Measure measure = Measure.builder()
+                .domain(measureDomainDAO.findByDomain(domain))
+                .abbreviation(abbr)
+                .requiredTest(requiredTest)
+                .name(name)
+                .requiresCriteriaSelection(criteriaSelectionReqd)
+                .build();
+        final Measure savedMeasure = measureDAO.create(measure);
+
+        criteria.stream()
+                .forEach(criterion -> measureCriterionMapDAO.create(criterion.getId(), savedMeasure.getId(), User.SYSTEM_USER_ID));
+
+        return measure;
+    }
+
+
     private List<MacraMeasureEntity> createLegacyMeasures() {
         return new ArrayList<MacraMeasureEntity>(Arrays.asList(
                 createLegacyMeasure(certificationCriterionService.get(CertificationCriterionService.Criteria2015.B_1_CURES).getId(),
                         "RT7 EH/CAH Medicare PI",
-                        "Support Electronic Referral Loops by Sending Health Information (formerly Patient Care Record Exchange):  Eligible Hospital/Critical Access Hospital",
+                        "Support Electronic Referral Loops by Sending Health Information (formerly Patient Care Record Exchange): Eligible Hospital/Critical Access Hospital",
                         "Required Test 7: Medicare Promoting Interoperability Programs"),
                 createLegacyMeasure(certificationCriterionService.get(CertificationCriterionService.Criteria2015.B_1_OLD).getId(),
                         "RT7 EH/CAH Medicare PI",
-                        "Support Electronic Referral Loops by Sending Health Information (formerly Patient Care Record Exchange):  Eligible Hospital/Critical Access Hospital",
+                        "Support Electronic Referral Loops by Sending Health Information (formerly Patient Care Record Exchange): Eligible Hospital/Critical Access Hospital",
                         "Required Test 7: Medicare Promoting Interoperability Programs"),
                 createLegacyMeasure(certificationCriterionService.get(CertificationCriterionService.Criteria2015.B_3_CURES).getId(),
                         "RT1 EH/CAH Medicare PI",
