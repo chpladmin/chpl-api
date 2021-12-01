@@ -30,4 +30,9 @@ public class MacraMeasureDAO extends BaseDAOImpl {
         }
         return result.get(0).getId();
     }
+
+    public MacraMeasureEntity create(MacraMeasureEntity entity) {
+        super.create(entity);
+        return entity;
+    }
 }
