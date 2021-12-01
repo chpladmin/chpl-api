@@ -90,6 +90,7 @@ public class MeasureDAO extends BaseDAOImpl {
 
     public Measure create(Measure measure) {
         MeasureEntity entity = MeasureEntity.builder()
+                .domain(MeasureDomainEntity.builder().id(measure.getDomain().getId()).build())
                 .requiredTest(measure.getRequiredTest())
                 .name(measure.getName())
                 .criteriaSelectionRequired(measure.getRemoved())
