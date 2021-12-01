@@ -15,10 +15,12 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Immutable;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Entity
 @Immutable
+@Builder
 @Data
 @Table(name = "allowed_measure_criteria_legacy_map")
 public class LegacyMacraMeasureCriterionMapEntity {
