@@ -166,10 +166,10 @@ public class ListingUploadHandlerUtilTest {
         assertEquals(0, index);
     }
 
-
     @Test
     public void getStartIndexOfNextCertResult_MultipleCriteriaColumnsNoData_ReturnsCorrectIndices() {
-        List<CSVRecord> records = ListingUploadTestUtil.getRecordsFromString("CRITERIA_170_315_A_1__C,CRITERIA_170_315_A_2__C");
+        List<CSVRecord> records = ListingUploadTestUtil.getRecordsFromString(
+                "CRITERIA_170_315_A_1__C,CRITERIA_170_315_A_2__C,CRITERIA_170_315_A_3__C,CRITERIA_170_315_A_4__C");
         assertEquals(1, records.size());
 
         CSVRecord heading = handlerUtil.getHeadingRecord(records);
@@ -178,6 +178,10 @@ public class ListingUploadHandlerUtilTest {
         assertEquals(0, index);
         index = handlerUtil.getNextIndexOfCertificationResult(1, heading);
         assertEquals(1, index);
+        index = handlerUtil.getNextIndexOfCertificationResult(2, heading);
+        assertEquals(2, index);
+        index = handlerUtil.getNextIndexOfCertificationResult(3, heading);
+        assertEquals(3, index);
     }
 
     @Test

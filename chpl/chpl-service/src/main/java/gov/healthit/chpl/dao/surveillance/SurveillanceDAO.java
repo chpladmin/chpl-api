@@ -324,15 +324,19 @@ public class SurveillanceDAO extends BaseDAOImpl {
 
     public SurveillanceNonconformityDocumentationEntity getDocumentById(Long documentId)
             throws EntityRetrievalException {
-        SurveillanceNonconformityDocumentationEntity doc = entityManager
-                .find(SurveillanceNonconformityDocumentationEntity.class, documentId);
-        if (doc == null) {
-            String msg = msgUtil.getMessage("surveillance.document.notFound");
-            throw new EntityRetrievalException(msg);
-        }
-        return doc;
-    }
+        Query query = entityManager.createQuery(
+                "from SurveillanceNonconformityDocumentationEntity doc " + "where doc.id = :id "
+                        + "and doc.deleted <> true",
+                        SurveillanceNonconformityDocumentationEntity.class);
+        query.setParameter("id", documentId);
+        List<SurveillanceNonconformityDocumentationEntity> matches = query.getResultList();
 
+        if (matches != null && matches.size() > 0) {
+            return matches.get(0);
+        }
+        String msg = msgUtil.getMessage("surveillance.document.notFound");
+        throw new EntityRetrievalException(msg);
+    }
 
     public List<SurveillanceEntity> getSurveillanceByCertifiedProductId(Long id) {
             entityManager.clear();
