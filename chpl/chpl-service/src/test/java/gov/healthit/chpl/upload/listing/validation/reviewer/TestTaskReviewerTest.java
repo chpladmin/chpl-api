@@ -18,7 +18,6 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSed;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -33,7 +32,6 @@ public class TestTaskReviewerTest {
     private CertificationResultRules certResultRules;
     private CertificationCriterionService criteriaService;
     private ErrorMessageUtil errorMessageUtil;
-    private ResourcePermissions resourcePermissions;
     private CertificationCriterion a1, a2, a3;
     private TestTaskReviewer reviewer;
 
@@ -67,9 +65,8 @@ public class TestTaskReviewerTest {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a3.getNumber()), ArgumentMatchers.eq(CertificationResultRules.TEST_TASK)))
             .thenReturn(false);
 
-        resourcePermissions = Mockito.mock(ResourcePermissions.class);
         reviewer = new TestTaskReviewer(criteriaService, new ValidationUtils(), certResultRules, "1,2",
-                errorMessageUtil, resourcePermissions);
+                errorMessageUtil);
     }
 
     @Test

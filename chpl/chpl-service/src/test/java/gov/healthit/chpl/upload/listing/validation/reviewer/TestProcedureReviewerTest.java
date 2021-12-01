@@ -20,7 +20,6 @@ import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestProcedure;
 import gov.healthit.chpl.dto.TestProcedureDTO;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -33,14 +32,12 @@ public class TestProcedureReviewerTest {
 
     private CertificationResultRules certResultRules;
     private ErrorMessageUtil msgUtil;
-    private ResourcePermissions resourcePermissions;
     private TestProcedureReviewer reviewer;
     private FF4j ff4j;
 
     @Before
     @SuppressWarnings("checkstyle:magicnumber")
     public void setup() {
-        resourcePermissions = Mockito.mock(ResourcePermissions.class);
         certResultRules = Mockito.mock(CertificationResultRules.class);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
 
@@ -64,7 +61,7 @@ public class TestProcedureReviewerTest {
         Mockito.when(ff4j.check(FeatureList.CONFORMANCE_METHOD))
         .thenReturn(false);
 
-        reviewer = new TestProcedureReviewer(certResultRules, msgUtil, resourcePermissions, ff4j);
+        reviewer = new TestProcedureReviewer(certResultRules, msgUtil, ff4j);
     }
 
     @Test

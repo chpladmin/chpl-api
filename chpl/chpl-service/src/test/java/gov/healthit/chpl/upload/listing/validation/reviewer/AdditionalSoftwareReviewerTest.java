@@ -17,7 +17,6 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -29,14 +28,12 @@ public class AdditionalSoftwareReviewerTest {
     private static final String ADDITIONAL_SOFTWARE_BOTH_FIELDS_HAVE_DATA = "Additional Software for %s has both a listing and software name/version specified. Only one is expected.";
 
     private CertificationResultRules certResultRules;
-    private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil msgUtil;
     private AdditionalSoftwareReviewer reviewer;
 
     @Before
     public void before() throws EntityRetrievalException {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        resourcePermissions = Mockito.mock(ResourcePermissions.class);
         certResultRules = Mockito.mock(CertificationResultRules.class);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.additionalSoftwareNotApplicable"),
                 ArgumentMatchers.anyString()))
@@ -53,7 +50,7 @@ public class AdditionalSoftwareReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.invalidAdditionalSoftware"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(ADDITIONAL_SOFTWARE_INVALID, i.getArgument(1), i.getArgument(2)));
-        reviewer = new AdditionalSoftwareReviewer(certResultRules, msgUtil, resourcePermissions);
+        reviewer = new AdditionalSoftwareReviewer(certResultRules, msgUtil);
     }
 
     @Test

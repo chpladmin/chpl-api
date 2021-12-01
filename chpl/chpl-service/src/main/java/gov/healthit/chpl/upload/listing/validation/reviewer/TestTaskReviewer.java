@@ -16,22 +16,21 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
-import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 
 @Component("listingUploadTestTaskReviewer")
-public class TestTaskReviewer extends PermissionBasedReviewer {
+public class TestTaskReviewer {
     private static final String DEFAULT_TASK_DECRIPTION = "<unknown>";
     private static final String DEFAULT_TASK_CRITERIA = "<none>";
     private static final int MINIMUM_TEST_PARTICIPANT_COUNT = 10;
 
     private CertificationResultRules certResultRules;
     private ValidationUtils validationUtils;
+    private ErrorMessageUtil msgUtil;
     private List<CertificationCriterion> testTaskCriteria = new ArrayList<CertificationCriterion>();
 
     @Autowired
@@ -39,10 +38,10 @@ public class TestTaskReviewer extends PermissionBasedReviewer {
             ValidationUtils validationUtils,
             CertificationResultRules certResultRules,
             @Value("${sedCriteria}") String testTaskCriteria,
-            ErrorMessageUtil errorMessageUtil, ResourcePermissions resourcePermissions) {
-        super(errorMessageUtil, resourcePermissions);
+            ErrorMessageUtil msgUtil) {
         this.certResultRules = certResultRules;
         this.validationUtils = validationUtils;
+        this.msgUtil = msgUtil;
 
         this.testTaskCriteria = Arrays.asList(testTaskCriteria.split(",")).stream()
                 .map(id -> criterionService.get(Long.parseLong(id)))
@@ -106,11 +105,11 @@ public class TestTaskReviewer extends PermissionBasedReviewer {
     private void reviewCertResultHasTestTasksIfRequired(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResult.isSed()) {
             if (listing.getSed() == null || CollectionUtils.isEmpty(listing.getSed().getTestTasks())) {
-                addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.missingTestTask",
-                        Util.formatCriteriaNumber(certResult.getCriterion()));
+                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingTestTask",
+                        Util.formatCriteriaNumber(certResult.getCriterion())));
             } else if (!doesTestTaskListContainCriterion(listing, certResult.getCriterion())) {
-                addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.missingTestTask",
-                        Util.formatCriteriaNumber(certResult.getCriterion()));
+                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingTestTask",
+                        Util.formatCriteriaNumber(certResult.getCriterion())));
             }
         }
     }

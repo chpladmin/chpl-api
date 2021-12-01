@@ -15,29 +15,28 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.UcdProcess;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
-import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 
 @Component("listingUploadUcdProcessReviewer")
-public class UcdProcessReviewer extends PermissionBasedReviewer {
+public class UcdProcessReviewer {
     private CertificationResultRules certResultRules;
     private ValidationUtils validationUtils;
+    private ErrorMessageUtil msgUtil;
     private List<CertificationCriterion> ucdProcessCriteria = new ArrayList<CertificationCriterion>();
 
     @Autowired
     public UcdProcessReviewer(CertificationCriterionService criterionService,
             ValidationUtils validationUtils,
             CertificationResultRules certResultRules,
-            @Value("${sedCriteria}") String ucdProcessCriteria,
-            ErrorMessageUtil errorMessageUtil, ResourcePermissions resourcePermissions) {
-        super(errorMessageUtil, resourcePermissions);
+            ErrorMessageUtil msgUtil,
+            @Value("${sedCriteria}") String ucdProcessCriteria) {
         this.certResultRules = certResultRules;
         this.validationUtils = validationUtils;
+        this.msgUtil = msgUtil;
 
         this.ucdProcessCriteria = Arrays.asList(ucdProcessCriteria.split(",")).stream()
                 .map(id -> criterionService.get(Long.parseLong(id)))
@@ -113,11 +112,11 @@ public class UcdProcessReviewer extends PermissionBasedReviewer {
     private void reviewCertResultsHasUcdProcessIfRequired(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResult.isSed()) {
             if (listing.getSed() == null || CollectionUtils.isEmpty(listing.getSed().getUcdProcesses())) {
-                addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.missingUcdProcess",
-                        Util.formatCriteriaNumber(certResult.getCriterion()));
+                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingUcdProcess",
+                        Util.formatCriteriaNumber(certResult.getCriterion())));
             } else if (!doesUcdProcessListContainCriterion(listing, certResult.getCriterion())) {
-                addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.missingUcdProcess",
-                        Util.formatCriteriaNumber(certResult.getCriterion()));
+                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingUcdProcess",
+                        Util.formatCriteriaNumber(certResult.getCriterion())));
             }
         }
     }

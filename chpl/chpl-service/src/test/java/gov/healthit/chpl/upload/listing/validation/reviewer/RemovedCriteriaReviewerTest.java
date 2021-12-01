@@ -3,8 +3,6 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Collections;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -32,22 +30,10 @@ public class RemovedCriteriaReviewerTest {
     }
 
     @Test
-    public void review_nullCertificationResults_noError() {
+    public void review_nullCertificationResult_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
-        listing.setCertificationResults(null);
-        reviewer.review(listing);
-
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(0, listing.getErrorMessages().size());
-    }
-
-    @Test
-    public void review_emptyCertificationResults_noError() {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .build();
-        listing.setCertificationResults(Collections.emptyList());
-        reviewer.review(listing);
+        reviewer.review(listing, null);
 
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(0, listing.getErrorMessages().size());
@@ -65,7 +51,7 @@ public class RemovedCriteriaReviewerTest {
                         .success(true)
                         .build())
                 .build();
-        reviewer.review(listing);
+        reviewer.review(listing, listing.getCertificationResults().get(0));
 
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(1, listing.getErrorMessages().size());
@@ -85,7 +71,7 @@ public class RemovedCriteriaReviewerTest {
                         .success(true)
                         .build())
                 .build();
-        reviewer.review(listing);
+        reviewer.review(listing, listing.getCertificationResults().get(0));
 
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(0, listing.getErrorMessages().size());

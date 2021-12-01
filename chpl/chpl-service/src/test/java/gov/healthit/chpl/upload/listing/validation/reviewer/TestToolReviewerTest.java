@@ -22,7 +22,6 @@ import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.TestTool;
 import gov.healthit.chpl.domain.TestToolCriteriaMap;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -38,7 +37,6 @@ public class TestToolReviewerTest {
 
     private CertificationResultRules certResultRules;
     private ErrorMessageUtil msgUtil;
-    private ResourcePermissions resourcePermissions;
     private TestToolDAO testToolDAO;
     private TestToolReviewer reviewer;
 
@@ -46,7 +44,6 @@ public class TestToolReviewerTest {
     @SuppressWarnings("checkstyle:magicnumber")
     public void setup() throws EntityRetrievalException {
         ChplProductNumberUtil chplProductNumberUtil = new ChplProductNumberUtil();
-        resourcePermissions = Mockito.mock(ResourcePermissions.class);
         certResultRules = Mockito.mock(CertificationResultRules.class);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         testToolDAO = Mockito.mock(TestToolDAO.class);
@@ -73,7 +70,7 @@ public class TestToolReviewerTest {
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(TEST_TOOL_CRITERIA_MISMATCH, i.getArgument(1), i.getArgument(2)));
         Mockito.when(testToolDAO.getAllTestToolCriteriaMap()).thenReturn(getTestToolCriteriaMap());
-        reviewer = new TestToolReviewer(certResultRules, chplProductNumberUtil, msgUtil, resourcePermissions, testToolDAO);
+        reviewer = new TestToolReviewer(certResultRules, chplProductNumberUtil, msgUtil, testToolDAO);
     }
 
     @Test
@@ -236,10 +233,10 @@ public class TestToolReviewerTest {
         reviewer.review(listing);
 
         assertEquals(1, listing.getCertificationResults().get(0).getTestToolsUsed().size());
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(
                 String.format(TEST_TOOL_NOT_FOUND_REMOVED, "170.315 (a)(1)", "bad name")));
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -273,10 +270,10 @@ public class TestToolReviewerTest {
         reviewer.review(listing);
 
         assertEquals(1, listing.getCertificationResults().get(0).getTestToolsUsed().size());
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(
                 String.format(TEST_TOOL_NOT_FOUND_REMOVED, "170.315 (a)(1)", "")));
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test

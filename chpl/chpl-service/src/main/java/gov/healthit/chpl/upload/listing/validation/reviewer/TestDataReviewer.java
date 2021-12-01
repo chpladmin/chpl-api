@@ -10,29 +10,27 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
-import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 
 @Component("listingUploadTestDataReviewer")
-public class TestDataReviewer extends PermissionBasedReviewer {
+public class TestDataReviewer {
     private CertificationResultRules certResultRules;
     private CertificationCriterionService criteriaSevice;
+    private ErrorMessageUtil msgUtil;
 
     @Autowired
     public TestDataReviewer(CertificationResultRules certResultRules,
             CertificationCriterionService criteriaSevice,
-            ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
-        super(msgUtil, resourcePermissions);
+            ErrorMessageUtil msgUtil) {
         this.certResultRules = certResultRules;
         this.criteriaSevice = criteriaSevice;
+        this.msgUtil = msgUtil;
     }
 
-    @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
             .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
@@ -119,9 +117,9 @@ public class TestDataReviewer extends PermissionBasedReviewer {
             CertificationResult certResult, CertificationResultTestData testData) {
         if (testData.getTestData() != null && !StringUtils.isEmpty(testData.getTestData().getName())
                 && StringUtils.isEmpty(testData.getVersion())) {
-            addCriterionErrorOrWarningByPermission(listing, certResult,
+            listing.getErrorMessages().add(msgUtil.getMessage(
                     "listing.criteria.missingTestDataVersion",
-                    Util.formatCriteriaNumber(certResult.getCriterion()));
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
 }

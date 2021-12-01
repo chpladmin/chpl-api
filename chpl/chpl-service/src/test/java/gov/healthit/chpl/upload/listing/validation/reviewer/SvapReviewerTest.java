@@ -18,7 +18,6 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -50,7 +49,7 @@ public class SvapReviewerTest {
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(SVAP_REPLACED, i.getArgument(1), i.getArgument(2)));
 
-        reviewer = new SvapReviewer(certResultRules, Mockito.mock(ResourcePermissions.class), msgUtil);
+        reviewer = new SvapReviewer(certResultRules, msgUtil);
     }
 
     @Test
@@ -152,10 +151,10 @@ public class SvapReviewerTest {
         assertEquals(2, listing.getCertificationResults().get(0).getSvaps().size());
         reviewer.review(listing);
 
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(
                 String.format(SVAP_NOT_FOUND_AND_REMOVED, "bad name", "170.315 (a)(1)")));
+        assertEquals(0, listing.getErrorMessages().size());
         assertEquals(1, listing.getCertificationResults().get(0).getSvaps().size());
     }
 
@@ -187,10 +186,10 @@ public class SvapReviewerTest {
                 .build();
         reviewer.review(listing);
 
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(
                 String.format(SVAP_NOT_FOUND_AND_REMOVED, "", "170.315 (a)(1)")));
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test

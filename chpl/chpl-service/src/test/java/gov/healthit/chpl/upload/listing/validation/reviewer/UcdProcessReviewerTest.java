@@ -15,7 +15,6 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSed;
 import gov.healthit.chpl.domain.UcdProcess;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -29,7 +28,6 @@ public class UcdProcessReviewerTest {
     private CertificationResultRules certResultRules;
     private CertificationCriterionService criteriaService;
     private ErrorMessageUtil errorMessageUtil;
-    private ResourcePermissions resourcePermissions;
     private CertificationCriterion a1, a2, a3;
     private UcdProcessReviewer reviewer;
 
@@ -63,9 +61,7 @@ public class UcdProcessReviewerTest {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a3.getNumber()), ArgumentMatchers.eq(CertificationResultRules.UCD_FIELDS)))
             .thenReturn(false);
 
-        resourcePermissions = Mockito.mock(ResourcePermissions.class);
-        reviewer = new UcdProcessReviewer(criteriaService, new ValidationUtils(), certResultRules, "1,2",
-                errorMessageUtil, resourcePermissions);
+        reviewer = new UcdProcessReviewer(criteriaService, new ValidationUtils(), certResultRules, errorMessageUtil, "1,2");
     }
 
     @Test

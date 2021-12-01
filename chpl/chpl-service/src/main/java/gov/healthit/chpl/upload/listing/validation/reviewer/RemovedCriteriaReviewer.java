@@ -1,6 +1,5 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,13 +18,14 @@ public class RemovedCriteriaReviewer {
         this.msgUtil = msgUtil;
     }
 
-    public void review(CertifiedProductSearchDetails listing) {
-        if (CollectionUtils.isNotEmpty(listing.getCertificationResults())) {
-            listing.getCertificationResults().stream()
-                .filter(certResult -> attestedCriterionIsRemoved(certResult))
-                .forEach(removedAttestedCriterion -> listing.getErrorMessages().add(
-                        msgUtil.getMessage("listing.removedCriteriaAddNotAllowed",
-                                Util.formatCriteriaNumber(removedAttestedCriterion.getCriterion()))));
+    public void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        if (listing == null || certResult == null) {
+            return;
+        }
+
+        if (attestedCriterionIsRemoved(certResult)) {
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.removedCriteriaAddNotAllowed",
+                                    Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
 

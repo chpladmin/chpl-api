@@ -17,27 +17,24 @@ import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.TestFunctionalityCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
-import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 
 @Component("listingUploadTestFunctionalityReviewer")
-public class TestFunctionalityReviewer extends PermissionBasedReviewer {
+public class TestFunctionalityReviewer {
     private CertificationResultRules certResultRules;
     private TestFunctionalityDAO testFunctionalityDao;
+    private ErrorMessageUtil msgUtil;
 
     @Autowired
     public TestFunctionalityReviewer(CertificationResultRules certResultRules,
-            TestFunctionalityDAO testFunctionalityDao,
-            ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
-        super(msgUtil, resourcePermissions);
+            TestFunctionalityDAO testFunctionalityDao, ErrorMessageUtil msgUtil) {
         this.certResultRules = certResultRules;
         this.testFunctionalityDao = testFunctionalityDao;
+        this.msgUtil = msgUtil;
     }
 
-    @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
             .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
@@ -73,8 +70,9 @@ public class TestFunctionalityReviewer extends PermissionBasedReviewer {
             CertificationResultTestFunctionality testFunctionality = testFunctionalityIter.next();
             if (testFunctionality.getTestFunctionalityId() == null) {
                 testFunctionalityIter.remove();
-                addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.testFunctionalityNotFoundAndRemoved",
-                        Util.formatCriteriaNumber(certResult.getCriterion()), testFunctionality.getName());
+                listing.getWarningMessages().add(msgUtil.getMessage(
+                        "listing.criteria.testFunctionalityNotFoundAndRemoved",
+                        Util.formatCriteriaNumber(certResult.getCriterion()), testFunctionality.getName()));
             }
         }
     }
@@ -90,9 +88,7 @@ public class TestFunctionalityReviewer extends PermissionBasedReviewer {
             if (!isTestFunctionalityCritierionValid(certResult.getCriterion().getId(),
                     testFunctionality.getTestFunctionalityId(), year)) {
                 testFunctionalityIter.remove();
-
-                addCriterionErrorOrWarningByPermission(listing, certResult,
-                        msgUtil.getMessage("listing.criteria.testFunctionalityCriterionMismatch",
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.testFunctionalityCriterionMismatch",
                             Util.formatCriteriaNumber(certResult.getCriterion()),
                             testFunctionality.getName(),
                             getDelimitedListOfValidCriteriaNumbers(testFunctionality.getTestFunctionalityId(), year),

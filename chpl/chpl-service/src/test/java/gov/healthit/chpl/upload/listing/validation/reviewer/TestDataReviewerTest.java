@@ -18,7 +18,6 @@ import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestData;
 import gov.healthit.chpl.dto.TestDataDTO;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.CertificationResultRules;
@@ -34,13 +33,11 @@ public class TestDataReviewerTest {
     private CertificationResultRules certResultRules;
     private CertificationCriterionService criteriaService;
     private ErrorMessageUtil msgUtil;
-    private ResourcePermissions resourcePermissions;
     private TestDataReviewer reviewer;
 
     @Before
     @SuppressWarnings("checkstyle:magicnumber")
     public void setup() {
-        resourcePermissions = Mockito.mock(ResourcePermissions.class);
         criteriaService = Mockito.mock(CertificationCriterionService.class);
         certResultRules = Mockito.mock(CertificationResultRules.class);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
@@ -70,7 +67,7 @@ public class TestDataReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.missingTestDataVersion"),
                 ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(MISSING_TEST_DATA_VERSION, i.getArgument(1), ""));
-        reviewer = new TestDataReviewer(certResultRules, criteriaService, msgUtil, resourcePermissions);
+        reviewer = new TestDataReviewer(certResultRules, criteriaService, msgUtil);
     }
 
     @Test

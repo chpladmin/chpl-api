@@ -14,7 +14,6 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.PrivacyAndSecurityFrameworkConcept;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -24,14 +23,12 @@ public class PrivacyAndSecurityFrameworkReviewerTest {
     private static final String PANDS_INVALID_NOT_FOUND = "Certification %s contains Privacy and Security Framework value '%s' which must match one of %s.";
 
     private CertificationResultRules certResultRules;
-    private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil msgUtil;
     private PrivacyAndSecurityFrameworkReviewer reviewer;
 
     @Before
     public void before() throws EntityRetrievalException {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        resourcePermissions = Mockito.mock(ResourcePermissions.class);
         certResultRules = Mockito.mock(CertificationResultRules.class);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.privacyAndSecurityFrameworkNotApplicable"),
                 ArgumentMatchers.anyString()))
@@ -42,7 +39,7 @@ public class PrivacyAndSecurityFrameworkReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.invalidPrivacySecurityFramework"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(PANDS_INVALID_NOT_FOUND, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
-        reviewer = new PrivacyAndSecurityFrameworkReviewer(certResultRules, msgUtil, resourcePermissions);
+        reviewer = new PrivacyAndSecurityFrameworkReviewer(certResultRules, msgUtil);
     }
 
     @Test

@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Review
 
 @Component
 public class CertificationResultReviewer {
+    private RemovedCriteriaReviewer removedCriteriaReviewer;
     private CriteriaReviewer criteriaReviewer;
     private PrivacyAndSecurityFrameworkReviewer privacyAndSecurityFrameworkReviewer;
     private AdditionalSoftwareReviewer additionalSoftwareReviewer;
@@ -37,7 +39,8 @@ public class CertificationResultReviewer {
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
-    public CertificationResultReviewer(@Qualifier("listingUploadCriteriaReviewer") CriteriaReviewer criteriaReviewer,
+    public CertificationResultReviewer(@Qualifier("listingUploadRemovedCriteriaReviewer") RemovedCriteriaReviewer removedCriteriaReviewer,
+            @Qualifier("listingUploadCriteriaReviewer") CriteriaReviewer criteriaReviewer,
             @Qualifier("listingUploadPrivacyAndSecurityFrameworkReviewer") PrivacyAndSecurityFrameworkReviewer privacyAndSecurityFrameworkReviewer,
             @Qualifier("listingUploadAdditionalSoftwareFrameworkReviewer") AdditionalSoftwareReviewer additionalSoftwareReviewer,
             @Qualifier("gapAllowedReviewer") GapAllowedReviewer gapAllowedReviewer,
@@ -52,6 +55,7 @@ public class CertificationResultReviewer {
             @Qualifier("oldCriteriaWithoutIcsReviewer") OldCriteriaWithoutIcsReviewer oldCriteriaWithoutIcsReviewer,
             @Qualifier("sedG32015Reviewer") SedG32015Reviewer sedG3Reviewer,
             CertificationResultRules certResultRules, ValidationUtils validationUtils, ErrorMessageUtil msgUtil) {
+        this.removedCriteriaReviewer = removedCriteriaReviewer;
         this.criteriaReviewer = criteriaReviewer;
         this.privacyAndSecurityFrameworkReviewer = privacyAndSecurityFrameworkReviewer;
         this.additionalSoftwareReviewer = additionalSoftwareReviewer;
@@ -72,13 +76,14 @@ public class CertificationResultReviewer {
     }
 
     public void review(CertifiedProductSearchDetails listing) {
-        if (listing.getCertificationResults() == null) {
+        if (CollectionUtils.isEmpty(listing.getCertificationResults())) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.missingCertificationResults"));
             return;
         }
 
         listing.getCertificationResults().stream()
-            .forEach(certResult -> reviewSuccessField(listing, certResult));
+            .filter(certResult -> certResult != null && certResult.getCriterion() != null)
+            .forEach(certResult -> reviewUnconditionalFields(listing, certResult));
 
         listing.getCertificationResults().stream()
             .filter(certResult -> certResult != null && certResult.getCriterion() != null
@@ -99,6 +104,11 @@ public class CertificationResultReviewer {
         unattestedCriteriaWithDataReviewer.review(listing);
         oldCriteriaWithoutIcsReviewer.review(listing);
         sedG3Reviewer.review(listing);
+    }
+
+    private void reviewUnconditionalFields(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        removedCriteriaReviewer.review(listing, certResult);
+        reviewSuccessField(listing, certResult);
     }
 
     private void reviewSuccessField(CertifiedProductSearchDetails listing, CertificationResult certResult) {

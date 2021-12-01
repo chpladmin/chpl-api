@@ -9,24 +9,21 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
-import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 
 @Component("listingUploadAdditionalSoftwareFrameworkReviewer")
-public class AdditionalSoftwareReviewer extends PermissionBasedReviewer {
+public class AdditionalSoftwareReviewer {
     private CertificationResultRules certResultRules;
+    private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public AdditionalSoftwareReviewer(CertificationResultRules certResultRules,
-            ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
-        super(msgUtil, resourcePermissions);
+    public AdditionalSoftwareReviewer(CertificationResultRules certResultRules, ErrorMessageUtil msgUtil) {
         this.certResultRules = certResultRules;
+        this.msgUtil = msgUtil;
     }
 
-    @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
             .filter(certResult -> certResult.getCriterion() != null && certResult.getCriterion().getId() != null
@@ -82,10 +79,10 @@ public class AdditionalSoftwareReviewer extends PermissionBasedReviewer {
         if (!CollectionUtils.isEmpty(certResult.getAdditionalSoftware())) {
             certResult.getAdditionalSoftware().stream()
                 .filter(additionalSoftware -> !StringUtils.isEmpty(additionalSoftware.getCertifiedProductNumber()) && additionalSoftware.getCertifiedProductId() == null)
-                .forEach(additionalSoftware -> addCriterionErrorOrWarningByPermission(listing, certResult,
+                .forEach(additionalSoftware -> listing.getErrorMessages().add(msgUtil.getMessage(
                                                     "listing.criteria.invalidAdditionalSoftware",
                                                     additionalSoftware.getCertifiedProductNumber(),
-                                                    Util.formatCriteriaNumber(certResult.getCriterion())));
+                                                    Util.formatCriteriaNumber(certResult.getCriterion()))));
         }
     }
 }

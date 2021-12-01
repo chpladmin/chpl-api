@@ -12,7 +12,6 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Review
 @Component("listingUploadCriteriaReviewer")
 public class CriteriaReviewer {
 
-    private RemovedCriteriaReviewer removedCriteriaReviewer;
     private PrivacyAndSecurityCriteriaReviewer privacyAndSecurityCriteriaReviewer;
     private InvalidCriteriaCombinationReviewer invalidCriteriaCombinationReviewer;
     private RequiredAndRelatedCriteriaReviewer requiredAndRelatedCriteriaReviewer;
@@ -20,13 +19,11 @@ public class CriteriaReviewer {
     private SedRelatedCriteriaReviewer sedRelatedCriteriaReviewer;
 
     @Autowired
-    public CriteriaReviewer(@Qualifier("listingUploadRemovedCriteriaReviewer") RemovedCriteriaReviewer removedCriteriaReviewer,
-            @Qualifier("listingUploadPrivacyAndSecurityCriteriaReviewer") PrivacyAndSecurityCriteriaReviewer privacyAndSecurityCriteriaReviewer,
+    public CriteriaReviewer(@Qualifier("listingUploadPrivacyAndSecurityCriteriaReviewer") PrivacyAndSecurityCriteriaReviewer privacyAndSecurityCriteriaReviewer,
             @Qualifier("invalidCriteriaCombinationReviewer") InvalidCriteriaCombinationReviewer invalidCriteriaCombinationReviewer,
             @Qualifier("requiredAndRelatedCriteriaReviewer") RequiredAndRelatedCriteriaReviewer requiredAndRelatedCriteriaReviewer,
             @Qualifier("sedG32015Reviewer") SedG32015Reviewer sedG3Reviewer,
             SedRelatedCriteriaReviewer sedRelatedCriteriaReviewer) {
-        this.removedCriteriaReviewer = removedCriteriaReviewer;
         this.privacyAndSecurityCriteriaReviewer = privacyAndSecurityCriteriaReviewer;
         this.invalidCriteriaCombinationReviewer = invalidCriteriaCombinationReviewer;
         this.requiredAndRelatedCriteriaReviewer = requiredAndRelatedCriteriaReviewer;
@@ -35,7 +32,6 @@ public class CriteriaReviewer {
     }
 
     public void review(CertifiedProductSearchDetails listing) {
-        removedCriteriaReviewer.review(listing);
         privacyAndSecurityCriteriaReviewer.review(listing);
         invalidCriteriaCombinationReviewer.review(listing);
         requiredAndRelatedCriteriaReviewer.review(listing);

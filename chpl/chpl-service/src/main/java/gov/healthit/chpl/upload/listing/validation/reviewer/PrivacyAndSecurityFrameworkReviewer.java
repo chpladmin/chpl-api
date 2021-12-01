@@ -8,24 +8,22 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.PrivacyAndSecurityFrameworkConcept;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
-import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 
 @Component("listingUploadPrivacyAndSecurityFrameworkReviewer")
-public class PrivacyAndSecurityFrameworkReviewer extends PermissionBasedReviewer {
+public class PrivacyAndSecurityFrameworkReviewer {
     private CertificationResultRules certResultRules;
+    private ErrorMessageUtil msgUtil;
 
     @Autowired
     public PrivacyAndSecurityFrameworkReviewer(CertificationResultRules certResultRules,
-            ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
-        super(msgUtil, resourcePermissions);
+            ErrorMessageUtil msgUtil) {
         this.certResultRules = certResultRules;
+        this.msgUtil = msgUtil;
     }
 
-    @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
             .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
@@ -51,9 +49,9 @@ public class PrivacyAndSecurityFrameworkReviewer extends PermissionBasedReviewer
     private void reviewPrivacyAndSecurityRequired(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.PRIVACY_SECURITY)
                 && StringUtils.isEmpty(certResult.getPrivacySecurityFramework())) {
-            addCriterionErrorOrWarningByPermission(listing, certResult,
+            listing.getErrorMessages().add(msgUtil.getMessage(
                     "listing.criteria.missingPrivacySecurityFramework",
-                    Util.formatCriteriaNumber(certResult.getCriterion()));
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
 
@@ -64,11 +62,11 @@ public class PrivacyAndSecurityFrameworkReviewer extends PermissionBasedReviewer
             PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept
                     .getValue(formattedPrivacyAndSecurityFramework);
             if (foundPrivacyAndSecurityFramework == null) {
-                addCriterionErrorOrWarningByPermission(listing, certResult,
+                listing.getErrorMessages().add(msgUtil.getMessage(
                         "listing.criteria.invalidPrivacySecurityFramework",
                         Util.formatCriteriaNumber(certResult.getCriterion()),
                         formattedPrivacyAndSecurityFramework,
-                        PrivacyAndSecurityFrameworkConcept.getFormattedValues());
+                        PrivacyAndSecurityFrameworkConcept.getFormattedValues()));
             }
         }
     }
