@@ -29,32 +29,40 @@ public class RemoveMeasuresJob extends QuartzJob {
     private MeasureDAO measureDAO;
 
     @Autowired
+    private MacraMeasureDAO macraMeasureDAO;
+
+    @Autowired
+    private CertificationCriterionService certificationCriterionService;
+
+    @Autowired
     private JpaTransactionManager txManager;
 
     //Format: domain|measure
     private static final String[] MEASURES_TO_REMOVE = {
-            "EC ACI Transition|Electronic Prescribing: Eligible Clinician",
-            "EH/CAH Stage 2|Electronic Prescribing: Eligible Hospital/Critical Access Hospital",
-            "EP Stage 2|Electronic Prescribing: Eligible Professional",
-            "EC|Electronic Prescribing: Eligible Clinician",
             "EH/CAH Medicare and Medicaid PI|Electronic Prescribing: Eligible Hospital/Critical Access Hospital",
             "EP Medicaid PI|Electronic Prescribing: Eligible Professional",
-            "EC|Query of Prescription Drug Monitoring Program (PDMP): Eligible Clinician",
-            "EH/CAH Stage 3|Query of Prescription Drug Monitoring Program (PDMP): Eligible Hospital/Critical Access Hospital",
-            "EC|Verify Opioid Treatment Agreement: Eligible Clinician",
-            "EH/CAH Medicare PI|Verify Opioid Treatment Agreement: Eligible Hospital/Critical Access Hospital",
-            "EC ACI|Patient-Specific Education: Eligible Clinician",
-            "EC ACI Transition|Patient-Specific Education: Eligible Clinician",
+            "EH/CAH Medicaid PI|Computerized Provider Order Entry - Medications: Eligible Hospital/Critical Access Hospital",
+            "EP Medicaid PI|Computerized Provider Order Entry - Medications: Eligible Professional",
+            "EH/CAH Medicaid PI|Computerized Provider Order Entry - Laboratory: Eligible Hospital/Critical Access Hospital",
+            "EP Medicaid PI|Computerized Provider Order Entry - Laboratory: Eligible Professional",
+            "EH/CAH Medicaid PI|Computerized Provider Order Entry - Diagnostic Imaging: Eligible Hospital/Critical Access Hospital",
+            "EP Medicaid PI|Computerized Provider Order Entry - Diagnostic Imaging: Eligible Professional",
+            "EH/CAH Medicare and Medicaid PI|Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital",
+            "EP Medicaid PI|Patient Electronic Access: Eligible Professional",
             "EH/CAH Medicaid PI|Patient-Specific Education: Eligible Hospital/Critical Access Hospital",
-            "EH/CAH Stage 2|Patient-Specific Education: Eligible Hospital/Critical Access Hospital",
             "EP Medicaid PI|Patient-Specific Education: Eligible Professional",
-            "EP Stage 2|Patient-Specific Education: Eligible Professional",
-            "EC ACI|Secure Electronic Messaging: Eligible Clinician",
-            "EC ACI Transition|Secure Electronic Messaging: Eligible Clinician",
+            "EH/CAH Medicaid PI|View, Download, or Transmit (VDT): Eligible Hospital/Critical Access Hospital",
+            "EP Medicaid PI|View, Download, or Transmit (VDT): Eligible Professional",
             "EH/CAH Medicaid PI|Secure Electronic Messaging: Eligible Hospital/Critical Access Hospital",
-            "EH/CAH Stage 2|Secure Electronic Messaging: Eligible Hospital/Critical Access Hospital",
             "EP Medicaid PI|Secure Electronic Messaging: Eligible Professional",
-            "EP Stage 2|Secure Electronic Messaging: Eligible Professional"};
+            "EH/CAH Medicaid PI|Patient-Generated Health Data: Eligible Hospital/Critical Access Hospital",
+            "EP Medicaid PI|Patient-Generated Health Data: Eligible Professional",
+            "EH/CAH Medicare and Medicaid PI|Support Electronic Referral Loops by Sending Health Information (formerly Patient Care Record Exchange):  Eligible Hospital/Critical Access Hospital",
+            "EP Medicaid PI|Patient Care Record Exchange: Eligible Professional",
+            "EH/CAH Medicaid PI|Request/Accept Patient Care Record: Eligible Hospital/Critical Access Hospital",
+            "EP Medicaid PI|Request/Accept Patient Care Record: Eligible Professional",
+            "EH/CAH Medicaid PI|Medication/Clinical Information Reconciliation: Eligible Hospital/Critical Access Hospital",
+            "EP Medicaid PI|Medication/Clinical Information Reconciliation: Eligible Professional"};
 
     public RemoveMeasuresJob() throws Exception {
         super();
