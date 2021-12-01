@@ -53,9 +53,9 @@ public class ListingUploadHandlerUtil {
     public int getHeadingRecordIndex(List<CSVRecord> allCsvRecords) {
         int headingIndex = -1;
         if (allCsvRecords != null) {
-            Optional<CSVRecord> headingRecord =
-                    allCsvRecords.stream().filter(currRecord -> hasHeading(currRecord))
-                    .findAny();
+            Optional<CSVRecord> headingRecord = allCsvRecords.stream()
+                .filter(currRecord -> hasHeading(currRecord))
+                .findAny();
             if (headingRecord.isPresent() && headingRecord.get() != null) {
                 headingIndex = (int) headingRecord.get().getRecordNumber() - 1;
             } else {
@@ -66,7 +66,11 @@ public class ListingUploadHandlerUtil {
     }
 
     public CSVRecord getHeadingRecord(List<CSVRecord> allCsvRecords) {
-        return allCsvRecords.get(getHeadingRecordIndex(allCsvRecords));
+        int headingRecordIndex = getHeadingRecordIndex(allCsvRecords);
+        if (headingRecordIndex < 0) {
+            return null;
+        }
+        return allCsvRecords.get(headingRecordIndex);
     }
 
     public int getNextIndexOfCertificationResult(int startIndex, CSVRecord headingRecord)
@@ -322,7 +326,11 @@ public class ListingUploadHandlerUtil {
     }
 
     private boolean looksLikeCriteriaStart(String headingVal) {
-        return StringUtils.startsWithIgnoreCase(headingVal, "CRITERIA");
+        Headings heading = Headings.getHeading(headingVal);
+        if (heading != null && heading.name().startsWith("CRITERIA")) {
+            return true;
+        }
+        return false;
     }
 
     private boolean hasHeading(CSVRecord record) {

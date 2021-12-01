@@ -1,0 +1,101 @@
+package gov.healthit.chpl.upload.listing.validation.reviewer;
+
+import java.util.Iterator;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.svap.domain.CertificationResultSvap;
+import gov.healthit.chpl.util.CertificationResultRules;
+import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
+import lombok.extern.log4j.Log4j2;
+
+@Component("listingUploadSvapReviewer")
+@Log4j2
+public class SvapReviewer extends PermissionBasedReviewer {
+    private CertificationResultRules certResultRules;
+    private ErrorMessageUtil msgUtil;
+
+    @Autowired
+    public SvapReviewer(CertificationResultRules certResultRules,
+            ResourcePermissions resourcePermissions,
+            ErrorMessageUtil msgUtil) {
+        super(msgUtil, resourcePermissions);
+        this.certResultRules = certResultRules;
+        this.msgUtil = msgUtil;
+    }
+
+    @Override
+    public void review(CertifiedProductSearchDetails listing) {
+        listing.getCertificationResults().stream()
+            .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
+            .forEach(certResult -> reviewCertificationResult(listing, certResult));
+    }
+
+    private void reviewCertificationResult(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        reviewCriteriaCanHaveSvaps(listing, certResult);
+        if (!CollectionUtils.isEmpty(certResult.getSvaps())) {
+            removeSvapsWithoutIds(listing, certResult);
+            certResult.getSvaps().stream()
+                .forEach(svap -> reviewSvapFields(listing, certResult, svap));
+        }
+    }
+
+    private void reviewCriteriaCanHaveSvaps(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.SVAP)) {
+            if (!CollectionUtils.isEmpty(certResult.getSvaps())) {
+                listing.getWarningMessages().add(msgUtil.getMessage(
+                    "listing.criteria.svapsNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
+            certResult.setSvaps(null);
+        }
+    }
+
+    private void removeSvapsWithoutIds(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        if (CollectionUtils.isEmpty(certResult.getSvaps())) {
+            return;
+        }
+        Iterator<CertificationResultSvap> svapIter = certResult.getSvaps().iterator();
+        while (svapIter.hasNext()) {
+            CertificationResultSvap svap = svapIter.next();
+            if (svap.getSvapId() == null) {
+                svapIter.remove();
+                addCriterionErrorOrWarningByPermission(listing, certResult,
+                        "listing.criteria.svap.invalidCriteriaAndRemoved",
+                        svap.getRegulatoryTextCitation(),
+                        Util.formatCriteriaNumber(certResult.getCriterion()));
+            }
+        }
+    }
+
+    private void reviewSvapFields(CertifiedProductSearchDetails listing,
+            CertificationResult certResult, CertificationResultSvap svap) {
+        reviewRegulatoryTextCitationRequired(listing, certResult, svap);
+        reviewSvapMarkedAsReplaced(listing, certResult, svap);
+    }
+
+    private void reviewRegulatoryTextCitationRequired(CertifiedProductSearchDetails listing,
+            CertificationResult certResult, CertificationResultSvap svap) {
+        if (StringUtils.isEmpty(svap.getRegulatoryTextCitation())) {
+            listing.getErrorMessages().add(
+                    msgUtil.getMessage("listing.criteria.svap.missingCitation",
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
+        }
+    }
+
+    private void reviewSvapMarkedAsReplaced(CertifiedProductSearchDetails listing,
+            CertificationResult certResult, CertificationResultSvap svap) {
+        if (svap.getSvapId() != null && BooleanUtils.isTrue(svap.getReplaced())) {
+            listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.svap.replaced",
+                    svap.getRegulatoryTextCitation(), certResult.getCriterion().getNumber()));
+        }
+    }
+}

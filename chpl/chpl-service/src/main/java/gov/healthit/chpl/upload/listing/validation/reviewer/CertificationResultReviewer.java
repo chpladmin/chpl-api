@@ -27,7 +27,7 @@ public class CertificationResultReviewer {
     private TestFunctionalityReviewer testFunctionalityReviewer;
     private TestStandardReviewer testStandardReviewer;
     private OptionalStandardReviewer optionalStandardReviewer;
-    //TODO: SVAP
+    private SvapReviewer svapReviewer;
     private UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
     private OldCriteriaWithoutIcsReviewer oldCriteriaWithoutIcsReviewer;
     private SedG32015Reviewer sedG3Reviewer;
@@ -47,6 +47,7 @@ public class CertificationResultReviewer {
             @Qualifier("listingUploadTestFunctionalityReviewer") TestFunctionalityReviewer testFunctionalityReviewer,
             @Qualifier("listingUploadTestStandardReviewer") TestStandardReviewer testStandardReviewer,
             @Qualifier("listingUploadOptionalStandardReviewer") OptionalStandardReviewer optionalStandardReviewer,
+            @Qualifier("listingUploadSvapReviewer") SvapReviewer svapReviewer,
             @Qualifier("uploadedListingUnattestedCriteriaWithDataReviewer") UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer,
             @Qualifier("oldCriteriaWithoutIcsReviewer") OldCriteriaWithoutIcsReviewer oldCriteriaWithoutIcsReviewer,
             @Qualifier("sedG32015Reviewer") SedG32015Reviewer sedG3Reviewer,
@@ -61,6 +62,7 @@ public class CertificationResultReviewer {
         this.testFunctionalityReviewer = testFunctionalityReviewer;
         this.testStandardReviewer = testStandardReviewer;
         this.optionalStandardReviewer = optionalStandardReviewer;
+        this.svapReviewer = svapReviewer;
         this.unattestedCriteriaWithDataReviewer = unattestedCriteriaWithDataReviewer;
         this.oldCriteriaWithoutIcsReviewer = oldCriteriaWithoutIcsReviewer;
         this.sedG3Reviewer = sedG3Reviewer;
@@ -93,6 +95,7 @@ public class CertificationResultReviewer {
         testFunctionalityReviewer.review(listing);
         testStandardReviewer.review(listing);
         optionalStandardReviewer.review(listing);
+        svapReviewer.review(listing);
         unattestedCriteriaWithDataReviewer.review(listing);
         oldCriteriaWithoutIcsReviewer.review(listing);
         sedG3Reviewer.review(listing);
