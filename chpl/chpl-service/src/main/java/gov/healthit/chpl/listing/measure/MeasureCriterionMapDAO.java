@@ -7,11 +7,11 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 @Repository
 public class MeasureCriterionMapDAO extends BaseDAOImpl {
     public MeasureCriterionMapEntity create(Long certificationCriterionId, Long measureId, Long lastUpdateUserId) {
-        MeasureCriterionMapEntity entity = MeasureCriterionMapEntity.builder()
-                .certificationCriterionId(certificationCriterionId)
-                .measureId(measureId)
-                .lastModifiedUser(lastUpdateUserId)
-                .build();
+        MeasureCriterionMapEntity entity = new MeasureCriterionMapEntity();
+        entity.setCertificationCriterionId(certificationCriterionId);
+        entity.setMeasureId(measureId);
+        entity.setLastModifiedUser(lastUpdateUserId);
+        entity.setDeleted(false);
         super.create(entity);
         return entity;
     }

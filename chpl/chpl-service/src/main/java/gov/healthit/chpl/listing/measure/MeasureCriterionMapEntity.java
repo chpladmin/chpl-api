@@ -15,12 +15,10 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
-import lombok.Builder;
 import lombok.Data;
 
 @Entity
 @Data
-@Builder
 @Table(name = "allowed_measure_criteria")
 public class MeasureCriterionMapEntity {
 

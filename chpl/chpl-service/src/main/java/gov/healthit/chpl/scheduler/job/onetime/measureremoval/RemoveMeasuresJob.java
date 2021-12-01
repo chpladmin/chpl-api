@@ -307,13 +307,14 @@ public class RemoveMeasuresJob extends QuartzJob {
     }
 
     private MacraMeasureEntity createLegacyMeasure(Long criterionId, String value, String name, String description) {
-        MacraMeasureEntity entity = MacraMeasureEntity.builder()
-                .id(criterionId)
-                .value(value)
-                .name(name)
-                .description(description)
-                .lastModifiedUser(User.SYSTEM_USER_ID)
-                .build();
+        MacraMeasureEntity entity = new MacraMeasureEntity();
+        entity.setCertificationCriterionId(criterionId);
+        entity.setValue(value);
+        entity.setName(name);
+        entity.setDescription(description);
+        entity.setRemoved(false);
+        entity.setLastModifiedUser(User.SYSTEM_USER_ID);
+        entity.setDeleted(false);
 
         return macraMeasureDAO.create(entity);
     }

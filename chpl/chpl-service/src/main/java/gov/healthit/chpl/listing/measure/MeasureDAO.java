@@ -89,13 +89,15 @@ public class MeasureDAO extends BaseDAOImpl {
     }
 
     public Measure create(Measure measure) {
-        MeasureEntity entity = MeasureEntity.builder()
-                .domain(MeasureDomainEntity.builder().id(measure.getDomain().getId()).build())
-                .requiredTest(measure.getRequiredTest())
-                .name(measure.getName())
-                .criteriaSelectionRequired(measure.getRemoved())
-                .lastModifiedUser(User.SYSTEM_USER_ID)
-                .build();
+        MeasureEntity entity = new MeasureEntity();
+        entity.setDomain(MeasureDomainEntity.builder().id(measure.getDomain().getId()).build());
+        entity.setAbbreviation(measure.getAbbreviation());
+        entity.setRequiredTest(measure.getRequiredTest());
+        entity.setName(measure.getName());
+        entity.setCriteriaSelectionRequired(measure.getRequiresCriteriaSelection());
+        entity.setRemoved(measure.getRemoved());
+        entity.setLastModifiedUser(User.SYSTEM_USER_ID);
+        entity.setDeleted(false);
         super.create(entity);
         return getById(entity.getId());
     }
