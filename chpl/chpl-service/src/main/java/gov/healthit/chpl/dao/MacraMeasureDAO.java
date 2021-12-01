@@ -33,6 +33,24 @@ public class MacraMeasureDAO extends BaseDAOImpl {
 
     public MacraMeasureEntity create(MacraMeasureEntity entity) {
         super.create(entity);
-        return entity;
+        return getById(entity.getId());
     }
+
+    private MacraMeasureEntity getById(Long id) {
+        Query query = entityManager.createQuery(
+                "SELECT mme "
+                + "FROM MacraMeasureEntity mme "
+                + "LEFT OUTER JOIN FETCH mme.certificationCriterion cce "
+                + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+                + "WHERE (NOT mme.deleted = true) "
+                + "AND mm.id = :id ",
+                MacraMeasureEntity.class);
+        query.setParameter("id", id);
+        List<MacraMeasureEntity> result = query.getResultList();
+        if (result == null || result.size() == 0) {
+            return null;
+        }
+        return result.get(0);
+    }
+
 }
