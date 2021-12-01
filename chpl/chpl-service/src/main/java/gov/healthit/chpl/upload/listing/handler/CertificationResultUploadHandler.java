@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
+import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 
@@ -64,6 +65,7 @@ public class CertificationResultUploadHandler {
                 .useCases(parseUseCases(certHeadingRecord, certResultRecords))
                 .serviceBaseUrlList(parseServiceBaseUrlList(certHeadingRecord, certResultRecords))
                 .apiDocumentation(parseApiDocumentation(certHeadingRecord, certResultRecords))
+                .svaps(parseSvaps(certHeadingRecord, certResultRecords))
             .build();
 
         if (certResult.getCriterion() != null) {
@@ -182,5 +184,20 @@ public class CertificationResultUploadHandler {
                 });
         }
         return optionalStandards;
+    }
+
+    private List<CertificationResultSvap> parseSvaps(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
+        List<CertificationResultSvap> svaps = new ArrayList<CertificationResultSvap>();
+            List<String> regulatoryTextCitations = uploadUtil.parseMultiRowFieldWithoutEmptyValues(
+                    Headings.SVAP_REG_TEXT, certHeadingRecord, certResultRecords);
+            if (!CollectionUtils.isEmpty(regulatoryTextCitations)) {
+                regulatoryTextCitations.stream().forEach(regulatoryTextCitation -> {
+                    CertificationResultSvap svap = CertificationResultSvap.builder()
+                            .regulatoryTextCitation(regulatoryTextCitation)
+                            .build();
+                    svaps.add(svap);
+                });
+        }
+        return svaps;
     }
 }

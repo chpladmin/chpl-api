@@ -63,7 +63,7 @@
 						"id": "a35aabbc-c49c-41e4-af52-7971fac83fde",
 						"exec": [
 							"var ReqBody= {\r",
-							"        userName:pm.environment.get(\"usernameACB\"),password:pm.environment.get(\"passwordACB\")\r",
+							"        userName:pm.environment.get(\"emailACB\"),password:pm.environment.get(\"passwordACB\")\r",
 							"    };\r",
 							"pm.sendRequest({\r",
 							"    url: pm.environment.get(\"authurl\"),\r",
