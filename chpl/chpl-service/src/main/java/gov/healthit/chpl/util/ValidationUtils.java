@@ -506,4 +506,10 @@ public class ValidationUtils {
                 && BooleanUtils.isNotTrue(certResult.getCriterion().getRemoved())
                 && BooleanUtils.isTrue(certResult.getMeetsCriteria());
     }
+
+    public boolean isEligibleForErrors(CertificationResult certResult) {
+        return certResult.getCriterion() != null
+                && BooleanUtils.isNotTrue(certResult.getCriterion().getRemoved())
+                && BooleanUtils.isTrue(certResult.isSuccess());
+    }
 }

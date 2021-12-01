@@ -1,6 +1,5 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -8,17 +7,16 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
-import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
+import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.GapAllowedReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.OldCriteriaWithoutIcsReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
 
 @Component
-public class CertificationResultReviewer extends PermissionBasedReviewer {
+public class CertificationResultReviewer {
     private CriteriaReviewer criteriaReviewer;
     private PrivacyAndSecurityFrameworkReviewer privacyAndSecurityFrameworkReviewer;
     private AdditionalSoftwareReviewer additionalSoftwareReviewer;
@@ -34,6 +32,7 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
     private OldCriteriaWithoutIcsReviewer oldCriteriaWithoutIcsReviewer;
     private SedG32015Reviewer sedG3Reviewer;
     private CertificationResultRules certResultRules;
+    private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
@@ -51,9 +50,7 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
             @Qualifier("uploadedListingUnattestedCriteriaWithDataReviewer") UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer,
             @Qualifier("oldCriteriaWithoutIcsReviewer") OldCriteriaWithoutIcsReviewer oldCriteriaWithoutIcsReviewer,
             @Qualifier("sedG32015Reviewer") SedG32015Reviewer sedG3Reviewer,
-            CertificationResultRules certResultRules, ErrorMessageUtil msgUtil,
-            ResourcePermissions resourcePermissions) {
-        super(msgUtil, resourcePermissions);
+            CertificationResultRules certResultRules, ValidationUtils validationUtils, ErrorMessageUtil msgUtil) {
         this.criteriaReviewer = criteriaReviewer;
         this.privacyAndSecurityFrameworkReviewer = privacyAndSecurityFrameworkReviewer;
         this.additionalSoftwareReviewer = additionalSoftwareReviewer;
@@ -68,6 +65,7 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
         this.oldCriteriaWithoutIcsReviewer = oldCriteriaWithoutIcsReviewer;
         this.sedG3Reviewer = sedG3Reviewer;
         this.certResultRules = certResultRules;
+        this.validationUtils = validationUtils;
         this.msgUtil = msgUtil;
     }
 
@@ -81,8 +79,9 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
             .forEach(certResult -> reviewSuccessField(listing, certResult));
 
         listing.getCertificationResults().stream()
-            .filter(certResult -> certResult != null && certResult.getCriterion() != null && certResult.getCriterion().getId() != null
-                        && BooleanUtils.isTrue(certResult.isSuccess()))
+            .filter(certResult -> certResult != null && certResult.getCriterion() != null
+                        && certResult.getCriterion().getId() != null
+                        && validationUtils.isEligibleForErrors(certResult))
             .forEach(certResult -> reviewCertResultFields(listing, certResult));
         criteriaReviewer.review(listing);
         privacyAndSecurityFrameworkReviewer.review(listing);
@@ -121,14 +120,12 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
         if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.GAP)
                 && certResult.isGap() == null) {
             if (!StringUtils.isEmpty(certResult.getGapStr())) {
-                addCriterionErrorOrWarningByPermission(listing, certResult,
-                        "listing.criteria.invalidGap",
+                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.invalidGap",
                         Util.formatCriteriaNumber(certResult.getCriterion()),
-                        certResult.getGapStr());
+                        certResult.getGapStr()));
             } else {
-                addCriterionErrorOrWarningByPermission(listing, certResult,
-                        "listing.criteria.missingGap",
-                        Util.formatCriteriaNumber(certResult.getCriterion()));
+                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingGap",
+                        Util.formatCriteriaNumber(certResult.getCriterion())));
             }
         } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.GAP)) {
             if (certResult.isGap() != null | !StringUtils.isEmpty(certResult.getGapStr())) {
@@ -142,10 +139,10 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
     private void reviewAdditionalSoftwareString(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!StringUtils.isEmpty(certResult.getHasAdditionalSoftwareStr())
                 && certResult.getHasAdditionalSoftware() == null) {
-            addCriterionErrorOrWarningByPermission(listing, certResult,
-                    "listing.criteria.invalidHasAdditionalSoftware",
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.invalidHasAdditionalSoftware",
                     Util.formatCriteriaNumber(certResult.getCriterion()),
-                    certResult.getHasAdditionalSoftwareStr());
+                    certResult.getHasAdditionalSoftwareStr()));
+
         }
     }
 
@@ -153,14 +150,13 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
         if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.ATTESTATION_ANSWER)
                 && certResult.getAttestationAnswer() == null) {
             if (!StringUtils.isEmpty(certResult.getAttestationAnswerStr())) {
-                addCriterionErrorOrWarningByPermission(listing, certResult,
-                        "listing.criteria.invalidAttestationAnswer",
+                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.invalidAttestationAnswer",
                         Util.formatCriteriaNumber(certResult.getCriterion()),
-                        certResult.getAttestationAnswerStr());
+                        certResult.getAttestationAnswerStr()));
+
             } else {
-                addCriterionErrorOrWarningByPermission(listing, certResult,
-                        "listing.criteria.missingAttestationAnswer",
-                        Util.formatCriteriaNumber(certResult.getCriterion()));
+                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingAttestationAnswer",
+                        Util.formatCriteriaNumber(certResult.getCriterion())));
             }
         } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.ATTESTATION_ANSWER)) {
             if (!StringUtils.isEmpty(certResult.getAttestationAnswer())
@@ -175,8 +171,8 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
     private void reviewApiDocumentation(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.API_DOCUMENTATION)
                 && StringUtils.isEmpty(certResult.getApiDocumentation())) {
-            addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.missingApiDocumentation",
-                    Util.formatCriteriaNumber(certResult.getCriterion()));
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingApiDocumentation",
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
         } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
             if (!StringUtils.isEmpty(certResult.getApiDocumentation())) {
                 listing.getWarningMessages().add(
@@ -189,8 +185,8 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
     private void reviewExportDocumentation(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.EXPORT_DOCUMENTATION)
                 && StringUtils.isEmpty(certResult.getExportDocumentation())) {
-            addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.missingExportDocumentation",
-                    Util.formatCriteriaNumber(certResult.getCriterion()));
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingExportDocumentation",
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
         } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.EXPORT_DOCUMENTATION)) {
             if (!StringUtils.isEmpty(certResult.getExportDocumentation())) {
                 listing.getWarningMessages().add(
@@ -204,8 +200,8 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
         if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.USE_CASES)
                 && StringUtils.isEmpty(certResult.getUseCases())
                 && certResult.getAttestationAnswer() != null && certResult.getAttestationAnswer().equals(Boolean.TRUE)) {
-            addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.missingUseCases",
-                    Util.formatCriteriaNumber(certResult.getCriterion()));
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingUseCases",
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
         } else if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.USE_CASES)
                 && !StringUtils.isEmpty(certResult.getUseCases())
                 && (certResult.getAttestationAnswer() == null || certResult.getAttestationAnswer().equals(Boolean.FALSE))) {
@@ -224,8 +220,8 @@ public class CertificationResultReviewer extends PermissionBasedReviewer {
     private void reviewServiceBaseUrlList(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.SERVICE_BASE_URL_LIST)
                 && StringUtils.isEmpty(certResult.getServiceBaseUrlList())) {
-            addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.missingServiceBaseUrlList",
-                    Util.formatCriteriaNumber(certResult.getCriterion()));
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingServiceBaseUrlList",
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
         } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.SERVICE_BASE_URL_LIST)) {
             if (!StringUtils.isEmpty(certResult.getServiceBaseUrlList())) {
                 listing.getWarningMessages().add(
