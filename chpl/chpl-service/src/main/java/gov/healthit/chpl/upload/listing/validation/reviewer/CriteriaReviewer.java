@@ -22,12 +22,10 @@ public class CriteriaReviewer {
     public CriteriaReviewer(@Qualifier("listingUploadPrivacyAndSecurityCriteriaReviewer") PrivacyAndSecurityCriteriaReviewer privacyAndSecurityCriteriaReviewer,
             @Qualifier("invalidCriteriaCombinationReviewer") InvalidCriteriaCombinationReviewer invalidCriteriaCombinationReviewer,
             @Qualifier("requiredAndRelatedCriteriaReviewer") RequiredAndRelatedCriteriaReviewer requiredAndRelatedCriteriaReviewer,
-            @Qualifier("sedG32015Reviewer") SedG32015Reviewer sedG3Reviewer,
             SedRelatedCriteriaReviewer sedRelatedCriteriaReviewer) {
         this.privacyAndSecurityCriteriaReviewer = privacyAndSecurityCriteriaReviewer;
         this.invalidCriteriaCombinationReviewer = invalidCriteriaCombinationReviewer;
         this.requiredAndRelatedCriteriaReviewer = requiredAndRelatedCriteriaReviewer;
-        this.sedG3Reviewer = sedG3Reviewer;
         this.sedRelatedCriteriaReviewer = sedRelatedCriteriaReviewer;
     }
 
@@ -35,7 +33,6 @@ public class CriteriaReviewer {
         privacyAndSecurityCriteriaReviewer.review(listing);
         invalidCriteriaCombinationReviewer.review(listing);
         requiredAndRelatedCriteriaReviewer.review(listing);
-        sedG3Reviewer.review(listing);
         sedRelatedCriteriaReviewer.review(listing);
     }
 }

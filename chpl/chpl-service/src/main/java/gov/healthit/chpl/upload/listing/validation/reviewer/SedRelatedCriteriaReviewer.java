@@ -57,10 +57,6 @@ public class SedRelatedCriteriaReviewer {
                 .filter(criterion -> criterion.getRemoved() == null || criterion.getRemoved().equals(Boolean.FALSE))
                 .filter(criterion -> certIdIsInCertList(criterion, sedRelatedCriteria.stream().map(sedCriterion -> sedCriterion.getId()).collect(Collectors.toList())))
                 .collect(Collectors.<CertificationCriterion>toList());
-        List<CertificationCriterion> removedAttestedSedCriteria = attestedCriteria.stream()
-                .filter(criterion -> criterion.getRemoved() != null && criterion.getRemoved().equals(Boolean.TRUE))
-                .filter(criterion -> certIdIsInCertList(criterion, sedRelatedCriteria.stream().map(sedCriterion -> sedCriterion.getId()).collect(Collectors.toList())))
-                .collect(Collectors.<CertificationCriterion>toList());
         boolean hasG3 = validationUtils.hasCriterion(g3, attestedCriteria);
 
         if (presentAttestedSedCriteria != null && presentAttestedSedCriteria.size() > 0 && !hasG3) {
