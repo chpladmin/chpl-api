@@ -78,6 +78,7 @@ public class UcdProcessReviewer {
                 .filter(ucdProcess -> !CollectionUtils.isEmpty(ucdProcess.getCriteria()))
                 .flatMap(ucdProcess -> ucdProcess.getCriteria().stream())
                 .filter(ucdCriterion -> !certResultRules.hasCertOption(ucdCriterion.getNumber(), CertificationResultRules.UCD_FIELDS))
+                .filter(ucdCriterion -> BooleanUtils.isFalse(ucdCriterion.getRemoved()))
                 .forEach(notAllowedUcdCriterion ->
                     listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.ucdProcessNotApplicable", Util.formatCriteriaNumber(notAllowedUcdCriterion))));
 
@@ -85,6 +86,7 @@ public class UcdProcessReviewer {
                 .filter(ucdProcess -> !CollectionUtils.isEmpty(ucdProcess.getCriteria()))
                 .flatMap(ucdProcess -> ucdProcess.getCriteria().stream())
                 .filter(ucdCriterion -> !doesListingAttestToCriterion(listing, ucdCriterion))
+                .filter(ucdCriterion -> BooleanUtils.isFalse(ucdCriterion.getRemoved()))
                 .forEach(notAllowedUcdCriterion ->
                     listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.ucdProcessNotApplicable", Util.formatCriteriaNumber(notAllowedUcdCriterion))));
         }
@@ -95,8 +97,8 @@ public class UcdProcessReviewer {
         ucdProcessCriteria.stream()
             .filter(criterion -> validationUtils.hasCriterion(criterion, attestedCriteria))
             .map(attestedUcdProcessCriterion -> getCertificationResultForCriterion(listing, attestedUcdProcessCriterion))
-            .filter(certResult -> certResult != null)
-            .forEach(certResult -> reviewCertResultsHasUcdProcessIfRequired(listing, certResult));
+            .filter(certResult -> certResult != null && validationUtils.isEligibleForErrors(certResult))
+            .forEach(certResult -> reviewCertResultHasUcdProcessIfRequired(listing, certResult));
     }
 
     private CertificationResult getCertificationResultForCriterion(CertifiedProductSearchDetails listing, CertificationCriterion criterionToReview) {
@@ -109,7 +111,7 @@ public class UcdProcessReviewer {
         return null;
     }
 
-    private void reviewCertResultsHasUcdProcessIfRequired(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    private void reviewCertResultHasUcdProcessIfRequired(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResult.isSed()) {
             if (listing.getSed() == null || CollectionUtils.isEmpty(listing.getSed().getUcdProcesses())) {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingUcdProcess",

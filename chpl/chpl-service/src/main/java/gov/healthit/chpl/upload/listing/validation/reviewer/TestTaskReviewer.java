@@ -63,13 +63,15 @@ public class TestTaskReviewer {
                 .filter(testTask -> !CollectionUtils.isEmpty(testTask.getCriteria()))
                 .flatMap(testTask -> testTask.getCriteria().stream())
                 .filter(testTaskCriterion -> !certResultRules.hasCertOption(testTaskCriterion.getNumber(), CertificationResultRules.TEST_TASK))
+                .filter(testTaskCriterion -> BooleanUtils.isFalse(testTaskCriterion.getRemoved()))
                 .forEach(notAllowedTestTaskCriterion ->
                     listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.testTasksNotApplicable", Util.formatCriteriaNumber(notAllowedTestTaskCriterion))));
 
             listing.getSed().getTestTasks().stream()
                 .filter(testTask -> !CollectionUtils.isEmpty(testTask.getCriteria()))
                 .flatMap(testTask -> testTask.getCriteria().stream())
-                .filter(ucdCriterion -> !doesListingAttestToCriterion(listing, ucdCriterion))
+                .filter(testTaskCriterion -> !doesListingAttestToCriterion(listing, testTaskCriterion))
+                .filter(testTaskCriterion -> BooleanUtils.isFalse(testTaskCriterion.getRemoved()))
                 .forEach(notAllowedTestTaskCriterion ->
                     listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.testTasksNotApplicable", Util.formatCriteriaNumber(notAllowedTestTaskCriterion))));
         }
@@ -88,7 +90,7 @@ public class TestTaskReviewer {
         testTaskCriteria.stream()
             .filter(criterion -> validationUtils.hasCriterion(criterion, attestedCriteria))
             .map(attestedTestTaskCriterion -> getCertificationResultForCriterion(listing, attestedTestTaskCriterion))
-            .filter(certResult -> certResult != null)
+            .filter(certResult -> certResult != null && validationUtils.isEligibleForErrors(certResult))
             .forEach(certResult -> reviewCertResultHasTestTasksIfRequired(listing, certResult));
     }
 
@@ -407,6 +409,7 @@ public class TestTaskReviewer {
             return DEFAULT_TASK_CRITERIA;
         }
         return testTask.getCriteria().stream()
+                .filter(criterion -> BooleanUtils.isFalse(criterion.getRemoved()))
                 .map(criterion -> Util.formatCriteriaNumber(criterion))
                 .collect(Collectors.joining(","));
     }

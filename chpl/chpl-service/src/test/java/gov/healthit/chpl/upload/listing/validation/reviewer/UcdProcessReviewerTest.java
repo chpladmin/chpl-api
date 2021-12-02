@@ -28,7 +28,7 @@ public class UcdProcessReviewerTest {
     private CertificationResultRules certResultRules;
     private CertificationCriterionService criteriaService;
     private ErrorMessageUtil errorMessageUtil;
-    private CertificationCriterion a1, a2, a3;
+    private CertificationCriterion a1, a2, a3, a6;
     private UcdProcessReviewer reviewer;
 
     @Before
@@ -46,12 +46,14 @@ public class UcdProcessReviewerTest {
             .thenAnswer(i -> String.format(MISSING_UCD_PROCESS, i.getArgument(1), ""));
 
         criteriaService = Mockito.mock(CertificationCriterionService.class);
-        a1 = CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("a1").build();
-        a2 = CertificationCriterion.builder().id(2L).number("170.315 (a)(2)").title("a2").build();
-        a3 = CertificationCriterion.builder().id(3L).number("170.315 (a)(3)").title("a3").build();
+        a1 = CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("a1").removed(false).build();
+        a2 = CertificationCriterion.builder().id(2L).number("170.315 (a)(2)").title("a2").removed(false).build();
+        a3 = CertificationCriterion.builder().id(3L).number("170.315 (a)(3)").title("a3").removed(false).build();
+        a6 = CertificationCriterion.builder().id(6L).number("170.315 (a)(6)").title("a6").removed(true).build();
         Mockito.when(criteriaService.get(ArgumentMatchers.eq(a1.getId()))).thenReturn(a1);
         Mockito.when(criteriaService.get(ArgumentMatchers.eq(a2.getId()))).thenReturn(a2);
         Mockito.when(criteriaService.get(ArgumentMatchers.eq(a3.getId()))).thenReturn(a3);
+        Mockito.when(criteriaService.get(ArgumentMatchers.eq(a6.getId()))).thenReturn(a6);
 
         certResultRules = Mockito.mock(CertificationResultRules.class);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a1.getNumber()), ArgumentMatchers.eq(CertificationResultRules.UCD_FIELDS)))
@@ -59,6 +61,8 @@ public class UcdProcessReviewerTest {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a2.getNumber()), ArgumentMatchers.eq(CertificationResultRules.UCD_FIELDS)))
             .thenReturn(true);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a3.getNumber()), ArgumentMatchers.eq(CertificationResultRules.UCD_FIELDS)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a6.getNumber()), ArgumentMatchers.eq(CertificationResultRules.UCD_FIELDS)))
             .thenReturn(false);
 
         reviewer = new UcdProcessReviewer(criteriaService, new ValidationUtils(), certResultRules, errorMessageUtil, "1,2");
@@ -156,6 +160,72 @@ public class UcdProcessReviewerTest {
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(String.format(UCD_NOT_APPLICABLE, "170.315 (a)(3)")));
+    }
+
+    @Test
+    public void review_ucdProcessHasNotAllowedRemovedCriteria_certResultHasSedTrue() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(a6)
+                        .sed(true)
+                        .build())
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+                .id(1L)
+                .criterion(a6)
+                .name("UCD Name")
+                .details("some details")
+                .build());
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_ucdProcessHasNotAllowedRemovedCriteria_certResultHasSedFalse_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(a6)
+                        .sed(false)
+                        .build())
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+                                .id(1L)
+                                .criterion(a6)
+                                .name("UCD Name")
+                                .details("some details")
+                                .build());
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_ucdProcessHasNotAllowedRemovedCriteria_certResultUnattested_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(false)
+                        .criterion(a6)
+                        .sed(false)
+                        .build())
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+                                .id(1L)
+                                .criterion(a6)
+                                .name("UCD Name")
+                                .details("some details")
+                                .build());
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -263,6 +333,31 @@ public class UcdProcessReviewerTest {
 
         assertEquals(1, listing.getWarningMessages().size());
         assertTrue(listing.getWarningMessages().contains(String.format(UCD_NOT_FOUND_AND_REMOVED, "UCD Name", "170.315 (a)(3)")));
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(0, listing.getSed().getUcdProcesses().size());
+    }
+
+    @Test
+    public void review_ucdProcessWithoutIdIsRemoved_criteriaRemovedAndDoesNotAllowUcd_hasWarningNoErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(a6)
+                        .sed(true)
+                        .build())
+                .sed(CertifiedProductSed.builder()
+                        .build())
+                .build();
+        UcdProcess ucdNotFound = UcdProcess.builder()
+                .criterion(a6)
+                .name("UCD Name")
+                .details("some details")
+                .build();
+        listing.getSed().setUcdProcesses(Stream.of(ucdNotFound).collect(Collectors.toList()));
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(UCD_NOT_FOUND_AND_REMOVED, "UCD Name", "170.315 (a)(6)")));
         assertEquals(0, listing.getErrorMessages().size());
         assertEquals(0, listing.getSed().getUcdProcesses().size());
     }
