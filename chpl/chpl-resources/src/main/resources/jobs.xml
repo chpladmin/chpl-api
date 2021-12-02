@@ -9,7 +9,7 @@
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
         <delete-job>
-            <name>realWorldTestingEligibilityJob</name>
+            <name>testStandards2OptionalStandardsConversion</name>
             <group>systemJobs</group>
         </delete-job>
         <!-- END remove after PROD push -->
@@ -736,16 +736,6 @@
             <group>systemJobs</group>
             <description>Sends emails to any registered API Keys that have accessed deprecated endpoints.</description>
             <job-class>gov.healthit.chpl.scheduler.job.deprecatedApiUsage.DeprecatedApiUsageEmailJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-        </job>
-
-        <!-- One time job to convert Test Standards to Optional Standards -->
-        <job>
-            <name>testStandards2OptionalStandardsConversion</name>
-            <group>systemJobs</group>
-            <description>One time job to convert Test Standards to Optional Standards</description>
-            <job-class>gov.healthit.chpl.scheduler.job.onetime.teststandardconversion.TestStandardConversionJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
         </job>

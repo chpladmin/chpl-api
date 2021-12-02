@@ -1,10 +1,8 @@
 package gov.healthit.chpl.validation.listing.reviewer;
 
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -16,24 +14,20 @@ import gov.healthit.chpl.util.Util;
 @Component("testStandardRemovalReviewer")
 public class TestStandardRemovalReviewer extends PermissionBasedReviewer {
     private ErrorMessageUtil msgUtil;
-    private FF4j ff4j;
 
     @Autowired
-    public TestStandardRemovalReviewer(ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions, FF4j ff4j) {
+    public TestStandardRemovalReviewer(ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
         super(msgUtil, resourcePermissions);
         this.msgUtil = msgUtil;
         this.resourcePermissions = resourcePermissions;
-        this.ff4j = ff4j;
     }
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
-        if (ff4j.check(FeatureList.OPTIONAL_STANDARDS)) {
-            listing.getCertificationResults().stream()
-            .filter(cert -> (cert.getTestStandards() != null && cert.getTestStandards().size() > 0))
-            .forEach(certResult -> certResult.getTestStandards().stream()
-                    .forEach(testStandard -> reviewTestStandard(listing, certResult, testStandard)));
-        }
+        listing.getCertificationResults().stream()
+        .filter(cert -> (cert.getTestStandards() != null && cert.getTestStandards().size() > 0))
+        .forEach(certResult -> certResult.getTestStandards().stream()
+                .forEach(testStandard -> reviewTestStandard(listing, certResult, testStandard)));
     }
 
     private void reviewTestStandard(CertifiedProductSearchDetails listing, CertificationResult certResult,
@@ -42,7 +36,7 @@ public class TestStandardRemovalReviewer extends PermissionBasedReviewer {
         String message = msgUtil.getMessage("listing.criteria.testStandardNotAllowed",
                 Util.formatCriteriaNumber(certResult.getCriterion()),
                 testStandardName);
-        if ((certResult.getOptionalStandards() != null && certResult.getOptionalStandards().size() > 0) || (ff4j.check(FeatureList.OPTIONAL_STANDARDS_ERROR) && isListing2015Edition(listing))) {
+        if ((certResult.getOptionalStandards() != null && certResult.getOptionalStandards().size() > 0) || isListing2015Edition(listing)) {
             addCriterionErrorOrWarningByPermission(listing, certResult, message);
         } else {
             if (certResult.getCriterion().getRemoved()) {

@@ -1351,7 +1351,7 @@
         <number>170.315 (a)(5)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>true</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -1372,7 +1372,7 @@
         <number>170.315 (a)(6)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>true</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -1437,7 +1437,7 @@
         <number>170.315 (a)(9)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>false</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -1502,7 +1502,7 @@
         <number>170.315 (a)(12)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>false</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -1523,7 +1523,7 @@
         <number>170.315 (a)(13)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>true</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -1544,7 +1544,7 @@
         <number>170.315 (a)(14)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>true</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -1565,7 +1565,7 @@
         <number>170.315 (a)(15)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>false</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -1586,7 +1586,7 @@
         <number>170.315 (b)(1)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>true</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -1607,7 +1607,7 @@
         <number>170.315 (b)(2)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>false</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -1628,7 +1628,7 @@
         <number>170.315 (b)(3)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>true</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -1649,7 +1649,7 @@
         <number>170.315 (b)(4)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>true</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -1670,7 +1670,7 @@
         <number>170.315 (b)(5)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>true</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -1691,7 +1691,7 @@
         <number>170.315 (b)(6)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>true</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -1712,7 +1712,7 @@
         <number>170.315 (b)(7)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>false</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -1733,7 +1733,7 @@
         <number>170.315 (b)(8)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>false</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -1754,7 +1754,7 @@
         <number>170.315 (b)(9)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>false</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -1796,7 +1796,7 @@
         <number>170.315 (c)(1)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>false</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -1817,7 +1817,7 @@
         <number>170.315 (c)(2)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>false</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -1838,7 +1838,7 @@
         <number>170.315 (c)(3)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>true</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -1859,7 +1859,7 @@
         <number>170.315 (c)(4)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>false</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -1902,7 +1902,7 @@
         <number>170.315 (d)(2)</number>
         <properties>
             <privacySecurity>false</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>false</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -1923,7 +1923,7 @@
         <number>170.315 (d)(3)</number>
         <properties>
             <privacySecurity>false</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>false</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -2011,7 +2011,7 @@
         <properties>
             <gap />
             <privacySecurity>false</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>true</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -2032,7 +2032,7 @@
         <number>170.315 (d)(8)</number>
         <properties>
             <privacySecurity>false</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>false</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -2053,7 +2053,7 @@
         <number>170.315 (d)(9)</number>
         <properties>
             <privacySecurity>false</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>true</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -2074,7 +2074,7 @@
         <number>170.315 (d)(10)</number>
         <properties>
             <privacySecurity>false</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>false</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -2096,7 +2096,7 @@
         <properties>
             <gap />
             <privacySecurity>false</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>false</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -2159,7 +2159,7 @@
         <number>170.315 (e)(1)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>true</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -2222,7 +2222,7 @@
         <number>170.315 (f)(1)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>false</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -2243,7 +2243,7 @@
         <number>170.315 (f)(2)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>false</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -2265,7 +2265,7 @@
         <properties>
             <gap />
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>false</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -2286,7 +2286,7 @@
         <number>170.315 (f)(4)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>false</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -2307,7 +2307,7 @@
         <number>170.315 (f)(5)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>true</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -2328,7 +2328,7 @@
         <number>170.315 (f)(6)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>false</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -2349,7 +2349,7 @@
         <number>170.315 (f)(7)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>false</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -2475,7 +2475,7 @@
         <number>170.315 (g)(6)</number>
         <properties>
             <privacySecurity>false</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>true</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -2517,7 +2517,7 @@
         <number>170.315 (g)(8)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>true</functionalityTested>
             <apiDocumentation>true</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -2538,7 +2538,7 @@
         <number>170.315 (g)(9)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>true</functionalityTested>
             <apiDocumentation>true</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -2580,7 +2580,7 @@
         <number>170.315 (h)(1)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>false</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
@@ -2601,7 +2601,7 @@
         <number>170.315 (h)(2)</number>
         <properties>
             <privacySecurity>true</privacySecurity>
-            <standardsTested>true</standardsTested>
+            <standardsTested>false</standardsTested>
             <functionalityTested>false</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
             <exportDocumentation>false</exportDocumentation>
