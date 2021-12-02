@@ -90,6 +90,20 @@ public class CertificationResultReviewer {
                         && certResult.getCriterion().getId() != null
                         && validationUtils.isEligibleForErrors(certResult))
             .forEach(certResult -> reviewCertResultFields(listing, certResult));
+
+        criteriaReviewer.review(listing);
+        privacyAndSecurityFrameworkReviewer.review(listing);
+        additionalSoftwareReviewer.review(listing);
+        gapAllowedReviewer.review(listing);
+        testToolReviewer.review(listing);
+        testDataReviewer.review(listing);
+        testProcedureReviewer.review(listing);
+        testFunctionalityReviewer.review(listing);
+        testStandardReviewer.review(listing);
+        optionalStandardReviewer.review(listing);
+        svapReviewer.review(listing);
+        oldCriteriaWithoutIcsReviewer.review(listing);
+        sedG3Reviewer.review(listing);
         unattestedCriteriaWithDataReviewer.review(listing);
     }
 
@@ -106,7 +120,7 @@ public class CertificationResultReviewer {
         }
     }
 
-    private void reviewCertResultFields(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    public void reviewCertResultFields(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         reviewGap(listing, certResult);
         reviewAdditionalSoftwareString(listing, certResult);
         reviewAttestationAnswer(listing, certResult);
@@ -114,20 +128,6 @@ public class CertificationResultReviewer {
         reviewExportDocumentation(listing, certResult);
         reviewUseCases(listing, certResult);
         reviewServiceBaseUrlList(listing, certResult);
-
-        criteriaReviewer.review(listing);
-        privacyAndSecurityFrameworkReviewer.review(listing);
-        additionalSoftwareReviewer.review(listing);
-        gapAllowedReviewer.review(listing);
-        testToolReviewer.review(listing);
-        testDataReviewer.review(listing);
-        testProcedureReviewer.review(listing);
-        testFunctionalityReviewer.review(listing);
-        testStandardReviewer.review(listing);
-        optionalStandardReviewer.review(listing);
-        svapReviewer.review(listing);
-        oldCriteriaWithoutIcsReviewer.review(listing);
-        sedG3Reviewer.review(listing);
     }
 
     private void reviewGap(CertifiedProductSearchDetails listing, CertificationResult certResult) {

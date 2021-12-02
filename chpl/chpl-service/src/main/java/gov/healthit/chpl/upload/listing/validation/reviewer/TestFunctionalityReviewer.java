@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -20,28 +19,32 @@ import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.util.ValidationUtils;
 
 @Component("listingUploadTestFunctionalityReviewer")
 public class TestFunctionalityReviewer {
     private CertificationResultRules certResultRules;
+    private ValidationUtils validationUtils;
     private TestFunctionalityDAO testFunctionalityDao;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
     public TestFunctionalityReviewer(CertificationResultRules certResultRules,
+            ValidationUtils validationUtils,
             TestFunctionalityDAO testFunctionalityDao, ErrorMessageUtil msgUtil) {
         this.certResultRules = certResultRules;
+        this.validationUtils = validationUtils;
         this.testFunctionalityDao = testFunctionalityDao;
         this.msgUtil = msgUtil;
     }
 
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
+            .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
             .forEach(certResult -> review(listing, certResult));
     }
 
-    public void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         reviewCriteriaCanHaveTestFunctionalityData(listing, certResult);
         removeTestFunctionalityWithoutIds(listing, certResult);
         removeTestFunctionalityMismatchedToCriteria(listing, certResult);

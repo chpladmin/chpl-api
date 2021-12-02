@@ -1,6 +1,5 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -11,26 +10,30 @@ import gov.healthit.chpl.domain.concept.PrivacyAndSecurityFrameworkConcept;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.util.ValidationUtils;
 
 @Component("listingUploadPrivacyAndSecurityFrameworkReviewer")
 public class PrivacyAndSecurityFrameworkReviewer {
     private CertificationResultRules certResultRules;
+    private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
     public PrivacyAndSecurityFrameworkReviewer(CertificationResultRules certResultRules,
+            ValidationUtils validationUtils,
             ErrorMessageUtil msgUtil) {
         this.certResultRules = certResultRules;
+        this.validationUtils = validationUtils;
         this.msgUtil = msgUtil;
     }
 
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
+            .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
             .forEach(certResult -> review(listing, certResult));
     }
 
-    public void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         reviewCriteriaCanHavePrivacyAndSecurity(listing, certResult);
         reviewPrivacyAndSecurityRequired(listing, certResult);
         reviewPrivacyAndSecurityValid(listing, certResult);

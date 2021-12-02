@@ -20,8 +20,10 @@ import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestProcedure;
 import gov.healthit.chpl.dto.TestProcedureDTO;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 
 public class TestProcedureReviewerTest {
     private static final String TEST_PROCEDURE_NOT_APPLICABLE = "Test procedures are not applicable for the criterion %s. They have been removed.";
@@ -61,7 +63,9 @@ public class TestProcedureReviewerTest {
         Mockito.when(ff4j.check(FeatureList.CONFORMANCE_METHOD))
         .thenReturn(false);
 
-        reviewer = new TestProcedureReviewer(certResultRules, msgUtil, ff4j);
+        reviewer = new TestProcedureReviewer(certResultRules,
+                new ValidationUtils(Mockito.mock(CertificationCriterionService.class)),
+                msgUtil, ff4j);
     }
 
     @Test
@@ -76,6 +80,7 @@ public class TestProcedureReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(false)
                         .success(true)
@@ -91,6 +96,31 @@ public class TestProcedureReviewerTest {
     }
 
     @Test
+    public void review_nullTestProceduresNoGapRemovedCriteria_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_PROCEDURE)))
+            .thenReturn(true);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .gap(false)
+                        .success(true)
+                        .build())
+                .build();
+        listing.getCertificationResults().get(0).setTestProcedures(null);
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
     public void review_emptyTestProceduresNoGapCriteria_hasError() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
@@ -102,6 +132,7 @@ public class TestProcedureReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(false)
                         .success(true)
@@ -116,6 +147,30 @@ public class TestProcedureReviewerTest {
     }
 
     @Test
+    public void review_emptyTestProceduresNoGapRemovedCriteria_hasError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_PROCEDURE)))
+            .thenReturn(true);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .gap(false)
+                        .success(true)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
     public void review_nullTestProceduresWithGapCriteria_noError() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(true);
@@ -127,6 +182,7 @@ public class TestProcedureReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(true)
                         .success(true)
@@ -151,6 +207,7 @@ public class TestProcedureReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(true)
                         .success(true)
@@ -181,6 +238,7 @@ public class TestProcedureReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(true)
                         .success(true)
@@ -194,6 +252,38 @@ public class TestProcedureReviewerTest {
         assertTrue(listing.getWarningMessages().contains(
                 String.format(TEST_PROCEDURE_NOT_APPLICABLE, "170.315 (a)(1)")));
         assertNull(listing.getCertificationResults().get(0).getTestProcedures());
+    }
+
+    @Test
+    public void review_testProcedureNotApplicableToRemovedCriteria_noWarnings() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(true);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_PROCEDURE)))
+            .thenReturn(false);
+        List<CertificationResultTestProcedure> testProcedures = new ArrayList<CertificationResultTestProcedure>();
+                testProcedures.add(CertificationResultTestProcedure.builder()
+                .testProcedure(TestProcedure.builder()
+                        .id(1L)
+                        .name(TestProcedureDTO.DEFAULT_TEST_PROCEDURE)
+                        .build())
+                .testProcedureVersion("1")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .gap(true)
+                        .success(true)
+                        .testProcedures(testProcedures)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(0, listing.getWarningMessages().size());
     }
 
     @Test
@@ -215,6 +305,7 @@ public class TestProcedureReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(true)
                         .success(true)
@@ -228,6 +319,38 @@ public class TestProcedureReviewerTest {
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(
                 String.format(TEST_PROCEDURE_NAME_INVALID, "170.315 (a)(1)", "bad name")));
+    }
+
+    @Test
+    public void review_testProcedureNullIdRemovedCritera_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(true);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_PROCEDURE)))
+            .thenReturn(true);
+        List<CertificationResultTestProcedure> testProcedures = new ArrayList<CertificationResultTestProcedure>();
+                testProcedures.add(CertificationResultTestProcedure.builder()
+                .testProcedure(TestProcedure.builder()
+                        .id(null)
+                        .name("bad name")
+                        .build())
+                .testProcedureVersion("1")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .gap(true)
+                        .success(true)
+                        .testProcedures(testProcedures)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -249,6 +372,7 @@ public class TestProcedureReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(false)
                         .success(true)
@@ -262,6 +386,38 @@ public class TestProcedureReviewerTest {
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(
                 String.format(MISSING_TEST_PROCEDURE_NAME, "170.315 (a)(1)")));
+    }
+
+    @Test
+    public void review_testProcedureEmptyNameRemovedCriteria_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_PROCEDURE)))
+            .thenReturn(true);
+        List<CertificationResultTestProcedure> testProcedures = new ArrayList<CertificationResultTestProcedure>();
+        testProcedures.add(CertificationResultTestProcedure.builder()
+            .testProcedure(TestProcedure.builder()
+                    .id(1L)
+                    .name("")
+                    .build())
+            .testProcedureVersion("1")
+            .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .gap(false)
+                        .success(true)
+                        .testProcedures(testProcedures)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -283,6 +439,7 @@ public class TestProcedureReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(false)
                         .success(true)
@@ -296,6 +453,38 @@ public class TestProcedureReviewerTest {
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(
                 String.format(MISSING_TEST_PROCEDURE_NAME, "170.315 (a)(1)")));
+    }
+
+    @Test
+    public void review_testProcedureNullNameRemovedCriteria_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_PROCEDURE)))
+            .thenReturn(true);
+        List<CertificationResultTestProcedure> testProcedures = new ArrayList<CertificationResultTestProcedure>();
+        testProcedures.add(CertificationResultTestProcedure.builder()
+            .testProcedure(TestProcedure.builder()
+                    .id(1L)
+                    .name(null)
+                    .build())
+            .testProcedureVersion("1")
+            .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .gap(false)
+                        .success(true)
+                        .testProcedures(testProcedures)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -317,6 +506,7 @@ public class TestProcedureReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(false)
                         .success(true)
@@ -330,6 +520,38 @@ public class TestProcedureReviewerTest {
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(
                 String.format(MISSING_TEST_PROCEDURE_VERSION, "170.315 (a)(1)")));
+    }
+
+    @Test
+    public void review_testProcedureEmptyVersionRemovedCriteria_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_PROCEDURE)))
+            .thenReturn(true);
+        List<CertificationResultTestProcedure> testProcedures = new ArrayList<CertificationResultTestProcedure>();
+        testProcedures.add(CertificationResultTestProcedure.builder()
+            .testProcedure(TestProcedure.builder()
+                    .id(1L)
+                    .name(TestProcedureDTO.DEFAULT_TEST_PROCEDURE)
+                    .build())
+            .testProcedureVersion("")
+            .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .gap(false)
+                        .success(true)
+                        .testProcedures(testProcedures)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -351,6 +573,7 @@ public class TestProcedureReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(false)
                         .success(true)
@@ -364,6 +587,38 @@ public class TestProcedureReviewerTest {
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(
                 String.format(MISSING_TEST_PROCEDURE_VERSION, "170.315 (a)(1)")));
+    }
+
+    @Test
+    public void review_testProcedureNullVersionRemovedCriteria_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_PROCEDURE)))
+            .thenReturn(true);
+        List<CertificationResultTestProcedure> testProcedures = new ArrayList<CertificationResultTestProcedure>();
+        testProcedures.add(CertificationResultTestProcedure.builder()
+            .testProcedure(TestProcedure.builder()
+                    .id(1L)
+                    .name(TestProcedureDTO.DEFAULT_TEST_PROCEDURE)
+                    .build())
+            .testProcedureVersion(null)
+            .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .gap(false)
+                        .success(true)
+                        .testProcedures(testProcedures)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -385,6 +640,7 @@ public class TestProcedureReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(false)
                         .success(true)

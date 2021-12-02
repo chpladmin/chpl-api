@@ -1,7 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -15,29 +14,33 @@ import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.util.ValidationUtils;
 
 @Component("listingUploadTestDataReviewer")
 public class TestDataReviewer {
     private CertificationResultRules certResultRules;
+    private ValidationUtils validationUtils;
     private CertificationCriterionService criteriaSevice;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
     public TestDataReviewer(CertificationResultRules certResultRules,
+            ValidationUtils validationUtils,
             CertificationCriterionService criteriaSevice,
             ErrorMessageUtil msgUtil) {
         this.certResultRules = certResultRules;
+        this.validationUtils = validationUtils;
         this.criteriaSevice = criteriaSevice;
         this.msgUtil = msgUtil;
     }
 
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
+            .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
             .forEach(certResult -> review(listing, certResult));
     }
 
-    public void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         reviewCriteriaCanHaveTestData(listing, certResult);
         reviewTestDataRequiredForG1AndG2WhenCertResultIsNotGap(listing, certResult);
         reviewTestDataForReplacements(listing, certResult);

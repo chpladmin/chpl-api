@@ -1,7 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.BooleanUtils;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,28 +13,32 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.util.ValidationUtils;
 
 @Component("listingUploadTestProcedureReviewer")
 public class TestProcedureReviewer {
     private CertificationResultRules certResultRules;
+    private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
     private FF4j ff4j;
 
     @Autowired
     public TestProcedureReviewer(CertificationResultRules certResultRules,
+            ValidationUtils validationUtils,
             ErrorMessageUtil msgUtil, FF4j ff4j) {
         this.certResultRules = certResultRules;
+        this.validationUtils = validationUtils;
         this.msgUtil = msgUtil;
         this.ff4j = ff4j;
     }
 
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
+            .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
             .forEach(certResult -> review(listing, certResult));
     }
 
-    public void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         reviewCriteriaCanHaveTestProcedures(listing, certResult);
         reviewTestProceduresRequiredWhenCertResultIsNotGap(listing, certResult);
         if (!CollectionUtils.isEmpty(certResult.getTestProcedures())) {

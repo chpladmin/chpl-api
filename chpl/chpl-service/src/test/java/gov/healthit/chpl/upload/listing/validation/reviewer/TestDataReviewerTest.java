@@ -22,6 +22,7 @@ import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 
 public class TestDataReviewerTest {
     private static final String TEST_DATA_NOT_APPLICABLE = "Test data is not applicable for the criterion %s. It has been removed.";
@@ -67,7 +68,9 @@ public class TestDataReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.missingTestDataVersion"),
                 ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(MISSING_TEST_DATA_VERSION, i.getArgument(1), ""));
-        reviewer = new TestDataReviewer(certResultRules, criteriaService, msgUtil);
+        reviewer = new TestDataReviewer(certResultRules,
+                new ValidationUtils(Mockito.mock(CertificationCriterionService.class)),
+                criteriaService, msgUtil);
     }
 
     @Test
@@ -82,6 +85,7 @@ public class TestDataReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(false)
                         .success(true)
@@ -106,6 +110,7 @@ public class TestDataReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(false)
                         .success(true)
@@ -129,6 +134,7 @@ public class TestDataReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(true)
                         .success(true)
@@ -153,6 +159,7 @@ public class TestDataReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(true)
                         .success(true)
@@ -184,6 +191,7 @@ public class TestDataReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(true)
                         .success(true)
@@ -198,6 +206,39 @@ public class TestDataReviewerTest {
         assertTrue(listing.getWarningMessages().contains(
                 String.format(TEST_DATA_NOT_APPLICABLE, "170.315 (a)(1)")));
         assertNull(listing.getCertificationResults().get(0).getTestDataUsed());
+    }
+
+    @Test
+    public void review_testDataNotApplicableToRemovedCriteria_noWarning() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(true);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+            .thenReturn(false);
+        List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
+        testData.add(CertificationResultTestData.builder()
+                .userEnteredName(TestDataDTO.DEFALUT_TEST_DATA)
+                .testData(TestData.builder()
+                        .id(1L)
+                        .name(TestDataDTO.DEFALUT_TEST_DATA)
+                        .build())
+                .version("1")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .gap(true)
+                        .success(true)
+                        .testDataUsed(testData)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(0, listing.getWarningMessages().size());
     }
 
     @Test
@@ -228,6 +269,7 @@ public class TestDataReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(false)
                         .success(true)
@@ -241,6 +283,47 @@ public class TestDataReviewerTest {
         assertEquals(0, listing.getErrorMessages().size());
         assertTrue(listing.getWarningMessages().contains(
                 String.format(TEST_DATA_NAME_INVALID, "bad name", "170.315 (a)(1)", TestDataDTO.DEFALUT_TEST_DATA)));
+    }
+
+    @Test
+    public void review_testDataNameInvalidForRemovedCriteria_noWarning() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+            .thenReturn(true);
+        List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
+        testData.add(CertificationResultTestData.builder()
+                .userEnteredName("bad name")
+                .testData(TestData.builder()
+                        .id(1L)
+                        .name(TestDataDTO.DEFALUT_TEST_DATA)
+                        .build())
+                .version("1")
+                .build());
+        testData.add(CertificationResultTestData.builder()
+                .userEnteredName("Valid Test Data")
+                .testData(TestData.builder()
+                        .id(2L)
+                        .name("Valid Test Data")
+                        .build())
+                .version("1")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .gap(false)
+                        .success(true)
+                        .testDataUsed(testData)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -271,6 +354,7 @@ public class TestDataReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(false)
                         .success(true)
@@ -284,6 +368,47 @@ public class TestDataReviewerTest {
         assertEquals(0, listing.getErrorMessages().size());
         assertTrue(listing.getWarningMessages().contains(
                 String.format(MISSING_TEST_DATA_NAME, "170.315 (a)(1)", TestDataDTO.DEFALUT_TEST_DATA)));
+    }
+
+    @Test
+    public void review_testDataEmptyNameRemovedCriteria_noWarning() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+            .thenReturn(true);
+        List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
+        testData.add(CertificationResultTestData.builder()
+                .userEnteredName("")
+                .testData(TestData.builder()
+                        .id(1L)
+                        .name(TestDataDTO.DEFALUT_TEST_DATA)
+                        .build())
+                .version("1")
+                .build());
+        testData.add(CertificationResultTestData.builder()
+                .userEnteredName("Valid Test Data")
+                .testData(TestData.builder()
+                        .id(2L)
+                        .name("Valid Test Data")
+                        .build())
+                .version("1")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .gap(false)
+                        .success(true)
+                        .testDataUsed(testData)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -306,6 +431,7 @@ public class TestDataReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(false)
                         .success(true)
@@ -319,6 +445,39 @@ public class TestDataReviewerTest {
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(
                 String.format(MISSING_TEST_DATA_VERSION, "170.315 (a)(1)")));
+    }
+
+    @Test
+    public void review_testDataEmptyVersionForRemovedCriteria_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+            .thenReturn(true);
+        List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
+        testData.add(CertificationResultTestData.builder()
+                .userEnteredName("Valid Test Data")
+                .testData(TestData.builder()
+                        .id(2L)
+                        .name("Valid Test Data")
+                        .build())
+                .version("")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .gap(false)
+                        .success(true)
+                        .testDataUsed(testData)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -341,6 +500,7 @@ public class TestDataReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(false)
                         .success(true)
@@ -357,6 +517,39 @@ public class TestDataReviewerTest {
     }
 
     @Test
+    public void review_testDataNullVersionForRemovedCritiria_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+            .thenReturn(true);
+        List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
+        testData.add(CertificationResultTestData.builder()
+                .userEnteredName("Valid Test Data")
+                .testData(TestData.builder()
+                        .id(2L)
+                        .name("Valid Test Data")
+                        .build())
+                .version(null)
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .gap(false)
+                        .success(true)
+                        .testDataUsed(testData)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
     public void review_testDataMissingOnG1WithoutGap_hasError() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
@@ -367,6 +560,7 @@ public class TestDataReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(100L)
                                 .number("170.315 (g)(1)")
+                                .removed(false)
                                 .build())
                         .gap(false)
                         .success(true)
@@ -381,6 +575,29 @@ public class TestDataReviewerTest {
     }
 
     @Test
+    public void review_testDataMissingOnG1RemovedWithoutGap_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+            .thenReturn(true);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(100L)
+                                .number("170.315 (g)(1)")
+                                .removed(true)
+                                .build())
+                        .gap(false)
+                        .success(true)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
     public void review_testDataMissingOnG1WithGap_noError() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(true);
@@ -391,6 +608,7 @@ public class TestDataReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(100L)
                                 .number("170.315 (g)(1)")
+                                .removed(false)
                                 .build())
                         .gap(true)
                         .success(true)
@@ -413,6 +631,7 @@ public class TestDataReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(101L)
                                 .number("170.315 (g)(2)")
+                                .removed(false)
                                 .build())
                         .gap(false)
                         .success(true)
@@ -427,6 +646,29 @@ public class TestDataReviewerTest {
     }
 
     @Test
+    public void review_testDataMissingOnG2RemovedWithoutGap_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+            .thenReturn(true);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(101L)
+                                .number("170.315 (g)(2)")
+                                .removed(true)
+                                .build())
+                        .gap(false)
+                        .success(true)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
     public void review_testDataMissingOnG2WithGap_noError() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(true);
@@ -437,6 +679,7 @@ public class TestDataReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(101L)
                                 .number("170.315 (g)(2)")
+                                .removed(false)
                                 .build())
                         .gap(true)
                         .success(true)
@@ -468,6 +711,7 @@ public class TestDataReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(false)
                         .success(true)

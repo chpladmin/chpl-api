@@ -23,8 +23,10 @@ import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 
 public class OptionalStandardReviewerTest {
     private static final String OPTIONAL_STANDARDS_NOT_APPLICABLE = "Optional Standards are not applicable for the criterion %s.";
@@ -61,7 +63,9 @@ public class OptionalStandardReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.optionalStandard.invalidCriteria"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(OPTIONAL_STANDARD_NOT_FOR_CRITERION, i.getArgument(1), i.getArgument(2)));
-        reviewer = new OptionalStandardReviewer(optionalStandardDao, certResultRules, msgUtil);
+        reviewer = new OptionalStandardReviewer(optionalStandardDao, certResultRules,
+                new ValidationUtils(Mockito.mock(CertificationCriterionService.class)),
+                msgUtil);
     }
 
     private List<OptionalStandardCriteriaMap> buildOptionalStandardCriteriaMaps() {
@@ -101,6 +105,7 @@ public class OptionalStandardReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .success(true)
                         .build())
@@ -122,6 +127,7 @@ public class OptionalStandardReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .success(true)
                         .optionalStandards(new ArrayList<CertificationResultOptionalStandard>())
@@ -148,6 +154,7 @@ public class OptionalStandardReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .success(true)
                         .optionalStandards(optionalStandards)
@@ -160,6 +167,33 @@ public class OptionalStandardReviewerTest {
         assertTrue(listing.getWarningMessages().contains(
                 String.format(OPTIONAL_STANDARDS_NOT_APPLICABLE, "170.315 (a)(1)")));
         assertNull(listing.getCertificationResults().get(0).getOptionalStandards());
+    }
+
+    @Test
+    public void optionalStandardsNotApplicableToRemovedCriteria_noWarnings() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
+            .thenReturn(false);
+        List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
+        optionalStandards.add(CertificationResultOptionalStandard.builder()
+                .citation("optional std")
+                .optionalStandardId(1L)
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationEdition(create2015EditionMap())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .success(true)
+                        .optionalStandards(optionalStandards)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -182,6 +216,7 @@ public class OptionalStandardReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .success(true)
                         .optionalStandards(optionalStandards)
@@ -193,6 +228,38 @@ public class OptionalStandardReviewerTest {
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(
                 String.format(OPTIONAL_STANDARD_NOT_FOUND, "170.315 (a)(1)", "bad name")));
+    }
+
+    @Test
+    public void review_optionalStandardsWithoutIdForRemovedCriteria_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
+            .thenReturn(true);
+
+        List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
+        optionalStandards.add(CertificationResultOptionalStandard.builder()
+                .optionalStandardId(1L)
+                .citation("optional std")
+                .build());
+        optionalStandards.add(CertificationResultOptionalStandard.builder()
+                .citation("bad name")
+                .build());
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationEdition(create2015EditionMap())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .success(true)
+                        .optionalStandards(optionalStandards)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -212,6 +279,7 @@ public class OptionalStandardReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(2L)
                                 .number("170.315 (a)(2)")
+                                .removed(false)
                                 .build())
                         .success(true)
                         .optionalStandards(optionalStandards)
@@ -223,6 +291,35 @@ public class OptionalStandardReviewerTest {
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(
                 String.format(OPTIONAL_STANDARD_NOT_FOR_CRITERION, "optional std", "170.315 (a)(2)")));
+    }
+
+    @Test
+    public void review_optionalStandardWithIdOnInvalidRemovedCriterion_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
+            .thenReturn(true);
+
+        List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
+        optionalStandards.add(CertificationResultOptionalStandard.builder()
+                .optionalStandardId(1L)
+                .citation("optional std")
+                .build());
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationEdition(create2015EditionMap())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(2L)
+                                .number("170.315 (a)(2)")
+                                .removed(true)
+                                .build())
+                        .success(true)
+                        .optionalStandards(optionalStandards)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -246,6 +343,7 @@ public class OptionalStandardReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .success(true)
                         .optionalStandards(optionalStandards)
@@ -257,6 +355,39 @@ public class OptionalStandardReviewerTest {
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(
                 String.format(OPTIONAL_STANDARD_NAME_MISSING, "170.315 (a)(1)", "")));
+    }
+
+    @Test
+    public void review_optionalStandardWithoutCitationAndWithoutIdForRemovedCriteria_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
+            .thenReturn(true);
+
+        List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
+        optionalStandards.add(CertificationResultOptionalStandard.builder()
+                .optionalStandardId(1L)
+                .citation("optional std")
+                .build());
+        optionalStandards.add(CertificationResultOptionalStandard.builder()
+                .optionalStandardId(null)
+                .citation("")
+                .build());
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationEdition(create2015EditionMap())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .success(true)
+                        .optionalStandards(optionalStandards)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -280,6 +411,7 @@ public class OptionalStandardReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .success(true)
                         .optionalStandards(optionalStandards)
@@ -293,6 +425,39 @@ public class OptionalStandardReviewerTest {
                 String.format(OPTIONAL_STANDARD_NAME_MISSING, "170.315 (a)(1)", "")));
         assertTrue(listing.getErrorMessages().contains(
                 String.format(OPTIONAL_STANDARD_NOT_FOR_CRITERION, "", "170.315 (a)(1)")));
+    }
+
+    @Test
+    public void review_optionalStandardsWithoutCitationWithIdForRemovedCriteria_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
+        .thenReturn(true);
+
+        List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
+        optionalStandards.add(CertificationResultOptionalStandard.builder()
+                .optionalStandardId(1L)
+                .citation("optional std")
+                .build());
+        optionalStandards.add(CertificationResultOptionalStandard.builder()
+                .optionalStandardId(2L)
+                .citation("")
+                .build());
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationEdition(create2015EditionMap())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .success(true)
+                        .optionalStandards(optionalStandards)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -312,6 +477,7 @@ public class OptionalStandardReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .success(true)
                         .optionalStandards(optionalStandards)

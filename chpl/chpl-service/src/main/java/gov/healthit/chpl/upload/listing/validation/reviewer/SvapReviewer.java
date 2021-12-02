@@ -14,24 +14,28 @@ import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.util.ValidationUtils;
 import lombok.extern.log4j.Log4j2;
 
 @Component("listingUploadSvapReviewer")
 @Log4j2
 public class SvapReviewer {
     private CertificationResultRules certResultRules;
+    private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
     public SvapReviewer(CertificationResultRules certResultRules,
+            ValidationUtils validationUtils,
             ErrorMessageUtil msgUtil) {
         this.certResultRules = certResultRules;
+        this.validationUtils = validationUtils;
         this.msgUtil = msgUtil;
     }
 
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
+            .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
             .forEach(certResult -> reviewCertificationResult(listing, certResult));
     }
 

@@ -4,10 +4,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
 import java.util.Collections;
 
 import org.junit.Before;
@@ -15,7 +11,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.service.CertificationCriterionService;
@@ -111,33 +106,5 @@ public class CertificationResultReviewerTest {
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(MISSING_CERT_RESULTS));
-    }
-
-    @Test
-    public void review_removedCertificationResult_reviewersCalledCorrectly() {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationResult(CertificationResult.builder()
-                        .criterion(a6)
-                        .success(Boolean.TRUE)
-                        .build())
-                .build();
-        reviewer.review(listing);
-
-        verify(removedCriteriaReviewer, times(1)).review(listing, listing.getCertificationResults().get(0));
-        verify(unattestedCriteriaWithDataReviewer, times(1)).review(listing);
-
-        verify(criteriaReviewer, never()).review(listing);
-        verify(pAndSFrameworkReviewer, never()).review(listing);
-        verify(additionalSoftwareReviewer, never()).review(listing);
-        verify(gapAllowedReviewer, never()).review(listing);
-        verify(testToolReviewer, never()).review(listing);
-        verify(testDataReviewer, never()).review(listing);
-        verify(testProcedureReviewer, never()).review(listing);
-        verify(testFunctionalityReviewer, never()).review(listing);
-        verify(testStandardReviewer, never()).review(listing);
-        verify(optionalStandardReviewer, never()).review(listing);
-        verify(svapReviewer, never()).review(listing);
-        verify(oldCriteriaWithoutIcsReviewer, never()).review(listing);
-        verify(sedG3Reviewer, never()).review(listing);
     }
 }
