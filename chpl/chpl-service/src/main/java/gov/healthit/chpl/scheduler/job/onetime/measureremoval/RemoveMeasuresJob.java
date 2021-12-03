@@ -180,11 +180,9 @@ public class RemoveMeasuresJob extends QuartzJob {
     private Optional<MeasureCriterionMapEntity> getAllowedMeasureBasedOnLegacyMacraMeasure(MacraMeasureEntity legacy, List<Measure> measures) {
         return measures.stream()
                 .map(measure -> measureDAO.getEntity(measure.getId()))
-                .peek(x -> LOGGER.always().log(x.toString()))
                 .filter(entity -> legacy.getName().equals(entity.getName())
                         && legacy.getDescription().equals(entity.getRequiredTest()))
                 .flatMap(measure -> measure.getAllowedCriteria().stream())
-                .peek(criterion -> LOGGER.always().log(String.format("%s =? %s", criterion.getCriterion().getId(), legacy.getCertificationCriterion().getId())))
                 .filter(criterion -> criterion.getCriterion().getId().equals(legacy.getCertificationCriterion().getId()))
                 .findAny();
     }
