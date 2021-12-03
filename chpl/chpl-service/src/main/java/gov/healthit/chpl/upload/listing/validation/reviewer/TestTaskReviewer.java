@@ -129,13 +129,26 @@ public class TestTaskReviewer {
             return;
         }
         listing.getSed().getTestTasks().stream()
+            .forEach(testTask -> reviewTaskCriteria(listing, testTask));
+
+        listing.getSed().getTestTasks().stream()
+            .filter(testTask -> doesTestTaskHaveNonRemovedCriteria(testTask))
             .forEach(testTask -> reviewTestTaskFields(listing, testTask));
 
     }
 
+    private boolean doesTestTaskHaveNonRemovedCriteria(TestTask testTask) {
+        if (CollectionUtils.isEmpty(testTask.getCriteria())) {
+            return false;
+        }
+
+        return testTask.getCriteria().stream()
+                .filter(criterion -> BooleanUtils.isFalse(criterion.getRemoved()))
+                .findAny().isPresent();
+    }
+
     private void reviewTestTaskFields(CertifiedProductSearchDetails listing, TestTask testTask) {
         reviewTaskUniqueId(listing, testTask);
-        reviewTaskCriteria(listing, testTask);
         reviewTaskParticipantSize(listing, testTask);
         reviewTaskDescription(listing, testTask);
         reviewTaskSuccessAverage(listing, testTask);
