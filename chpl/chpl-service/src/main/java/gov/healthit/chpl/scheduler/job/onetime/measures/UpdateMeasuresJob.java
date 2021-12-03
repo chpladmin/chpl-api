@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.onetime.measureremoval;
+package gov.healthit.chpl.scheduler.job.onetime.measures;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,8 +36,8 @@ import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.extern.log4j.Log4j2;
 import net.sf.ehcache.CacheManager;
 
-@Log4j2(topic = "removeMeasuresJobLogger")
-public class RemoveMeasuresJob extends QuartzJob {
+@Log4j2(topic = "updateMeasuresJobLogger")
+public class UpdateMeasuresJob extends QuartzJob {
 
     @Autowired
     private MeasureDAO measureDAO;
@@ -87,7 +87,7 @@ public class RemoveMeasuresJob extends QuartzJob {
             "EH/CAH Medicaid PI|Medication/Clinical Information Reconciliation: Eligible Hospital/Critical Access Hospital",
             "EP Medicaid PI|Medication/Clinical Information Reconciliation: Eligible Professional"};
 
-    public RemoveMeasuresJob() throws Exception {
+    public UpdateMeasuresJob() throws Exception {
         super();
     }
 
