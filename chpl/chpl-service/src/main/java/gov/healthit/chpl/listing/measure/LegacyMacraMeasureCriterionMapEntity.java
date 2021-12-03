@@ -37,7 +37,7 @@ public class LegacyMacraMeasureCriterionMapEntity {
     @JoinColumn(name = "allowed_criteria_measure_id", unique = true, nullable = true, insertable = false, updatable = false)
     private MeasureCriterionMapEntity measureCriterionMap;
 
-    @Column(name = "macra_criteria_map_id", nullable = false, updatable = false, insertable = false)
+    @Column(name = "macra_criteria_map_id", nullable = false)
     private Long legacyMacraMeasureId;
 
     @Column(name = "creation_date", nullable = false, updatable = false, insertable = false)
