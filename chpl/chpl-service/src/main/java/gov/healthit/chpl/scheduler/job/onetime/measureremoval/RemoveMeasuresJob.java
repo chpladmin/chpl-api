@@ -158,26 +158,34 @@ public class RemoveMeasuresJob extends QuartzJob {
         for (MacraMeasureEntity legacy : legacyMeasures) {
 
             Optional<MeasureCriterionMapEntity> measureCriterionMap = getAllowedMeasureBasedOnLegacyMacraMeasure(legacy, measures);
-            if (measureCriterionMap.isEmpty()) {
+            if (!measureCriterionMap.isPresent()) {
                 throw new ObjectNotFoundException(String.format("Could not locate MeasureCriteriaMap for: %s", legacy.toString()));
             }
 
-            legacyMacraMeasureCriterionMapDAO.create(LegacyMacraMeasureCriterionMapEntity.builder()
-                    .legacyMacraMeasureId(legacy.getId())
-                    .measureCriterionId(measureCriterionMap.get().getId())
-                    .lastModifiedUser(User.SYSTEM_USER_ID)
-                    .build());
+            createLegacyMacraMeasureCriteria(legacy.getId(), measureCriterionMap.get().getId());
+            LOGGER.always().log(String.format("Inserted Mapping - Leagcy: %s  AllowedMeasure: %s", legacy.getId(), measureCriterionMap.get().getId()));
         }
 
+    }
+
+    private LegacyMacraMeasureCriterionMapEntity createLegacyMacraMeasureCriteria(Long legacyMacraMeasureId, Long measureCriterionId) {
+        LegacyMacraMeasureCriterionMapEntity entity = new LegacyMacraMeasureCriterionMapEntity();
+        entity.setLegacyMacraMeasureId(legacyMacraMeasureId);
+        entity.setMeasureCriterionId(measureCriterionId);
+        entity.setLastModifiedUser(User.SYSTEM_USER_ID);
+        entity.setDeleted(false);
+        return legacyMacraMeasureCriterionMapDAO.create(entity);
     }
 
     private Optional<MeasureCriterionMapEntity> getAllowedMeasureBasedOnLegacyMacraMeasure(MacraMeasureEntity legacy, List<Measure> measures) {
         return measures.stream()
                 .map(measure -> measureDAO.getEntity(measure.getId()))
+                .peek(x -> LOGGER.always().log(x.toString()))
                 .filter(entity -> legacy.getName().equals(entity.getName())
                         && legacy.getDescription().equals(entity.getRequiredTest()))
                 .flatMap(measure -> measure.getAllowedCriteria().stream())
-                .filter(criterion -> criterion.getId().equals(legacy.getCertificationCriterion().getId()))
+                .peek(criterion -> LOGGER.always().log(String.format("%s =? %s", criterion.getCriterion().getId(), legacy.getCertificationCriterion().getId())))
+                .filter(criterion -> criterion.getCriterion().getId().equals(legacy.getCertificationCriterion().getId()))
                 .findAny();
     }
 
@@ -189,11 +197,11 @@ public class RemoveMeasuresJob extends QuartzJob {
                         "Support Electronic Referral Loops by Sending Health Information (formerly Patient Care Record Exchange): Eligible Hospital/Critical Access Hospital",
                         false,
                         new ArrayList<CertificationCriterion>(Arrays.asList(
-                                certificationCriterionService.get(CertificationCriterionService.Criteria2015.B_7_CURES),
-                                certificationCriterionService.get(CertificationCriterionService.Criteria2015.B_7_OLD)))),
+                                certificationCriterionService.get(CertificationCriterionService.Criteria2015.B_1_CURES),
+                                certificationCriterionService.get(CertificationCriterionService.Criteria2015.B_1_OLD)))),
                 createMeasure("EH/CAH Medicare PI",
                         "RT1",
-                        "Required Test 1: Medicare Promoting Interopability Programs",
+                        "Required Test 1: Medicare Promoting Interoperability Programs",
                         "Electronic Prescribing: Eligible Hospital/Critical Access Hospital",
                         false,
                         new ArrayList<CertificationCriterion>(Arrays.asList(
@@ -201,7 +209,7 @@ public class RemoveMeasuresJob extends QuartzJob {
                                 certificationCriterionService.get(CertificationCriterionService.Criteria2015.B_3_OLD)))),
                 createMeasure("EH/CAH Medicare PI",
                         "RT2",
-                        "Required Test 2: Medicare Promoting Interoperability Programs ",
+                        "Required Test 2: Medicare Promoting Interoperability Programs",
                         "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Hospital/Critical Access Hospital",
                         true,
                         new ArrayList<CertificationCriterion>(Arrays.asList(
@@ -213,7 +221,7 @@ public class RemoveMeasuresJob extends QuartzJob {
                                 certificationCriterionService.get(CertificationCriterionService.Criteria2015.G_10)))),
                 createMeasure("EH/CAH Medicare PI",
                         "RT2",
-                        "Required Test 2: Medicare Promoting Interoperability Programs ",
+                        "Required Test 2: Medicare Promoting Interoperability Programs",
                         "Provide Patients Electronic Access to Their Health Information (formerly Patient Electronic Access): Eligible Clinician",
                         true,
                         new ArrayList<CertificationCriterion>(Arrays.asList(
@@ -231,11 +239,15 @@ public class RemoveMeasuresJob extends QuartzJob {
                 .removed(false)
                 .build();
         final Measure savedMeasure = measureDAO.create(measure);
+        LOGGER.always().log(String.format("Inserted Measure: %s", savedMeasure.toString()));
 
         criteria.stream()
-                .forEach(criterion -> measureCriterionMapDAO.create(criterion.getId(), savedMeasure.getId(), User.SYSTEM_USER_ID));
+                .forEach(criterion -> {
+                    MeasureCriterionMapEntity e = measureCriterionMapDAO.create(criterion.getId(), savedMeasure.getId(), User.SYSTEM_USER_ID);
+                    LOGGER.always().log(String.format("     Inserted Allowed Measure Criteria: %s", e.toString()));
+                });
 
-        return measure;
+        return savedMeasure;
     }
 
 
@@ -318,6 +330,8 @@ public class RemoveMeasuresJob extends QuartzJob {
         entity.setLastModifiedUser(User.SYSTEM_USER_ID);
         entity.setDeleted(false);
 
-        return macraMeasureDAO.create(entity);
+        MacraMeasureEntity e = macraMeasureDAO.create(entity);
+        LOGGER.always().log(String.format("Inserted Legacy Macra Measure: %s", e.toString()));
+        return e;
     }
 }
