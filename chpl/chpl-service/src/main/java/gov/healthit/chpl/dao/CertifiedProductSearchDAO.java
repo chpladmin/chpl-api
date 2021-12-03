@@ -103,6 +103,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         }
     }
 
+    @Deprecated
     public List<CertifiedProductFlatSearchResult> getFlatCertifiedProducts() {
         LOGGER.info("Starting basic search query.");
         Query query = entityManager.createQuery("SELECT cps "
@@ -697,6 +698,8 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
                 .closedSurveillanceCount(entity.getClosedSurveillanceCount())
                 .openSurveillanceNonConformityCount(entity.getOpenSurveillanceNonConformityCount())
                 .closedSurveillanceNonConformityCount(entity.getClosedSurveillanceNonConformityCount())
+                .rwtPlansUrl(entity.getRwtPlansUrl())
+                .rwtResultsUrl(entity.getRwtResultsUrl())
                 .surveillanceDates(convertToSetOfStringsWithDelimiter(entity.getSurveillanceDates(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
                 .statusEvents(convertToSetOfStringsWithDelimiter(entity.getStatusEvents(), "&"))
                 .criteriaMet(convertToSetOfLongsWithDelimiter(entity.getCerts(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))

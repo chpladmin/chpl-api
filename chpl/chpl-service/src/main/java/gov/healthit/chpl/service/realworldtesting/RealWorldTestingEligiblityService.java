@@ -13,7 +13,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
-
 import gov.healthit.chpl.activity.history.ListingActivityUtil;
 import gov.healthit.chpl.activity.history.explorer.RealWorldTestingEligibilityActivityExplorer;
 import gov.healthit.chpl.activity.history.query.RealWorldTestingEligibilityQuery;
@@ -63,8 +62,8 @@ public class RealWorldTestingEligiblityService {
             return memo.get(listingId);
         }
 
-        Optional<Integer> rwtEligYearBasedOnIcs = getRwtEligibilityYearBasedOnIcs(listingId, logger);
-        if (rwtEligYearBasedOnIcs.isPresent()) {
+        Integer rwtEligYearBasedOnIcs = getRwtEligibilityYearBasedOnIcs(listingId, logger);
+        if (rwtEligYearBasedOnIcs != null) {
             RealWorldTestingEligibility eligibility = new RealWorldTestingEligibility(RealWorldTestingEligiblityReason.ICS, rwtEligYearBasedOnIcs);
             addCalculatedResultsToMemo(listingId, eligibility);
             return eligibility;
@@ -72,10 +71,9 @@ public class RealWorldTestingEligiblityService {
             Optional<RealWorldTestingEligibility> rwtElig = getRwtEligBasedOnStandardRequirements(listingId);
             if (rwtElig.isPresent()) {
                 return rwtElig.get();
-
             }
         }
-        RealWorldTestingEligibility eligibility = new RealWorldTestingEligibility(RealWorldTestingEligiblityReason.NOT_ELIGIBLE, Optional.empty());
+        RealWorldTestingEligibility eligibility = new RealWorldTestingEligibility(RealWorldTestingEligiblityReason.NOT_ELIGIBLE, null);
         addCalculatedResultsToMemo(listingId, eligibility);
         return eligibility;
     }
@@ -92,7 +90,6 @@ public class RealWorldTestingEligiblityService {
         memo.put(listingId, eligibility);
     }
 
-
     private Optional<RealWorldTestingEligibility> getRwtEligBasedOnStandardRequirements(Long listingId) {
         //Initially try to determine the eligibility based on the beginning of the program
         LocalDate currentRwtEligStartDate = rwtProgramStartDate;
@@ -100,7 +97,7 @@ public class RealWorldTestingEligiblityService {
         while (currentRwtEligStartDate.isBefore(LocalDate.now())) {
             Optional<CertifiedProductSearchDetails> listing = getListingAsOfDate(listingId, currentRwtEligStartDate);
             if (listing.isPresent() && isListingRwtEligible(listing.get(), currentRwtEligStartDate)) {
-                RealWorldTestingEligibility eligibility = new RealWorldTestingEligibility(RealWorldTestingEligiblityReason.SELF, Optional.of(currentRwtEligYear));
+                RealWorldTestingEligibility eligibility = new RealWorldTestingEligibility(RealWorldTestingEligiblityReason.SELF, currentRwtEligYear);
                 addCalculatedResultsToMemo(listingId, eligibility);
                 return Optional.of(eligibility);
             }
@@ -111,7 +108,7 @@ public class RealWorldTestingEligiblityService {
         return Optional.empty();
     }
 
-    private Optional<Integer> getRwtEligibilityYearBasedOnIcs(Long listingId, Logger logger) {
+    private Integer getRwtEligibilityYearBasedOnIcs(Long listingId, Logger logger) {
         try {
             Optional<CertifiedProductSearchDetails> listing = getListingInOriginalState(listingId);
             if (listing.isPresent()) {
@@ -124,29 +121,30 @@ public class RealWorldTestingEligiblityService {
                     //Need a "details" object for the icsCode
                     CertifiedProductDTO cpChild = certifiedProductDAO.getById(listing.get().getId());
                     List<Integer> parentEligibilityYears = new ArrayList<Integer>();
-                    for (CertifiedProduct cp : listing.get().getIcs().getParents()) {
+                    for (CertifiedProduct cpParent : listing.get().getIcs().getParents()) {
                         //Need a "details" object for the icsCode
-                        CertifiedProductDTO cpParent = certifiedProductDAO.getById(cp.getId());
+                        CertifiedProductDTO cpParentDto = certifiedProductDAO.getById(cpParent.getId());
 
                         //This helps break any ics "loops" that may exist
-                        if (Integer.valueOf(cpParent.getIcsCode()) >= Integer.valueOf(cpChild.getIcsCode())) {
+                        if (Integer.valueOf(cpParentDto.getIcsCode()) >= Integer.valueOf(cpChild.getIcsCode())) {
                             continue;
                         }
                         //Get the eligiblity year for the parent...  Uh-oh - possible recursion...
-                        RealWorldTestingEligibility parentEligibility = getRwtEligibilityYearForListing(cp.getId(), logger);
-                        if (parentEligibility.getEligibilityYear().isPresent()) {
-                            parentEligibilityYears.add(parentEligibility.getEligibilityYear().get());
+                        RealWorldTestingEligibility parentEligibility = getRwtEligibilityYearForListing(cpParent.getId(), logger);
+                        if (parentEligibility.getEligibilityYear() != null) {
+                            parentEligibilityYears.add(parentEligibility.getEligibilityYear());
                         }
                     }
                     if (parentEligibilityYears.size() > 0) {
-                        return parentEligibilityYears.stream()
+                        Optional<Integer> minEligibilityYear = parentEligibilityYears.stream()
                                 .min(Integer::compare);
+                        return minEligibilityYear.isPresent() ? minEligibilityYear.get() : null;
                     }
                 }
             }
-            return Optional.empty();
+            return null;
         } catch (EntityRetrievalException e) {
-            return Optional.empty();
+            return null;
         }
     }
 

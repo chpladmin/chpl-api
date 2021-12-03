@@ -1,16 +1,40 @@
 package gov.healthit.chpl.activity.history.explorer;
 
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.apache.commons.lang3.ObjectUtils;
 
 import gov.healthit.chpl.activity.history.query.ListingActivityQuery;
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.util.DateUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public abstract class ListingActivityExplorer {
 
     public abstract ActivityDTO getActivity(ListingActivityQuery query);
+
+    public ActivityDTO getActivityNearestAndBeforeDay(List<ActivityDTO> activities, Long listingId, LocalDate day) {
+        sortOldestActivityFirst(activities);
+        ActivityDTO result = null;
+        ListIterator<ActivityDTO> activityIter = activities.listIterator();
+        while (activityIter.hasNext()) {
+            ActivityDTO currActivity = activityIter.next();
+            if (day.isAfter(DateUtil.toLocalDate(currActivity.getActivityDate().getTime()))) {
+                if (activityIter.hasPrevious()) {
+                    result = activityIter.previous();
+                } else {
+                    result = currActivity;
+                }
+                activityIter.next();
+            }
+        }
+        LOGGER.info("Listing " + listingId + " activity nearest but before " + day + " occurred on " + DateUtil.toLocalDate(result.getActivityDate().getTime()));
+        return result;
+    }
 
     public void sortNewestActivityFirst(List<ActivityDTO> activities) {
         activities.sort(new Comparator<ActivityDTO>() {

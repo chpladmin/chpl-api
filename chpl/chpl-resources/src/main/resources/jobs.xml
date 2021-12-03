@@ -739,7 +739,7 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
-        
+
         <!-- One time job to convert Test Standards to Optional Standards -->
         <job>
             <name>testStandards2OptionalStandardsConversion</name>
@@ -760,5 +760,52 @@
             <recover>false</recover>
         </job>
         
+
+        <job>
+            <name>Listings Snapshot</name>
+            <group>chplJobs</group>
+            <description>Generate a CSV snapshot of listings in the system on January 1, 2020.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.snapshot.ListingsSnapshotCsvCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN</value>
+                </entry>
+                <entry>
+                    <key>edition</key>
+                    <value>2015</value>
+                </entry>
+                <entry>
+                    <key>snapshotDate</key>
+                    <value>2020-01-01</value>
+                </entry>
+            </job-data-map>
+        </job>
+
+        <job>
+            <name>Listings With Criterion Snapshot</name>
+            <group>chplJobs</group>
+            <description>Generate a CSV snapshot of listings in the system attesting to 170.315 (f)(5) on January 1, 2020.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.snapshot.ListingsWithCriterionSnapshotCsvCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>edition</key>
+                    <value>2015</value>
+                </entry>
+                <entry>
+                    <key>snapshotDate</key>
+                    <value>2020-01-01</value>
+                </entry>
+                <!-- 170.315 (f)(5) -->
+                <entry>
+                    <key>criterionId</key>
+                    <value>47</value>
+                </entry>
+            </job-data-map>
+        </job>
     </schedule>
 </job-scheduling-data>

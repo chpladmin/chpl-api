@@ -79,6 +79,7 @@ import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CuresUpdateService;
+import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityCachingService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.Validator;
@@ -190,7 +191,8 @@ public class CertifiedProductManagerTest {
                 testProcDao,  testDataDao, testFuncDao,  ucdDao, testParticipantDao,  testTaskDao, certStatusDao,
                 listingGraphDao, fuzzyChoicesDao,  resourcePermissions, certifiedProductSearchResultDAO,
                 certifiedProductDetailsManager, Mockito.mock(PendingCertifiedProductManager.class),
-                activityManager, validatorFactory, curesUpdateService, criterionService);
+                activityManager, validatorFactory, curesUpdateService, criterionService,
+                Mockito.mock(RealWorldTestingEligiblityCachingService.class));
     }
 
     @Test(expected = ValidationException.class)

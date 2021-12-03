@@ -12,17 +12,21 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.domain.CertificationEdition;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
 import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
+import gov.healthit.chpl.search.domain.RwtSearchOptions;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchResponse;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
@@ -34,6 +38,7 @@ import lombok.extern.log4j.Log4j2;
 @NoArgsConstructor
 @Log4j2
 public class ListingSearchService {
+    private static final String CURES_UPDATE_EDITION = "2015" + CertificationEdition.CURES_SUFFIX;
     private SearchRequestValidator searchRequestValidator;
     private SearchRequestNormalizer searchRequestNormalizer;
     private CertifiedProductSearchManager cpSearchManager;
@@ -61,6 +66,7 @@ public class ListingSearchService {
             .filter(listing -> matchesSearchTerm(listing, searchRequest.getSearchTerm()))
             .filter(listing -> matchesAcbNames(listing, searchRequest.getCertificationBodies()))
             .filter(listing -> matchesCertificationStatuses(listing, searchRequest.getCertificationStatuses()))
+            .filter(listing -> matchesDerivedCertificationEditions(listing, searchRequest.getDerivedCertificationEditions()))
             .filter(listing -> matchesCertificationEditions(listing, searchRequest.getCertificationEditions()))
             .filter(listing -> matchesDeveloper(listing, searchRequest.getDeveloper()))
             .filter(listing -> matchesProduct(listing, searchRequest.getProduct()))
@@ -70,6 +76,7 @@ public class ListingSearchService {
             .filter(listing -> matchesCqms(listing, searchRequest.getCqms(), searchRequest.getCqmsOperator()))
             .filter(listing -> matchesCertificationDateRange(listing, searchRequest.getCertificationDateStart(), searchRequest.getCertificationDateEnd()))
             .filter(listing -> matchesComplianceFilter(listing, searchRequest.getComplianceActivity()))
+            .filter(listing -> matchesRwtFilter(listing, searchRequest.getRwtOptions(), searchRequest.getRwtOperator()))
             .collect(Collectors.toList());
         LOGGER.debug("Total filtered listings: " + filteredListings.size());
 
@@ -117,11 +124,37 @@ public class ListingSearchService {
     }
 
     private boolean matchesCertificationEditions(CertifiedProductBasicSearchResult listing, Set<String> certificationEditions) {
-        if (certificationEditions == null || certificationEditions.size() == 0) {
+        if (CollectionUtils.isEmpty(certificationEditions)) {
             return true;
         }
 
         return !StringUtils.isEmpty(listing.getEdition()) && certificationEditions.contains(listing.getEdition());
+    }
+
+    private boolean matchesDerivedCertificationEditions(CertifiedProductBasicSearchResult listing, Set<String> derivedCertificationEditions) {
+        if (CollectionUtils.isEmpty(derivedCertificationEditions)) {
+            return true;
+        }
+
+        return derivedCertificationEditions.stream()
+            .anyMatch(edition -> matchesDerivedCertificationEdition(listing, edition));
+    }
+
+    private boolean matchesDerivedCertificationEdition(CertifiedProductBasicSearchResult listing, String derivedCertificationEdition) {
+        boolean editionMatch = false;
+        if (derivedCertificationEdition.equalsIgnoreCase(CURES_UPDATE_EDITION)) {
+            editionMatch = !StringUtils.isEmpty(listing.getEdition())
+                    && listing.getEdition().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())
+                    && BooleanUtils.isTrue(listing.getCuresUpdate());
+        } else if (derivedCertificationEdition.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())) {
+            editionMatch = !StringUtils.isEmpty(listing.getEdition())
+                    && listing.getEdition().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())
+                    && BooleanUtils.isFalse(listing.getCuresUpdate());
+        } else {
+            editionMatch = !StringUtils.isEmpty(listing.getEdition())
+                    && derivedCertificationEdition.equals(listing.getEdition());
+        }
+        return editionMatch;
     }
 
     private boolean matchesDeveloper(CertifiedProductBasicSearchResult listing, String developer) {
@@ -193,8 +226,7 @@ public class ListingSearchService {
     private boolean matchesComplianceFilter(CertifiedProductBasicSearchResult listing, ComplianceSearchFilter complianceFilter) {
         if (complianceFilter == null
                 || (complianceFilter.getHasHadComplianceActivity() == null
-                    && (complianceFilter.getNonConformityOptions() == null || complianceFilter.getNonConformityOptions().size() == 0)
-                    && complianceFilter.getNonConformityOptionsOperator() == null)) {
+                    && CollectionUtils.isEmpty(complianceFilter.getNonConformityOptions()))) {
             return true;
         }
 
@@ -237,9 +269,9 @@ public class ListingSearchService {
 
         if (ObjectUtils.anyNotNull(matchesNeverNonConformityFilter, matchesOpenNonConformityFilter, matchesClosedNonConformityFilter,
                 matchesNotNeverNonConformityFilter, matchesNotOpenNonConformityFilter, matchesNotClosedNonConformityFilter)) {
-            boolean matchesNonConformityFilter = applyOperation(matchesNeverNonConformityFilter, matchesOpenNonConformityFilter,
-                    matchesClosedNonConformityFilter, matchesNotNeverNonConformityFilter, matchesNotOpenNonConformityFilter,
-                    matchesNotClosedNonConformityFilter, complianceFilter.getNonConformityOptionsOperator());
+            boolean matchesNonConformityFilter = applyOperation(complianceFilter.getNonConformityOptionsOperator(),
+                    matchesNeverNonConformityFilter, matchesOpenNonConformityFilter, matchesClosedNonConformityFilter,
+                    matchesNotNeverNonConformityFilter, matchesNotOpenNonConformityFilter, matchesNotClosedNonConformityFilter);
             return matchesHasHadComplianceActivityFilter && matchesNonConformityFilter;
         }
         return matchesHasHadComplianceActivityFilter;
@@ -256,16 +288,50 @@ public class ListingSearchService {
         }
     }
 
-    private boolean applyOperation(Boolean matchesNeverNonConformityFilter,
-            Boolean matchesOpenNonConformityFilter, Boolean matchesClosedNonConformityFilter,
-            Boolean matchesNotNeverNonConformityFilter,
-            Boolean matchesNotOpenNonConformityFilter, Boolean matchesNotClosedNonConformityFilter,
-            SearchSetOperator operation) {
-        List<Boolean> nonNullFilters = Stream.of(matchesNeverNonConformityFilter, matchesOpenNonConformityFilter,
-                matchesClosedNonConformityFilter, matchesNotNeverNonConformityFilter, matchesNotOpenNonConformityFilter,
-                matchesNotClosedNonConformityFilter)
+    private boolean matchesRwtFilter(CertifiedProductBasicSearchResult listing, Set<RwtSearchOptions> rwtOptions, SearchSetOperator rwtOperator) {
+        if (CollectionUtils.isEmpty(rwtOptions)) {
+            return true;
+        }
+
+        Boolean matchesIsEligibleFilter = null;
+        if (rwtOptions.contains(RwtSearchOptions.IS_ELIGIBLE)) {
+            matchesIsEligibleFilter = listing.getIsRwtEligible();
+        }
+        Boolean matchesNotEligibleFilter = null;
+        if (rwtOptions.contains(RwtSearchOptions.NOT_ELIGIBLE)) {
+            matchesNotEligibleFilter = BooleanUtils.isFalse(listing.getIsRwtEligible());
+        }
+        Boolean matchesHasPlansFilter = null;
+        if (rwtOptions.contains(RwtSearchOptions.HAS_PLANS_URL)) {
+            matchesHasPlansFilter = StringUtils.isNotBlank(listing.getRwtPlansUrl());
+        }
+        Boolean matchesNoPlansFilter = null;
+        if (rwtOptions.contains(RwtSearchOptions.NO_PLANS_URL)) {
+            matchesNoPlansFilter = StringUtils.isBlank(listing.getRwtPlansUrl());
+        }
+        Boolean matchesResultsFilter = null;
+        if (rwtOptions.contains(RwtSearchOptions.HAS_RESULTS_URL)) {
+            matchesResultsFilter = StringUtils.isNotBlank(listing.getRwtResultsUrl());
+        }
+        Boolean matchesNoResultsFilter = null;
+        if (rwtOptions.contains(RwtSearchOptions.NO_RESULTS_URL)) {
+            matchesNoResultsFilter = StringUtils.isBlank(listing.getRwtResultsUrl());
+        }
+
+        boolean matchesRwtFilter = applyOperation(rwtOperator, matchesIsEligibleFilter, matchesNotEligibleFilter,
+                matchesHasPlansFilter, matchesNoPlansFilter, matchesResultsFilter,
+                matchesNoResultsFilter);
+        return matchesRwtFilter;
+    }
+
+    private boolean applyOperation(SearchSetOperator operation, Boolean... filters) {
+        List<Boolean> nonNullFilters = Stream.of(filters)
                 .filter(booleanElement -> booleanElement != null)
                 .collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(nonNullFilters)) {
+            return false;
+        }
+
         if (operation == null || operation.equals(SearchSetOperator.AND)) {
             return BooleanUtils.and(nonNullFilters.toArray(new Boolean[nonNullFilters.size()]));
         } else if (operation.equals(SearchSetOperator.OR)) {
@@ -340,6 +406,9 @@ public class ListingSearchService {
         }
 
         switch (orderBy) {
+            case DERIVED_EDITION:
+                listings.sort(new DerivedEditionComparator(descending));
+                break;
             case EDITION:
                 listings.sort(new EditionComparator(descending));
                 break;
@@ -364,6 +433,23 @@ public class ListingSearchService {
             default:
                 LOGGER.error("Unrecognized value for Order By: " + orderBy.name());
                 break;
+        }
+    }
+
+    private class DerivedEditionComparator implements Comparator<CertifiedProductBasicSearchResult> {
+        private boolean descending = false;
+
+        DerivedEditionComparator(boolean descending) {
+            this.descending = descending;
+        }
+
+        @Override
+        public int compare(CertifiedProductBasicSearchResult listing1, CertifiedProductBasicSearchResult listing2) {
+            if (StringUtils.isAnyEmpty(listing1.getEdition(), listing2.getEdition())) {
+                return 0;
+            }
+            int sortFactor = descending ? -1 : 1;
+            return (listing1.getDerivedEdition().compareTo(listing2.getDerivedEdition())) * sortFactor;
         }
     }
 

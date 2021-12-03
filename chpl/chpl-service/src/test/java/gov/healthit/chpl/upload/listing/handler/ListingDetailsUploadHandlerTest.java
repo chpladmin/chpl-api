@@ -1,9 +1,8 @@
 package gov.healthit.chpl.upload.listing.handler;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Calendar;
@@ -237,7 +236,7 @@ public class ListingDetailsUploadHandlerTest {
         Calendar cal = Calendar.getInstance();
         cal.set(2018, 1, 14, 0, 0, 0);
         cal.set(Calendar.MILLISECOND, 0);
-        assertEquals(cal.getTime().getTime(), listing.getCertificationDate());
+        assertEquals(cal.getTime().getTime(), listing.getCertificationDate().longValue());
     }
 
     @Test
@@ -256,7 +255,7 @@ public class ListingDetailsUploadHandlerTest {
         Calendar cal = Calendar.getInstance();
         cal.set(2020, 8, 9, 0, 0, 0);
         cal.set(Calendar.MILLISECOND, 0);
-        assertEquals(cal.getTime().getTime(), listing.getCertificationDate());
+        assertEquals(cal.getTime().getTime(), listing.getCertificationDate().longValue());
     }
 
     @Test
@@ -274,7 +273,7 @@ public class ListingDetailsUploadHandlerTest {
         Calendar cal = Calendar.getInstance();
         cal.set(2018, 1, 14, 0, 0, 0);
         cal.set(Calendar.MILLISECOND, 0);
-        assertEquals(cal.getTime().getTime(), listing.getCertificationDate());
+        assertEquals(cal.getTime().getTime(), listing.getCertificationDate().longValue());
     }
 
     @Test
