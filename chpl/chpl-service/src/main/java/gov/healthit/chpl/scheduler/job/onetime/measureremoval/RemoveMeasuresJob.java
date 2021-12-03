@@ -117,6 +117,7 @@ public class RemoveMeasuresJob extends QuartzJob {
                     CacheManager.getInstance().clearAll();
                 } catch (final Exception ex) {
                     LOGGER.error("Exception updating measures.", ex);
+                    status.setRollbackOnly();
                 }
             }
         });
