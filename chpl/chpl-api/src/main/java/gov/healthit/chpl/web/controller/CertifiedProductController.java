@@ -1008,8 +1008,6 @@ public class CertifiedProductController {
             try {
                 CertifiedProductDTO createdProduct = cpManager.createFromPending(pcpDto, request.isAcknowledgeWarnings());
                 createdListing = cpdManager.getCertifiedProductDetails(createdProduct.getId());
-                activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, createdListing.getId(),
-                        "Created a certified product", null, createdListing);
             } catch (Exception ex) {
                 // TODO - alert on this message in datadog
                 LOGGER.error("Unexpected exception confirming pending listing " + pcpDto.getId() + ".", ex);

@@ -115,7 +115,11 @@ public class DownloadableResourceController {
                 toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2014Name"));
             } else if (edition.equals("2015")) {
                 if (ff4j.check(FeatureList.RWT_ENABLED)) {
-                    toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015NameWithRWT"));
+                    if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_18_MONTHS)) {
+                        toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015NamePostERDPlus18M"));
+                    } else {
+                        toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015NameWithRWT"));
+                    }
                 } else {
                     toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015Name"));
                 }

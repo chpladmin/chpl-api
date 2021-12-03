@@ -461,7 +461,7 @@ public class PendingCertifiedProductDAO extends BaseDAOImpl {
         entity.setProcessing(false);
         entity.setLastModifiedDate(new Date());
         entity.setLastModifiedUser(AuthUtil.getAuditId());
-        entityManager.persist(entity);
+        update(entity);
     }
 
 
