@@ -8,7 +8,6 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.Measure;
 
@@ -75,46 +74,5 @@ public class MeasureDAO extends BaseDAOImpl {
             });
         }
         return results;
-    }
-
-    public Measure update(Measure measure) {
-        MeasureEntity result = getEntity(measure.getId());
-        result.setAbbreviation(measure.getAbbreviation());
-        result.setName(measure.getName());
-        result.setRemoved(measure.getRemoved());
-
-        update(result);
-
-        return getById(result.getId());
-    }
-
-    public Measure create(Measure measure) {
-        MeasureEntity entity = new MeasureEntity();
-        entity.setDomain(MeasureDomainEntity.builder().id(measure.getDomain().getId()).build());
-        entity.setAbbreviation(measure.getAbbreviation());
-        entity.setRequiredTest(measure.getRequiredTest());
-        entity.setName(measure.getName());
-        entity.setCriteriaSelectionRequired(measure.getRequiresCriteriaSelection());
-        entity.setRemoved(measure.getRemoved());
-        entity.setLastModifiedUser(User.SYSTEM_USER_ID);
-        entity.setDeleted(false);
-        super.create(entity);
-        return getById(entity.getId());
-    }
-
-    public MeasureEntity getEntity(Long id) {
-        Query query = entityManager.createQuery(
-                MEASURE_HQL_BEGIN
-                + "WHERE measure.deleted = false "
-                + "AND measure.id = :id ",
-                MeasureEntity.class);
-        query.setParameter("id", id);
-        List<MeasureEntity> entities = query.getResultList();
-
-        MeasureEntity result = null;
-        if (entities != null && entities.size() > 0) {
-            result = entities.get(0);
-        }
-        return result;
     }
 }
