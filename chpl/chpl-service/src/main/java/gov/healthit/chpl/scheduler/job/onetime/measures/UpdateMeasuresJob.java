@@ -380,7 +380,7 @@ public class UpdateMeasuresJob extends QuartzJob {
         }
 
         public Measure updateMeasure(Measure measure) {
-            MeasureEntity result = measureDAO.getEntity(measure.getId());
+            MeasureEntity result = getMeasureEntity(measure.getId());
             result.setAbbreviation(measure.getAbbreviation());
             result.setName(measure.getName());
             result.setRemoved(measure.getRemoved());
