@@ -285,13 +285,12 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"expect removed measure to be marked as removed\", () => {\r",
-							"        var jsonData = pm.response.json();\r",
-							"        pm.expect(jsonData.data[2].domain.name).to.eql(\"EP Stage 2\");\r",
-							"        pm.expect(jsonData.data[2].abbreviation).to.eql(\"RT9\");\r",
-							"        pm.expect(jsonData.data[2].requiredTest).to.eql(\"Required Test 9: Stage 2 Objective 7\");\r",
-							"        pm.expect(jsonData.data[2].name).to.eql(\"Medication/Clinical Information Reconciliation: Eligible Professional\");\r",
-							"        pm.expect(jsonData.data[2].removed).to.be.true;\r",
+							"pm.test(\"expect removed g1g2 measure to be marked as removed\", () => {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    const measure = jsonData.data.find(item => item.requiredTest === \"Required Test 9: Stage 2 Objective 7\");\r",
+							"    pm.expect(measure.removed).to.be.true;\r",
+							"    pm.expect(measure.abbreviation).to.eql(\"RT9\");\r",
+							"    pm.expect(measure.name).to.eql(\"Medication/Clinical Information Reconciliation: Eligible Professional\");\r",
 							"});"
 						],
 						"type": "text/javascript"
