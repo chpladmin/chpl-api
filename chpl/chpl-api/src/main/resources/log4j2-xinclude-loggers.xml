@@ -179,10 +179,7 @@
         additivity="false">
         <AppenderRef ref="deprecatedApiUsageEmailJob" />
     </Logger>
-    <Logger name="testStandardConversionJobLogger" level="INFO"
-        additivity="false">
-        <AppenderRef ref="testStandardConversionJob" />
-    </Logger>
+
     <Logger name="listingsSnapshotCsvCreatorJobLogger"
         level="INFO" additivity="false">
         <AppenderRef
