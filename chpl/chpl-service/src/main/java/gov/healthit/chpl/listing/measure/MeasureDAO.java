@@ -14,7 +14,7 @@ import gov.healthit.chpl.domain.Measure;
 
 @Repository("measuresDao")
 public class MeasureDAO extends BaseDAOImpl {
-    private static final String MEASURE_HQL_BEGIN = "SELECT DISTINCT measure "
+    public static final String MEASURE_HQL_BEGIN = "SELECT DISTINCT measure "
             + "FROM MeasureEntity measure "
             + "LEFT JOIN FETCH measure.domain "
             + "LEFT JOIN FETCH measure.allowedCriteria ac "
