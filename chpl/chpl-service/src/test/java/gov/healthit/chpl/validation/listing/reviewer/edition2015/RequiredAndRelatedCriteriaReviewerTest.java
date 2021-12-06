@@ -267,13 +267,13 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                         .build())
                 .build();
         reviewer.review(listing);
-        assertEquals(6, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d1))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d2))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d3))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d5))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d6))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d7))));
+        assertEquals(0, listing.getWarningMessages().size());
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d1))));
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d2))));
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d3))));
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d5))));
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d6))));
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d7))));
     }
 
     @Test
@@ -297,13 +297,13 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                         .build())
                 .build();
         reviewer.review(listing);
-        assertEquals(6, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d1))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d2))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d3))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d5))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d6))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d7))));
+        assertEquals(0, listing.getWarningMessages().size());
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d1))));
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d2))));
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d3))));
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d5))));
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d6))));
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d7))));
     }
 
     @Test
