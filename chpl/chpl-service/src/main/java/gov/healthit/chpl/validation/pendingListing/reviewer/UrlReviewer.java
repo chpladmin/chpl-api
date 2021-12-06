@@ -44,7 +44,7 @@ public class UrlReviewer extends PermissionBasedReviewer {
 
         //check all criteria fields
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
-            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria().equals(Boolean.TRUE)) {
+            if (validationUtils.isEligibleForErrors(cert)) {
                 addCriteriaErrorIfNotValid(listing, cert, cert.getApiDocumentation(), "API Documentation");
                 addCriteriaErrorIfNotValid(listing, cert, cert.getExportDocumentation(), "Export Documentation");
                 addCriteriaErrorIfNotValid(listing, cert, cert.getDocumentationUrl(), "Documentation Url");
