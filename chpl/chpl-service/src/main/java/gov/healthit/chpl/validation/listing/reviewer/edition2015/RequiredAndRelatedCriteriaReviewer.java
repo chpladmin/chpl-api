@@ -92,16 +92,10 @@ public class RequiredAndRelatedCriteriaReviewer  extends PermissionBasedReviewer
         List<String> errors = validationUtils.checkClassOfCriteriaForMissingComplementaryCriteriaErrors(A_CRITERIA_NUMBERS_START,
                 attestedCriteria, requiredByACriteria);
         listing.getErrorMessages().addAll(errors);
-        List<String> warnings = validationUtils.checkClassOfCriteriaForMissingComplementaryCriteriaWarnings(A_CRITERIA_NUMBERS_START,
-                attestedCriteria, requiredByACriteria);
-        addListingWarningsByPermission(listing, warnings);
 
         errors = validationUtils.checkClassSubsetOfCriteriaForMissingComplementaryCriteriaErrors(A_CRITERIA_NUMBERS_START,
                 attestedCriteria, exceptionsToRequiredByACriteria, exceptionsToACriteria);
         listing.getErrorMessages().addAll(errors);
-        //warnings = validationUtils.checkClassSubsetOfCriteriaForMissingComplementaryCriteriaWarnings(A_CRITERIA_NUMBERS_START,
-        //        attestedCriteria, exceptionsToRequiredByACriteria, exceptionsToACriteria);
-        //addListingWarningsByPermission(listing, warnings);
     }
 
     private void checkBCriteriaHaveRequiredDependencies(CertifiedProductSearchDetails listing, List<CertificationCriterion> attestedCriteria) {
@@ -125,13 +119,6 @@ public class RequiredAndRelatedCriteriaReviewer  extends PermissionBasedReviewer
                 requiredByBCriteria,
                 excludedBCriteria);
         listing.getErrorMessages().addAll(errors);
-
-        //List<String> warnings = validationUtils.checkClassSubsetOfCriteriaForMissingComplementaryCriteriaWarnings(
-        //        B_CRITERIA_NUMBERS_START,
-        //        attestedCriteria,
-        //        requiredByBCriteria,
-        //        excludedBCriteria);
-        //addListingWarningsByPermission(listing, warnings);
     }
 
     private void checkCCriteriaHaveRequiredDependencies(CertifiedProductSearchDetails listing, List<CertificationCriterion> attestedCriteria) {
@@ -148,12 +135,6 @@ public class RequiredAndRelatedCriteriaReviewer  extends PermissionBasedReviewer
                 attestedCriteria,
                 requiredByCCriteria);
         listing.getErrorMessages().addAll(errors);
-
-        //List<String> warnings = validationUtils.checkClassOfCriteriaForMissingComplementaryCriteriaWarnings(
-        //        C_CRITERIA_NUMBERS_START,
-        //        attestedCriteria,
-        //        requiredByCCriteria);
-        //addListingWarningsByPermission(listing, warnings);
     }
 
     private void checkE1CriterionHasRequiredDependencies(CertifiedProductSearchDetails listing, List<CertificationCriterion> attestedCriteria) {
@@ -168,20 +149,12 @@ public class RequiredAndRelatedCriteriaReviewer  extends PermissionBasedReviewer
                 criterionService.get(Criteria2015.D_9))
                 .collect(Collectors.toList());
         CertificationCriterion e1 = criterionService.get(Criteria2015.E_1_OLD);
-        CertificationCriterion e1Cures = criterionService.get(Criteria2015.E_1_CURES);
 
         List<String> errors = validationUtils.checkSpecificCriterionForMissingComplementaryCriteriaErrors(
                 e1,
                 attestedCriteria,
                 requiredByE1Criteria);
         listing.getErrorMessages().addAll(errors);
-
-        //errors = validationUtils.checkSpecificCriterionForMissingComplementaryCriteriaErrors(
-        //        e1Cures,
-        //        attestedCriteria,
-        //        requiredByE1Criteria);
-        //listing.getErrorMessages().addAll(errors);
-
     }
 
     private void checkE2E3CriteriaHaveRequiredDependencies(CertifiedProductSearchDetails listing, List<CertificationCriterion> attestedCriteria) {
