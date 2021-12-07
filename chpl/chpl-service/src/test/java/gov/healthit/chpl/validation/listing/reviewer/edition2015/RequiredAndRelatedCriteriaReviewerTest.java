@@ -247,7 +247,7 @@ public class RequiredAndRelatedCriteriaReviewerTest {
     }
 
     @Test
-    public void review_a6RemovedCriteriaAttestedWithoutDependencies_asAdmin_hasWarnings() {
+    public void review_a6RemovedCriteriaAttestedWithoutDependencies_asAdmin_noWarnings() {
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
@@ -277,7 +277,7 @@ public class RequiredAndRelatedCriteriaReviewerTest {
     }
 
     @Test
-    public void review_a6RemovedCriteriaAttestedWithoutDependencies_asOnc_hasWarnings() {
+    public void review_a6RemovedCriteriaAttestedWithoutDependencies_asOnc_noWarnings() {
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(true);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
@@ -721,7 +721,7 @@ public class RequiredAndRelatedCriteriaReviewerTest {
     }
 
     @Test
-    public void review_c2RemovedCriteriaAttestedWithoutDependencies_adminUser_hasWarnings() {
+    public void review_c2RemovedCriteriaAttestedWithoutDependencies_adminUser_noWarnings() {
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
