@@ -130,10 +130,10 @@ public class DeprecatedApiUsageEmailJob implements Job {
                 .htmlMessage(createHtmlMessage(apiKey, deprecatedApiUsage, deprecatedResponseFieldUsage))
                 .sendEmail();
             LOGGER.info("Sent email to " + apiKey.getEmail() + ".");
-            deprecatedApiUsage.stream().forEach(item -> deleteDeprecatedApiUsage(item));
-            LOGGER.info("Deleted " + deprecatedApiUsage.size() + " deprecated API usage records for " + apiKey.getEmail());
-            deprecatedResponseFieldUsage.stream().forEach(item -> deleteDeprecatedResponseFieldUsage(item));
-            LOGGER.info("Deleted " + deprecatedResponseFieldUsage.size() + " deprecated response field usage records for " + apiKey.getEmail());
+            deprecatedApiUsage.stream().forEach(item -> markAsUserNotified(item));
+            LOGGER.info("Marked " + deprecatedApiUsage.size() + " deprecated API usage records as user-notified for " + apiKey.getEmail());
+            deprecatedResponseFieldUsage.stream().forEach(item -> markAsUserNotified(item));
+            LOGGER.info("Marked " + deprecatedResponseFieldUsage.size() + " deprecated response field usage records as user-notified for " + apiKey.getEmail());
         } catch (Exception ex) {
             LOGGER.error("Unable to send email to " + apiKey.getEmail() + ". "
                     + "User may not have been notified and database records will not be deleted.", ex);
@@ -216,18 +216,18 @@ public class DeprecatedApiUsageEmailJob implements Job {
         return DateUtil.formatInEasternTime(date, "MMM d, yyyy, hh:mm");
     }
 
-    private void deleteDeprecatedApiUsage(DeprecatedApiUsage usage) {
+    private void markAsUserNotified(DeprecatedApiUsage usage) {
         try {
-            deprecatedApiUsageDao.delete(usage.getId());
+            deprecatedApiUsageDao.markAsUserNotified(usage.getId());
             LOGGER.info("Deleted deprecated API usage with ID " + usage.getId());
         } catch (Exception ex) {
             LOGGER.error("Error deleting deprecated API usage with ID " + usage.getId(), ex);
         }
     }
 
-    private void deleteDeprecatedResponseFieldUsage(DeprecatedResponseFieldApiUsage usage) {
+    private void markAsUserNotified(DeprecatedResponseFieldApiUsage usage) {
         try {
-            deprecatedResponseFieldApiUsageDao.delete(usage.getId());
+            deprecatedResponseFieldApiUsageDao.markAsUserNotified(usage.getId());
             LOGGER.info("Deleted deprecated response field usage with ID " + usage.getId());
         } catch (Exception ex) {
             LOGGER.error("Error deleting deprecated response field usage with ID " + usage.getId(), ex);

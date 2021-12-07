@@ -69,9 +69,10 @@ public class DeprecatedApiUsageDao extends BaseDAOImpl {
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void markAsUserNotified(Long id) {
         DeprecatedApiUsageEntity entity = entityManager.find(DeprecatedApiUsageEntity.class, id);
         if (entity != null) {
+            entity.setNotificationSent(new Date());
             entity.setDeleted(true);
             entity.setLastModifiedUser(User.SYSTEM_USER_ID);
             update(entity);
