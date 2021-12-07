@@ -149,9 +149,16 @@ public class RequiredAndRelatedCriteriaReviewer  extends PermissionBasedReviewer
                 criterionService.get(Criteria2015.D_9))
                 .collect(Collectors.toList());
         CertificationCriterion e1 = criterionService.get(Criteria2015.E_1_OLD);
+        CertificationCriterion e1Cures = criterionService.get(Criteria2015.E_1_CURES);
 
         List<String> errors = validationUtils.checkSpecificCriterionForMissingComplementaryCriteriaErrors(
                 e1,
+                attestedCriteria,
+                requiredByE1Criteria);
+        listing.getErrorMessages().addAll(errors);
+
+        errors = validationUtils.checkSpecificCriterionForMissingComplementaryCriteriaErrors(
+                e1Cures,
                 attestedCriteria,
                 requiredByE1Criteria);
         listing.getErrorMessages().addAll(errors);
