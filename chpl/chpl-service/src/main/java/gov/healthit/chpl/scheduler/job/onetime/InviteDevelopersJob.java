@@ -146,7 +146,8 @@ public class InviteDevelopersJob implements Job {
         private String chplEmailValediction;
         private String accountInvitationTitle;
         private String accountInvitationHeading;
-        private String accountInvitationBody;
+        private String accountInvitationParagraph1;
+        private String accountInvitationParagraph2;
         private String accountInvitationLink;
 
         private UserPermission permission;
@@ -161,8 +162,10 @@ public class InviteDevelopersJob implements Job {
                 Environment env,
                 @Value("${account.invitation.title}") String accountInvitationTitle,
                 @Value("${account.invitation.heading}") String accountInvitationHeading,
-                @Value("${account.invitation.body}") String accountInvitationBody,
+                @Value("${account.invitation.paragraph1}") String accountInvitationParagraph1,
+                @Value("${account.invitation.paragraph2}") String accountInvitationParagraph2,
                 @Value("${account.invitation.invitationLink}") String accountInvitationLink,
+                @Value("${invitationLengthInDays}") Long invitationLengthDays,
                 @Value("${chplUrlBegin}") String chplUrlBegin,
                 @Value("${footer.publicUrl}") String publicFeedbackUrl,
                 @Value("${chpl.email.valediction}") String chplEmailValediction) {
@@ -178,7 +181,8 @@ public class InviteDevelopersJob implements Job {
 
             this.accountInvitationTitle = accountInvitationTitle;
             this.accountInvitationHeading = accountInvitationHeading;
-            this.accountInvitationBody = accountInvitationBody;
+            this.accountInvitationParagraph1 = accountInvitationParagraph1;
+            this.accountInvitationParagraph2 = String.format(accountInvitationParagraph2, invitationLengthDays);
             this.accountInvitationLink = accountInvitationLink;
             this.chplUrlBegin = chplUrlBegin;
             this.chplEmailValediction = String.format(chplEmailValediction, publicFeedbackUrl);
@@ -230,8 +234,9 @@ public class InviteDevelopersJob implements Job {
         private String createHtmlInvitation(UserInvitation invitation) {
             String htmlMessage = htmlEmailBuilder.initialize()
                     .heading(accountInvitationTitle)
-                    .paragraph(accountInvitationHeading, accountInvitationBody)
+                    .paragraph(accountInvitationHeading, accountInvitationParagraph1)
                     .paragraph(null, String.format(accountInvitationLink, chplUrlBegin, invitation.getInvitationToken()))
+                    .paragraph(null, accountInvitationParagraph2)
                     .paragraph(null, chplEmailValediction)
                     .footer(true)
                     .build();

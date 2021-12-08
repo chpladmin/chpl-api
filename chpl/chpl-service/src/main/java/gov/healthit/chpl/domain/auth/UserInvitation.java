@@ -35,7 +35,11 @@ public class UserInvitation {
     @JsonIgnore
     private Long lastModifiedUserId;
 
-    public boolean isOlderThan(long numDaysInMillis) {
+    public boolean isOlderThan(long numDays) {
+        return isOlderThanMillis(numDays * 24L * 60L * 60L * 1000L);
+    }
+
+    private boolean isOlderThanMillis(long numDaysInMillis) {
         if (this.creationDate == null || this.lastModifiedDate == null) {
             return true;
         }

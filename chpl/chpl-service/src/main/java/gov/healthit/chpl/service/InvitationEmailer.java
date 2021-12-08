@@ -23,7 +23,8 @@ public class InvitationEmailer {
 
     private String accountInvitationTitle;
     private String accountInvitationHeading;
-    private String accountInvitationBody;
+    private String accountInvitationParagraph1;
+    private String accountInvitationParagraph2;
     private String accountInvitationLink;
 
     private String accountConfirmationTitle;
@@ -37,8 +38,10 @@ public class InvitationEmailer {
             Environment env,
             @Value("${account.invitation.title}") String accountInvitationTitle,
             @Value("${account.invitation.heading}") String accountInvitationHeading,
-            @Value("${account.invitation.body}") String accountInvitationBody,
+            @Value("${account.invitation.paragraph1}") String accountInvitationParagraph1,
+            @Value("${account.invitation.paragraph2}") String accountInvitationParagraph2,
             @Value("${account.invitation.invitationLink}") String accountInvitationLink,
+            @Value("${invitationLengthInDays}") Long invitationLengthDays,
             @Value("${account.conirmation.title}") String accountConfirmationTitle,
             @Value("${account.confirmation.body}") String accountConfirmationBody,
             @Value("${account.confirmation.confirmationLink}") String accountConfirmationLink,
@@ -51,7 +54,8 @@ public class InvitationEmailer {
 
         this.accountInvitationTitle = accountInvitationTitle;
         this.accountInvitationHeading = accountInvitationHeading;
-        this.accountInvitationBody = accountInvitationBody;
+        this.accountInvitationParagraph1 = accountInvitationParagraph1;
+        this.accountInvitationParagraph2 = String.format(accountInvitationParagraph2, invitationLengthDays);
         this.accountInvitationLink = accountInvitationLink;
 
         this.accountConfirmationTitle = accountConfirmationTitle;
@@ -66,8 +70,9 @@ public class InvitationEmailer {
     public void emailInvitedUser(UserInvitation invitation) {
         String htmlMessage = htmlEmailBuilder.initialize()
                 .heading(accountInvitationTitle)
-                .paragraph(accountInvitationHeading, accountInvitationBody)
+                .paragraph(accountInvitationHeading, accountInvitationParagraph1)
                 .paragraph(null, String.format(accountInvitationLink, chplUrlBegin, invitation.getInvitationToken()))
+                .paragraph(null, accountInvitationParagraph2)
                 .paragraph(null, chplEmailValediction)
                 .footer(true)
                 .build();

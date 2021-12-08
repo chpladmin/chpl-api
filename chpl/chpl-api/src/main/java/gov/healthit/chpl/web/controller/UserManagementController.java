@@ -12,6 +12,7 @@ import javax.mail.internet.AddressException;
 import org.apache.commons.lang3.NotImplementedException;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -66,25 +67,29 @@ import lombok.Getter;
 @RequestMapping("/users")
 @Loggable
 public class UserManagementController {
-    private static final long VALID_INVITATION_LENGTH = 3L * 24L * 60L * 60L * 1000L;
-    private static final long VALID_CONFIRMATION_LENGTH = 30L * 24L * 60L * 60L * 1000L;
-
     private UserManager userManager;
     private InvitationManager invitationManager;
     private AuthenticationManager authenticationManager;
     private FF4j ff4j;
     private ErrorMessageUtil msgUtil;
 
+    private long invitationLengthInDays;
+    private long confirmationLengthInDays;
 
     @Autowired
     public UserManagementController(UserManager userManager, InvitationManager invitationManager,
             AuthenticationManager authenticationManager, FF4j ff4j,
-            ErrorMessageUtil errorMessageUtil) {
+            ErrorMessageUtil errorMessageUtil,
+            @Value("${invitationLengthInDays}") Long invitationLengthDays,
+            @Value("${confirmationLengthInDays}") Long confirmationLengthDays) {
         this.userManager = userManager;
         this.invitationManager = invitationManager;
         this.authenticationManager = authenticationManager;
         this.ff4j = ff4j;
         this.msgUtil = errorMessageUtil;
+
+        this.invitationLengthInDays = invitationLengthDays;
+        this.confirmationLengthInDays = confirmationLengthDays;
     }
 
     @Operation(summary = "Create a new user account from an invitation.",
@@ -111,7 +116,7 @@ public class UserManagementController {
         }
 
         UserInvitation invitation = invitationManager.getByInvitationHash(userInfo.getHash());
-        if (invitation == null || invitation.isOlderThan(VALID_INVITATION_LENGTH)) {
+        if (invitation == null || invitation.isOlderThan(invitationLengthInDays)) {
             throw new ValidationException(msgUtil.getMessage("user.providerKey.invalid"));
         }
 
@@ -162,7 +167,7 @@ public class UserManagementController {
     MultipleUserAccountsException {
         UserInvitation invitation = invitationManager.getByConfirmationHash(hash);
 
-        if (invitation == null || invitation.isOlderThan(VALID_INVITATION_LENGTH)) {
+        if (invitation == null || invitation.isOlderThan(invitationLengthInDays)) {
             throw new InvalidArgumentsException(
                     "Provided user key is not valid in the database. The user key is valid for up to 3 days from when "
                             + "it is assigned.");
@@ -197,7 +202,7 @@ public class UserManagementController {
         }
 
         UserInvitation invitation = invitationManager.getByInvitationHash(credentials.getHash());
-        if (invitation == null || invitation.isOlderThan(VALID_CONFIRMATION_LENGTH)) {
+        if (invitation == null || invitation.isOlderThan(confirmationLengthInDays)) {
             throw new InvalidArgumentsException(
                     "Provided user key is not valid in the database. The user key is valid for up to 3 days from when "
                             + "it is assigned.");
