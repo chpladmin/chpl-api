@@ -40,13 +40,14 @@ public class DeprecatedResponseFieldApiUsageDao extends BaseDAOImpl {
     }
 
     @Transactional
-    public List<DeprecatedResponseFieldApiUsage> getAllUsage() {
+    public List<DeprecatedResponseFieldApiUsage> getUnnotifiedUsage() {
         String hql = "SELECT DISTINCT apiUsage "
                 + "FROM DeprecatedResponseFieldApiUsageEntity apiUsage "
                 + "JOIN FETCH apiUsage.deprecatedResponseFieldApi api "
                 + "JOIN FETCH api.responseFields rf "
                 + "JOIN FETCH apiUsage.apiKey apiKey "
-                + "WHERE apiUsage.deleted = false "
+                + "WHERE apiUsage.notificationSent IS NULL "
+                + "AND apiUsage.deleted = false "
                 + "ORDER BY apiUsage.apiCallCount DESC ";
         Query query = entityManager.createQuery(hql);
         List<DeprecatedResponseFieldApiUsageEntity> results = query.getResultList();
@@ -70,7 +71,6 @@ public class DeprecatedResponseFieldApiUsageDao extends BaseDAOImpl {
         DeprecatedResponseFieldApiUsageEntity entity = entityManager.find(DeprecatedResponseFieldApiUsageEntity.class, id);
         if (entity != null) {
             entity.setNotificationSent(new Date());
-            entity.setDeleted(true);
             entity.setLastModifiedUser(User.SYSTEM_USER_ID);
             update(entity);
         }
@@ -93,7 +93,8 @@ public class DeprecatedResponseFieldApiUsageDao extends BaseDAOImpl {
                 + "JOIN FETCH apiUsage.deprecatedResponseFieldApi api "
                 + "JOIN FETCH api.responseFields rf "
                 + "JOIN FETCH apiUsage.apiKey apiKey "
-                + "WHERE apiUsage.deleted = false "
+                + "WHERE apiUsage.notificationSent IS NULL "
+                + "AND apiUsage.deleted = false "
                 + "AND apiUsage.apiKeyId = :apiKeyId "
                 + "AND apiUsage.deprecatedResponseFieldApiId = :deprecatedResponseFieldApiId";
         Query query = entityManager.createQuery(hql);

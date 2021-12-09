@@ -77,9 +77,9 @@ public class DeprecatedApiUsageEmailJob implements Job {
         LOGGER.info("********* Starting the Deprecated Api Usage Email job. *********");
 
         try {
-            List<DeprecatedApiUsage> allDeprecatedApiUsage = deprecatedApiUsageDao.getAllDeprecatedApiUsage();
+            List<DeprecatedApiUsage> allDeprecatedApiUsage = deprecatedApiUsageDao.getUnnotifiedUsage();
             LOGGER.info(allDeprecatedApiUsage.size() + " records of deprecated API usage were retrieved.");
-            List<DeprecatedResponseFieldApiUsage> allDeprecatedResponseFieldUsage = deprecatedResponseFieldApiUsageDao.getAllUsage();
+            List<DeprecatedResponseFieldApiUsage> allDeprecatedResponseFieldUsage = deprecatedResponseFieldApiUsageDao.getUnnotifiedUsage();
             LOGGER.info(allDeprecatedResponseFieldUsage.size() + " records of APIs with deprecated response field usage were retrieved.");
 
             Set<ApiKey> apiKeys = getDistinctApiKeys(allDeprecatedApiUsage, allDeprecatedResponseFieldUsage);
