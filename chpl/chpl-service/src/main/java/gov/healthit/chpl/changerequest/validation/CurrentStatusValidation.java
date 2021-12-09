@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
+import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -44,9 +45,7 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
         // It's fine if it's not set... We aren't going to do anything with it.
-        if (context.getChangeRequest().getCurrentStatus() == null
-                || context.getChangeRequest().getCurrentStatus().getChangeRequestStatusType() == null
-                || context.getChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId() == null) {
+        if (!doesCurrentStatusExist(context.getChangeRequest())) {
             return true;
         }
 
@@ -57,6 +56,13 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
                     context.getChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId());
         } catch (EntityRetrievalException e) {
             getMessages().add(getErrorMessage("changeRequest.statusType.notExists"));
+            return false;
+        }
+
+
+        // Make sure this is not a duplicate of the current status
+        if (isNewStatusSameAsPreviousStatus(context)) {
+            getMessages().add("This is a duplicate status!!");
             return false;
         }
 
@@ -84,5 +90,16 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
 
     private List<Long> getValidStatusesForChangeRequestAdmin() {
         return new ArrayList<Long>(Arrays.asList(acceptedStatus, rejectedStatus, pendingDeveloperActionStatus));
+    }
+
+    private Boolean isNewStatusSameAsPreviousStatus(ChangeRequestValidationContext context) {
+        return context.getCrFromDb().getCurrentStatus().getChangeRequestStatusType().getId().equals(
+                context.getChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId());
+    }
+
+    private Boolean doesCurrentStatusExist(ChangeRequest cr) {
+        return cr.getCurrentStatus() == null
+                || cr.getCurrentStatus().getChangeRequestStatusType() == null
+                || cr.getCurrentStatus().getChangeRequestStatusType().getId() == null;
     }
 }
