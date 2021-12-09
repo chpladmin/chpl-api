@@ -290,7 +290,6 @@
 							"    const measure = jsonData.data.find(item => item.requiredTest === \"Required Test 9: Stage 2 Objective 7\");\r",
 							"    pm.expect(measure.removed).to.be.true;\r",
 							"    pm.expect(measure.abbreviation).to.eql(\"RT9\");\r",
-							"    pm.expect(measure.name).to.eql(\"Medication/Clinical Information Reconciliation: Eligible Professional\");\r",
 							"});"
 						],
 						"type": "text/javascript"
