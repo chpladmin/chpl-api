@@ -5,57 +5,332 @@
 	},
 	"item": [
 		{
-			"name": "GET /activity/metadata/atls/{id}",
+			"name": "ONC_STAFF",
+			"item": [
+				{
+					"name": "GET /activity/metadata/atls/{id}",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ONC_STAFF users should get 200 status and response is not null for /activity/metadata/atls/{id} end point\", function () {\r",
+									"    var actualResponseBody = pm.response.json();\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(actualResponseBody).not.eql(null);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/activity/metadata/atls/3",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"activity",
+								"metadata",
+								"atls",
+								"3"
+							]
+						},
+						"description": "ONC_STAFF users should get 200 status and valid response for /activity/metadata/atls/{id} end point"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /activity/metadata/beta/pending-surveillances",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ONC_STAFF users should get 200 status and response is not null for /activity/metadata/beta/pending-surveillances end point\", function () {\r",
+									"    var actualResponseBody = pm.response.json();\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(actualResponseBody).not.eql(null);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/activity/metadata/beta/pending-surveillances",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"activity",
+								"metadata",
+								"beta",
+								"pending-surveillances"
+							]
+						},
+						"description": "ONC_STAFF users should get 200 status and response is not null for /activity/metadata/beta/pending-surveillances end point"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /activity/metadata/beta/users",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ONC_STAFF users should get 200 status and response is not null for /activity/metadata/beta/users end point\", function () {\r",
+									"    var actualResponseBody = pm.response.json();\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(actualResponseBody).not.eql(null);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/activity/metadata/beta/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"activity",
+								"metadata",
+								"beta",
+								"users"
+							]
+						},
+						"description": "ONC_STAFF users should get 200 status and response is not null for /activity/metadata/beta/users end point"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /activity/metadata/beta/pending-listings",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ONC_STAFF users should get 200 status and response is not null for /activity/metadata/beta/pending-listings end point\", function () {\r",
+									"    var actualResponseBody = pm.response.json();\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(actualResponseBody).not.eql(null);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/activity/metadata/beta/pending-listings",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"activity",
+								"metadata",
+								"beta",
+								"pending-listings"
+							]
+						},
+						"description": "ONC_STAFF users should get 200 status and response is not null for /activity/metadata/beta/pending-listings end point"
+					},
+					"response": []
+				}
+			],
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
+						"type": "text/javascript",
 						"exec": [
-							"var ReqBody= {\r",
-							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")\r",
-							"    };\r",
-							"pm.sendRequest({\r",
-							"    url: pm.environment.get(\"authurl\"),\r",
-							"    method: \"POST\",\r",
-							"    header: {\r",
-							"        \"Content-Type\": \"application/json\",\r",
-							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
-							"    },\r",
-							"    body: JSON.stringify(ReqBody)\r",
-							"}, function (err, response) {\r",
-							"   var jsonData = response.json();\r",
-							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"var ReqBody= {",
+							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")",
+							"    };",
+							"pm.sendRequest({",
+							"    url: pm.environment.get(\"authurl\"),",
+							"    method: \"POST\",",
+							"    header: {",
+							"        \"Content-Type\": \"application/json\",",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")",
+							"    },",
+							"    body: JSON.stringify(ReqBody)",
+							"}, function (err, response) {",
+							"   var jsonData = response.json();",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])",
 							"});"
-						],
-						"type": "text/javascript"
+						]
 					}
 				},
 				{
 					"listen": "test",
 					"script": {
+						"type": "text/javascript",
 						"exec": [
-							"pm.test(\"ONC_STAFF users should get 200 status and response is not null for /activity/metadata/atls/{id} end point\", function () {\r",
-							"    var actualResponseBody = pm.response.json();\r",
-							"    pm.response.to.have.status(200);\r",
-							"    pm.expect(actualResponseBody).not.eql(null);\r",
-							"});\r",
 							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "GET /activity/metadata/listings/{id}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"expect to see metadata about auditable records in the system for a specific listing\", function () {\r",
+							"    var actualResponseBody = pm.response.json();\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(actualResponseBody).not.eql(null);\r",
+							"    pm.expect(pm.response.text()).to.include(\"8496\");\r",
+							"});"
 						],
 						"type": "text/javascript"
 					}
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{token}}",
-							"type": "string"
-						}
-					]
-				},
 				"method": "GET",
 				"header": [
 					{
@@ -70,7 +345,7 @@
 					}
 				],
 				"url": {
-					"raw": "{{url}}/rest/activity/metadata/atls/3",
+					"raw": "{{url}}/rest/activity/metadata/listings/8496",
 					"host": [
 						"{{url}}"
 					],
@@ -78,45 +353,117 @@
 						"rest",
 						"activity",
 						"metadata",
-						"atls",
-						"3"
+						"listings",
+						"8496"
 					]
-				},
-				"description": "ONC_STAFF users should get 200 status and valid response for /activity/metadata/atls/{id} end point"
+				}
 			},
 			"response": []
 		},
 		{
-			"name": "GET /activity/metadata/beta/pending-listings",
+			"name": "GET /activity/metadata/listings/{chplPrefix}-{identifier}",
 			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"var ReqBody= {\r",
-							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")\r",
-							"    };\r",
-							"pm.sendRequest({\r",
-							"    url: pm.environment.get(\"authurl\"),\r",
-							"    method: \"POST\",\r",
-							"    header: {\r",
-							"        \"Content-Type\": \"application/json\",\r",
-							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
-							"    },\r",
-							"    body: JSON.stringify(ReqBody)\r",
-							"}, function (err, response) {\r",
-							"   var jsonData = response.json();\r",
-							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				},
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"ONC_STAFF users should get 200 status and response is not null for /activity/metadata/beta/pending-listings end point\", function () {\r",
+							"pm.test(\"expect to see metadata about auditable records in the system for a specific listing given its legacy CHPL product Number \", function () {\r",
+							"    var actualResponseBody = pm.response.json();\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(actualResponseBody).not.eql(null);\r",
+							"    pm.expect(pm.response.text()).to.include(\"CHP-019661\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/activity/metadata/listings/CHP-019661",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"activity",
+						"metadata",
+						"listings",
+						"CHP-019661"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /activity/metadata/listings/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"expect to see metadata about auditable records in the system for a specific listing given its new-style CHPL product Number \", function () {\r",
+							"    var actualResponseBody = pm.response.json();\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(actualResponseBody).not.eql(null);\r",
+							"    pm.expect(pm.response.text()).to.include(\"15.07.07.1447.EP03.03.04.1.170403\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/activity/metadata/listings/15.07.07.1447.EP03.03.04.1.170403",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"activity",
+						"metadata",
+						"listings",
+						"15.07.07.1447.EP03.03.04.1.170403"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /activity/metadata/beta/listings",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"expect to see metadata about auditable records in the system for listings\", function () {\r",
 							"    var actualResponseBody = pm.response.json();\r",
 							"    pm.response.to.have.status(200);\r",
 							"    pm.expect(actualResponseBody).not.eql(null);\r",
@@ -127,16 +474,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{token}}",
-							"type": "string"
-						}
-					]
-				},
 				"method": "GET",
 				"header": [
 					{
@@ -151,7 +488,7 @@
 					}
 				],
 				"url": {
-					"raw": "{{url}}/rest/activity/metadata/beta/pending-listings",
+					"raw": "{{url}}/rest/activity/metadata/beta/listings",
 					"host": [
 						"{{url}}"
 					],
@@ -160,47 +497,24 @@
 						"activity",
 						"metadata",
 						"beta",
-						"pending-listings"
+						"listings"
 					]
-				},
-				"description": "ONC_STAFF users should get 200 status and response is not null for /activity/metadata/beta/pending-listings end point"
+				}
 			},
 			"response": []
 		},
 		{
-			"name": "GET /activity/metadata/beta/pending-surveillances",
+			"name": "GET /activity/metadata/developers/{id}",
 			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"var ReqBody= {\r",
-							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")\r",
-							"    };\r",
-							"pm.sendRequest({\r",
-							"    url: pm.environment.get(\"authurl\"),\r",
-							"    method: \"POST\",\r",
-							"    header: {\r",
-							"        \"Content-Type\": \"application/json\",\r",
-							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
-							"    },\r",
-							"    body: JSON.stringify(ReqBody)\r",
-							"}, function (err, response) {\r",
-							"   var jsonData = response.json();\r",
-							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				},
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"ONC_STAFF users should get 200 status and response is not null for /activity/metadata/beta/pending-surveillances end point\", function () {\r",
+							"pm.test(\"expect to see metadata about auditable records in the system for a specific developer\", function () {\r",
 							"    var actualResponseBody = pm.response.json();\r",
 							"    pm.response.to.have.status(200);\r",
 							"    pm.expect(actualResponseBody).not.eql(null);\r",
+							"    pm.expect(pm.response.text()).to.include(\"Epic Systems Corporation\");\r",
 							"});"
 						],
 						"type": "text/javascript"
@@ -208,16 +522,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{token}}",
-							"type": "string"
-						}
-					]
-				},
 				"method": "GET",
 				"header": [
 					{
@@ -232,7 +536,7 @@
 					}
 				],
 				"url": {
-					"raw": "{{url}}/rest/activity/metadata/beta/pending-surveillances",
+					"raw": "{{url}}/rest/activity/metadata/developers/448",
 					"host": [
 						"{{url}}"
 					],
@@ -240,48 +544,25 @@
 						"rest",
 						"activity",
 						"metadata",
-						"beta",
-						"pending-surveillances"
+						"developers",
+						"448"
 					]
-				},
-				"description": "ONC_STAFF users should get 200 status and response is not null for /activity/metadata/beta/pending-surveillances end point"
+				}
 			},
 			"response": []
 		},
 		{
-			"name": "GET /activity/metadata/beta/users",
+			"name": "GET /activity/metadata/beta/developers",
 			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"var ReqBody= {\r",
-							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")\r",
-							"    };\r",
-							"pm.sendRequest({\r",
-							"    url: pm.environment.get(\"authurl\"),\r",
-							"    method: \"POST\",\r",
-							"    header: {\r",
-							"        \"Content-Type\": \"application/json\",\r",
-							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
-							"    },\r",
-							"    body: JSON.stringify(ReqBody)\r",
-							"}, function (err, response) {\r",
-							"   var jsonData = response.json();\r",
-							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				},
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"ONC_STAFF users should get 200 status and response is not null for /activity/metadata/beta/users end point\", function () {\r",
+							"pm.test(\"expect to see metadata about auditable records in the system for developers \", function () {\r",
 							"    var actualResponseBody = pm.response.json();\r",
 							"    pm.response.to.have.status(200);\r",
 							"    pm.expect(actualResponseBody).not.eql(null);\r",
+							"    pm.expect(pm.response.text()).to.include(\"DEVELOPER\");\r",
 							"});"
 						],
 						"type": "text/javascript"
@@ -289,16 +570,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{token}}",
-							"type": "string"
-						}
-					]
-				},
 				"method": "GET",
 				"header": [
 					{
@@ -313,7 +584,7 @@
 					}
 				],
 				"url": {
-					"raw": "{{url}}/rest/activity/metadata/beta/users",
+					"raw": "{{url}}/rest/activity/metadata/beta/developers",
 					"host": [
 						"{{url}}"
 					],
@@ -322,10 +593,249 @@
 						"activity",
 						"metadata",
 						"beta",
-						"users"
+						"developers"
 					]
-				},
-				"description": "ONC_STAFF users should get 200 status and response is not null for /activity/metadata/beta/users end point"
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /activity/metadata/products/{id}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"expect to see metadata about auditable records in the system for a specific product \", function () {\r",
+							"    var actualResponseBody = pm.response.json();\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(actualResponseBody).not.eql(null);\r",
+							"    pm.expect(pm.response.text()).to.include(\"Healthy Planet\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/activity/metadata/products/2957",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"activity",
+						"metadata",
+						"products",
+						"2957"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /activity/metadata/beta/products",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"expect to see metadata about auditable records in the system for products \", function () {\r",
+							"    var actualResponseBody = pm.response.json();\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(actualResponseBody).not.eql(null);\r",
+							"    pm.expect(pm.response.text()).to.include(\"PRODUCT\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/activity/metadata/beta/products",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"activity",
+						"metadata",
+						"beta",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /activity/metadata/versions/{id}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"expect to see metadata about auditable records in the system for a specific version \", function () {\r",
+							"    var actualResponseBody = pm.response.json();\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(actualResponseBody).not.eql(null);\r",
+							"    pm.expect(pm.response.text()).to.include(\"Epic 2017\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/activity/metadata/versions/7463",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"activity",
+						"metadata",
+						"versions",
+						"7463"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /activity/metadata/beta/versions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"expect to see metadata about auditable records in the system for versions \", function () {\r",
+							"    var actualResponseBody = pm.response.json();\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(actualResponseBody).not.eql(null);\r",
+							"    pm.expect(pm.response.text()).to.include(\"VERSION\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/activity/metadata/beta/versions",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"activity",
+						"metadata",
+						"beta",
+						"versions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /activity/metadata/beta/corrective-action-plans",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"expect to see metadata about auditable records in the system for corrective action plans \", function () {\r",
+							"    var actualResponseBody = pm.response.json();\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(actualResponseBody).not.eql(null);\r",
+							"    pm.expect(pm.response.text()).to.include(\"CORRECTIVE_ACTION_PLAN\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/activity/metadata/beta/corrective-action-plans",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"activity",
+						"metadata",
+						"beta",
+						"corrective-action-plans"
+					]
+				}
 			},
 			"response": []
 		}

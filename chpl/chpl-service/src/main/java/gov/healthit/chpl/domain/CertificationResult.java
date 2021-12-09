@@ -26,7 +26,6 @@ import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.util.CertificationResultRules;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Singular;
 import lombok.ToString;
 
 /**
@@ -266,7 +265,7 @@ public class CertificationResult implements Serializable {
      */
     @XmlElementWrapper(name = "svaps", nillable = true, required = false)
     @XmlElement(name = "svap")
-    @Singular
+    @Builder.Default
     private List<CertificationResultSvap> svaps = new ArrayList<CertificationResultSvap>();
 
     /**

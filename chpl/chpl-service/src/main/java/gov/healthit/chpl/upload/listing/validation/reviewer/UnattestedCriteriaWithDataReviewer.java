@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -86,35 +87,50 @@ public class UnattestedCriteriaWithDataReviewer {
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "Privacy and Security Framework"));
         }
-        if (certResult.getAdditionalSoftware() != null && certResult.getAdditionalSoftware().size() > 0) {
+        if (!CollectionUtils.isEmpty(certResult.getAdditionalSoftware())) {
             listing.getWarningMessages().add(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "Additional Software"));
         }
-        if (certResult.getTestDataUsed() != null && certResult.getTestDataUsed().size() > 0) {
+        if (!CollectionUtils.isEmpty(certResult.getTestDataUsed())) {
             listing.getWarningMessages().add(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "Test Data"));
         }
-        if (certResult.getTestFunctionality() != null && certResult.getTestFunctionality().size() > 0) {
+        if (!CollectionUtils.isEmpty(certResult.getTestFunctionality())) {
             listing.getWarningMessages().add(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "Test Functionality"));
         }
-        if (certResult.getTestProcedures() != null && certResult.getTestProcedures().size() > 0) {
+        if (!CollectionUtils.isEmpty(certResult.getTestProcedures())) {
             listing.getWarningMessages().add(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "Test Procedures"));
         }
-        if (certResult.getTestStandards() != null && certResult.getTestStandards().size() > 0) {
+        if (!CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
+            listing.getWarningMessages().add(
+                    msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
+                            Util.formatCriteriaNumber(certResult.getCriterion()), "Conformance Methods"));
+        }
+        if (!CollectionUtils.isEmpty(certResult.getTestStandards())) {
             listing.getWarningMessages().add(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "Test Standards"));
         }
-        if (certResult.getTestToolsUsed() != null && certResult.getTestToolsUsed().size() > 0) {
+        if (!CollectionUtils.isEmpty(certResult.getOptionalStandards())) {
+            listing.getWarningMessages().add(
+                    msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
+                            Util.formatCriteriaNumber(certResult.getCriterion()), "Optional Standards"));
+        }
+        if (!CollectionUtils.isEmpty(certResult.getTestToolsUsed())) {
             listing.getWarningMessages().add(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "Test Tools"));
+        }
+        if (!CollectionUtils.isEmpty(certResult.getSvaps())) {
+            listing.getWarningMessages().add(
+                    msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
+                            Util.formatCriteriaNumber(certResult.getCriterion()), "Standards Version Advancement Processes"));
         }
     }
 

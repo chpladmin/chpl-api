@@ -19,6 +19,7 @@ import gov.healthit.chpl.dto.ListingCountStatisticsDTO;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
+import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
 
 /**
@@ -50,7 +51,7 @@ public final class ChartDataCreatorJob extends QuartzJob {
     public void execute(JobExecutionContext arg0) throws JobExecutionException {
         LOGGER.info("*****Chart Data Generator is starting now.*****");
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        List<CertifiedProductFlatSearchResult> certifiedProducts = certifiedProductSearchDAO.getFlatCertifiedProducts();
+        List<CertifiedProductBasicSearchResult> certifiedProducts = certifiedProductSearchDAO.getCertifiedProducts();
         LOGGER.info("Certified Product Count: " + certifiedProducts.size());
 
         try {
@@ -86,16 +87,16 @@ public final class ChartDataCreatorJob extends QuartzJob {
         LOGGER.info("*****Chart Data Generator is done running.*****");
     }
 
-    private static void analyzeDevelopers(List<CertifiedProductFlatSearchResult> listings) {
+    private static void analyzeDevelopers(List<CertifiedProductBasicSearchResult> listings) {
         IncumbentDevelopersStatisticsCalculator incumbentDevelopersStatisticsCalculator = new IncumbentDevelopersStatisticsCalculator();
         List<IncumbentDevelopersStatisticsDTO> dtos = incumbentDevelopersStatisticsCalculator.getCounts(listings);
         incumbentDevelopersStatisticsCalculator.logCounts(dtos);
         incumbentDevelopersStatisticsCalculator.save(dtos);
     }
 
-    private static void analyzeListingCounts(List<CertifiedProductFlatSearchResult> listings) {
+    private static void analyzeListingCounts(List<CertifiedProductBasicSearchResult> listings) {
         ListingCountDataFilter listingCountDataFilter = new ListingCountDataFilter();
-        List<CertifiedProductFlatSearchResult> filteredListings = listingCountDataFilter.filterData(listings);
+        List<CertifiedProductBasicSearchResult> filteredListings = listingCountDataFilter.filterData(listings);
         ListingCountStatisticsCalculator listingCountStatisticsCalculator = new ListingCountStatisticsCalculator();
         List<ListingCountStatisticsDTO> dtos = listingCountStatisticsCalculator.getCounts(filteredListings);
         listingCountStatisticsCalculator.logCounts(dtos);
@@ -109,16 +110,16 @@ public final class ChartDataCreatorJob extends QuartzJob {
         nonconformityStatisticsCalculator.saveCounts(dtos);
     }
 
-    private static void analyzeProducts(List<CertifiedProductFlatSearchResult> listings) throws NumberFormatException, EntityRetrievalException {
+    private static void analyzeProducts(List<CertifiedProductBasicSearchResult> listings) throws NumberFormatException, EntityRetrievalException {
         CriterionProductDataFilter criterionProductDataFilter = new CriterionProductDataFilter();
         CriterionProductStatisticsCalculator criterionProductStatisticsCalculator = new CriterionProductStatisticsCalculator();
-        List<CertifiedProductFlatSearchResult> filteredListings = criterionProductDataFilter.filterData(listings);
-        Map<String, Long> productCounts = criterionProductStatisticsCalculator.getCounts(filteredListings);
+        List<CertifiedProductBasicSearchResult> filteredListings = criterionProductDataFilter.filterData(listings);
+        Map<Long, Long> productCounts = criterionProductStatisticsCalculator.getCounts(filteredListings);
         criterionProductStatisticsCalculator.logCounts(productCounts);
         criterionProductStatisticsCalculator.save(productCounts);
     }
 
-    private static void analyzeSed(List<CertifiedProductFlatSearchResult> listings) {
+    private static void analyzeSed(List<CertifiedProductBasicSearchResult> listings) {
         // Get Certified Products
         SedDataCollector sedDataCollector = new SedDataCollector();
         List<CertifiedProductSearchDetails> seds = sedDataCollector.retreiveData(listings);

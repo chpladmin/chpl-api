@@ -11,15 +11,17 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.ff4j.FF4j;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
@@ -28,6 +30,7 @@ import gov.healthit.chpl.entity.CertificationStatusType;
 
 public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, AutoCloseable {
     private static final String OPEN_STATUS = "open";
+    private static final String UNKNOWN_VALUE = "?";
 
     private Logger logger;
     private List<CertificationCriterionDTO> applicableCriteria = new ArrayList<CertificationCriterionDTO>();
@@ -147,18 +150,21 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
                 : listing.getDeveloper().getWebsite());
         result.add(formatSelfDeveloper(listing));
         result.addAll(getContactCells(listing));
-        result.add(listing.getProduct().getName());
-        result.add(listing.getProduct().getProductId().toString());
-        result.add(listing.getVersion().getVersion());
-        result.add(listing.getVersion().getVersionId().toString());
+        result.add(listing.getProduct() != null ? listing.getProduct().getName() : UNKNOWN_VALUE);
+        result.add(ObjectUtils.allNotNull(listing.getProduct(), listing.getProduct().getProductId())
+                ? listing.getProduct().getProductId().toString() : UNKNOWN_VALUE);
+        result.add(listing.getVersion() != null ? listing.getVersion().getVersion() : UNKNOWN_VALUE);
+        result.add(ObjectUtils.allNotNull(listing.getVersion(), listing.getVersion().getVersionId())
+                ? listing.getVersion().getVersionId().toString() : UNKNOWN_VALUE);
         if (ff4j.check(FeatureList.RWT_ENABLED)) {
             result.add(listing.getRwtPlansUrl());
             result.add(listing.getRwtResultsUrl());
         }
-        result.add(listing.getCountSurveillance().toString());
-        result.add((listing.getCountOpenNonconformities() + listing.getCountClosedNonconformities()) + "");
-        result.add(listing.getCountOpenNonconformities().toString());
-        result.add(listing.getDirectReviews().size() + "");
+        result.add(listing.getCountSurveillance() != null ? listing.getCountSurveillance().toString() : UNKNOWN_VALUE);
+        result.add(ObjectUtils.allNotNull(listing.getCountOpenNonconformities(), listing.getCountClosedNonconformities())
+                ? (listing.getCountOpenNonconformities() + listing.getCountClosedNonconformities()) + "" : UNKNOWN_VALUE);
+        result.add(listing.getCountOpenNonconformities() != null ? listing.getCountOpenNonconformities().toString() : UNKNOWN_VALUE);
+        result.add(listing.getDirectReviews() != null ? listing.getDirectReviews().size() + "" : UNKNOWN_VALUE);
         result.add(getCountOfDirectReviewNonconformitiesForListing(listing) + "");
         result.add(getCountOfOpenDirectReviewNonconformitiesForListing(listing) + "");
         List<String> criteria = generateCriteriaValues(listing);
@@ -178,6 +184,9 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
                     result.add(currCriteria.isSuccess().toString());
                 }
             }
+            if (!criteriaMatch) {
+                result.add(UNKNOWN_VALUE);
+            }
         }
         return result;
     }
@@ -185,7 +194,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
     protected String formatEdition(CertifiedProductSearchDetails listing) {
         String edition = listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
         if (listing.getCuresUpdate() != null && listing.getCuresUpdate()) {
-            edition = edition + " Cures Update";
+            edition = edition + CertificationEdition.CURES_SUFFIX;
         }
         return edition;
     }
@@ -212,7 +221,10 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
     }
 
     protected String formatSelfDeveloper(CertifiedProductSearchDetails listing) {
-        return listing.getDeveloper().getSelfDeveloper() ? "Yes" : "No";
+        if (ObjectUtils.allNotNull(listing.getDeveloper(), listing.getDeveloper().getSelfDeveloper())) {
+            return BooleanUtils.isTrue(listing.getDeveloper().getSelfDeveloper()) ? "Yes" : "No";
+        }
+        return UNKNOWN_VALUE;
     }
 
     protected String formatDate(Long dateInMillis) {
@@ -222,10 +234,12 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
 
     private long getCountOfDirectReviewNonconformitiesForListing(CertifiedProductSearchDetails listing) {
         long count = 0;
-        count = listing.getDirectReviews().stream()
+        if (listing.getDirectReviews() != null) {
+            count = listing.getDirectReviews().stream()
                     .flatMap(dr -> dr.getNonConformities().stream())
                     .filter(nc -> isNonconformityAssociatedWithListing(listing, nc))
                     .count();
+        }
         return count;
     }
 
