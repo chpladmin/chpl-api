@@ -193,8 +193,8 @@ public class UserManagerTest {
         fail();
     }
 
-    @Test(expected = UserAccountExistsException.class)
-    public void update_DuplicateEmailAddress_UserAccountExistsThrown()
+    @Test(expected = ValidationException.class)
+    public void update_ChangedEmailAddress_ValidationExceptionThrown()
             throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
             ValidationException, MultipleUserAccountsException, UserAccountExistsException {
         UserManager userManager = new UserManager(null, userDAO, null, null, errorMessageUtil, null);

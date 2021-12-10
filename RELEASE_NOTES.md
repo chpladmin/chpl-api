@@ -1,5 +1,17 @@
 # Release Notes
 
+## Version 32.5.1
+_9 December 2021_
+
+### Bug Fixes
+* Respect "deleted" flag for Surveillance Documents
+
+### Flagged Features
+* Add SVAP parsing and validation to flexible upload
+* Add updated 2015 Edition CSV definition file
+
+---
+
 ## Version 32.5.0
 _29 November 2021_
 
