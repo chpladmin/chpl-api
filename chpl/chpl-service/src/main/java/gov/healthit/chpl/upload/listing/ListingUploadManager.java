@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostFilter;
@@ -36,6 +37,7 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.ConfirmListingRequest;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.auth.User;
@@ -216,6 +218,32 @@ public class ListingUploadManager {
         validateListingUploadTrigger.setJob(validateListingUploadJob);
         validateListingUploadTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
         validateListingUploadTrigger = schedulerManager.createBackgroundJobTrigger(validateListingUploadTrigger);
+    }
+
+    @Transactional
+    @CacheEvict(value = {
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES, CacheNames.DEVELOPER_NAMES
+    }, allEntries = true)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
+            + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).CONFIRM, #id)")
+    public CertifiedProductSearchDetails confirm(Long id, ConfirmListingRequest confirmListingRequest) {
+        //Is listing already processing?
+        //if yes
+            // throw new InvalidArgumentsException(msgUtil.getMessage("pendingListing.alreadyProcessing"));
+        //if no
+            //Mark the listingUpload as processing
+            //In another manager with it's own PreAuthorize that checks the ACB on the confirmListingRequest...
+                //Validate the listing to see if there are any errors/warnings
+                //Make sure acknowledge warnings is checked if there are any warnings
+                //run developer validations developerManager.validateDeveloperInSystemIfExists(pcpDto)
+                //Insert all listing data
+                //logCertifiedProductCreateActivity(newCertifiedProduct.getId());
+                //rwtCachingService.calculateRwtEligibility(newCertifiedProduct.getId());
+            //Back in this manager...
+                //mark listingUpload as not processing
+                //mark listingUpload as deleted/confirmed/something
+        return new CertifiedProductSearchDetails();
     }
 
     @Transactional

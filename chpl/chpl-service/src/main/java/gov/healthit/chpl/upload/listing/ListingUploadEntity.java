@@ -66,6 +66,9 @@ public class ListingUploadEntity {
     @Column(name = "certified_product_id")
     private Long certifiedProductId;
 
+    @Column(name = "processing")
+    private Boolean processing;
+
     @Column(name = "contents")
     private String fileContents;
 
