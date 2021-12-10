@@ -45,7 +45,7 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
         // It's fine if it's not set... We aren't going to do anything with it.
-        if (!doesCurrentStatusExist(context.getChangeRequest())) {
+        if (!doesCurrentStatusExist(context.getNewChangeRequest())) {
             return true;
         }
 
@@ -53,20 +53,14 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
         // Does it exist in the DB?
         try {
             crStatusTypeDAO.getChangeRequestStatusTypeById(
-                    context.getChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId());
+                    context.getNewChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId());
         } catch (EntityRetrievalException e) {
             getMessages().add(getErrorMessage("changeRequest.statusType.notExists"));
             return false;
         }
 
 
-        // Make sure this is not a duplicate of the current status
-        if (isNewStatusSameAsPreviousStatus(context)) {
-            getMessages().add("This is a duplicate status!!");
-            return false;
-        }
-
-        Long statusTypeId = context.getChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId();
+        Long statusTypeId = context.getNewChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId();
         // Is this a valid status change based on the user's role?
         if (resourcePermissions.isUserRoleDeveloperAdmin()
                 && !getValidStatusesForDeveloper().contains(statusTypeId)) {
@@ -90,11 +84,6 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
 
     private List<Long> getValidStatusesForChangeRequestAdmin() {
         return new ArrayList<Long>(Arrays.asList(acceptedStatus, rejectedStatus, pendingDeveloperActionStatus));
-    }
-
-    private Boolean isNewStatusSameAsPreviousStatus(ChangeRequestValidationContext context) {
-        return context.getCrFromDb().getCurrentStatus().getChangeRequestStatusType().getId().equals(
-                context.getChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId());
     }
 
     private Boolean doesCurrentStatusExist(ChangeRequest cr) {
