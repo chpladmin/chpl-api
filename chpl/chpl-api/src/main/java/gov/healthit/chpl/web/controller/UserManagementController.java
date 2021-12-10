@@ -75,13 +75,15 @@ public class UserManagementController {
 
     private long invitationLengthInDays;
     private long confirmationLengthInDays;
+    private long authorizationLengthInDays;
 
     @Autowired
     public UserManagementController(UserManager userManager, InvitationManager invitationManager,
             AuthenticationManager authenticationManager, FF4j ff4j,
             ErrorMessageUtil errorMessageUtil,
             @Value("${invitationLengthInDays}") Long invitationLengthDays,
-            @Value("${confirmationLengthInDays}") Long confirmationLengthDays) {
+            @Value("${confirmationLengthInDays}") Long confirmationLengthDays,
+            @Value("${authorizationLengthInDays}") Long authorizationLengthInDays) {
         this.userManager = userManager;
         this.invitationManager = invitationManager;
         this.authenticationManager = authenticationManager;
@@ -90,6 +92,7 @@ public class UserManagementController {
 
         this.invitationLengthInDays = invitationLengthDays;
         this.confirmationLengthInDays = confirmationLengthDays;
+        this.authorizationLengthInDays = authorizationLengthInDays;
     }
 
     @Operation(summary = "Create a new user account from an invitation.",
@@ -117,7 +120,9 @@ public class UserManagementController {
 
         UserInvitation invitation = invitationManager.getByInvitationHash(userInfo.getHash());
         if (invitation == null || invitation.isOlderThan(invitationLengthInDays)) {
-            throw new ValidationException(msgUtil.getMessage("user.providerKey.invalid"));
+            throw new ValidationException(msgUtil.getMessage("user.invitation.expired",
+                    invitationLengthInDays + "",
+                    invitationLengthInDays == 1 ? "" : "s"));
         }
 
         return invitationManager.createUserFromInvitation(invitation, userInfo.getUser());
@@ -167,10 +172,10 @@ public class UserManagementController {
     MultipleUserAccountsException {
         UserInvitation invitation = invitationManager.getByConfirmationHash(hash);
 
-        if (invitation == null || invitation.isOlderThan(invitationLengthInDays)) {
-            throw new InvalidArgumentsException(
-                    "Provided user key is not valid in the database. The user key is valid for up to 3 days from when "
-                            + "it is assigned.");
+        if (invitation == null || invitation.isOlderThan(confirmationLengthInDays)) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("user.confirmation.expired",
+                    confirmationLengthInDays + "",
+                    confirmationLengthInDays == 1 ? "" : "s"));
         }
         UserDTO createdUser = invitationManager.confirmAccountEmail(invitation);
         return new User(createdUser);
@@ -202,10 +207,10 @@ public class UserManagementController {
         }
 
         UserInvitation invitation = invitationManager.getByInvitationHash(credentials.getHash());
-        if (invitation == null || invitation.isOlderThan(confirmationLengthInDays)) {
-            throw new InvalidArgumentsException(
-                    "Provided user key is not valid in the database. The user key is valid for up to 3 days from when "
-                            + "it is assigned.");
+        if (invitation == null || invitation.isOlderThan(authorizationLengthInDays)) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("user.invitation.expired",
+                    authorizationLengthInDays + "",
+                    authorizationLengthInDays == 1 ? "" : "s"));
         }
 
         // Log the user in, if they are not logged in
