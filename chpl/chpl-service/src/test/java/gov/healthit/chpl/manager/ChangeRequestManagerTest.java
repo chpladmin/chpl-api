@@ -3,6 +3,7 @@ package gov.healthit.chpl.manager;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,7 +24,6 @@ import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsServic
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestStatusService;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationService;
-import gov.healthit.chpl.changerequest.validation.WebsiteValidation;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EmailNotSentException;
@@ -95,8 +95,8 @@ public class ChangeRequestManagerTest {
         ChangeRequestDAO changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
         Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong())).thenReturn(getBasicChangeRequest());
 
-        ChangeRequestValidationService crValidationFactory = Mockito.mock(ChangeRequestValidationService.class);
-        Mockito.when(crValidationFactory.getRule(ArgumentMatchers.anyString())).thenReturn(null);
+        ChangeRequestValidationService crValidationService = Mockito.mock(ChangeRequestValidationService.class);
+        Mockito.when(crValidationService.validate(ArgumentMatchers.any())).thenReturn(new ArrayList<String>());
 
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
@@ -117,7 +117,7 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 crStatusService,
-                crValidationFactory,
+                crValidationService,
                 crDetailsFactory,
                 null,
                 null,
@@ -133,18 +133,16 @@ public class ChangeRequestManagerTest {
     }
 
     @Test(expected = ValidationException.class)
-    public void updateChangeRequest_InvalidData_ThrowsException()
+    public void updateChangeRequest_ValidationErrors_ThrowsException()
             throws EntityRetrievalException, ValidationException, EntityCreationException,
             JsonProcessingException, InvalidArgumentsException, EmailNotSentException {
         // Setup
         ChangeRequestDAO changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
         Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong())).thenReturn(getBasicChangeRequest());
 
-        ChangeRequestValidationService crValidationFactory = Mockito.mock(ChangeRequestValidationService.class);
-        WebsiteValidation websiteValidation = Mockito.mock(WebsiteValidation.class);
-        Mockito.when(websiteValidation.isValid(ArgumentMatchers.any())).thenReturn(false);
-        Mockito.when(websiteValidation.getMessages()).thenReturn(Arrays.asList("Error Message"));
-        Mockito.when(crValidationFactory.getRule(ArgumentMatchers.anyString())).thenReturn(websiteValidation);
+        ChangeRequestValidationService crValidationService = Mockito.mock(ChangeRequestValidationService.class);
+                Mockito.when(crValidationService.validate(ArgumentMatchers.any())).thenReturn(new ArrayList<String>(
+                        Arrays.asList("This is an error.")));
 
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(changeRequestDAO,
                 null,
@@ -152,7 +150,7 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 null,
-                crValidationFactory,
+                crValidationService,
                 null,
                 null,
                 null,
@@ -174,8 +172,8 @@ public class ChangeRequestManagerTest {
         ChangeRequestDAO changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
         Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong())).thenReturn(getBasicChangeRequest());
 
-        ChangeRequestValidationService crValidationFactory = Mockito.mock(ChangeRequestValidationService.class);
-        Mockito.when(crValidationFactory.getRule(ArgumentMatchers.anyString())).thenReturn(null);
+        ChangeRequestValidationService crValidationService = Mockito.mock(ChangeRequestValidationService.class);
+        Mockito.when(crValidationService.validate(ArgumentMatchers.any())).thenReturn(new ArrayList<String>());
 
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(false);
@@ -196,7 +194,7 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 crStatusService,
-                crValidationFactory,
+                crValidationService,
                 crDetailsFactory,
                 null,
                 null,
@@ -219,8 +217,8 @@ public class ChangeRequestManagerTest {
         ChangeRequestDAO changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
         Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong())).thenReturn(getBasicChangeRequest());
 
-        ChangeRequestValidationService crValidationFactory = Mockito.mock(ChangeRequestValidationService.class);
-        Mockito.when(crValidationFactory.getRule(ArgumentMatchers.anyString())).thenReturn(null);
+        ChangeRequestValidationService crValidationService = Mockito.mock(ChangeRequestValidationService.class);
+        Mockito.when(crValidationService.validate(ArgumentMatchers.any())).thenReturn(new ArrayList<String>());
 
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
@@ -241,7 +239,7 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 crStatusService,
-                crValidationFactory,
+                crValidationService,
                 crDetailsFactory,
                 null,
                 null,
