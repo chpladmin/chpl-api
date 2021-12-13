@@ -98,7 +98,7 @@ public class ListingUploadController {
         if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
             throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
-        return listingUploadManager.getAll();
+        return listingUploadManager.getAllProcessingAndAvailable();
     }
 
     @Operation(summary = "Get the details of an uploaded listing.",
@@ -247,7 +247,7 @@ public class ListingUploadController {
         //call the GET to return bad request if the id is not something that can be deleted
         listingUploadManager.getById(id);
         //perform delete
-        listingUploadManager.delete(id);
+        listingUploadManager.reject(id);
     }
 
     @Operation(summary = "Reject several uploaded listings.",
@@ -274,7 +274,7 @@ public class ListingUploadController {
                 //call the GET to return bad request if the id is not something that can be deleted
                 listingUploadManager.getById(id);
                 //perform delete
-                listingUploadManager.delete(id);
+                listingUploadManager.reject(id);
             } catch (ObjectMissingValidationException ex) {
                 possibleExceptions.getExceptions().add(ex);
             }

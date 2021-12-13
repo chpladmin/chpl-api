@@ -102,7 +102,7 @@ public class ListingUploadValidationJob implements Job {
                     }
 
                     if (listingDetails != null) {
-                        listingUpload.setUploadStatus(ListingUploadStatus.SUCCESSFUL);
+                        listingUpload.setStatus(ListingUploadStatus.UPLOAD_SUCCESS);
                         listingUpload.setErrorCount(listingDetails.getErrorMessages() == null ? 0 : listingDetails.getErrorMessages().size());
                         listingUpload.setWarningCount(listingDetails.getWarningMessages() == null ? 0 : listingDetails.getWarningMessages().size());
                         LOGGER.info("Listing upload with ID " + listingUpload.getId() + " had "
@@ -126,7 +126,7 @@ public class ListingUploadValidationJob implements Job {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
-                    listingUploadDao.updateStatus(listingUploadId, ListingUploadStatus.FAILED);
+                    listingUploadDao.updateStatus(listingUploadId, ListingUploadStatus.UPLOAD_FAILURE);
                 } catch (Exception ex) {
                     LOGGER.error("The pending listing with ID " + listingUploadId + " could not be updated. No updates were made to its status.");
                 }

@@ -38,7 +38,7 @@ public class ListingUpload implements Serializable {
     private String version;
     private Integer warningCount;
     private Integer errorCount;
-    private ListingUploadStatus uploadStatus;
+    private ListingUploadStatus status;
     @XmlTransient
     @JsonIgnore
     private List<CSVRecord> records;

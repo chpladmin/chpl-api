@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductSummaryDTO;
@@ -47,6 +48,11 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         this.msgUtil = msgUtil;
     }
 
+    public void create(CertifiedProductSearchDetails listing) {
+
+    }
+
+    @Deprecated
     @Transactional(readOnly = false)
     public CertifiedProductDTO create(final CertifiedProductDTO dto) throws EntityCreationException {
         CertifiedProductEntity entity = null;
