@@ -56,18 +56,18 @@ public class ListingUploadEntity {
     @Column(name = "warning_count")
     private Integer warningCount;
 
-    @Column(name = "status")
+    @Column(name = "upload_status")
     @Type(type = "gov.healthit.chpl.upload.listing.PostgresListingUploadStatus",
         parameters = {@org.hibernate.annotations.Parameter(name = "enumClassName",
             value = "gov.healthit.chpl.upload.listing.ListingUploadStatus")
     })
-    private ListingUploadStatus status;
+    private ListingUploadStatus uploadStatus;
+
+    @Column(name = "confirming")
+    private Boolean confirming;
 
     @Column(name = "certified_product_id")
     private Long certifiedProductId;
-
-    @Column(name = "processing")
-    private Boolean processing;
 
     @Column(name = "contents")
     private String fileContents;

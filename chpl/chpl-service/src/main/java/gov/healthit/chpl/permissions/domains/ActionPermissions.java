@@ -30,7 +30,11 @@ public abstract class ActionPermissions {
 
     public abstract boolean hasAccess(Object obj);
 
-    public boolean isAcbValidForCurrentUser(final Long acbId) {
+    public boolean isAcbValidForCurrentUser(Long acbId) {
+        if (acbId == null) {
+            return false;
+        }
+
         List<CertificationBodyDTO> acbs = resourcePermissions.getAllAcbsForCurrentUser();
         for (CertificationBodyDTO dto : acbs) {
             if (dto.getId().equals(acbId)) {

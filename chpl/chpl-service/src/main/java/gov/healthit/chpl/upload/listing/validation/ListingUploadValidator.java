@@ -129,6 +129,10 @@ public class ListingUploadValidator {
 
     public void review(ListingUpload uploadedMetadata, CertifiedProductSearchDetails listing) {
         csvHeaderReviewer.review(uploadedMetadata, listing);
+        review(listing);
+    }
+
+    public void review(CertifiedProductSearchDetails listing) {
         chplNumberFormatReviewer.review(listing);
         chplNumberUniqueReviewer.review(listing);
         editionCodeReviewer.review(listing);

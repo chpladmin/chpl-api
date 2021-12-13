@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -18,12 +19,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.mock.web.MockMultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.ConfirmListingRequest;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -33,6 +38,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.upload.listing.handler.CertificationDateHandler;
 import gov.healthit.chpl.upload.listing.handler.ListingDetailsUploadHandler;
@@ -52,6 +58,8 @@ public class ListingUploadManagerTest {
     private ListingUploadHandlerUtil uploadUtil;
     private ChplProductNumberUtil chplProductNumberUtil;
     private CertificationBodyDAO acbDao;
+    private ListingUploadValidator listingUploadValidator;
+    private CertifiedProductManager cpManager;
 
     @Before
     public void setup() throws InvalidArgumentsException, JsonProcessingException,
@@ -62,6 +70,8 @@ public class ListingUploadManagerTest {
         acbDao = Mockito.mock(CertificationBodyDAO.class);
         chplProductNumberUtil = Mockito.mock(ChplProductNumberUtil.class);
         certDateHandler = Mockito.mock(CertificationDateHandler.class);
+        cpManager = Mockito.mock(CertifiedProductManager.class);
+        listingUploadValidator = Mockito.mock(ListingUploadValidator.class);
         ListingDetailsNormalizer listingNormalizer = Mockito.mock(ListingDetailsNormalizer.class);
 
         Mockito.when(acbDao.getByName(ArgumentMatchers.anyString())).thenReturn(createAcb());
@@ -79,9 +89,10 @@ public class ListingUploadManagerTest {
         uploadManager = new ListingUploadManager(Mockito.mock(ListingDetailsUploadHandler.class),
                 certDateHandler,
                 listingNormalizer,
-                Mockito.mock(ListingUploadValidator.class),
+                listingUploadValidator,
                 uploadUtil, chplProductNumberUtil, Mockito.mock(ListingUploadDao.class), acbDao,
                 Mockito.mock(UserDAO.class),
+                cpManager,
                 Mockito.mock(SchedulerManager.class),
                 Mockito.mock(ActivityManager.class), msgUtil);
     }
@@ -336,6 +347,80 @@ public class ListingUploadManagerTest {
         assertEquals("DEV Name", metadata.getDeveloper());
         assertEquals("Prod Name", metadata.getProduct());
         assertEquals("1.0", metadata.getVersion());
+    }
+
+    @Test
+    public void confirmListing_noWarningsNoAcknowledgment_succeeds()
+            throws InvalidArgumentsException, ValidationException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
+        Mockito.doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                CertifiedProductSearchDetails listing = (CertifiedProductSearchDetails) invocation.getArgument(0);
+                listing.setWarningMessages(new HashSet<String>());
+                return null;
+            }
+        }).when(listingUploadValidator).review(Mockito.eq(listing));
+        uploadManager.confirm(1L, ConfirmListingRequest.builder()
+                .acknowledgeWarnings(false)
+                .listing(listing)
+                .build());
+    }
+
+    @Test
+    public void confirmListing_noWarningsHasAcknowledgment_succeeds()
+            throws InvalidArgumentsException, ValidationException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
+        Mockito.doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                CertifiedProductSearchDetails listing = (CertifiedProductSearchDetails) invocation.getArgument(0);
+                listing.setWarningMessages(new HashSet<String>());
+                return null;
+            }
+        }).when(listingUploadValidator).review(Mockito.eq(listing));
+        uploadManager.confirm(1L, ConfirmListingRequest.builder()
+                .acknowledgeWarnings(true)
+                .listing(listing)
+                .build());
+    }
+
+    @Test(expected = ValidationException.class)
+    public void confirmListing_hasWarningsNoAcknowledgment_throwsValidationException()
+            throws InvalidArgumentsException, ValidationException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
+        Mockito.doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                CertifiedProductSearchDetails listing = (CertifiedProductSearchDetails) invocation.getArgument(0);
+                listing.setWarningMessages(new HashSet<String>());
+                listing.getWarningMessages().add("This is a test warning");
+                return null;
+            }
+        }).when(listingUploadValidator).review(Mockito.eq(listing));
+        uploadManager.confirm(1L, ConfirmListingRequest.builder()
+                .acknowledgeWarnings(false)
+                .listing(listing)
+                .build());
+    }
+
+    @Test
+    public void confirmListing_hasWarningsHasAcknowledgment_succeeds()
+            throws InvalidArgumentsException, ValidationException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
+        Mockito.doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                CertifiedProductSearchDetails listing = (CertifiedProductSearchDetails) invocation.getArgument(0);
+                listing.setWarningMessages(new HashSet<String>());
+                listing.getWarningMessages().add("This is a test warning");
+                return null;
+            }
+        }).when(listingUploadValidator).review(Mockito.eq(listing));
+        uploadManager.confirm(1L, ConfirmListingRequest.builder()
+                .acknowledgeWarnings(true)
+                .listing(listing)
+                .build());
     }
 
     private CertificationBodyDTO createAcb() {

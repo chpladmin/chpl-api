@@ -210,7 +210,7 @@ public class ListingUploadController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/pending/{id}", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<CertifiedProductSearchDetails> confirmLisitngUpload(@PathVariable("id") Long id,
-            ConfirmListingRequest confirmListingRequest) throws ValidationException {
+            ConfirmListingRequest confirmListingRequest) throws ValidationException, InvalidArgumentsException {
         CertifiedProductSearchDetails createdListing = listingUploadManager.confirm(id, confirmListingRequest);
 
         //note - once all collections pages are converted to use the search/beta endpoint instead of the

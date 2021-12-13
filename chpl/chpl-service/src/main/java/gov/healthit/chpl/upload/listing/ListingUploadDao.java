@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
@@ -39,7 +40,7 @@ public class ListingUploadDao extends BaseDAOImpl {
         toCreate.setVersionName(uploadMetadata.getVersion());
         toCreate.setErrorCount(uploadMetadata.getErrorCount());
         toCreate.setWarningCount(uploadMetadata.getWarningCount());
-        toCreate.setStatus(ListingUploadStatus.PROCESSING);
+        toCreate.setUploadStatus(ListingUploadStatus.PROCESSING);
         String fileContents = null;
         try {
             fileContents = printToString(uploadMetadata.getRecords());
@@ -57,7 +58,7 @@ public class ListingUploadDao extends BaseDAOImpl {
     public void updateErrorAndWarningCounts(ListingUpload listingUpload) {
         ListingUploadEntity entity = entityManager.find(ListingUploadEntity.class, listingUpload.getId());
         if (entity != null) {
-            entity.setStatus(listingUpload.getStatus());
+            entity.setUploadStatus(listingUpload.getUploadStatus());
             entity.setErrorCount(listingUpload.getErrorCount());
             entity.setWarningCount(listingUpload.getWarningCount());
             update(entity);
@@ -67,7 +68,26 @@ public class ListingUploadDao extends BaseDAOImpl {
     public void updateStatus(Long listingUploadId, ListingUploadStatus status) {
         ListingUploadEntity entity = entityManager.find(ListingUploadEntity.class, listingUploadId);
         if (entity != null) {
-            entity.setStatus(status);
+            entity.setUploadStatus(status);
+            update(entity);
+        }
+    }
+
+    public boolean isAvailableForProcessing(Long id) {
+        Query query = entityManager.createQuery("SELECT ul "
+                + "FROM ListingUploadEntity ul "
+                + "WHERE ul.id = :id "
+                + "AND ul.confirming = false "
+                + "AND ul.deleted = false", ListingUploadEntity.class);
+        query.setParameter("id", id);
+        List<ListingUploadEntity> availableUploadedListingsWithId = query.getResultList();
+        return CollectionUtils.isNotEmpty(availableUploadedListingsWithId);
+    }
+
+    public void setConfirming(Long id, boolean isConfirming) {
+        ListingUploadEntity entity = entityManager.find(ListingUploadEntity.class, id);
+        if (entity != null) {
+            entity.setConfirming(isConfirming);
             update(entity);
         }
     }
@@ -160,7 +180,7 @@ public class ListingUploadDao extends BaseDAOImpl {
         listingUpload.setVersion(entity.getVersionName());
         listingUpload.setErrorCount(entity.getErrorCount());
         listingUpload.setWarningCount(entity.getWarningCount());
-        listingUpload.setStatus(entity.getStatus());
+        listingUpload.setUploadStatus(entity.getUploadStatus());
         if (includeRecords) {
             listingUpload.setRecords(recordsFromString(entity.getFileContents()));
         }

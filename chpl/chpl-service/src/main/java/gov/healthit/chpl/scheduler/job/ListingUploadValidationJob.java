@@ -102,7 +102,7 @@ public class ListingUploadValidationJob implements Job {
                     }
 
                     if (listingDetails != null) {
-                        listingUpload.setStatus(ListingUploadStatus.SUCCESSFUL);
+                        listingUpload.setUploadStatus(ListingUploadStatus.SUCCESSFUL);
                         listingUpload.setErrorCount(listingDetails.getErrorMessages() == null ? 0 : listingDetails.getErrorMessages().size());
                         listingUpload.setWarningCount(listingDetails.getWarningMessages() == null ? 0 : listingDetails.getWarningMessages().size());
                         LOGGER.info("Listing upload with ID " + listingUpload.getId() + " had "

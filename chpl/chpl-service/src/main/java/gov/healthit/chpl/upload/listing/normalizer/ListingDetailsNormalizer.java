@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -65,6 +66,12 @@ public class ListingDetailsNormalizer {
         this.cqmNormalizer.normalize(listing);
         this.measureNormalizer.normalize(listing);
         this.sedNormalizer.normalize(listing);
+        if (CollectionUtils.isNotEmpty(listing.getErrorMessages())) {
+            listing.getErrorMessages().clear();
+        }
+        if (CollectionUtils.isNotEmpty(listing.getWarningMessages())) {
+            listing.getWarningMessages().clear();
+        }
     }
 
 }

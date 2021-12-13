@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
@@ -22,7 +23,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostFilter;
@@ -47,10 +47,12 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.scheduler.job.ListingUploadValidationJob;
 import gov.healthit.chpl.upload.listing.handler.CertificationDateHandler;
@@ -75,6 +77,7 @@ public class ListingUploadManager {
     private ListingUploadValidator listingUploadValidator;
     private CertificationBodyDAO acbDao;
     private UserDAO userDao;
+    private CertifiedProductManager cpManager;
     private SchedulerManager schedulerManager;
     private ActivityManager activityManager;
     private ErrorMessageUtil msgUtil;
@@ -87,7 +90,8 @@ public class ListingUploadManager {
             ListingUploadValidator listingUploadValidator,
             ListingUploadHandlerUtil uploadUtil, ChplProductNumberUtil chplProductNumberUtil,
             ListingUploadDao listingUploadDao, CertificationBodyDAO acbDao, UserDAO userDao,
-            SchedulerManager schedulerManager, ActivityManager activityManager, ErrorMessageUtil msgUtil) {
+            CertifiedProductManager cpManager, SchedulerManager schedulerManager,
+            ActivityManager activityManager, ErrorMessageUtil msgUtil) {
         this.listingDetailsHandler = listingDetailsHandler;
         this.certDateHandler = certDateHandler;
         this.listingNormalizer = listingNormalizer;
@@ -97,6 +101,7 @@ public class ListingUploadManager {
         this.listingUploadDao = listingUploadDao;
         this.acbDao = acbDao;
         this.userDao = userDao;
+        this.cpManager = cpManager;
         this.schedulerManager = schedulerManager;
         this.activityManager = activityManager;
         this.msgUtil = msgUtil;
@@ -221,29 +226,54 @@ public class ListingUploadManager {
     }
 
     @Transactional
-    @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES, CacheNames.DEVELOPER_NAMES
-    }, allEntries = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
             + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).CONFIRM, #id)")
-    public CertifiedProductSearchDetails confirm(Long id, ConfirmListingRequest confirmListingRequest) {
+    public CertifiedProductSearchDetails confirm(Long id, ConfirmListingRequest confirmListingRequest)
+        throws InvalidArgumentsException, ValidationException {
         //Is listing already processing?
-        //if yes
-            // throw new InvalidArgumentsException(msgUtil.getMessage("pendingListing.alreadyProcessing"));
-        //if no
-            //Mark the listingUpload as processing
-            //In another manager with it's own PreAuthorize that checks the ACB on the confirmListingRequest...
-                //Validate the listing to see if there are any errors/warnings
-                //Make sure acknowledge warnings is checked if there are any warnings
-                //run developer validations developerManager.validateDeveloperInSystemIfExists(pcpDto)
-                //Insert all listing data
-                //logCertifiedProductCreateActivity(newCertifiedProduct.getId());
-                //rwtCachingService.calculateRwtEligibility(newCertifiedProduct.getId());
-            //Back in this manager...
-                //mark listingUpload as not processing
-                //mark listingUpload as deleted/confirmed/something
-        return new CertifiedProductSearchDetails();
+        if (listingUploadDao.isAvailableForProcessing(id)) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("pendingListing.alreadyProcessing"));
+        } else {
+            listingUploadDao.setConfirming(id, true);
+            try {
+                CertifiedProductSearchDetails listing = confirmListingRequest.getListing();
+                checkForErrorsOrUnacknowledgedWarnings(listing, confirmListingRequest.isAcknowledgeWarnings());
+                cpManager.create(listing);
+            } catch (ValidationException ex) {
+                LOGGER.error("Could not confirm pending listing " + id + " due to validation error.");
+                throw ex;
+            } catch (Exception ex) {
+                LOGGER.error("Could not confirm pending listing " + id);
+                //TODO: throw something instead?
+                return null;
+            } finally {
+                listingUploadDao.setConfirming(id, false);
+            }
+            listingUploadDao.delete(id);
+        }
+
+        return createTemporaryConfirmationResponse(confirmListingRequest.getListing());
+    }
+
+    private void checkForErrorsOrUnacknowledgedWarnings(CertifiedProductSearchDetails listing,
+            boolean acknowledgeWarnings) throws ValidationException {
+        listingNormalizer.normalize(listing);
+        LOGGER.debug("Normalized listing for confirmation: " + listing.getChplProductNumber());
+        listingUploadValidator.review(listing);
+        LOGGER.debug("Validated listing for confirmation: " + listing.getChplProductNumber());
+
+        if (listing.getErrorMessages() != null && listing.getErrorMessages().size() > 0
+                || (listing.getWarningMessages() != null && listing.getWarningMessages().size() > 0
+                        && !acknowledgeWarnings)) {
+            throw new ValidationException(listing.getErrorMessages(), listing.getWarningMessages());
+        }
+    }
+
+    private CertifiedProductSearchDetails createTemporaryConfirmationResponse(CertifiedProductSearchDetails listing) {
+        listing.setId(ThreadLocalRandom.current().nextLong(11000L, 12000L + 1));
+        listing.getWarningMessages().clear();
+        listing.getErrorMessages().clear();
+        return listing;
     }
 
     @Transactional

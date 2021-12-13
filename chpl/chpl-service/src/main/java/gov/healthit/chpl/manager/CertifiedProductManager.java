@@ -427,6 +427,21 @@ public class CertifiedProductManager extends SecuredManager {
         return familyTree;
     }
 
+    @Transactional(readOnly = false)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).CREATE, #listing)")
+    @CacheEvict(value = {
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES, CacheNames.DEVELOPER_NAMES
+    }, allEntries = true)
+    public CertifiedProductSearchDetails create(CertifiedProductSearchDetails listing) {
+        //TODO:
+        //Insert all listing data
+        //logCertifiedProductCreateActivity(newCertifiedProduct.getId());
+        //rwtCachingService.calculateRwtEligibility(newCertifiedProduct.getId());
+        return null;
+    }
+
     @SuppressWarnings({"checkstyle:linelength", "checkstyle:methodlength"})
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).CREATE_FROM_PENDING, #pendingCp)")
