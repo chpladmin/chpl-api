@@ -2,8 +2,6 @@ package gov.healthit.chpl.changerequest.domain;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang3.builder.EqualsExclude;
-
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import lombok.AllArgsConstructor;
@@ -20,15 +18,23 @@ import lombok.NoArgsConstructor;
 public class ChangeRequestDeveloperDetails implements Serializable, ChangeRequestDetails {
     private static final long serialVersionUID = -5572794875421124955L;
 
-    @EqualsExclude
+    @EqualsAndHashCode.Exclude
     private Long id;
 
     private Boolean selfDeveloper;
     private Address address;
     private PointOfContact contact;
 
+    public static ChangeRequestDeveloperDetails cast(Object obj) {
+        if (obj instanceof ChangeRequestDeveloperDetails) {
+            return (ChangeRequestDeveloperDetails) obj;
+        } else {
+            throw new RuntimeException("Could not cast object as type ChangeRequestDeveloperDetails");
+        }
+    }
+
     @Override
-    public boolean isEqual(Object obj) {
+    public boolean matches(Object obj) {
         return equals(obj);
     }
 }

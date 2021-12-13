@@ -30,7 +30,7 @@ public class ChangeRequestAttestation implements Serializable, ChangeRequestDeta
     }
 
     @Override
-    public boolean isEqual(Object obj) {
+    public boolean matches(Object obj) {
         return equals(obj);
     }
 }

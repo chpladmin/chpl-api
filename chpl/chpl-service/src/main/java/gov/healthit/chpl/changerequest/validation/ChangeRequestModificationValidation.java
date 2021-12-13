@@ -27,13 +27,13 @@ public class ChangeRequestModificationValidation extends ValidationRule<ChangeRe
 
     private Boolean changeRequestDetailsEquals(ChangeRequestValidationContext context) {
         if (context.getNewChangeRequest().getDetails() instanceof ChangeRequestWebsite) {
-            return (((ChangeRequestWebsite) context.getNewChangeRequest().getDetails()).isEqual(
-                    (context.getOrigChangeRequest().getDetails())));
+            return ChangeRequestWebsite.cast(context.getNewChangeRequest().getDetails()).matches(
+                    ChangeRequestWebsite.cast(context.getOrigChangeRequest().getDetails()));
         } else if (context.getNewChangeRequest().getDetails() instanceof ChangeRequestDeveloperDetails) {
-            return (((ChangeRequestDeveloperDetails) context.getNewChangeRequest().getDetails()).isEqual(
-                    (context.getOrigChangeRequest().getDetails())));
+            return ChangeRequestDeveloperDetails.cast(context.getNewChangeRequest().getDetails()).matches(
+                    ChangeRequestDeveloperDetails.cast(context.getOrigChangeRequest().getDetails()));
         } else if (context.getNewChangeRequest().getDetails() instanceof ChangeRequestAttestation) {
-            return ChangeRequestAttestation.cast(context.getNewChangeRequest().getDetails()).isEqual(
+            return ChangeRequestAttestation.cast(context.getNewChangeRequest().getDetails()).matches(
                     ChangeRequestAttestation.cast(context.getOrigChangeRequest().getDetails()));
         } else {
             return false;

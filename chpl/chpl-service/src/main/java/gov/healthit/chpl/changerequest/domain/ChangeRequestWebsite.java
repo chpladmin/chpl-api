@@ -2,8 +2,6 @@ package gov.healthit.chpl.changerequest.domain;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang3.builder.EqualsExclude;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,13 +16,22 @@ import lombok.NoArgsConstructor;
 public class ChangeRequestWebsite implements Serializable, ChangeRequestDetails {
     private static final long serialVersionUID = -5572794875424284955L;
 
-    @EqualsExclude
+    @EqualsAndHashCode.Exclude
     private Long id;
 
     private String website;
 
+
+    public static ChangeRequestWebsite cast(Object obj) {
+        if (obj instanceof ChangeRequestWebsite) {
+            return (ChangeRequestWebsite) obj;
+        } else {
+            throw new RuntimeException("Could not cast object as type ChangeRequestWebsite");
+        }
+    }
+
     @Override
-    public boolean isEqual(Object obj) {
+    public boolean matches(Object obj) {
         return equals(obj);
     }
 
