@@ -2,8 +2,6 @@ package gov.healthit.chpl.changerequest.domain;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang3.builder.EqualsExclude;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,10 +16,18 @@ import lombok.NoArgsConstructor;
 public class ChangeRequestAttestation implements Serializable, ChangeRequestDetails{
     private static final long serialVersionUID = 2150025150434933303L;
 
-    @EqualsExclude
+    @EqualsAndHashCode.Exclude
     private Long id;
 
     private String attestation;
+
+    public static ChangeRequestAttestation cast(Object obj) {
+        if (obj instanceof ChangeRequestAttestation) {
+            return (ChangeRequestAttestation) obj;
+        } else {
+            throw new RuntimeException("Could not cast object as type ChangeRequestAttestation");
+        }
+    }
 
     @Override
     public boolean isEqual(Object obj) {

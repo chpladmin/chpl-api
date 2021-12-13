@@ -12,15 +12,15 @@ public class ChangeRequestModificationValidation extends ValidationRule<ChangeRe
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
-        if (isStatusUpdated(context) || !changeRequestDetailsEquals(context)) {
-            return true;
-        } else {
+        if (isCurrentStatusEqual(context) && changeRequestDetailsEquals(context)) {
             getMessages().add(getErrorMessage("changeRequest.noChanges"));
             return false;
+        } else {
+            return true;
         }
     }
 
-    private Boolean isStatusUpdated(ChangeRequestValidationContext context) {
+    private Boolean isCurrentStatusEqual(ChangeRequestValidationContext context) {
         return context.getOrigChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId().equals(
                 context.getNewChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId());
     }
@@ -33,8 +33,8 @@ public class ChangeRequestModificationValidation extends ValidationRule<ChangeRe
             return (((ChangeRequestDeveloperDetails) context.getNewChangeRequest().getDetails()).isEqual(
                     (context.getOrigChangeRequest().getDetails())));
         } else if (context.getNewChangeRequest().getDetails() instanceof ChangeRequestAttestation) {
-            return (((ChangeRequestDeveloperDetails) context.getNewChangeRequest().getDetails()).isEqual(
-                    (context.getOrigChangeRequest().getDetails())));
+            return ChangeRequestAttestation.cast(context.getNewChangeRequest().getDetails()).isEqual(
+                    ChangeRequestAttestation.cast(context.getOrigChangeRequest().getDetails()));
         } else {
             return false;
         }
