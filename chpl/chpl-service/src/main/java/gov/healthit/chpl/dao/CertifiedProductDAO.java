@@ -47,7 +47,11 @@ public class CertifiedProductDAO extends BaseDAOImpl {
     }
 
     public void create(CertifiedProductSearchDetails listing) {
+        try {
+            Thread.sleep(10000);
+        } catch (Exception ex) {
 
+        }
     }
 
     @Deprecated
