@@ -201,5 +201,6 @@
     <Logger name="inviteDevelopersJobLogger" level="INFO"
         additivity="false">
         <AppenderRef ref="inviteDevelopersJob" />
+        <AppenderRef ref="inviteDevelopersJobJson" />
     </Logger>
 </Loggers>
