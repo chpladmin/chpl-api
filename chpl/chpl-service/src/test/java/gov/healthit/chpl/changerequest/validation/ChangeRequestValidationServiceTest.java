@@ -1,11 +1,17 @@
 package gov.healthit.chpl.changerequest.validation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+
+import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
 
 public class ChangeRequestValidationServiceTest {
 
@@ -117,6 +123,106 @@ public class ChangeRequestValidationServiceTest {
     @Test
     public void validate_CreateWebsiteChangeRequest_AllValidatorsRun() {
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
-                .newChangeRequest(newChangeRequest)
+                .newChangeRequest(ChangeRequest.builder()
+                        .changeRequestType(ChangeRequestType.builder()
+                                .id(websiteChangeRequestTypeId)
+                                .build())
+                        .build())
+                .build();
+
+        List<String> errorMsgs = changeRequestValidationService.validate(context);
+
+        assertEquals(6, errorMsgs.size());
     }
+
+    @Test
+    public void validate_CreateDeveloperDetailsChangeRequest_AllValidatorsRun() {
+        ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
+                .newChangeRequest(ChangeRequest.builder()
+                        .changeRequestType(ChangeRequestType.builder()
+                                .id(developerDetailsChangeRequestTypeId)
+                                .build())
+                        .build())
+                .build();
+
+        List<String> errorMsgs = changeRequestValidationService.validate(context);
+
+        assertEquals(8, errorMsgs.size());
+    }
+
+    @Test
+    public void validate_CreateAttestationChangeRequest_AllValidatorsRun() {
+        ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
+                .newChangeRequest(ChangeRequest.builder()
+                        .changeRequestType(ChangeRequestType.builder()
+                                .id(attestationChangeRequestTypeId)
+                                .build())
+                        .build())
+                .build();
+
+        List<String> errorMsgs = changeRequestValidationService.validate(context);
+
+        assertEquals(5, errorMsgs.size());
+    }
+
+    @Test
+    public void validate_UpdateWebsiteChangeRequest_AllValidatorsRun() {
+        ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
+                .newChangeRequest(ChangeRequest.builder()
+                        .changeRequestType(ChangeRequestType.builder()
+                                .id(websiteChangeRequestTypeId)
+                                .build())
+                        .build())
+                .origChangeRequest(ChangeRequest.builder()
+                        .changeRequestType(ChangeRequestType.builder()
+                                .id(websiteChangeRequestTypeId)
+                                .build())
+                        .build())
+                .build();
+
+        List<String> errorMsgs = changeRequestValidationService.validate(context);
+
+        assertEquals(8, errorMsgs.size());
+    }
+
+    @Test
+    public void validate_UpdateDeveloperDetailsChangeRequest_AllValidatorsRun() {
+        ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
+                .newChangeRequest(ChangeRequest.builder()
+                        .changeRequestType(ChangeRequestType.builder()
+                                .id(developerDetailsChangeRequestTypeId)
+                                .build())
+                        .build())
+                .origChangeRequest(ChangeRequest.builder()
+                        .changeRequestType(ChangeRequestType.builder()
+                                .id(developerDetailsChangeRequestTypeId)
+                                .build())
+                        .build())
+                .build();
+
+        List<String> errorMsgs = changeRequestValidationService.validate(context);
+
+        assertEquals(10, errorMsgs.size());
+    }
+
+    @Test
+    public void validate_UpdateAttestationChangeRequest_AllValidatorsRun() {
+        ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
+                .newChangeRequest(ChangeRequest.builder()
+                        .changeRequestType(ChangeRequestType.builder()
+                                .id(attestationChangeRequestTypeId)
+                                .build())
+                        .build())
+                .origChangeRequest(ChangeRequest.builder()
+                        .changeRequestType(ChangeRequestType.builder()
+                                .id(attestationChangeRequestTypeId)
+                                .build())
+                        .build())
+                .build();
+
+        List<String> errorMsgs = changeRequestValidationService.validate(context);
+
+        assertEquals(7, errorMsgs.size());
+    }
+
 }
