@@ -31,6 +31,7 @@ import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductQmsStandardD
 import gov.healthit.chpl.dto.listing.pending.PendingTestTaskDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
@@ -66,10 +67,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
             "170.315 (d)(1)", "170.315 (d)(2)", "170.315 (d)(3)", "170.315 (d)(5)", "170.315 (d)(7)", "170.315 (d)(9)"
     };
 
-    private static final String[] E2E3_RELATED_CERTS = {
-            "170.315 (d)(1)", "170.315 (d)(2)", "170.315 (d)(3)", "170.315 (d)(5)", "170.315 (d)(9)"
-    };
-
     private static final String[] F_RELATED_CERTS = {
             "170.315 (d)(1)", "170.315 (d)(2)", "170.315 (d)(3)", "170.315 (d)(7)"
     };
@@ -98,7 +95,8 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     private static final String H1_CRITERIA_NUMBER = "170.315 (h)(1)";
     private static final int MINIMIMUM_PARTICIPANTS = 10;
 
-    private List<String> e2e3Criterion = new ArrayList<String>();
+    private List<CertificationCriterion> e2e3Criteria = new ArrayList<CertificationCriterion>();
+    private List<CertificationCriterion> e2e3RelatedCriteria = new ArrayList<CertificationCriterion>();
     private List<String> g7g8g9Criterion = new ArrayList<String>();
     private List<String> d2d10Criterion = new ArrayList<String>();
     private List<CertificationCriterion> e1Criteria;
@@ -126,8 +124,16 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         this.criterionService = criterionService;
         this.validationUtils = validationUtils;
 
-        e2e3Criterion.add("170.315 (e)(2)");
-        e2e3Criterion.add("170.315 (e)(3)");
+        e2e3Criteria.add(criterionService.get(Criteria2015.E_2));
+        e2e3Criteria.add(criterionService.get(Criteria2015.E_3));
+
+        e2e3RelatedCriteria.add(criterionService.get(Criteria2015.D_1));
+        e2e3RelatedCriteria.add(criterionService.get(Criteria2015.D_2_OLD));
+        e2e3RelatedCriteria.add(criterionService.get(Criteria2015.D_2_CURES));
+        e2e3RelatedCriteria.add(criterionService.get(Criteria2015.D_3_OLD));
+        e2e3RelatedCriteria.add(criterionService.get(Criteria2015.D_3_CURES));
+        e2e3RelatedCriteria.add(criterionService.get(Criteria2015.D_5));
+        e2e3RelatedCriteria.add(criterionService.get(Criteria2015.D_9));
 
         g7g8g9Criterion.add("170.315 (g)(7)");
         g7g8g9Criterion.add("170.315 (g)(8)");
@@ -190,8 +196,8 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
         // check for (e)(2) or (e)(3) required complimentary certs
         List<String> e2e3ComplimentaryErrors =
-                validationUtils.checkComplementaryCriteriaNumbersAllRequired(e2e3Criterion,
-                        Arrays.asList(E2E3_RELATED_CERTS), attestedCriteria);
+                validationUtils.checkComplementaryCriteriaAllRequired(e2e3Criteria, e2e3RelatedCriteria,
+                        attestedCriteria);
         listing.getErrorMessages().addAll(e2e3ComplimentaryErrors);
 
         // check for (g)(7) or (g)(8) or (g)(9) required complimentary certs
