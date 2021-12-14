@@ -39,12 +39,10 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.listener.QuestionableActivityListener;
-import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.JSONUtils;
 
-@Loggable
 @Service("activityManager")
 public class ActivityManager extends SecuredManager {
     private static Logger LOGGER = LogManager.getLogger(ActivityManager.class);

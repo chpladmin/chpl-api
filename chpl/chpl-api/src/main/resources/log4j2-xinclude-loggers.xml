@@ -2,195 +2,205 @@
 <Loggers>
     <Logger name="net.sf.ehcache" level="INFO" additivity="false">
         <AppenderRef ref="cacheListenerActivity" />
+        <AppenderRef ref="cacheListenerActivity" />
     </Logger>
     <Logger name="org.springframework.cache" level="INFO">
         <AppenderRef ref="cacheListenerActivity" />
+        <AppenderRef ref="cacheListenerActivity" />
     </Logger>
-    <Logger name="loggableLogger" level="INFO"
-        additivity="false">
-        <AppenderRef ref="loggable" />
-    </Logger>
-    <Logger name="summaryStatisticsEmailJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="summaryStatisticsEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="summaryStatisticsEmailJob" />
+        <AppenderRef ref="summaryStatisticsEmailJobJson" />
     </Logger>
-    <Logger name="summaryStatisticsCreatorJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="summaryStatisticsCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="summaryStatisticsCreatorJob" />
+        <AppenderRef ref="summaryStatisticsCreatorJobJson" />
     </Logger>
-    <Logger name="curesStatisticsCreatorJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="curesStatisticsCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="curesStatisticsCreatorJob" />
+        <AppenderRef ref="curesStatisticsCreatorJobJson" />
     </Logger>
-    <Logger name="curesStatisticsEmailJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="curesStatisticsEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="curesStatisticsEmailJob" />
+        <AppenderRef ref="curesStatisticsEmailJobJson" />
     </Logger>
-    <Logger name="urlStatusDataCollectorJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="urlStatusDataCollectorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="urlStatusDataCollectorJob" />
+        <AppenderRef ref="urlStatusDataCollectorJobJson" />
     </Logger>
-    <Logger name="questionableUrlReportGeneratorJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="questionableUrlReportGeneratorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="questionableUrlReportGeneratorJob" />
+        <AppenderRef ref="questionableUrlReportGeneratorJobJson" />
     </Logger>
-    <Logger name="chartDataCreatorJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="chartDataCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="chartDataCreatorJob" />
+        <AppenderRef ref="chartDataCreatorJobJson" />
     </Logger>
-    <Logger name="certifiedProductDownloadableResourceCreatorJobLogger"
-        level="INFO" additivity="false">
-        <AppenderRef
-            ref="certifiedProductDownloadableResourceCreatorJob" />
+    <Logger name="certifiedProductDownloadableResourceCreatorJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="certifiedProductDownloadableResourceCreatorJob" />
+        <AppenderRef ref="certifiedProductDownloadableResourceCreatorJobJson" />
     </Logger>
-    <Logger name="g3Sed2015DownloadableResourceCreatorJobLogger"
-        level="INFO" additivity="false">
+    <Logger name="g3Sed2015DownloadableResourceCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="g3Sed2015DownloadableResourceCreatorJob" />
+        <AppenderRef ref="g3Sed2015DownloadableResourceCreatorJobJson" />
     </Logger>
-    <Logger name="surveillanceDownloadableResourceCreatorJobLogger"
-        level="INFO" additivity="false">
+    <Logger name="surveillanceDownloadableResourceCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="surveillanceDownloadableResourceCreatorJob" />
+        <AppenderRef ref="surveillanceDownloadableResourceCreatorJobJson" />
     </Logger>
-    <Logger name="directReviewDownloadableResourceCreatorJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="directReviewDownloadableResourceCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="directReviewDownloadableResourceCreatorJob" />
+        <AppenderRef ref="directReviewDownloadableResourceCreatorJobJson" />
     </Logger>
-    <Logger name="svapActivityDownloadableResourceCreatorJobLogger"
-        level="INFO" additivity="false">
+    <Logger name="svapActivityDownloadableResourceCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="svapActivityDownloadableResourceCreatorJob" />
+        <AppenderRef ref="svapActivityDownloadableResourceCreatorJobJson" />
     </Logger>
-    <Logger name="brokenSurveillanceRulesCreatorJobLogger"
-        level="INFO" additivity="false">
+    <Logger name="brokenSurveillanceRulesCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="brokenSurveillanceRulesCreatorJob" />
+        <AppenderRef ref="brokenSurveillanceRulesCreatorJobJson" />
     </Logger>
-    <Logger name="brokenSurveillanceRulesEmailJobLogger"
-        level="INFO" additivity="false">
+    <Logger name="brokenSurveillanceRulesEmailJobLogger"  level="INFO" additivity="false">
         <AppenderRef ref="brokenSurveillanceRulesEmailJob" />
+        <AppenderRef ref="brokenSurveillanceRulesEmailJobJson" />
     </Logger>
-    <Logger name="inheritanceErrorsReportCreatorJobLogger"
-        level="INFO" additivity="false">
+    <Logger name="inheritanceErrorsReportCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="inheritanceErrorsReportCreatorJob" />
+        <AppenderRef ref="inheritanceErrorsReportCreatorJobJson" />
     </Logger>
-    <Logger name="inheritanceErrorsReportEmailJobLogger"
-        level="INFO" additivity="false">
+    <Logger name="inheritanceErrorsReportEmailJobLogger" additivity="false">
         <AppenderRef ref="inheritanceErrorsReportEmailJob" />
+        <AppenderRef ref="inheritanceErrorsReportEmailJobJson" />
     </Logger>
-    <Logger name="cacheStatusAgeJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="cacheStatusAgeJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="cacheStatusAgeJob" />
+        <AppenderRef ref="cacheStatusAgeJobJson" />
     </Logger>
-    <Logger name="triggerDeveloperBanJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="triggerDeveloperBanJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="triggerDeveloperBanJob" />
+        <AppenderRef ref="triggerDeveloperBanJobJson" />
     </Logger>
-    <Logger name="splitDeveloperJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="splitDeveloperJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="splitDeveloperJob" />
+        <AppenderRef ref="splitDeveloperJobJson" />
     </Logger>
-    <Logger name="mergeDeveloperJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="mergeDeveloperJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="mergeDeveloperJob" />
+        <AppenderRef ref="mergeDeveloperJobJson" />
     </Logger>
-    <Logger name="apiKeyWarningEmailJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="apiKeyWarningEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="apiKeyWarningEmailJob" />
+        <AppenderRef ref="apiKeyWarningEmailJobJson" />
     </Logger>
-    <Logger name="apiKeyDeleteJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="apiKeyDeleteJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="apiKeyDeleteJob" />
+        <AppenderRef ref="apiKeyDeleteJobJson" />
     </Logger>
-    <Logger name="questionableActivityEmailJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="questionableActivityEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="questionableActivityEmailJob" />
+        <AppenderRef ref="questionableActivityEmailJobJson" />
     </Logger>
-    <Logger name="pendingChangeRequestEmailJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="pendingChangeRequestEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="pendingChangeRequestEmailJob" />
+        <AppenderRef ref="pendingChangeRequestEmailJobJson" />
     </Logger>
-    <Logger name="interruptJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="interruptJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="interruptJob" />
+        <AppenderRef ref="interruptJobJson" />
     </Logger>
-    <Logger name="massRequirePasswordChangeJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="massRequirePasswordChangeJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="massRequirePasswordChangeJob" />
+        <AppenderRef ref="massRequirePasswordChangeJobJson" />
     </Logger>
-    <Logger name="updateListingStatusJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="updateListingStatusJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="updateListingStatusJob" />
+        <AppenderRef ref="updateListingStatusJobJson" />
     </Logger>
-    <Logger name="developerAccessEmailJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="developerAccessEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="developerAccessEmailJob" />
+        <AppenderRef ref="developerAccessEmailJobJson" />
     </Logger>
-    <Logger name="directReviewCacheRefreshJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="directReviewCacheRefreshJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="directReviewCacheRefreshJob" />
+        <AppenderRef ref="directReviewCacheRefreshJobJson" />
     </Logger>
-    <Logger name="realWorldTestingUploadJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="realWorldTestingUploadJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="realWorldTestingUploadJob" />
+        <AppenderRef ref="realWorldTestingUploadJobJson" />
     </Logger>
-    <Logger name="realWorldTestingReportEmailJobLogger" level="INFO"
-        additivity="false">
-        <AppenderRef ref="realWorldTestingReportEmailJob" />
+    <Logger name="realWorldTestingReportEmailJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="realWorldTestingUploadJob" />
+        <AppenderRef ref="realWorldTestingUploadJobJson" />
     </Logger>
-    <Logger name="auditDataRetentionJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="auditDataRetentionJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="auditDataRetentionJob" />
+        <AppenderRef ref="auditDataRetentionJobJson" />
     </Logger>
-    <Logger name="listingValidationReportCreatorJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="listingValidationReportCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="listingValidationReportCreatorJob" />
+        <AppenderRef ref="listingValidationReportCreatorJobJson" />
     </Logger>
-    <Logger name="listingValidationReportEmailJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="listingValidationReportEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="listingValidationReportEmailJob" />
+        <AppenderRef ref="listingValidationReportEmailJobJson" />
     </Logger>
-    <Logger name="quarterlyReportGenerationJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="quarterlyReportGenerationJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="quarterlyReportGenerationJob" />
+        <AppenderRef ref="quarterlyReportGenerationJobJson" />
     </Logger>
-    <Logger name="annualReportGenerationJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="annualReportGenerationJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="annualReportGenerationJob" />
+        <AppenderRef ref="annualReportGenerationJobJson" />
     </Logger>
-    <Logger name="listingUploadValidationJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="listingUploadValidationJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="listingUploadValidationJob" />
+        <AppenderRef ref="listingUploadValidationJobJson" />
     </Logger>
-    <Logger name="userDefinedTriggersEmailJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="userDefinedTriggersEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="userDefinedTriggersEmailJob" />
+        <AppenderRef ref="userDefinedTriggersEmailJobJson" />
     </Logger>
-    <Logger name="surveillanceActivityReportJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="surveillanceActivityReportJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="surveillanceActivityReportJob" />
+        <AppenderRef ref="surveillanceActivityReportJobJson" />
     </Logger>
-    <Logger name="surveillanceUploadJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="surveillanceUploadJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="surveillanceUploadJob" />
+        <AppenderRef ref="surveillanceUploadJobJson" />
     </Logger>
-    <Logger name="promotingInteroperabilityUploadJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="promotingInteroperabilityUploadJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="promotingInteroperabilityUploadJob" />
+        <AppenderRef ref="promotingInteroperabilityUploadJobJson" />
     </Logger>
-    <Logger name="deprecatedApiUsageEmailJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="deprecatedApiUsageEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="deprecatedApiUsageEmailJob" />
+        <AppenderRef ref="deprecatedApiUsageEmailJobJson" />
     </Logger>
-    <Logger name="testStandardConversionJobLogger" level="INFO"
-        additivity="false">
+    <Logger name="testStandardConversionJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="testStandardConversionJob" />
+        <AppenderRef ref="testStandardConversionJobJson" />
     </Logger>
-    <Logger name="listingsSnapshotCsvCreatorJobLogger"
-        level="INFO" additivity="false">
-        <AppenderRef
-            ref="listingsSnapshotCsvCreatorJob" />
+    <Logger name="removeCriteriaJobLogger" level="INFO"
+        additivity="false">
+        <AppenderRef ref="removeCriteriaJob" />
+        <AppenderRef ref="removeCriteriaJobJson" />
     </Logger>
-    <Logger name="listingsWithCriterionSnapshotCsvCreatorJobLogger"
-        level="INFO" additivity="false">
-        <AppenderRef
-            ref="listingsWithCriterionSnapshotCsvCreatorJob" />
+    <Logger name="addCuresUpdateToListingsJobLogger" level="INFO"
+        additivity="false">
+        <AppenderRef ref="addCuresUpdateToListingsJob" />
+        <AppenderRef ref="addCuresUpdateToListingsJobJson" />
+    </Logger>
+    <Logger name="listingsSnapshotCsvCreatorJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="listingsSnapshotCsvCreatorJob" />
+        <AppenderRef ref="listingsSnapshotCsvCreatorJobJson" />
+    </Logger>
+    <Logger name="listingsWithCriterionSnapshotCsvCreatorJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="listingsWithCriterionSnapshotCsvCreatorJob" />
+        <AppenderRef ref="listingsWithCriterionSnapshotCsvCreatorJobJson" />
+    </Logger>
+    <Logger name="inviteDevelopersJobLogger" level="INFO"
+        additivity="false">
+        <AppenderRef ref="inviteDevelopersJob" />
+        <AppenderRef ref="inviteDevelopersJobJson" />
     </Logger>
 </Loggers>

@@ -1,5 +1,6 @@
 package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -246,7 +247,7 @@ public class RequiredAndRelatedCriteriaReviewerTest {
     }
 
     @Test
-    public void review_a6RemovedCriteriaAttestedWithoutDependencies_asAdmin_hasWarnings() {
+    public void review_a6RemovedCriteriaAttestedWithoutDependencies_asAdmin_noWarnings() {
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
@@ -266,18 +267,17 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                         .build())
                 .build();
         reviewer.review(listing);
-        assertEquals(7, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d1))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d2))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d3))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d4))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d5))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d6))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d7))));
+        assertEquals(0, listing.getWarningMessages().size());
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d1))));
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d2))));
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d3))));
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d5))));
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d6))));
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d7))));
     }
 
     @Test
-    public void review_a6RemovedCriteriaAttestedWithoutDependencies_asOnc_hasWarnings() {
+    public void review_a6RemovedCriteriaAttestedWithoutDependencies_asOnc_noWarnings() {
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(true);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
@@ -297,14 +297,13 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                         .build())
                 .build();
         reviewer.review(listing);
-        assertEquals(7, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d1))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d2))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d3))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d4))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d5))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d6))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d7))));
+        assertEquals(0, listing.getWarningMessages().size());
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d1))));
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d2))));
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d3))));
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d5))));
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d6))));
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d7))));
     }
 
     @Test
@@ -722,7 +721,7 @@ public class RequiredAndRelatedCriteriaReviewerTest {
     }
 
     @Test
-    public void review_c2RemovedCriteriaAttestedWithoutDependencies_adminUser_hasWarnings() {
+    public void review_c2RemovedCriteriaAttestedWithoutDependencies_adminUser_noWarnings() {
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
@@ -742,15 +741,15 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                         .build())
                 .build();
         reviewer.review(listing);
-        assertEquals(4, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d1))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d2))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d3))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d5))));
+        assertEquals(0, listing.getWarningMessages().size());
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d1))));
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d2))));
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d3))));
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d5))));
     }
 
     @Test
-    public void review_c2RemovedCriteriaAttestedWithoutDependencies_oncUser_hasWarnings() {
+    public void review_c2RemovedCriteriaAttestedWithoutDependencies_oncUser_hasNoWarnings() {
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(true);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
@@ -770,11 +769,11 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                         .build())
                 .build();
         reviewer.review(listing);
-        assertEquals(4, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d1))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d2))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d3))));
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d5))));
+        assertEquals(0, listing.getWarningMessages().size());
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d1))));
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d2))));
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d3))));
+        assertFalse(listing.getWarningMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d5))));
     }
 
     @Test
