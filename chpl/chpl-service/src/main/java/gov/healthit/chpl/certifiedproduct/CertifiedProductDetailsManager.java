@@ -21,9 +21,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.logging.Loggable;
 
-@Loggable
 @Component("certifiedProductDetailsManager")
 public class CertifiedProductDetailsManager {
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;

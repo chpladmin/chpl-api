@@ -17,10 +17,8 @@ import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
-import gov.healthit.chpl.logging.Loggable;
 import lombok.extern.log4j.Log4j2;
 
-@Loggable
 @Component("directReviewUpdateEmailService")
 @Log4j2
 public class DirectReviewUpdateEmailService {
