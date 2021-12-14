@@ -26,7 +26,6 @@ import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.domain.search.BasicSearchResponseLegacy;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResultLegacy;
 import gov.healthit.chpl.domain.search.CertifiedProductSearchResultLegacy;
-import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.search.CertifiedProductSearchManager;
 import gov.healthit.chpl.search.domain.BasicSearchResponse;
@@ -47,7 +46,6 @@ import lombok.extern.log4j.Log4j2;
 @RestController
 @RequestMapping("/collections")
 @Log4j2
-@Loggable
 public class CollectionsController {
     private CertifiedProductSearchManager certifiedProductSearchManager;
     private DeveloperManager developerManager;
@@ -64,7 +62,9 @@ public class CollectionsController {
     @Deprecated
     @Operation(summary = "Get basic data about all certified products in the system.", description = "",
             deprecated = true,
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/certified-products", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.SIX_HOURS)
@@ -82,9 +82,9 @@ public class CollectionsController {
             nonNullJsonMapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false);
 
             // create a copy of the search results since we will be manipulating
-            // them by setting fields to null but do not want to overwrite the cached data
-            List<CertifiedProductFlatSearchResult> mutableSearchResults
-            = new ArrayList<CertifiedProductFlatSearchResult>(cachedSearchResults.size());
+            // them by setting fields to null but do not want to overwrite the
+            // cached data
+            List<CertifiedProductFlatSearchResult> mutableSearchResults = new ArrayList<CertifiedProductFlatSearchResult>(cachedSearchResults.size());
             for (CertifiedProductFlatSearchResult cachedSearchResult : cachedSearchResults) {
                 mutableSearchResults.add(new CertifiedProductFlatSearchResult(cachedSearchResult));
             }
@@ -167,16 +167,21 @@ public class CollectionsController {
     }
 
     /**
-     * DEPRECATED. Use /collections/certified-products.
-     * Get basic data about all listings in the system.
-     * @param delimitedFieldNames the names of the fields needed for each listing
+     * DEPRECATED. Use /collections/certified-products. Get basic data about all
+     * listings in the system.
+     * 
+     * @param delimitedFieldNames
+     *            the names of the fields needed for each listing
      * @return an array of the listings
-     * @throws JsonProcessingException if processing fails
+     * @throws JsonProcessingException
+     *             if processing fails
      */
     @Deprecated
     @Operation(summary = "Get basic data about all certified products in the system.", description = "",
-        deprecated = true,
-        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+            deprecated = true,
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/certified_products", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.SIX_HOURS)
@@ -194,9 +199,9 @@ public class CollectionsController {
             nonNullJsonMapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false);
 
             // create a copy of the search results since we will be manipulating
-            // them by setting fields to null but do not want to overwrite the cached data
-            List<CertifiedProductFlatSearchResultLegacy> mutableSearchResults
-            = new ArrayList<CertifiedProductFlatSearchResultLegacy>(cachedSearchResults.size());
+            // them by setting fields to null but do not want to overwrite the
+            // cached data
+            List<CertifiedProductFlatSearchResultLegacy> mutableSearchResults = new ArrayList<CertifiedProductFlatSearchResultLegacy>(cachedSearchResults.size());
             for (CertifiedProductFlatSearchResultLegacy cachedSearchResult : cachedSearchResults) {
                 mutableSearchResults.add(new CertifiedProductFlatSearchResultLegacy(cachedSearchResult));
             }
@@ -279,7 +284,9 @@ public class CollectionsController {
     @Deprecated
     @Operation(summary = "DEPRECATED. Get a list of all developers with transparency attestation URLs and ACB attestations.",
             deprecated = true,
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/developers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody List<DeveloperTransparency> getDeveloperCollection() {
@@ -289,7 +296,9 @@ public class CollectionsController {
 
     @Operation(summary = "Get a list of all banned developers.",
             description = "",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/decertified-developers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody List<DecertifiedDeveloper> getDecertifiedDeveloperCollection() {

@@ -20,7 +20,6 @@ import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
 import gov.healthit.chpl.domain.schedule.ScheduledSystemJob;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
@@ -38,7 +37,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "schedules", description = "Allows management of scheduled jobs and reports.")
 @RestController
 @RequestMapping("/schedules")
-@Loggable
 public class SchedulerController {
     private static final String USER_JOB_TYPE = "user";
     private static final String SYSTEM_JOB_TYPE = "system";
@@ -48,12 +46,13 @@ public class SchedulerController {
 
     @Operation(summary = "Create a new trigger and return it",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @DeprecatedResponseFields(responseClass = ScheduleTriggersResults.class)
     @RequestMapping(value = "/triggers", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public @ResponseBody ScheduleTriggersResults createTrigger(@RequestBody(required = true)
-        ChplRepeatableTrigger trigger) throws SchedulerException, ValidationException, EmailNotSentException {
+    public @ResponseBody ScheduleTriggersResults createTrigger(@RequestBody(required = true) ChplRepeatableTrigger trigger) throws SchedulerException, ValidationException, EmailNotSentException {
         ChplRepeatableTrigger result = schedulerManager.createTrigger(trigger);
         ScheduleTriggersResults results = new ScheduleTriggersResults();
         results.getResults().add(result);
@@ -61,12 +60,13 @@ public class SchedulerController {
     }
 
     @Operation(summary = "Create a new trigger and return it",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @DeprecatedResponseFields(responseClass = ScheduleOneTimeTriggersResults.class)
     @RequestMapping(value = "/triggers/one_time", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public @ResponseBody ScheduleOneTimeTriggersResults createOneTimeTrigger(@RequestBody(required = true)
-        ChplOneTimeTrigger trigger) throws SchedulerException, ValidationException {
+    public @ResponseBody ScheduleOneTimeTriggersResults createOneTimeTrigger(@RequestBody(required = true) ChplOneTimeTrigger trigger) throws SchedulerException, ValidationException {
         ChplOneTimeTrigger result = schedulerManager.createOneTimeTrigger(trigger);
         ScheduleOneTimeTriggersResults results = new ScheduleOneTimeTriggersResults();
         results.getResults().add(result);
@@ -74,12 +74,14 @@ public class SchedulerController {
     }
 
     @Operation(summary = "Delete an existing trigger",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/triggers/{triggerGroup}/{triggerName}", method = RequestMethod.DELETE)
     public void deleteTrigger(@PathVariable("triggerGroup") String triggerGroup,
             @PathVariable("triggerName") String triggerName)
-                    throws SchedulerException, ValidationException, EmailNotSentException {
+            throws SchedulerException, ValidationException, EmailNotSentException {
         schedulerManager.deleteTrigger(triggerGroup, triggerName);
     }
 
@@ -89,8 +91,10 @@ public class SchedulerController {
                     + "and have administrative authority on the specified ONC-ACB. "
                     + "ROLE_ADMIN, ROLE_ONC, or ROLE_ONC_STAFF for '" + SYSTEM_JOB_TYPE + "' jobs. "
                     + "Note: The default jobType query parameter is set to '" + USER_JOB_TYPE + "'.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @DeprecatedResponseFields(responseClass = ScheduleTriggersResults.class)
     @RequestMapping(value = "/triggers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody Object getAllTriggersByJobType(@RequestParam(defaultValue = USER_JOB_TYPE) String jobType)
@@ -111,8 +115,10 @@ public class SchedulerController {
     @Operation(summary = "Update an existing trigger and return it",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF or ROLE_ACB and have administrative authority on "
                     + "the specified ONC-ACB.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @DeprecatedResponseFields(responseClass = ScheduleTriggersResults.class)
     @RequestMapping(value = "/triggers", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public @ResponseBody ScheduleTriggersResults updateTrigger(@RequestBody(required = true) ChplRepeatableTrigger trigger)
@@ -125,8 +131,10 @@ public class SchedulerController {
 
     @Operation(summary = "Get the list of all jobs that are applicable to the currently logged in user",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and have administrative authority on the specified ONC-ACB",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @DeprecatedResponseFields(responseClass = ChplJobsResults.class)
     @RequestMapping(value = "/jobs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -140,8 +148,10 @@ public class SchedulerController {
     @Operation(summary = "Update a given job",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF or ROLE_ACB and have administrative authority on "
                     + "the specified ONC-ACB.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @DeprecatedResponseFields(responseClass = ChplJobsResults.class)
     @RequestMapping(value = "/jobs", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public @ResponseBody ChplJobsResults updateJob(@RequestBody(required = true) ChplJob job)

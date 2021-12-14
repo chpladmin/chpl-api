@@ -1,5 +1,14 @@
 # Release Notes
 
+## Version 32.6.0
+_13 December 2021_
+
+### Features
+* Update log4j libraries to 2.15
+* Disallow editing of User email addresses
+
+---
+
 ## Version 32.5.1
 _9 December 2021_
 

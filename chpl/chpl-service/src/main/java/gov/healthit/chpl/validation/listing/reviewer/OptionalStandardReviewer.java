@@ -16,16 +16,18 @@ import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("optionalStandardReviewer")
-public class OptionalStandardReviewer implements Reviewer {
+public class OptionalStandardReviewer extends PermissionBasedReviewer implements Reviewer {
     private OptionalStandardDAO optionalStandardDAO;
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public OptionalStandardReviewer(OptionalStandardDAO optionalStandardDAO, ErrorMessageUtil errorMessageUtil) {
+    public OptionalStandardReviewer(OptionalStandardDAO optionalStandardDAO, ErrorMessageUtil errorMessageUtil, ResourcePermissions resourcePermissions) {
+        super(errorMessageUtil, resourcePermissions);
         this.optionalStandardDAO = optionalStandardDAO;
         this.errorMessageUtil = errorMessageUtil;
     }
@@ -43,13 +45,13 @@ public class OptionalStandardReviewer implements Reviewer {
             listing.getErrorMessages().add("Could not validate Optional Standard");
             return;
         }
-
         for (CertificationResult cr : certificationResultsWithOptionalStandards) {
             for (CertificationResultOptionalStandard cros : cr.getOptionalStandards()) {
                 populateOptionalStandardFields(cros, optionalStandardCriteriaMap);
                 if (!isOptionalStandardValidForCriteria(cros.getOptionalStandardId(), cr.getCriterion().getId(), optionalStandardCriteriaMap)) {
-                    listing.getErrorMessages().add(errorMessageUtil.getMessage("listing.criteria.optionalStandard.invalidCriteria",
-                            cros.getCitation(), CertificationCriterionService.formatCriteriaNumber(cr.getCriterion())));
+                    String error = errorMessageUtil.getMessage("listing.criteria.optionalStandard.invalidCriteria",
+                            cros.getCitation(), CertificationCriterionService.formatCriteriaNumber(cr.getCriterion()));
+                    addCriterionErrorOrWarningByPermission(listing, cr, error);
                 }
             }
         }

@@ -740,6 +740,26 @@
             <recover>false</recover>
         </job>
 
+        <!-- One time job to remove 3 criteria -->
+        <job>
+            <name>removeCriteriaJob</name>
+            <group>systemJobs</group>
+            <description>One time job to remove 3 criteria</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.criteriaremoval.RemoveCriteriaJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+
+        <!-- Updates Listing's Cures Updated indicator -->
+        <job>
+            <name>addCuresUpdateToListingsJob</name>
+            <group>systemJobs</group>
+            <description>Updates Listing's Cures Updated indicator</description>
+            <job-class>gov.healthit.chpl.scheduler.job.AddCuresUpdateToListingsJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+
         <job>
             <name>Listings Snapshot</name>
             <group>chplJobs</group>
@@ -785,6 +805,15 @@
                     <value>47</value>
                 </entry>
             </job-data-map>
+        </job>
+
+        <job>
+          <name>inviteDevelopersJob</name>
+          <group>systemJobs</group>
+          <description>Send account invitations to POCs of any Developers that do not have accounts associated with them.</description>
+          <job-class>gov.healthit.chpl.scheduler.job.onetime.InviteDevelopersJob</job-class>
+          <durability>true</durability>
+          <recover>false</recover>
         </job>
     </schedule>
 </job-scheduling-data>

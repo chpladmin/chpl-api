@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
@@ -76,6 +79,7 @@ public class ChangeRequestManager extends SecurityManager {
     private ActivityManager activityManager;
     private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil msgUtil;
+    private FF4j ff4j;
 
     @Autowired
     public ChangeRequestManager(ChangeRequestDAO changeRequestDAO,
@@ -85,7 +89,7 @@ public class ChangeRequestManager extends SecurityManager {
             ChangeRequestStatusService crStatusHelper,
             ChangeRequestValidationFactory crValidationFactory,
             ChangeRequestDetailsFactory crDetailsFactory, DeveloperManager devManager,
-            ActivityManager activityManager, ResourcePermissions resourcePermissions, ErrorMessageUtil msgUtil) {
+            ActivityManager activityManager, ResourcePermissions resourcePermissions, ErrorMessageUtil msgUtil, FF4j ff4j) {
         this.changeRequestDAO = changeRequestDAO;
         this.changeRequestTypeDAO = changeRequestTypeDAO;
         this.changeRequestStatusTypeDAO = changeRequestStatusTypeDAO;
@@ -96,6 +100,7 @@ public class ChangeRequestManager extends SecurityManager {
         this.activityManager = activityManager;
         this.resourcePermissions = resourcePermissions;
         this.msgUtil = msgUtil;
+        this.ff4j = ff4j;
     }
 
     @Transactional(readOnly = true)
@@ -117,7 +122,7 @@ public class ChangeRequestManager extends SecurityManager {
             + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).CREATE, #parentChangeRequest)")
     public List<ChangeRequest> createChangeRequests(ChangeRequest parentChangeRequest)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException,
-            InvalidArgumentsException {
+            InvalidArgumentsException, NotImplementedException {
         //get developer from db in case passed-in data is not correct
         if (parentChangeRequest.getDeveloper() == null || parentChangeRequest.getDeveloper().getDeveloperId() == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.developer.required"));
@@ -198,6 +203,9 @@ public class ChangeRequestManager extends SecurityManager {
     private List<ChangeRequest> splitByChangeRequestType(ChangeRequest parentChangeRequest) {
         List<ChangeRequest> changeRequests = new ArrayList<ChangeRequest>();
         if (isWebsiteChangeRequest(parentChangeRequest)) {
+            if (!ff4j.check(FeatureList.DEMOGRAPHIC_CHANGE_REQUEST)) {
+                throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
+            }
             ChangeRequestType websiteChangeRequestType = new ChangeRequestType();
             websiteChangeRequestType.setId(websiteChangeRequestTypeId);
             ChangeRequest websiteChangeRequest = new ChangeRequest();
@@ -206,7 +214,11 @@ public class ChangeRequestManager extends SecurityManager {
             websiteChangeRequest.setSubmittedDate(parentChangeRequest.getSubmittedDate());
             websiteChangeRequest.setDetails(extractWebsiteChangesFromDetails(parentChangeRequest));
             changeRequests.add(websiteChangeRequest);
-        } else if (isDeveloperDetailsChangeRequest(parentChangeRequest)) {
+        }
+        if (isDeveloperDetailsChangeRequest(parentChangeRequest)) {
+            if (!ff4j.check(FeatureList.DEMOGRAPHIC_CHANGE_REQUEST)) {
+                throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
+            }
             ChangeRequestType devDetailsChangeRequestType = new ChangeRequestType();
             devDetailsChangeRequestType.setId(developerDetailsChangeRequestTypeId);
             ChangeRequest developerDetailsChangeRequest = new ChangeRequest();
@@ -215,7 +227,8 @@ public class ChangeRequestManager extends SecurityManager {
             developerDetailsChangeRequest.setSubmittedDate(parentChangeRequest.getSubmittedDate());
             developerDetailsChangeRequest.setDetails(extractDeveloperChangesFromDetails(parentChangeRequest));
             changeRequests.add(developerDetailsChangeRequest);
-        } else if (isDeveloperAttestationChangeRequest(parentChangeRequest)) {
+        }
+        if (isDeveloperAttestationChangeRequest(parentChangeRequest)) {
             ChangeRequestType attestationChangeRequestType = new ChangeRequestType();
             attestationChangeRequestType.setId(attestationChangeRequestTypeId);
             ChangeRequest attestationChangeRequest = new ChangeRequest();
