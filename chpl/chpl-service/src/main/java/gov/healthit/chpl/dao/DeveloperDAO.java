@@ -42,13 +42,11 @@ import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.listing.ListingsFromBannedDevelopersEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Repository("developerDAO")
-@Loggable
 public class DeveloperDAO extends BaseDAOImpl {
 
     private static final Logger LOGGER = LogManager.getLogger(DeveloperDAO.class);
@@ -802,7 +800,6 @@ public class DeveloperDAO extends BaseDAOImpl {
         return entity;
     }
 
-    @Loggable
     private DeveloperACBMapEntity getTransparencyMappingEntity(final Long developerId, final Long acbId) {
         Query query = entityManager.createQuery("SELECT map "
                 + "FROM DeveloperACBMapEntity map "

@@ -2,6 +2,8 @@ package gov.healthit.chpl.scheduler.job;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
@@ -20,6 +22,11 @@ public class CertifiedProduct2015Gatherer {
 
     @Autowired
     private CertifiedProductDAO certifiedProductDAO;
+
+    public List<CertifiedProductSearchDetails> getAll2015CertifiedProducts(Logger logger, Integer threadPoolSize) throws InterruptedException, ExecutionException {
+        ForkJoinPool pool = new ForkJoinPool(threadPoolSize);
+        return pool.submit(() -> getAll2015CertifiedProducts(logger)).get();
+    }
 
     public List<CertifiedProductSearchDetails> getAll2015CertifiedProducts(Logger logger) {
         logger.info("Retrieving all 2015 listings");

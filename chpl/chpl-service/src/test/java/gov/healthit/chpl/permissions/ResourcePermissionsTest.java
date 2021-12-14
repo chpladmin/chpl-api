@@ -11,8 +11,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.auth.Authority;
+import gov.healthit.chpl.domain.auth.UserPermission;
 import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.dto.auth.UserPermissionDTO;
 
 public class ResourcePermissionsTest {
     private ResourcePermissions resourcePermissions;
@@ -31,14 +31,14 @@ public class ResourcePermissionsTest {
         Mockito.when(resourcePermissions.isUserRoleOncStaff()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
         Mockito.when(resourcePermissions.getRoleByUserId(ArgumentMatchers.anyLong()))
-                .thenReturn(UserPermissionDTO.builder()
+                .thenReturn(UserPermission.builder()
                         .authority(Authority.ROLE_DEVELOPER)
                         .build());
         Mockito.when(resourcePermissions.hasPermissionOnUser(ArgumentMatchers.any(UserDTO.class))).thenCallRealMethod();
 
         UserDTO userToCheck = UserDTO.builder()
                 .id(1L)
-                .permission(UserPermissionDTO.builder()
+                .permission(UserPermission.builder()
                         .authority(Authority.ROLE_DEVELOPER)
                         .build())
                 .build();

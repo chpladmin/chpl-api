@@ -1,5 +1,26 @@
 # Release Notes
 
+## Version 32.6.0
+_13 December 2021_
+
+### Features
+* Update log4j libraries to 2.15
+* Disallow editing of User email addresses
+
+---
+
+## Version 32.5.1
+_9 December 2021_
+
+### Bug Fixes
+* Respect "deleted" flag for Surveillance Documents
+
+### Flagged Features
+* Add SVAP parsing and validation to flexible upload
+* Add updated 2015 Edition CSV definition file
+
+---
+
 ## Version 32.5.0
 _29 November 2021_
 

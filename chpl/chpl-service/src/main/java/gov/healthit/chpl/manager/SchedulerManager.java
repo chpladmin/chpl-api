@@ -39,14 +39,12 @@ import gov.healthit.chpl.domain.schedule.ScheduledSystemJob;
 import gov.healthit.chpl.domain.schedule.TriggerSchedule;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.ChplRepeatableTriggerChangeEmailer;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 import gov.healthit.chpl.util.AuthUtil;
 
-@Loggable
 @Service
 public class SchedulerManager extends SecuredManager {
     private static final String AUTHORITY_DELIMITER = ";";

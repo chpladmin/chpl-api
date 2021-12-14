@@ -13,9 +13,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.TransparencyAttestationDTO;
-import gov.healthit.chpl.logging.Loggable;
 
-@Loggable
 @Component
 public class TransparencyAttestationManager {
 
