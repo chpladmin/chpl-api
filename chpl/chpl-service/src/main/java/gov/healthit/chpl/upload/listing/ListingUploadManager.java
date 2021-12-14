@@ -251,6 +251,7 @@ public class ListingUploadManager {
                 return null;
             }
             listingUploadDao.updateStatus(id, ListingUploadStatus.CONFIRMED);
+            //TODO: update ListingUpload with the ID of the newly confirmed listing in the CHPL
         }
 
         return createTemporaryConfirmationResponse(confirmListingRequest.getListing());

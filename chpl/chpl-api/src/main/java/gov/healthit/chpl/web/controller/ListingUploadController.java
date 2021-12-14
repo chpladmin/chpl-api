@@ -107,7 +107,7 @@ public class ListingUploadController {
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @DeprecatedResponseFields(responseClass = CertifiedProductSearchDetails.class)
-    @RequestMapping(value = "/pending/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/pending/{id:^-?\\d+$}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public CertifiedProductSearchDetails geById(@PathVariable("id") Long id)
             throws ValidationException, EntityRetrievalException {
         if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
@@ -208,7 +208,7 @@ public class ListingUploadController {
                     + "and administrative authority on the ONC-ACB for the potentially confirmed listing is required.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
-    @RequestMapping(value = "/pending/{id}", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/pending/{id:^-?\\d+$}", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<CertifiedProductSearchDetails> confirmLisitngUpload(@PathVariable("id") Long id,
             ConfirmListingRequest confirmListingRequest) throws ValidationException, InvalidArgumentsException {
         CertifiedProductSearchDetails createdListing = listingUploadManager.confirm(id, confirmListingRequest);
@@ -235,7 +235,7 @@ public class ListingUploadController {
                     + "and administrative authority on the ONC-ACB for each uploaded listing is required.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
-    @RequestMapping(value = "/pending/{id}", method = RequestMethod.DELETE,
+    @RequestMapping(value = "/pending/{id:^-?\\d+$}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public void rejectListingUpload(@PathVariable("id") Long id)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
