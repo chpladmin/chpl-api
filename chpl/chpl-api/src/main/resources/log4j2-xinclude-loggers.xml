@@ -198,4 +198,8 @@
         <AppenderRef ref="listingsWithCriterionSnapshotCsvCreatorJob" />
         <AppenderRef ref="listingsWithCriterionSnapshotCsvCreatorJobJson" />
     </Logger>
+    <Logger name="inviteDevelopersJobLogger" level="INFO"
+        additivity="false">
+        <AppenderRef ref="inviteDevelopersJob" />
+    </Logger>
 </Loggers>

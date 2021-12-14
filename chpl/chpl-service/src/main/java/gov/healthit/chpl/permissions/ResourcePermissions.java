@@ -21,6 +21,7 @@ import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dao.UserTestingLabMapDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.auth.Authority;
+import gov.healthit.chpl.domain.auth.UserPermission;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
@@ -28,7 +29,6 @@ import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.dto.UserDeveloperMapDTO;
 import gov.healthit.chpl.dto.UserTestingLabMapDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.dto.auth.UserPermissionDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
@@ -316,7 +316,7 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
-    public UserPermissionDTO getRoleByUserId(Long userId) {
+    public UserPermission getRoleByUserId(Long userId) {
         try {
             UserDTO user = userDAO.getById(userId);
             return user.getPermission();
@@ -444,7 +444,7 @@ public class ResourcePermissions {
             return false;
         }
 
-        UserPermissionDTO role = getRoleByUserId(user.getId());
+        UserPermission role = getRoleByUserId(user.getId());
         if (role == null) {
             return false;
         }
@@ -457,7 +457,7 @@ public class ResourcePermissions {
             return false;
         }
 
-        UserPermissionDTO role = getRoleByUserId(auditUserId);
+        UserPermission role = getRoleByUserId(auditUserId);
         if (role == null) {
             return false;
         }

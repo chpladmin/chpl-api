@@ -85,7 +85,6 @@ public class UserDAO extends BaseDAOImpl {
     public UserDTO update(UserDTO user) throws UserRetrievalException, MultipleUserAccountsException {
         UserEntity userEntity = getEntityById(user.getId());
         userEntity.setFailedLoginCount(user.getFailedLoginCount());
-        userEntity.getContact().setEmail(user.getEmail());
         userEntity.getContact().setPhoneNumber(user.getPhoneNumber());
         userEntity.getContact().setSignatureDate(user.getSignatureDate());
         userEntity.getContact().setTitle(user.getTitle());

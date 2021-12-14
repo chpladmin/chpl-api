@@ -8,44 +8,41 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.auth.InvitationDTO;
+import gov.healthit.chpl.domain.auth.UserInvitation;
 import gov.healthit.chpl.entity.auth.InvitationEntity;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
+import lombok.extern.log4j.Log4j2;
 
 @Repository(value = "invitationDAO")
+@Log4j2
 public class InvitationDAO extends BaseDAOImpl {
-
-    public InvitationDTO create(InvitationDTO dto) throws UserCreationException {
-        Date creationDate = new Date();
-
+    public Long create(UserInvitation invitation) throws UserCreationException {
         InvitationEntity toCreate = new InvitationEntity();
-        toCreate.setCreationDate(creationDate);
+        toCreate.setUserPermissionId(invitation.getPermission().getId());
+        toCreate.setPermissionObjectId(invitation.getPermissionObjectId());
+        toCreate.setEmailAddress(invitation.getEmailAddress());
+        toCreate.setInviteToken(invitation.getHash());
         toCreate.setDeleted(false);
-        toCreate.setUserPermissionId(dto.getPermission().getId());
-        toCreate.setPermissionObjectId(dto.getPermissionObjectId());
-        toCreate.setEmailAddress(dto.getEmail());
-        toCreate.setInviteToken(dto.getInviteToken());
-        toCreate.setLastModifiedDate(new Date());
         toCreate.setLastModifiedUser(AuthUtil.getAuditId());
         super.create(toCreate);
-        return new InvitationDTO(toCreate);
+        return toCreate.getId();
     }
 
-    public InvitationDTO update(InvitationDTO dto) throws UserRetrievalException {
-        InvitationEntity toUpdate = getEntityById(dto.getId());
+    public UserInvitation update(UserInvitation invitation) throws UserRetrievalException {
+        InvitationEntity toUpdate = getEntityById(invitation.getId());
 
         if (toUpdate == null) {
-            throw new UserRetrievalException("Could not find invitation with id " + dto.getId());
+            throw new UserRetrievalException("Could not find invitation with id " + invitation.getId());
         }
-        toUpdate.setConfirmToken(dto.getConfirmToken());
-        toUpdate.setInviteToken(dto.getInviteToken());
-        toUpdate.setCreatedUserId(dto.getCreatedUserId());
+        toUpdate.setConfirmToken(invitation.getConfirmationToken());
+        toUpdate.setInviteToken(invitation.getInvitationToken());
+        toUpdate.setCreatedUserId(invitation.getCreatedUserId());
         toUpdate.setLastModifiedDate(new Date());
         toUpdate.setLastModifiedUser(AuthUtil.getAuditId());
         super.update(toUpdate);
-        return new InvitationDTO(toUpdate);
+        return toUpdate.toDomain();
     }
 
     public void delete(Long id) throws UserRetrievalException {
@@ -54,49 +51,47 @@ public class InvitationDAO extends BaseDAOImpl {
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(currentDate);
-            // TODO: can we update the last modified user field like this? is
-            // someone authenticated at this point?
-            // toDelete.setLastModifiedUser(Util.getAuditId());
+            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             super.update(toDelete);
         } else {
+            LOGGER.error("Unable to mark user invitation with id '" + id + "' as deleted.");
             throw new UserRetrievalException("Could not find invitation with id " + id);
         }
     }
 
-    public InvitationDTO getById(Long id) throws UserRetrievalException {
+    public UserInvitation getById(Long id) throws UserRetrievalException {
         InvitationEntity entity = getEntityById(id);
         if (entity == null) {
             return null;
         }
-        return new InvitationDTO(entity);
+        return entity.toDomain();
     }
 
-    public InvitationDTO getByInvitationToken(String token) {
+    public UserInvitation getByInvitationToken(String token) {
         InvitationEntity entity = getEntityByInvitationToken(token);
         if (entity == null) {
             return null;
         }
-        return new InvitationDTO(entity);
+        return entity.toDomain();
     }
 
-    public InvitationDTO getByConfirmationToken(String token) {
+    public UserInvitation getByConfirmationToken(String token) {
         InvitationEntity entity = getEntityByConfirmToken(token);
         if (entity == null) {
             return null;
         }
-        return new InvitationDTO(entity);
+        return entity.toDomain();
     }
 
     private InvitationEntity getEntityById(Long id) throws UserRetrievalException {
-        Query query = entityManager.createQuery(
-                "FROM InvitationEntity i "
+        Query query = entityManager.createQuery("SELECT i "
+                + "FROM InvitationEntity i "
                 + "JOIN FETCH i.permission "
                 + "WHERE (i.deleted = false) "
                 + "AND (i.id = :id) ",
                 InvitationEntity.class);
         query.setParameter("id", id);
         List<InvitationEntity> result = query.getResultList();
-
         if (result.size() > 1) {
             throw new UserRetrievalException("Data error. Duplicate invitation id in database.");
         }
@@ -108,15 +103,14 @@ public class InvitationDAO extends BaseDAOImpl {
     }
 
     private InvitationEntity getEntityByInvitationToken(String token) {
-        Query query = entityManager.createQuery(
-                "FROM InvitationEntity i "
+        Query query = entityManager.createQuery("SELECT i "
+                + "FROM InvitationEntity i "
                 + "JOIN FETCH i.permission "
                 + "WHERE (i.deleted = false) "
                 + "AND (i.inviteToken = :token) ",
                 InvitationEntity.class);
         query.setParameter("token", token);
         List<InvitationEntity> result = query.getResultList();
-
         if (result.size() == 0) {
             return null;
         }
@@ -124,15 +118,14 @@ public class InvitationDAO extends BaseDAOImpl {
     }
 
     private InvitationEntity getEntityByConfirmToken(String token) {
-        Query query = entityManager.createQuery(
-                "FROM InvitationEntity i "
+        Query query = entityManager.createQuery("SELECT i "
+                + "FROM InvitationEntity i "
                 + "JOIN FETCH i.permission "
                 + "WHERE (i.deleted = false) "
                 + "AND (i.confirmToken = :token) ",
                 InvitationEntity.class);
         query.setParameter("token", token);
         List<InvitationEntity> result = query.getResultList();
-
         if (result.size() == 0) {
             return null;
         }
