@@ -50,7 +50,6 @@ import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.auth.AuthenticationManager;
 import gov.healthit.chpl.manager.auth.UserManager;
@@ -65,7 +64,6 @@ import lombok.Getter;
 @Tag(name = "users", description = "Allows management of users.")
 @RestController
 @RequestMapping("/users")
-@Loggable
 public class UserManagementController {
     private UserManager userManager;
     private InvitationManager invitationManager;
@@ -101,9 +99,11 @@ public class UserManagementController {
                     + "can be passed in here. The account is created but cannot be used until that user "
                     + "confirms that their email address is valid. The correct order to call invitation requests is "
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm ",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody User createUser(@RequestBody CreateUserFromInvitationRequest userInfo)
             throws ValidationException, EntityRetrievalException, InvalidArgumentsException,
             UserRetrievalException, MultipleUserAccountsException, UserCreationException,
@@ -151,8 +151,8 @@ public class UserManagementController {
         }
         if (!StringUtils.isEmpty(request.getUser().getPhoneNumber())
                 && request.getUser().getPhoneNumber().length() > msgUtil.getMessageAsInteger("maxLength.phoneNumber")) {
-           validationErrors.add(msgUtil.getMessage("user.phoneNumber.maxlength",
-                   msgUtil.getMessageAsInteger("maxLength.phoneNumber")));
+            validationErrors.add(msgUtil.getMessage("user.phoneNumber.maxlength",
+                    msgUtil.getMessageAsInteger("maxLength.phoneNumber")));
         }
         return validationErrors;
     }
@@ -164,9 +164,11 @@ public class UserManagementController {
                     + "via this request before the user will be allowed to log in with "
                     + "the credentials they selected. " + "The correct order to call invitation requests is "
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm ",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/confirm", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public User confirmUser(@RequestBody String hash) throws InvalidArgumentsException, UserRetrievalException,
     EntityRetrievalException, MessagingException, JsonProcessingException, EntityCreationException,
     MultipleUserAccountsException {
@@ -186,11 +188,13 @@ public class UserManagementController {
                     + "The correct order to call invitation requests is "
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm.  Security Restrictions: ROLE_ADMIN "
                     + "or ROLE_ONC.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/{userId}/authorize", method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = "application/json; charset=utf-8")
     public String authorizeUser(@RequestBody AuthorizeCredentials credentials)
             throws InvalidArgumentsException, JWTCreationException, UserRetrievalException,
             EntityRetrievalException, MultipleUserAccountsException {
@@ -240,10 +244,12 @@ public class UserManagementController {
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm. "
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC can invite users to any organization.  "
                     + "ROLE_ACB and ROLE_ATL can add users to their own organization.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/invite", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public UserInvitation inviteUser(@RequestBody UserInvitation invitation)
             throws InvalidArgumentsException, UserCreationException, UserRetrievalException,
             UserPermissionRetrievalException, AddressException, EmailNotSentException {
@@ -278,10 +284,12 @@ public class UserManagementController {
     }
 
     @Operation(summary = "Modify user information.", description = "",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/{userId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public User updateUserDetails(@RequestBody User userInfo)
             throws UserRetrievalException, UserPermissionRetrievalException, JsonProcessingException,
             EntityCreationException, EntityRetrievalException, ValidationException, UserAccountExistsException,
@@ -298,8 +306,10 @@ public class UserManagementController {
     @Operation(summary = "Delete a user.",
             description = "Deletes a user account and all associated authorities on ACBs and ATLs. "
                     + "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public DeletedUser deleteUser(@PathVariable("userId") Long userId)
@@ -321,8 +331,10 @@ public class UserManagementController {
     @Operation(summary = "View users of the system.",
             description = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can see all users.  ROLE_ACB, ROLE_ATL, "
                     + "and ROLE_CMS_STAFF can see themselves.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @PreAuthorize("isAuthenticated()")
     public @ResponseBody UsersResponse getUsers() {
@@ -344,10 +356,12 @@ public class UserManagementController {
             description = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
                     + "have ROLE_ACB.",
             deprecated = true,
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/{userName}/details", method = RequestMethod.GET,
-        produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody User getUserByUsername(@PathVariable("userName") String userName)
             throws UserRetrievalException, MultipleUserAccountsException {
         UserDTO user = userManager.getByNameOrEmail(userName);
@@ -360,10 +374,12 @@ public class UserManagementController {
     @Operation(summary = "View a specific user's details.",
             description = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
                     + "have ROLE_ACB.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/beta/{id}/details", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody User getUser(@PathVariable("id") Long id)
             throws UserRetrievalException {
 
