@@ -32,6 +32,16 @@ public class SpecialProperties {
         }
     }
 
+    public Date getEffectiveRuleDatePlus18Months() {
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+        try {
+            return sdf.parse(env.getProperty("cures.ruleEffectiveDatePlus18Months"));
+        } catch (ParseException e) {
+            LOGGER.error("Could not determine value of 'cures.ruleEffectiveDate'.", e);
+            return null;
+        }
+    }
+
     public Date getEffectiveRuleTimestamp() {
         Date curesEffectiveRuleDate = getEffectiveRuleDate();
         Calendar cal = Calendar.getInstance();

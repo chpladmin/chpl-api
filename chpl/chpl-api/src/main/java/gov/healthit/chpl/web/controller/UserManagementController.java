@@ -1,7 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -13,7 +12,7 @@ import javax.mail.internet.AddressException;
 import org.apache.commons.lang3.NotImplementedException;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -32,16 +31,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
-import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.auth.AuthorizeCredentials;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UserInvitation;
 import gov.healthit.chpl.domain.auth.UsersResponse;
-import gov.healthit.chpl.dto.auth.InvitationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserInvitationDTO;
-import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -54,8 +50,6 @@ import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.logging.Loggable;
-import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.auth.AuthenticationManager;
 import gov.healthit.chpl.manager.auth.UserManager;
@@ -65,35 +59,38 @@ import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.Getter;
 
 @Tag(name = "users", description = "Allows management of users.")
 @RestController
 @RequestMapping("/users")
-@Loggable
 public class UserManagementController {
-    private static final long VALID_INVITATION_LENGTH = 3L * 24L * 60L * 60L * 1000L;
-    private static final long VALID_CONFIRMATION_LENGTH = 30L * 24L * 60L * 60L * 1000L;
-
     private UserManager userManager;
     private InvitationManager invitationManager;
     private AuthenticationManager authenticationManager;
-    private ActivityManager activityManager;
     private FF4j ff4j;
-    private Environment env;
     private ErrorMessageUtil msgUtil;
 
+    private long invitationLengthInDays;
+    private long confirmationLengthInDays;
+    private long authorizationLengthInDays;
 
     @Autowired
     public UserManagementController(UserManager userManager, InvitationManager invitationManager,
-            AuthenticationManager authenticationManager, ActivityManager activityManager, FF4j ff4j,
-            Environment env, ErrorMessageUtil errorMessageUtil) {
+            AuthenticationManager authenticationManager, FF4j ff4j,
+            ErrorMessageUtil errorMessageUtil,
+            @Value("${invitationLengthInDays}") Long invitationLengthDays,
+            @Value("${confirmationLengthInDays}") Long confirmationLengthDays,
+            @Value("${authorizationLengthInDays}") Long authorizationLengthInDays) {
         this.userManager = userManager;
         this.invitationManager = invitationManager;
         this.authenticationManager = authenticationManager;
-        this.activityManager = activityManager;
         this.ff4j = ff4j;
-        this.env = env;
         this.msgUtil = errorMessageUtil;
+
+        this.invitationLengthInDays = invitationLengthDays;
+        this.confirmationLengthInDays = confirmationLengthDays;
+        this.authorizationLengthInDays = authorizationLengthInDays;
     }
 
     @Operation(summary = "Create a new user account from an invitation.",
@@ -102,9 +99,11 @@ public class UserManagementController {
                     + "can be passed in here. The account is created but cannot be used until that user "
                     + "confirms that their email address is valid. The correct order to call invitation requests is "
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm ",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody User createUser(@RequestBody CreateUserFromInvitationRequest userInfo)
             throws ValidationException, EntityRetrievalException, InvalidArgumentsException,
             UserRetrievalException, MultipleUserAccountsException, UserCreationException,
@@ -119,40 +118,14 @@ public class UserManagementController {
             throw new ValidationException(errors, null);
         }
 
-        InvitationDTO invitation = invitationManager.getByInvitationHash(userInfo.getHash());
-        if (invitation == null || invitation.isOlderThan(VALID_INVITATION_LENGTH)) {
-            throw new ValidationException(msgUtil.getMessage("user.providerKey.invalid"));
+        UserInvitation invitation = invitationManager.getByInvitationHash(userInfo.getHash());
+        if (invitation == null || invitation.isOlderThan(invitationLengthInDays)) {
+            throw new ValidationException(msgUtil.getMessage("user.invitation.expired",
+                    invitationLengthInDays + "",
+                    invitationLengthInDays == 1 ? "" : "s"));
         }
 
-        UserDTO createdUser = invitationManager.createUserFromInvitation(invitation, userInfo.getUser());
-
-        // get the invitation again to get the new hash
-        invitation = invitationManager.getById(invitation.getId());
-
-        // send email for user to confirm email address
-        String htmlMessage = "<p>Thank you for setting up your administrator account on ONC's Certified Health IT Product List (CHPL). "
-                + "Please click the link below to activate your account: <br/>" + env.getProperty("chplUrlBegin")
-                + "/#/registration/confirm-user/" + invitation.getConfirmToken() + "</p>"
-                + "<p>If you have any issues completing the registration, "
-                + "please visit the <a href=\"https://inquiry.healthit.gov/support/plugins/servlet/loginfreeRedirMain?portalid=2&request=51\">Health IT Feedback and Inquiry Portal</a> and select \"Certified Health IT Product List (CHPL)\" to submit a ticket.</p>"
-                + "<p>The CHPL Team</p>";
-
-        String[] toEmails = {
-                createdUser.getEmail()
-        };
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
-        .subject("Confirm CHPL Administrator Account")
-        .htmlMessage(htmlMessage)
-        .sendEmail();
-
-        String activityDescription = "User " + createdUser.getEmail() + " was created.";
-        activityManager.addActivity(ActivityConcept.USER, createdUser.getId(), activityDescription,
-                null, createdUser, createdUser.getId());
-
-        User result = new User(createdUser);
-        result.setHash(invitation.getConfirmToken());
-        return result;
+        return invitationManager.createUserFromInvitation(invitation, userInfo.getUser());
     }
 
     private Set<String> validateCreateUserFromInvitationRequest(CreateUserFromInvitationRequest request) {
@@ -178,8 +151,8 @@ public class UserManagementController {
         }
         if (!StringUtils.isEmpty(request.getUser().getPhoneNumber())
                 && request.getUser().getPhoneNumber().length() > msgUtil.getMessageAsInteger("maxLength.phoneNumber")) {
-           validationErrors.add(msgUtil.getMessage("user.phoneNumber.maxlength",
-                   msgUtil.getMessageAsInteger("maxLength.phoneNumber")));
+            validationErrors.add(msgUtil.getMessage("user.phoneNumber.maxlength",
+                    msgUtil.getMessageAsInteger("maxLength.phoneNumber")));
         }
         return validationErrors;
     }
@@ -191,18 +164,20 @@ public class UserManagementController {
                     + "via this request before the user will be allowed to log in with "
                     + "the credentials they selected. " + "The correct order to call invitation requests is "
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm ",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/confirm", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public User confirmUser(@RequestBody String hash) throws InvalidArgumentsException, UserRetrievalException,
     EntityRetrievalException, MessagingException, JsonProcessingException, EntityCreationException,
     MultipleUserAccountsException {
-        InvitationDTO invitation = invitationManager.getByConfirmationHash(hash);
+        UserInvitation invitation = invitationManager.getByConfirmationHash(hash);
 
-        if (invitation == null || invitation.isOlderThan(VALID_INVITATION_LENGTH)) {
-            throw new InvalidArgumentsException(
-                    "Provided user key is not valid in the database. The user key is valid for up to 3 days from when "
-                            + "it is assigned.");
+        if (invitation == null || invitation.isOlderThan(confirmationLengthInDays)) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("user.confirmation.expired",
+                    confirmationLengthInDays + "",
+                    confirmationLengthInDays == 1 ? "" : "s"));
         }
         UserDTO createdUser = invitationManager.confirmAccountEmail(invitation);
         return new User(createdUser);
@@ -213,11 +188,13 @@ public class UserManagementController {
                     + "The correct order to call invitation requests is "
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm.  Security Restrictions: ROLE_ADMIN "
                     + "or ROLE_ONC.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/{userId}/authorize", method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = "application/json; charset=utf-8")
     public String authorizeUser(@RequestBody AuthorizeCredentials credentials)
             throws InvalidArgumentsException, JWTCreationException, UserRetrievalException,
             EntityRetrievalException, MultipleUserAccountsException {
@@ -233,11 +210,11 @@ public class UserManagementController {
                     "Username and Password are required since no user is currently logged in.");
         }
 
-        InvitationDTO invitation = invitationManager.getByInvitationHash(credentials.getHash());
-        if (invitation == null || invitation.isOlderThan(VALID_CONFIRMATION_LENGTH)) {
-            throw new InvalidArgumentsException(
-                    "Provided user key is not valid in the database. The user key is valid for up to 3 days from when "
-                            + "it is assigned.");
+        UserInvitation invitation = invitationManager.getByInvitationHash(credentials.getHash());
+        if (invitation == null || invitation.isOlderThan(authorizationLengthInDays)) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("user.invitation.expired",
+                    authorizationLengthInDays + "",
+                    authorizationLengthInDays == 1 ? "" : "s"));
         }
 
         // Log the user in, if they are not logged in
@@ -267,10 +244,12 @@ public class UserManagementController {
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm. "
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC can invite users to any organization.  "
                     + "ROLE_ACB and ROLE_ATL can add users to their own organization.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/invite", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public UserInvitation inviteUser(@RequestBody UserInvitation invitation)
             throws InvalidArgumentsException, UserCreationException, UserRetrievalException,
             UserPermissionRetrievalException, AddressException, EmailNotSentException {
@@ -279,59 +258,38 @@ public class UserManagementController {
             throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
 
-        InvitationDTO createdInvite = null;
+        UserInvitation createdInvitiation = null;
         if (invitation.getRole().equals(Authority.ROLE_ADMIN)) {
-            createdInvite = invitationManager.inviteAdmin(invitation.getEmailAddress());
+            createdInvitiation = invitationManager.inviteAdmin(invitation.getEmailAddress());
         } else if (invitation.getRole().equals(Authority.ROLE_ONC)) {
-            createdInvite = invitationManager.inviteOnc(invitation.getEmailAddress());
+            createdInvitiation = invitationManager.inviteOnc(invitation.getEmailAddress());
         } else if (invitation.getRole().equals(Authority.ROLE_ONC_STAFF)) {
-            createdInvite = invitationManager.inviteOncStaff(invitation.getEmailAddress());
+            createdInvitiation = invitationManager.inviteOncStaff(invitation.getEmailAddress());
         } else if (invitation.getRole().equals(Authority.ROLE_CMS_STAFF)) {
-            createdInvite = invitationManager.inviteCms(invitation.getEmailAddress());
+            createdInvitiation = invitationManager.inviteCms(invitation.getEmailAddress());
         } else if (invitation.getRole().equals(Authority.ROLE_ACB)
                 && invitation.getPermissionObjectId() != null) {
-            createdInvite = invitationManager.inviteWithAcbAccess(invitation.getEmailAddress(),
+            createdInvitiation = invitationManager.inviteWithAcbAccess(invitation.getEmailAddress(),
                     invitation.getPermissionObjectId());
         } else if (invitation.getRole().equals(Authority.ROLE_ATL)
                 && invitation.getPermissionObjectId() != null) {
-            createdInvite = invitationManager.inviteWithAtlAccess(invitation.getEmailAddress(),
+            createdInvitiation = invitationManager.inviteWithAtlAccess(invitation.getEmailAddress(),
                     invitation.getPermissionObjectId());
         } else if (invitation.getRole().equals(Authority.ROLE_DEVELOPER)
                 && invitation.getPermissionObjectId() != null) {
-            createdInvite = invitationManager.inviteWithDeveloperAccess(invitation.getEmailAddress(),
+            createdInvitiation = invitationManager.inviteWithDeveloperAccess(invitation.getEmailAddress(),
                     invitation.getPermissionObjectId());
         }
-
-        // send email
-        String htmlMessage = "<p>Hi,</p>"
-                + "<p>You have been granted a new role on ONC's Certified Health IT Product List (CHPL) "
-                + "which will allow you to manage certified product listings on the CHPL. "
-                + "Please click the link below to create or update your account: <br/>"
-                + env.getProperty("chplUrlBegin") + "/#/registration/create-user/" + createdInvite.getInviteToken()
-                + "</p>"
-                + "<p>If you have any issues completing the registration, "
-                + "please visit the <a href=\"https://inquiry.healthit.gov/support/plugins/servlet/loginfreeRedirMain?portalid=2&request=51\">Health IT Feedback and Inquiry Portal</a> and select \"Certified Health IT Product List (CHPL)\" to submit a ticket.</p>"
-                + "<p>Take care,<br/> " + "The CHPL Team</p>";
-
-        String[] toEmails = {
-                createdInvite.getEmail()
-        };
-
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
-        .subject("CHPL Administrator Invitation")
-        .htmlMessage(htmlMessage)
-        .sendEmail();
-
-        UserInvitation result = new UserInvitation(createdInvite);
-        return result;
+        return createdInvitiation;
     }
 
     @Operation(summary = "Modify user information.", description = "",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/{userId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public User updateUserDetails(@RequestBody User userInfo)
             throws UserRetrievalException, UserPermissionRetrievalException, JsonProcessingException,
             EntityCreationException, EntityRetrievalException, ValidationException, UserAccountExistsException,
@@ -348,11 +306,13 @@ public class UserManagementController {
     @Operation(summary = "Delete a user.",
             description = "Deletes a user account and all associated authorities on ACBs and ATLs. "
                     + "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
-    public String deleteUser(@PathVariable("userId") Long userId)
+    public DeletedUser deleteUser(@PathVariable("userId") Long userId)
             throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException,
             JsonProcessingException, EntityCreationException, EntityRetrievalException {
 
@@ -365,20 +325,16 @@ public class UserManagementController {
             throw new UserRetrievalException("Could not find user with id " + userId);
         }
         userManager.delete(toDelete);
-        //db soft delete trigger takes care of deleting things associated with this user.
-
-        String activityDescription = "Deleted user " + toDelete.getUsername() + ".";
-        activityManager.addActivity(ActivityConcept.USER, toDelete.getId(), activityDescription,
-                toDelete, null);
-
-        return "{\"deletedUser\" : true}";
+        return new DeletedUser(true);
     }
 
     @Operation(summary = "View users of the system.",
             description = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can see all users.  ROLE_ACB, ROLE_ATL, "
                     + "and ROLE_CMS_STAFF can see themselves.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @PreAuthorize("isAuthenticated()")
     public @ResponseBody UsersResponse getUsers() {
@@ -400,10 +356,12 @@ public class UserManagementController {
             description = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
                     + "have ROLE_ACB.",
             deprecated = true,
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/{userName}/details", method = RequestMethod.GET,
-        produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody User getUserByUsername(@PathVariable("userName") String userName)
             throws UserRetrievalException, MultipleUserAccountsException {
         UserDTO user = userManager.getByNameOrEmail(userName);
@@ -416,13 +374,24 @@ public class UserManagementController {
     @Operation(summary = "View a specific user's details.",
             description = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
                     + "have ROLE_ACB.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/beta/{id}/details", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody User getUser(@PathVariable("id") Long id)
             throws UserRetrievalException {
 
         return userManager.getUserInfo(id);
+    }
+
+    private class DeletedUser {
+        @Getter
+        private Boolean deletedUser;
+
+        DeletedUser(Boolean deletedUser) {
+            this.deletedUser = deletedUser;
+        }
     }
 }

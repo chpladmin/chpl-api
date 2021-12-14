@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
 import gov.healthit.chpl.search.domain.SearchRequest;
@@ -32,7 +31,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "search", description = "Search all CHPL listing data.")
 @RestController
-@Loggable
 public class SearchController {
     private ListingSearchService searchService;
 
@@ -45,13 +43,13 @@ public class SearchController {
             "checkstyle:methodlength", "checkstyle:parameternumber"
     })
     @Operation(summary = "Search the CHPL",
-        description = "If paging parameters are not specified, the first 20 records are returned by default. "
-            + "All parameters are optional. "
-            + "Any parameter that can accept multiple things (i.e. certificationStatuses) expects "
-            + "a comma-delimited list of those things (i.e. certificationStatuses = Active,Suspended). "
-            + "Date parameters are required to be in the format "
-            + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + ". ",
-        security = {
+            description = "If paging parameters are not specified, the first 20 records are returned by default. "
+                    + "All parameters are optional. "
+                    + "Any parameter that can accept multiple things (i.e. certificationStatuses) expects "
+                    + "a comma-delimited list of those things (i.e. certificationStatuses = Active,Suspended). "
+                    + "Date parameters are required to be in the format "
+                    + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + ". ",
+            security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @DeprecatedResponseFields(responseClass = SearchResponse.class)

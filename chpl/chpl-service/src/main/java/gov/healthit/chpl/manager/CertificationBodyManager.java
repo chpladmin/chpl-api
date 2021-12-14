@@ -25,12 +25,10 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import lombok.extern.log4j.Log4j2;
 
-@Loggable
 @Log4j2
 @Service("certificationBodyManager")
 public class CertificationBodyManager extends SecuredManager {
