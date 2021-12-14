@@ -106,10 +106,10 @@ public class UserManagerTest {
     }
 
     @Test
-    public void create_GoodData_Success() throws UserCreationException {
+    public void create_GoodData_Success() throws UserCreationException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         UserDTO user = getUserDTO(1L);
-        UserManager userManager = new UserManager(null, userDAO, null, bCryptPasswordEncoder,  null, null);
+        UserManager userManager = new UserManager(null, userDAO, null, bCryptPasswordEncoder,  null, activityManager);
 
         UserDTO newUser = userManager.create(user, "@ThisShouldBeAStrongPassword1!");
 
@@ -117,7 +117,7 @@ public class UserManagerTest {
     }
 
     @Test(expected = UserCreationException.class)
-    public void create_WeakPassword_UserCreationException() throws UserCreationException {
+    public void create_WeakPassword_UserCreationException() throws UserCreationException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
         Mockito.when(userDAO.create(ArgumentMatchers.any(UserDTO.class), ArgumentMatchers.anyString()))
                 .thenThrow(new UserCreationException());
 
@@ -208,9 +208,10 @@ public class UserManagerTest {
 
     @Test()
     public void delete_GoodData_Success()
-            throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
+            throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException,
+            EntityRetrievalException, EntityCreationException, JsonProcessingException{
 
-        UserManager userManager = new UserManager(null, userDAO, null, null, null, null);
+        UserManager userManager = new UserManager(null, userDAO, null, null, null, activityManager);
         userManager.delete(getUserDTO(1L));
 
         Mockito.verify(userDAO).delete(1L);
@@ -218,7 +219,8 @@ public class UserManagerTest {
 
     @Test(expected = UserRetrievalException.class)
     public void delete_UserNotValid_UserRetrievalExceptionThrown()
-            throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
+            throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException,
+            EntityRetrievalException, EntityCreationException, JsonProcessingException {
         Mockito.doThrow(UserRetrievalException.class).when(userDAO).delete(ArgumentMatchers.anyLong());
 
         UserManager userManager = new UserManager(null, userDAO, null, null, null, null);

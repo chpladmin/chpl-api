@@ -15,7 +15,6 @@ import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.OrganizationDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.dto.auth.UserPermissionDTO;
 import gov.healthit.chpl.entity.auth.UserEntity;
 
 @Component
@@ -66,7 +65,7 @@ public class UserMapper {
             dto.setSignatureDate(entity.getContact().getSignatureDate());
         }
         if (entity.getPermission() != null) {
-            dto.setPermission(new UserPermissionDTO(entity.getPermission()));
+            dto.setPermission(entity.getPermission().toDomain());
         }
         return dto;
     }

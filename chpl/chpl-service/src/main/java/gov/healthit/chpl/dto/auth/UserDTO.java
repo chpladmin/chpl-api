@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.domain.auth.UserPermission;
 import gov.healthit.chpl.dto.OrganizationDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,7 +27,7 @@ public class UserDTO implements UserDetails {
     private static final long serialVersionUID = -5792083881606731413L;
 
     private Long id;
-    private UserPermissionDTO permission;
+    private UserPermission permission;
     private String subjectName;
     private String fullName;
     private String friendlyName;
