@@ -35,7 +35,7 @@ public class TriggerDeveloperBanJob implements Job {
 
         LOGGER.info("********* Starting the Trigger Developer Ban job. *********");
 
-        String[] recipients = jobContext.getMergedJobDataMap().getString("email").split("\u263A");
+        String[] recipients = jobContext.getMergedJobDataMap().getString("email").split(",");
 
         try {
             sendEmails(jobContext, recipients);
