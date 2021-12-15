@@ -142,7 +142,7 @@ public class TriggerDeveloperBanJob implements Job {
                 MapUtils.getString(updatedListing.getCertifyingBody(), CertifiedProductSearchDetails.ACB_NAME_KEY),
                 Util.getDateFormatter().format(listingChangeDate), // date of change
                 userPerformingAction.getFullName(),
-                jdm.getString("status"), // target status
+                updatedListing.getCurrentStatus().getStatus().getName(), // target status
                 Util.getDateFormatter().format(new Date(updatedListing.getCurrentStatus().getEventDate())),
                 reasonForStatusChange, // reason for change
                 reasonForListingChange, // reason for change
