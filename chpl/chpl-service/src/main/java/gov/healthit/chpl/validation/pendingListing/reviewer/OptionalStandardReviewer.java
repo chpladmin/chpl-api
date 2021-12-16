@@ -17,22 +17,26 @@ import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.util.ValidationUtils;
 
 @Component("pendingOptionalStandardReviewer")
 public class OptionalStandardReviewer implements Reviewer {
     private ErrorMessageUtil msgUtil;
+    private ValidationUtils validationUtil;
     private OptionalStandardDAO optionalStandardDao;
 
     @Autowired
-    public OptionalStandardReviewer(OptionalStandardDAO optionalStandardDao, ErrorMessageUtil msgUtil) {
+    public OptionalStandardReviewer(OptionalStandardDAO optionalStandardDao, ValidationUtils validationUtil,
+            ErrorMessageUtil msgUtil) {
         this.msgUtil = msgUtil;
+        this.validationUtil = validationUtil;
         this.optionalStandardDao = optionalStandardDao;
     }
 
     @Override
     public void review(PendingCertifiedProductDTO listing) {
         listing.getCertificationCriterion().stream()
-            .filter(cert -> (cert.getMeetsCriteria() != null && cert.getMeetsCriteria().equals(Boolean.TRUE)))
+            .filter(cert -> validationUtil.isEligibleForErrors(cert))
             .filter(cert -> (cert.getOptionalStandards() != null && cert.getOptionalStandards().size() > 0))
             .forEach(certResult -> certResult.getOptionalStandards().stream()
                     .forEach(optionalStandard -> reviewOptionalStandard(listing, certResult, optionalStandard)));

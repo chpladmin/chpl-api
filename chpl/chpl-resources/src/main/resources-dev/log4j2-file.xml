@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Configuration>
 <!-- Local logging configuration for things that go to the console/standard out -->
-<Configuration status="warn" monitorInterval="300" name="CHPL-Service-local" packages="">
+<Configuration status="warn" monitorInterval="300" name="CHPL-Service-DEV" packages="">
     <Appenders>
         <RollingFile name="FILE" fileName="${logDir}/chplservice.log" filePermissions="rw-rw-r--"
             filePattern="${logDir}/chplservice-%d{yyyyMMdd}.log">

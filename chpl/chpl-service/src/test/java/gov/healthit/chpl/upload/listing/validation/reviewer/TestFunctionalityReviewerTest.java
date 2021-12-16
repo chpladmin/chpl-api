@@ -22,9 +22,10 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.TestFunctionalityCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 
 public class TestFunctionalityReviewerTest {
     private static final String TEST_FUNCTIONALITY_NOT_APPLICABLE = "Test functionality is not applicable for the criterion %s. It has been removed.";
@@ -33,7 +34,6 @@ public class TestFunctionalityReviewerTest {
     private static final String TEST_FUNCTIONALITY_CRITERION_MISMATCH = "In Criteria %s, Test Functionality %s is for Criteria %s and is not valid for Criteria %s. The invalid Test Functionality has been removed.";
 
     private ErrorMessageUtil msgUtil;
-    private ResourcePermissions resourcePermissions;
     private CertificationResultRules certResultRules;
     private TestFunctionalityDAO testFunctionalityDao;
     private TestFunctionalityReviewer reviewer;
@@ -41,7 +41,6 @@ public class TestFunctionalityReviewerTest {
     @Before
     @SuppressWarnings("checkstyle:magicnumber")
     public void setup() {
-        resourcePermissions = Mockito.mock(ResourcePermissions.class);
         certResultRules = Mockito.mock(CertificationResultRules.class);
         testFunctionalityDao = Mockito.mock(TestFunctionalityDAO.class);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
@@ -63,7 +62,9 @@ public class TestFunctionalityReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testFunctionalityCriterionMismatch"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(TEST_FUNCTIONALITY_CRITERION_MISMATCH, i.getArgument(1), i.getArgument(2), i.getArgument(3), i.getArgument(4)));
-        reviewer = new TestFunctionalityReviewer(certResultRules, testFunctionalityDao, msgUtil, resourcePermissions);
+        reviewer = new TestFunctionalityReviewer(certResultRules,
+                new ValidationUtils(Mockito.mock(CertificationCriterionService.class)),
+                testFunctionalityDao, msgUtil);
     }
 
     @Test
@@ -76,6 +77,7 @@ public class TestFunctionalityReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .success(true)
                         .build())
@@ -97,6 +99,7 @@ public class TestFunctionalityReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .success(true)
                         .build())
@@ -122,6 +125,7 @@ public class TestFunctionalityReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .success(true)
                         .testFunctionality(testFuncs)
@@ -135,6 +139,33 @@ public class TestFunctionalityReviewerTest {
         assertTrue(listing.getWarningMessages().contains(
                 String.format(TEST_FUNCTIONALITY_NOT_APPLICABLE, "170.315 (a)(1)")));
         assertNull(listing.getCertificationResults().get(0).getTestFunctionality());
+    }
+
+    @Test
+    public void review_testFunctionalityNotApplicableToRemovedCriteria_noWarning() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
+            .thenReturn(false);
+        List<CertificationResultTestFunctionality> testFuncs = new ArrayList<CertificationResultTestFunctionality>();
+        testFuncs.add(CertificationResultTestFunctionality.builder()
+                .testFunctionalityId(1L)
+                .name("test func")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationEdition(create2015EditionMap())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .success(true)
+                        .testFunctionality(testFuncs)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(0, listing.getWarningMessages().size());
     }
 
     @Test
@@ -157,6 +188,7 @@ public class TestFunctionalityReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .success(true)
                         .testFunctionality(testFuncs)
@@ -165,10 +197,42 @@ public class TestFunctionalityReviewerTest {
         reviewer.review(listing);
 
         assertEquals(1, listing.getCertificationResults().get(0).getTestFunctionality().size());
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(
                 String.format(TEST_FUNCTIONALITY_NOT_FOUND_REMOVED, "170.315 (a)(1)", "bad name")));
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_ignoresTestFunctionalityWithoutIdForRemovedCriteria_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
+            .thenReturn(true);
+
+        List<CertificationResultTestFunctionality> testFuncs = new ArrayList<CertificationResultTestFunctionality>();
+        testFuncs.add(CertificationResultTestFunctionality.builder()
+                .testFunctionalityId(1L)
+                .name("test func")
+                .build());
+        testFuncs.add(CertificationResultTestFunctionality.builder()
+                .name("bad name")
+                .build());
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationEdition(create2015EditionMap())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .success(true)
+                        .testFunctionality(testFuncs)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -191,6 +255,7 @@ public class TestFunctionalityReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .success(true)
                         .testFunctionality(testFuncs)
@@ -199,10 +264,42 @@ public class TestFunctionalityReviewerTest {
         reviewer.review(listing);
 
         assertEquals(1, listing.getCertificationResults().get(0).getTestFunctionality().size());
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(
                 String.format(TEST_FUNCTIONALITY_NOT_FOUND_REMOVED, "170.315 (a)(1)", "")));
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_testFunctionalityWithoutNameWithoutIdForRemovedCriteria_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
+            .thenReturn(true);
+
+        List<CertificationResultTestFunctionality> testFuncs = new ArrayList<CertificationResultTestFunctionality>();
+        testFuncs.add(CertificationResultTestFunctionality.builder()
+                .testFunctionalityId(1L)
+                .name("test func")
+                .build());
+        testFuncs.add(CertificationResultTestFunctionality.builder()
+                .testFunctionalityId(null)
+                .name("")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationEdition(create2015EditionMap())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .success(true)
+                        .testFunctionality(testFuncs)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -225,6 +322,7 @@ public class TestFunctionalityReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .success(true)
                         .testFunctionality(testFuncs)
@@ -237,6 +335,38 @@ public class TestFunctionalityReviewerTest {
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(
                 String.format(MISSING_TEST_FUNCTIONALITY_NAME, "170.315 (a)(1)", "")));
+    }
+
+    @Test
+    public void review_testFunctionalityWithoutNameWithIdForRemovedCriteria_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
+            .thenReturn(true);
+
+        List<CertificationResultTestFunctionality> testFuncs = new ArrayList<CertificationResultTestFunctionality>();
+        testFuncs.add(CertificationResultTestFunctionality.builder()
+                .testFunctionalityId(1L)
+                .name("test func")
+                .build());
+        testFuncs.add(CertificationResultTestFunctionality.builder()
+                .testFunctionalityId(2L)
+                .name("")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationEdition(create2015EditionMap())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .success(true)
+                        .testFunctionality(testFuncs)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -260,6 +390,7 @@ public class TestFunctionalityReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .success(true)
                         .testFunctionality(testFuncs)
@@ -268,11 +399,44 @@ public class TestFunctionalityReviewerTest {
         reviewer.review(listing);
 
         assertEquals(1, listing.getCertificationResults().get(0).getTestFunctionality().size());
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(
                 String.format(TEST_FUNCTIONALITY_CRITERION_MISMATCH, "170.315 (a)(1)", "mismatch",
                         "170.315 (a)(2)", "170.315 (a)(1)")));
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_testFunctionalityWithIdRemovedCriteriaMismatch_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
+            .thenReturn(true);
+
+        List<CertificationResultTestFunctionality> testFuncs = new ArrayList<CertificationResultTestFunctionality>();
+        testFuncs.add(CertificationResultTestFunctionality.builder()
+                .testFunctionalityId(1L)
+                .name("valid func")
+                .build());
+        testFuncs.add(CertificationResultTestFunctionality.builder()
+                .testFunctionalityId(3L)
+                .name("mismatch")
+                .build());
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                    .certificationEdition(create2015EditionMap())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .success(true)
+                        .testFunctionality(testFuncs)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -295,6 +459,7 @@ public class TestFunctionalityReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .success(true)
                         .testFunctionality(testFuncs)

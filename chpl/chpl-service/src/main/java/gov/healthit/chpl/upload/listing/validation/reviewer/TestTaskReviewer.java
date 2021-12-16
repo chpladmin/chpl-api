@@ -16,22 +16,21 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
-import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 
 @Component("listingUploadTestTaskReviewer")
-public class TestTaskReviewer extends PermissionBasedReviewer {
+public class TestTaskReviewer {
     private static final String DEFAULT_TASK_DECRIPTION = "<unknown>";
     private static final String DEFAULT_TASK_CRITERIA = "<none>";
     private static final int MINIMUM_TEST_PARTICIPANT_COUNT = 10;
 
     private CertificationResultRules certResultRules;
     private ValidationUtils validationUtils;
+    private ErrorMessageUtil msgUtil;
     private List<CertificationCriterion> testTaskCriteria = new ArrayList<CertificationCriterion>();
 
     @Autowired
@@ -39,10 +38,10 @@ public class TestTaskReviewer extends PermissionBasedReviewer {
             ValidationUtils validationUtils,
             CertificationResultRules certResultRules,
             @Value("${sedCriteria}") String testTaskCriteria,
-            ErrorMessageUtil errorMessageUtil, ResourcePermissions resourcePermissions) {
-        super(errorMessageUtil, resourcePermissions);
+            ErrorMessageUtil msgUtil) {
         this.certResultRules = certResultRules;
         this.validationUtils = validationUtils;
+        this.msgUtil = msgUtil;
 
         this.testTaskCriteria = Arrays.asList(testTaskCriteria.split(",")).stream()
                 .map(id -> criterionService.get(Long.parseLong(id)))
@@ -64,13 +63,15 @@ public class TestTaskReviewer extends PermissionBasedReviewer {
                 .filter(testTask -> !CollectionUtils.isEmpty(testTask.getCriteria()))
                 .flatMap(testTask -> testTask.getCriteria().stream())
                 .filter(testTaskCriterion -> !certResultRules.hasCertOption(testTaskCriterion.getNumber(), CertificationResultRules.TEST_TASK))
+                .filter(testTaskCriterion -> BooleanUtils.isFalse(testTaskCriterion.getRemoved()))
                 .forEach(notAllowedTestTaskCriterion ->
                     listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.testTasksNotApplicable", Util.formatCriteriaNumber(notAllowedTestTaskCriterion))));
 
             listing.getSed().getTestTasks().stream()
                 .filter(testTask -> !CollectionUtils.isEmpty(testTask.getCriteria()))
                 .flatMap(testTask -> testTask.getCriteria().stream())
-                .filter(ucdCriterion -> !doesListingAttestToCriterion(listing, ucdCriterion))
+                .filter(testTaskCriterion -> !doesListingAttestToCriterion(listing, testTaskCriterion))
+                .filter(testTaskCriterion -> BooleanUtils.isFalse(testTaskCriterion.getRemoved()))
                 .forEach(notAllowedTestTaskCriterion ->
                     listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.testTasksNotApplicable", Util.formatCriteriaNumber(notAllowedTestTaskCriterion))));
         }
@@ -89,7 +90,7 @@ public class TestTaskReviewer extends PermissionBasedReviewer {
         testTaskCriteria.stream()
             .filter(criterion -> validationUtils.hasCriterion(criterion, attestedCriteria))
             .map(attestedTestTaskCriterion -> getCertificationResultForCriterion(listing, attestedTestTaskCriterion))
-            .filter(certResult -> certResult != null)
+            .filter(certResult -> certResult != null && validationUtils.isEligibleForErrors(certResult))
             .forEach(certResult -> reviewCertResultHasTestTasksIfRequired(listing, certResult));
     }
 
@@ -106,11 +107,11 @@ public class TestTaskReviewer extends PermissionBasedReviewer {
     private void reviewCertResultHasTestTasksIfRequired(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResult.isSed()) {
             if (listing.getSed() == null || CollectionUtils.isEmpty(listing.getSed().getTestTasks())) {
-                addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.missingTestTask",
-                        Util.formatCriteriaNumber(certResult.getCriterion()));
+                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingTestTask",
+                        Util.formatCriteriaNumber(certResult.getCriterion())));
             } else if (!doesTestTaskListContainCriterion(listing, certResult.getCriterion())) {
-                addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.missingTestTask",
-                        Util.formatCriteriaNumber(certResult.getCriterion()));
+                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingTestTask",
+                        Util.formatCriteriaNumber(certResult.getCriterion())));
             }
         }
     }
@@ -128,13 +129,26 @@ public class TestTaskReviewer extends PermissionBasedReviewer {
             return;
         }
         listing.getSed().getTestTasks().stream()
+            .forEach(testTask -> reviewTaskCriteria(listing, testTask));
+
+        listing.getSed().getTestTasks().stream()
+            .filter(testTask -> doesTestTaskHaveNonRemovedCriteria(testTask))
             .forEach(testTask -> reviewTestTaskFields(listing, testTask));
 
     }
 
+    private boolean doesTestTaskHaveNonRemovedCriteria(TestTask testTask) {
+        if (CollectionUtils.isEmpty(testTask.getCriteria())) {
+            return false;
+        }
+
+        return testTask.getCriteria().stream()
+                .filter(criterion -> BooleanUtils.isFalse(criterion.getRemoved()))
+                .findAny().isPresent();
+    }
+
     private void reviewTestTaskFields(CertifiedProductSearchDetails listing, TestTask testTask) {
         reviewTaskUniqueId(listing, testTask);
-        reviewTaskCriteria(listing, testTask);
         reviewTaskParticipantSize(listing, testTask);
         reviewTaskDescription(listing, testTask);
         reviewTaskSuccessAverage(listing, testTask);
@@ -408,6 +422,7 @@ public class TestTaskReviewer extends PermissionBasedReviewer {
             return DEFAULT_TASK_CRITERIA;
         }
         return testTask.getCriteria().stream()
+                .filter(criterion -> BooleanUtils.isFalse(criterion.getRemoved()))
                 .map(criterion -> Util.formatCriteriaNumber(criterion))
                 .collect(Collectors.joining(","));
     }

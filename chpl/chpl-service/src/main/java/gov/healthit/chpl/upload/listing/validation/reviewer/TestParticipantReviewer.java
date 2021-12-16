@@ -1,11 +1,13 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestParticipant;
+import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("listingUploadTestParticipantReviewer")
@@ -24,9 +26,19 @@ public class TestParticipantReviewer {
             return;
         }
         listing.getSed().getTestTasks().stream()
-            .filter(testTask -> !CollectionUtils.isEmpty(testTask.getTestParticipants()))
+            .filter(testTask -> doesTestTaskHaveNonRemovedCriteria(testTask) && !CollectionUtils.isEmpty(testTask.getTestParticipants()))
             .flatMap(testTask -> testTask.getTestParticipants().stream())
             .forEach(testParticipant -> reviewTestParticipantFields(listing, testParticipant));
+    }
+
+    private boolean doesTestTaskHaveNonRemovedCriteria(TestTask testTask) {
+        if (CollectionUtils.isEmpty(testTask.getCriteria())) {
+            return false;
+        }
+
+        return testTask.getCriteria().stream()
+                .filter(criterion -> BooleanUtils.isFalse(criterion.getRemoved()))
+                .findAny().isPresent();
     }
 
     private void reviewTestParticipantFields(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {

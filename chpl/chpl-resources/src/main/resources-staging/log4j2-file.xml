@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Configuration>
 <!-- Local logging configuration for things that go to the console/standard out -->
-<Configuration status="warn" monitorInterval="300" name="CHPL-Service-local" packages="">
+<Configuration status="warn" monitorInterval="300" name="CHPL-Service-STG" packages="">
     <Appenders>
         <RollingFile name="FILE" fileName="${logDir}/chplservice.log" filePermissions="rw-rw-r--"
             filePattern="${logDir}/chplservice-%d{yyyyMMdd}.log">
@@ -37,16 +37,19 @@
     <Loggers>
         <Logger name="org.jose4j" level="ERROR" additivity="false">
             <AppenderRef ref="FILE" />
+            <AppenderRef ref="chplserviceJson" />
         </Logger>
         <Logger name="org.hibernate" level="ERROR" additivity="false">
             <AppenderRef ref="FILE" />
+            <AppenderRef ref="chplserviceJson" />
         </Logger>
-        <Logger name="org.springframework" level="ERROR"
-            additivity="false">
+        <Logger name="org.springframework" level="ERROR" additivity="false">
             <AppenderRef ref="FILE" />
+            <AppenderRef ref="chplserviceJson" />
         </Logger>
         <Logger name="gov.healthit.chpl" level="INFO" additivity="false">
             <AppenderRef ref="FILE" />
+            <AppenderRef ref="chplserviceJson" />
         </Logger>
     </Loggers>
 </Configuration>
