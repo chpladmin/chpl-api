@@ -13,12 +13,12 @@ import gov.healthit.chpl.domain.Measure;
 
 @Repository("measuresDao")
 public class MeasureDAO extends BaseDAOImpl {
-    private static final String MEASURE_HQL_BEGIN = "SELECT DISTINCT measure "
+    public static final String MEASURE_HQL_BEGIN = "SELECT DISTINCT measure "
             + "FROM MeasureEntity measure "
-            + "JOIN FETCH measure.domain "
-            + "JOIN FETCH measure.allowedCriteria ac "
-            + "JOIN FETCH ac.criterion cc "
-            + "JOIN FETCH cc.certificationEdition ";
+            + "LEFT JOIN FETCH measure.domain "
+            + "LEFT JOIN FETCH measure.allowedCriteria ac "
+            + "LEFT JOIN FETCH ac.criterion cc "
+            + "LEFT JOIN FETCH cc.certificationEdition ";
 
     public Measure getById(Long id) {
         Query query = entityManager.createQuery(
