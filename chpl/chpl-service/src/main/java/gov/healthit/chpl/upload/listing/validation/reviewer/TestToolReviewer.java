@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -16,39 +15,39 @@ import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestToolCriteriaMap;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
-import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
+import gov.healthit.chpl.util.ValidationUtils;
 
 @Component("listingUploadTestToolReviewer")
-public class TestToolReviewer extends PermissionBasedReviewer {
+public class TestToolReviewer {
     private CertificationResultRules certResultRules;
+    private ValidationUtils validationUtils;
+    private ErrorMessageUtil msgUtil;
     private ChplProductNumberUtil chplProductNumberUtil;
     private List<TestToolCriteriaMap> testToolCriteriaMaps;
 
     @Autowired
     public TestToolReviewer(CertificationResultRules certResultRules,
+            ValidationUtils validationUtils,
             ChplProductNumberUtil chplProductNumberUtil,
-            ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
-            TestToolDAO testToolDAO) throws EntityRetrievalException {
-        super(msgUtil, resourcePermissions);
+            ErrorMessageUtil msgUtil, TestToolDAO testToolDAO) throws EntityRetrievalException {
         this.certResultRules = certResultRules;
+        this.validationUtils = validationUtils;
         this.chplProductNumberUtil = chplProductNumberUtil;
-
+        this.msgUtil = msgUtil;
         testToolCriteriaMaps = testToolDAO.getAllTestToolCriteriaMap();
     }
 
-    @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
+            .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
             .forEach(certResult -> review(listing, certResult));
     }
 
-    public void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         reviewCriteriaCanHaveTestToolData(listing, certResult);
         removeTestToolsWithoutIds(listing, certResult);
         reviewTestToolsRequiredWhenCertResultIsNotGap(listing, certResult);
@@ -77,8 +76,8 @@ public class TestToolReviewer extends PermissionBasedReviewer {
             CertificationResultTestTool testTool = testToolIter.next();
             if (testTool.getTestToolId() == null) {
                 testToolIter.remove();
-                addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.testToolNotFoundAndRemoved",
-                        Util.formatCriteriaNumber(certResult.getCriterion()), testTool.getTestToolName());
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.testToolNotFoundAndRemoved",
+                        Util.formatCriteriaNumber(certResult.getCriterion()), testTool.getTestToolName()));
             }
         }
     }
@@ -87,9 +86,9 @@ public class TestToolReviewer extends PermissionBasedReviewer {
         if (!isGapEligibileAndHasGap(certResult)
                 && certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_TOOLS_USED)
                 && CollectionUtils.isEmpty(certResult.getTestToolsUsed())) {
-                    addCriterionErrorOrWarningByPermission(listing, certResult,
+            listing.getErrorMessages().add(msgUtil.getMessage(
                             "listing.criteria.missingTestTool",
-                            Util.formatCriteriaNumber(certResult.getCriterion()));
+                            Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
 
@@ -117,8 +116,8 @@ public class TestToolReviewer extends PermissionBasedReviewer {
         } else if (!StringUtils.isEmpty(testTool.getTestToolName())
                 && StringUtils.isEmpty(testTool.getTestToolVersion())) {
             // require test tool version if a test tool name was entered
-            addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.missingTestToolVersion",
-                    testTool.getTestToolName(), Util.formatCriteriaNumber(certResult.getCriterion()));
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingTestToolVersion",
+                    testTool.getTestToolName(), Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
 
@@ -126,10 +125,10 @@ public class TestToolReviewer extends PermissionBasedReviewer {
             CertificationResult certResult, CertificationResultTestTool testTool) {
         if (testTool.getTestToolId() != null && testTool.isRetired()
                 && (!hasIcs(listing) || hasIcsMismatch(listing))) {
-            addCriterionErrorOrWarningByPermission(listing, certResult,
+            listing.getErrorMessages().add(msgUtil.getMessage(
                         "listing.criteria.retiredTestToolNoIcsNotAllowed",
                         testTool.getTestToolName(),
-                        Util.formatCriteriaNumber(certResult.getCriterion()));
+                        Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
 

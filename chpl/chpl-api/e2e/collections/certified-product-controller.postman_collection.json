@@ -1477,7 +1477,7 @@
 									"pm.test(\"expect to receive 400 bad request for bad data in Test Data, Test standard, Test Functionality, SVAP and Test Procedure\", function () {\r",
 									"    pm.response.to.have.status(400);\r",
 									"});\r",
-									"pm.test(\"expect to see a warning for null Test Data ID and invalid name input\", function () {\r",									
+									"pm.test(\"expect to see a warning for null Test Data ID and invalid name input\", function () {\r",
 									"    pm.expect(pm.response.text()).to.include(\"Test data 'test Test Method' is invalid for certification 170.315 (b)(6). ONC Test Method will be used instead.\");\r",
 									"});\r",
 									"pm.test(\"expect to see an error for invalid Test Data ID\", function () {\r",
@@ -1545,7 +1545,56 @@
 						"description": "listing edit request with invalid inputs should result in 400 status code and errors in response"
 					},
 					"response": []
-				}				
+				},
+				{
+					"name": "GET /rest/certified_products/{listingId} - removed measures validation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect removed measure to be marked as removed\", () => {\r",
+									"        var jsonData = pm.response.json();\r",
+									"        pm.expect(jsonData.results[0].measure.domain.name).to.eql(\"EC ACI Transition\");\r",
+									"        pm.expect(jsonData.results[0].measure.abbreviation).to.eql(\"RT1\");\r",
+									"        pm.expect(jsonData.results[0].measure.requiredTest).to.eql(\"Required Test 1: Promoting Interoperability Transition Objective 2 Measure 1\");\r",
+									"        pm.expect(jsonData.results[0].measure.name).to.eql(\"Electronic Prescribing: Eligible Clinician\");\r",
+									"        pm.expect(jsonData.results[0].measure.removed).to.be.true;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/certified_products/9694/measures",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"certified_products",
+								"9694",
+								"measures"
+							]
+						}
+					},
+					"response": []
+				}
 			]
 		}
 	]

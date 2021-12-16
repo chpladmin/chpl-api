@@ -44,7 +44,7 @@ public class UrlReviewer extends PermissionBasedReviewer {
 
         //check all criteria fields
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
-            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria().equals(Boolean.TRUE)) {
+            if (validationUtils.isEligibleForErrors(cert)) {
                 addCriteriaErrorIfNotValid(listing, cert, cert.getApiDocumentation(), "API Documentation");
                 addCriteriaErrorIfNotValid(listing, cert, cert.getExportDocumentation(), "Export Documentation");
                 addCriteriaErrorIfNotValid(listing, cert, cert.getDocumentationUrl(), "Documentation Url");
@@ -72,7 +72,7 @@ public class UrlReviewer extends PermissionBasedReviewer {
         if (!StringUtils.isEmpty(input)) {
             if (validationUtils.hasNewline(input)
                     || !validationUtils.isWellFormedUrl(input)) {
-                addErrorOrWarningByPermission(listing, cert,
+                addErrorIfCriterionIsNotRemoved(listing, cert,
                         "listing.criteria.invalidUrlFound", fieldName,
                         Util.formatCriteriaNumber(cert.getCriterion()));
             }
