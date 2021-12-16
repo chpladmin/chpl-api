@@ -232,7 +232,7 @@ public class ListingUploadManager {
     public CertifiedProductSearchDetails confirm(Long id, ConfirmListingRequest confirmListingRequest)
         throws InvalidArgumentsException, ValidationException {
         //Is listing already processing?
-        if (listingUploadDao.isAvailableForProcessing(id)) {
+        if (!listingUploadDao.isAvailableForProcessing(id)) {
             throw new InvalidArgumentsException(msgUtil.getMessage("pendingListing.alreadyProcessing"));
         } else {
             listingUploadDao.updateStatus(id, ListingUploadStatus.CONFIRMATION_PROCESSING);
