@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -34,9 +35,15 @@ public class SedReviewer {
     }
 
     private void reviewUnusedTasksAndParticipants(CertifiedProductSearchDetails listing) {
-        listing.getSed().getUnusedTestTaskUniqueIds().stream()
-            .forEach(unusedTestTask -> listing.getWarningMessages().add(msgUtil.getMessage("listing.sed.unusedTestTask", unusedTestTask)));
-        listing.getSed().getUnusedTestParticipantUniqueIds().stream()
-        .forEach(unusedTestParticipant -> listing.getWarningMessages().add(msgUtil.getMessage("listing.sed.unusedTestParticipant", unusedTestParticipant)));
+        if (listing.getSed() != null
+                && !CollectionUtils.isEmpty(listing.getSed().getUnusedTestTaskUniqueIds())) {
+            listing.getSed().getUnusedTestTaskUniqueIds().stream()
+                .forEach(unusedTestTask -> listing.getWarningMessages().add(msgUtil.getMessage("listing.sed.unusedTestTask", unusedTestTask)));
+        }
+        if (listing.getSed() != null
+                && !CollectionUtils.isEmpty(listing.getSed().getUnusedTestParticipantUniqueIds())) {
+            listing.getSed().getUnusedTestParticipantUniqueIds().stream()
+                .forEach(unusedTestParticipant -> listing.getWarningMessages().add(msgUtil.getMessage("listing.sed.unusedTestParticipant", unusedTestParticipant)));
+        }
     }
 }

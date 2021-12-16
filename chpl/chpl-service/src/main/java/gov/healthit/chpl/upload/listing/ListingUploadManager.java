@@ -246,9 +246,8 @@ public class ListingUploadManager {
                 throw ex;
             } catch (Exception ex) {
                 listingUploadDao.updateStatus(id, ListingUploadStatus.UPLOAD_SUCCESS);
-                LOGGER.error("Could not confirm pending listing " + id);
-                //TODO: throw something instead?
-                return null;
+                LOGGER.error("Could not confirm pending listing " + id, ex);
+                throw ex;
             }
             listingUploadDao.updateStatus(id, ListingUploadStatus.CONFIRMED);
             //TODO: update ListingUpload with the ID of the newly confirmed listing in the CHPL
