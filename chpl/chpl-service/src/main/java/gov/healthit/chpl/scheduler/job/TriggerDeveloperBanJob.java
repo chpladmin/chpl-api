@@ -47,7 +47,7 @@ public class TriggerDeveloperBanJob implements Job {
     @Value("${triggerDeveloperBan.body}")
     private String emailBody;
 
-    @Value("${chplUrlBegin")
+    @Value("${chplUrlBegin}")
     private String chplUrlBegin;
 
     @Value("${listingDetailsUrl}")
