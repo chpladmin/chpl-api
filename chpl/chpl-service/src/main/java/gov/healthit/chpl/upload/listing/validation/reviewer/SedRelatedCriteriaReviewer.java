@@ -9,25 +9,24 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
-import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 
 @Component("sedRelatedCriteriaReviewer")
-public class SedRelatedCriteriaReviewer extends PermissionBasedReviewer {
+public class SedRelatedCriteriaReviewer {
     private ValidationUtils validationUtils;
+    private ErrorMessageUtil msgUtil;
     private CertificationCriterion g3;
     private List<CertificationCriterion> sedRelatedCriteria;
 
     @Autowired
     public SedRelatedCriteriaReviewer(ValidationUtils validationUtils, CertificationCriterionService criteriaService,
-            ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
-        super(msgUtil, resourcePermissions);
+            ErrorMessageUtil msgUtil) {
         this.validationUtils = validationUtils;
+        this.msgUtil = msgUtil;
         g3 = criteriaService.get(Criteria2015.G_3);
         sedRelatedCriteria = Stream.of(
                 criteriaService.get(Criteria2015.A_1),
@@ -47,7 +46,6 @@ public class SedRelatedCriteriaReviewer extends PermissionBasedReviewer {
                 .collect(Collectors.toList());
     }
 
-    @Override
     public void review(CertifiedProductSearchDetails listing) {
         reviewG3IsPresentIfRequired(listing);
         reviewG3IsNotPresentIfNotAllowed(listing);
@@ -59,19 +57,10 @@ public class SedRelatedCriteriaReviewer extends PermissionBasedReviewer {
                 .filter(criterion -> criterion.getRemoved() == null || criterion.getRemoved().equals(Boolean.FALSE))
                 .filter(criterion -> certIdIsInCertList(criterion, sedRelatedCriteria.stream().map(sedCriterion -> sedCriterion.getId()).collect(Collectors.toList())))
                 .collect(Collectors.<CertificationCriterion>toList());
-        List<CertificationCriterion> removedAttestedSedCriteria = attestedCriteria.stream()
-                .filter(criterion -> criterion.getRemoved() != null && criterion.getRemoved().equals(Boolean.TRUE))
-                .filter(criterion -> certIdIsInCertList(criterion, sedRelatedCriteria.stream().map(sedCriterion -> sedCriterion.getId()).collect(Collectors.toList())))
-                .collect(Collectors.<CertificationCriterion>toList());
         boolean hasG3 = validationUtils.hasCriterion(g3, attestedCriteria);
 
         if (presentAttestedSedCriteria != null && presentAttestedSedCriteria.size() > 0 && !hasG3) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteriaRequired", Util.formatCriteriaNumber(g3)));
-        }
-        if (removedAttestedSedCriteria != null && removedAttestedSedCriteria.size() > 0
-                && (presentAttestedSedCriteria == null || presentAttestedSedCriteria.size() == 0)
-                && !hasG3) {
-            addListingWarningByPermission(listing, msgUtil.getMessage("listing.criteriaRequired", Util.formatCriteriaNumber(g3)));
         }
     }
 

@@ -64,7 +64,7 @@ public class TestToolReviewer extends PermissionBasedReviewer {
         while (testToolIter.hasNext()) {
             PendingCertificationResultTestToolDTO testTool = testToolIter.next();
             if (StringUtils.isEmpty(testTool.getName())) {
-                addErrorOrWarningByPermission(listing, cert,
+                addErrorIfCriterionIsNotRemoved(listing, cert,
                         "listing.criteria.missingTestToolName",
                         Util.formatCriteriaNumber(cert.getCriterion()));
             } else {
@@ -73,7 +73,7 @@ public class TestToolReviewer extends PermissionBasedReviewer {
                     // retired tools aren't allowed if there is ICS or an ICS Mismatch
                     if (foundTestTool.isRetired()) {
                         if (!hasIcs(listing) || hasIcsMismatch(listing)) {
-                            addErrorOrWarningByPermission(listing, cert,
+                            addErrorIfCriterionIsNotRemoved(listing, cert,
                                     "listing.criteria.retiredTestToolNoIcsNotAllowed",
                                     testTool.getName(),
                                     Util.formatCriteriaNumber(cert.getCriterion()));
@@ -86,7 +86,7 @@ public class TestToolReviewer extends PermissionBasedReviewer {
                                         foundTestTool.getName(), Util.formatCriteriaNumber(cert.getCriterion())));
                     }
                 } else {
-                    addErrorOrWarningByPermission(listing, cert, "listing.criteria.testToolNotFoundAndRemoved",
+                    addErrorIfCriterionIsNotRemoved(listing, cert, "listing.criteria.testToolNotFoundAndRemoved",
                             Util.formatCriteriaNumber(cert.getCriterion()),
                             testTool.getName());
                     testToolIter.remove();

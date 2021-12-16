@@ -1,7 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -9,32 +8,33 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
-import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
+import gov.healthit.chpl.util.ValidationUtils;
 
 @Component("listingUploadAdditionalSoftwareFrameworkReviewer")
-public class AdditionalSoftwareReviewer extends PermissionBasedReviewer {
+public class AdditionalSoftwareReviewer {
     private CertificationResultRules certResultRules;
+    private ValidationUtils validationUtils;
+    private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public AdditionalSoftwareReviewer(CertificationResultRules certResultRules,
-            ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
-        super(msgUtil, resourcePermissions);
+    public AdditionalSoftwareReviewer(CertificationResultRules certResultRules, ValidationUtils validationUtils,
+            ErrorMessageUtil msgUtil) {
         this.certResultRules = certResultRules;
+        this.validationUtils = validationUtils;
+        this.msgUtil = msgUtil;
     }
 
-    @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
             .filter(certResult -> certResult.getCriterion() != null && certResult.getCriterion().getId() != null
-                && BooleanUtils.isTrue(certResult.isSuccess()))
+                && validationUtils.isEligibleForErrors(certResult))
             .forEach(certResult -> review(listing, certResult));
     }
 
-    public void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         reviewCriteriaCanHaveAdditionalSoftware(listing, certResult);
         reviewAdditionalSoftwareListMatchesAdditionalSoftwareBoolean(listing, certResult);
         reviewAdditionalSoftwareHasEitherNameOrListing(listing, certResult);
@@ -82,10 +82,10 @@ public class AdditionalSoftwareReviewer extends PermissionBasedReviewer {
         if (!CollectionUtils.isEmpty(certResult.getAdditionalSoftware())) {
             certResult.getAdditionalSoftware().stream()
                 .filter(additionalSoftware -> !StringUtils.isEmpty(additionalSoftware.getCertifiedProductNumber()) && additionalSoftware.getCertifiedProductId() == null)
-                .forEach(additionalSoftware -> addCriterionErrorOrWarningByPermission(listing, certResult,
+                .forEach(additionalSoftware -> listing.getErrorMessages().add(msgUtil.getMessage(
                                                     "listing.criteria.invalidAdditionalSoftware",
                                                     additionalSoftware.getCertifiedProductNumber(),
-                                                    Util.formatCriteriaNumber(certResult.getCriterion())));
+                                                    Util.formatCriteriaNumber(certResult.getCriterion()))));
         }
     }
 }

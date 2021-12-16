@@ -3,6 +3,7 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -10,6 +11,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSed;
 import gov.healthit.chpl.domain.TestParticipant;
@@ -18,7 +21,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class TestParticipantReviewerTest {
     private static final String TEST_PARTICIPANT_FIELD_ROUNDED = "A non-integer numeric number was found in Test Participant \"%s\" \"%s\" \"%s\". The number has been rounded to \"%s\".";
-
+    private CertificationCriterion a1, a6;
     private ErrorMessageUtil errorMessageUtil;
     private TestParticipantReviewer reviewer;
 
@@ -29,6 +32,9 @@ public class TestParticipantReviewerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.roundedParticipantNumber"),  ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
         .thenAnswer(i -> String.format(TEST_PARTICIPANT_FIELD_ROUNDED, i.getArgument(1), i.getArgument(2), i.getArgument(3), i.getArgument(4)));
+
+        a1 = CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("a1").removed(false).build();
+        a6 = CertificationCriterion.builder().id(6L).number("170.315 (a)(6)").title("a6").removed(true).build();
 
         reviewer = new TestParticipantReviewer(errorMessageUtil);
     }
@@ -88,7 +94,7 @@ public class TestParticipantReviewerTest {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(buildValidTestParticipant(null)).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -106,7 +112,7 @@ public class TestParticipantReviewerTest {
                 .sed(CertifiedProductSed.builder()
                         .build())
                 .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(buildValidTestParticipant("")).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -130,7 +136,7 @@ public class TestParticipantReviewerTest {
                     .ageRange(null)
                     .ageRangeId(null)
                 .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -153,7 +159,7 @@ public class TestParticipantReviewerTest {
                     .ageRange("")
                     .ageRangeId(null)
                 .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -176,7 +182,7 @@ public class TestParticipantReviewerTest {
                     .ageRange("notanagerange")
                     .ageRangeId(null)
                 .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -199,7 +205,7 @@ public class TestParticipantReviewerTest {
                     .educationTypeName(null)
                     .educationTypeId(null)
                 .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -222,7 +228,7 @@ public class TestParticipantReviewerTest {
                     .educationTypeName("")
                     .educationTypeId(null)
                 .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -245,7 +251,7 @@ public class TestParticipantReviewerTest {
                 .educationTypeName("notaneducation")
                 .educationTypeId(null)
             .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -266,7 +272,7 @@ public class TestParticipantReviewerTest {
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                 .gender(null)
             .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -288,7 +294,7 @@ public class TestParticipantReviewerTest {
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                 .gender("")
             .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -309,7 +315,7 @@ public class TestParticipantReviewerTest {
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                 .occupation(null)
             .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -330,7 +336,7 @@ public class TestParticipantReviewerTest {
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                 .occupation("")
             .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -351,7 +357,7 @@ public class TestParticipantReviewerTest {
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                 .assistiveTechnologyNeeds(null)
             .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -372,7 +378,7 @@ public class TestParticipantReviewerTest {
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                 .assistiveTechnologyNeeds("")
             .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -395,7 +401,7 @@ public class TestParticipantReviewerTest {
                 .professionalExperienceMonths(null)
                 .professionalExperienceMonthsStr(null)
             .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -418,7 +424,7 @@ public class TestParticipantReviewerTest {
                 .professionalExperienceMonths(null)
                 .professionalExperienceMonthsStr("")
             .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -441,7 +447,7 @@ public class TestParticipantReviewerTest {
                 .professionalExperienceMonths(null)
                 .professionalExperienceMonthsStr("K")
             .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -459,7 +465,7 @@ public class TestParticipantReviewerTest {
                 .professionalExperienceMonths(1)
                 .professionalExperienceMonthsStr("1.2")
             .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -482,7 +488,7 @@ public class TestParticipantReviewerTest {
                 .productExperienceMonths(null)
                 .productExperienceMonthsStr(null)
             .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -505,7 +511,7 @@ public class TestParticipantReviewerTest {
                 .productExperienceMonths(null)
                 .productExperienceMonthsStr("")
             .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -528,7 +534,7 @@ public class TestParticipantReviewerTest {
                 .productExperienceMonths(null)
                 .productExperienceMonthsStr("K")
             .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -546,7 +552,7 @@ public class TestParticipantReviewerTest {
                 .productExperienceMonths(1)
                 .productExperienceMonthsStr("1.2")
             .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -569,7 +575,7 @@ public class TestParticipantReviewerTest {
                 .computerExperienceMonths(null)
                 .computerExperienceMonthsStr(null)
             .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -592,7 +598,7 @@ public class TestParticipantReviewerTest {
                 .computerExperienceMonths(null)
                 .computerExperienceMonthsStr("")
             .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -615,7 +621,7 @@ public class TestParticipantReviewerTest {
                 .computerExperienceMonths(null)
                 .computerExperienceMonthsStr("K")
             .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -633,7 +639,7 @@ public class TestParticipantReviewerTest {
                 .computerExperienceMonths(1)
                 .computerExperienceMonthsStr("1.2")
             .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
         reviewer.review(listing);
 
@@ -677,5 +683,39 @@ public class TestParticipantReviewerTest {
                 .professionalExperienceMonths(10)
                 .professionalExperienceMonthsStr("10")
         .build();
+    }
+
+    private TestTask buildTestTask(String uniqueId, List<CertificationCriterion> criteria) {
+        TestTask tt = TestTask.builder()
+                .uniqueId(uniqueId)
+                .criteria(criteria)
+                .description("desc")
+                .taskErrors(1.5F)
+                .taskErrorsStr("1.5")
+                .taskErrorsStddev(2.5F)
+                .taskErrorsStddevStr("2.5")
+                .taskPathDeviationObserved(3)
+                .taskPathDeviationObservedStr("3")
+                .taskPathDeviationOptimal(4)
+                .taskPathDeviationOptimalStr("4")
+                .taskRating(5.5F)
+                .taskRatingStr("5.5")
+                .taskRatingScale("Likert")
+                .taskRatingStddev(6.5F)
+                .taskRatingStddevStr("6.5")
+                .taskSuccessAverage(7.5F)
+                .taskSuccessAverageStr("7.5")
+                .taskSuccessStddev(8.5F)
+                .taskSuccessStddevStr("8.5")
+                .taskTimeAvg(9L)
+                .taskTimeAvgStr("9")
+                .taskTimeDeviationObservedAvg(10)
+                .taskTimeDeviationObservedAvgStr("10")
+                .taskTimeDeviationOptimalAvg(11)
+                .taskTimeDeviationOptimalAvgStr("11")
+                .taskTimeStddev(12)
+                .taskTimeStddevStr("12")
+        .build();
+        return tt;
     }
 }

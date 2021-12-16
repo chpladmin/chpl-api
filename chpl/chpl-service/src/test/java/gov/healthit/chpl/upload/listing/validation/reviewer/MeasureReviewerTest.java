@@ -75,7 +75,7 @@ public class MeasureReviewerTest {
         Mockito.when(validationUtils.hasCert(ArgumentMatchers.anyString(), ArgumentMatchers.any()))
             .thenCallRealMethod();
 
-        reviewer = new MeasureReviewer(criterionService, validationUtils, msgUtil);
+        reviewer = new MeasureReviewer(validationUtils, msgUtil);
     }
 
     @Test

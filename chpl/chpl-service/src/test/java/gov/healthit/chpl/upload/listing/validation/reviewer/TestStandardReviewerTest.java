@@ -19,8 +19,10 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 
 public class TestStandardReviewerTest {
     private static final String TEST_STANDARDS_NOT_APPLICABLE = "Test standards are not applicable to criterion '%s'. They have been removed.";
@@ -36,7 +38,9 @@ public class TestStandardReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testStandardsNotApplicable"),
                 ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(TEST_STANDARDS_NOT_APPLICABLE, i.getArgument(1), ""));
-        reviewer = new TestStandardReviewer(certResultRules, msgUtil);
+        reviewer = new TestStandardReviewer(certResultRules,
+                new ValidationUtils(Mockito.mock(CertificationCriterionService.class)),
+                msgUtil);
     }
 
     @Test
@@ -46,6 +50,7 @@ public class TestStandardReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .success(true)
                         .build())
@@ -64,6 +69,7 @@ public class TestStandardReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .success(true)
                         .testStandards(new ArrayList<CertificationResultTestStandard>())
@@ -91,6 +97,7 @@ public class TestStandardReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .success(true)
                         .testStandards(testStandards)
@@ -103,6 +110,34 @@ public class TestStandardReviewerTest {
         assertTrue(listing.getWarningMessages().contains(
                 String.format(TEST_STANDARDS_NOT_APPLICABLE, "170.315 (a)(1)")));
         assertEquals(0, listing.getCertificationResults().get(0).getTestStandards().size());
+    }
+
+    @Test
+    public void review_testStandardsPresentAndAllowedForRemovedCriteria_noWarning() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.STANDARDS_TESTED)))
+            .thenReturn(true);
+
+        List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();
+        testStandards.add(CertificationResultTestStandard.builder()
+                .testStandardName("test std")
+                .testStandardId(1L)
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationEdition(create2015EditionMap())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .success(true)
+                        .testStandards(testStandards)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -121,6 +156,7 @@ public class TestStandardReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .success(true)
                         .testStandards(testStandards)
@@ -133,6 +169,34 @@ public class TestStandardReviewerTest {
         assertTrue(listing.getWarningMessages().contains(
                 String.format(TEST_STANDARDS_NOT_APPLICABLE, "170.315 (a)(1)")));
         assertNull(listing.getCertificationResults().get(0).getTestStandards());
+    }
+
+    @Test
+    public void review_testStandardsPresentAndNotAllowedForRemovedCriteria_noWarnings() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.STANDARDS_TESTED)))
+            .thenReturn(false);
+
+        List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();
+        testStandards.add(CertificationResultTestStandard.builder()
+                .testStandardName("test std")
+                .testStandardId(null)
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationEdition(create2015EditionMap())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .success(true)
+                        .testStandards(testStandards)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     private Map<String, Object> create2015EditionMap() {
