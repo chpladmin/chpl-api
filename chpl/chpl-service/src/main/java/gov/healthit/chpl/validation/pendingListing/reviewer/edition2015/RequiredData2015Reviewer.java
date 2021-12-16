@@ -97,6 +97,8 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
     private List<CertificationCriterion> e2e3Criteria = new ArrayList<CertificationCriterion>();
     private List<CertificationCriterion> e2e3RelatedCriteria = new ArrayList<CertificationCriterion>();
+    private List<CertificationCriterion> d2Criteria = new ArrayList<CertificationCriterion>();
+    private List<CertificationCriterion> d3Criteria = new ArrayList<CertificationCriterion>();
     private List<String> g7g8g9Criterion = new ArrayList<String>();
     private List<String> d2d10Criterion = new ArrayList<String>();
     private List<CertificationCriterion> e1Criteria;
@@ -128,12 +130,14 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         e2e3Criteria.add(criterionService.get(Criteria2015.E_3));
 
         e2e3RelatedCriteria.add(criterionService.get(Criteria2015.D_1));
-        e2e3RelatedCriteria.add(criterionService.get(Criteria2015.D_2_OLD));
-        e2e3RelatedCriteria.add(criterionService.get(Criteria2015.D_2_CURES));
-        e2e3RelatedCriteria.add(criterionService.get(Criteria2015.D_3_OLD));
-        e2e3RelatedCriteria.add(criterionService.get(Criteria2015.D_3_CURES));
         e2e3RelatedCriteria.add(criterionService.get(Criteria2015.D_5));
         e2e3RelatedCriteria.add(criterionService.get(Criteria2015.D_9));
+
+        d2Criteria.add(criterionService.get(Criteria2015.D_2_OLD));
+        d2Criteria.add(criterionService.get(Criteria2015.D_2_CURES));
+
+        d3Criteria.add(criterionService.get(Criteria2015.D_3_OLD));
+        d3Criteria.add(criterionService.get(Criteria2015.D_3_CURES));
 
         g7g8g9Criterion.add("170.315 (g)(7)");
         g7g8g9Criterion.add("170.315 (g)(8)");
@@ -199,6 +203,16 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 validationUtils.checkComplementaryCriteriaAllRequired(e2e3Criteria, e2e3RelatedCriteria,
                         attestedCriteria);
         listing.getErrorMessages().addAll(e2e3ComplimentaryErrors);
+
+        List<String> e2e3MissingD2Errors =
+                validationUtils.checkComplementaryCriteriaAnyRequired(e2e3Criteria, d2Criteria,
+                        attestedCriteria);
+        listing.getErrorMessages().addAll(e2e3MissingD2Errors);
+
+        List<String> e2e3MissingD3Errors =
+                validationUtils.checkComplementaryCriteriaAnyRequired(e2e3Criteria, d3Criteria,
+                        attestedCriteria);
+        listing.getErrorMessages().addAll(e2e3MissingD3Errors);
 
         // check for (g)(7) or (g)(8) or (g)(9) required complimentary certs
         List<String> g7g8g9ComplimentaryErrors =
