@@ -277,6 +277,12 @@ public class InvitationManager extends SecuredManager {
         return userInvitation.getUser();
     }
 
+    public void resendConfirmAddressEmailToUser(Long userId) throws UserRetrievalException {
+        UserDTO user = userDao.getById(userId);
+        UserInvitation invitation = getByCreatedUserId(userId);
+        invitationEmailer.emailNewUser(user, invitation);
+    }
+
     /**
      * Adds the invited user (who has now created an account) to any ACBs, ATLs, or Developers
      * that the invitation specifies they should have access to.
