@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.auth.ChplAccountStatusException;
 import gov.healthit.chpl.auth.jwt.JWTAuthor;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
@@ -25,6 +26,7 @@ import gov.healthit.chpl.exception.JWTCreationException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
@@ -38,38 +40,51 @@ public class AuthenticationManager {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private UserDetailsChecker userDetailsChecker;
     private ErrorMessageUtil msgUtil;
+    private InvitationManager invitationManager;
 
     @Autowired
     public AuthenticationManager(JWTAuthor jwtAuthor, UserManager userManager, UserDAO userDAO,
             BCryptPasswordEncoder bCryptPasswordEncoder,
             @Qualifier("chplAccountStatusChecker") UserDetailsChecker userDetailsChecker,
-            ErrorMessageUtil msgUtil) {
+            ErrorMessageUtil msgUtil, InvitationManager invitationManager) {
         this.jwtAuthor = jwtAuthor;
         this.userManager = userManager;
         this.userDAO = userDAO;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userDetailsChecker = userDetailsChecker;
         this.msgUtil = msgUtil;
+        this.invitationManager = invitationManager;
     }
 
     public String authenticate(LoginCredentials credentials)
-            throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
+            throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException, ChplAccountEmailNotConfirmedException {
 
         String jwt = getJWT(credentials);
-        UserDTO user = getUser(credentials);
-        if (user != null && user.isPasswordResetRequired()) {
-            throw new UserRetrievalException(msgUtil.getMessage("auth.changePasswordRequired"));
+        try {
+            UserDTO user = getUser(credentials);
+
+            if (user != null && user.isPasswordResetRequired()) {
+                throw new UserRetrievalException(msgUtil.getMessage("auth.changePasswordRequired"));
+            }
+            logWhenUsername(credentials, user);
+
+        } catch (ChplAccountEmailNotConfirmedException e) {
+            invitationManager.resendConfirmAddressEmailToUser(
+                    userManager.getByNameOrEmail(credentials.getUserName()).getId());
+            throw e;
         }
-        logWhenUsername(credentials, user);
         return jwt;
     }
 
     public UserDTO getUser(LoginCredentials credentials)
-            throws AccountStatusException, UserRetrievalException, MultipleUserAccountsException {
+            throws AccountStatusException, UserRetrievalException,
+            MultipleUserAccountsException, ChplAccountEmailNotConfirmedException {
+
         UserDTO user = getUserByNameOrEmail(credentials.getUserName());
         if (user != null) {
             if (user.getSignatureDate() == null) {
-                throw new ChplAccountStatusException(msgUtil.getMessage("auth.accountNotConfirmed", user.getEmail()));
+                //TODO - Need to add message to errors.properties
+                throw new ChplAccountEmailNotConfirmedException(msgUtil.getMessage("auth.accountNotConfirmed", user.getEmail()), user.getEmail());
             }
             if (user.getId() < 0) {
                 throw new ChplAccountStatusException(msgUtil.getMessage("auth.loginNotAllowed"));
@@ -150,7 +165,7 @@ public class AuthenticationManager {
             user = getUser(credentials);
         } catch (AccountStatusException e1) {
             throw new JWTCreationException(e1.getMessage());
-        } catch (UserRetrievalException | MultipleUserAccountsException e2) {
+        } catch (UserRetrievalException | MultipleUserAccountsException | ChplAccountEmailNotConfirmedException e2) {
             throw new JWTCreationException(e2.getMessage());
         }
 
