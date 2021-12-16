@@ -171,6 +171,11 @@ public class InvitationManager extends SecuredManager {
     }
 
     @Transactional
+    public UserInvitation getByCreatedUserId(Long createdUserId) {
+        return invitationDao.getByCreatedUserId(createdUserId);
+    }
+
+    @Transactional
     public User createUserFromInvitation(UserInvitation invitation, CreateUserRequest user)
             throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException,
             UserCreationException, MultipleUserAccountsException, EntityCreationException, EntityRetrievalException,
