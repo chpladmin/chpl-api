@@ -198,10 +198,10 @@ public class ApiExceptionControllerAdvice {
 
     @ExceptionHandler(ChplAccountEmailNotConfirmedException.class)
     public ResponseEntity<ErrorResponse> exception(ChplAccountEmailNotConfirmedException e) {
-        LOGGER.error(String.format("User's email [%s] is not confirmed. Resend confirm address email.", e.getEmailAddress()));
-        return new ResponseEntity<ErrorResponse>(
-                new ErrorResponse(e.getMessage()),
-                HttpStatus.BAD_REQUEST);
+        LOGGER.error(String.format("User's email [%s] is not confirmed. Resent confirm address email.", e.getEmailAddress()));
+        return ResponseEntity
+                .status(ChplHttpStatus.RESENT_USER_CONFIRMATION_EMAIL.value())
+                .body(new ErrorResponse(ChplHttpStatus.RESENT_USER_CONFIRMATION_EMAIL.getReasonPhrase()));
     }
 
     @ExceptionHandler(HttpClientErrorException.class)
