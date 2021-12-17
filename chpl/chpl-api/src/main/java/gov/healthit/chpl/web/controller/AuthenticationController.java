@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nulabinc.zxcvbn.Strength;
 
+import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
@@ -76,7 +78,8 @@ public class AuthenticationController {
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public String authenticateJSON(@RequestBody LoginCredentials credentials)
-            throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
+            throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException,
+            ChplAccountEmailNotConfirmedException {
 
         String jwt = authenticationManager.authenticate(credentials);
         String jwtJSON = "{\"token\": \"" + jwt + "\"}";
@@ -148,7 +151,7 @@ public class AuthenticationController {
             produces = "application/json; charset=utf-8")
     public UpdatePasswordResponse changeExpiredPassword(@RequestBody UpdateExpiredPasswordRequest request)
             throws UserRetrievalException, JWTCreationException, JWTValidationException,
-            MultipleUserAccountsException {
+            MultipleUserAccountsException, AccountStatusException, ChplAccountEmailNotConfirmedException {
         UpdatePasswordResponse response = new UpdatePasswordResponse();
 
         // get the user trying to change their password
