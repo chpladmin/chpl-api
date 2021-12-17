@@ -58,22 +58,19 @@ public class AuthenticationManager {
 
     public String authenticate(LoginCredentials credentials)
             throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException, ChplAccountEmailNotConfirmedException {
-
-        String jwt = getJWT(credentials);
         try {
             UserDTO user = getUser(credentials);
-
             if (user != null && user.isPasswordResetRequired()) {
                 throw new UserRetrievalException(msgUtil.getMessage("auth.changePasswordRequired"));
             }
+            String jwt = getJWT(credentials);
             logWhenUsername(credentials, user);
-
+            return jwt;
         } catch (ChplAccountEmailNotConfirmedException e) {
             invitationManager.resendConfirmAddressEmailToUser(
-                    userManager.getByNameOrEmail(credentials.getUserName()).getId());
+                    userManager.getByNameOrEmailUnsecured(credentials.getUserName()).getId());
             throw e;
         }
-        return jwt;
     }
 
     public UserDTO getUser(LoginCredentials credentials)
@@ -82,14 +79,15 @@ public class AuthenticationManager {
 
         UserDTO user = getUserByNameOrEmail(credentials.getUserName());
         if (user != null) {
-            if (user.getSignatureDate() == null) {
-                //TODO - Need to add message to errors.properties
-                throw new ChplAccountEmailNotConfirmedException(msgUtil.getMessage("auth.accountNotConfirmed", user.getEmail()), user.getEmail());
-            }
             if (user.getId() < 0) {
                 throw new ChplAccountStatusException(msgUtil.getMessage("auth.loginNotAllowed"));
             }
             if (checkPassword(credentials.getPassword(), userManager.getEncodedPassword(user))) {
+                if (user.getSignatureDate() == null) {
+                    //TODO - Need to add message to errors.properties
+                    throw new ChplAccountEmailNotConfirmedException(msgUtil.getMessage("auth.accountNotConfirmed", user.getEmail()), user.getEmail());
+                }
+
                 userDetailsChecker.check(user);
                 userManager.updateLastLoggedInDate(user);
 
