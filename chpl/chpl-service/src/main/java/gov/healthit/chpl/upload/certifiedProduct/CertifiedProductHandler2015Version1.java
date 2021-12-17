@@ -674,7 +674,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                         .getByCriterionId(cert.getMappedCriterion().getId());
                 if (allowedTestData != null && allowedTestData.size() > 0) {
                     for (TestDataDTO allowedTd : allowedTestData) {
-                        if (allowedTd.getName().equalsIgnoreCase(TestDataDTO.DEFALUT_TEST_DATA)) {
+                        if (allowedTd.getName().equalsIgnoreCase(TestDataDTO.DEFAULT_TEST_DATA)) {
                             tdEntity.setTestDataId(allowedTd.getId());
                         }
                     }

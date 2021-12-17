@@ -750,9 +750,9 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     msgUtil.getMessage("listing.criteria.badTestDataName",
                                             crTestData.getEnteredName(),
                                             Util.formatCriteriaNumber(cert.getCriterion()),
-                                            TestDataDTO.DEFALUT_TEST_DATA));
+                                            TestDataDTO.DEFAULT_TEST_DATA));
                             TestDataDTO foundTestData = testDataDao.getByCriterionAndValue(
-                                    cert.getCriterion().getId(), TestDataDTO.DEFALUT_TEST_DATA);
+                                    cert.getCriterion().getId(), TestDataDTO.DEFAULT_TEST_DATA);
                             crTestData.setTestData(foundTestData);
                         } else if (crTestData.getTestData() != null && crTestData.getTestData().getId() == null) {
                             TestDataDTO foundTestData =
@@ -762,7 +762,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                         msgUtil.getMessage("listing.criteria.badTestDataName",
                                                 crTestData.getTestData().getName(),
                                                 Util.formatCriteriaNumber(cert.getCriterion()),
-                                                TestDataDTO.DEFALUT_TEST_DATA));
+                                                TestDataDTO.DEFAULT_TEST_DATA));
                             } else {
                                 crTestData.getTestData().setId(foundTestData.getId());
                             }

@@ -43,7 +43,6 @@ public class TestDataReviewer {
     private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         reviewCriteriaCanHaveTestData(listing, certResult);
         reviewTestDataRequiredForG1AndG2WhenCertResultIsNotGap(listing, certResult);
-        reviewTestDataForReplacements(listing, certResult);
         if (certResult.getTestDataUsed() != null && certResult.getTestDataUsed().size() > 0) {
             certResult.getTestDataUsed().stream()
                 .forEach(testData -> reviewTestDataFields(listing, certResult, testData));
@@ -58,25 +57,6 @@ public class TestDataReviewer {
             }
             certResult.setTestDataUsed(null);
         }
-    }
-
-    private void reviewTestDataForReplacements(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (CollectionUtils.isEmpty(certResult.getTestDataUsed())) {
-            return;
-        }
-        certResult.getTestDataUsed().stream()
-            .filter(testData -> !StringUtils.isEmpty(testData.getUserEnteredName())
-                    && !testData.getTestData().getName().equals(testData.getUserEnteredName()))
-            .forEach(testData -> addWarningMessageForTestDataReplacement(listing, certResult, testData));
-    }
-
-    private void addWarningMessageForTestDataReplacement(CertifiedProductSearchDetails listing,
-            CertificationResult certResult, CertificationResultTestData testData) {
-        listing.getWarningMessages().add(
-                msgUtil.getMessage("listing.criteria.badTestDataName",
-                        testData.getUserEnteredName(),
-                        Util.formatCriteriaNumber(certResult.getCriterion()),
-                        testData.getTestData().getName()));
     }
 
     private void reviewTestDataRequiredForG1AndG2WhenCertResultIsNotGap(CertifiedProductSearchDetails listing, CertificationResult certResult) {
@@ -102,17 +82,27 @@ public class TestDataReviewer {
 
     private void reviewTestDataFields(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultTestData testData) {
+        reviewIdRequired(listing, certResult, testData);
         reviewNameRequired(listing, certResult, testData);
         reviewVersionRequired(listing, certResult, testData);
     }
 
+    private void reviewIdRequired(CertifiedProductSearchDetails listing,
+            CertificationResult certResult, CertificationResultTestData testData) {
+        if (testData.getTestData() != null && !StringUtils.isEmpty(testData.getTestData().getName())
+                && testData.getTestData().getId() == null) {
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.invalidTestData",
+                    testData.getTestData().getName(),
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
+        }
+    }
+
     private void reviewNameRequired(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultTestData testData) {
-        if (testData.getTestData() != null && StringUtils.isEmpty(testData.getUserEnteredName())
-                && !StringUtils.isEmpty(testData.getTestData().getName())) {
-            listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.missingTestDataName",
-                    Util.formatCriteriaNumber(certResult.getCriterion()),
-                    testData.getTestData().getName()));
+        if (testData.getTestData() != null && !StringUtils.isEmpty(testData.getVersion())
+                && StringUtils.isEmpty(testData.getTestData().getName())) {
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingTestDataName",
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
 
