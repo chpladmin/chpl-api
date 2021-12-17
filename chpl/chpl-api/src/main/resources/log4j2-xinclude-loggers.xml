@@ -181,6 +181,14 @@
         <AppenderRef
             ref="listingsSnapshotCsvCreatorJob" />
     </Logger>
+    <Logger name="updateMeasuresJobLogger" level="INFO"  additivity="false">
+        <AppenderRef ref="updateMeasuresJob" />
+        <AppenderRef ref="updateMeasuresJobJson" />
+    </Logger>
+    <Logger name="listingsSnapshotCsvCreatorJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="listingsSnapshotCsvCreatorJob" />
+        <AppenderRef ref="listingsSnapshotCsvCreatorJobJson" />
+    </Logger>
     <Logger name="removeCriteriaJobLogger" level="INFO"
         additivity="false">
         <AppenderRef ref="removeCriteriaJob" />

@@ -510,4 +510,16 @@ public class ValidationUtils {
                 .map(attestedCertResult -> new CertificationCriterion(attestedCertResult.getCriterion()))
                 .collect(Collectors.<CertificationCriterion>toList());
     }
+
+    public boolean isEligibleForErrors(PendingCertificationResultDTO certResult) {
+        return certResult.getCriterion() != null
+                && BooleanUtils.isNotTrue(certResult.getCriterion().getRemoved())
+                && BooleanUtils.isTrue(certResult.getMeetsCriteria());
+    }
+
+    public boolean isEligibleForErrors(CertificationResult certResult) {
+        return certResult.getCriterion() != null
+                && BooleanUtils.isNotTrue(certResult.getCriterion().getRemoved())
+                && BooleanUtils.isTrue(certResult.isSuccess());
+    }
 }

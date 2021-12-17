@@ -31,7 +31,7 @@ public class ValidDataReviewer extends PermissionBasedReviewer {
                     PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept
                             .getValue(formattedPrivacyAndSecurityFramework);
                     if (foundPrivacyAndSecurityFramework == null) {
-                        addErrorOrWarningByPermission(listing, cert,
+                        addErrorIfCriterionIsNotRemoved(listing, cert,
                                 "listing.criteria.invalidPrivacySecurityFramework",
                                 Util.formatCriteriaNumber(cert.getCriterion()),
                                 formattedPrivacyAndSecurityFramework,
@@ -41,7 +41,7 @@ public class ValidDataReviewer extends PermissionBasedReviewer {
                 if (cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
                     for (PendingCertificationResultAdditionalSoftwareDTO asDto : cert.getAdditionalSoftware()) {
                         if (!StringUtils.isEmpty(asDto.getChplId()) && asDto.getCertifiedProductId() == null) {
-                            addErrorOrWarningByPermission(listing, cert,
+                            addErrorIfCriterionIsNotRemoved(listing, cert,
                                     "listing.criteria.invalidAdditionalSoftware", asDto.getChplId(),
                                     Util.formatCriteriaNumber(cert.getCriterion()));
                         }
