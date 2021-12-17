@@ -18,11 +18,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.ToString;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@ToString
 @AllArgsConstructor
 public class Measure implements Serializable {
     private static final long serialVersionUID = 3070401446291821552L;
