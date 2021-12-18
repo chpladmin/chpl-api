@@ -58,6 +58,7 @@ public class ListingUploadManagerTest {
     private ListingUploadHandlerUtil uploadUtil;
     private ChplProductNumberUtil chplProductNumberUtil;
     private CertificationBodyDAO acbDao;
+    private ListingUploadDao listingUploadDao;
     private ListingUploadValidator listingUploadValidator;
     private CertifiedProductManager cpManager;
 
@@ -71,6 +72,7 @@ public class ListingUploadManagerTest {
         chplProductNumberUtil = Mockito.mock(ChplProductNumberUtil.class);
         certDateHandler = Mockito.mock(CertificationDateHandler.class);
         cpManager = Mockito.mock(CertifiedProductManager.class);
+        listingUploadDao = Mockito.mock(ListingUploadDao.class);
         listingUploadValidator = Mockito.mock(ListingUploadValidator.class);
         ListingDetailsNormalizer listingNormalizer = Mockito.mock(ListingDetailsNormalizer.class);
 
@@ -90,7 +92,7 @@ public class ListingUploadManagerTest {
                 certDateHandler,
                 listingNormalizer,
                 listingUploadValidator,
-                uploadUtil, chplProductNumberUtil, Mockito.mock(ListingUploadDao.class), acbDao,
+                uploadUtil, chplProductNumberUtil, listingUploadDao, acbDao,
                 Mockito.mock(UserDAO.class),
                 cpManager,
                 Mockito.mock(SchedulerManager.class),
@@ -352,7 +354,9 @@ public class ListingUploadManagerTest {
     @Test
     public void confirmListing_noWarningsNoAcknowledgment_succeeds()
             throws InvalidArgumentsException, ValidationException {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .id(1L)
+                .build();
         Mockito.doAnswer(new Answer<Object>() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -361,6 +365,8 @@ public class ListingUploadManagerTest {
                 return null;
             }
         }).when(listingUploadValidator).review(Mockito.eq(listing));
+        Mockito.when(listingUploadDao.isAvailableForProcessing(ArgumentMatchers.eq(listing.getId())))
+            .thenReturn(true);
         uploadManager.confirm(1L, ConfirmListingRequest.builder()
                 .acknowledgeWarnings(false)
                 .listing(listing)
@@ -370,7 +376,9 @@ public class ListingUploadManagerTest {
     @Test
     public void confirmListing_noWarningsHasAcknowledgment_succeeds()
             throws InvalidArgumentsException, ValidationException {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .id(1L)
+                .build();
         Mockito.doAnswer(new Answer<Object>() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -379,6 +387,8 @@ public class ListingUploadManagerTest {
                 return null;
             }
         }).when(listingUploadValidator).review(Mockito.eq(listing));
+        Mockito.when(listingUploadDao.isAvailableForProcessing(ArgumentMatchers.eq(listing.getId())))
+            .thenReturn(true);
         uploadManager.confirm(1L, ConfirmListingRequest.builder()
                 .acknowledgeWarnings(true)
                 .listing(listing)
@@ -388,7 +398,9 @@ public class ListingUploadManagerTest {
     @Test(expected = ValidationException.class)
     public void confirmListing_hasWarningsNoAcknowledgment_throwsValidationException()
             throws InvalidArgumentsException, ValidationException {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .id(1L)
+                .build();
         Mockito.doAnswer(new Answer<Object>() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -398,6 +410,8 @@ public class ListingUploadManagerTest {
                 return null;
             }
         }).when(listingUploadValidator).review(Mockito.eq(listing));
+        Mockito.when(listingUploadDao.isAvailableForProcessing(ArgumentMatchers.eq(listing.getId())))
+            .thenReturn(true);
         uploadManager.confirm(1L, ConfirmListingRequest.builder()
                 .acknowledgeWarnings(false)
                 .listing(listing)
@@ -407,7 +421,9 @@ public class ListingUploadManagerTest {
     @Test
     public void confirmListing_hasWarningsHasAcknowledgment_succeeds()
             throws InvalidArgumentsException, ValidationException {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .id(1L)
+                .build();
         Mockito.doAnswer(new Answer<Object>() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -417,8 +433,24 @@ public class ListingUploadManagerTest {
                 return null;
             }
         }).when(listingUploadValidator).review(Mockito.eq(listing));
+        Mockito.when(listingUploadDao.isAvailableForProcessing(ArgumentMatchers.eq(listing.getId())))
+            .thenReturn(true);
         uploadManager.confirm(1L, ConfirmListingRequest.builder()
                 .acknowledgeWarnings(true)
+                .listing(listing)
+                .build());
+    }
+
+    @Test(expected = InvalidArgumentsException.class)
+    public void confirmListing_notAvailableForConfirmation_throwsInvalidArgumentsException()
+            throws InvalidArgumentsException, ValidationException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .id(1L)
+                .build();
+        Mockito.when(listingUploadDao.isAvailableForProcessing(ArgumentMatchers.eq(listing.getId())))
+            .thenReturn(false);
+        uploadManager.confirm(1L, ConfirmListingRequest.builder()
+                .acknowledgeWarnings(false)
                 .listing(listing)
                 .build());
     }
