@@ -13,7 +13,6 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.ObjectUtils;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
@@ -76,7 +75,6 @@ public class Measure implements Serializable {
     private Set<CertificationCriterion> allowedCriteria = new LinkedHashSet<CertificationCriterion>();
 
     @XmlTransient
-    @JsonIgnore
     private String legacyMacraMeasureValue;
 
     public Measure() {
