@@ -1,6 +1,5 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -8,31 +7,33 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.PrivacyAndSecurityFrameworkConcept;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
-import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
+import gov.healthit.chpl.util.ValidationUtils;
 
 @Component("listingUploadPrivacyAndSecurityFrameworkReviewer")
-public class PrivacyAndSecurityFrameworkReviewer extends PermissionBasedReviewer {
+public class PrivacyAndSecurityFrameworkReviewer {
     private CertificationResultRules certResultRules;
+    private ValidationUtils validationUtils;
+    private ErrorMessageUtil msgUtil;
 
     @Autowired
     public PrivacyAndSecurityFrameworkReviewer(CertificationResultRules certResultRules,
-            ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
-        super(msgUtil, resourcePermissions);
+            ValidationUtils validationUtils,
+            ErrorMessageUtil msgUtil) {
         this.certResultRules = certResultRules;
+        this.validationUtils = validationUtils;
+        this.msgUtil = msgUtil;
     }
 
-    @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
+            .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
             .forEach(certResult -> review(listing, certResult));
     }
 
-    public void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         reviewCriteriaCanHavePrivacyAndSecurity(listing, certResult);
         reviewPrivacyAndSecurityRequired(listing, certResult);
         reviewPrivacyAndSecurityValid(listing, certResult);
@@ -51,9 +52,9 @@ public class PrivacyAndSecurityFrameworkReviewer extends PermissionBasedReviewer
     private void reviewPrivacyAndSecurityRequired(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.PRIVACY_SECURITY)
                 && StringUtils.isEmpty(certResult.getPrivacySecurityFramework())) {
-            addCriterionErrorOrWarningByPermission(listing, certResult,
+            listing.getErrorMessages().add(msgUtil.getMessage(
                     "listing.criteria.missingPrivacySecurityFramework",
-                    Util.formatCriteriaNumber(certResult.getCriterion()));
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
 
@@ -64,11 +65,11 @@ public class PrivacyAndSecurityFrameworkReviewer extends PermissionBasedReviewer
             PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept
                     .getValue(formattedPrivacyAndSecurityFramework);
             if (foundPrivacyAndSecurityFramework == null) {
-                addCriterionErrorOrWarningByPermission(listing, certResult,
+                listing.getErrorMessages().add(msgUtil.getMessage(
                         "listing.criteria.invalidPrivacySecurityFramework",
                         Util.formatCriteriaNumber(certResult.getCriterion()),
                         formattedPrivacyAndSecurityFramework,
-                        PrivacyAndSecurityFrameworkConcept.getFormattedValues());
+                        PrivacyAndSecurityFrameworkConcept.getFormattedValues()));
             }
         }
     }

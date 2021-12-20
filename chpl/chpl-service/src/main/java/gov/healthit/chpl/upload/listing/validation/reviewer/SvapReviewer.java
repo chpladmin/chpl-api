@@ -10,33 +10,32 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
-import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
+import gov.healthit.chpl.util.ValidationUtils;
 import lombok.extern.log4j.Log4j2;
 
 @Component("listingUploadSvapReviewer")
 @Log4j2
-public class SvapReviewer extends PermissionBasedReviewer {
+public class SvapReviewer {
     private CertificationResultRules certResultRules;
+    private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
     public SvapReviewer(CertificationResultRules certResultRules,
-            ResourcePermissions resourcePermissions,
+            ValidationUtils validationUtils,
             ErrorMessageUtil msgUtil) {
-        super(msgUtil, resourcePermissions);
         this.certResultRules = certResultRules;
+        this.validationUtils = validationUtils;
         this.msgUtil = msgUtil;
     }
 
-    @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
+            .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
             .forEach(certResult -> reviewCertificationResult(listing, certResult));
     }
 
@@ -68,10 +67,10 @@ public class SvapReviewer extends PermissionBasedReviewer {
             CertificationResultSvap svap = svapIter.next();
             if (svap.getSvapId() == null) {
                 svapIter.remove();
-                addCriterionErrorOrWarningByPermission(listing, certResult,
+                listing.getWarningMessages().add(msgUtil.getMessage(
                         "listing.criteria.svap.invalidCriteriaAndRemoved",
                         svap.getRegulatoryTextCitation(),
-                        Util.formatCriteriaNumber(certResult.getCriterion()));
+                        Util.formatCriteriaNumber(certResult.getCriterion())));
             }
         }
     }

@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -17,34 +16,35 @@ import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.TestFunctionalityCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
-import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
+import gov.healthit.chpl.util.ValidationUtils;
 
 @Component("listingUploadTestFunctionalityReviewer")
-public class TestFunctionalityReviewer extends PermissionBasedReviewer {
+public class TestFunctionalityReviewer {
     private CertificationResultRules certResultRules;
+    private ValidationUtils validationUtils;
     private TestFunctionalityDAO testFunctionalityDao;
+    private ErrorMessageUtil msgUtil;
 
     @Autowired
     public TestFunctionalityReviewer(CertificationResultRules certResultRules,
-            TestFunctionalityDAO testFunctionalityDao,
-            ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
-        super(msgUtil, resourcePermissions);
+            ValidationUtils validationUtils,
+            TestFunctionalityDAO testFunctionalityDao, ErrorMessageUtil msgUtil) {
         this.certResultRules = certResultRules;
+        this.validationUtils = validationUtils;
         this.testFunctionalityDao = testFunctionalityDao;
+        this.msgUtil = msgUtil;
     }
 
-    @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
+            .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
             .forEach(certResult -> review(listing, certResult));
     }
 
-    public void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         reviewCriteriaCanHaveTestFunctionalityData(listing, certResult);
         removeTestFunctionalityWithoutIds(listing, certResult);
         removeTestFunctionalityMismatchedToCriteria(listing, certResult);
@@ -73,8 +73,9 @@ public class TestFunctionalityReviewer extends PermissionBasedReviewer {
             CertificationResultTestFunctionality testFunctionality = testFunctionalityIter.next();
             if (testFunctionality.getTestFunctionalityId() == null) {
                 testFunctionalityIter.remove();
-                addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.testFunctionalityNotFoundAndRemoved",
-                        Util.formatCriteriaNumber(certResult.getCriterion()), testFunctionality.getName());
+                listing.getWarningMessages().add(msgUtil.getMessage(
+                        "listing.criteria.testFunctionalityNotFoundAndRemoved",
+                        Util.formatCriteriaNumber(certResult.getCriterion()), testFunctionality.getName()));
             }
         }
     }
@@ -90,9 +91,7 @@ public class TestFunctionalityReviewer extends PermissionBasedReviewer {
             if (!isTestFunctionalityCritierionValid(certResult.getCriterion().getId(),
                     testFunctionality.getTestFunctionalityId(), year)) {
                 testFunctionalityIter.remove();
-
-                addCriterionErrorOrWarningByPermission(listing, certResult,
-                        msgUtil.getMessage("listing.criteria.testFunctionalityCriterionMismatch",
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.testFunctionalityCriterionMismatch",
                             Util.formatCriteriaNumber(certResult.getCriterion()),
                             testFunctionality.getName(),
                             getDelimitedListOfValidCriteriaNumbers(testFunctionality.getTestFunctionalityId(), year),

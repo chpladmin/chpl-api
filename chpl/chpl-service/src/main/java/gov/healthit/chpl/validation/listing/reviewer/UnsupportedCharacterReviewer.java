@@ -45,7 +45,7 @@ public class UnsupportedCharacterReviewer implements Reviewer {
 
         // check all criteria fields
         for (CertificationResult cert : listing.getCertificationResults()) {
-            if (cert.isSuccess() != null && cert.isSuccess().booleanValue()) {
+            if (validationUtils.isEligibleForErrors(cert)) {
                 addCriteriaWarningIfNotValid(listing, cert, cert.getApiDocumentation(), "API Documentation");
                 if (cert.getAdditionalSoftware() != null) {
                     for (CertificationResultAdditionalSoftware addSoft : cert.getAdditionalSoftware()) {

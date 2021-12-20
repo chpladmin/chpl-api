@@ -12,7 +12,6 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
@@ -24,7 +23,6 @@ public class SedRelatedCriteriaReviewerTest {
 
     private CertificationCriterion g3;
     private ErrorMessageUtil msgUtil;
-    private ResourcePermissions resourcePermissions;
     private SedRelatedCriteriaReviewer reviewer;
 
     @Before
@@ -34,7 +32,6 @@ public class SedRelatedCriteriaReviewerTest {
             .thenAnswer(i -> String.format(CRITERION_REQUIRED, i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.g3NotAllowed")))
             .thenReturn(G3_NOT_ALLOWED);
-        resourcePermissions = Mockito.mock(ResourcePermissions.class);
         CertificationCriterionService criteriaService = Mockito.mock(CertificationCriterionService.class);
         Mockito.when(criteriaService.get(ArgumentMatchers.eq("criterion.170_315_a_1"))).thenReturn(getCriterion(1L, "170.315 (a)(1)", "a1 original", false));
         Mockito.when(criteriaService.get(ArgumentMatchers.eq("criterion.170_315_a_2"))).thenReturn(getCriterion(2L, "170.315 (a)(2)", "a2 original", false));
@@ -54,7 +51,7 @@ public class SedRelatedCriteriaReviewerTest {
         Mockito.when(criteriaService.get(ArgumentMatchers.eq("criterion.170_315_g_3"))).thenReturn(g3);
 
         ValidationUtils validationUtils = new ValidationUtils(criteriaService);
-        reviewer = new SedRelatedCriteriaReviewer(validationUtils, criteriaService, msgUtil, resourcePermissions);
+        reviewer = new SedRelatedCriteriaReviewer(validationUtils, criteriaService, msgUtil);
     }
 
     @Test
@@ -138,55 +135,7 @@ public class SedRelatedCriteriaReviewerTest {
     }
 
     @Test
-    public void review_noG3AndAttestsRemovedSedRelatedCriteria_admin_hasWarning() {
-        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
-        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
-        Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
-
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationResult(CertificationResult.builder()
-                        .success(false)
-                        .criterion(g3)
-                        .build())
-                .certificationResult(CertificationResult.builder()
-                        .success(true)
-                        .criterion(getCriterion(6L, "170.315 (a)(6)", "A6 original", true))
-                        .build())
-                .build();
-        reviewer.review(listing);
-        assertEquals(0, listing.getErrorMessages().size());
-        assertEquals(1, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERION_REQUIRED, Util.formatCriteriaNumber(g3))));
-    }
-
-    @Test
-    public void review_noG3AndAttestsRemovedSedRelatedCriteria_oncAdmin_hasWarning() {
-        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
-        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(true);
-        Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
-
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationResult(CertificationResult.builder()
-                        .success(false)
-                        .criterion(g3)
-                        .build())
-                .certificationResult(CertificationResult.builder()
-                        .success(true)
-                        .criterion(getCriterion(6L, "170.315 (a)(6)", "A6 original", true))
-                        .build())
-                .build();
-        reviewer.review(listing);
-        assertEquals(0, listing.getErrorMessages().size());
-        assertEquals(1, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(String.format(CRITERION_REQUIRED, Util.formatCriteriaNumber(g3))));
-    }
-
-    @Test
-    public void review_noG3AndAttestsRemovedSedRelatedCriteria_acbAdmin_noErrors() {
-        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
-        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
-        Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
-
+    public void review_noG3AndAttestsRemovedSedRelatedCriteria_noErrors() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .success(false)

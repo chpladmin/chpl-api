@@ -277,6 +277,52 @@
 				"description": "ONC_STAFF users should get 200 status and response is not null for data/fuzzy_choices end point"
 			},
 			"response": []
+		},
+		{
+			"name": "GET /data/measures - removed measures validation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"expect removed g1g2 measure to be marked as removed\", () => {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    const measure = jsonData.data.find(item => item.requiredTest === \"Required Test 9: Stage 2 Objective 7\");\r",
+							"    pm.expect(measure.removed).to.be.true;\r",
+							"    pm.expect(measure.abbreviation).to.eql(\"RT9\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/data/measures",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"data",
+						"measures"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }

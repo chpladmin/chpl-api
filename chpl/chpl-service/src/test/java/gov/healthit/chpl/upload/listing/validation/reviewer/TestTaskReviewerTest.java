@@ -18,7 +18,6 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSed;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -33,8 +32,7 @@ public class TestTaskReviewerTest {
     private CertificationResultRules certResultRules;
     private CertificationCriterionService criteriaService;
     private ErrorMessageUtil errorMessageUtil;
-    private ResourcePermissions resourcePermissions;
-    private CertificationCriterion a1, a2, a3;
+    private CertificationCriterion a1, a2, a3, a6, a7;
     private TestTaskReviewer reviewer;
 
     @Before
@@ -52,12 +50,17 @@ public class TestTaskReviewerTest {
         .thenAnswer(i -> String.format(TEST_TASK_FIELD_ROUNDED, i.getArgument(1), i.getArgument(2), i.getArgument(3), i.getArgument(4)));
 
         criteriaService = Mockito.mock(CertificationCriterionService.class);
-        a1 = CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("a1").build();
-        a2 = CertificationCriterion.builder().id(2L).number("170.315 (a)(2)").title("a2").build();
-        a3 = CertificationCriterion.builder().id(3L).number("170.315 (a)(3)").title("a3").build();
+        a1 = CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("a1").removed(false).build();
+        a2 = CertificationCriterion.builder().id(2L).number("170.315 (a)(2)").title("a2").removed(false).build();
+        a3 = CertificationCriterion.builder().id(3L).number("170.315 (a)(3)").title("a3").removed(false).build();
+        a6 = CertificationCriterion.builder().id(6L).number("170.315 (a)(6)").title("a6").removed(true).build();
+        a7 = CertificationCriterion.builder().id(7L).number("170.315 (a)(7)").title("a7").removed(true).build();
+
         Mockito.when(criteriaService.get(ArgumentMatchers.eq(a1.getId()))).thenReturn(a1);
         Mockito.when(criteriaService.get(ArgumentMatchers.eq(a2.getId()))).thenReturn(a2);
         Mockito.when(criteriaService.get(ArgumentMatchers.eq(a3.getId()))).thenReturn(a3);
+        Mockito.when(criteriaService.get(ArgumentMatchers.eq(a6.getId()))).thenReturn(a6);
+        Mockito.when(criteriaService.get(ArgumentMatchers.eq(a7.getId()))).thenReturn(a7);
 
         certResultRules = Mockito.mock(CertificationResultRules.class);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a1.getNumber()), ArgumentMatchers.eq(CertificationResultRules.TEST_TASK)))
@@ -66,10 +69,13 @@ public class TestTaskReviewerTest {
             .thenReturn(true);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a3.getNumber()), ArgumentMatchers.eq(CertificationResultRules.TEST_TASK)))
             .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a6.getNumber()), ArgumentMatchers.eq(CertificationResultRules.TEST_TASK)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a7.getNumber()), ArgumentMatchers.eq(CertificationResultRules.TEST_TASK)))
+            .thenReturn(true);
 
-        resourcePermissions = Mockito.mock(ResourcePermissions.class);
         reviewer = new TestTaskReviewer(criteriaService, new ValidationUtils(), certResultRules, "1,2",
-                errorMessageUtil, resourcePermissions);
+                errorMessageUtil);
     }
 
     @Test
@@ -153,6 +159,60 @@ public class TestTaskReviewerTest {
     }
 
     @Test
+    public void review_testTaskHasNotAllowedRemovedCriteria_certResultHasSedTrue_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(a6)
+                        .sed(true)
+                        .build())
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a6).collect(Collectors.toList())));
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_testTaskHasNotAllowedRemovedCriteria_certResultHasSedFalse_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(a6)
+                        .sed(false)
+                        .build())
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a6).collect(Collectors.toList())));
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_testTaskHasNotAllowedRemovedCriteria_certResultUnattested_hasError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(false)
+                        .criterion(a6)
+                        .sed(false)
+                        .build())
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a6).collect(Collectors.toList())));
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
     public void review_criteriaWithSedIsMissingTestTask_hasErrors() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -173,7 +233,30 @@ public class TestTaskReviewerTest {
 
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(MISSING_TEST_TASK , Util.formatCriteriaNumber(a1))));
+        assertTrue(listing.getErrorMessages().contains(String.format(MISSING_TEST_TASK, Util.formatCriteriaNumber(a1))));
+    }
+
+    @Test
+    public void review_removedCriteriaWithSedIsMissingTestTask_noErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(a1)
+                        .sed(true)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(a7)
+                        .sed(true)
+                        .build())
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1).collect(Collectors.toList())));
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -197,7 +280,30 @@ public class TestTaskReviewerTest {
 
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(TEST_TASK_NOT_APPLICABLE , Util.formatCriteriaNumber(a1))));
+        assertTrue(listing.getErrorMessages().contains(String.format(TEST_TASK_NOT_APPLICABLE, Util.formatCriteriaNumber(a1))));
+    }
+
+    @Test
+    public void review_testTaskIncludesUnattestedRemovedCriteria_noErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(a3)
+                        .sed(false)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .success(false)
+                        .criterion(a7)
+                        .sed(false)
+                        .build())
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a7).collect(Collectors.toList())));
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -240,7 +346,7 @@ public class TestTaskReviewerTest {
                 .sed(CertifiedProductSed.builder().build())
                 .build();
         listing.getSed().getTestTasks().add(
-                buildValidTestTask(null, Stream.of(a1).collect(Collectors.toList())));
+                buildValidTestTask("", Stream.of(a1).collect(Collectors.toList())));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
