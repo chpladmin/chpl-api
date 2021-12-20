@@ -541,7 +541,7 @@
         </Policies>
     </RollingFile>
     <RollingFile name="removeCriteriaJob"
-       fileName="${logDir}/scheduler/removeCriteriaJob.log"
+        fileName="${logDir}/scheduler/removeCriteriaJob.log"
         filePattern="${logDir}/scheduler/history/removeCriteriaJob-%d{yyyy-MM-dd}.log"
         filePermissions="rw-rw-r--">
         <PatternLayout>

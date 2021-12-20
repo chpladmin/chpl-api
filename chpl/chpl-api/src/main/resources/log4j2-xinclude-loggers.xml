@@ -176,11 +176,6 @@
         <AppenderRef ref="deprecatedApiUsageEmailJob" />
         <AppenderRef ref="deprecatedApiUsageEmailJobJson" />
     </Logger>
-    <Logger name="listingsSnapshotCsvCreatorJobLogger"
-        level="INFO" additivity="false">
-        <AppenderRef
-            ref="listingsSnapshotCsvCreatorJob" />
-    </Logger>
     <Logger name="updateMeasuresJobLogger" level="INFO"  additivity="false">
         <AppenderRef ref="updateMeasuresJob" />
         <AppenderRef ref="updateMeasuresJobJson" />
