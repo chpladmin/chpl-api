@@ -56,6 +56,7 @@ public class AuthenticationManager {
         this.invitationManager = invitationManager;
     }
 
+    @Transactional
     public String authenticate(LoginCredentials credentials)
             throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException, ChplAccountEmailNotConfirmedException {
         try {

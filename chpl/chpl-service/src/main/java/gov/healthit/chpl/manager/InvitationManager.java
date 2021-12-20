@@ -277,10 +277,16 @@ public class InvitationManager extends SecuredManager {
         return userInvitation.getUser();
     }
 
-    public void resendConfirmAddressEmailToUser(Long userId) throws UserRetrievalException {
+    public Boolean resendConfirmAddressEmailToUser(Long userId) throws UserRetrievalException {
         UserDTO user = userDao.getById(userId);
         UserInvitation invitation = getByCreatedUserId(userId);
-        invitationEmailer.emailNewUser(user, invitation);
+        if (invitation != null) {
+            invitationDao.update(invitation);
+            invitationEmailer.emailNewUser(user, invitation);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
