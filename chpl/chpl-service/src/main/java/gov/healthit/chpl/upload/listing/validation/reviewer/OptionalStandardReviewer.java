@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -19,6 +18,7 @@ import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import lombok.extern.log4j.Log4j2;
 
@@ -27,11 +27,13 @@ import lombok.extern.log4j.Log4j2;
 public class OptionalStandardReviewer implements Reviewer {
     private Map<Long, List<OptionalStandardCriteriaMap>> optionalStandardCriteriaMap = null;
     private CertificationResultRules certResultRules;
+    private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
     public OptionalStandardReviewer(OptionalStandardDAO optionalStandardDao,
             CertificationResultRules certResultRules,
+            ValidationUtils validationUtils,
             ErrorMessageUtil msgUtil) {
         try {
             optionalStandardCriteriaMap = optionalStandardDao.getAllOptionalStandardCriteriaMap().stream()
@@ -42,13 +44,14 @@ public class OptionalStandardReviewer implements Reviewer {
         }
 
         this.certResultRules = certResultRules;
+        this.validationUtils = validationUtils;
         this.msgUtil = msgUtil;
     }
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
+            .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
             .forEach(certResult -> reviewCertificationResult(listing, certResult));
     }
 

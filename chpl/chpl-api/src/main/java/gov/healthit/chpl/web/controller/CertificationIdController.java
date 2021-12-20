@@ -31,7 +31,6 @@ import gov.healthit.chpl.exception.CertificationIdException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -40,15 +39,14 @@ import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
 import gov.healthit.chpl.web.controller.results.CertificationIdLookupResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdVerifyResults;
-import lombok.extern.log4j.Log4j2;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.log4j.Log4j2;
 
 @Tag(name = "certification-ids", description = "All certification ID operations.")
 @RestController
 @RequestMapping("/certification_ids")
-@Loggable
 @Log4j2
 public class CertificationIdController {
 
@@ -69,9 +67,11 @@ public class CertificationIdController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ONC_STAFF', 'ROLE_CMS_STAFF')")
     @Operation(summary = "Retrieves a list of all CMS EHR Certification IDs along with the date they were created.",
-        description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_CMS_STAFF",
-        security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER) })
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_CMS_STAFF",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = {
             MediaType.APPLICATION_JSON_VALUE
     })
@@ -91,35 +91,39 @@ public class CertificationIdController {
             description = "Retrieves a CMS EHR Certification ID for a collection of products. Returns a list of "
                     + "basic product information, Criteria and CQM calculations, and the associated CMS EHR "
                     + "Certification ID if one exists.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/search", method = RequestMethod.GET, produces = {
             MediaType.APPLICATION_JSON_VALUE
     })
     @DeprecatedResponseFields(responseClass = CertificationIdResults.class)
     public @ResponseBody CertificationIdResults searchCertificationId(
             @RequestParam(required = false) final List<Long> ids) throws InvalidArgumentsException,
-    CertificationIdException {
+            CertificationIdException {
         return this.findCertificationByProductIds(ids, false);
     }
 
     @Operation(summary = "Creates a new CMS EHR Certification ID for a collection of products if one does not already "
-                    + "exist.",
+            + "exist.",
             description = "Retrieves a CMS EHR Certification ID for a collection of products or creates a new one "
                     + "if one does not already exist. Returns a list of basic product information, Criteria "
                     + "and CQM calculations, and the associated CMS EHR Certification ID if one exists.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = {
             MediaType.APPLICATION_JSON_VALUE
     })
     @DeprecatedResponseFields(responseClass = CertificationIdResults.class)
     public @ResponseBody CertificationIdResults createCertificationId(
             @RequestParam(required = true) final List<Long> ids) throws InvalidArgumentsException,
-    CertificationIdException {
+            CertificationIdException {
         return create(ids);
     }
 
     private CertificationIdResults create(final List<Long> ids) throws InvalidArgumentsException,
-    CertificationIdException {
+            CertificationIdException {
         return this.findCertificationByProductIds(ids, true);
     }
 
@@ -128,46 +132,54 @@ public class CertificationIdController {
                     + "products that make it up.  This method can be used when verfying a small number of"
                     + "Certification Ids, where the length of the URL, plus the list of IDs, is less than the"
                     + "maximum length URL that your client can handle.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/{certificationId:^[A-Z0-9]+$}", method = RequestMethod.GET, produces = {
             MediaType.APPLICATION_JSON_VALUE
     })
     public @ResponseBody CertificationIdLookupResults getCertificationId(
             @PathVariable("certificationId") final String certificationId, @RequestParam(required = false,
-            defaultValue = "false") final Boolean includeCriteria, @RequestParam(required = false,
-            defaultValue = "false") final Boolean includeCqms) throws InvalidArgumentsException,
-    EntityRetrievalException, CertificationIdException {
+                    defaultValue = "false") final Boolean includeCriteria,
+            @RequestParam(required = false,
+                    defaultValue = "false") final Boolean includeCqms)
+            throws InvalidArgumentsException,
+            EntityRetrievalException, CertificationIdException {
         return this.findCertificationIdByCertificationId(certificationId, includeCriteria, includeCqms);
     }
 
     @Operation(summary = "Verify whether one or more specific EHR Certification IDs are valid or not.",
             description = "Returns a boolean value for each EHR Certification ID specified.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/verify", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = {
-            MediaType.APPLICATION_JSON_VALUE
-    })
+            produces = {
+                    MediaType.APPLICATION_JSON_VALUE
+            })
     public @ResponseBody CertificationIdVerifyResults verifyCertificationId(
             @RequestBody final CertificationIdVerificationBody body) throws InvalidArgumentsException,
-    CertificationIdException {
+            CertificationIdException {
         return this.verifyCertificationIds(body.getIds());
     }
 
     @Operation(summary = "Verify whether one or more specific EHR Certification IDs are valid or not.",
             description = "Returns true or false for each EHR Certification ID specified.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY) })
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/verify", method = RequestMethod.GET, produces = {
             MediaType.APPLICATION_JSON_VALUE
     })
     public @ResponseBody CertificationIdVerifyResults verifyCertificationId(
             @RequestParam("ids") final List<String> certificationIds) throws InvalidArgumentsException,
-    CertificationIdException {
+            CertificationIdException {
         return this.verifyCertificationIds(certificationIds);
     }
 
     private CertificationIdLookupResults findCertificationIdByCertificationId(final String certificationId,
             final Boolean includeCriteria, final Boolean includeCqms) throws InvalidArgumentsException,
-    EntityRetrievalException, CertificationIdException {
+            EntityRetrievalException, CertificationIdException {
         CertificationIdLookupResults results = new CertificationIdLookupResults();
         try {
             // Lookup the Cert ID

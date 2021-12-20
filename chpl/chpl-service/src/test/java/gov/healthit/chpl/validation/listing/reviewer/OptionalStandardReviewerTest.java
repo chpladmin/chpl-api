@@ -23,8 +23,8 @@ import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.validation.listing.reviewer.OptionalStandardReviewer;
 
 public class OptionalStandardReviewerTest {
     private static final String INVALID_EDITION_ERROR_KEY = "listing.criteria.optionalStandard.invalidEdition";
@@ -33,6 +33,7 @@ public class OptionalStandardReviewerTest {
     private OptionalStandardDAO optionalStandardDAO;
     private ErrorMessageUtil errorMessageUtil;
     private OptionalStandardReviewer optionalStandardReviewer;
+    private ResourcePermissions resourcePermissions;
     private FF4j ff4j;
 
     @Before
@@ -51,7 +52,9 @@ public class OptionalStandardReviewerTest {
         Mockito.when(ff4j.check(FeatureList.OPTIONAL_STANDARDS))
         .thenReturn(true);
 
-        optionalStandardReviewer = new OptionalStandardReviewer(optionalStandardDAO, errorMessageUtil, ff4j);
+        resourcePermissions = Mockito.mock(ResourcePermissions.class);
+
+        optionalStandardReviewer = new OptionalStandardReviewer(optionalStandardDAO, errorMessageUtil, resourcePermissions, ff4j);
     }
 
     @Test
@@ -107,6 +110,75 @@ public class OptionalStandardReviewerTest {
         optionalStandardReviewer.review(listing);
 
         assertEquals(1, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_invalidOptionalStandardCriterionCombinationWhenCriteriaRemovedAndRoleAcb_NoMessageExists() {
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleOncStaff()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
+
+        Map<String, Object> certEdition = new HashMap<String, Object>();
+        certEdition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 3L);
+        certEdition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (a)(13)")
+                                .id(1L)
+                                .removed(true)
+                                .build())
+                        .optionalStandards(Stream.of(CertificationResultOptionalStandard.builder()
+                                .optionalStandardId(2L)
+                                .citation("bad std1")
+                                .build()).collect(Collectors.toList()))
+                        .build())
+                .certificationEdition(certEdition)
+                .build();
+
+
+        optionalStandardReviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(0, listing.getWarningMessages().size());
+    }
+
+    @Test
+    public void review_invalidOptionalStandardCriterionCombinationWhenCriteriaRemovedAndRoleAdmin_WarningMessageExists() {
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleOncStaff()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
+
+        Map<String, Object> certEdition = new HashMap<String, Object>();
+        certEdition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 3L);
+        certEdition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (a)(13)")
+                                .id(1L)
+                                .removed(true)
+                                .build())
+                        .optionalStandards(Stream.of(CertificationResultOptionalStandard.builder()
+                                .optionalStandardId(2L)
+                                .citation("bad std1")
+                                .build()).collect(Collectors.toList()))
+                        .build())
+                .certificationEdition(certEdition)
+                .build();
+
+
+        optionalStandardReviewer.review(listing);
+
+        assertEquals(1, listing.getWarningMessages().size());
     }
 
     private List<OptionalStandardCriteriaMap> getOptionalStandardCriteriaMaps() {

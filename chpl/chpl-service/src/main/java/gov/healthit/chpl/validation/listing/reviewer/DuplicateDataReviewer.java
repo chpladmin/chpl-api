@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.AccessibilityStandardDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.AdditionalSoftwareDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.AtlDuplicateReviewer;
@@ -39,6 +40,7 @@ public class DuplicateDataReviewer implements Reviewer {
     private AtlDuplicateReviewer atlDuplicateReviewer;
     private TargetedUserDuplicateReviewer targetedUserDuplicateReviewer;
     private PromotingInteroperabilityUserCountReviewer piuReviewer;
+    private ValidationUtils validationUtils;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
@@ -57,7 +59,8 @@ public class DuplicateDataReviewer implements Reviewer {
             @Qualifier("icsSourceDuplicateReviewer") IcsSourceDuplicateReviewer icsSourceDuplicateReviewer,
             @Qualifier("atlDuplicateReviewer") AtlDuplicateReviewer atlDuplicateReviewer,
             @Qualifier("targetedUserDuplicateReviewer") TargetedUserDuplicateReviewer targetedUserDuplicateReviewer,
-            @Qualifier("promotingInteroperabilityUserCountDuplicateReviewer") PromotingInteroperabilityUserCountReviewer piuReviewer) {
+            @Qualifier("promotingInteroperabilityUserCountDuplicateReviewer") PromotingInteroperabilityUserCountReviewer piuReviewer,
+            ValidationUtils validationUtils) {
         this.testFunctionalityDuplicateReviewer = testFunctionalityDuplicateReviewer;
         this.testDataDuplicateReviewer = testDataDuplicateReviewer;
         this.testToolDuplicateReviewer = testToolDuplicateReviewer;
@@ -73,6 +76,7 @@ public class DuplicateDataReviewer implements Reviewer {
         this.atlDuplicateReviewer = atlDuplicateReviewer;
         this.targetedUserDuplicateReviewer = targetedUserDuplicateReviewer;
         this.piuReviewer = piuReviewer;
+        this.validationUtils = validationUtils;
     }
 
     @Override
@@ -86,14 +90,16 @@ public class DuplicateDataReviewer implements Reviewer {
         piuReviewer.review(listing);
 
         for (CertificationResult cr : listing.getCertificationResults()) {
-            additionalSoftwareDuplicateReviewer.review(listing, cr);
-            testToolDuplicateReviewer.review(listing, cr);
-            testProcedureDuplicateReviewer.review(listing, cr);
-            testDataDuplicateReviewer.review(listing, cr);
-            testStandardDuplicateReviewer.review(listing, cr);
-            optionalStandardDuplicateReviewer.review(listing, cr);
-            svapDuplicateReviewer.review(listing, cr);
-            testFunctionalityDuplicateReviewer.review(listing, cr);
+            if (validationUtils.isEligibleForErrors(cr)) {
+                additionalSoftwareDuplicateReviewer.review(listing, cr);
+                testToolDuplicateReviewer.review(listing, cr);
+                testProcedureDuplicateReviewer.review(listing, cr);
+                testDataDuplicateReviewer.review(listing, cr);
+                testStandardDuplicateReviewer.review(listing, cr);
+                optionalStandardDuplicateReviewer.review(listing, cr);
+                svapDuplicateReviewer.review(listing, cr);
+                testFunctionalityDuplicateReviewer.review(listing, cr);
+            }
         }
     }
 

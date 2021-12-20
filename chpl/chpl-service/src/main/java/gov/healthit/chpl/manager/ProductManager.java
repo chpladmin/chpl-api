@@ -33,7 +33,6 @@ import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.DirectReviewUpdateEmailService;
@@ -45,7 +44,6 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service
-@Loggable
 public class ProductManager extends SecuredManager {
     private ErrorMessageUtil msgUtil;
     private ProductDAO productDao;

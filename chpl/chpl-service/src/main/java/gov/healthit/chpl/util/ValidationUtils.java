@@ -162,7 +162,13 @@ public class ValidationUtils {
             List<CertificationCriterion> complementaryCriteria,
             List<CertificationCriterion> allCriteriaMet) {
         List<String> errors = new ArrayList<String>();
-        boolean hasApplicableCriterion = hasAnyCriteria(criterionToCheck, allCriteriaMet);
+
+
+        boolean hasApplicableCriterion = hasAnyCriteria(
+                criterionToCheck.stream()
+                        .filter(crit -> !crit.getRemoved())
+                        .collect(Collectors.toList()),
+                allCriteriaMet);
         if (hasApplicableCriterion) {
             for (CertificationCriterion complementaryCriterion : complementaryCriteria) {
                 boolean hasComplementaryCriterion = hasCriterion(complementaryCriterion, allCriteriaMet);
@@ -250,7 +256,11 @@ public class ValidationUtils {
     public List<String> checkComplementaryCriteriaAnyRequired(List<CertificationCriterion> criteriaToCheck,
             List<CertificationCriterion> complementaryCriteria, List<CertificationCriterion> allCriteriaMet) {
         List<String> errors = new ArrayList<String>();
-        boolean hasAnyCriteria = hasAnyCriteria(criteriaToCheck, allCriteriaMet);
+        boolean hasAnyCriteria = hasAnyCriteria(
+                criteriaToCheck.stream()
+                        .filter(crit -> !crit.getRemoved())
+                        .collect(Collectors.toList()),
+                allCriteriaMet);
         if (hasAnyCriteria) {
             boolean hasAnyComplementaryCriteria = hasAnyCriteria(complementaryCriteria, allCriteriaMet);
             if (!hasAnyComplementaryCriteria) {
@@ -499,5 +509,17 @@ public class ValidationUtils {
                 .filter(certResult -> certResult.getMeetsCriteria() != null && certResult.getMeetsCriteria().equals(Boolean.TRUE))
                 .map(attestedCertResult -> new CertificationCriterion(attestedCertResult.getCriterion()))
                 .collect(Collectors.<CertificationCriterion>toList());
+    }
+
+    public boolean isEligibleForErrors(PendingCertificationResultDTO certResult) {
+        return certResult.getCriterion() != null
+                && BooleanUtils.isNotTrue(certResult.getCriterion().getRemoved())
+                && BooleanUtils.isTrue(certResult.getMeetsCriteria());
+    }
+
+    public boolean isEligibleForErrors(CertificationResult certResult) {
+        return certResult.getCriterion() != null
+                && BooleanUtils.isNotTrue(certResult.getCriterion().getRemoved())
+                && BooleanUtils.isTrue(certResult.isSuccess());
     }
 }

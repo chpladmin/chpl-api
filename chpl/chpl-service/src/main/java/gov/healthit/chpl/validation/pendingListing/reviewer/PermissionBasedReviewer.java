@@ -2,6 +2,7 @@ package gov.healthit.chpl.validation.pendingListing.reviewer;
 
 import java.util.List;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -40,17 +41,11 @@ public abstract class PermissionBasedReviewer implements Reviewer {
         }
     }
 
-    public void addErrorOrWarningByPermission(
-            PendingCertifiedProductDTO listing, PendingCertificationResultDTO certResult,
-            String errorMessageName, Object... errorMessageArgs) {
-        if (certResult.getCriterion() != null && certResult.getCriterion().getRemoved() != null
-                && certResult.getCriterion().getRemoved().equals(Boolean.TRUE)
-                && (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc())) {
-                listing.getWarningMessages().add(msgUtil.getMessage(errorMessageName, errorMessageArgs));
-                //ACBs do not get any error or warning about removed criteria validation issues
-        } else if (certResult.getCriterion() != null && (certResult.getCriterion().getRemoved() == null
-                || certResult.getCriterion().getRemoved().equals(Boolean.FALSE))) {
-            listing.getErrorMessages().add(msgUtil.getMessage(errorMessageName, errorMessageArgs));
+    public void addErrorIfCriterionIsNotRemoved(PendingCertifiedProductDTO listing,
+            PendingCertificationResultDTO certResult, String errorMessageName, Object... errorMessageArgs) {
+        if (certResult.getCriterion() != null
+                && BooleanUtils.isNotTrue(certResult.getCriterion().getRemoved())) {
+                listing.getErrorMessages().add(msgUtil.getMessage(errorMessageName, errorMessageArgs));
         }
     }
 

@@ -1,27 +1,14 @@
 package gov.healthit.chpl.dto.auth;
 
+import gov.healthit.chpl.domain.auth.UserInvitation;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Data;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserInvitationDTO {
     private UserDTO user;
-    private InvitationDTO invitation;
-
-    public UserInvitationDTO() {
-    }
-
-    public UserInvitationDTO(final UserDTO user, final InvitationDTO invitation) {
-        this.user = user;
-        this.invitation = invitation;
-    }
-
-    public UserDTO getUser() {
-        return user;
-    }
-    public void setUser(final UserDTO user) {
-        this.user = user;
-    }
-    public InvitationDTO getInvitation() {
-        return invitation;
-    }
-    public void setInvitation(final InvitationDTO invitation) {
-        this.invitation = invitation;
-    }
+    private UserInvitation invitation;
 }

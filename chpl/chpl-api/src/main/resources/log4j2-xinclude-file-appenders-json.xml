@@ -1,0 +1,1002 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Appenders>
+    <RollingFile name="chartDataCreatorJobJson"
+        fileName="${logDir}/scheduler/chartDataCreatorJob.json"
+        filePattern="${logDir}/scheduler/history/chartDataCreatorJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="chartDataCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="chartDataCreatorJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="summaryStatisticsEmailJobJson"
+        fileName="${logDir}/scheduler/summaryStatisticsEmailJob.json"
+        filePattern="${logDir}/scheduler/history/summaryStatisticsEmailJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="summaryStatisticsEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="summaryStatisticsEmailJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="summaryStatisticsCreatorJobJson"
+        fileName="${logDir}/scheduler/summaryStatisticsCreatorJob.json"
+        filePattern="${logDir}/scheduler/history/summaryStatisticsCreatorJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="summaryStatisticsCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="summaryStatisticsCreatorJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="curesStatisticsCreatorJobJson"
+        fileName="${logDir}/scheduler/curesStatisticsCreatorJob.json"
+        filePattern="${logDir}/scheduler/history/curesStatisticsCreatorJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="curesStatisticsCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="curesStatisticsCreatorJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="curesStatisticsEmailJobJson"
+        fileName="${logDir}/scheduler/curesStatisticsEmailJob.json"
+        filePattern="${logDir}/scheduler/history/curesStatisticsEmailJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="curesStatisticsEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="curesStatisticsEmailJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="urlStatusDataCollectorJobJson"
+        fileName="${logDir}/scheduler/urlStatusDataCollectorJob.json"
+        filePattern="${logDir}/scheduler/history/urlStatusDataCollectorJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="urlStatusDataCollectorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="urlStatusDataCollectorJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="questionableUrlReportGeneratorJobJson"
+        fileName="${logDir}/scheduler/questionableUrlReportGeneratorJob.json"
+        filePattern="${logDir}/scheduler/history/questionableUrlReportGeneratorJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="questionableUrlReportGeneratorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="questionableUrlReportGeneratorJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="certifiedProductDownloadableResourceCreatorJobJson"
+        fileName="${logDir}/scheduler/certifiedProductDownloadableResourceCreatorJob.json"
+        filePattern="${logDir}/scheduler/history/certifiedProductDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="certifiedProductDownloadableResourceCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="certifiedProductDownloadableResourceCreatorJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="g3Sed2015DownloadableResourceCreatorJobJson"
+        fileName="${logDir}/scheduler/g3Sed2015DownloadableResourceCreatorJob.json"
+        filePattern="${logDir}/scheduler/history/g3Sed2015DownloadableResourceCreatorJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="g3Sed2015DownloadableResourceCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="g3Sed2015DownloadableResourceCreatorJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="surveillanceDownloadableResourceCreatorJobJson"
+        fileName="${logDir}/scheduler/surveillanceDownloadableResourceCreatorJob.json"
+        filePattern="${logDir}/scheduler/history/surveillanceDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="surveillanceDownloadableResourceCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="surveillanceDownloadableResourceCreatorJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="directReviewDownloadableResourceCreatorJobJson"
+        fileName="${logDir}/scheduler/directReviewDownloadableResourceCreatorJob.json"
+        filePattern="${logDir}/scheduler/history/directReviewDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="directReviewDownloadableResourceCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="directReviewDownloadableResourceCreatorJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="svapActivityDownloadableResourceCreatorJobJson"
+        fileName="${logDir}/scheduler/svapActivityDownloadableResourceCreatorJob.json"
+        filePattern="${logDir}/scheduler/history/svapActivityDownloadableResourceCreatorJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="svapActivityDownloadableResourceCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="svapActivityDownloadableResourceCreatorJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="brokenSurveillanceRulesCreatorJobJson"
+        fileName="${logDir}/scheduler/brokenSurveillanceRulesCreatorJob.json"
+        filePattern="${logDir}/scheduler/history/brokenSurveillanceRulesCreatorJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="brokenSurveillanceRulesCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="brokenSurveillanceRulesCreatorJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="brokenSurveillanceRulesEmailJobJson"
+        fileName="${logDir}/scheduler/brokenSurveillanceRulesEmailJob.json"
+        filePattern="${logDir}/scheduler/history/brokenSurveillanceRulesEmailJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="brokenSurveillanceRulesEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="brokenSurveillanceRulesEmailJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="inheritanceErrorsReportCreatorJobJson"
+        fileName="${logDir}/scheduler/inheritanceErrorsReportCreatorJob.json"
+        filePattern="${logDir}/scheduler/history/inheritanceErrorsReportCreatorJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="inheritanceErrorsReportCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="inheritanceErrorsReportCreatorJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="inheritanceErrorsReportEmailJobJson"
+        fileName="${logDir}/scheduler/inheritanceErrorsReportEmailJob.json"
+        filePattern="${logDir}/scheduler/history/inheritanceErrorsReportEmailJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="inheritanceErrorsReportEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="inheritanceErrorsReportEmailJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="cacheStatusAgeJobJson"
+        fileName="${logDir}/scheduler/cacheStatusAgeJob.json"
+        filePattern="${logDir}/scheduler/history/cacheStatusAgeJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="cacheStatusAgeJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="cacheStatusAgeJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="triggerDeveloperBanJobJson"
+        fileName="${logDir}/scheduler/triggerDeveloperBanJob.json"
+        filePattern="${logDir}/scheduler/history/triggerDeveloperBanJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="triggerDeveloperBanJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="triggerDeveloperBanJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="splitDeveloperJobJson"
+        fileName="${logDir}/scheduler/splitDeveloperJob.json"
+        filePattern="${logDir}/scheduler/history/splitDeveloperJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="splitDeveloperJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="splitDeveloperJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="mergeDeveloperJobJson"
+        fileName="${logDir}/scheduler/mergeDeveloperJob.json"
+        filePattern="${logDir}/scheduler/history/mergeDeveloperJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="mergeDeveloperJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="mergeDeveloperJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="apiKeyWarningEmailJobJson"
+        fileName="${logDir}/scheduler/apiKeyWarningEmailJob.json"
+        filePattern="${logDir}/scheduler/history/apiKeyWarningEmailJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="apiKeyWarningEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="apiKeyWarningEmailJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="apiKeyDeleteJobJson"
+        fileName="${logDir}/scheduler/apiKeyDeleteJob.json"
+        filePattern="${logDir}/scheduler/history/apiKeyDeleteJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="apiKeyDeleteJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="apiKeyDeleteJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="questionableActivityEmailJobJson"
+        fileName="${logDir}/scheduler/questionableActivityEmailJob.json"
+        filePattern="${logDir}/scheduler/history/questionableActivityEmailJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="questionableActivityEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="questionableActivityEmailJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="pendingChangeRequestEmailJobJson"
+        fileName="${logDir}/scheduler/pendingChangeRequestEmailJob.json"
+        filePattern="${logDir}/scheduler/history/pendingChangeRequestEmailJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="pendingChangeRequestEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="pendingChangeRequestEmailJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="interruptJobJson"
+        fileName="${logDir}/scheduler/interruptJob.json"
+        filePattern="${logDir}/scheduler/history/interruptJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="interruptJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="interruptJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="massRequirePasswordChangeJobJson"
+        fileName="${logDir}/scheduler/massRequirePasswordChangeJob.json"
+        filePattern="${logDir}/scheduler/history/massRequirePasswordChangeJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="massRequirePasswordChangeJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="massRequirePasswordChangeJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="updateListingStatusJobJson"
+        fileName="${logDir}/scheduler/updateListingStatusJob.json"
+        filePattern="${logDir}/scheduler/history/updateListingStatusJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="updateListingStatusJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="updateListingStatusJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="directReviewCacheRefreshJobJson"
+        fileName="${logDir}/scheduler/directReviewCacheRefreshJob.json"
+        filePattern="${logDir}/scheduler/history/directReviewCacheRefreshJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="directReviewCacheRefreshJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="directReviewCacheRefreshJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="developerAccessEmailJobJson"
+        fileName="${logDir}/scheduler/developerAccessEmailJob.json"
+        filePattern="${logDir}/scheduler/history/developerAccessEmailJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="developerAccessEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="developerAccessEmailJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="cacheListenerActivityJson"
+                 fileName="${logDir}/cache/cacheListenerActivity.json"
+                 filePattern="${logDir}/cache/history/cacheListenerActivity-%d{yyyy-MM-dd}.json"
+                 filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="cacheListenerActivity" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="cacheListenerActivity-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="realWorldTestingUploadJobJson"
+        fileName="${logDir}/scheduler/realWorldTestingUploadJob.json"
+        filePattern="${logDir}/scheduler/history/realWorldTestingUploadJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="realWorldTestingUploadJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="realWorldTestingUploadJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="auditDataRetentionJobJson"
+        fileName="${logDir}/scheduler/auditDataRetentionJob.json"
+        filePattern="${logDir}/scheduler/history/auditDataRetentionJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="auditDataRetentionJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="auditDataRetentionJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="listingValidationReportCreatorJobJson"
+        fileName="${logDir}/scheduler/listingValidationReportCreatorJob.json"
+        filePattern="${logDir}/scheduler/history/listingValidationReportCreatorJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="listingValidationReportCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="listingValidationReportCreatorJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="listingValidationReportEmailJobJson"
+        fileName="${logDir}/scheduler/listingValidationReportEmailJob.json"
+        filePattern="${logDir}/scheduler/history/listingValidationReportEmailJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="listingValidationReportEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="listingValidationReportEmailJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="realWorldTestingReportEmailJobJson"
+        fileName="${logDir}/scheduler/realWorldTestingReportEmailJob.json"
+        filePattern="${logDir}/scheduler/history/realWorldTestingReportEmailJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="realWorldTestingReportEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="realWorldTestingReportEmailJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="quarterlyReportGenerationJobJson"
+        fileName="${logDir}/scheduler/quarterlyReportGenerationJob.json"
+        filePattern="${logDir}/scheduler/history/quarterlyReportGenerationJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="quarterlyReportGenerationJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="quarterlyReportGenerationJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="annualReportGenerationJobJson"
+        fileName="${logDir}/scheduler/annualReportGenerationJob.json"
+        filePattern="${logDir}/scheduler/history/annualReportGenerationJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="annualReportGenerationJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="annualReportGenerationJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="userDefinedTriggersEmailJobJson"
+            fileName="${logDir}/scheduler/userDefinedTriggersEmailJob.json"
+            filePattern="${logDir}/scheduler/history/userDefinedTriggersEmailJob-%d{yyyy-MM-dd}.json"
+            filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="userDefinedTriggersEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="userDefinedTriggersEmailJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="listingUploadValidationJobJson"
+        fileName="${logDir}/scheduler/listingUploadValidationJob.json"
+        filePattern="${logDir}/scheduler/history/listingUploadValidationJob-%d{yyyy-MM-dd}.json">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="listingUploadValidationJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="listingUploadValidationJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="surveillanceActivityReportJobJson"
+        fileName="${logDir}/scheduler/surveillanceActivityReportJob.json"
+        filePattern="${logDir}/scheduler/history/surveillanceActivityReportJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="surveillanceActivityReportJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="surveillanceActivityReportJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="surveillanceUploadJobJson"
+        fileName="${logDir}/scheduler/surveillanceUploadJob.json"
+        filePattern="${logDir}/scheduler/history/surveillanceUploadJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="surveillanceUploadJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="surveillanceUploadJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="promotingInteroperabilityUploadJobJson"
+        fileName="${logDir}/scheduler/promotingInteroperabilityUploadJob.json"
+        filePattern="${logDir}/scheduler/history/promotingInteroperabilityUploadJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="promotingInteroperabilityUploadJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="promotingInteroperabilityUploadJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+
+    <RollingFile name="deprecatedApiUsageEmailJobJson"
+        fileName="${logDir}/scheduler/deprecatedApiUsageEmailJob.json"
+        filePattern="${logDir}/scheduler/history/deprecatedApiUsageEmailJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="deprecatedApiUsageEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="deprecatedApiUsageEmailJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="testStandardConversionJobJson"
+        fileName="${logDir}/scheduler/testStandardConversionJob.json"
+        filePattern="${logDir}/scheduler/history/testStandardConversionJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="testStandardConversionJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="testStandardConversionJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="removeCriteriaJobJson"
+        fileName="${logDir}/scheduler/removeCriteriaJob.json"
+        filePattern="${logDir}/scheduler/history/removeCriteriaJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="removeCriteriaJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="removeCriteriaJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="addCuresUpdateToListingsJobJson"
+        fileName="${logDir}/scheduler/addCuresUpdateToListingsJob.json"
+        filePattern="${logDir}/scheduler/history/addCuresUpdateToListingsJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="addCuresUpdateToListingsJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="addCuresUpdateToListingsJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="listingsSnapshotCsvCreatorJobJson"
+        fileName="${logDir}/scheduler/listingsSnapshotCsvCreatorJob.json"
+        filePattern="${logDir}/scheduler/history/listingsSnapshotCsvCreatorJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="listingsSnapshotCsvCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="listingsSnapshotCsvCreatorJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="listingsWithCriterionSnapshotCsvCreatorJobJson"
+        fileName="${logDir}/scheduler/listingsWithCriterionSnapshotCsvCreatorJob.json"
+        filePattern="${logDir}/scheduler/history/listingsWithCriterionSnapshotCsvCreatorJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="listingsWithCriterionSnapshotCsvCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="listingsWithCriterionSnapshotCsvCreatorJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="inviteDevelopersJobJson"
+        fileName="${logDir}/scheduler/inviteDevelopersJob.json"
+        filePattern="${logDir}/scheduler/history/inviteDevelopersJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="inviteDevelopersJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="inviteDevelopersJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+    <RollingFile name="updateMeasuresJobJson"
+        fileName="${logDir}/scheduler/updateMeasuresJob.json"
+        filePattern="${logDir}/scheduler/history/updateMeasuresJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="inviteDevelopersJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="updateMeasuresJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+</Appenders>

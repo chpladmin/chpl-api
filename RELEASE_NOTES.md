@@ -1,5 +1,29 @@
 # Release Notes
 
+## Version 32.7.0
+_20 December 2021_
+
+### Features
+* Do not allow confirming a listing with removed criteria and do not give errors for sub-data.
+* Add job to add and remove G1/G2 measures
+* Add job to mark (a)(10), (a)(13), (e)(2) 2015 Criteria as Removed
+* Remove (b)(4) and (b)(5) from the Real World Testing eligibility check
+* Update account creation/confirmation emails to use the new HTML format
+
+### Flagged Features
+* Limit Demographic Change Requests by flag
+
+---
+
+## Version 32.6.0
+_13 December 2021_
+
+### Features
+* Update log4j libraries to 2.15
+* Disallow editing of User email addresses
+
+---
+
 ## Version 32.5.1
 _9 December 2021_
 

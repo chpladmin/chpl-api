@@ -26,14 +26,11 @@ public class MeasureReviewer implements Reviewer {
     private static final String G1_CRITERIA_NUMBER = "170.315 (g)(1)";
     private static final String G2_CRITERIA_NUMBER = "170.315 (g)(2)";
 
-    private CertificationCriterionService criteriaService;
     private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public MeasureReviewer(CertificationCriterionService criteriaService,
-            ValidationUtils validationUtils, ErrorMessageUtil msgUtil) {
-        this.criteriaService = criteriaService;
+    public MeasureReviewer(ValidationUtils validationUtils, ErrorMessageUtil msgUtil) {
         this.validationUtils = validationUtils;
         this.msgUtil = msgUtil;
     }

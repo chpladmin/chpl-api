@@ -41,13 +41,12 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.logging.Loggable;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
-import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.util.ChplProductNumberUtil.ChplProductNumberParts;
+import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.results.ProductResults;
 import gov.healthit.chpl.web.controller.results.SplitProductResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,7 +56,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "products", description = "Allows management of products.")
 @RestController
 @RequestMapping("/products")
-@Loggable
 public class ProductController {
 
     @Autowired
@@ -77,7 +75,9 @@ public class ProductController {
 
     @Operation(summary = "List all products",
             description = "Either list all products or optionally just all products belonging to a specific developer.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ProductResults getAllProducts(@RequestParam(required = false) final Long developerId) {
 
@@ -103,7 +103,9 @@ public class ProductController {
     }
 
     @Operation(summary = "Get information about a specific product.", description = "",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/{productId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody Product getProductById(@PathVariable("productId") final Long productId)
             throws EntityRetrievalException {
@@ -117,9 +119,11 @@ public class ProductController {
     }
 
     @Operation(summary = "Get all listings owned by the specified product.", description = "",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/{productId}/listings", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertifiedProduct> getListingsForProduct(@PathVariable("productId") final Long productId)
             throws EntityRetrievalException {
         List<CertifiedProductDetailsDTO> listings = cpManager.getByProduct(productId);
@@ -138,14 +142,16 @@ public class ProductController {
                     + " previously assigned to the productIds specified are reassigned to the newly created product. "
                     + "The old products are then deleted. "
                     + "Security Restrictions: To merge: ROLE_ADMIN or ROLE_ONC. To update: ROLE_ADMIN, ROLE_ONC or ROLE_ACB.",
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public ResponseEntity<Product> updateProduct(
             @RequestBody(required = true) final UpdateProductsRequest productInfo)
-                    throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
-                    JsonProcessingException, ValidationException {
+            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
+            JsonProcessingException, ValidationException {
 
         return update(productInfo);
     }
@@ -161,15 +167,15 @@ public class ProductController {
             throw new InvalidArgumentsException("At least one product id must be provided in the request.");
         }
         if (productInfo.getProductIds().size() > 1) {
-            // if a product was sent in, we need to do a "merge" of the new product and old products create a new
+            // if a product was sent in, we need to do a "merge" of the new
+            // product and old products create a new
             // product with the rest of the passed in information
             result = mergeProducts(productInfo);
             responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         } else if (productInfo.getProductIds().size() == 1) {
             if (productInfo.getNewDeveloperId() != null) {
-                List<DuplicateChplProdNumber> duplicateChplProdNbrs =
-                        getDuplicateChplProdNumbersCausedByDeveloperChange(
-                                productInfo.getProductIds().get(0), productInfo.getNewDeveloperId());
+                List<DuplicateChplProdNumber> duplicateChplProdNbrs = getDuplicateChplProdNumbersCausedByDeveloperChange(
+                        productInfo.getProductIds().get(0), productInfo.getNewDeveloperId());
 
                 if (duplicateChplProdNbrs.size() != 0) {
                     throw new ValidationException(
@@ -231,7 +237,7 @@ public class ProductController {
         try {
             ProductDTO origProduct = productManager.getById(request.getProduct().getProductId());
             if (origProduct != null) {
-                //Convert the dto list to domain objects
+                // Convert the dto list to domain objects
                 List<ProductOwner> origProductOwners = convertToProductOwnerDomainTypes(origProduct.getOwnerHistory());
                 List<ProductOwner> newProductOwners = request.getProduct().getOwnerHistory();
                 return !isProductOwnerListEqual(origProductOwners, newProductOwners);
@@ -264,6 +270,7 @@ public class ProductController {
         }
         return productOwners;
     }
+
     private Set<String> getDuplicateChplProductNumberErrorMessages(
             final List<DuplicateChplProdNumber> duplicateChplProdNumbers) {
 
@@ -285,11 +292,11 @@ public class ProductController {
         List<DuplicateChplProdNumber> duplicateChplProductNumbers = new ArrayList<DuplicateChplProdNumber>();
         DeveloperDTO newDeveloper = developerManager.getById(newDeveloperId);
 
-        //cpManager.getByProduct(productId)
-        List<CertifiedProductDetailsDTO> newDeveloperCertifiedProducts =
-                cpManager.getByDeveloperId(newDeveloperId);
+        // cpManager.getByProduct(productId)
+        List<CertifiedProductDetailsDTO> newDeveloperCertifiedProducts = cpManager.getByDeveloperId(newDeveloperId);
 
-        //Get the CPs, for the current product - the CHPL Prod Nbr will be changing
+        // Get the CPs, for the current product - the CHPL Prod Nbr will be
+        // changing
         List<CertifiedProductDetailsDTO> certifiedProducts = cpManager.getByProduct(productId);
 
         for (CertifiedProductDetailsDTO cpDTO : certifiedProducts) {
@@ -297,7 +304,7 @@ public class ProductController {
             if (cpDTO.getChplProductNumber().startsWith("CHP")) {
                 newChplProductNumber = cpDTO.getChplProductNumber();
             } else {
-                //Calculate the new CHPL Prod Nbr
+                // Calculate the new CHPL Prod Nbr
                 newChplProductNumber = chplProductNumberUtil.getChplProductNumber(
                         cpDTO.getYear(),
                         getTestingLabCode(cpDTO.getChplProductNumber()),
@@ -310,12 +317,11 @@ public class ProductController {
                         cpDTO.getCertifiedDateCode());
             }
 
-            //Does this CHPL prod number already exist for the new developer?
-            List<CertifiedProductDetailsDTO> filteredResults =
-                    filterByChplProductNumber(newDeveloperCertifiedProducts, newChplProductNumber);
+            // Does this CHPL prod number already exist for the new developer?
+            List<CertifiedProductDetailsDTO> filteredResults = filterByChplProductNumber(newDeveloperCertifiedProducts, newChplProductNumber);
 
             for (CertifiedProductDetailsDTO filterCp : filteredResults) {
-                //Add it to the list of duplicates
+                // Add it to the list of duplicates
                 if (!cpDTO.getChplProductNumber().equals(filterCp.getChplProductNumber())) {
                     duplicateChplProductNumbers.add(new DuplicateChplProdNumber(
                             cpDTO.getChplProductNumber(), filterCp.getChplProductNumber(),
@@ -345,16 +351,18 @@ public class ProductController {
     }
 
     @Operation(summary = "Split a product - some versions stay with the existing product and some versions are moved "
-                    + "to a new product.",
-                    description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB",
-                    security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                            @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+            + "to a new product.",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
     @RequestMapping(value = "/{productId}/split", method = RequestMethod.POST,
-    consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public ResponseEntity<SplitProductResponse> splitProduct(@PathVariable("productId") final Long productId,
             @RequestBody(required = true) final SplitProductsRequest splitRequest)
-                    throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
-                    JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
+            JsonProcessingException {
 
         if (splitRequest.getNewProductCode() != null) {
             splitRequest.setNewProductCode(splitRequest.getNewProductCode().trim());
