@@ -9,6 +9,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -97,7 +98,11 @@ public class TriggerDeveloperBanJob implements Job {
         List<String> emailAddresses = Arrays.asList(recipients);
         for (String emailAddress : emailAddresses) {
             try {
-                sendEmail(emailAddress, subject, htmlMessage);
+                if (EmailValidator.getInstance().isValid(emailAddress)) {
+                    sendEmail(emailAddress, subject, htmlMessage);
+                } else {
+                    LOGGER.error("Detected invalid email address '" + emailAddress + "'. Not sending that email.");
+                }
             } catch (Exception ex) {
                 LOGGER.error("Could not send message to " + emailAddress, ex);
             }
