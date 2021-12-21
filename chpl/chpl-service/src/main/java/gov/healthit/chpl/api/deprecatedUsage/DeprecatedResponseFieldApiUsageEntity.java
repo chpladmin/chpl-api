@@ -50,6 +50,9 @@ public class DeprecatedResponseFieldApiUsageEntity {
     @Column(name = "last_accessed_date")
     private Date lastAccessedDate;
 
+    @Column(name = "notification_sent")
+    private Date notificationSent;
+
     @Basic(optional = false)
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
