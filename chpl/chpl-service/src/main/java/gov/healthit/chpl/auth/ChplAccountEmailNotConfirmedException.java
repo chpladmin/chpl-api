@@ -11,6 +11,7 @@ public class ChplAccountEmailNotConfirmedException extends Exception {
 
     public ChplAccountEmailNotConfirmedException(String msg, String email) {
         super(msg);
+        this.emailAddress = email;
     }
 
 }

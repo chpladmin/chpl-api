@@ -108,7 +108,7 @@ public class AuthenticationManager {
             }
             if (checkPassword(credentials.getPassword(), userManager.getEncodedPassword(user))) {
                 if (user.getSignatureDate() == null) {
-                    throw new ChplAccountEmailNotConfirmedException(msgUtil.getMessage("auth.accountNotConfirmed"), user.getEmail());
+                    throw new ChplAccountEmailNotConfirmedException(msgUtil.getMessage("auth.accountNotConfirmed"), credentials.getUserName());
                 }
 
                 userDetailsChecker.check(user);
