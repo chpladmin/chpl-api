@@ -1,9 +1,5 @@
 package gov.healthit.chpl.manager;
 
-import static org.quartz.JobKey.jobKey;
-import static org.quartz.TriggerBuilder.newTrigger;
-import static org.quartz.TriggerKey.triggerKey;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,12 +14,7 @@ import javax.persistence.EntityNotFoundException;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.quartz.JobKey;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.Trigger;
-import org.quartz.TriggerKey;
-import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.JobDataMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Lazy;
@@ -86,6 +77,8 @@ import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.schedule.ChplJob;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
@@ -166,6 +159,7 @@ import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.scheduler.job.TriggerDeveloperBanJob;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CuresUpdateService;
 import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityCachingService;
@@ -221,6 +215,7 @@ public class CertifiedProductManager extends SecuredManager {
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
     private PendingCertifiedProductManager pcpManager;
+    private SchedulerManager schedulerManager;
     private ActivityManager activityManager;
     private ListingValidatorFactory validatorFactory;
     private CuresUpdateService curesUpdateService;
@@ -263,6 +258,7 @@ public class CertifiedProductManager extends SecuredManager {
             CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
             PendingCertifiedProductManager pcpManager,
+            SchedulerManager schedulerManager,
             ActivityManager activityManager, ListingValidatorFactory validatorFactory,
             CuresUpdateService curesUpdateService,
             CertificationCriterionService criteriaService,
@@ -309,6 +305,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
         this.pcpManager = pcpManager;
+        this.schedulerManager = schedulerManager;
         this.activityManager = activityManager;
         this.validatorFactory = validatorFactory;
         this.curesUpdateService = curesUpdateService;
@@ -2435,38 +2432,23 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     private void triggerDeveloperBan(CertifiedProductSearchDetails updatedListing, String reason) {
-        Scheduler scheduler;
+        ChplOneTimeTrigger possibleDeveloperBanTrigger = new ChplOneTimeTrigger();
+        ChplJob triggerDeveloperBanJob = new ChplJob();
+        triggerDeveloperBanJob.setName(TriggerDeveloperBanJob.JOB_NAME);
+        triggerDeveloperBanJob.setGroup(SchedulerManager.CHPL_JOBS_KEY);
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put(TriggerDeveloperBanJob.UPDATED_LISTING, updatedListing);
+        jobDataMap.put(TriggerDeveloperBanJob.USER, AuthUtil.getCurrentUser());
+        jobDataMap.put(TriggerDeveloperBanJob.CHANGE_DATE, System.currentTimeMillis());
+        jobDataMap.put(TriggerDeveloperBanJob.USER_PROVIDED_REASON, reason);
+        triggerDeveloperBanJob.setJobDataMap(jobDataMap);
+        possibleDeveloperBanTrigger.setJob(triggerDeveloperBanJob);
+        possibleDeveloperBanTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
         try {
-            scheduler = getScheduler();
-
-            TriggerKey triggerId = triggerKey("triggerBanNow_" + new Date().getTime(), "triggerDeveloperBanTrigger");
-            JobKey jobId = jobKey("Trigger Developer Ban Notification", SchedulerManager.CHPL_JOBS_KEY);
-
-            Trigger qzTrigger = newTrigger().withIdentity(triggerId).startNow().forJob(jobId)
-                    .usingJobData("status", updatedListing.getCurrentStatus().getStatus().getName())
-                    .usingJobData("dbId", updatedListing.getId())
-                    .usingJobData("chplId", updatedListing.getChplProductNumber())
-                    .usingJobData("developer", updatedListing.getDeveloper().getName())
-                    .usingJobData("acb", updatedListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY)
-                            .toString())
-                    .usingJobData("changeDate", new Date().getTime())
-                    .usingJobData("fullName", AuthUtil.getCurrentUser().getFullName())
-                    .usingJobData("effectiveDate", updatedListing.getCurrentStatus().getEventDate())
-                    .usingJobData("openNcs", updatedListing.getCountOpenNonconformities())
-                    .usingJobData("closedNcs", updatedListing.getCountClosedNonconformities())
-                    .usingJobData("reason", updatedListing.getCurrentStatus().getReason())
-                    .usingJobData("reasonForChange", reason).build();
-            scheduler.scheduleJob(qzTrigger);
-        } catch (SchedulerException e) {
-            LOGGER.error("Could not start Trigger Developer Ban", e);
+            possibleDeveloperBanTrigger = schedulerManager.createBackgroundJobTrigger(possibleDeveloperBanTrigger);
+        } catch (Exception ex) {
+            LOGGER.error("Unable to schedule Trigger Developer Ban Job.", ex);
         }
-    }
-
-    private Scheduler getScheduler() throws SchedulerException {
-        StdSchedulerFactory sf = new StdSchedulerFactory();
-        sf.initialize();
-        Scheduler scheduler = sf.getScheduler();
-        return scheduler;
     }
 
     @Data
