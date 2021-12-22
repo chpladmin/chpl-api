@@ -1,5 +1,8 @@
 package gov.healthit.chpl.manager.auth;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +10,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
@@ -21,6 +25,7 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
+import gov.healthit.chpl.domain.auth.UserInvitation;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.JWTCreationException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
@@ -41,12 +46,14 @@ public class AuthenticationManager {
     private UserDetailsChecker userDetailsChecker;
     private ErrorMessageUtil msgUtil;
     private InvitationManager invitationManager;
+    private Long confirmationWindowInDays;
 
     @Autowired
     public AuthenticationManager(JWTAuthor jwtAuthor, UserManager userManager, UserDAO userDAO,
             BCryptPasswordEncoder bCryptPasswordEncoder,
             @Qualifier("chplAccountStatusChecker") UserDetailsChecker userDetailsChecker,
-            ErrorMessageUtil msgUtil, InvitationManager invitationManager) {
+            ErrorMessageUtil msgUtil, InvitationManager invitationManager,
+            @Value("${resendConfirmationEmailWindowInDays}") Long confirmationWindowInDays) {
         this.jwtAuthor = jwtAuthor;
         this.userManager = userManager;
         this.userDAO = userDAO;
@@ -54,6 +61,7 @@ public class AuthenticationManager {
         this.userDetailsChecker = userDetailsChecker;
         this.msgUtil = msgUtil;
         this.invitationManager = invitationManager;
+        this.confirmationWindowInDays = confirmationWindowInDays;
     }
 
     @Transactional
@@ -68,9 +76,24 @@ public class AuthenticationManager {
             logWhenUsername(credentials, user);
             return jwt;
         } catch (ChplAccountEmailNotConfirmedException e) {
-            invitationManager.resendConfirmAddressEmailToUser(
-                    userManager.getByNameOrEmailUnsecured(credentials.getUserName()).getId());
-            throw e;
+            if (!isConfirmationPeriodExpired(credentials)) {
+                invitationManager.resendConfirmAddressEmailToUser(
+                        userManager.getByNameOrEmailUnsecured(credentials.getUserName()).getId());
+                throw e;
+            } else {
+                throw new ChplAccountStatusException(msgUtil.getMessage("auth.loginNotAllowed"));
+            }
+        }
+    }
+
+    private Boolean isConfirmationPeriodExpired(LoginCredentials credentials) {
+        try {
+            UserDTO user = userDAO.getByNameOrEmail(credentials.getUserName());
+            UserInvitation invitation = invitationManager.getByCreatedUserId(user.getId());
+            LocalDateTime invitationDate = LocalDateTime.ofInstant(invitation.getCreationDate().toInstant(), ZoneId.systemDefault());
+            return Duration.between(invitationDate, LocalDateTime.now()).toDays() > confirmationWindowInDays;
+        } catch (Exception e) {
+            return true;
         }
     }
 
