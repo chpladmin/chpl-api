@@ -44,12 +44,13 @@ public class DeprecatedApiUsageDao extends BaseDAOImpl {
     }
 
     @Transactional
-    public List<DeprecatedApiUsage> getAllDeprecatedApiUsage() {
+    public List<DeprecatedApiUsage> getUnnotifiedUsage() {
         String hql = "SELECT apiUsage "
                 + "FROM DeprecatedApiUsageEntity apiUsage "
                 + "JOIN FETCH apiUsage.deprecatedApi api "
                 + "JOIN FETCH apiUsage.apiKey apiKey "
-                + "WHERE apiUsage.deleted = false "
+                + "WHERE apiUsage.notificationSent IS NULL "
+                + "AND apiUsage.deleted = false "
                 + "ORDER BY apiUsage.apiCallCount DESC ";
         Query query = entityManager.createQuery(hql);
         List<DeprecatedApiUsageEntity> results = query.getResultList();
@@ -69,10 +70,10 @@ public class DeprecatedApiUsageDao extends BaseDAOImpl {
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void markAsUserNotified(Long id) {
         DeprecatedApiUsageEntity entity = entityManager.find(DeprecatedApiUsageEntity.class, id);
         if (entity != null) {
-            entity.setDeleted(true);
+            entity.setNotificationSent(new Date());
             entity.setLastModifiedUser(User.SYSTEM_USER_ID);
             update(entity);
         }
@@ -94,7 +95,8 @@ public class DeprecatedApiUsageDao extends BaseDAOImpl {
                 + "FROM DeprecatedApiUsageEntity apiUsage "
                 + "JOIN FETCH apiUsage.deprecatedApi api "
                 + "JOIN FETCH apiUsage.apiKey apiKey "
-                + "WHERE apiUsage.deleted = false "
+                + "WHERE apiUsage.notificationSent IS NULL "
+                + "AND apiUsage.deleted = false "
                 + "AND apiUsage.apiKeyId = :apiKeyId "
                 + "AND apiUsage.deprecatedApiId = :deprecatedApiId";
         Query query = entityManager.createQuery(hql);

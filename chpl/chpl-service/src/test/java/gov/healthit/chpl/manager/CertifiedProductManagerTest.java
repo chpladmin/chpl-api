@@ -191,6 +191,7 @@ public class CertifiedProductManagerTest {
                 testProcDao,  testDataDao, testFuncDao,  ucdDao, testParticipantDao,  testTaskDao, certStatusDao,
                 listingGraphDao, fuzzyChoicesDao,  resourcePermissions, certifiedProductSearchResultDAO,
                 certifiedProductDetailsManager, Mockito.mock(PendingCertifiedProductManager.class),
+                Mockito.mock(SchedulerManager.class),
                 activityManager, validatorFactory, curesUpdateService, criterionService,
                 Mockito.mock(RealWorldTestingEligiblityCachingService.class));
     }
