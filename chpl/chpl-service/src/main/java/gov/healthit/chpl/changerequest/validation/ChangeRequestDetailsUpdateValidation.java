@@ -26,9 +26,9 @@ public class ChangeRequestDetailsUpdateValidation extends ValidationRule<ChangeR
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
         if (resourcePermissions.isUserRoleDeveloperAdmin()) {
-            if (context.getChangeRequest().getDetails() != null) {
+            if (context.getNewChangeRequest().getDetails() != null) {
                 if (isChangeRequestWebsite(context)) {
-                    return isChangeRequestWebsiteValid((HashMap) context.getChangeRequest().getDetails());
+                    return isChangeRequestWebsiteValid((HashMap) context.getNewChangeRequest().getDetails());
                 }
             }
         }
@@ -48,6 +48,6 @@ public class ChangeRequestDetailsUpdateValidation extends ValidationRule<ChangeR
     }
 
     private boolean isChangeRequestWebsite(ChangeRequestValidationContext context) {
-        return context.getCrFromDb().getChangeRequestType().getId().equals(websiteChangeRequestType);
+        return context.getOrigChangeRequest().getChangeRequestType().getId().equals(websiteChangeRequestType);
     }
 }

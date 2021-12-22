@@ -21,9 +21,9 @@ public class CommentRequiredValidation extends ValidationRule<ChangeRequestValid
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
-        if (ChangeRequestStatusService.doesCurrentStatusExist(context.getChangeRequest())) {
+        if (ChangeRequestStatusService.doesCurrentStatusExist(context.getNewChangeRequest())) {
             if (isStatusChange(context) && doesNewStatusRequireComment(context)) {
-                if (StringUtils.isEmpty(context.getChangeRequest().getCurrentStatus().getComment())) {
+                if (StringUtils.isEmpty(context.getNewChangeRequest().getCurrentStatus().getComment())) {
                     getMessages().add(getErrorMessage("changeRequest.status.changeRequiresComment"));
                     return false;
                 }
@@ -33,8 +33,8 @@ public class CommentRequiredValidation extends ValidationRule<ChangeRequestValid
     }
 
     private boolean isStatusChange(ChangeRequestValidationContext context) {
-        return !context.getChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId().equals(
-                context.getCrFromDb().getCurrentStatus().getChangeRequestStatusType().getId());
+        return !context.getNewChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId().equals(
+                context.getOrigChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId());
 
     }
 
@@ -44,7 +44,7 @@ public class CommentRequiredValidation extends ValidationRule<ChangeRequestValid
 
         return statusesRequiringComment.stream()
                 .anyMatch(status -> status
-                        .equals(context.getChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId()));
+                        .equals(context.getNewChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId()));
     }
 
 }
