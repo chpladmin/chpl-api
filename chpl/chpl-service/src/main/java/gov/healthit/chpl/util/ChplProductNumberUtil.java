@@ -308,9 +308,19 @@ public class ChplProductNumberUtil {
         return hasIcsConflict;
     }
 
-    public String getDeveloperCode(final String chplProductNumber) {
+    public String getDeveloperCode(String chplProductNumber) {
         ChplProductNumberParts parts = parseChplProductNumber(chplProductNumber);
         return parts.getDeveloperCode();
+    }
+
+    public String getProductCode(String chplProductNumber) {
+        ChplProductNumberParts parts = parseChplProductNumber(chplProductNumber);
+        return parts.getProductCode();
+    }
+
+    public String getVersionCode(String chplProductNumber) {
+        ChplProductNumberParts parts = parseChplProductNumber(chplProductNumber);
+        return parts.getProductCode();
     }
 
     public String getAcbCode(String chplProductNumber) {

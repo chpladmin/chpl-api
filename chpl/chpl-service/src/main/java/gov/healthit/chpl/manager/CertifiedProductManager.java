@@ -431,15 +431,71 @@ public class CertifiedProductManager extends SecuredManager {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES, CacheNames.DEVELOPER_NAMES
     }, allEntries = true)
-    public CertifiedProductSearchDetails create(CertifiedProductSearchDetails listing) {
-        cpDao.create(listing);
+    public Long create(CertifiedProductSearchDetails listing)
+        throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+        if (listing.getDeveloper().getDeveloperId() == null) {
+            //create developer, set developer ID in listing
+            Long developerId = developerManager.create(listing.getDeveloper());
+            listing.getDeveloper().setDeveloperId(developerId);
+        }
+        if (listing.getProduct().getProductId() == null) {
+            //create product, set product ID in listing
+            Long productId = productManager.create(listing.getDeveloper().getDeveloperId(), listing.getProduct());
+            listing.getProduct().setProductId(productId);
+        }
+        if (listing.getVersion().getVersionId() == null) {
+            //create version, set version ID in listing
+            Long versionId = versionManager.create(listing.getProduct().getProductId(), listing.getVersion());
+            listing.getVersion().setVersionId(versionId);
+        }
+        Long createdListingId = cpDao.create(listing);
+        listing.getTestingLabs().stream()
+            .forEach(atl -> cpTestingLabDao.createListingTestingLabMapping(createdListingId, atl.getTestingLabId()));
+        //QMS entries
+        saveListingQmsData(listing);
+        //Accessibility entries
+        //Targeted users
+        //Measures
+        //create ICS entries
+        //SED
+        //Certification Results
+        //CQMs
         try {
             logCertifiedProductCreateActivity(listing.getId());
         } catch (Exception ex) {
             LOGGER.error("Unable to log create activity for listing " + listing.getId(), ex);
         }
         rwtCachingService.calculateRwtEligibility(listing.getId());
-        return null;
+        return createdListingId;
+    }
+
+    private void saveListingQmsData(CertifiedProductSearchDetails listing) {
+        if (!CollectionUtils.isEmpty(listing.getQmsStandards())) {
+            List<String> fuzzyQmsChoices = fuzzyChoicesDao.getByType(FuzzyType.QMS_STANDARD).getChoices();
+            listing.getQmsStandards().stream()
+                .filter(qmsStandard -> !fuzzyQmsChoices.contains(qmsStandard.getQmsStandardName()))
+                .forEach(qmsStandard -> addQmsStandardToFuzzyChoices(qmsStandard, fuzzyQmsChoices));
+            for (PendingCertifiedProductQmsStandardDTO pendingQms : pendingCp.getQmsStandards()) {
+                if (!fuzzyQmsChoices.contains(pendingQms.getName())) {
+
+                }
+                CertifiedProductQmsStandardDTO qmsDto = new CertifiedProductQmsStandardDTO();
+                QmsStandardDTO qms = qmsDao.findOrCreate(pendingQms.getQmsStandardId(), pendingQms.getName());
+                qmsDto.setQmsStandardId(qms.getId());
+                qmsDto.setCertifiedProductId(newCertifiedProduct.getId());
+                qmsDto.setApplicableCriteria(pendingQms.getApplicableCriteria());
+                qmsDto.setQmsModification(pendingQms.getModification());
+                cpQmsDao.createCertifiedProductQms(qmsDto);
+            }
+        }
+    }
+
+    private void addQmsStandardToFuzzyChoices(CertifiedProductQmsStandard qmsStandard, List<String> fuzzyQmsChoices) {
+        fuzzyQmsChoices.add(qmsStandard.getQmsStandardName());
+        FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
+        dto.setFuzzyType(FuzzyType.QMS_STANDARD);
+        dto.setChoices(fuzzyQmsChoices);
+        fuzzyChoicesDao.update(dto);
     }
 
     @Deprecated

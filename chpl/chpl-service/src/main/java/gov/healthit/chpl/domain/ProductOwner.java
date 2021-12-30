@@ -8,9 +8,15 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 import gov.healthit.chpl.dto.ProductOwnerDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProductOwner implements Serializable {
     private static final long serialVersionUID = 5678373560374145870L;
 
@@ -32,9 +38,6 @@ public class ProductOwner implements Serializable {
      */
     @XmlElement(required = true)
     private Long transferDate;
-
-    public ProductOwner() {
-    }
 
     public ProductOwner(ProductOwnerDTO dto) {
         this.id = dto.getId();
@@ -80,28 +83,37 @@ public class ProductOwner implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         ProductOwner other = (ProductOwner) obj;
         if (developer == null) {
-            if (other.developer != null)
+            if (other.developer != null) {
                 return false;
-        } else if (!developer.getDeveloperId().equals(other.developer.getDeveloperId()))
+            }
+        } else if (!developer.getDeveloperId().equals(other.developer.getDeveloperId())) {
             return false;
+        }
         if (id == null) {
-            if (other.id != null)
+            if (other.id != null) {
                 return false;
-        } else if (!id.equals(other.id))
+            }
+        } else if (!id.equals(other.id)) {
             return false;
+        }
         if (transferDate == null) {
-            if (other.transferDate != null)
+            if (other.transferDate != null) {
                 return false;
-        } else if (!transferDate.equals(other.transferDate))
+            }
+        } else if (!transferDate.equals(other.transferDate)) {
             return false;
+        }
         return true;
     }
 

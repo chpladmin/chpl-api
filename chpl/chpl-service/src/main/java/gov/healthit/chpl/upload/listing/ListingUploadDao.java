@@ -76,6 +76,15 @@ public class ListingUploadDao extends BaseDAOImpl {
         }
     }
 
+    public void updateConfirmedListingId(Long listingUploadId, Long confirmedListingId) {
+        ListingUploadEntity entity = entityManager.find(ListingUploadEntity.class, listingUploadId);
+        if (entity != null) {
+            entity.setCertifiedProductId(confirmedListingId);
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
+            update(entity);
+        }
+    }
+
     public void delete(Long listingUploadId) {
         ListingUploadEntity entity = entityManager.find(ListingUploadEntity.class, listingUploadId);
         if (entity != null) {

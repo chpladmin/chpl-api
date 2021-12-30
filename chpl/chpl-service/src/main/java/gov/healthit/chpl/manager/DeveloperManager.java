@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
@@ -30,6 +30,7 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.developer.hierarchy.DeveloperTree;
@@ -280,6 +281,10 @@ public class DeveloperManager extends SecuredManager {
         return after;
     }
 
+    private void createOrUpdateTransparencyMappings(Developer developer) {
+        transparencyAttestationManager.save(developer);
+    }
+
     private void createOrUpdateTransparencyMappings(DeveloperDTO developer) {
         transparencyAttestationManager.save(developer);
     }
@@ -300,12 +305,12 @@ public class DeveloperManager extends SecuredManager {
 
         for (DeveloperStatusEventPair toUpdate : statusEventsToUpdate) {
             boolean hasChanged = false;
-            if (!ObjectUtils.equals(toUpdate.getOrig().getStatusDate(), toUpdate.getUpdated().getStatusDate())
-                    || !ObjectUtils.equals(toUpdate.getOrig().getStatus().getId(),
+            if (!Objects.equals(toUpdate.getOrig().getStatusDate(), toUpdate.getUpdated().getStatusDate())
+                    || !Objects.equals(toUpdate.getOrig().getStatus().getId(),
                             toUpdate.getUpdated().getStatus().getId())
-                    || !ObjectUtils.equals(toUpdate.getOrig().getStatus().getStatusName(),
+                    || !Objects.equals(toUpdate.getOrig().getStatus().getStatusName(),
                             toUpdate.getUpdated().getStatus().getStatusName())
-                    || !ObjectUtils.equals(toUpdate.getOrig().getReason(), toUpdate.getUpdated().getReason())) {
+                    || !Objects.equals(toUpdate.getOrig().getReason(), toUpdate.getUpdated().getReason())) {
                 hasChanged = true;
             }
 
@@ -324,6 +329,26 @@ public class DeveloperManager extends SecuredManager {
         for (DeveloperStatusEventDTO toRemove : statusEventsToRemove) {
             developerDao.deleteDeveloperStatusEvent(toRemove);
         }
+    }
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
+            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).CREATE)")
+    @Transactional(readOnly = false)
+    @CacheEvict(value = {
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS
+    }, allEntries = true)
+    public Long create(Developer developer)
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+        Long developerId = developerDao.create(developer);
+        developer.setDeveloperId(developerId);
+
+        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
+            createOrUpdateTransparencyMappings(developer);
+        }
+
+        activityManager.addActivity(ActivityConcept.DEVELOPER, developerId,
+                "Developer " + developer.getName() + " has been created.", null, developer);
+        return developerId;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "

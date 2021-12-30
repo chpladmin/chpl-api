@@ -9,6 +9,7 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.ProductVersionEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -18,9 +19,16 @@ import gov.healthit.chpl.util.AuthUtil;
 @Repository("productVersionDAO")
 public class ProductVersionDAO extends BaseDAOImpl {
 
+    public Long create(Long productId, ProductVersion version) {
+        ProductVersionEntity entity = new ProductVersionEntity();
+        entity.setProductId(productId);
+        entity.setVersion(version.getVersion());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
+        create(entity);
+        return entity.getId();
+    }
 
     public ProductVersionDTO create(ProductVersionDTO dto) throws EntityCreationException, EntityRetrievalException {
-
         ProductVersionEntity entity = null;
         try {
             if (dto.getId() != null) {
@@ -67,9 +75,7 @@ public class ProductVersionDAO extends BaseDAOImpl {
         return getById(entity.getId());
     }
 
-
     public ProductVersionEntity update(ProductVersionDTO dto) throws EntityRetrievalException {
-
         ProductVersionEntity entity = this.getEntityById(dto.getId());
 
         entity.setVersion(dto.getVersion()); // version can be null

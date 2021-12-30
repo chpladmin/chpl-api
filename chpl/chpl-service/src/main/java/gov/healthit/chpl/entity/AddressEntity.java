@@ -10,7 +10,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import gov.healthit.chpl.domain.Address;
@@ -56,25 +55,20 @@ public class AddressEntity implements Serializable {
     @Column(name = "country")
     private String country;
 
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
+    @Column(name = "creation_date", insertable = false, updatable = false)
     private Date creationDate;
 
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
+    @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
 
     @Basic(optional = false)
-    @NotNull()
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
-    @Basic(optional = false)
-    @NotNull()
-    @Column(nullable = false)
+    @Column(name = "deleted")
     private Boolean deleted;
 
-    public Address buildAddress() {
+    public Address toDomain() {
         return Address.builder()
         .addressId(this.getId())
         .city(this.getCity())

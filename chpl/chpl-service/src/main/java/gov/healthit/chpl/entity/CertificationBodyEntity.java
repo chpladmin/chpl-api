@@ -80,7 +80,7 @@ public class CertificationBodyEntity implements Serializable {
         return CertificationBody.builder()
                 .acbCode(this.getAcbCode())
                 .address(this.getAddress() == null ? null
-                        : this.getAddress().buildAddress())
+                        : this.getAddress().toDomain())
                 .id(this.getId())
                 .name(this.getName())
                 .retired(this.getRetired())

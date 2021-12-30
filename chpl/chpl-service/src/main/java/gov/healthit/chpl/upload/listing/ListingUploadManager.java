@@ -230,16 +230,18 @@ public class ListingUploadManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
             + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).CONFIRM, #id)")
     public CertifiedProductSearchDetails confirm(Long id, ConfirmListingRequest confirmListingRequest)
-        throws InvalidArgumentsException, ValidationException {
+        throws InvalidArgumentsException, JsonProcessingException, EntityRetrievalException, EntityCreationException,
+        ValidationException {
         //Is listing already processing?
         if (!listingUploadDao.isAvailableForProcessing(id)) {
             throw new InvalidArgumentsException(msgUtil.getMessage("pendingListing.alreadyProcessing"));
         } else {
+            Long confirmedListingId = null;
             listingUploadDao.updateStatus(id, ListingUploadStatus.CONFIRMATION_PROCESSING);
             try {
                 CertifiedProductSearchDetails listing = confirmListingRequest.getListing();
                 checkForErrorsOrUnacknowledgedWarnings(listing, confirmListingRequest.isAcknowledgeWarnings());
-                cpManager.create(listing);
+                confirmedListingId = cpManager.create(listing);
             } catch (ValidationException ex) {
                 listingUploadDao.updateStatus(id, ListingUploadStatus.UPLOAD_SUCCESS);
                 LOGGER.error("Could not confirm pending listing " + id + " due to validation error.");
@@ -250,7 +252,7 @@ public class ListingUploadManager {
                 throw ex;
             }
             listingUploadDao.updateStatus(id, ListingUploadStatus.CONFIRMED);
-            //TODO: update ListingUpload with the ID of the newly confirmed listing in the CHPL
+            listingUploadDao.updateConfirmedListingId(id, confirmedListingId);
         }
 
         return createTemporaryConfirmationResponse(confirmListingRequest.getListing());
