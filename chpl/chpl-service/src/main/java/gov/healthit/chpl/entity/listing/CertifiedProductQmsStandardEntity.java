@@ -14,9 +14,12 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.QmsStandardEntity;
-import gov.healthit.chpl.util.Util;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Data
+@NoArgsConstructor
 @Table(name = "certified_product_qms_standard")
 public class CertifiedProductQmsStandardEntity {
 
@@ -47,99 +50,15 @@ public class CertifiedProductQmsStandardEntity {
     @Column(name = "applicable_criteria", nullable = false)
     private String applicableCriteria;
 
-    public Long getId() {
-        return id;
-    }
+    @Column(name = "deleted")
+    private Boolean deleted;
 
-    public void setId(final Long id) {
-        this.id = id;
-    }
+    @Column(name = "last_modified_user")
+    private Long lastModifiedUser;
 
-    public Long getCertifiedProductId() {
-        return certifiedProductId;
-    }
+    @Column(name = "creation_date", insertable = false, updatable = false)
+    private Date creationDate;
 
-    public void setCertifiedProductId(final Long certifiedProductId) {
-        this.certifiedProductId = certifiedProductId;
-    }
-
-    public Long getQmsStandardId() {
-        return qmsStandardId;
-    }
-
-    public void setQmsStandardId(final Long qmsStandardId) {
-        this.qmsStandardId = qmsStandardId;
-    }
-
-    public QmsStandardEntity getQmsStandard() {
-        return qmsStandard;
-    }
-
-    public void setQmsStandard(final QmsStandardEntity qmsStandard) {
-        this.qmsStandard = qmsStandard;
-    }
-
-    public String getModification() {
-        return modification;
-    }
-
-    public void setModification(final String modification) {
-        this.modification = modification;
-    }
-
-    public String getApplicableCriteria() {
-        return applicableCriteria;
-    }
-
-    public void setApplicableCriteria(final String applicableCriteria) {
-        this.applicableCriteria = applicableCriteria;
-    }
-
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
-    protected Date creationDate;
-
-    @Basic(optional = false)
-    @Column(nullable = false)
-    protected Boolean deleted;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
-    protected Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    protected Long lastModifiedUser;
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
+    @Column(name = "last_modified_date", insertable = false, updatable = false)
+    private Date lastModifiedDate;
 }

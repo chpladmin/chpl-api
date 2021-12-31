@@ -451,10 +451,9 @@ public class CertifiedProductManager extends SecuredManager {
         Long createdListingId = cpDao.create(listing);
         listing.getTestingLabs().stream()
             .forEach(atl -> cpTestingLabDao.createListingTestingLabMapping(createdListingId, atl.getTestingLabId()));
-        //QMS entries
         saveListingQmsData(listing);
-        //Accessibility entries
-        //Targeted users
+        saveListingAccessibiltyStandardData(listing);
+        saveListingTargetedUserData(listing);
         //Measures
         //create ICS entries
         //SED
@@ -471,31 +470,64 @@ public class CertifiedProductManager extends SecuredManager {
 
     private void saveListingQmsData(CertifiedProductSearchDetails listing) {
         if (!CollectionUtils.isEmpty(listing.getQmsStandards())) {
-            List<String> fuzzyQmsChoices = fuzzyChoicesDao.getByType(FuzzyType.QMS_STANDARD).getChoices();
-            listing.getQmsStandards().stream()
-                .filter(qmsStandard -> !fuzzyQmsChoices.contains(qmsStandard.getQmsStandardName()))
-                .forEach(qmsStandard -> addQmsStandardToFuzzyChoices(qmsStandard, fuzzyQmsChoices));
-            for (PendingCertifiedProductQmsStandardDTO pendingQms : pendingCp.getQmsStandards()) {
-                if (!fuzzyQmsChoices.contains(pendingQms.getName())) {
-
-                }
-                CertifiedProductQmsStandardDTO qmsDto = new CertifiedProductQmsStandardDTO();
-                QmsStandardDTO qms = qmsDao.findOrCreate(pendingQms.getQmsStandardId(), pendingQms.getName());
-                qmsDto.setQmsStandardId(qms.getId());
-                qmsDto.setCertifiedProductId(newCertifiedProduct.getId());
-                qmsDto.setApplicableCriteria(pendingQms.getApplicableCriteria());
-                qmsDto.setQmsModification(pendingQms.getModification());
-                cpQmsDao.createCertifiedProductQms(qmsDto);
+            try {
+                List<String> fuzzyChoices = fuzzyChoicesDao.getByType(FuzzyType.QMS_STANDARD).getChoices();
+                listing.getQmsStandards().stream()
+                    .filter(qmsStandard -> !fuzzyChoices.contains(qmsStandard.getQmsStandardName()))
+                    .forEach(qmsStandard -> addQmsStandardToFuzzyChoices(qmsStandard, fuzzyChoices));
+            } catch (IOException | EntityRetrievalException ex) {
+                LOGGER.error("Cannot get QMS Standard fuzzy choices", ex);
             }
+            listing.getQmsStandards().stream()
+                .forEach(qmsStandard -> cpQmsDao.createListingQmsStandardMapping(listing.getId(), qmsStandard));
         }
     }
 
-    private void addQmsStandardToFuzzyChoices(CertifiedProductQmsStandard qmsStandard, List<String> fuzzyQmsChoices) {
-        fuzzyQmsChoices.add(qmsStandard.getQmsStandardName());
+    private void addQmsStandardToFuzzyChoices(CertifiedProductQmsStandard qmsStandard, List<String> fuzzyChoices) {
+        fuzzyChoices.add(qmsStandard.getQmsStandardName());
         FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
         dto.setFuzzyType(FuzzyType.QMS_STANDARD);
-        dto.setChoices(fuzzyQmsChoices);
-        fuzzyChoicesDao.update(dto);
+        dto.setChoices(fuzzyChoices);
+        try {
+            fuzzyChoicesDao.update(dto);
+        } catch (IOException | EntityCreationException | EntityRetrievalException ex) {
+            LOGGER.error("Cannot update fuzzy choices with " + qmsStandard.getQmsStandardName(), ex);
+        }
+    }
+
+    private void saveListingAccessibiltyStandardData(CertifiedProductSearchDetails listing) {
+        if (!CollectionUtils.isEmpty(listing.getAccessibilityStandards())) {
+            try {
+                List<String> fuzzyChoices = fuzzyChoicesDao.getByType(FuzzyType.ACCESSIBILITY_STANDARD).getChoices();
+                listing.getAccessibilityStandards().stream()
+                    .filter(accStandard -> !fuzzyChoices.contains(accStandard.getAccessibilityStandardName()))
+                    .forEach(accStandard -> addAccessibilityStandardToFuzzyChoices(accStandard, fuzzyChoices));
+            } catch (IOException | EntityRetrievalException ex) {
+                LOGGER.error("Cannot get Accessibility Standard fuzzy choices", ex);
+            }
+            listing.getAccessibilityStandards().stream()
+                .forEach(accStandard -> cpAccStdDao.createListingAccessibilityStandardMapping(listing.getId(), accStandard));
+        }
+    }
+
+    private void addAccessibilityStandardToFuzzyChoices(CertifiedProductAccessibilityStandard accessibilityStandard,
+            List<String> fuzzyChoices) {
+        fuzzyChoices.add(accessibilityStandard.getAccessibilityStandardName());
+        FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
+        dto.setFuzzyType(FuzzyType.ACCESSIBILITY_STANDARD);
+        dto.setChoices(fuzzyChoices);
+        try {
+            fuzzyChoicesDao.update(dto);
+        } catch (IOException | EntityCreationException | EntityRetrievalException ex) {
+            LOGGER.error("Cannot update fuzzy choices with " + accessibilityStandard.getAccessibilityStandardName(), ex);
+        }
+    }
+
+    public void saveListingTargetedUserData(CertifiedProductSearchDetails listing) {
+        if (!CollectionUtils.isEmpty(listing.getTargetedUsers())) {
+            listing.getTargetedUsers().stream()
+                .forEach(targetedUser -> cpTargetedUserDao.createListingTargetedUserMapping(listing.getId(), targetedUser));
+        }
     }
 
     @Deprecated
