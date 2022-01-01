@@ -38,7 +38,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.upload.listing.handler.CertificationDateHandler;
 import gov.healthit.chpl.upload.listing.handler.ListingDetailsUploadHandler;
@@ -60,7 +59,7 @@ public class ListingUploadManagerTest {
     private CertificationBodyDAO acbDao;
     private ListingUploadDao listingUploadDao;
     private ListingUploadValidator listingUploadValidator;
-    private CertifiedProductManager cpManager;
+    private ListingConfirmationManager listingConfirmationManager;
 
     @Before
     public void setup() throws InvalidArgumentsException, JsonProcessingException,
@@ -71,7 +70,7 @@ public class ListingUploadManagerTest {
         acbDao = Mockito.mock(CertificationBodyDAO.class);
         chplProductNumberUtil = Mockito.mock(ChplProductNumberUtil.class);
         certDateHandler = Mockito.mock(CertificationDateHandler.class);
-        cpManager = Mockito.mock(CertifiedProductManager.class);
+        listingConfirmationManager = Mockito.mock(ListingConfirmationManager.class);
         listingUploadDao = Mockito.mock(ListingUploadDao.class);
         listingUploadValidator = Mockito.mock(ListingUploadValidator.class);
         ListingDetailsNormalizer listingNormalizer = Mockito.mock(ListingDetailsNormalizer.class);
@@ -94,7 +93,7 @@ public class ListingUploadManagerTest {
                 listingUploadValidator,
                 uploadUtil, chplProductNumberUtil, listingUploadDao, acbDao,
                 Mockito.mock(UserDAO.class),
-                cpManager,
+                listingConfirmationManager,
                 Mockito.mock(SchedulerManager.class),
                 Mockito.mock(ActivityManager.class), msgUtil);
     }
@@ -353,7 +352,8 @@ public class ListingUploadManagerTest {
 
     @Test
     public void confirmListing_noWarningsNoAcknowledgment_succeeds()
-            throws InvalidArgumentsException, ValidationException {
+            throws InvalidArgumentsException, EntityCreationException,
+            EntityRetrievalException, JsonProcessingException, ValidationException {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .id(1L)
                 .build();
@@ -375,7 +375,8 @@ public class ListingUploadManagerTest {
 
     @Test
     public void confirmListing_noWarningsHasAcknowledgment_succeeds()
-            throws InvalidArgumentsException, ValidationException {
+            throws InvalidArgumentsException, EntityCreationException,
+            EntityRetrievalException, JsonProcessingException, ValidationException {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .id(1L)
                 .build();
@@ -397,7 +398,8 @@ public class ListingUploadManagerTest {
 
     @Test(expected = ValidationException.class)
     public void confirmListing_hasWarningsNoAcknowledgment_throwsValidationException()
-            throws InvalidArgumentsException, ValidationException {
+            throws InvalidArgumentsException, EntityCreationException,
+            EntityRetrievalException, JsonProcessingException, ValidationException {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .id(1L)
                 .build();
@@ -420,7 +422,8 @@ public class ListingUploadManagerTest {
 
     @Test
     public void confirmListing_hasWarningsHasAcknowledgment_succeeds()
-            throws InvalidArgumentsException, ValidationException {
+            throws InvalidArgumentsException, EntityCreationException,
+            EntityRetrievalException, JsonProcessingException, ValidationException {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .id(1L)
                 .build();
@@ -443,7 +446,8 @@ public class ListingUploadManagerTest {
 
     @Test(expected = InvalidArgumentsException.class)
     public void confirmListing_notAvailableForConfirmation_throwsInvalidArgumentsException()
-            throws InvalidArgumentsException, ValidationException {
+            throws InvalidArgumentsException, EntityCreationException,
+            EntityRetrievalException, JsonProcessingException, ValidationException {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .id(1L)
                 .build();

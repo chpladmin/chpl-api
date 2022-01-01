@@ -73,7 +73,6 @@ public class DeveloperDetailsNormalizer {
         userEnteredDev.setSelfDeveloper(systemDev.getSelfDeveloper());
         userEnteredDev.setContact(systemDev.getContact());
         userEnteredDev.setAddress(systemDev.getAddress());
-        userEnteredDev.setStatus(systemDev.getStatus());
         userEnteredDev.setStatusEvents(systemDev.getStatusEvents());
         userEnteredDev.setTransparencyAttestations(systemDev.getTransparencyAttestations());
     }

@@ -43,7 +43,7 @@ public class CertifiedProductAccessibilityStandardEntity {
             updatable = false)
     private AccessibilityStandardEntity accessibilityStandard;
 
-    @Column(name = "deleted")
+    @Column(name = "deleted", insertable = false)
     private Boolean deleted;
 
     @Column(name = "last_modified_user")

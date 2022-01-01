@@ -82,7 +82,7 @@ public class DeveloperEntity implements Serializable {
     @Column(name = "creation_date", insertable = false, updatable = false)
     private Date creationDate;
 
-    @Column(name = "deleted")
+    @Column(name = "deleted", insertable = false)
     private Boolean deleted;
 
     @Column(name = "last_modified_date", insertable = false, updatable = false)

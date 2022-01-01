@@ -27,20 +27,25 @@ public class CertifiedProductAccessibilityStandardDAO extends BaseDAOImpl {
         this.accessibilityStandardDao = accessibilityStandardDao;
     }
 
-    public Long createListingAccessibilityStandardMapping(Long listingId, CertifiedProductAccessibilityStandard accStdMapping) {
-        CertifiedProductAccessibilityStandardEntity mappingEntity = new CertifiedProductAccessibilityStandardEntity();
-        mappingEntity.setCertifiedProductId(listingId);
+    public Long createListingAccessibilityStandardMapping(Long listingId, CertifiedProductAccessibilityStandard accStdMapping)
+            throws EntityCreationException {
+        try {
+            CertifiedProductAccessibilityStandardEntity mappingEntity = new CertifiedProductAccessibilityStandardEntity();
+            mappingEntity.setCertifiedProductId(listingId);
 
-        if (accStdMapping.getAccessibilityStandardId() == null) {
-            AccessibilityStandardDTO accessibiltyStandard = accessibilityStandardDao.findOrCreate(accStdMapping.getAccessibilityStandardId(), accStdMapping.getAccessibilityStandardName());
-            mappingEntity.setAccessibilityStandardId(accessibiltyStandard.getId());
-        } else {
-            mappingEntity.setAccessibilityStandardId(accStdMapping.getAccessibilityStandardId());
+            if (accStdMapping.getAccessibilityStandardId() == null) {
+                AccessibilityStandardDTO accessibiltyStandard = accessibilityStandardDao.findOrCreate(accStdMapping.getAccessibilityStandardId(), accStdMapping.getAccessibilityStandardName());
+                mappingEntity.setAccessibilityStandardId(accessibiltyStandard.getId());
+            } else {
+                mappingEntity.setAccessibilityStandardId(accStdMapping.getAccessibilityStandardId());
+            }
+
+            mappingEntity.setLastModifiedUser(AuthUtil.getAuditId());
+            create(mappingEntity);
+            return mappingEntity.getId();
+        } catch (Exception ex) {
+            throw new EntityCreationException(ex);
         }
-
-        mappingEntity.setLastModifiedUser(AuthUtil.getAuditId());
-        create(mappingEntity);
-        return mappingEntity.getId();
     }
 
     public CertifiedProductAccessibilityStandardDTO createCertifiedProductAccessibilityStandard(

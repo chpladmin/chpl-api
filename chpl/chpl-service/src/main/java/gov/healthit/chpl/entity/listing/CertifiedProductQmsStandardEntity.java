@@ -50,7 +50,7 @@ public class CertifiedProductQmsStandardEntity {
     @Column(name = "applicable_criteria", nullable = false)
     private String applicableCriteria;
 
-    @Column(name = "deleted")
+    @Column(name = "deleted", insertable = false)
     private Boolean deleted;
 
     @Column(name = "last_modified_user")

@@ -50,39 +50,43 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         this.msgUtil = msgUtil;
     }
 
-    public Long create(CertifiedProductSearchDetails listing) {
-        CertifiedProductEntity entity = new CertifiedProductEntity();
-        //foreign keys
-        entity.setCertificationBodyId(MapUtils.getLong(listing.getCertifyingBody(), CertifiedProductSearchDetails.ACB_ID_KEY));
-        entity.setProductVersionId(listing.getVersion().getVersionId());
-        entity.setCertificationEditionId(MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY));
-        //other listing fields
-        entity.setAcbCertificationId(listing.getAcbCertificationId());
-        entity.setProductCode(chplProductNumberUtil.getProductCode(listing.getChplProductNumber()));
-        entity.setVersionCode(chplProductNumberUtil.getVersionCode(listing.getChplProductNumber()));
-        entity.setReportFileLocation(listing.getReportFileLocation());
-        entity.setSedIntendedUserDescription(listing.getSedIntendedUserDescription());
-        entity.setSedTestingEnd(listing.getSedTestingEndDate());
-        entity.setSedReportFileLocation(listing.getSedReportFileLocation());
-        entity.setProductAdditionalSoftware(listing.getProductAdditionalSoftware());
-        entity.setOtherAcb(listing.getOtherAcb());
-        entity.setMandatoryDisclosures(listing.getMandatoryDisclosures());
-        entity.setSvapNoticeUrl(listing.getSvapNoticeUrl());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
+    public Long create(CertifiedProductSearchDetails listing) throws EntityCreationException {
+        try {
+            CertifiedProductEntity entity = new CertifiedProductEntity();
+            //foreign keys
+            entity.setCertificationBodyId(MapUtils.getLong(listing.getCertifyingBody(), CertifiedProductSearchDetails.ACB_ID_KEY));
+            entity.setProductVersionId(listing.getVersion().getVersionId());
+            entity.setCertificationEditionId(MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY));
+            //other listing fields
+            entity.setAcbCertificationId(listing.getAcbCertificationId());
+            entity.setProductCode(chplProductNumberUtil.getProductCode(listing.getChplProductNumber()));
+            entity.setVersionCode(chplProductNumberUtil.getVersionCode(listing.getChplProductNumber()));
+            entity.setReportFileLocation(listing.getReportFileLocation());
+            entity.setSedIntendedUserDescription(listing.getSedIntendedUserDescription());
+            entity.setSedTestingEnd(listing.getSedTestingEndDate());
+            entity.setSedReportFileLocation(listing.getSedReportFileLocation());
+            entity.setProductAdditionalSoftware(listing.getProductAdditionalSoftware());
+            entity.setOtherAcb(listing.getOtherAcb());
+            entity.setMandatoryDisclosures(listing.getMandatoryDisclosures());
+            entity.setSvapNoticeUrl(listing.getSvapNoticeUrl());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
 
-        //TODO this group of fields is all derived... not sure if they are used in legacy listings
-        //setting them null rather than filling them in to confirm they are not used
-        entity.setPendingCertifiedProductId(null);
-        entity.setChplProductNumber(null);
-        entity.setAdditionalSoftwareCode(null);
-        entity.setIcsCode(null);
-        entity.setCertifiedDateCode(null);
-        entity.setIcs(null);
-        entity.setSedTesting(null);
-        entity.setQmsTesting(null);
-        entity.setAccessibilityCertified(null);
-        create(entity);
-        return entity.getId();
+            //TODO this group of fields is all derived... not sure if they are used in legacy listings
+            //setting them null rather than filling them in to confirm they are not used
+            entity.setPendingCertifiedProductId(null);
+            entity.setChplProductNumber(null);
+            entity.setAdditionalSoftwareCode(null);
+            entity.setIcsCode(null);
+            entity.setCertifiedDateCode(null);
+            entity.setIcs(null);
+            entity.setSedTesting(null);
+            entity.setQmsTesting(null);
+            entity.setAccessibilityCertified(null);
+            create(entity);
+            return entity.getId();
+        } catch (Exception ex) {
+            throw new EntityCreationException(ex);
+        }
     }
 
     @Deprecated

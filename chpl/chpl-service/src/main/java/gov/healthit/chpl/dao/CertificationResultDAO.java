@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
@@ -63,6 +65,36 @@ public class CertificationResultDAO extends BaseDAOImpl {
         this.participantDao = participantDao;
         this.testTaskDao = testTaskDao;
         this.msgUtil = msgUtil;
+    }
+
+    public Long create(Long listingId, CertificationResult certificationResult) throws EntityCreationException {
+        CertificationResultEntity entity = new CertificationResultEntity();
+        entity.setCertificationCriterionId(certificationResult.getCriterion().getId());
+        entity.setCertifiedProductId(listingId);
+        boolean isCertified = BooleanUtils.isTrue(certificationResult.isSuccess());
+        entity.setGap(isCertified ? certificationResult.getGap() : null);
+        entity.setSed(result.getSed());
+        entity.setG1Success(result.getG1Success());
+        entity.setG2Success(result.getG2Success());
+        entity.setAttestationAnswer(result.getAttestationAnswer());
+        entity.setSuccess(result.getSuccessful());
+        entity.setApiDocumentation(result.getApiDocumentation());
+        entity.setExportDocumentation(result.getExportDocumentation());
+        entity.setDocumentationUrl(result.getDocumentationUrl());
+        entity.setUseCases(result.getUseCases());
+        entity.setServiceBaseUrlList(result.getServiceBaseUrlList());
+        entity.setPrivacySecurityFramework(result.getPrivacySecurityFramework());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
+
+        try {
+            create(entity);
+        } catch (Exception ex) {
+            String msg = msgUtil.getMessage("listing.badCriteriaData",
+                    result.getCertificationCriterionId(), ex.getMessage());
+            LOGGER.error(msg, ex);
+            throw new EntityCreationException(msg);
+        }
+        return entity.getId();
     }
 
     public CertificationResultDTO create(CertificationResultDTO result) throws EntityCreationException {

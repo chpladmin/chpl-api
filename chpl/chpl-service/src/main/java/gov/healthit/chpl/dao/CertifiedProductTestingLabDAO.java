@@ -19,13 +19,17 @@ import gov.healthit.chpl.util.AuthUtil;
 @Repository(value = "certifiedProductTestingLabDao")
 public class CertifiedProductTestingLabDAO extends BaseDAOImpl {
 
-    public Long createListingTestingLabMapping(Long listingId, Long atlId) {
-        CertifiedProductTestingLabMapEntity mappingEntity = new CertifiedProductTestingLabMapEntity();
-        mappingEntity.setCertifiedProductId(listingId);
-        mappingEntity.setTestingLabId(atlId);
-        mappingEntity.setLastModifiedUser(AuthUtil.getAuditId());
-        create(mappingEntity);
-        return mappingEntity.getId();
+    public Long createListingTestingLabMapping(Long listingId, Long atlId) throws EntityCreationException {
+        try {
+            CertifiedProductTestingLabMapEntity mappingEntity = new CertifiedProductTestingLabMapEntity();
+            mappingEntity.setCertifiedProductId(listingId);
+            mappingEntity.setTestingLabId(atlId);
+            mappingEntity.setLastModifiedUser(AuthUtil.getAuditId());
+            create(mappingEntity);
+            return mappingEntity.getId();
+        } catch (Exception ex) {
+            throw new EntityCreationException(ex);
+        }
     }
 
     public CertifiedProductTestingLabDTO createCertifiedProductTestingLab(CertifiedProductTestingLabDTO toCreate)

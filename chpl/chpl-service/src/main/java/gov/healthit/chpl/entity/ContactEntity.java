@@ -52,7 +52,7 @@ public class ContactEntity implements Serializable {
     @Column(length = TITLE_LENGTH)
     private String title;
 
-    @Column(name = "deleted")
+    @Column(name = "deleted", insertable = false)
     private Boolean deleted;
 
     @Basic(optional = false)

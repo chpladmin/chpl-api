@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.entity.QmsStandardEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
 
@@ -72,7 +73,7 @@ public class QmsStandardDAO extends BaseDAOImpl {
 
     }
 
-    public QmsStandardDTO findOrCreate(Long id, String name) {
+    public QmsStandardDTO findOrCreate(Long id, String name) throws EntityCreationException {
         QmsStandardDTO result = null;
         if (id != null) {
             result = getById(id);
@@ -88,15 +89,19 @@ public class QmsStandardDAO extends BaseDAOImpl {
         return result;
     }
 
-    private QmsStandardDTO create(QmsStandardDTO dto) {
-        QmsStandardEntity entity = new QmsStandardEntity();
-        entity.setCreationDate(new Date());
-        entity.setDeleted(false);
-        entity.setLastModifiedDate(new Date());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
-        entity.setName(dto.getName());
-        create(entity);
-        return new QmsStandardDTO(entity);
+    private QmsStandardDTO create(QmsStandardDTO dto) throws EntityCreationException {
+        try {
+            QmsStandardEntity entity = new QmsStandardEntity();
+            entity.setCreationDate(new Date());
+            entity.setDeleted(false);
+            entity.setLastModifiedDate(new Date());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
+            entity.setName(dto.getName());
+            create(entity);
+            return new QmsStandardDTO(entity);
+        } catch (Exception ex) {
+            throw new EntityCreationException(ex);
+        }
     }
 
     private List<QmsStandardEntity> getAllEntities() {

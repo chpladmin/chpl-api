@@ -64,27 +64,31 @@ public class DeveloperDAO extends BaseDAOImpl {
        this.msgUtil = msgUtil;
     }
 
-    public Long create(Developer developer) {
-        DeveloperEntity developerEntity = new DeveloperEntity();
-        Long addressId = addressDao.create(developer.getAddress());
-        developerEntity.setAddressId(addressId);
-        Long contactId = contactDao.create(developer.getContact());
-        developerEntity.setContactId(contactId);
-        developerEntity.setName(developer.getName());
-        developerEntity.setWebsite(developer.getWebsite());
-        developerEntity.setSelfDeveloper(developer.getSelfDeveloper());
-        developerEntity.setLastModifiedUser(AuthUtil.getAuditId());
-        create(developerEntity);
+    public Long create(Developer developer) throws EntityCreationException {
+        try {
+            DeveloperEntity developerEntity = new DeveloperEntity();
+            Long addressId = addressDao.create(developer.getAddress());
+            developerEntity.setAddressId(addressId);
+            Long contactId = contactDao.create(developer.getContact());
+            developerEntity.setContactId(contactId);
+            developerEntity.setName(developer.getName());
+            developerEntity.setWebsite(developer.getWebsite());
+            developerEntity.setSelfDeveloper(developer.getSelfDeveloper());
+            developerEntity.setLastModifiedUser(AuthUtil.getAuditId());
+            create(developerEntity);
 
-        DeveloperStatusEventEntity initialStatusEntity = new DeveloperStatusEventEntity();
-        initialStatusEntity.setDeveloperId(developerEntity.getId());
-        DeveloperStatusEntity defaultStatus = getStatusByName(DEFAULT_STATUS.toString());
-        initialStatusEntity.setDeveloperStatusId(defaultStatus.getId());
-        initialStatusEntity.setStatusDate(developerEntity.getCreationDate());
-        initialStatusEntity.setDeleted(false);
-        initialStatusEntity.setLastModifiedUser(developerEntity.getLastModifiedUser());
-        create(initialStatusEntity);
-        return developerEntity.getId();
+            DeveloperStatusEventEntity initialStatusEntity = new DeveloperStatusEventEntity();
+            initialStatusEntity.setDeveloperId(developerEntity.getId());
+            DeveloperStatusEntity defaultStatus = getStatusByName(DEFAULT_STATUS.toString());
+            initialStatusEntity.setDeveloperStatusId(defaultStatus.getId());
+            initialStatusEntity.setStatusDate(developerEntity.getCreationDate());
+            initialStatusEntity.setDeleted(false);
+            initialStatusEntity.setLastModifiedUser(developerEntity.getLastModifiedUser());
+            create(initialStatusEntity);
+            return developerEntity.getId();
+        } catch (Exception ex) {
+            throw new EntityCreationException(ex);
+        }
     }
 
     public DeveloperDTO create(DeveloperDTO dto) throws EntityCreationException, EntityRetrievalException {

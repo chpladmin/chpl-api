@@ -42,7 +42,7 @@ public class CertifiedProductTargetedUserEntity {
     @JoinColumn(name = "targeted_user_id", unique = true, nullable = true, insertable = false, updatable = false)
     private TargetedUserEntity targetedUser;
 
-    @Column(name = "deleted")
+    @Column(name = "deleted", insertable = false)
     private Boolean deleted;
 
     @Column(name = "last_modified_user")

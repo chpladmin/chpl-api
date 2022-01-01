@@ -42,7 +42,7 @@ public class CertifiedProductTestingLabMapEntity {
     @JoinColumn(name = "testing_lab_id", unique = true, nullable = true, insertable = false, updatable = false)
     private TestingLabEntity testingLab;
 
-    @Column(name = "deleted")
+    @Column(name = "deleted", insertable = false)
     private Boolean deleted;
 
     @Column(name = "last_modified_user")

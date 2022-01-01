@@ -29,12 +29,16 @@ public class TargetedUserDAO extends BaseDAOImpl {
         this.msgUtil = msgUtil;
     }
 
-    public Long create(String name) {
-        TargetedUserEntity entity = new TargetedUserEntity();
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
-        entity.setName(name);
-        create(entity);
-        return entity.getId();
+    public Long create(String name) throws EntityCreationException {
+        try {
+            TargetedUserEntity entity = new TargetedUserEntity();
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
+            entity.setName(name);
+            create(entity);
+            return entity.getId();
+        } catch (Exception ex) {
+            throw new EntityCreationException(ex);
+        }
     }
 
     public TargetedUserDTO create(TargetedUserDTO dto) throws EntityCreationException {

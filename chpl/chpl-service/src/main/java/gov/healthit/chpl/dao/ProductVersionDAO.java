@@ -19,13 +19,17 @@ import gov.healthit.chpl.util.AuthUtil;
 @Repository("productVersionDAO")
 public class ProductVersionDAO extends BaseDAOImpl {
 
-    public Long create(Long productId, ProductVersion version) {
-        ProductVersionEntity entity = new ProductVersionEntity();
-        entity.setProductId(productId);
-        entity.setVersion(version.getVersion());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
-        create(entity);
-        return entity.getId();
+    public Long create(Long productId, ProductVersion version) throws EntityCreationException {
+        try {
+            ProductVersionEntity entity = new ProductVersionEntity();
+            entity.setProductId(productId);
+            entity.setVersion(version.getVersion());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
+            create(entity);
+            return entity.getId();
+        } catch (Exception ex) {
+            throw new EntityCreationException(ex);
+        }
     }
 
     public ProductVersionDTO create(ProductVersionDTO dto) throws EntityCreationException, EntityRetrievalException {

@@ -45,7 +45,7 @@ public class ProductVersionEntity implements Serializable {
     @Column(name = "version")
     private String version;
 
-    @Column(name = "deleted")
+    @Column(name = "deleted", insertable = false)
     private Boolean deleted;
 
     @Column(name = "last_modified_user")

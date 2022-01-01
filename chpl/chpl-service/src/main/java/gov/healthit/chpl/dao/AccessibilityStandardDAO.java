@@ -12,18 +12,23 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.entity.AccessibilityStandardEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("accessibilityStandardDAO")
 public class AccessibilityStandardDAO extends BaseDAOImpl {
 
-    public AccessibilityStandardDTO create(AccessibilityStandardDTO dto) {
-        AccessibilityStandardEntity entity = new AccessibilityStandardEntity();
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
-        entity.setName(dto.getName());
-        create(entity);
-        return new AccessibilityStandardDTO(entity);
+    public AccessibilityStandardDTO create(AccessibilityStandardDTO dto) throws EntityCreationException {
+        try {
+            AccessibilityStandardEntity entity = new AccessibilityStandardEntity();
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
+            entity.setName(dto.getName());
+            create(entity);
+            return new AccessibilityStandardDTO(entity);
+        } catch (Exception ex) {
+            throw new EntityCreationException(ex);
+        }
     }
 
     public AccessibilityStandardDTO update(AccessibilityStandardDTO dto) throws EntityRetrievalException {
@@ -76,7 +81,7 @@ public class AccessibilityStandardDAO extends BaseDAOImpl {
 
     }
 
-    public AccessibilityStandardDTO findOrCreate(Long id, String name) {
+    public AccessibilityStandardDTO findOrCreate(Long id, String name) throws EntityCreationException {
         AccessibilityStandardDTO result = null;
         if (id != null) {
             result = getById(id);

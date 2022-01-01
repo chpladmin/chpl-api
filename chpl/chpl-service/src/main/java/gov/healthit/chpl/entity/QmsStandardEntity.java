@@ -26,7 +26,7 @@ public class QmsStandardEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "deleted")
+    @Column(name = "deleted", insertable = false)
     private Boolean deleted;
 
     @Column(name = "last_modified_user")

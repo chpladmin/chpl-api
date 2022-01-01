@@ -3,6 +3,8 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Date;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -12,6 +14,7 @@ import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
+import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
@@ -815,7 +818,7 @@ public class DeveloperReviewerTest {
     @Test
     public void review_newDeveloperWithNoCurrentStatus_noError() {
         Developer developer = buildNewDeveloper();
-        developer.setStatus(null);
+        developer.setStatusEvents(null);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
                 .developer(developer)
@@ -828,7 +831,7 @@ public class DeveloperReviewerTest {
     @Test
     public void review_systemDeveloperWithNoCurrentStatus_hasError() {
         Developer developer = buildSystemDeveloper();
-        developer.setStatus(null);
+        developer.setStatusEvents(null);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
                 .build();
@@ -1097,8 +1100,13 @@ public class DeveloperReviewerTest {
                         .email("test@test.com")
                         .phoneNumber("123-456-7890")
                         .build())
-                .status(DeveloperStatus.builder()
-                        .status(DeveloperStatusType.Active.getName())
+                .statusEvent(DeveloperStatusEvent.builder()
+                        .developerId(id)
+                        .id(1L)
+                        .status(DeveloperStatus.builder()
+                            .status(DeveloperStatusType.Active.getName())
+                            .build())
+                        .statusDate(new Date())
                         .build())
                 .build();
     }

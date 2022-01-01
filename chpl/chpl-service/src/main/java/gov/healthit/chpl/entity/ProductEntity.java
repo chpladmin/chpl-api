@@ -94,7 +94,7 @@ public class ProductEntity implements Serializable {
     @Where(clause = "deleted <> 'true'")
     private Set<ProductActiveOwnerEntity> ownerHistory = new HashSet<ProductActiveOwnerEntity>();
 
-    @Column(name = "deleted")
+    @Column(name = "deleted", insertable = false)
     private Boolean deleted;
 
     @Column(name = "last_modified_user")

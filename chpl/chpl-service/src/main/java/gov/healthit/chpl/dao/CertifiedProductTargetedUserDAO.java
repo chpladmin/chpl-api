@@ -26,20 +26,25 @@ public class CertifiedProductTargetedUserDAO extends BaseDAOImpl {
         this.targetedUserDao = targetedUserDao;
     }
 
-    public Long createListingTargetedUserMapping(Long listingId, CertifiedProductTargetedUser targetedUserMapping) {
-        CertifiedProductTargetedUserEntity mappingEntity = new CertifiedProductTargetedUserEntity();
-        mappingEntity.setCertifiedProductId(listingId);
+    public Long createListingTargetedUserMapping(Long listingId, CertifiedProductTargetedUser targetedUserMapping)
+            throws EntityCreationException {
+        try {
+            CertifiedProductTargetedUserEntity mappingEntity = new CertifiedProductTargetedUserEntity();
+            mappingEntity.setCertifiedProductId(listingId);
 
-        if (targetedUserMapping.getTargetedUserId() == null) {
-            Long targetedUserId = targetedUserDao.create(targetedUserMapping.getTargetedUserName());
-            mappingEntity.setTargetedUserId(targetedUserId);
-        } else {
-            mappingEntity.setTargetedUserId(targetedUserMapping.getTargetedUserId());
+            if (targetedUserMapping.getTargetedUserId() == null) {
+                Long targetedUserId = targetedUserDao.create(targetedUserMapping.getTargetedUserName());
+                mappingEntity.setTargetedUserId(targetedUserId);
+            } else {
+                mappingEntity.setTargetedUserId(targetedUserMapping.getTargetedUserId());
+            }
+
+            mappingEntity.setLastModifiedUser(AuthUtil.getAuditId());
+            create(mappingEntity);
+            return mappingEntity.getId();
+        } catch (Exception ex) {
+            throw new EntityCreationException(ex);
         }
-
-        mappingEntity.setLastModifiedUser(AuthUtil.getAuditId());
-        create(mappingEntity);
-        return mappingEntity.getId();
     }
 
     public CertifiedProductTargetedUserDTO createCertifiedProductTargetedUser(CertifiedProductTargetedUserDTO toCreate)

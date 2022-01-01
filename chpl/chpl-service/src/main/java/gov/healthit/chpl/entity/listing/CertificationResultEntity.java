@@ -122,7 +122,6 @@ public class CertificationResultEntity implements Serializable {
     @Column(name = "last_modified_user", nullable = false)
     protected Long lastModifiedUser;
 
-
     public CertificationResultEntity(Long id) {
         this.id = id;
     }

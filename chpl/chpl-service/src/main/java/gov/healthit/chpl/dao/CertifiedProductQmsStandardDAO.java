@@ -27,22 +27,27 @@ public class CertifiedProductQmsStandardDAO extends BaseDAOImpl {
         this.qmsDao = qmsDao;
     }
 
-    public Long createListingQmsStandardMapping(Long listingId, CertifiedProductQmsStandard qmsMapping) {
-        CertifiedProductQmsStandardEntity mappingEntity = new CertifiedProductQmsStandardEntity();
-        mappingEntity.setCertifiedProductId(listingId);
+    public Long createListingQmsStandardMapping(Long listingId, CertifiedProductQmsStandard qmsMapping)
+        throws EntityCreationException {
+        try {
+            CertifiedProductQmsStandardEntity mappingEntity = new CertifiedProductQmsStandardEntity();
+            mappingEntity.setCertifiedProductId(listingId);
 
-        if (qmsMapping.getQmsStandardId() == null) {
-            QmsStandardDTO qmsStandard = qmsDao.findOrCreate(qmsMapping.getQmsStandardId(), qmsMapping.getQmsStandardName());
-            mappingEntity.setQmsStandardId(qmsStandard.getId());
-        } else {
-            mappingEntity.setQmsStandardId(qmsMapping.getQmsStandardId());
+            if (qmsMapping.getQmsStandardId() == null) {
+                QmsStandardDTO qmsStandard = qmsDao.findOrCreate(qmsMapping.getQmsStandardId(), qmsMapping.getQmsStandardName());
+                mappingEntity.setQmsStandardId(qmsStandard.getId());
+            } else {
+                mappingEntity.setQmsStandardId(qmsMapping.getQmsStandardId());
+            }
+
+            mappingEntity.setApplicableCriteria(qmsMapping.getApplicableCriteria());
+            mappingEntity.setModification(qmsMapping.getQmsModification());
+            mappingEntity.setLastModifiedUser(AuthUtil.getAuditId());
+            create(mappingEntity);
+            return mappingEntity.getId();
+        } catch (Exception ex) {
+            throw new EntityCreationException(ex);
         }
-
-        mappingEntity.setApplicableCriteria(qmsMapping.getApplicableCriteria());
-        mappingEntity.setModification(qmsMapping.getQmsModification());
-        mappingEntity.setLastModifiedUser(AuthUtil.getAuditId());
-        create(mappingEntity);
-        return mappingEntity.getId();
     }
 
     public CertifiedProductQmsStandardDTO createCertifiedProductQms(CertifiedProductQmsStandardDTO toCreate)

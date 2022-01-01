@@ -53,7 +53,6 @@ import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.scheduler.job.ListingUploadValidationJob;
 import gov.healthit.chpl.upload.listing.handler.CertificationDateHandler;
@@ -78,7 +77,7 @@ public class ListingUploadManager {
     private ListingUploadValidator listingUploadValidator;
     private CertificationBodyDAO acbDao;
     private UserDAO userDao;
-    private CertifiedProductManager cpManager;
+    private ListingConfirmationManager listingConfirmationManager;
     private SchedulerManager schedulerManager;
     private ActivityManager activityManager;
     private ErrorMessageUtil msgUtil;
@@ -91,7 +90,8 @@ public class ListingUploadManager {
             ListingUploadValidator listingUploadValidator,
             ListingUploadHandlerUtil uploadUtil, ChplProductNumberUtil chplProductNumberUtil,
             ListingUploadDao listingUploadDao, CertificationBodyDAO acbDao, UserDAO userDao,
-            CertifiedProductManager cpManager, SchedulerManager schedulerManager,
+            ListingConfirmationManager listingConfirmationManager,
+            SchedulerManager schedulerManager,
             ActivityManager activityManager, ErrorMessageUtil msgUtil) {
         this.listingDetailsHandler = listingDetailsHandler;
         this.certDateHandler = certDateHandler;
@@ -102,7 +102,7 @@ public class ListingUploadManager {
         this.listingUploadDao = listingUploadDao;
         this.acbDao = acbDao;
         this.userDao = userDao;
-        this.cpManager = cpManager;
+        this.listingConfirmationManager= listingConfirmationManager;
         this.schedulerManager = schedulerManager;
         this.activityManager = activityManager;
         this.msgUtil = msgUtil;
@@ -241,7 +241,7 @@ public class ListingUploadManager {
             try {
                 CertifiedProductSearchDetails listing = confirmListingRequest.getListing();
                 checkForErrorsOrUnacknowledgedWarnings(listing, confirmListingRequest.isAcknowledgeWarnings());
-                confirmedListingId = cpManager.create(listing);
+                confirmedListingId = listingConfirmationManager.create(listing);
             } catch (ValidationException ex) {
                 listingUploadDao.updateStatus(id, ListingUploadStatus.UPLOAD_SUCCESS);
                 LOGGER.error("Could not confirm pending listing " + id + " due to validation error.");

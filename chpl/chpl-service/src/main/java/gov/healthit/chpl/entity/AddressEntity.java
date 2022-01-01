@@ -65,7 +65,7 @@ public class AddressEntity implements Serializable {
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
-    @Column(name = "deleted")
+    @Column(name = "deleted", insertable = false)
     private Boolean deleted;
 
     public Address toDomain() {
