@@ -17,7 +17,13 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultConformanceMethod;
+import gov.healthit.chpl.domain.CertificationResultTestData;
+import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
+import gov.healthit.chpl.domain.CertificationResultTestProcedure;
+import gov.healthit.chpl.domain.CertificationResultTestTool;
+import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
@@ -29,6 +35,7 @@ import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.dto.TestTaskDTO;
+import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.entity.TestParticipantEntity;
 import gov.healthit.chpl.entity.TestTaskEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultAdditionalSoftwareEntity;
@@ -55,13 +62,15 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class CertificationResultDAO extends BaseDAOImpl {
     private static final Logger LOGGER = LogManager.getLogger(CertificationResultDAO.class);
 
+    private UcdProcessDAO ucdProcessDao;
     private TestParticipantDAO participantDao;
     private TestTaskDAO testTaskDao;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public CertificationResultDAO(TestParticipantDAO participantDao, TestTaskDAO testTaskDao,
-            ErrorMessageUtil msgUtil) {
+    public CertificationResultDAO(UcdProcessDAO ucdProcessDao, TestParticipantDAO participantDao,
+            TestTaskDAO testTaskDao, ErrorMessageUtil msgUtil) {
+        this.ucdProcessDao = ucdProcessDao;
         this.participantDao = participantDao;
         this.testTaskDao = testTaskDao;
         this.msgUtil = msgUtil;
@@ -72,25 +81,26 @@ public class CertificationResultDAO extends BaseDAOImpl {
         entity.setCertificationCriterionId(certificationResult.getCriterion().getId());
         entity.setCertifiedProductId(listingId);
         boolean isCertified = BooleanUtils.isTrue(certificationResult.isSuccess());
-        entity.setGap(isCertified ? certificationResult.getGap() : null);
-        entity.setSed(result.getSed());
-        entity.setG1Success(result.getG1Success());
-        entity.setG2Success(result.getG2Success());
-        entity.setAttestationAnswer(result.getAttestationAnswer());
-        entity.setSuccess(result.getSuccessful());
-        entity.setApiDocumentation(result.getApiDocumentation());
-        entity.setExportDocumentation(result.getExportDocumentation());
-        entity.setDocumentationUrl(result.getDocumentationUrl());
-        entity.setUseCases(result.getUseCases());
-        entity.setServiceBaseUrlList(result.getServiceBaseUrlList());
-        entity.setPrivacySecurityFramework(result.getPrivacySecurityFramework());
+        entity.setGap(isCertified ? certificationResult.isGap() : null);
+        entity.setSed(isCertified ? certificationResult.isSed() : null);
+        entity.setG1Success(certificationResult.isG1Success());
+        entity.setG2Success(certificationResult.isG2Success());
+        entity.setAttestationAnswer(isCertified ? certificationResult.getAttestationAnswer() : null);
+        entity.setSuccess(isCertified ? certificationResult.isSuccess() : null);
+        entity.setApiDocumentation(isCertified ? certificationResult.getApiDocumentation() : null);
+        entity.setExportDocumentation(isCertified ? certificationResult.getExportDocumentation() : null);
+        entity.setDocumentationUrl(isCertified ? certificationResult.getDocumentationUrl() : null);
+        entity.setUseCases(isCertified ? certificationResult.getUseCases() : null);
+        entity.setServiceBaseUrlList(isCertified ? certificationResult.getServiceBaseUrlList() : null);
+        entity.setPrivacySecurityFramework(isCertified ? certificationResult.getPrivacySecurityFramework() : null);
+        entity.setDeleted(false);
         entity.setLastModifiedUser(AuthUtil.getAuditId());
 
         try {
             create(entity);
         } catch (Exception ex) {
             String msg = msgUtil.getMessage("listing.badCriteriaData",
-                    result.getCertificationCriterionId(), ex.getMessage());
+                    certificationResult.getCriterion().getId(), ex.getMessage());
             LOGGER.error(msg, ex);
             throw new EntityCreationException(msg);
         }
@@ -297,6 +307,27 @@ public class CertificationResultDAO extends BaseDAOImpl {
         return result;
     }
 
+    public Long createUcdProcessMapping(Long certificationResultId, UcdProcess ucdProcess) throws EntityCreationException {
+        try {
+            CertificationResultUcdProcessEntity mapping = new CertificationResultUcdProcessEntity();
+            mapping.setCertificationResultId(certificationResultId);
+
+            if (ucdProcess.getId() == null) {
+                UcdProcessDTO foundUcdProcess = ucdProcessDao.findOrCreate(ucdProcess.getId(), ucdProcess.getName());
+                mapping.setUcdProcessId(foundUcdProcess.getId());
+            } else {
+                mapping.setUcdProcessId(ucdProcess.getId());
+            }
+
+            mapping.setUcdProcessDetails(ucdProcess.getDetails());
+            mapping.setLastModifiedUser(AuthUtil.getAuditId());
+            create(mapping);
+            return mapping.getId();
+        } catch (Exception ex) {
+            throw new EntityCreationException(ex);
+        }
+    }
+
     public CertificationResultUcdProcessDTO addUcdProcessMapping(CertificationResultUcdProcessDTO dto)
             throws EntityCreationException {
         CertificationResultUcdProcessEntity mapping = new CertificationResultUcdProcessEntity();
@@ -396,6 +427,24 @@ public class CertificationResultDAO extends BaseDAOImpl {
             dtos.add(dto);
         }
         return dtos;
+    }
+
+    public Long createAdditionalSoftwareMapping(Long certResultId, CertificationResultAdditionalSoftware additionalSoftware)
+            throws EntityCreationException {
+        try {
+            CertificationResultAdditionalSoftwareEntity entity = new CertificationResultAdditionalSoftwareEntity();
+            entity.setCertificationResultId(certResultId);
+            entity.setCertifiedProductId(additionalSoftware.getCertifiedProductId());
+            entity.setName(additionalSoftware.getName());
+            entity.setVersion(additionalSoftware.getVersion());
+            entity.setJustification(additionalSoftware.getJustification());
+            entity.setGrouping(additionalSoftware.getGrouping());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
+            create(entity);
+            return entity.getId();
+        } catch (Exception ex) {
+            throw new EntityCreationException(ex);
+        }
     }
 
     public CertificationResultAdditionalSoftwareDTO addAdditionalSoftwareMapping(
@@ -520,6 +569,21 @@ public class CertificationResultDAO extends BaseDAOImpl {
      *
      *******************************************************/
 
+    public Long createConformanceMethodMapping(Long certResultId, CertificationResultConformanceMethod conformanceMethod)
+            throws EntityCreationException {
+        try {
+            CertificationResultConformanceMethodEntity entity = new CertificationResultConformanceMethodEntity();
+            entity.setCertificationResultId(certResultId);
+            entity.setConformanceMethodId(conformanceMethod.getConformanceMethod().getId());
+            entity.setVersion(conformanceMethod.getConformanceMethodVersion());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
+            create(entity);
+            return entity.getId();
+        } catch (Exception ex) {
+            throw new EntityCreationException(ex);
+        }
+    }
+
     public CertificationResultConformanceMethod addConformanceMethodMapping(CertificationResultConformanceMethodEntity entity) {
         CertificationResultConformanceMethodEntity mapping = new CertificationResultConformanceMethodEntity();
         mapping.setCertificationResultId(entity.getCertificationResultId());
@@ -577,6 +641,20 @@ public class CertificationResultDAO extends BaseDAOImpl {
             domains.add(domain);
         }
         return domains;
+    }
+
+    public Long createOptionalStandardMapping(Long certResultId, CertificationResultOptionalStandard optionalStandard)
+            throws EntityCreationException {
+        try {
+            CertificationResultOptionalStandardEntity entity = new CertificationResultOptionalStandardEntity();
+            entity.setCertificationResultId(certResultId);
+            entity.setOptionalStandardId(optionalStandard.getOptionalStandardId());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
+            create(entity);
+            return entity.getId();
+        } catch (Exception ex) {
+            throw new EntityCreationException(ex);
+        }
     }
 
     public CertificationResultOptionalStandard addOptionalStandardMapping(CertificationResultOptionalStandardEntity entity)
@@ -763,6 +841,21 @@ public class CertificationResultDAO extends BaseDAOImpl {
         return dtos;
     }
 
+    public Long createTestToolMapping(Long certResultId, CertificationResultTestTool testTool)
+            throws EntityCreationException {
+        try {
+            CertificationResultTestToolEntity entity = new CertificationResultTestToolEntity();
+            entity.setCertificationResultId(certResultId);
+            entity.setTestToolId(testTool.getTestToolId());
+            entity.setVersion(testTool.getTestToolVersion());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
+            create(entity);
+            return entity.getId();
+        } catch (Exception ex) {
+            throw new EntityCreationException(ex);
+        }
+    }
+
     public CertificationResultTestToolDTO addTestToolMapping(CertificationResultTestToolDTO dto)
             throws EntityCreationException {
         CertificationResultTestToolEntity mapping = new CertificationResultTestToolEntity();
@@ -840,6 +933,22 @@ public class CertificationResultDAO extends BaseDAOImpl {
             dtos.add(dto);
         }
         return dtos;
+    }
+
+    public Long createTestDataMapping(Long certResultId, CertificationResultTestData testData)
+            throws EntityCreationException {
+        try {
+            CertificationResultTestDataEntity entity = new CertificationResultTestDataEntity();
+            entity.setCertificationResultId(certResultId);
+            entity.setTestDataId(testData.getTestData().getId());
+            entity.setAlterationDescription(testData.getAlteration());
+            entity.setTestDataVersion(testData.getVersion());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
+            create(entity);
+            return entity.getId();
+        } catch (Exception ex) {
+            throw new EntityCreationException(ex);
+        }
     }
 
     public CertificationResultTestDataDTO addTestDataMapping(CertificationResultTestDataDTO dto)
@@ -952,6 +1061,21 @@ public class CertificationResultDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
+    public Long createTestProcedureMapping(Long certResultId, CertificationResultTestProcedure testProcedure)
+            throws EntityCreationException {
+        try {
+            CertificationResultTestProcedureEntity entity = new CertificationResultTestProcedureEntity();
+            entity.setCertificationResultId(certResultId);
+            entity.setTestProcedureId(testProcedure.getTestProcedure().getId());
+            entity.setVersion(testProcedure.getTestProcedureVersion());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
+            create(entity);
+            return entity.getId();
+        } catch (Exception ex) {
+            throw new EntityCreationException(ex);
+        }
+    }
+
     public CertificationResultTestProcedureDTO addTestProcedureMapping(CertificationResultTestProcedureDTO dto)
             throws EntityCreationException {
         CertificationResultTestProcedureEntity mapping = new CertificationResultTestProcedureEntity();
@@ -1044,6 +1168,20 @@ public class CertificationResultDAO extends BaseDAOImpl {
             dtos.add(dto);
         }
         return dtos;
+    }
+
+    public Long createTestFunctionalityMapping(Long certResultId, CertificationResultTestFunctionality testFunctionality)
+            throws EntityCreationException {
+        try {
+            CertificationResultTestFunctionalityEntity entity = new CertificationResultTestFunctionalityEntity();
+            entity.setCertificationResultId(certResultId);
+            entity.setTestFunctionalityId(testFunctionality.getTestFunctionalityId());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
+            create(entity);
+            return entity.getId();
+        } catch (Exception ex) {
+            throw new EntityCreationException(ex);
+        }
     }
 
     public CertificationResultTestFunctionalityDTO addTestFunctionalityMapping(
@@ -1290,6 +1428,19 @@ public class CertificationResultDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
+    public Long createSvapMapping(Long certResultId, CertificationResultSvap svap)
+            throws EntityCreationException {
+        try {
+            CertificationResultSvapEntity entity = new CertificationResultSvapEntity();
+            entity.setCertificationResultId(certResultId);
+            entity.setSvapId(svap.getSvapId());
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
+            create(entity);
+            return entity.getId();
+        } catch (Exception ex) {
+            throw new EntityCreationException(ex);
+        }
+    }
 
     public CertificationResultSvap addCertificationResultSvap(CertificationResultSvap certificationResultSvapToAdd,
             Long certificationResultId) {

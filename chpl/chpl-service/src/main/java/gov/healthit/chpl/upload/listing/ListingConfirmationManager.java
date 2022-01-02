@@ -3,11 +3,14 @@ package gov.healthit.chpl.upload.listing;
 import static gov.healthit.chpl.util.LambdaExceptionUtil.rethrowConsumer;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,18 +21,28 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertificationResultDAO;
+import gov.healthit.chpl.dao.CertificationStatusDAO;
+import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
+import gov.healthit.chpl.dao.CuresUpdateEventDAO;
 import gov.healthit.chpl.dao.FuzzyChoicesDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationStatus;
+import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.dto.CuresUpdateEventDTO;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -38,6 +51,7 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
+import gov.healthit.chpl.service.CuresUpdateService;
 import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityCachingService;
 import lombok.extern.log4j.Log4j2;
 
@@ -56,9 +70,14 @@ public class ListingConfirmationManager {
     private ListingMeasureDAO listingMeasureDao;
     private FuzzyChoicesDAO fuzzyChoicesDao;
     private CertificationResultDAO certResultDao;
+    private CertificationStatusEventDAO statusEventDao;
+    private CuresUpdateEventDAO curesUpdateDao;
+    private CuresUpdateService curesUpdateService;
     private ActivityManager activityManager;
     private CertifiedProductDetailsManager cpDetailsManager;
     private RealWorldTestingEligiblityCachingService rwtCachingService;
+
+    private CertificationStatus activeStatus;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
@@ -70,7 +89,9 @@ public class ListingConfirmationManager {
             CertifiedProductTargetedUserDAO cpTargetedUserDao,
             ListingGraphDAO listingGraphDao, ListingMeasureDAO listingMeasureDao,
             CertificationResultDAO certResultDao,
-            CertifiedProductDetailsManager cpDetailsManager,
+            CertificationStatusDAO certStatusDao,  CertificationStatusEventDAO statusEventDao,
+            CuresUpdateEventDAO curesUpdateDao,
+            CertifiedProductDetailsManager cpDetailsManager, CuresUpdateService curesUpdateService,
             ActivityManager activityManager, RealWorldTestingEligiblityCachingService rwtCachingService) {
         this.developerManager = developerManager;
         this.productManager = productManager;
@@ -84,8 +105,13 @@ public class ListingConfirmationManager {
         this.listingGraphDao = listingGraphDao;
         this.listingMeasureDao = listingMeasureDao;
         this.certResultDao = certResultDao;
+        this.statusEventDao = statusEventDao;
+        this.curesUpdateDao = curesUpdateDao;
         this.cpDetailsManager = cpDetailsManager;
+        this.curesUpdateService = curesUpdateService;
         this.activityManager = activityManager;
+
+        activeStatus = certStatusDao.getByStatusName(CertificationStatusType.Active.toString());
     }
 
 
@@ -120,9 +146,11 @@ public class ListingConfirmationManager {
         saveListingTargetedUserMappings(listing);
         saveListingIcsMappings(listing);
         saveListingMeasures(listing);
-        //SED
-        //Certification Results
+        saveCertificationResults(listing);
         //CQMs
+        saveSed(listing);
+        saveInitialCertificationEvent(listing);
+        saveInitialCuresUpdateEvent(listing);
         try {
             logCertifiedProductCreateActivity(listing.getId());
         } catch (Exception ex) {
@@ -226,7 +254,140 @@ public class ListingConfirmationManager {
         if (CollectionUtils.isEmpty(listing.getCertificationResults())) {
             return;
         }
+        listing.getCertificationResults().stream()
+            .forEach(rethrowConsumer(certResult -> saveCertificationResult(listing.getId(), certResult)));
+    }
 
+    private void saveCertificationResult(Long listingId, CertificationResult certResult) throws EntityCreationException {
+        Long certResultId = certResultDao.create(listingId, certResult);
+        certResult.setId(certResultId);
+        if (BooleanUtils.isTrue(certResult.isSuccess())) {
+            saveAdditionalSoftware(certResult);
+            saveOptionalStandards(certResult);
+            saveTestData(certResult);
+            saveTestProcedures(certResult);
+            saveTestFunctionality(certResult);
+            saveTestTools(certResult);
+            saveConformanceMethods(certResult);
+            saveSvaps(certResult);
+        }
+    }
+
+    private void saveAdditionalSoftware(CertificationResult certResult) throws EntityCreationException {
+        if (!CollectionUtils.isEmpty(certResult.getAdditionalSoftware())) {
+            certResult.getAdditionalSoftware().stream()
+                .forEach(rethrowConsumer(additionalSoftware -> certResultDao.createAdditionalSoftwareMapping(certResult.getId(), additionalSoftware)));
+        }
+    }
+
+    private void saveOptionalStandards(CertificationResult certResult) throws EntityCreationException {
+        if (!CollectionUtils.isEmpty(certResult.getOptionalStandards())) {
+            certResult.getOptionalStandards().stream()
+                .forEach(rethrowConsumer(optionalStandard -> certResultDao.createOptionalStandardMapping(certResult.getId(), optionalStandard)));
+        }
+    }
+
+    private void saveTestData(CertificationResult certResult) throws EntityCreationException {
+        if (!CollectionUtils.isEmpty(certResult.getTestDataUsed())) {
+            certResult.getTestDataUsed().stream()
+                .forEach(rethrowConsumer(testData -> certResultDao.createTestDataMapping(certResult.getId(), testData)));
+        }
+    }
+
+    private void saveTestProcedures(CertificationResult certResult) throws EntityCreationException {
+        if (!CollectionUtils.isEmpty(certResult.getTestProcedures())) {
+            certResult.getTestProcedures().stream()
+                .forEach(rethrowConsumer(testProcedure -> certResultDao.createTestProcedureMapping(certResult.getId(), testProcedure)));
+        }
+    }
+
+    private void saveTestFunctionality(CertificationResult certResult) throws EntityCreationException {
+        if (!CollectionUtils.isEmpty(certResult.getTestFunctionality())) {
+            certResult.getTestFunctionality().stream()
+                .forEach(rethrowConsumer(testFunctionality -> certResultDao.createTestFunctionalityMapping(certResult.getId(), testFunctionality)));
+        }
+    }
+
+    private void saveTestTools(CertificationResult certResult) throws EntityCreationException {
+        if (!CollectionUtils.isEmpty(certResult.getTestToolsUsed())) {
+            certResult.getTestToolsUsed().stream()
+                .forEach(rethrowConsumer(testTool -> certResultDao.createTestToolMapping(certResult.getId(), testTool)));
+        }
+    }
+
+    private void saveConformanceMethods(CertificationResult certResult) throws EntityCreationException {
+        if (!CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
+            certResult.getConformanceMethods().stream()
+                .forEach(rethrowConsumer(conformanceMethod -> certResultDao.createConformanceMethodMapping(certResult.getId(), conformanceMethod)));
+        }
+    }
+
+    private void saveSvaps(CertificationResult certResult) throws EntityCreationException {
+        if (!CollectionUtils.isEmpty(certResult.getSvaps())) {
+            certResult.getSvaps().stream()
+                .forEach(rethrowConsumer(svap -> certResultDao.createSvapMapping(certResult.getId(), svap)));
+        }
+    }
+
+    private void saveSed(CertifiedProductSearchDetails listing) throws EntityCreationException {
+        if (listing.getSed() != null && !CollectionUtils.isEmpty(listing.getSed().getUcdProcesses())) {
+            try {
+                List<String> fuzzyChoices = fuzzyChoicesDao.getByType(FuzzyType.UCD_PROCESS).getChoices();
+                listing.getSed().getUcdProcesses().stream()
+                    .filter(ucdProcess -> !fuzzyChoices.contains(ucdProcess.getName()))
+                    .forEach(ucdProcess -> addUcdProcessToFuzzyChoices(ucdProcess, fuzzyChoices));
+            } catch (IOException | EntityRetrievalException ex) {
+                LOGGER.error("Cannot get UCD Process fuzzy choices", ex);
+            }
+            listing.getSed().getUcdProcesses().stream()
+                .forEach(rethrowConsumer(ucdProcess -> saveUcdProcess(listing, ucdProcess)));
+        }
+        //TODO test tools + participants
+    }
+
+    private void addUcdProcessToFuzzyChoices(UcdProcess ucdProcess, List<String> fuzzyChoices) {
+        fuzzyChoices.add(ucdProcess.getName());
+        FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
+        dto.setFuzzyType(FuzzyType.UCD_PROCESS);
+        dto.setChoices(fuzzyChoices);
+        try {
+            fuzzyChoicesDao.update(dto);
+        } catch (IOException | EntityCreationException | EntityRetrievalException ex) {
+            LOGGER.error("Cannot update fuzzy choices with " + ucdProcess.getName(), ex);
+        }
+    }
+
+    private void saveUcdProcess(CertifiedProductSearchDetails listing, UcdProcess ucdProcess) throws EntityCreationException {
+        List<Long> certResultIds = ucdProcess.getCriteria().stream()
+            .map(criterion -> getCertificationResultId(listing, criterion))
+            .collect(Collectors.toList());
+        certResultIds.stream()
+            .forEach(rethrowConsumer(certResultId -> certResultDao.createUcdProcessMapping(certResultId, ucdProcess)));
+    }
+
+    private Long getCertificationResultId(CertifiedProductSearchDetails listing, CertificationCriterion criterion) {
+        return listing.getCertificationResults().stream()
+                .filter(certResult -> certResult.getCriterion().getId().equals(criterion.getId()))
+                .findAny().get().getId();
+    }
+
+    private void saveInitialCertificationEvent(CertifiedProductSearchDetails listing)
+            throws EntityCreationException {
+        Date certificationDate = new Date(listing.getCertificationDate());
+        CertificationStatusEvent certEvent = CertificationStatusEvent.builder()
+                .eventDate(certificationDate.getTime())
+                .status(activeStatus)
+                .build();
+        statusEventDao.create(listing.getId(), certEvent);
+    }
+
+    private void saveInitialCuresUpdateEvent(CertifiedProductSearchDetails listing) throws EntityCreationException {
+        CuresUpdateEventDTO curesEvent = CuresUpdateEventDTO.builder()
+                .eventDate(new Date(listing.getCertificationDate()))
+                .curesUpdate(curesUpdateService.isCuresUpdate(listing))
+                .certifiedProductId(listing.getId())
+                .build();
+        curesUpdateDao.create(curesEvent);
     }
 
     private void logCertifiedProductCreateActivity(Long listingId) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {

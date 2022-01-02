@@ -15,9 +15,12 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.UcdProcessEntity;
-import gov.healthit.chpl.util.Util;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Data
+@NoArgsConstructor
 @Table(name = "certification_result_ucd_process")
 public class CertificationResultUcdProcessEntity implements Serializable {
     private static final long serialVersionUID = -8570212776898137339L;
@@ -43,91 +46,15 @@ public class CertificationResultUcdProcessEntity implements Serializable {
     @JoinColumn(name = "ucd_process_id", unique = true, nullable = true, insertable = false, updatable = false)
     private UcdProcessEntity ucdProcess;
 
-    public Long getId() {
-        return id;
-    }
+    @Column(name = "deleted", insertable = false)
+    private Boolean deleted;
 
-    public void setId(final Long id) {
-        this.id = id;
-    }
+    @Column(name = "last_modified_user")
+    private Long lastModifiedUser;
 
-    public Long getCertificationResultId() {
-        return certificationResultId;
-    }
+    @Column(name = "creation_date", insertable = false, updatable = false)
+    private Date creationDate;
 
-    public void setCertificationResultId(final Long certificationResultId) {
-        this.certificationResultId = certificationResultId;
-    }
-
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
-    protected Date creationDate;
-
-    @Basic(optional = false)
-    @Column(nullable = false)
-    protected Boolean deleted;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
-    protected Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    protected Long lastModifiedUser;
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Long getUcdProcessId() {
-        return ucdProcessId;
-    }
-
-    public void setUcdProcessId(final Long ucdProcessId) {
-        this.ucdProcessId = ucdProcessId;
-    }
-
-    public String getUcdProcessDetails() {
-        return ucdProcessDetails;
-    }
-
-    public void setUcdProcessDetails(final String ucdProcessDetails) {
-        this.ucdProcessDetails = ucdProcessDetails;
-    }
-
-    public UcdProcessEntity getUcdProcess() {
-        return ucdProcess;
-    }
-
-    public void setUcdProcess(final UcdProcessEntity ucdProcess) {
-        this.ucdProcess = ucdProcess;
-    }
+    @Column(name = "last_modified_date", insertable = false, updatable = false)
+    private Date lastModifiedDate;
 }
