@@ -1,5 +1,7 @@
 package gov.healthit.chpl.dao;
 
+import static gov.healthit.chpl.util.LambdaExceptionUtil.rethrowConsumer;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,6 +10,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,6 +26,8 @@ import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
+import gov.healthit.chpl.domain.TestParticipant;
+import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
@@ -1258,6 +1263,24 @@ public class CertificationResultDAO extends BaseDAOImpl {
         return dtos;
     }
 
+    public Long createTestTaskMapping(Long certificationResultId, TestTask testTask)
+            throws EntityCreationException {
+        Long testTaskId = testTaskDao.create(testTask);
+        testTask.setId(testTaskId);
+
+        CertificationResultTestTaskEntity mapping = new CertificationResultTestTaskEntity();
+        mapping.setCertificationResultId(certificationResultId);
+        mapping.setTestTaskId(testTaskId);
+        mapping.setLastModifiedUser(AuthUtil.getAuditId());
+        create(mapping);
+
+        if (!CollectionUtils.isEmpty(testTask.getTestParticipants())) {
+            testTask.getTestParticipants().stream()
+                .forEach(rethrowConsumer(participant -> createTestParticipantMapping(testTaskId, participant)));
+        }
+        return mapping.getId();
+    }
+
     public CertificationResultTestTaskDTO addTestTaskMapping(CertificationResultTestTaskDTO dto)
             throws EntityCreationException {
         CertificationResultTestTaskEntity mapping = new CertificationResultTestTaskEntity();
@@ -1342,6 +1365,40 @@ public class CertificationResultDAO extends BaseDAOImpl {
             return null;
         }
         return result;
+    }
+
+    public void createTestParticipantMapping(Long testTaskId, TestParticipant participant)
+            throws EntityCreationException {
+        boolean createMapping = false;
+        if (participant.getId() == null) {
+            Long participantId = participantDao.create(participant);
+            participant.setId(participantId);
+            createMapping = true;
+        } else {
+            createMapping = !doesTaskParticipantMappingExist(testTaskId, participant.getId());
+        }
+
+        if (createMapping) {
+            TestTaskParticipantMapEntity mapping = new TestTaskParticipantMapEntity();
+            mapping.setTestParticipantId(participant.getId());
+            mapping.setTestTaskId(testTaskId);
+            mapping.setLastModifiedUser(AuthUtil.getAuditId());
+            create(mapping);
+        }
+    }
+
+    private boolean doesTaskParticipantMappingExist(Long testTaskId, Long participantId) {
+        Query query = entityManager.createQuery(
+                "SELECT participantMap "
+                        + "FROM TestTaskParticipantMapEntity participantMap "
+                        + "WHERE participantMap.deleted <> true "
+                        + "AND participantMap.testTaskId = :testTaskId "
+                        + "AND participantMap.testParticipantId = :testParticipantId",
+                TestTaskParticipantMapEntity.class);
+        query.setParameter("testTaskId", testTaskId);
+        query.setParameter("testParticipantId", participantId);
+        List<TestTaskParticipantMapEntity> existingMappings = query.getResultList();
+        return !CollectionUtils.isEmpty(existingMappings);
     }
 
     public TestParticipantDTO addTestParticipantMapping(TestTaskDTO task, TestParticipantDTO participant)

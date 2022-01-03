@@ -16,9 +16,12 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.entity.TestTaskEntity;
-import gov.healthit.chpl.util.Util;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Data
+@NoArgsConstructor
 @Table(name = "certification_result_test_task")
 public class CertificationResultTestTaskEntity {
 
@@ -41,83 +44,15 @@ public class CertificationResultTestTaskEntity {
     @Where(clause = "deleted <> 'true'")
     private TestTaskEntity testTask;
 
-    public Long getId() {
-        return id;
-    }
+    @Column(name = "deleted", insertable = false)
+    private Boolean deleted;
 
-    public void setId(final Long id) {
-        this.id = id;
-    }
+    @Column(name = "last_modified_user")
+    private Long lastModifiedUser;
 
-    public Long getCertificationResultId() {
-        return certificationResultId;
-    }
+    @Column(name = "creation_date", insertable = false, updatable = false)
+    private Date creationDate;
 
-    public void setCertificationResultId(final Long certificationResultId) {
-        this.certificationResultId = certificationResultId;
-    }
-
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
-    protected Date creationDate;
-
-    @Basic(optional = false)
-    @Column(nullable = false)
-    protected Boolean deleted;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
-    protected Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    protected Long lastModifiedUser;
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Long getTestTaskId() {
-        return testTaskId;
-    }
-
-    public void setTestTaskId(final Long testTaskId) {
-        this.testTaskId = testTaskId;
-    }
-
-    public TestTaskEntity getTestTask() {
-        return testTask;
-    }
-
-    public void setTestTask(final TestTaskEntity testTaskEntity) {
-        this.testTask = testTaskEntity;
-    }
+    @Column(name = "last_modified_date", insertable = false, updatable = false)
+    private Date lastModifiedDate;
 }

@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
@@ -38,6 +39,7 @@ import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CuresUpdateEventDTO;
@@ -70,6 +72,7 @@ public class ListingConfirmationManager {
     private ListingMeasureDAO listingMeasureDao;
     private FuzzyChoicesDAO fuzzyChoicesDao;
     private CertificationResultDAO certResultDao;
+    private CQMResultDAO cqmResultDao;
     private CertificationStatusEventDAO statusEventDao;
     private CuresUpdateEventDAO curesUpdateDao;
     private CuresUpdateService curesUpdateService;
@@ -88,7 +91,7 @@ public class ListingConfirmationManager {
             CertifiedProductAccessibilityStandardDAO cpAccStdDao,
             CertifiedProductTargetedUserDAO cpTargetedUserDao,
             ListingGraphDAO listingGraphDao, ListingMeasureDAO listingMeasureDao,
-            CertificationResultDAO certResultDao,
+            CertificationResultDAO certResultDao, CQMResultDAO cqmResultDao,
             CertificationStatusDAO certStatusDao,  CertificationStatusEventDAO statusEventDao,
             CuresUpdateEventDAO curesUpdateDao,
             CertifiedProductDetailsManager cpDetailsManager, CuresUpdateService curesUpdateService,
@@ -105,6 +108,7 @@ public class ListingConfirmationManager {
         this.listingGraphDao = listingGraphDao;
         this.listingMeasureDao = listingMeasureDao;
         this.certResultDao = certResultDao;
+        this.cqmResultDao = cqmResultDao;
         this.statusEventDao = statusEventDao;
         this.curesUpdateDao = curesUpdateDao;
         this.cpDetailsManager = cpDetailsManager;
@@ -122,7 +126,7 @@ public class ListingConfirmationManager {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES, CacheNames.DEVELOPER_NAMES
     }, allEntries = true)
-    public Long create(CertifiedProductSearchDetails listing)
+    public CertifiedProductSearchDetails create(CertifiedProductSearchDetails listing)
         throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
         if (listing.getDeveloper().getDeveloperId() == null) {
             //create developer, set developer ID in listing
@@ -147,17 +151,18 @@ public class ListingConfirmationManager {
         saveListingIcsMappings(listing);
         saveListingMeasures(listing);
         saveCertificationResults(listing);
-        //CQMs
         saveSed(listing);
+        saveCqms(listing);
         saveInitialCertificationEvent(listing);
         saveInitialCuresUpdateEvent(listing);
+        CertifiedProductSearchDetails confirmedListing = cpDetailsManager.getCertifiedProductDetails(listing.getId());
         try {
-            logCertifiedProductCreateActivity(listing.getId());
+            logCertifiedProductCreateActivity(confirmedListing);
         } catch (Exception ex) {
             LOGGER.error("Unable to log create activity for listing " + listing.getId(), ex);
         }
         rwtCachingService.calculateRwtEligibility(listing.getId());
-        return createdListingId;
+        return confirmedListing;
     }
 
     private void saveListingTestingLabMappings(CertifiedProductSearchDetails listing) throws EntityCreationException {
@@ -342,7 +347,10 @@ public class ListingConfirmationManager {
             listing.getSed().getUcdProcesses().stream()
                 .forEach(rethrowConsumer(ucdProcess -> saveUcdProcess(listing, ucdProcess)));
         }
-        //TODO test tools + participants
+        if (listing.getSed() != null && !CollectionUtils.isEmpty(listing.getSed().getTestTasks())) {
+            listing.getSed().getTestTasks().stream()
+                .forEach(rethrowConsumer(testTask -> saveTestTask(listing, testTask)));
+        }
     }
 
     private void addUcdProcessToFuzzyChoices(UcdProcess ucdProcess, List<String> fuzzyChoices) {
@@ -365,10 +373,25 @@ public class ListingConfirmationManager {
             .forEach(rethrowConsumer(certResultId -> certResultDao.createUcdProcessMapping(certResultId, ucdProcess)));
     }
 
+    private void saveTestTask(CertifiedProductSearchDetails listing, TestTask testTask) throws EntityCreationException {
+        List<Long> certResultIds = testTask.getCriteria().stream()
+                .map(criterion -> getCertificationResultId(listing, criterion))
+                .collect(Collectors.toList());
+            certResultIds.stream()
+                .forEach(rethrowConsumer(certResultId -> certResultDao.createTestTaskMapping(certResultId, testTask)));
+    }
+
     private Long getCertificationResultId(CertifiedProductSearchDetails listing, CertificationCriterion criterion) {
         return listing.getCertificationResults().stream()
                 .filter(certResult -> certResult.getCriterion().getId().equals(criterion.getId()))
                 .findAny().get().getId();
+    }
+
+    private void saveCqms(CertifiedProductSearchDetails listing) throws EntityCreationException {
+        //only save attested CQMs
+        listing.getCqmResults().stream()
+            .filter(cqmResult -> BooleanUtils.isTrue(cqmResult.isSuccess()))
+            .forEach(rethrowConsumer(cqmResult -> cqmResultDao.create(listing.getId(), cqmResult)));
     }
 
     private void saveInitialCertificationEvent(CertifiedProductSearchDetails listing)
@@ -390,10 +413,8 @@ public class ListingConfirmationManager {
         curesUpdateDao.create(curesEvent);
     }
 
-    private void logCertifiedProductCreateActivity(Long listingId) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
-        CertifiedProductSearchDetails confirmedListing
-            = cpDetailsManager.getCertifiedProductDetails(listingId);
-        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, listingId,
-            "Created a certified product", null, confirmedListing);
+    private void logCertifiedProductCreateActivity(CertifiedProductSearchDetails listing) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, listing.getId(),
+            "Created a certified product", null, listing);
     }
 }

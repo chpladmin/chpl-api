@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
@@ -236,12 +235,12 @@ public class ListingUploadManager {
         if (!listingUploadDao.isAvailableForProcessing(id)) {
             throw new InvalidArgumentsException(msgUtil.getMessage("pendingListing.alreadyProcessing"));
         } else {
-            Long confirmedListingId = null;
+            CertifiedProductSearchDetails confirmedListing = null;
             listingUploadDao.updateStatus(id, ListingUploadStatus.CONFIRMATION_PROCESSING);
             try {
                 CertifiedProductSearchDetails listing = confirmListingRequest.getListing();
                 checkForErrorsOrUnacknowledgedWarnings(listing, confirmListingRequest.isAcknowledgeWarnings());
-                confirmedListingId = listingConfirmationManager.create(listing);
+                confirmedListing = listingConfirmationManager.create(listing);
             } catch (ValidationException ex) {
                 listingUploadDao.updateStatus(id, ListingUploadStatus.UPLOAD_SUCCESS);
                 LOGGER.error("Could not confirm pending listing " + id + " due to validation error.");
@@ -252,10 +251,9 @@ public class ListingUploadManager {
                 throw ex;
             }
             listingUploadDao.updateStatus(id, ListingUploadStatus.CONFIRMED);
-            listingUploadDao.updateConfirmedListingId(id, confirmedListingId);
+            listingUploadDao.updateConfirmedListingId(id, confirmedListing.getId());
+            return confirmedListing;
         }
-
-        return createTemporaryConfirmationResponse(confirmListingRequest.getListing());
     }
 
     private void checkForErrorsOrUnacknowledgedWarnings(CertifiedProductSearchDetails listing,
@@ -270,13 +268,6 @@ public class ListingUploadManager {
                         && !acknowledgeWarnings)) {
             throw new ValidationException(listing.getErrorMessages(), listing.getWarningMessages());
         }
-    }
-
-    private CertifiedProductSearchDetails createTemporaryConfirmationResponse(CertifiedProductSearchDetails listing) {
-        listing.setId(ThreadLocalRandom.current().nextLong(11000L, 12000L + 1));
-        listing.getWarningMessages().clear();
-        listing.getErrorMessages().clear();
-        return listing;
     }
 
     @Transactional
