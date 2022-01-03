@@ -367,6 +367,8 @@ public class ListingUploadManagerTest {
         }).when(listingUploadValidator).review(Mockito.eq(listing));
         Mockito.when(listingUploadDao.isAvailableForProcessing(ArgumentMatchers.eq(listing.getId())))
             .thenReturn(true);
+        Mockito.when(listingConfirmationManager.create(ArgumentMatchers.any()))
+            .thenReturn(listing);
         uploadManager.confirm(1L, ConfirmListingRequest.builder()
                 .acknowledgeWarnings(false)
                 .listing(listing)
@@ -390,6 +392,8 @@ public class ListingUploadManagerTest {
         }).when(listingUploadValidator).review(Mockito.eq(listing));
         Mockito.when(listingUploadDao.isAvailableForProcessing(ArgumentMatchers.eq(listing.getId())))
             .thenReturn(true);
+        Mockito.when(listingConfirmationManager.create(ArgumentMatchers.any()))
+            .thenReturn(listing);
         uploadManager.confirm(1L, ConfirmListingRequest.builder()
                 .acknowledgeWarnings(true)
                 .listing(listing)
@@ -438,6 +442,8 @@ public class ListingUploadManagerTest {
         }).when(listingUploadValidator).review(Mockito.eq(listing));
         Mockito.when(listingUploadDao.isAvailableForProcessing(ArgumentMatchers.eq(listing.getId())))
             .thenReturn(true);
+        Mockito.when(listingConfirmationManager.create(ArgumentMatchers.any()))
+            .thenReturn(listing);
         uploadManager.confirm(1L, ConfirmListingRequest.builder()
                 .acknowledgeWarnings(true)
                 .listing(listing)
