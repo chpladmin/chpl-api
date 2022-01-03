@@ -8,15 +8,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.ChplProductNumberDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
-import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
@@ -29,6 +26,9 @@ import lombok.extern.log4j.Log4j2;
 @NoArgsConstructor
 @Log4j2
 public class ChplProductNumberUtil {
+    public static final String LEGACY_ID_BEGIN = "CHP-";
+    public static final String CHPL_PRODUCT_NUMBER_SEARCH_REGEX = "(\\d{2}\\.){3}\\d{4}\\.(\\w{4}\\.(\\w{2}\\.(\\d{2}\\.(\\d\\.(\\d{6})?)?)?)?)?";
+
     public static final int EDITION_CODE_INDEX = 0;
     public static final String EDITION_CODE_REGEX = "^[0-9]{" + ChplProductNumberUtil.EDITION_CODE_LENGTH + "}$";
     public static final int EDITION_CODE_LENGTH = 2;
@@ -60,32 +60,25 @@ public class ChplProductNumberUtil {
 
     private static final int CERTIFICATION_EDITION_BEGIN_INDEX = 2;
     private static final int CERTIFICATION_EDITION_END_INDEX = 4;
-
     private static final int LEGACY_ID_LENGTH = 10;
-    private static final String LEGACY_ID_BEGIN = "CHP-";
-
-    public static final String CHPL_PRODUCT_NUMBER_SEARCH_REGEX = "(\\d{2}\\.){3}\\d{4}\\.(\\w{4}\\.(\\w{2}\\.(\\d{2}\\.(\\d\\.(\\d{6})?)?)?)?)?";
 
     private TestingLabDAO testingLabDAO;
     private CertificationBodyDAO certBodyDAO;
     private DeveloperDAO developerDAO;
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
     private ChplProductNumberDAO chplProductNumberDAO;
-    private CertifiedProductDAO cpDao;
 
     @Autowired
     public ChplProductNumberUtil(TestingLabDAO testingLabDAO,
             CertificationBodyDAO certBodyDAO,
             DeveloperDAO developerDAO,
             CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
-            ChplProductNumberDAO chplProductNumberDAO,
-            CertifiedProductDAO cpDao) {
+            ChplProductNumberDAO chplProductNumberDAO) {
         this.testingLabDAO = testingLabDAO;
         this.certBodyDAO = certBodyDAO;
         this.developerDAO = developerDAO;
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
         this.chplProductNumberDAO = chplProductNumberDAO;
-        this.cpDao = cpDao;
     }
 
     /**
@@ -149,64 +142,6 @@ public class ChplProductNumberUtil {
             return true; // Need to determine the correct action here
         }
         return !(details != null && details.size() > 0);
-    }
-
-    /**
-     * Determines if the given CHPL ID is a listing in the system.
-     *
-     * @param id
-     * @return true if there is a listing with the chpl product number, false otherwise
-     * @throws EntityRetrievalException
-     */
-    public boolean chplIdExists(final String chplProductNumber) throws EntityRetrievalException {
-        if (StringUtils.isEmpty(chplProductNumber)) {
-            return false;
-        }
-
-        boolean exists = false;
-        if (chplProductNumber.startsWith("CHP")) {
-            CertifiedProductDTO existing = cpDao.getByChplNumber(chplProductNumber);
-            if (existing != null) {
-                exists = true;
-            }
-        } else {
-            try {
-                CertifiedProductDetailsDTO existing = cpDao.getByChplUniqueId(chplProductNumber);
-                if (existing != null) {
-                    exists = true;
-                }
-            } catch (final EntityRetrievalException ex) {
-                LOGGER.error("Could not look up " + chplProductNumber, ex);
-            }
-        }
-        return exists;
-    }
-
-    public CertifiedProduct getListing(String chplProductNumber) {
-        CertifiedProduct listing = null;
-        if (chplProductNumber.startsWith("CHP-")) {
-            try {
-                CertifiedProductDTO chplProduct = cpDao.getByChplNumber(chplProductNumber);
-                if (chplProduct != null) {
-                    CertifiedProductDetailsDTO cpDetails = cpDao.getDetailsById(chplProduct.getId());
-                    if (cpDetails != null) {
-                        listing = new CertifiedProduct(cpDetails);
-                    }
-                }
-            } catch (final EntityRetrievalException ex) {
-                LOGGER.error("Could not look up " + chplProductNumber, ex);
-            }
-        } else {
-            try {
-                CertifiedProductDetailsDTO cpDetails = cpDao.getByChplUniqueId(chplProductNumber);
-                if (cpDetails != null) {
-                    listing = new CertifiedProduct(cpDetails);
-                }
-            } catch (final EntityRetrievalException ex) {
-                LOGGER.error("Could not look up " + chplProductNumber, ex);
-            }
-        }
-        return listing;
     }
 
     @SuppressWarnings({"checkstyle:parameternumber"})

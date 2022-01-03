@@ -36,7 +36,6 @@ import lombok.Data;
 @DynamicUpdate
 @Table(name = "vendor")
 public class DeveloperEntity implements Serializable {
-
     private static final long serialVersionUID = -1396979009499564864L;
     private static final int WEBSITE_MAX_LENGTH = 300;
 
@@ -65,7 +64,7 @@ public class DeveloperEntity implements Serializable {
 
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "address_id", unique = true, nullable = true)
+    @JoinColumn(name = "address_id", unique = true, nullable = true, insertable = false, updatable = false)
     @Where(clause = "deleted <> 'true'")
     private AddressEntity address;
 

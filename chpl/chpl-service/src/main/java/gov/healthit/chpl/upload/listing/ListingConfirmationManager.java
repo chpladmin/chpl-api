@@ -144,6 +144,8 @@ public class ListingConfirmationManager {
             listing.getVersion().setVersionId(versionId);
         }
         Long createdListingId = cpDao.create(listing);
+        listing.setId(createdListingId);
+
         saveListingTestingLabMappings(listing);
         saveListingQmsStandardMappings(listing);
         saveListingAccessibiltyStandardMappings(listing);
