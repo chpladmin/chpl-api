@@ -69,12 +69,11 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             entity.setOtherAcb(listing.getOtherAcb());
             entity.setMandatoryDisclosures(listing.getMandatoryDisclosures());
             entity.setSvapNoticeUrl(listing.getSvapNoticeUrl());
+            entity.setChplProductNumber(null);
             entity.setLastModifiedUser(AuthUtil.getAuditId());
 
-            //TODO this group of fields is all derived... not sure if they are used in legacy listings
-            //setting them null rather than filling them in to confirm they are not used
+            //this group of fields is all derived and I believe are unused
             entity.setPendingCertifiedProductId(null);
-            entity.setChplProductNumber(null);
             entity.setAdditionalSoftwareCode(null);
             entity.setIcsCode(null);
             entity.setCertifiedDateCode(null);

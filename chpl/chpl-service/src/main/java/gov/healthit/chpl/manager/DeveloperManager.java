@@ -346,6 +346,7 @@ public class DeveloperManager extends SecuredManager {
             createOrUpdateTransparencyMappings(developer);
         }
 
+        //TODO: put the activity in with a DeveloperDTO object (same for product/version)
         activityManager.addActivity(ActivityConcept.DEVELOPER, developerId,
                 "Developer " + developer.getName() + " has been created.", null, developer);
         return developerId;

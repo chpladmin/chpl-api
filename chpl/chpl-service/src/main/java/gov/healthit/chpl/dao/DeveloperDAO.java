@@ -292,8 +292,6 @@ public class DeveloperDAO extends BaseDAOImpl {
         }
 
         update(entity);
-
-        entityManager.clear();
         return getById(dto.getId());
     }
 

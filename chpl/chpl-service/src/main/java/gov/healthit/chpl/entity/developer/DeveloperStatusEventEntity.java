@@ -15,6 +15,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.util.Util;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -68,6 +69,14 @@ public class DeveloperStatusEventEntity implements Serializable {
 
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
+
+    public Date getStatusDate() {
+        return Util.getNewDate(statusDate);
+    }
+
+    public void setStatusDate(final Date statusDate) {
+        this.statusDate = Util.getNewDate(statusDate);
+    }
 
     public DeveloperStatusEvent toDomain() {
         return DeveloperStatusEvent.builder()
