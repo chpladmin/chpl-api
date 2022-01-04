@@ -255,7 +255,7 @@ public class ChplProductNumberUtil {
 
     public String getVersionCode(String chplProductNumber) {
         ChplProductNumberParts parts = parseChplProductNumber(chplProductNumber);
-        return parts.getProductCode();
+        return parts.getVersionCode();
     }
 
     public String getAcbCode(String chplProductNumber) {
