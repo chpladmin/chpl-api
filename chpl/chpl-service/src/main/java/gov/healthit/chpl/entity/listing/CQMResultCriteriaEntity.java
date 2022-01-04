@@ -15,11 +15,15 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @Table(name = "cqm_result_criteria")
 public class CQMResultCriteriaEntity implements Serializable {

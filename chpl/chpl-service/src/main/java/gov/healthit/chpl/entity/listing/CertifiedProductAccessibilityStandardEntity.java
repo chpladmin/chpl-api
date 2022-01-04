@@ -14,11 +14,15 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.AccessibilityStandardEntity;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @Table(name = "certified_product_accessibility_standard")
 public class CertifiedProductAccessibilityStandardEntity {

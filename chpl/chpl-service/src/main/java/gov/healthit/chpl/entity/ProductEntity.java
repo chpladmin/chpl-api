@@ -30,14 +30,18 @@ import gov.healthit.chpl.domain.ProductOwner;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
+@ToString
 @Table(name = "product")
 public class ProductEntity implements Serializable {
     private static final long serialVersionUID = -5332080900089062551L;

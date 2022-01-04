@@ -17,11 +17,15 @@ import javax.persistence.Table;
 import gov.healthit.chpl.domain.ProductOwner;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "product_active_owner_history_map")

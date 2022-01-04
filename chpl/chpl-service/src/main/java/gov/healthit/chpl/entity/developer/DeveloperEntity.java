@@ -29,10 +29,14 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.entity.ContactEntity;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
 @DynamicUpdate
 @Table(name = "vendor")
 public class DeveloperEntity implements Serializable {

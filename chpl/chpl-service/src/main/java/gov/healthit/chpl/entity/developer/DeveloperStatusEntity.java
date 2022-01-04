@@ -15,13 +15,17 @@ import org.hibernate.annotations.Type;
 
 import gov.healthit.chpl.domain.DeveloperStatus;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
+@ToString
 @Table(name = "vendor_status")
 public class DeveloperStatusEntity implements Serializable {
     private static final long serialVersionUID = 1730728043307135377L;

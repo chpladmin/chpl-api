@@ -16,11 +16,15 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.entity.TestTaskEntity;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @Table(name = "certification_result_test_task")
 public class CertificationResultTestTaskEntity {

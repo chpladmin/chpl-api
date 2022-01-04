@@ -16,13 +16,17 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
+@ToString
 @Table(name = "vendor_status_history")
 public class DeveloperStatusEventEntity implements Serializable {
     private static final long serialVersionUID = 1730728043307135377L;
