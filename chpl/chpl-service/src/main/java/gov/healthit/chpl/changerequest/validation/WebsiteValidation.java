@@ -27,10 +27,10 @@ public class WebsiteValidation extends ValidationRule<ChangeRequestValidationCon
         // Only role we update the website for is ROLE_DEVELOPER
         if (resourcePermissions.isUserRoleDeveloperAdmin()) {
             // Is there a website?
-            if (isChangeRequestWebsiteValid((HashMap) context.getChangeRequest().getDetails())) {
+            if (isChangeRequestWebsiteValid((HashMap) context.getNewChangeRequest().getDetails())) {
                 // Is the website valid?
                 if (!validationUtils.isWellFormedUrl(
-                        ((HashMap) context.getChangeRequest().getDetails()).get("website").toString())) {
+                        ((HashMap) context.getNewChangeRequest().getDetails()).get("website").toString())) {
                     getMessages().add(getErrorMessage("changeRequest.details.website.invalidFormat"));
                     return false;
                 }

@@ -25,7 +25,7 @@ public class ContactValidation extends ValidationRule<ChangeRequestValidationCon
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
         if (resourcePermissions.isUserRoleDeveloperAdmin()) {
-            HashMap<String, Object> details = (HashMap) context.getChangeRequest().getDetails();
+            HashMap<String, Object> details = (HashMap) context.getNewChangeRequest().getDetails();
             if (details.containsKey("contact")) {
                 PointOfContact crContact = new PointOfContact((HashMap<String, Object>) details.get("contact"));
                 boolean contactComponentsValid = true;

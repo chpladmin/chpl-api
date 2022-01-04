@@ -25,7 +25,7 @@ public class AddressValidation extends ValidationRule<ChangeRequestValidationCon
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
         if (resourcePermissions.isUserRoleDeveloperAdmin()) {
-            HashMap<String, Object> details = (HashMap) context.getChangeRequest().getDetails();
+            HashMap<String, Object> details = (HashMap) context.getNewChangeRequest().getDetails();
             if (details.containsKey("address")) {
                 Address crAddress = new Address((HashMap<String, Object>) details.get("address"));
                 boolean addressComponentsValid = true;

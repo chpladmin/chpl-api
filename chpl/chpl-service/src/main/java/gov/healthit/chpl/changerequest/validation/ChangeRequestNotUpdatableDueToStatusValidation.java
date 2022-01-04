@@ -27,7 +27,7 @@ public class ChangeRequestNotUpdatableDueToStatusValidation extends ValidationRu
         // We need to check the current status from the DB - not what the user
         // has passed in
         try {
-            ChangeRequest crFromDb = context.getCrFromDb();
+            ChangeRequest crFromDb = context.getOrigChangeRequest();
             if (getNonUpdatableStatuses().contains(crFromDb.getCurrentStatus().getChangeRequestStatusType().getId())) {
                 getMessages().add(getErrorMessage(crFromDb.getCurrentStatus().getChangeRequestStatusType()));
                 return false;
