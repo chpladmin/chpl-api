@@ -29,6 +29,7 @@ import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class UserAuthenticatorTest {
+    private static final Long RESEND_CONFIRMATION_EMAIL_WINDOW_IN_DAYS = 180L;
     private JWTAuthor jwtAuthor;
     private UserManager userManager;
     private UserDAO userDAO;
@@ -82,7 +83,7 @@ public class UserAuthenticatorTest {
             throws UserRetrievalException, MultipleUserAccountsException, AccountStatusException, ChplAccountEmailNotConfirmedException {
         LoginCredentials creds = new LoginCredentials("username", "password");
         AuthenticationManager authenticator = new AuthenticationManager(jwtAuthor, userManager, userDAO, bCryptPasswordEncoder,
-                userDetailsChecker, msgUtil, invitationManager);
+                userDetailsChecker, msgUtil, invitationManager, RESEND_CONFIRMATION_EMAIL_WINDOW_IN_DAYS);
         UserDTO user = authenticator.getUser(creds);
 
         assertNotNull(user);
@@ -96,7 +97,7 @@ public class UserAuthenticatorTest {
                 .thenReturn(null);
 
         LoginCredentials creds = new LoginCredentials("username", "password");
-        AuthenticationManager authenticator = new AuthenticationManager(null, null, userDAO, null, null, msgUtil, invitationManager);
+        AuthenticationManager authenticator = new AuthenticationManager(null, null, userDAO, null, null, msgUtil, invitationManager, RESEND_CONFIRMATION_EMAIL_WINDOW_IN_DAYS);
         authenticator.getUser(creds);
 
         fail();
@@ -124,7 +125,7 @@ public class UserAuthenticatorTest {
 
         LoginCredentials creds = new LoginCredentials("username", "password");
         AuthenticationManager authenticator = new AuthenticationManager(jwtAuthor, userManager, userDAO, bCryptPasswordEncoder,
-                userDetailsChecker, msgUtil, invitationManager);
+                userDetailsChecker, msgUtil, invitationManager, RESEND_CONFIRMATION_EMAIL_WINDOW_IN_DAYS);
         authenticator.getUser(creds);
 
         fail();
@@ -139,7 +140,7 @@ public class UserAuthenticatorTest {
 
         LoginCredentials creds = new LoginCredentials("username", "password");
         AuthenticationManager authenticator = new AuthenticationManager(jwtAuthor, userManager, userDAO, bCryptPasswordEncoder,
-                userDetailsChecker, msgUtil, invitationManager);
+                userDetailsChecker, msgUtil, invitationManager, RESEND_CONFIRMATION_EMAIL_WINDOW_IN_DAYS);
         authenticator.getUser(creds);
 
         fail();
