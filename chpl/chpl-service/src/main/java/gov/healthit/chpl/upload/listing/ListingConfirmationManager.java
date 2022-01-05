@@ -114,6 +114,7 @@ public class ListingConfirmationManager {
         this.cpDetailsManager = cpDetailsManager;
         this.curesUpdateService = curesUpdateService;
         this.activityManager = activityManager;
+        this.rwtCachingService = rwtCachingService;
 
         activeStatus = certStatusDao.getByStatusName(CertificationStatusType.Active.toString());
     }

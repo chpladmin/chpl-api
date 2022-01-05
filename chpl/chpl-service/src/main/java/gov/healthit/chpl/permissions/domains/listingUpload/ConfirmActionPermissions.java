@@ -7,8 +7,10 @@ import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.upload.listing.ListingUploadDao;
+import lombok.extern.log4j.Log4j2;
 
 @Component("confirmListingUploadActionPermissions")
+@Log4j2
 public class ConfirmActionPermissions extends ActionPermissions {
 
     private ListingUploadDao listingUploadDao;
@@ -31,6 +33,7 @@ public class ConfirmActionPermissions extends ActionPermissions {
                 ListingUpload listingUpload = listingUploadDao.getById(listingUploadId);
                 return hasAccess(listingUpload);
             } catch (EntityRetrievalException ex) {
+                LOGGER.error("Could not get listing upload with ID " + listingUploadId, ex);
                 return false;
             }
         }

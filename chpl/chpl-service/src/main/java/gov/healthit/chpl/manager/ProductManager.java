@@ -153,8 +153,9 @@ public class ProductManager extends SecuredManager {
 
         Long productId = productDao.create(developerId, product);
         product.setProductId(productId);
+        ProductDTO createdProductDto = productDao.getById(productId);
         String activityMsg = "Product " + product.getName() + " was created.";
-        activityManager.addActivity(ActivityConcept.PRODUCT, productId, activityMsg, null, product);
+        activityManager.addActivity(ActivityConcept.PRODUCT, productId, activityMsg, null, createdProductDto);
         return productId;
     }
 

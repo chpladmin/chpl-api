@@ -83,25 +83,23 @@ public class CertificationResultDAO extends BaseDAOImpl {
 
     public Long create(Long listingId, CertificationResult certificationResult) throws EntityCreationException {
         CertificationResultEntity entity = new CertificationResultEntity();
-        entity.setCertificationCriterionId(certificationResult.getCriterion().getId());
-        entity.setCertifiedProductId(listingId);
-        boolean isCertified = BooleanUtils.isTrue(certificationResult.isSuccess());
-        entity.setGap(isCertified ? certificationResult.isGap() : null);
-        entity.setSed(isCertified ? certificationResult.isSed() : null);
-        entity.setG1Success(certificationResult.isG1Success());
-        entity.setG2Success(certificationResult.isG2Success());
-        entity.setAttestationAnswer(isCertified ? certificationResult.getAttestationAnswer() : null);
-        entity.setSuccess(isCertified ? certificationResult.isSuccess() : null);
-        entity.setApiDocumentation(isCertified ? certificationResult.getApiDocumentation() : null);
-        entity.setExportDocumentation(isCertified ? certificationResult.getExportDocumentation() : null);
-        entity.setDocumentationUrl(isCertified ? certificationResult.getDocumentationUrl() : null);
-        entity.setUseCases(isCertified ? certificationResult.getUseCases() : null);
-        entity.setServiceBaseUrlList(isCertified ? certificationResult.getServiceBaseUrlList() : null);
-        entity.setPrivacySecurityFramework(isCertified ? certificationResult.getPrivacySecurityFramework() : null);
-        entity.setDeleted(false);
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
-
         try {
+            entity.setCertificationCriterionId(certificationResult.getCriterion().getId());
+            entity.setCertifiedProductId(listingId);
+            boolean isCertified = BooleanUtils.isTrue(certificationResult.isSuccess());
+            entity.setSuccess(certificationResult.isSuccess());
+            entity.setGap(isCertified ? certificationResult.isGap() : null);
+            entity.setSed(isCertified ? certificationResult.isSed() : null);
+            entity.setG1Success(certificationResult.isG1Success());
+            entity.setG2Success(certificationResult.isG2Success());
+            entity.setAttestationAnswer(isCertified ? certificationResult.getAttestationAnswer() : null);
+            entity.setApiDocumentation(isCertified ? certificationResult.getApiDocumentation() : null);
+            entity.setExportDocumentation(isCertified ? certificationResult.getExportDocumentation() : null);
+            entity.setDocumentationUrl(isCertified ? certificationResult.getDocumentationUrl() : null);
+            entity.setUseCases(isCertified ? certificationResult.getUseCases() : null);
+            entity.setServiceBaseUrlList(isCertified ? certificationResult.getServiceBaseUrlList() : null);
+            entity.setPrivacySecurityFramework(isCertified ? certificationResult.getPrivacySecurityFramework() : null);
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
             create(entity);
         } catch (Exception ex) {
             String msg = msgUtil.getMessage("listing.badCriteriaData",
