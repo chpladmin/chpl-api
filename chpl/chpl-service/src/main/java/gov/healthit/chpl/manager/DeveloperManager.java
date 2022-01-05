@@ -281,10 +281,6 @@ public class DeveloperManager extends SecuredManager {
         return after;
     }
 
-    private void createOrUpdateTransparencyMappings(Developer developer) {
-        transparencyAttestationManager.save(developer);
-    }
-
     private void createOrUpdateTransparencyMappings(DeveloperDTO developer) {
         transparencyAttestationManager.save(developer);
     }
@@ -341,10 +337,6 @@ public class DeveloperManager extends SecuredManager {
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
         Long developerId = developerDao.create(developer);
         developer.setDeveloperId(developerId);
-
-        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
-            createOrUpdateTransparencyMappings(developer);
-        }
 
         DeveloperDTO createdDevloperDto = developerDao.getById(developerId);
         activityManager.addActivity(ActivityConcept.DEVELOPER, developerId,
