@@ -26,7 +26,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
 public class MeasureReviewerTest {
-    private static final String MEASURE_NOT_FOUND = "%s Measure '%s' was not found associated with %s.";
+    private static final String MEASURE_NOT_FOUND = "%s Measure '%s' was not found associated with %s and has been removed from the listing.";
     private static final String INVALID_MEASURE_TYPE = "Invalid G1/G2 Measure Type: '%s' was not found.";
     private static final String MISSING_G1_MEASURES = "Listing has attested to (g)(1), but no measures have been successfully tested for (g)(1).";
     private static final String MISSING_G2_MEASURES = "Listing has attested to (g)(2), but no measures have been successfully tested for (g)(2).";
@@ -211,11 +211,12 @@ public class MeasureReviewerTest {
                         .build())
                 .associatedCriteria(buildCriterionSet(1L, "170.315 (a)(1)"))
                 .build());
+        assertEquals(1, listing.getMeasures().size());
 
         reviewer.review(listing);
-
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(MEASURE_NOT_FOUND, "G1", "Test", "170.315 (a)(1)")));
+        assertEquals(0, listing.getMeasures().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(MEASURE_NOT_FOUND, "G1", "Test", "170.315 (a)(1)")));
     }
 
     @Test
