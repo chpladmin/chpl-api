@@ -50,7 +50,7 @@ public class MeasureReviewerTest {
                     buildCuresCriterion(2L, "170.315 (g)(1)")).collect(Collectors.toList()));
 
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.measureNotFound"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.measureNotFoundAndRemoved"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(MEASURE_NOT_FOUND, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.invalidMeasureType"), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_MEASURE_TYPE, i.getArgument(1), ""));
@@ -216,6 +216,7 @@ public class MeasureReviewerTest {
         reviewer.review(listing);
         assertEquals(0, listing.getMeasures().size());
         assertEquals(1, listing.getWarningMessages().size());
+        System.out.println(listing.getWarningMessages().iterator().next());
         assertTrue(listing.getWarningMessages().contains(String.format(MEASURE_NOT_FOUND, "G1", "Test", "170.315 (a)(1)")));
     }
 
