@@ -81,9 +81,8 @@ public class DeveloperDAO extends BaseDAOImpl {
             initialStatusEntity.setDeveloperId(developerEntity.getId());
             DeveloperStatusEntity defaultStatus = getStatusByName(DEFAULT_STATUS.toString());
             initialStatusEntity.setDeveloperStatusId(defaultStatus.getId());
-            initialStatusEntity.setStatusDate(developerEntity.getCreationDate());
-            initialStatusEntity.setDeleted(false);
-            initialStatusEntity.setLastModifiedUser(developerEntity.getLastModifiedUser());
+            initialStatusEntity.setStatusDate(new Date());
+            initialStatusEntity.setLastModifiedUser(AuthUtil.getAuditId());
             create(initialStatusEntity);
             return developerEntity.getId();
         } catch (Exception ex) {

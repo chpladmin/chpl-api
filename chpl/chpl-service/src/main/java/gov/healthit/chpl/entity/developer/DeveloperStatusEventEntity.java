@@ -58,7 +58,7 @@ public class DeveloperStatusEventEntity implements Serializable {
     @Column(name = "status_date")
     private Date statusDate;
 
-    @Column(name = "deleted")
+    @Column(name = "deleted", insertable = false)
     private Boolean deleted;
 
     @Column(name = "last_modified_user")
