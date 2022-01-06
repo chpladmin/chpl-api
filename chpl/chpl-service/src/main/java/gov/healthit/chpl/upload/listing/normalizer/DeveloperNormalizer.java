@@ -81,16 +81,26 @@ public class DeveloperNormalizer {
         if (userEnteredDev == null) {
             return;
         }
-        userEnteredDev.setName(userEnteredDev.getUserEnteredName());
-        Boolean selfDeveloper = null;
-        try {
-            selfDeveloper = uploadHandlerUtil.parseBoolean(userEnteredDev.getUserEnteredSelfDeveloper());
-        } catch (Exception ex) {
-            LOGGER.warn("Could not turn " + userEnteredDev.getUserEnteredSelfDeveloper() + " into a boolean.");
+        if (StringUtils.isEmpty(userEnteredDev.getName())) {
+            userEnteredDev.setName(userEnteredDev.getUserEnteredName());
         }
-        userEnteredDev.setSelfDeveloper(selfDeveloper);
-        userEnteredDev.setWebsite(userEnteredDev.getUserEnteredWebsite());
-        userEnteredDev.setAddress(userEnteredDev.getUserEnteredAddress());
-        userEnteredDev.setContact(userEnteredDev.getUserEnteredPointOfContact());
+        if (userEnteredDev.getSelfDeveloper() == null) {
+            Boolean selfDeveloper = null;
+            try {
+                selfDeveloper = uploadHandlerUtil.parseBoolean(userEnteredDev.getUserEnteredSelfDeveloper());
+            } catch (Exception ex) {
+                LOGGER.warn("Could not turn " + userEnteredDev.getUserEnteredSelfDeveloper() + " into a boolean.");
+            }
+            userEnteredDev.setSelfDeveloper(selfDeveloper);
+        }
+        if (StringUtils.isEmpty(userEnteredDev.getWebsite())) {
+            userEnteredDev.setWebsite(userEnteredDev.getUserEnteredWebsite());
+        }
+        if (userEnteredDev.getAddress() == null) {
+            userEnteredDev.setAddress(userEnteredDev.getUserEnteredAddress());
+        }
+        if (userEnteredDev.getContact() == null) {
+            userEnteredDev.setContact(userEnteredDev.getUserEnteredPointOfContact());
+        }
     }
 }
