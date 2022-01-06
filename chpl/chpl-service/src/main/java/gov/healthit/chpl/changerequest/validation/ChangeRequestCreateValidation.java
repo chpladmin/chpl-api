@@ -18,18 +18,18 @@ public class ChangeRequestCreateValidation extends ValidationRule<ChangeRequestV
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
-        if (context.getChangeRequest().getChangeRequestType().getId().equals(websiteChangeRequestType)
-                && (context.getChangeRequest().getDetails() == null
-                        || !isChangeRequestWebsiteValid((HashMap) context.getChangeRequest().getDetails()))) {
+        if (context.getNewChangeRequest().getChangeRequestType().getId().equals(websiteChangeRequestType)
+                && (context.getNewChangeRequest().getDetails() == null
+                        || !isChangeRequestWebsiteValid((HashMap) context.getNewChangeRequest().getDetails()))) {
             getMessages().add(getErrorMessage("changeRequest.details.website.invalid"));
             return false;
-        } else if (context.getChangeRequest().getChangeRequestType().getId().equals(devDetailsChangeRequestType)) {
-            if (context.getChangeRequest().getDetails() == null) {
+        } else if (context.getNewChangeRequest().getChangeRequestType().getId().equals(devDetailsChangeRequestType)) {
+            if (context.getNewChangeRequest().getDetails() == null) {
                 getMessages().add(getErrorMessage("changeRequest.details.invalid"));
                 return false;
             } else {
                 boolean areDetailsValid = true;
-                HashMap<String, Object> crDetails = (HashMap) context.getChangeRequest().getDetails();
+                HashMap<String, Object> crDetails = (HashMap) context.getNewChangeRequest().getDetails();
                 if (!isChangeRequestSelfDevloperValid(crDetails)) {
                     getMessages().add(getErrorMessage("changeRequest.details.selfDeveloper.missing"));
                     areDetailsValid = false;

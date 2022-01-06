@@ -33,9 +33,9 @@ public class ChangeRequestTypeInProcessValidation extends ValidationRule<ChangeR
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
         try {
-            List<ChangeRequest> crs = crDAO.getByDeveloper(context.getChangeRequest().getDeveloper().getDeveloperId())
+            List<ChangeRequest> crs = crDAO.getByDeveloper(context.getNewChangeRequest().getDeveloper().getDeveloperId())
                     .stream()
-                    .filter(cr -> cr.getChangeRequestType().getId().equals(context.getChangeRequest().getChangeRequestType().getId()))
+                    .filter(cr -> cr.getChangeRequestType().getId().equals(context.getNewChangeRequest().getChangeRequestType().getId()))
                     .filter(cr -> getInProcessStatuses().stream()
                             .anyMatch(status -> cr.getCurrentStatus().getChangeRequestStatusType().getId()
                                     .equals(status)))
