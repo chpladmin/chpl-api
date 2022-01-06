@@ -18,6 +18,9 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -27,17 +30,15 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.Util;
-import gov.healthit.chpl.entity.CertificationStatusType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Certified Product Search Details entity.
@@ -254,6 +255,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      * value of Affirmative, Negative, or N/A.
      */
     @XmlElement(name = "transparencyAttestation", required = false, nillable = true)
+    @Deprecated
     private TransparencyAttestation transparencyAttestation;
 
     /**
