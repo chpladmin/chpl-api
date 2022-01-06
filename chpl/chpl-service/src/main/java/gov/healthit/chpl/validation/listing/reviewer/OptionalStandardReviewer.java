@@ -6,11 +6,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -26,14 +24,12 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class OptionalStandardReviewer extends PermissionBasedReviewer implements Reviewer {
     private OptionalStandardDAO optionalStandardDAO;
     private ErrorMessageUtil errorMessageUtil;
-    private FF4j ff4j;
 
     @Autowired
-    public OptionalStandardReviewer(OptionalStandardDAO optionalStandardDAO, ErrorMessageUtil errorMessageUtil, ResourcePermissions resourcePermissions, FF4j ff4j) {
+    public OptionalStandardReviewer(OptionalStandardDAO optionalStandardDAO, ErrorMessageUtil errorMessageUtil, ResourcePermissions resourcePermissions) {
         super(errorMessageUtil, resourcePermissions);
         this.optionalStandardDAO = optionalStandardDAO;
         this.errorMessageUtil = errorMessageUtil;
-        this.ff4j = ff4j;
     }
 
     @Override
@@ -41,26 +37,21 @@ public class OptionalStandardReviewer extends PermissionBasedReviewer implements
         List<CertificationResult> certificationResultsWithOptionalStandards = listing.getCertificationResults().stream()
                 .filter(cr -> cr.isSuccess() && cr.getOptionalStandards() != null && cr.getOptionalStandards().size() > 0)
                 .collect(Collectors.toList());
-        if (certificationResultsWithOptionalStandards.size() > 0 && !ff4j.check(FeatureList.OPTIONAL_STANDARDS)) {
-            listing.getErrorMessages().add("Optional Standards are not implemented yet");
-        } else {
-            Map<Long, List<OptionalStandardCriteriaMap>> optionalStandardCriteriaMap = null;
-            try {
-                optionalStandardCriteriaMap = optionalStandardDAO.getAllOptionalStandardCriteriaMap().stream()
-                        .collect(Collectors.groupingBy(scm -> scm.getCriterion().getId()));
-            } catch (EntityRetrievalException e) {
-                listing.getErrorMessages().add("Could not validate Optional Standard");
-                return;
-            }
-
-            for (CertificationResult cr : certificationResultsWithOptionalStandards) {
-                for (CertificationResultOptionalStandard cros : cr.getOptionalStandards()) {
-                    populateOptionalStandardFields(cros, optionalStandardCriteriaMap);
-                    if (!isOptionalStandardValidForCriteria(cros.getOptionalStandardId(), cr.getCriterion().getId(), optionalStandardCriteriaMap)) {
-                        String error = errorMessageUtil.getMessage("listing.criteria.optionalStandard.invalidCriteria",
-                                cros.getCitation(), CertificationCriterionService.formatCriteriaNumber(cr.getCriterion()));
-                        addCriterionErrorOrWarningByPermission(listing, cr, error);
-                    }
+        Map<Long, List<OptionalStandardCriteriaMap>> optionalStandardCriteriaMap = null;
+        try {
+            optionalStandardCriteriaMap = optionalStandardDAO.getAllOptionalStandardCriteriaMap().stream()
+                    .collect(Collectors.groupingBy(scm -> scm.getCriterion().getId()));
+        } catch (EntityRetrievalException e) {
+            listing.getErrorMessages().add("Could not validate Optional Standard");
+            return;
+        }
+        for (CertificationResult cr : certificationResultsWithOptionalStandards) {
+            for (CertificationResultOptionalStandard cros : cr.getOptionalStandards()) {
+                populateOptionalStandardFields(cros, optionalStandardCriteriaMap);
+                if (!isOptionalStandardValidForCriteria(cros.getOptionalStandardId(), cr.getCriterion().getId(), optionalStandardCriteriaMap)) {
+                    String error = errorMessageUtil.getMessage("listing.criteria.optionalStandard.invalidCriteria",
+                            cros.getCitation(), CertificationCriterionService.formatCriteriaNumber(cr.getCriterion()));
+                    addCriterionErrorOrWarningByPermission(listing, cr, error);
                 }
             }
         }

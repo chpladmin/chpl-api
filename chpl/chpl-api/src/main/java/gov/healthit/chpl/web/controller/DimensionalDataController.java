@@ -304,11 +304,7 @@ public class DimensionalDataController {
         Set<OptionalStandard> data = dimensionalDataManager.getOptionalStandards();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
-        if (ff4j.check(FeatureList.OPTIONAL_STANDARDS)) {
-            result.setData(data);
-        } else {
-            result.setData(new HashSet<OptionalStandard>());
-        }
+        result.setData(data);
         return result;
     }
 
