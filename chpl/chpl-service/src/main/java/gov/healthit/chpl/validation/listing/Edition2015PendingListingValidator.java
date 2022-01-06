@@ -17,8 +17,6 @@ import gov.healthit.chpl.validation.pendingListing.reviewer.InheritedCertificati
 import gov.healthit.chpl.validation.pendingListing.reviewer.OptionalStandardReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.RemovedCriteriaReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.Reviewer;
-import gov.healthit.chpl.validation.pendingListing.reviewer.TestStandardAndOptionalStandardReviewer;
-import gov.healthit.chpl.validation.pendingListing.reviewer.TestStandardReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.TestToolReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.UnattestedCriteriaWithDataReviewer;
 import gov.healthit.chpl.validation.pendingListing.reviewer.UnsupportedCharacterReviewer;
@@ -114,16 +112,8 @@ public class Edition2015PendingListingValidator extends PendingValidator {
     private DuplicateDataReviewer duplicateDataReviewer;
 
     @Autowired
-    @Qualifier("pendingTestStandardReviewer")
-    private TestStandardReviewer testStandardReviewer;
-
-    @Autowired
     @Qualifier("pendingOptionalStandardReviewer")
     private OptionalStandardReviewer optionalStandardReviewer;
-
-    @Autowired
-    @Qualifier("pendingTestStandardAndOptionalStandardReviewer")
-    private TestStandardAndOptionalStandardReviewer testStandardAndOptionalStandardReviewer;
 
     @Autowired
     @Qualifier("removedCriteriaReviewer")
@@ -191,9 +181,7 @@ public class Edition2015PendingListingValidator extends PendingValidator {
             reviewers.add(privacyAndSecurityCriteriaReviewer);
             reviewers.add(duplicateDataReviewer);
             reviewers.add(testFunctionalityAllowedByRoleReviewer);
-            reviewers.add(testStandardReviewer);
             reviewers.add(optionalStandardReviewer);
-            reviewers.add(testStandardAndOptionalStandardReviewer);
             reviewers.add(gapAllowedReviewer);
             reviewers.add(measureReviewer);
             reviewers.add(svapReviewer);

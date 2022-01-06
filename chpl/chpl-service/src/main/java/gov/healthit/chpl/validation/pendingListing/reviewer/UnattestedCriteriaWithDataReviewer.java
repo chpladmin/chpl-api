@@ -1,5 +1,6 @@
 package gov.healthit.chpl.validation.pendingListing.reviewer;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -12,11 +13,13 @@ import gov.healthit.chpl.util.Util;
 @Component("pendingUnattestedCriteriaWithDataReviewer")
 public class UnattestedCriteriaWithDataReviewer implements Reviewer {
 
-    @Autowired ErrorMessageUtil msgUtil;
+    @Autowired
+    private ErrorMessageUtil msgUtil;
 
     public void review(PendingCertifiedProductDTO listing) {
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
-            if ((cert.getMeetsCriteria() == null || !cert.getMeetsCriteria().booleanValue())) {
+            if (BooleanUtils.isNotTrue(cert.getMeetsCriteria())
+                    && BooleanUtils.isFalse(cert.getCriterion().getRemoved())) {
                 if (cert.getGap() != null && cert.getGap().booleanValue()) {
                     listing.getWarningMessages().add(
                             msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
@@ -86,6 +89,11 @@ public class UnattestedCriteriaWithDataReviewer implements Reviewer {
                     listing.getWarningMessages().add(
                             msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                                     Util.formatCriteriaNumber(cert.getCriterion()), "Test Standards"));
+                }
+                if (cert.getOptionalStandards() != null && cert.getOptionalStandards().size() > 0) {
+                    listing.getWarningMessages().add(
+                            msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
+                                    Util.formatCriteriaNumber(cert.getCriterion()), "Optional Standards"));
                 }
                 if (cert.getTestTasks() != null && cert.getTestTasks().size() > 0) {
                     listing.getWarningMessages().add(

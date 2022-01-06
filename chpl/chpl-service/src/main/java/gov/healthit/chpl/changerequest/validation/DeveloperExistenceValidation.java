@@ -20,14 +20,14 @@ public class DeveloperExistenceValidation extends ValidationRule<ChangeRequestVa
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
         // Is the developer null?
-        if (context.getChangeRequest().getDeveloper() == null
-                || context.getChangeRequest().getDeveloper().getDeveloperId() == null) {
+        if (context.getNewChangeRequest().getDeveloper() == null
+                || context.getNewChangeRequest().getDeveloper().getDeveloperId() == null) {
             getMessages().add(getErrorMessage("changeRequest.developer.required"));
             return false;
         }
 
         try {
-            developerDAO.getById(context.getChangeRequest().getDeveloper().getDeveloperId());
+            developerDAO.getById(context.getNewChangeRequest().getDeveloper().getDeveloperId());
         } catch (EntityRetrievalException e) {
             getMessages().add(getErrorMessage("changeRequest.developer.invalid"));
             return false;

@@ -22,10 +22,11 @@ import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.TestTool;
 import gov.healthit.chpl.domain.TestToolCriteriaMap;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 
 public class TestToolReviewerTest {
     private static final String TEST_TOOL_NOT_APPLICABLE = "Test tools are not applicable for the criterion %s. They have been removed.";
@@ -38,7 +39,6 @@ public class TestToolReviewerTest {
 
     private CertificationResultRules certResultRules;
     private ErrorMessageUtil msgUtil;
-    private ResourcePermissions resourcePermissions;
     private TestToolDAO testToolDAO;
     private TestToolReviewer reviewer;
 
@@ -46,7 +46,6 @@ public class TestToolReviewerTest {
     @SuppressWarnings("checkstyle:magicnumber")
     public void setup() throws EntityRetrievalException {
         ChplProductNumberUtil chplProductNumberUtil = new ChplProductNumberUtil();
-        resourcePermissions = Mockito.mock(ResourcePermissions.class);
         certResultRules = Mockito.mock(CertificationResultRules.class);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         testToolDAO = Mockito.mock(TestToolDAO.class);
@@ -73,7 +72,9 @@ public class TestToolReviewerTest {
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(TEST_TOOL_CRITERIA_MISMATCH, i.getArgument(1), i.getArgument(2)));
         Mockito.when(testToolDAO.getAllTestToolCriteriaMap()).thenReturn(getTestToolCriteriaMap());
-        reviewer = new TestToolReviewer(certResultRules, chplProductNumberUtil, msgUtil, resourcePermissions, testToolDAO);
+        reviewer = new TestToolReviewer(certResultRules,
+                new ValidationUtils(Mockito.mock(CertificationCriterionService.class)),
+                chplProductNumberUtil, msgUtil, testToolDAO);
     }
 
     @Test
@@ -88,6 +89,7 @@ public class TestToolReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(false)
                         .success(true)
@@ -103,6 +105,31 @@ public class TestToolReviewerTest {
     }
 
     @Test
+    public void review_nullTestToolsRemovedCriteria_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+            .thenReturn(true);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .gap(false)
+                        .success(true)
+                        .build())
+                .build();
+        listing.getCertificationResults().get(0).setTestToolsUsed(null);
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
     public void review_emptyTestToolsNoGapCriteria_hasError() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
@@ -114,6 +141,7 @@ public class TestToolReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(false)
                         .success(true)
@@ -128,6 +156,30 @@ public class TestToolReviewerTest {
     }
 
     @Test
+    public void review_emptyTestToolsRemovedCriteria_hasError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+            .thenReturn(true);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .gap(false)
+                        .success(true)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
     public void review_nullTestToolsWithGapCriteria_noError() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(true);
@@ -139,6 +191,7 @@ public class TestToolReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(true)
                         .success(true)
@@ -163,6 +216,7 @@ public class TestToolReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(true)
                         .success(true)
@@ -191,6 +245,7 @@ public class TestToolReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(true)
                         .success(true)
@@ -208,7 +263,37 @@ public class TestToolReviewerTest {
     }
 
     @Test
-    public void review_removesTestToolsWithoutId_hasError() {
+    public void review_removedCriteriaDoesNotSupportTestTools_noWarning() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(true);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+            .thenReturn(false);
+        List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolId(1L)
+                .testToolName("good name")
+                .testToolVersion("1")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .gap(true)
+                        .success(true)
+                        .testToolsUsed(testTools)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(0, listing.getWarningMessages().size());
+    }
+
+    @Test
+    public void review_removesTestToolsWithoutId_hasWarning() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
@@ -227,6 +312,7 @@ public class TestToolReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(false)
                         .success(true)
@@ -236,14 +322,48 @@ public class TestToolReviewerTest {
         reviewer.review(listing);
 
         assertEquals(1, listing.getCertificationResults().get(0).getTestToolsUsed().size());
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(
                 String.format(TEST_TOOL_NOT_FOUND_REMOVED, "170.315 (a)(1)", "bad name")));
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
-    public void review_testToolWithoutNameNoId_hasError() {
+    public void review_ignoresTestToolsWithoutIdForRemovedCriteria_noWarning() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+            .thenReturn(true);
+        List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolName("bad name")
+                .build());
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolId(1L)
+                .testToolName("good name")
+                .testToolVersion("1")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .gap(false)
+                        .success(true)
+                        .testToolsUsed(testTools)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(2, listing.getCertificationResults().get(0).getTestToolsUsed().size());
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_testToolWithoutNameNoId_hasWarnig() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
@@ -264,6 +384,7 @@ public class TestToolReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(false)
                         .success(true)
@@ -273,10 +394,46 @@ public class TestToolReviewerTest {
         reviewer.review(listing);
 
         assertEquals(1, listing.getCertificationResults().get(0).getTestToolsUsed().size());
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(
                 String.format(TEST_TOOL_NOT_FOUND_REMOVED, "170.315 (a)(1)", "")));
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_testToolWithoutNameNoIdForRemovedCriteria_notRemovedAndNoWarning() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+            .thenReturn(true);
+
+        List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolName("")
+                .testToolVersion("1")
+                .build());
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolId(1L)
+                .testToolName("good name")
+                .testToolVersion("1")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .gap(false)
+                        .success(true)
+                        .testToolsUsed(testTools)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(2, listing.getCertificationResults().get(0).getTestToolsUsed().size());
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -302,6 +459,7 @@ public class TestToolReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(false)
                         .success(true)
@@ -315,6 +473,43 @@ public class TestToolReviewerTest {
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(
                 String.format(MISSING_TEST_TOOL_NAME, "170.315 (a)(1)")));
+    }
+
+    @Test
+    public void review_testToolWithoutNameWithIdForRemovedCriteria_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+            .thenReturn(true);
+
+        List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolId(2L)
+                .testToolName("")
+                .testToolVersion("1")
+                .build());
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolId(1L)
+                .testToolName("good name")
+                .testToolVersion("1")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .gap(false)
+                        .success(true)
+                        .testToolsUsed(testTools)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(2, listing.getCertificationResults().get(0).getTestToolsUsed().size());
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -339,6 +534,7 @@ public class TestToolReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(false)
                         .success(true)
@@ -352,6 +548,42 @@ public class TestToolReviewerTest {
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(
                 String.format(MISSING_TEST_TOOL_VERSION, "missing version", "170.315 (a)(1)")));
+    }
+
+    @Test
+    public void review_testToolMissingVersionForRemovedCriteria_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+            .thenReturn(true);
+
+        List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolId(2L)
+                .testToolName("missing version")
+                .build());
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolId(1L)
+                .testToolName("good name")
+                .testToolVersion("1")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .gap(false)
+                        .success(true)
+                        .testToolsUsed(testTools)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(2, listing.getCertificationResults().get(0).getTestToolsUsed().size());
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -379,6 +611,7 @@ public class TestToolReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(false)
                         .success(true)
@@ -392,6 +625,45 @@ public class TestToolReviewerTest {
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(
                 String.format(RETIRED_TEST_TOOL_NOT_ALLOWED, "retired tool", "170.315 (a)(1)")));
+    }
+
+    @Test
+    public void review_retiredTestToolWithoutListingIcsForRemovedCriteria_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+            .thenReturn(true);
+
+        List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolId(2L)
+                .testToolName("retired tool")
+                .testToolVersion("1")
+                .retired(true)
+                .build());
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolId(1L)
+                .testToolName("good name")
+                .testToolVersion("1")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.2526.WErB.06.00.1.123456")
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .gap(false)
+                        .success(true)
+                        .testToolsUsed(testTools)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(2, listing.getCertificationResults().get(0).getTestToolsUsed().size());
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -419,6 +691,7 @@ public class TestToolReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(false)
                         .success(true)
@@ -459,6 +732,7 @@ public class TestToolReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(false)
                         .success(true)
@@ -489,6 +763,7 @@ public class TestToolReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
+                                .removed(false)
                                 .build())
                         .gap(true)
                         .success(true)
@@ -502,6 +777,37 @@ public class TestToolReviewerTest {
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(
                 String.format(TEST_TOOL_CRITERIA_MISMATCH, "another name", "170.315 (a)(1)")));
+    }
+
+    @Test
+    public void review_testToolsNotApplicableForRemovedCriteria_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(true);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+            .thenReturn(true);
+        List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
+        testTools.add(CertificationResultTestTool.builder()
+                .testToolId(3L)
+                .testToolName("another name")
+                .testToolVersion("1")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(true)
+                                .build())
+                        .gap(true)
+                        .success(true)
+                        .testToolsUsed(testTools)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getCertificationResults().get(0).getTestToolsUsed().size());
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     private List<TestToolCriteriaMap> getTestToolCriteriaMap() {
