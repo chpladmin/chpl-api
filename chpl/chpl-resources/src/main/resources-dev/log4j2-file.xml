@@ -15,12 +15,12 @@
         </RollingFile>
         <RollingFile name="chplserviceJson"
             fileName="${logDir}/chplservice.json"
-            filePattern="${logDir}/chplservice-%d{yyyyMMdd}.log"
+            filePattern="${logDir}/chplservice-%d{yyyyMMdd}.json"
             filePermissions="rw-rw-r--">
             <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
                 <KeyValuePair key="service" value="chplservice" />
                 <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
-                <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />          
+                <KeyValuePair key="dd.span_id" value="%X{dd.trace_id}" />
             </JsonLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy
