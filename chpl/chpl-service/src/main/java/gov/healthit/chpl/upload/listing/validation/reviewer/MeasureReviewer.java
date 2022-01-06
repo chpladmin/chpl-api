@@ -208,7 +208,7 @@ public class MeasureReviewer implements Reviewer {
                 String typeName = measure.getMeasureType() == null ? "?" : measure.getMeasureType().getName();
                 String measureName = measure.getMeasure().getLegacyMacraMeasureValue() == null ? "?" : measure.getMeasure().getLegacyMacraMeasureValue();
                 listing.getWarningMessages().add(
-                        msgUtil.getMessage("listing.measureNotFound", typeName,
+                        msgUtil.getMessage("listing.measureNotFoundAndRemoved", typeName,
                                 measureName,
                                 measure.getAssociatedCriteria().stream().map(crit -> Util.formatCriteriaNumber(crit)).collect(Collectors.joining(", "))));
             }

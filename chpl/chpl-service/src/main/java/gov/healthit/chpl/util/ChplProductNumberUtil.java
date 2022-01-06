@@ -225,6 +225,11 @@ public class ChplProductNumberUtil {
         return icsCode;
     }
 
+    public String getIcsCodeAsString(String chplProductNumber) {
+        ChplProductNumberParts parts = parseChplProductNumber(chplProductNumber);
+        return parts.getIcsCode();
+    }
+
     public boolean hasIcsConflict(String uniqueId, Boolean hasIcs) {
         boolean hasIcsConflict = false;
         String[] uniqueIdParts = uniqueId.split("\\.");

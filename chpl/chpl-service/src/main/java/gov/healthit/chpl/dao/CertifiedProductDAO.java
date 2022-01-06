@@ -61,6 +61,9 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             entity.setAcbCertificationId(listing.getAcbCertificationId());
             entity.setProductCode(chplProductNumberUtil.getProductCode(listing.getChplProductNumber()));
             entity.setVersionCode(chplProductNumberUtil.getVersionCode(listing.getChplProductNumber()));
+            entity.setAdditionalSoftwareCode(chplProductNumberUtil.getAdditionalSoftwareCode(listing.getChplProductNumber()));
+            entity.setIcsCode(chplProductNumberUtil.getIcsCodeAsString(listing.getChplProductNumber()));
+            entity.setCertifiedDateCode(chplProductNumberUtil.getCertificationDateCode(listing.getChplProductNumber()));
             entity.setReportFileLocation(listing.getReportFileLocation());
             entity.setSedIntendedUserDescription(listing.getSedIntendedUserDescription());
             entity.setSedTestingEnd(listing.getSedTestingEndDate());
@@ -68,19 +71,18 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             entity.setProductAdditionalSoftware(listing.getProductAdditionalSoftware());
             entity.setOtherAcb(listing.getOtherAcb());
             entity.setMandatoryDisclosures(listing.getMandatoryDisclosures());
+            entity.setIcs(listing.getIcs() == null || listing.getIcs().getInherits() == null ? Boolean.FALSE : listing.getIcs().getInherits());
+            entity.setAccessibilityCertified(listing.getAccessibilityCertified());
             entity.setSvapNoticeUrl(listing.getSvapNoticeUrl());
             entity.setChplProductNumber(null);
             entity.setLastModifiedUser(AuthUtil.getAuditId());
 
-            //this group of fields is all derived and I believe are unused
-            entity.setPendingCertifiedProductId(null);
-            entity.setAdditionalSoftwareCode(null);
-            entity.setIcsCode(null);
-            entity.setCertifiedDateCode(null);
-            entity.setIcs(null);
+            //these fields are null for ALL current listings
             entity.setSedTesting(null);
             entity.setQmsTesting(null);
-            entity.setAccessibilityCertified(null);
+            //Can't set this field because it is a FK to a different pending listing table
+            entity.setPendingCertifiedProductId(null);
+
             create(entity);
             return entity.getId();
         } catch (Exception ex) {
