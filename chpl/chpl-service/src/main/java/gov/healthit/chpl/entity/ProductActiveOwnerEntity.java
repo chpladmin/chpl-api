@@ -65,10 +65,10 @@ public class ProductActiveOwnerEntity implements ProductOwnerEntity, Serializabl
     private Long lastModifiedUser;
 
     public ProductOwner toDomain() {
-        return ProductOwner.builder()
-                .developer(this.getDeveloper() != null ? this.getDeveloper().toDomain() : null)
-                .id(this.getId())
-                .transferDate(this.getTransferDate().getTime())
-                .build();
+        ProductOwner domain = new ProductOwner();
+        domain.setDeveloper(this.getDeveloper() != null ? this.getDeveloper().toDomain() : null);
+        domain.setId(this.getId());
+        domain.setTransferDate(this.getTransferDate().getTime());
+        return domain;
     }
 }

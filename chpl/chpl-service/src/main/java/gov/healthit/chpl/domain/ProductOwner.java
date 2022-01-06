@@ -8,15 +8,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 import gov.healthit.chpl.dto.ProductOwnerDTO;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class ProductOwner implements Serializable {
     private static final long serialVersionUID = 5678373560374145870L;
 
@@ -38,6 +32,10 @@ public class ProductOwner implements Serializable {
      */
     @XmlElement(required = true)
     private Long transferDate;
+
+    public ProductOwner() {
+
+    }
 
     public ProductOwner(ProductOwnerDTO dto) {
         this.id = dto.getId();
