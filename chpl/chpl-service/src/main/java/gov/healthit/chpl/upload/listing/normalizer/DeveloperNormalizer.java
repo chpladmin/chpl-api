@@ -15,13 +15,13 @@ import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2
-public class DeveloperDetailsNormalizer {
+public class DeveloperNormalizer {
     private DeveloperDAO devDao;
     private ChplProductNumberUtil chplProductNumberUtil;
     private ListingUploadHandlerUtil uploadHandlerUtil;
 
     @Autowired
-    public DeveloperDetailsNormalizer(DeveloperDAO devDao,
+    public DeveloperNormalizer(DeveloperDAO devDao,
             ChplProductNumberUtil chplProductNumberUtil,
             ListingUploadHandlerUtil uploadHandlerUtil) {
         this.devDao = devDao;

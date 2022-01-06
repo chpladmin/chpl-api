@@ -32,13 +32,13 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class DeveloperNormalizerTest {
 
     private DeveloperDAO developerDao;
-    private DeveloperDetailsNormalizer normalizer;
+    private DeveloperNormalizer normalizer;
 
     @Before
     public void setup() {
         developerDao = Mockito.mock(DeveloperDAO.class);
         ErrorMessageUtil msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        normalizer = new DeveloperDetailsNormalizer(developerDao, new ChplProductNumberUtil(),
+        normalizer = new DeveloperNormalizer(developerDao, new ChplProductNumberUtil(),
                 new ListingUploadHandlerUtil(msgUtil));
     }
 

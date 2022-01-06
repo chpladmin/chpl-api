@@ -1,12 +1,16 @@
 package gov.healthit.chpl.dao;
 
+import static gov.healthit.chpl.util.LambdaExceptionUtil.rethrowConsumer;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -23,20 +27,39 @@ import gov.healthit.chpl.util.AuthUtil;
 @Repository(value = "cqmResultDAO")
 public class CQMResultDAO extends BaseDAOImpl {
 
-    public Long create(Long listingId, CQMResultDetails cqmResult) throws EntityCreationException {
+    private CQMCriterionDAO cqmDao;
+
+    @Autowired
+    public CQMResultDAO(CQMCriterionDAO cqmDao) {
+        this.cqmDao = cqmDao;
+    }
+
+    public void create(Long listingId, CQMResultDetails cqmResult) throws EntityCreationException {
+        if (CollectionUtils.isEmpty(cqmResult.getSuccessVersions())) {
+            return;
+        }
+        List<Long> cqmsWithVersionIds = cqmResult.getSuccessVersions().stream()
+                .map(cqmSuccessVersion -> cqmDao.getCMSByNumberAndVersion(cqmResult.getCmsId(), cqmSuccessVersion))
+                .map(cqmWithVersion -> cqmWithVersion.getId())
+                .collect(Collectors.toList());
+        cqmsWithVersionIds.stream()
+            .forEach(rethrowConsumer(cqmWithVersionId -> create(listingId, cqmWithVersionId, cqmResult.getCriteria())));
+    }
+
+    private void create(Long listingId, Long cqmWithVersionId, List<CQMResultCertification> cqmCriteria)
+            throws EntityCreationException {
         try {
             CQMResultEntity cqmResultEntity = new CQMResultEntity();
-            cqmResultEntity.setCqmCriterionId(cqmResult.getCqmCriterionId());
+            cqmResultEntity.setCqmCriterionId(cqmWithVersionId);
             cqmResultEntity.setCertifiedProductId(listingId);
-            cqmResultEntity.setSuccess(cqmResult.isSuccess());
+            cqmResultEntity.setSuccess(true);
             cqmResultEntity.setLastModifiedUser(AuthUtil.getAuditId());
             create(cqmResultEntity);
-            if (!CollectionUtils.isEmpty(cqmResult.getCriteria())) {
-                for (CQMResultCertification cqmCriterion : cqmResult.getCriteria()) {
+            if (!CollectionUtils.isEmpty(cqmCriteria)) {
+                for (CQMResultCertification cqmCriterion : cqmCriteria) {
                     createCqmCriteronMapping(cqmResultEntity.getId(), cqmCriterion.getCriterion().getId());
                 }
             }
-            return cqmResultEntity.getId();
         } catch (Exception ex) {
             throw new EntityCreationException(ex);
         }

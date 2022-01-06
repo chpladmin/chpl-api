@@ -11,7 +11,7 @@ public class ListingDetailsNormalizer {
     private CertificationEditionNormalizer editionNormalizer;
     private CertificationBodyNormalizer acbNormalizer;
     private TestingLabNormalizer atlNormalizer;
-    private DeveloperDetailsNormalizer developerNormalizer;
+    private DeveloperNormalizer developerNormalizer;
     private ProductAndVersionNormalizer productVersionNormalizer;
     private IcsNormalizer icsNormalizer;
     private AccessibilityStandardNormalizer accessibilityStandardNormalizer;
@@ -27,7 +27,7 @@ public class ListingDetailsNormalizer {
     public ListingDetailsNormalizer(CertificationEditionNormalizer editionNormalizer,
         CertificationBodyNormalizer acbNormalizer,
         TestingLabNormalizer atlNormalizer,
-        DeveloperDetailsNormalizer developerNormalizer,
+        DeveloperNormalizer developerNormalizer,
         ProductAndVersionNormalizer productVersionNormalizer,
         IcsNormalizer icsNormalizer,
         AccessibilityStandardNormalizer accessibilityStandardNormalizer,
