@@ -545,8 +545,8 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
         osEntity.setCitation(name);
         if (os != null) {
             osEntity.setOptionalStandardId(os.getId());
-            cert.getOptionalStandards().add(osEntity);
         }
+        cert.getOptionalStandards().add(osEntity);
     }
 
     protected void parseTestFunctionality(final PendingCertifiedProductEntity listing,
