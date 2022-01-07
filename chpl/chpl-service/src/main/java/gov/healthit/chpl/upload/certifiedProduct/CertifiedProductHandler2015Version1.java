@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
@@ -533,43 +532,21 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
         for (CSVRecord row : getRecord()) {
             String tsValue = row.get(tsColumn).trim();
             if (!StringUtils.isEmpty(tsValue)) {
-                if (!ff4j.check(FeatureList.OPTIONAL_STANDARDS)) {
-                    parseTestStandardAsTestStandard(listing, cert, tsValue);
-                } else {
-                    boolean parsed = false;
-                    if (certRules.hasCertOption(cert.getMappedCriterion().getNumber(), CertificationResultRules.OPTIONAL_STANDARD)) {
-                        parsed = parseTestStandardAsOptionalStandard(cert, tsValue);
-                    }
-                    if (!parsed) {
-                        parseTestStandardAsTestStandard(listing, cert, tsValue);
-                    }
+                if (certRules.hasCertOption(cert.getMappedCriterion().getNumber(), CertificationResultRules.OPTIONAL_STANDARD)) {
+                    parseTestStandardAsOptionalStandard(cert, tsValue);
                 }
             }
         }
     }
 
-    private void parseTestStandardAsTestStandard(PendingCertifiedProductEntity listing, PendingCertificationResultEntity cert, String name) {
-        PendingCertificationResultTestStandardEntity tsEntity = new PendingCertificationResultTestStandardEntity();
-        tsEntity.setTestStandardName(name);
-        TestStandardDTO ts = testStandardDao.getByNumberAndEdition(name, listing.getCertificationEditionId());
-        if (ts != null) {
-            tsEntity.setTestStandardId(ts.getId());
-        }
-        cert.getTestStandards().add(tsEntity);
-    }
-
-    private boolean parseTestStandardAsOptionalStandard(PendingCertificationResultEntity cert, String name) {
+    private void parseTestStandardAsOptionalStandard(PendingCertificationResultEntity cert, String name) {
         PendingCertificationResultOptionalStandardEntity osEntity = new PendingCertificationResultOptionalStandardEntity();
         OptionalStandard os = optionalStandardDao.getByCitation(name);
         osEntity.setCitation(name);
         if (os != null) {
             osEntity.setOptionalStandardId(os.getId());
         }
-        if (ff4j.check(FeatureList.OPTIONAL_STANDARDS_ERROR) || os != null) {
-            cert.getOptionalStandards().add(osEntity);
-            return true;
-        }
-        return false;
+        cert.getOptionalStandards().add(osEntity);
     }
 
     protected void parseTestFunctionality(final PendingCertifiedProductEntity listing,
