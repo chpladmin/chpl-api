@@ -1,5 +1,7 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import java.util.Iterator;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -42,6 +44,7 @@ public class TestDataReviewer {
 
     private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         reviewCriteriaCanHaveTestData(listing, certResult);
+        removeTestDataWithoutIds(listing, certResult);
         reviewTestDataRequiredForG1AndG2WhenCertResultIsNotGap(listing, certResult);
         if (certResult.getTestDataUsed() != null && certResult.getTestDataUsed().size() > 0) {
             certResult.getTestDataUsed().stream()
@@ -56,6 +59,23 @@ public class TestDataReviewer {
                     "listing.criteria.testDataNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
             certResult.setTestDataUsed(null);
+        }
+    }
+
+    private void removeTestDataWithoutIds(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        if (CollectionUtils.isEmpty(certResult.getTestDataUsed())) {
+            return;
+        }
+        Iterator<CertificationResultTestData> testDataIter = certResult.getTestDataUsed().iterator();
+        while (testDataIter.hasNext()) {
+            CertificationResultTestData testData = testDataIter.next();
+            if (testData.getTestData() != null && testData.getTestData().getId() == null
+                    && !StringUtils.isEmpty(testData.getTestData().getName())) {
+                testDataIter.remove();
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.invalidTestDataRemoved",
+                        testData.getTestData().getName(),
+                        Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
         }
     }
 
@@ -82,19 +102,8 @@ public class TestDataReviewer {
 
     private void reviewTestDataFields(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultTestData testData) {
-        reviewIdRequired(listing, certResult, testData);
         reviewNameRequired(listing, certResult, testData);
         reviewVersionRequired(listing, certResult, testData);
-    }
-
-    private void reviewIdRequired(CertifiedProductSearchDetails listing,
-            CertificationResult certResult, CertificationResultTestData testData) {
-        if (testData.getTestData() != null && !StringUtils.isEmpty(testData.getTestData().getName())
-                && testData.getTestData().getId() == null) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.invalidTestData",
-                    testData.getTestData().getName(),
-                    Util.formatCriteriaNumber(certResult.getCriterion())));
-        }
     }
 
     private void reviewNameRequired(CertifiedProductSearchDetails listing,

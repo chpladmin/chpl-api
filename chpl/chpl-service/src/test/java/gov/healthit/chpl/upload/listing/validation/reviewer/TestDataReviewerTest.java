@@ -26,9 +26,9 @@ import gov.healthit.chpl.util.ValidationUtils;
 
 public class TestDataReviewerTest {
     private static final String TEST_DATA_NOT_APPLICABLE = "Test data is not applicable for the criterion %s. It has been removed.";
-    private static final String TEST_DATA_NAME_INVALID = "Test data '%s' is invalid for the criterion %s.";
+    private static final String TEST_DATA_NAME_INVALID = "Test data '%s' is invalid for the criterion %s and has been removed from the listing.";
     private static final String TEST_DATA_REQUIRED = "Test data is required for certification %s.";
-    private static final String MISSING_TEST_DATA_NAME = "Test data was not provided for certification %s.";
+    private static final String MISSING_TEST_DATA_NAME = "Test data name was not provided for certification %s.";
     private static final String MISSING_TEST_DATA_VERSION = "Test data version is required for certification %s.";
 
     private CertificationResultRules certResultRules;
@@ -56,7 +56,7 @@ public class TestDataReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testDataNotApplicable"),
                 ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(TEST_DATA_NOT_APPLICABLE, i.getArgument(1), ""));
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.invalidTestData"),
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.invalidTestDataRemoved"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(TEST_DATA_NAME_INVALID, i.getArgument(1), i.getArgument(2)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testDataRequired"),
@@ -240,7 +240,7 @@ public class TestDataReviewerTest {
     }
 
     @Test
-    public void review_testDataNameInvalid_hasError() {
+    public void review_testDataNameInvalid_hasWarning() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
@@ -272,12 +272,13 @@ public class TestDataReviewerTest {
                         .testDataUsed(testData)
                         .build())
                 .build();
+        assertEquals(2, listing.getCertificationResults().get(0).getTestDataUsed().size());
         reviewer.review(listing);
 
-        assertEquals(2, listing.getCertificationResults().get(0).getTestDataUsed().size());
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(
+        assertEquals(1, listing.getCertificationResults().get(0).getTestDataUsed().size());
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(
                 String.format(TEST_DATA_NAME_INVALID, "bad test data", "170.315 (a)(1)")));
     }
 
