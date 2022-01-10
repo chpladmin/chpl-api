@@ -29,7 +29,7 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsFactory;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestStatusService;
 import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationContext;
-import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationFactory;
+import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationService;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.Address;
@@ -45,7 +45,6 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
-import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
@@ -73,7 +72,7 @@ public class ChangeRequestManager extends SecurityManager {
     private ChangeRequestTypeDAO changeRequestTypeDAO;
     private ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO;
     private ChangeRequestStatusService crStatusService;
-    private ChangeRequestValidationFactory crValidationFactory;
+    private ChangeRequestValidationService crValidationService;
     private ChangeRequestDetailsFactory crDetailsFactory;
     private DeveloperManager devManager;
     private ActivityManager activityManager;
@@ -87,14 +86,14 @@ public class ChangeRequestManager extends SecurityManager {
             ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO,
             CertifiedProductDAO certifiedProductDAO, CertificationBodyDAO certificationBodyDAO,
             ChangeRequestStatusService crStatusHelper,
-            ChangeRequestValidationFactory crValidationFactory,
+            ChangeRequestValidationService crValidationService,
             ChangeRequestDetailsFactory crDetailsFactory, DeveloperManager devManager,
             ActivityManager activityManager, ResourcePermissions resourcePermissions, ErrorMessageUtil msgUtil, FF4j ff4j) {
         this.changeRequestDAO = changeRequestDAO;
         this.changeRequestTypeDAO = changeRequestTypeDAO;
         this.changeRequestStatusTypeDAO = changeRequestStatusTypeDAO;
         this.crStatusService = crStatusHelper;
-        this.crValidationFactory = crValidationFactory;
+        this.crValidationService = crValidationService;
         this.crDetailsFactory = crDetailsFactory;
         this.devManager = devManager;
         this.activityManager = activityManager;
@@ -166,16 +165,12 @@ public class ChangeRequestManager extends SecurityManager {
     public ChangeRequest updateChangeRequest(ChangeRequest cr)
             throws EntityRetrievalException, ValidationException, EntityCreationException,
             JsonProcessingException, InvalidArgumentsException, EmailNotSentException {
+
         ChangeRequest crFromDb = getChangeRequest(cr.getId());
 
+        ChangeRequestValidationContext crValidationContext = new ChangeRequestValidationContext(cr, crFromDb);
         ValidationException validationException = new ValidationException();
-        validationException.getErrorMessages().addAll(runUpdateValidations(cr));
-        if (cr.getChangeRequestType().getId().equals(websiteChangeRequestTypeId)) {
-            validationException.getErrorMessages().addAll(runWebsiteValidations(cr));
-        } else if (cr.getChangeRequestType().getId().equals(developerDetailsChangeRequestTypeId)) {
-            validationException.getErrorMessages().addAll(runDeveloperDetailsValidations(cr));
-        }
-
+        validationException.getErrorMessages().addAll(crValidationService.validate(crValidationContext));
         if (validationException.getErrorMessages().size() > 0) {
             throw validationException;
         }
@@ -183,8 +178,7 @@ public class ChangeRequestManager extends SecurityManager {
         ChangeRequest updatedDetails = null, updatedStatus = null;
         // Update the details, if the user is of role developer
         if (resourcePermissions.isUserRoleDeveloperAdmin() && cr.getDetails() != null) {
-            updatedDetails =
-                    crDetailsFactory.get(crFromDb.getChangeRequestType().getId()).update(cr);
+            updatedDetails = crDetailsFactory.get(crFromDb.getChangeRequestType().getId()).update(cr);
         }
 
         // Update the status
@@ -348,14 +342,10 @@ public class ChangeRequestManager extends SecurityManager {
 
     private ChangeRequest createChangeRequest(ChangeRequest cr)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
-        ValidationException validationException = new ValidationException();
-        validationException.getErrorMessages().addAll(runCreateValidations(cr));
-        if (cr.getChangeRequestType().getId().equals(websiteChangeRequestTypeId)) {
-            validationException.getErrorMessages().addAll(runWebsiteValidations(cr));
-        } else if (cr.getChangeRequestType().getId().equals(developerDetailsChangeRequestTypeId)) {
-            validationException.getErrorMessages().addAll(runDeveloperDetailsValidations(cr));
-        }
 
+        ChangeRequestValidationContext crValidationContext = new ChangeRequestValidationContext(cr, null);
+        ValidationException validationException = new ValidationException();
+        validationException.getErrorMessages().addAll(crValidationService.validate(crValidationContext));
         if (validationException.getErrorMessages().size() > 0) {
             throw validationException;
         }
@@ -370,8 +360,7 @@ public class ChangeRequestManager extends SecurityManager {
         // Get the new change request as it exists in DB
         newCr = getChangeRequest(newCr.getId());
 
-        activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, newCr.getId(), "Change request created", null,
-                newCr);
+        activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, newCr.getId(), "Change request created", null, newCr);
         return newCr;
     }
 
@@ -379,60 +368,5 @@ public class ChangeRequestManager extends SecurityManager {
         ChangeRequest newCr = changeRequestDAO.create(cr);
         newCr.getStatuses().add(crStatusService.saveInitialStatus(newCr));
         return newCr;
-    }
-
-    private List<String> runCreateValidations(ChangeRequest cr) {
-        List<ValidationRule<ChangeRequestValidationContext>> rules = new ArrayList<ValidationRule<ChangeRequestValidationContext>>();
-        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_TYPE));
-        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_IN_PROCESS));
-        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.DEVELOPER_EXISTENCE));
-        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.DEVELOPER_ACTIVE));
-        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_CREATE));
-        return runValidations(rules, cr);
-    }
-
-    private List<String> runWebsiteValidations(ChangeRequest cr) {
-        List<ValidationRule<ChangeRequestValidationContext>> rules = new ArrayList<ValidationRule<ChangeRequestValidationContext>>();
-        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.WEBSITE_VALID));
-        return runValidations(rules, cr);
-    }
-
-    private List<String> runDeveloperDetailsValidations(ChangeRequest cr) {
-        List<ValidationRule<ChangeRequestValidationContext>> rules = new ArrayList<ValidationRule<ChangeRequestValidationContext>>();
-        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.SELF_DEVELOPER_VALID));
-        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.ADDRESS_VALID));
-        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CONTACT_VALID));
-        return runValidations(rules, cr);
-    }
-
-    private List<String> runUpdateValidations(ChangeRequest cr) {
-        List<ValidationRule<ChangeRequestValidationContext>> rules = new ArrayList<ValidationRule<ChangeRequestValidationContext>>();
-        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.CHANGE_REQUEST_DETAILS_UPDATE));
-        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.MULTIPLE_ACBS));
-        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.DEVELOPER_ACTIVE));
-        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.STATUS_TYPE));
-        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.STATUS_NOT_UPDATABLE));
-        rules.add(crValidationFactory.getRule(ChangeRequestValidationFactory.COMMENT_REQUIRED));
-        return runValidations(rules, cr);
-    }
-
-    private List<String> runValidations(List<ValidationRule<ChangeRequestValidationContext>> rules, ChangeRequest cr) {
-        try {
-            List<String> errorMessages = new ArrayList<String>();
-            ChangeRequest crFromDb = null;
-            if (cr.getId() != null) {
-                crFromDb = getChangeRequest(cr.getId());
-            }
-            ChangeRequestValidationContext context = new ChangeRequestValidationContext(cr, crFromDb);
-
-            for (ValidationRule<ChangeRequestValidationContext> rule : rules) {
-                if (rule != null && !rule.isValid(context)) {
-                    errorMessages.addAll(rule.getMessages());
-                }
-            }
-            return errorMessages;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 }

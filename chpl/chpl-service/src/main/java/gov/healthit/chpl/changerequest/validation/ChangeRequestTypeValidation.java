@@ -18,16 +18,15 @@ public class ChangeRequestTypeValidation extends ValidationRule<ChangeRequestVal
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
-        // Is it null?
-        if (context.getChangeRequest().getChangeRequestType() == null
-                || context.getChangeRequest().getChangeRequestType().getId() == null) {
+        if (context.getNewChangeRequest().getChangeRequestType() == null
+                || context.getNewChangeRequest().getChangeRequestType().getId() == null) {
             getMessages().add(getErrorMessage("changeRequest.changeRequestType.required"));
             return false;
         }
 
         // Does it exist in the DB?
         try {
-            crTypeDAO.getChangeRequestTypeById(context.getChangeRequest().getChangeRequestType().getId());
+            crTypeDAO.getChangeRequestTypeById(context.getNewChangeRequest().getChangeRequestType().getId());
         } catch (EntityRetrievalException e) {
             getMessages().add(getErrorMessage("changeRequest.changeRequestType.invalid"));
             return false;

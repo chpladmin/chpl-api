@@ -16,7 +16,8 @@ import lombok.Singular;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public @Data class ChangeRequest implements Serializable {
+@Data
+public class ChangeRequest implements Serializable {
     private static final long serialVersionUID = 216843913133697622L;
 
     private Long id;

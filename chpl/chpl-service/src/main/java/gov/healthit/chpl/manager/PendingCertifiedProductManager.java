@@ -526,7 +526,7 @@ public class PendingCertifiedProductManager extends SecuredManager {
 
     private List<OptionalStandard> getAvailableOptionalStandardsForCriteria(CertificationResult result, List<OptionalStandardCriteriaMap> optionalStandardCriteriaMap) {
         return optionalStandardCriteriaMap.stream()
-                .filter(osm -> ff4j.check(FeatureList.OPTIONAL_STANDARDS) && osm.getCriterion().getId().equals(result.getCriterion().getId()))
+                .filter(osm -> osm.getCriterion().getId().equals(result.getCriterion().getId()))
                 .map(osm -> osm.getOptionalStandard())
                 .collect(Collectors.toList());
     }

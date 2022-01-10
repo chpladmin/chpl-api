@@ -12,10 +12,16 @@
                 <TimeBasedTriggeringPolicy
                     interval="1" modulate="true" />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${logDir}" >
+                    <IfFileName glob="chplservice-*.log" />
+                    <IfLastModified age="180d" />
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <RollingFile name="chplserviceJson"
             fileName="${logDir}/chplservice.json"
-            filePattern="${logDir}/chplservice-%d{yyyyMMdd}.log"
+            filePattern="${logDir}/chplservice-%d{yyyyMMdd}.json"
             filePermissions="rw-rw-r--">
             <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
                 <KeyValuePair key="service" value="chplservice" />
@@ -29,7 +35,7 @@
             <DefaultRolloverStrategy>
                 <Delete basePath="${logDir}" >
                     <IfFileName glob="chplservice-*.json" />
-                    <IfLastModified age="1d" />
+                    <IfLastModified age="7d" />
                 </Delete>
             </DefaultRolloverStrategy>
         </RollingFile>
