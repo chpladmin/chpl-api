@@ -1,5 +1,16 @@
 # Release Notes
 
+## Version 32.8.0
+_10 January 2022_
+
+### Features
+* Prevent saving a Change Request where no data was updated
+
+### Bug Fixes
+* Split Trigger Developer Job email addresses by correct character
+
+---
+
 ## Version 32.7.0
 _20 December 2021_
 
