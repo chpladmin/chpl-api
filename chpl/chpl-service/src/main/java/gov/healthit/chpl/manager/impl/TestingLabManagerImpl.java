@@ -22,7 +22,6 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
-import gov.healthit.chpl.util.AuthUtil;
 
 @Service
 public class TestingLabManagerImpl extends SecuredManager implements TestingLabManager {
