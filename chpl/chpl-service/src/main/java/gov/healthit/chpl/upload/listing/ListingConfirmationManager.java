@@ -54,7 +54,6 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.service.CuresUpdateService;
-import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityCachingService;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -78,7 +77,6 @@ public class ListingConfirmationManager {
     private CuresUpdateService curesUpdateService;
     private ActivityManager activityManager;
     private CertifiedProductDetailsManager cpDetailsManager;
-    private RealWorldTestingEligiblityCachingService rwtCachingService;
 
     private CertificationStatus activeStatus;
 
@@ -95,7 +93,7 @@ public class ListingConfirmationManager {
             CertificationStatusDAO certStatusDao,  CertificationStatusEventDAO statusEventDao,
             CuresUpdateEventDAO curesUpdateDao,
             CertifiedProductDetailsManager cpDetailsManager, CuresUpdateService curesUpdateService,
-            ActivityManager activityManager, RealWorldTestingEligiblityCachingService rwtCachingService) {
+            ActivityManager activityManager) {
         this.developerManager = developerManager;
         this.productManager = productManager;
         this.versionManager = versionManager;
@@ -114,7 +112,6 @@ public class ListingConfirmationManager {
         this.cpDetailsManager = cpDetailsManager;
         this.curesUpdateService = curesUpdateService;
         this.activityManager = activityManager;
-        this.rwtCachingService = rwtCachingService;
 
         activeStatus = certStatusDao.getByStatusName(CertificationStatusType.Active.toString());
     }
@@ -164,7 +161,6 @@ public class ListingConfirmationManager {
         } catch (Exception ex) {
             LOGGER.error("Unable to log create activity for listing " + listing.getId(), ex);
         }
-        rwtCachingService.calculateRwtEligibility(listing.getId());
         return confirmedListing;
     }
 
