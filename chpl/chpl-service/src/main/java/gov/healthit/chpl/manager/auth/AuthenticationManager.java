@@ -91,7 +91,7 @@ public class AuthenticationManager {
             UserDTO user = userDAO.getByNameOrEmail(credentials.getUserName());
             UserInvitation invitation = invitationManager.getByCreatedUserId(user.getId());
             LocalDateTime invitationDate = LocalDateTime.ofInstant(invitation.getCreationDate().toInstant(), ZoneId.systemDefault());
-            return Duration.between(invitationDate, LocalDateTime.now()).toDays() > confirmationWindowInDays;
+            return Duration.between(invitationDate, LocalDateTime.now()).toDays() > confirmationWindowInDays - 1;
         } catch (Exception e) {
             return true;
         }
