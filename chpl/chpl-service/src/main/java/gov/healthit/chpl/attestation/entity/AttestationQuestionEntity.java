@@ -3,7 +3,6 @@ package gov.healthit.chpl.attestation.entity;
 import java.util.Date;
 import java.util.Set;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,7 +21,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "attestation_questions")
+@Table(name = "attestation_question")
 @Getter
 @Setter
 @ToString
@@ -33,7 +32,6 @@ public class AttestationQuestionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     @Column(name = "id", nullable = false)
     private Long id;
 
@@ -43,27 +41,21 @@ public class AttestationQuestionEntity {
             inverseJoinColumns = @JoinColumn(name = "attestation_answer_id"))
     private Set<AttestationAnswerEntity> answers;
 
-    @Basic(optional = false)
     @Column(name = "question")
     private String question;
 
-    @Basic(optional = false)
     @Column(name = "sort_order")
     private Long sortOrder;
 
-    @Basic(optional = false)
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
-    @Basic(optional = false)
     @Column(name = "deleted", nullable = false)
     private Boolean deleted;
 
-    @Basic(optional = false)
     @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
     private Date creationDate;
 
-    @Basic(optional = false)
     @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
     private Date lastModifiedDate;
 

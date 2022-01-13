@@ -3,7 +3,6 @@ package gov.healthit.chpl.attestation.entity;
 import java.util.Date;
 import java.util.Set;
 
-import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,7 +27,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "attestation_categories")
+@Table(name = "attestation_category")
 public class AttestationCategoryEntity {
 
     @Id
@@ -46,19 +45,15 @@ public class AttestationCategoryEntity {
     @Column(name = "sort_order", nullable = false)
     private Long sortOrder;
 
-    @Basic(optional = false)
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
-    @Basic(optional = false)
     @Column(name = "deleted", nullable = false)
     private Boolean deleted;
 
-    @Basic(optional = false)
     @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
     private Date creationDate;
 
-    @Basic(optional = false)
     @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
     private Date lastModifiedDate;
 

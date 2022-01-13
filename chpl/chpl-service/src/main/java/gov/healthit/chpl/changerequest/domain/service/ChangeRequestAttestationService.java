@@ -4,20 +4,18 @@ import java.text.DateFormat;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
-import javax.mail.MessagingException;
-
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.changerequest.dao.ChangeRequestAttestationDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestation;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
-import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -35,6 +33,8 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     private DeveloperManager developerManager;
     private ActivityManager activityManager;
     private Environment env;
+
+    private ObjectMapper mapper;
 
     @Value("${changeRequest.attestation.approval.subject}")
     private String approvalEmailSubject;
@@ -64,6 +64,8 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         this.developerManager = developerManager;
         this.activityManager = activityManager;
         this.env = env;
+
+        this.mapper = new ObjectMapper();
     }
 
     @Override
@@ -84,6 +86,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     @Override
     public ChangeRequest update(ChangeRequest cr) throws InvalidArgumentsException {
         try {
+            /*
             // Get the current cr to determine if the attestation changed
             ChangeRequest crFromDb = crDAO.get(cr.getId());
 
@@ -104,6 +107,8 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                 return null;
             }
             return cr;
+            */
+            return null;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -111,6 +116,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     @Override
     protected ChangeRequest execute(ChangeRequest cr) throws EntityRetrievalException, EntityCreationException {
+
         // This will need to be implemented once we know what do when an attestation is approved
         LOGGER.info("Attestation Change Request has been executed.");
         return cr;
@@ -164,14 +170,6 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     }
 
     private ChangeRequestAttestation getDetailsFromHashMap(HashMap<String, Object> map) {
-        ChangeRequestAttestation crAttestation = new ChangeRequestAttestation();
-        if (map.containsKey("id") && StringUtils.isNumeric(map.get("id").toString())) {
-            crAttestation.setId(Long.valueOf(map.get("id").toString()));
-        }
-        if (map.containsKey("attestation")) {
-            crAttestation.setAttestation(map.get("attestation").toString());
-        }
-        return crAttestation;
+        return  mapper.convertValue(map, ChangeRequestAttestation.class);
     }
-
 }

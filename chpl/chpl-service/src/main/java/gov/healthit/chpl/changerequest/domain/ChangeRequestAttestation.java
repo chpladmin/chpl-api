@@ -1,7 +1,10 @@
 package gov.healthit.chpl.changerequest.domain;
 
 import java.io.Serializable;
+import java.util.List;
 
+import gov.healthit.chpl.attestation.domain.AttestationPeriod;
+import gov.healthit.chpl.attestation.domain.AttestationResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +22,8 @@ public class ChangeRequestAttestation implements Serializable, ChangeRequestDeta
     @EqualsAndHashCode.Exclude
     private Long id;
 
-    private String attestation;
+    private AttestationPeriod attestationPeriod;
+    private List<AttestationResponse> responses;
 
     public static ChangeRequestAttestation cast(Object obj) {
         if (obj instanceof ChangeRequestAttestation) {

@@ -9,6 +9,8 @@ import gov.healthit.chpl.attestation.domain.AttestationCategory;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.entity.AttestationCategoryEntity;
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
+import gov.healthit.chpl.attestation.entity.DeveloperAttestationEntity;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestation;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 
 @Repository
@@ -24,6 +26,14 @@ public class AttestationDAO extends BaseDAOImpl{
         return getAttestationFormEntities().stream()
                 .map(ent -> new AttestationCategory(ent))
                 .collect(Collectors.toList());
+    }
+
+    public ChangeRequestAttestation create(ChangeRequestAttestation attestation) {
+        DeveloperAttestationEntity entity = DeveloperAttestationEntity.builder()
+                .period(AttestationPeriodEntity.builder()
+                        .id(attestation.getAttestationPeriod().getId())
+                        .build())
+                .responses(responses)
     }
 
     private List<AttestationPeriodEntity> getAllPeriodEntities() {
