@@ -107,7 +107,7 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
         Set<String> matchingUrlPatterns = requestMapping.getPatternsCondition().getPatterns();
         if (matchingUrlPatterns != null && matchingUrlPatterns.size() > 0) {
             String matchingUrlPattern = matchingUrlPatterns.iterator().next();
-            LOGGER.info(request.getRequestURI() + " maps to endpoint with deprecated response fields " + matchingUrlPattern + ", handler: " + handlerMethod);
+            LOGGER.debug(request.getRequestURI() + " maps to endpoint with deprecated response fields " + matchingUrlPattern + ", handler: " + handlerMethod);
             ApiKey apiKey = getApiKey(request);
             DeprecatedResponseFieldApi deprecatedResponseFieldApi = getDeprecatedResponseFieldApi(request, matchingUrlPattern);
             if (apiKey != null && deprecatedResponseFieldApi != null) {
