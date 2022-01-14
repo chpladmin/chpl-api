@@ -11,10 +11,12 @@ import gov.healthit.chpl.util.LocalDateSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class AttestationPeriod {
     private Long id;
 

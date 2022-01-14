@@ -4,6 +4,8 @@ import java.text.DateFormat;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.healthit.chpl.attestation.dao.AttestationDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestAttestationDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
@@ -32,6 +35,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     private ChangeRequestAttestationDAO crAttesttionDAO;
     private DeveloperManager developerManager;
     private ActivityManager activityManager;
+    private AttestationDAO attestationDAO;
     private Environment env;
 
     private ObjectMapper mapper;
@@ -57,12 +61,13 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     @Autowired
     public ChangeRequestAttestationService(ChangeRequestDAO crDAO, ChangeRequestAttestationDAO crAttesttionDAO,
             DeveloperManager developerManager, UserDeveloperMapDAO userDeveloperMapDAO,
-            ActivityManager activityManager, Environment env) {
+            ActivityManager activityManager, AttestationDAO attestationDAO, Environment env) {
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
         this.crAttesttionDAO = crAttesttionDAO;
         this.developerManager = developerManager;
         this.activityManager = activityManager;
+        this.attestationDAO = attestationDAO;
         this.env = env;
 
         this.mapper = new ObjectMapper();
@@ -74,6 +79,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     }
 
     @Override
+    @Transactional
     public ChangeRequest create(ChangeRequest cr) {
         try {
             crAttesttionDAO.create(cr, getDetailsFromHashMap((HashMap<String, Object>) cr.getDetails()));
@@ -116,7 +122,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     @Override
     protected ChangeRequest execute(ChangeRequest cr) throws EntityRetrievalException, EntityCreationException {
-
+        attestationDAO.create(getDetailsFromHashMap((HashMap) cr.getDetails()), cr.getDeveloper().getDeveloperId());
         // This will need to be implemented once we know what do when an attestation is approved
         LOGGER.info("Attestation Change Request has been executed.");
         return cr;
@@ -139,34 +145,34 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     @Override
     protected void sendPendingDeveloperActionEmail(ChangeRequest cr) throws EmailNotSentException {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
-        new EmailBuilder(env)
-                .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
-                        .map(user -> user.getEmail())
-                        .collect(Collectors.toList()))
-                .subject(pendingDeveloperActionEmailSubject)
-                .htmlMessage(String.format(pendingDeveloperActionEmailBody,
-                        df.format(cr.getSubmittedDate()),
-                        ((ChangeRequestAttestation) cr.getDetails()).getAttestation(),
-                        getApprovalBody(cr),
-                        cr.getCurrentStatus().getComment()))
-                .sendEmail();
+//        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
+//        new EmailBuilder(env)
+//                .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
+//                        .map(user -> user.getEmail())
+//                        .collect(Collectors.toList()))
+//                .subject(pendingDeveloperActionEmailSubject)
+//                .htmlMessage(String.format(pendingDeveloperActionEmailBody,
+//                        df.format(cr.getSubmittedDate()),
+//                        ((ChangeRequestAttestation) cr.getDetails()).getAttestation(),
+//                        getApprovalBody(cr),
+//                        cr.getCurrentStatus().getComment()))
+//                .sendEmail();
     }
 
     @Override
     protected void sendRejectedEmail(ChangeRequest cr) throws EmailNotSentException {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
-        new EmailBuilder(env)
-                .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
-                        .map(user -> user.getEmail())
-                        .collect(Collectors.toList()))
-                .subject(rejectedEmailSubject)
-                .htmlMessage(String.format(rejectedEmailBody,
-                        df.format(cr.getSubmittedDate()),
-                        ((ChangeRequestAttestation) cr.getDetails()).getAttestation(),
-                        getApprovalBody(cr),
-                        cr.getCurrentStatus().getComment()))
-                .sendEmail();
+//        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
+//        new EmailBuilder(env)
+//                .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
+//                        .map(user -> user.getEmail())
+//                        .collect(Collectors.toList()))
+//                .subject(rejectedEmailSubject)
+//                .htmlMessage(String.format(rejectedEmailBody,
+//                        df.format(cr.getSubmittedDate()),
+//                        ((ChangeRequestAttestation) cr.getDetails()).getAttestation(),
+//                        getApprovalBody(cr),
+//                        cr.getCurrentStatus().getComment()))
+//                .sendEmail();
     }
 
     private ChangeRequestAttestation getDetailsFromHashMap(HashMap<String, Object> map) {

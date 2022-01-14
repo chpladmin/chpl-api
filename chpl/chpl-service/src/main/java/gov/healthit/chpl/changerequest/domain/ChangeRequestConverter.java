@@ -1,6 +1,13 @@
 package gov.healthit.chpl.changerequest.domain;
 
+import java.util.stream.Collectors;
+
+import gov.healthit.chpl.attestation.domain.AttestationAnswer;
+import gov.healthit.chpl.attestation.domain.AttestationPeriod;
+import gov.healthit.chpl.attestation.domain.AttestationQuestion;
+import gov.healthit.chpl.attestation.domain.AttestationResponse;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationEntity;
+import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationResponseEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestDeveloperDetailsEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusEntity;
@@ -94,10 +101,30 @@ public final class ChangeRequestConverter {
     }
 
     public static ChangeRequestAttestation convert(ChangeRequestAttestationEntity entity) {
-        ChangeRequestAttestation crAttestation = new ChangeRequestAttestation();
-        crAttestation.setId(entity.getId());
-        crAttestation.setAttestation(entity.getAttestation());
-        return crAttestation;
+        return ChangeRequestAttestation.builder()
+                .attestationPeriod(AttestationPeriod.builder()
+                        .id(entity.getPeriod().getId())
+                        .periodStart(entity.getPeriod().getPeriodStart())
+                        .periodEnd(entity.getPeriod().getPeriodEnd())
+                        .description(entity.getPeriod().getDescription())
+                        .build())
+                .responses(entity.getResponses().stream()
+                        .map(resp -> convert(resp))
+                        .collect(Collectors.toList()))
+                .build();
     }
 
+    private static AttestationResponse convert(ChangeRequestAttestationResponseEntity entity) {
+        return AttestationResponse.builder()
+                .id(entity.getId())
+                .question(AttestationQuestion.builder()
+                        .id(entity.getQuestion().getId())
+                        .question(entity.getQuestion().getQuestion())
+                        .build())
+                .answer(AttestationAnswer.builder()
+                        .id(entity.getQuestion().getId())
+                        .answer(entity.getAnswer().getAnswer())
+                        .build())
+                .build();
+    }
 }

@@ -34,19 +34,16 @@ public class DeveloperAttestationResponseEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Column(name = "developer_attestation_id", nullable = false)
+    private Long developerAttestationId;
+
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "attestation_question_id")
+    @JoinColumn(name = "attestation_question_id", insertable = false, updatable = false)
     private AttestationQuestionEntity question;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "attestation_question_id")
-    private AttestationAnswerEntity answer;;
-
-    @Column(name = "name", nullable = false)
-    private String name;
-
-    @Column(name = "sort_order", nullable = false)
-    private Long sortOrder;
+    @JoinColumn(name = "attestation_question_id", insertable = false, updatable = false)
+    private AttestationAnswerEntity answer;
 
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;

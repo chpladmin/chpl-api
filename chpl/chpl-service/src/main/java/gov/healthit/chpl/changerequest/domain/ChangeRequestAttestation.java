@@ -25,14 +25,6 @@ public class ChangeRequestAttestation implements Serializable, ChangeRequestDeta
     private AttestationPeriod attestationPeriod;
     private List<AttestationResponse> responses;
 
-    public static ChangeRequestAttestation cast(Object obj) {
-        if (obj instanceof ChangeRequestAttestation) {
-            return (ChangeRequestAttestation) obj;
-        } else {
-            throw new RuntimeException("Could not cast object as type ChangeRequestAttestation");
-        }
-    }
-
     @Override
     public boolean matches(Object obj) {
         return equals(obj);

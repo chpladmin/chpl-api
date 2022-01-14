@@ -7,10 +7,12 @@ import gov.healthit.chpl.attestation.entity.AttestationQuestionEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class AttestationQuestion {
     private Long id;
     private List<AttestationAnswer> answers;

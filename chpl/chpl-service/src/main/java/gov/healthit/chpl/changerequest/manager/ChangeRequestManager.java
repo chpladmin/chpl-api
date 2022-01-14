@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
@@ -80,6 +81,8 @@ public class ChangeRequestManager extends SecurityManager {
     private ErrorMessageUtil msgUtil;
     private FF4j ff4j;
 
+    private ObjectMapper mapper;
+
     @Autowired
     public ChangeRequestManager(ChangeRequestDAO changeRequestDAO,
             ChangeRequestTypeDAO changeRequestTypeDAO,
@@ -100,6 +103,9 @@ public class ChangeRequestManager extends SecurityManager {
         this.resourcePermissions = resourcePermissions;
         this.msgUtil = msgUtil;
         this.ff4j = ff4j;
+
+        this.mapper = new ObjectMapper();
+
     }
 
     @Transactional(readOnly = true)
@@ -244,10 +250,8 @@ public class ChangeRequestManager extends SecurityManager {
     }
 
     private boolean isDeveloperAttestationChangeRequest(ChangeRequest cr) {
-        // This needs to be able to identify an attestation "details" object.
-        // This will probably need to be changed when the attestation object is defined
         HashMap<String, Object> crMap = (HashMap) cr.getDetails();
-        return crMap.containsKey("attestation");
+        return crMap.containsKey("attestationPeriod");
     }
 
     private boolean isWebsiteChanged(ChangeRequest cr) {
@@ -334,8 +338,11 @@ public class ChangeRequestManager extends SecurityManager {
         // This method will probably need to be changed when the attestation object is defined
         HashMap<String, Object> devDetails = new HashMap<String, Object>();
         HashMap<String, Object> crDetails = (HashMap) cr.getDetails();
-        if (crDetails.containsKey("attestation")) {
-            devDetails.put("attestation", crDetails.get("attestation"));
+        if (crDetails.containsKey("attestationPeriod")) {
+            devDetails.put("attestationPeriod", crDetails.get("attestationPeriod"));
+        }
+        if (crDetails.containsKey("responses")) {
+            devDetails.put("responses", crDetails.get("responses"));
         }
         return devDetails;
     }
