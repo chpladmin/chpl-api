@@ -51,11 +51,11 @@ public class ChangeRequestNotUpdatableDueToStatusValidation extends ValidationRu
 
     private String getErrorMessage(ChangeRequestStatusType changeRequestStatusType) {
         if (changeRequestStatusType.getId().equals(cancelledStatus)) {
-            return getErrorMessage("changeRequest.status.cancelled");
+            return getErrorMessageFromResource("changeRequest.status.cancelled");
         } else if (changeRequestStatusType.getId().equals(acceptedStatus)) {
-            return getErrorMessage("changeRequest.status.approved");
+            return getErrorMessageFromResource("changeRequest.status.approved");
         } else if (changeRequestStatusType.getId().equals(rejectedStatus)) {
-            return getErrorMessage("changeRequest.status.rejected");
+            return getErrorMessageFromResource("changeRequest.status.rejected");
         } else {
             return "";
         }

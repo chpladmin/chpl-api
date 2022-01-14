@@ -43,7 +43,7 @@ public class ChangeRequestTypeInProcessValidation extends ValidationRule<ChangeR
                                     .equals(status)))
                     .collect(Collectors.toList());
             if (crs.size() > 0) {
-                errorMessages.add(getErrorMessage("changeRequest.inProcess"));
+                errorMessages.add(getErrorMessageFromResource("changeRequest.inProcess"));
             }
         } catch (EntityRetrievalException e) {
             // Not sure what happened here, but we'll assume that another

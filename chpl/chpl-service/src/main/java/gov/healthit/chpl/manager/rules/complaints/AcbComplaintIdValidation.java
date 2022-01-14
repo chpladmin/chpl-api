@@ -9,7 +9,7 @@ public class AcbComplaintIdValidation extends ValidationRule<ComplaintValidation
         // Received Date type is required
         if (context.getComplaint().getAcbComplaintId() == null
                 || context.getComplaint().getAcbComplaintId().equals("")) {
-            getMessages().add(getErrorMessage("complaints.acbComplaintId.required"));
+            getMessages().add(getErrorMessageFromResource("complaints.acbComplaintId.required"));
             return false;
         }
 

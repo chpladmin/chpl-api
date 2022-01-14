@@ -27,14 +27,14 @@ public class DeveloperExistenceValidation extends ValidationRule<ChangeRequestVa
         // Is the developer null?
         if (context.getNewChangeRequest().getDeveloper() == null
                 || context.getNewChangeRequest().getDeveloper().getDeveloperId() == null) {
-            errorMessages.add(getErrorMessage("changeRequest.developer.required"));
+            errorMessages.add(getErrorMessageFromResource("changeRequest.developer.required"));
             return errorMessages;
         }
 
         try {
             developerDAO.getById(context.getNewChangeRequest().getDeveloper().getDeveloperId());
         } catch (EntityRetrievalException e) {
-            errorMessages.add(getErrorMessage("changeRequest.developer.invalid"));
+            errorMessages.add(getErrorMessageFromResource("changeRequest.developer.invalid"));
             return errorMessages;
         } catch (Exception e) {
             // This would probably be a NPE, but will be caught by other

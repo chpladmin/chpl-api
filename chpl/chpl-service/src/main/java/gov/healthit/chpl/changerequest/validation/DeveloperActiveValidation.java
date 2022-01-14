@@ -53,7 +53,7 @@ public class DeveloperActiveValidation extends ValidationRule<ChangeRequestValid
 
         // Is the developer active?
         if (!devDTO.getStatus().getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-            errorMessages.add(getErrorMessage("changeRequest.developer.notActive"));
+            errorMessages.add(getErrorMessageFromResource("changeRequest.developer.notActive"));
         }
         return errorMessages;
     }

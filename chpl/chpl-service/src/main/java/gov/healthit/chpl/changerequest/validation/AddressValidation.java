@@ -33,16 +33,16 @@ public class AddressValidation extends ValidationRule<ChangeRequestValidationCon
             if (details.containsKey("address")) {
                 Address crAddress = new Address((HashMap<String, Object>) details.get("address"));
                 if (!isStreetValid(crAddress)) {
-                    errorMessages.add(getErrorMessage("developer.address.streetRequired"));
+                    errorMessages.add(getErrorMessageFromResource("developer.address.streetRequired"));
                 }
                 if (!isCityValid(crAddress)) {
-                    errorMessages.add(getErrorMessage("developer.address.cityRequired"));
+                    errorMessages.add(getErrorMessageFromResource("developer.address.cityRequired"));
                 }
                 if (!isStateValid(crAddress)) {
-                    errorMessages.add(getErrorMessage("developer.address.stateRequired"));
+                    errorMessages.add(getErrorMessageFromResource("developer.address.stateRequired"));
                 }
                 if (!isZipValid(crAddress)) {
-                    errorMessages.add(getErrorMessage("developer.address.zipRequired"));
+                    errorMessages.add(getErrorMessageFromResource("developer.address.zipRequired"));
                 }
             }
         }

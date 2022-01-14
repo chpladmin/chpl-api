@@ -25,18 +25,18 @@ public class ChangeRequestCreateValidation extends ValidationRule<ChangeRequestV
         if (context.getNewChangeRequest().getChangeRequestType().getId().equals(websiteChangeRequestType)
                 && (context.getNewChangeRequest().getDetails() == null
                         || !isChangeRequestWebsiteValid((HashMap) context.getNewChangeRequest().getDetails()))) {
-            errorMessages.add(getErrorMessage("changeRequest.details.website.invalid"));
+            errorMessages.add(getErrorMessageFromResource("changeRequest.details.website.invalid"));
         } else if (context.getNewChangeRequest().getChangeRequestType().getId().equals(devDetailsChangeRequestType)) {
             if (context.getNewChangeRequest().getDetails() == null) {
-                errorMessages.add(getErrorMessage("changeRequest.details.invalid"));
+                errorMessages.add(getErrorMessageFromResource("changeRequest.details.invalid"));
             } else {
                 HashMap<String, Object> crDetails = (HashMap) context.getNewChangeRequest().getDetails();
                 if (!isChangeRequestSelfDevloperValid(crDetails)) {
-                    errorMessages.add(getErrorMessage("changeRequest.details.selfDeveloper.missing"));
+                    errorMessages.add(getErrorMessageFromResource("changeRequest.details.selfDeveloper.missing"));
                 } else if (!isChangeRequestAddressValid(crDetails)) {
-                    errorMessages.add(getErrorMessage("changeRequest.details.address.missing"));
+                    errorMessages.add(getErrorMessageFromResource("changeRequest.details.address.missing"));
                 } else if (!isChangeRequestContactValid(crDetails)) {
-                    errorMessages.add(getErrorMessage("changeRequest.details.contact.missing"));
+                    errorMessages.add(getErrorMessageFromResource("changeRequest.details.contact.missing"));
                 }
             }
         }

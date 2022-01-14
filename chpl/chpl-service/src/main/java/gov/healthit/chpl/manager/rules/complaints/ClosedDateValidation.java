@@ -13,17 +13,17 @@ public class ClosedDateValidation extends ValidationRule<ComplaintValidationCont
         if (context.getComplaint().getClosedDate() != null) {
             // Closed Date may not be in the future
             if (context.getComplaint().getClosedDate().isAfter(LocalDate.now())) {
-                getMessages().add(getErrorMessage("complaints.closedDate.inTheFuture"));
+                getMessages().add(getErrorMessageFromResource("complaints.closedDate.inTheFuture"));
                 return false;
             }
             // Closed Date must be on or after the Received Date
             if (context.getComplaint().getReceivedDate() != null && context.getComplaint().getClosedDate().isBefore(context.getComplaint().getReceivedDate())) {
-                getMessages().add(getErrorMessage("complaints.closedDate.mustBeAfterReceivedDate"));
+                getMessages().add(getErrorMessageFromResource("complaints.closedDate.mustBeAfterReceivedDate"));
                 return false;
             }
             // Actions/Responses must be provided if a Closed Date is provided
             if (StringUtils.isEmpty(context.getComplaint().getActions())) {
-                getMessages().add(getErrorMessage("complaints.closedDate.actionsRequired"));
+                getMessages().add(getErrorMessageFromResource("complaints.closedDate.actionsRequired"));
                 return false;
             }
         }

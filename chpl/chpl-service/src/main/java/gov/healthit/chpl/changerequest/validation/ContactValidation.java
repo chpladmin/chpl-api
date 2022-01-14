@@ -33,13 +33,13 @@ public class ContactValidation extends ValidationRule<ChangeRequestValidationCon
             if (details.containsKey("contact")) {
                 PointOfContact crContact = new PointOfContact((HashMap<String, Object>) details.get("contact"));
                 if (!isNameValid(crContact)) {
-                    errorMessages.add(getErrorMessage("developer.contact.nameRequired"));
+                    errorMessages.add(getErrorMessageFromResource("developer.contact.nameRequired"));
                 }
                 if (!isEmailValid(crContact)) {
-                    errorMessages.add(getErrorMessage("developer.contact.emailRequired"));
+                    errorMessages.add(getErrorMessageFromResource("developer.contact.emailRequired"));
                 }
                 if (!isPhoneNumberValid(crContact)) {
-                    errorMessages.add(getErrorMessage("developer.contact.phoneRequired"));
+                    errorMessages.add(getErrorMessageFromResource("developer.contact.phoneRequired"));
                 }
             }
         }

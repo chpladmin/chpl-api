@@ -18,7 +18,7 @@ public class ChangeRequestModificationValidation extends ValidationRule<ChangeRe
         List<String> errorMessages = new ArrayList<String>();
 
         if (isCurrentStatusEqual(context) && changeRequestDetailsEquals(context)) {
-            errorMessages.add(getErrorMessage("changeRequest.noChanges"));
+            errorMessages.add(getErrorMessageFromResource("changeRequest.noChanges"));
         }
         return errorMessages;
     }

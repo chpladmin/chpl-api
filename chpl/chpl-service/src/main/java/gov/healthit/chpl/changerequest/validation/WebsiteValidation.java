@@ -35,7 +35,7 @@ public class WebsiteValidation extends ValidationRule<ChangeRequestValidationCon
                 // Is the website valid?
                 if (!validationUtils.isWellFormedUrl(
                         ((HashMap) context.getNewChangeRequest().getDetails()).get("website").toString())) {
-                    errorMessages.add(getErrorMessage("changeRequest.details.website.invalidFormat"));
+                    errorMessages.add(getErrorMessageFromResource("changeRequest.details.website.invalidFormat"));
                 }
             }
         }

@@ -1,10 +1,9 @@
 package gov.healthit.chpl.changerequest.validation;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -28,9 +27,8 @@ public class ChangeRequestSelfDeveloperValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestSelfDeveloper(true), null);
 
-        boolean result = crSelfDevValidator.getErrorMessages(context);
-        assertTrue(result);
-        assertEquals(0, crSelfDevValidator.getMessages().size());
+        List<String> result = crSelfDevValidator.getErrorMessages(context);
+        assertEquals(0, result.size());
     }
 
     @Test
@@ -42,9 +40,8 @@ public class ChangeRequestSelfDeveloperValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestSelfDeveloper(false), null);
 
-        boolean result = crSelfDevValidator.getErrorMessages(context);
-        assertTrue(result);
-        assertEquals(0, crSelfDevValidator.getMessages().size());
+        List<String> result = crSelfDevValidator.getErrorMessages(context);
+        assertEquals(0, result.size());
     }
 
     @Test
@@ -56,9 +53,8 @@ public class ChangeRequestSelfDeveloperValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestSelfDeveloper("JUNK"), null);
 
-        boolean result = crSelfDevValidator.getErrorMessages(context);
-        assertFalse(result);
-        assertEquals(1, crSelfDevValidator.getMessages().size());
+        List<String> result = crSelfDevValidator.getErrorMessages(context);
+        assertEquals(1, result.size());
     }
 
     @Test
@@ -70,9 +66,8 @@ public class ChangeRequestSelfDeveloperValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestSelfDeveloper(null), null);
 
-        boolean result = crSelfDevValidator.getErrorMessages(context);
-        assertFalse(result);
-        assertEquals(1, crSelfDevValidator.getMessages().size());
+        List<String> result = crSelfDevValidator.getErrorMessages(context);
+        assertEquals(1, result.size());
     }
 
     private ChangeRequest getChangeRequestSelfDeveloper(Object selfDeveloper) {

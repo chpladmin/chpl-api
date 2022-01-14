@@ -19,11 +19,11 @@ public class ComplaintAcbChanged extends ValidationRule<ComplaintValidationConte
                     .equals(original.getCertificationBody().getId())) {
                 return true;
             } else {
-                getMessages().add(getErrorMessage("complaints.update.acbChange"));
+                getMessages().add(getErrorMessageFromResource("complaints.update.acbChange"));
                 return false;
             }
         } catch (Exception e) {
-            String error = getErrorMessage("complaints.error");
+            String error = getErrorMessageFromResource("complaints.error");
             LOGGER.error(error, e);
             getMessages().add(error);
             return false;

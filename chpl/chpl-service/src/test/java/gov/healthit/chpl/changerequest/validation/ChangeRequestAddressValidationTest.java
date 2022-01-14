@@ -1,10 +1,10 @@
 package gov.healthit.chpl.changerequest.validation;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -13,8 +13,6 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
-import gov.healthit.chpl.changerequest.validation.AddressValidation;
-import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationContext;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
@@ -32,9 +30,7 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        boolean result = crAddrValidator.getErrorMessages(context);
-        assertTrue(result);
-        assertEquals(0, crAddrValidator.getMessages().size());
+        assertEquals(0, crAddrValidator.getErrorMessages(context).size());
     }
 
     @Test
@@ -47,9 +43,7 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        boolean result = crAddrValidator.getErrorMessages(context);
-        assertTrue(result);
-        assertEquals(0, crAddrValidator.getMessages().size());
+        assertEquals(0, crAddrValidator.getErrorMessages(context).size());
     }
 
     @Test
@@ -62,9 +56,7 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        boolean result = crAddrValidator.getErrorMessages(context);
-        assertTrue(result);
-        assertEquals(0, crAddrValidator.getMessages().size());
+        assertEquals(0, crAddrValidator.getErrorMessages(context).size());
     }
 
     @Test
@@ -77,8 +69,7 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        boolean result = crAddrValidator.getErrorMessages(context);
-        assertFalse(result);
+        assertEquals(1, crAddrValidator.getErrorMessages(context).size());
     }
 
     @Test
@@ -91,8 +82,7 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        boolean result = crAddrValidator.getErrorMessages(context);
-        assertFalse(result);
+        assertEquals(1, crAddrValidator.getErrorMessages(context).size());
     }
 
     @Test
@@ -105,10 +95,9 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        crAddrValidator.getErrorMessages(context);
-
-        assertEquals(1, crAddrValidator.getMessages().size());
-        assertTrue(crAddrValidator.getMessages().contains("Developer street address is required."));
+        List<String> errors = crAddrValidator.getErrorMessages(context);
+        assertEquals(1, errors.size());
+        assertTrue(errors.contains("Developer street address is required."));
     }
 
     @Test
@@ -121,8 +110,7 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        boolean result = crAddrValidator.getErrorMessages(context);
-        assertFalse(result);
+        assertEquals(1, crAddrValidator.getErrorMessages(context).size());
     }
 
     @Test
@@ -135,8 +123,7 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        boolean result = crAddrValidator.getErrorMessages(context);
-        assertFalse(result);
+        assertEquals(1, crAddrValidator.getErrorMessages(context).size());
     }
 
     @Test
@@ -149,10 +136,10 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        crAddrValidator.getErrorMessages(context);
+        List<String> errors = crAddrValidator.getErrorMessages(context);
 
-        assertEquals(1, crAddrValidator.getMessages().size());
-        assertTrue(crAddrValidator.getMessages().contains("Developer city is required."));
+        assertEquals(1, errors.size());
+        assertTrue(errors.contains("Developer city is required."));
     }
 
     @Test
@@ -165,8 +152,7 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        boolean result = crAddrValidator.getErrorMessages(context);
-        assertFalse(result);
+        assertEquals(1, crAddrValidator.getErrorMessages(context).size());
     }
 
     @Test
@@ -179,8 +165,7 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        boolean result = crAddrValidator.getErrorMessages(context);
-        assertFalse(result);
+        assertEquals(1, crAddrValidator.getErrorMessages(context).size());
     }
 
     @Test
@@ -193,10 +178,10 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        crAddrValidator.getErrorMessages(context);
+        List<String> errors = crAddrValidator.getErrorMessages(context);
 
-        assertEquals(1, crAddrValidator.getMessages().size());
-        assertTrue(crAddrValidator.getMessages().contains("Developer state is required."));
+        assertEquals(1, errors.size());
+        assertTrue(errors.contains("Developer state is required."));
     }
 
     @Test
@@ -209,8 +194,7 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        boolean result = crAddrValidator.getErrorMessages(context);
-        assertFalse(result);
+        assertEquals(1, crAddrValidator.getErrorMessages(context).size());
     }
 
     @Test
@@ -223,8 +207,7 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        boolean result = crAddrValidator.getErrorMessages(context);
-        assertFalse(result);
+        assertEquals(1, crAddrValidator.getErrorMessages(context).size());
     }
 
     @Test
@@ -237,10 +220,10 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        crAddrValidator.getErrorMessages(context);
+        List<String> errors = crAddrValidator.getErrorMessages(context);
 
-        assertEquals(1, crAddrValidator.getMessages().size());
-        assertTrue(crAddrValidator.getMessages().contains("Developer zipcode is required."));
+        assertEquals(1, errors.size());
+        assertTrue(errors.contains("Developer zipcode is required."));
     }
 
     private ChangeRequest getChangeRequestAddress(Address address) {

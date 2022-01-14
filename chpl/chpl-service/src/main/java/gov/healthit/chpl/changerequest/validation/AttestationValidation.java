@@ -44,11 +44,11 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
         errorMessages.addAll(validateAttestationPeriod(attestation));
 
         errorMessages.addAll(getMissingQuestions(attestation).stream()
-                .map(question -> String.format(getErrorMessage("changeRequest.attestation.questionNotAnswered"), question.getQuestion()))
+                .map(question -> String.format(getErrorMessageFromResource("changeRequest.attestation.questionNotAnswered"), question.getQuestion()))
                 .collect(Collectors.toList()));
 
         errorMessages.addAll(getInvalidResponses(attestation).stream()
-                .map(response -> String.format(getErrorMessage("changeRequest.attestation.invalidResponse"),
+                .map(response -> String.format(getErrorMessageFromResource("changeRequest.attestation.invalidResponse"),
                         getAnswerText(response.getAnswer().getId()),
                         getQuestionText(response.getQuestion().getId())))
                 .collect(Collectors.toList()));
@@ -60,14 +60,14 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
         List<String> errors = new ArrayList<String>();
 
         if (attestation == null || attestation.getAttestationPeriod() == null || attestation.getAttestationPeriod().getId() == null) {
-            errors.add(String.format(getErrorMessage("changeRequest.attestation.invalidPeriod")));
+            errors.add(String.format(getErrorMessageFromResource("changeRequest.attestation.invalidPeriod")));
         } else {
             Optional<AttestationPeriod> period = attestationPeriods.stream()
                     .filter(p -> p.getId().equals(attestation.getAttestationPeriod().getId()))
                     .findAny();
 
             if (!period.isPresent()) {
-                errors.add(String.format(getErrorMessage("changeRequest.attestation.invalidPeriodId"), attestation.getAttestationPeriod().getId()));
+                errors.add(String.format(getErrorMessageFromResource("changeRequest.attestation.invalidPeriodId"), attestation.getAttestationPeriod().getId()));
             }
         }
         return errors;

@@ -10,7 +10,7 @@ public class SummaryValidation extends ValidationRule<ComplaintValidationContext
     public boolean getErrorMessages(ComplaintValidationContext context) {
         // Summary is required
         if (StringUtils.isEmpty(context.getComplaint().getSummary())) {
-            getMessages().add(getErrorMessage("complaints.summary.required"));
+            getMessages().add(getErrorMessageFromResource("complaints.summary.required"));
             return false;
         }
         return true;

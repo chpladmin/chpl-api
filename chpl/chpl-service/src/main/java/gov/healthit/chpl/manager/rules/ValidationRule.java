@@ -26,7 +26,7 @@ public abstract class ValidationRule<T> {
         }
     }
 
-    protected String getErrorMessage(String key) {
+    protected String getErrorMessageFromResource(String key) {
         return props.getProperty(key);
     }
 

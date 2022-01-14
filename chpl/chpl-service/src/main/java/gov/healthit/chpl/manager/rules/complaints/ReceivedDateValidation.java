@@ -8,7 +8,7 @@ public class ReceivedDateValidation extends ValidationRule<ComplaintValidationCo
     public boolean getErrorMessages(ComplaintValidationContext context) {
         // Received Date type is required
         if (context.getComplaint().getReceivedDate() == null) {
-            getMessages().add(getErrorMessage("complaints.receivedDate.required"));
+            getMessages().add(getErrorMessageFromResource("complaints.receivedDate.required"));
             return false;
         }
         return true;
