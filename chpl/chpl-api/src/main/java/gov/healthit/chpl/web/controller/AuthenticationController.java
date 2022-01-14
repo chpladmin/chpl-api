@@ -44,6 +44,7 @@ import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -74,7 +75,9 @@ public class AuthenticationController {
                     + "Specifically, the Authorization header must have a value of 'Bearer token-that-gets-returned'.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+            }
+        )
+    @ApiResponse(responseCode = "461", description = "The confirmation email has been resent to the user.")
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public String authenticateJSON(@RequestBody LoginCredentials credentials)
