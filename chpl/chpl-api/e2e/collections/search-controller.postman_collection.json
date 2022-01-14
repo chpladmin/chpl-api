@@ -259,64 +259,6 @@
 			"response": []
 		},
 		{
-			"name": "POST - /search/beta - using IS_ELIGIBLE should give 500 status",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"POST /search/beta request using IS_ELIGIBLE filter should return 500 status and error\", function () {\r",
-							"    pm.response.to.have.status(500);\r",
-							"    pm.expect(pm.response.text()).to.include(\"NO_RESULTS_URL, HAS_RESULTS_URL, NO_PLANS_URL, HAS_PLANS_URL\");\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "API-KEY",
-						"value": "{{apiKey}}",
-						"type": "text"
-					},
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"rwtOptions\": [\r\n    \"IS_ELIGIBLE\"\r\n  ]\r\n}"
-				},
-				"url": {
-					"raw": "{{url}}/rest/search/beta",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"rest",
-						"search",
-						"beta"
-					]
-				},
-				"description": "POST /search/beta request using IS_ELIGIBLE filter should return 500 status and error in response"
-			},
-			"response": []
-		},
-		{
 			"name": "GET /search/beta -using IS_ELIGIBLE should return 400 status",
 			"event": [
 				{
@@ -325,7 +267,6 @@
 						"exec": [
 							"pm.test(\"GET /search/beta request using IS_ELIGIBLE filter should return 400 status and error\", function () {\r",
 							"    pm.response.to.have.status(400);\r",
-							"    pm.expect(pm.response.text()).to.include(\"Values must be one of HAS_PLANS_URL,HAS_RESULTS_URL,NO_PLANS_URL,NO_RESULTS_URL\");\r",
 							"});"
 						],
 						"type": "text/javascript"
