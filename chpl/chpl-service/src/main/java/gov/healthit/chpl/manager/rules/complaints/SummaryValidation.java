@@ -7,7 +7,7 @@ import gov.healthit.chpl.manager.rules.ValidationRule;
 public class SummaryValidation extends ValidationRule<ComplaintValidationContext> {
 
     @Override
-    public boolean isValid(ComplaintValidationContext context) {
+    public boolean getErrorMessages(ComplaintValidationContext context) {
         // Summary is required
         if (StringUtils.isEmpty(context.getComplaint().getSummary())) {
             getMessages().add(getErrorMessage("complaints.summary.required"));

@@ -20,7 +20,7 @@ public class DeveloperEditStatusHistoryValidation extends ValidationRule<Develop
      * triggered by listing status update
      */
     @Override
-    public boolean isValid(DeveloperValidationContext context) {
+    public boolean getErrorMessages(DeveloperValidationContext context) {
         ErrorMessageUtil msgUtil = context.getErrorMessageUtil();
         DeveloperDTO updatedDev = context.getDeveloperDTO();
         DeveloperDTO beforeDev = context.getBeforeDev();

@@ -11,7 +11,7 @@ public class ComplaintAcbChanged extends ValidationRule<ComplaintValidationConte
     }
 
     @Override
-    public boolean isValid(ComplaintValidationContext context) {
+    public boolean getErrorMessages(ComplaintValidationContext context) {
         try {
             // Get the original complaint
             Complaint original = context.getComplaintDAO().getComplaint(context.getComplaint().getId());

@@ -6,7 +6,7 @@ import gov.healthit.chpl.manager.rules.ValidationRule;
 
 public class DeveloperContactValidation extends ValidationRule<DeveloperValidationContext> {
     @Override
-    public boolean isValid(DeveloperValidationContext context) {
+    public boolean getErrorMessages(DeveloperValidationContext context) {
         if (context.getDeveloperDTO().getContact() == null) {
             getMessages().add(context.getErrorMessageUtil().getMessage("developer.contactRequired"));
             return false;

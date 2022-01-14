@@ -1,5 +1,8 @@
 package gov.healthit.chpl.changerequest.validation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +26,9 @@ public class DeveloperActiveValidation extends ValidationRule<ChangeRequestValid
     }
 
     @Override
-    public boolean isValid(ChangeRequestValidationContext context) {
+    public List<String> getErrorMessages(ChangeRequestValidationContext context) {
+        List<String> errorMessages = new ArrayList<String>();
+
 
         // Is this a new or existing CR?
         ChangeRequest crToTest = null;
@@ -32,7 +37,7 @@ public class DeveloperActiveValidation extends ValidationRule<ChangeRequestValid
                 crToTest = changeRequestDAO.get(context.getNewChangeRequest().getId());
             } catch (EntityRetrievalException e) {
                 // This should be caught be ChangeRequestExistenceValidation
-                return true;
+                return errorMessages;
             }
         } else {
             crToTest = context.getNewChangeRequest();
@@ -43,15 +48,13 @@ public class DeveloperActiveValidation extends ValidationRule<ChangeRequestValid
             devDTO = developerDAO.getById(context.getNewChangeRequest().getDeveloper().getDeveloperId());
         } catch (Exception e) {
             // This should be caught be DeveloperExistenceValidation
-            return true;
+            return errorMessages;
         }
 
         // Is the developer active?
         if (!devDTO.getStatus().getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-            getMessages().add(getErrorMessage("changeRequest.developer.notActive"));
-            return false;
+            errorMessages.add(getErrorMessage("changeRequest.developer.notActive"));
         }
-        return true;
-
+        return errorMessages;
     }
 }

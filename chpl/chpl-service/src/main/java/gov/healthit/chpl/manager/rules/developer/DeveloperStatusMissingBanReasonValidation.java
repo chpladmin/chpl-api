@@ -14,7 +14,7 @@ public class DeveloperStatusMissingBanReasonValidation extends ValidationRule<De
      * Under Certification Ban by ONC make sure there is a reason given
      */
     @Override
-    public boolean isValid(DeveloperValidationContext context) {
+    public boolean getErrorMessages(DeveloperValidationContext context) {
         ErrorMessageUtil msgUtil = context.getErrorMessageUtil();
         DeveloperDTO updatedDev = context.getDeveloperDTO();
         for (DeveloperStatusEventDTO statusEvent : updatedDev.getStatusEvents()) {

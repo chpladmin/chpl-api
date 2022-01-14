@@ -23,21 +23,22 @@ public class ChangeRequestNotUpdatableDueToStatusValidation extends ValidationRu
     private Long rejectedStatus;
 
     @Override
-    public boolean isValid(ChangeRequestValidationContext context) {
+    public List<String> getErrorMessages(ChangeRequestValidationContext context) {
+        List<String> errorMessages = new ArrayList<String>();
+
         // We need to check the current status from the DB - not what the user
         // has passed in
         try {
             ChangeRequest crFromDb = context.getOrigChangeRequest();
             if (getNonUpdatableStatuses().contains(crFromDb.getCurrentStatus().getChangeRequestStatusType().getId())) {
-                getMessages().add(getErrorMessage(crFromDb.getCurrentStatus().getChangeRequestStatusType()));
-                return false;
-            } else {
-                return true;
+                errorMessages.add(getErrorMessage(crFromDb.getCurrentStatus().getChangeRequestStatusType()));
+                return errorMessages;
             }
         } catch (Exception e) {
             // This will be caught by other validators
-            return true;
+            return errorMessages;
         }
+        return errorMessages;
     }
 
     private List<Long> getNonUpdatableStatuses() {

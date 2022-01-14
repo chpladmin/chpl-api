@@ -1,5 +1,8 @@
 package gov.healthit.chpl.changerequest.validation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestation;
@@ -11,13 +14,13 @@ import gov.healthit.chpl.manager.rules.ValidationRule;
 public class ChangeRequestModificationValidation extends ValidationRule<ChangeRequestValidationContext> {
 
     @Override
-    public boolean isValid(ChangeRequestValidationContext context) {
+    public List<String> getErrorMessages(ChangeRequestValidationContext context) {
+        List<String> errorMessages = new ArrayList<String>();
+
         if (isCurrentStatusEqual(context) && changeRequestDetailsEquals(context)) {
-            getMessages().add(getErrorMessage("changeRequest.noChanges"));
-            return false;
-        } else {
-            return true;
+            errorMessages.add(getErrorMessage("changeRequest.noChanges"));
         }
+        return errorMessages;
     }
 
     private Boolean isCurrentStatusEqual(ChangeRequestValidationContext context) {

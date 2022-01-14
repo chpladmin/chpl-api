@@ -6,7 +6,7 @@ import gov.healthit.chpl.manager.rules.ValidationRule;
 
 public class DeveloperWebsiteRequiredValidation extends ValidationRule<DeveloperValidationContext> {
     @Override
-    public boolean isValid(DeveloperValidationContext context) {
+    public boolean getErrorMessages(DeveloperValidationContext context) {
         if (StringUtils.isEmpty(context.getDeveloperDTO().getWebsite())) {
             getMessages().add(context.getErrorMessageUtil().getMessage("developer.websiteRequired"));
             return false;

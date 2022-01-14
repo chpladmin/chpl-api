@@ -43,10 +43,12 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
     }
 
     @Override
-    public boolean isValid(ChangeRequestValidationContext context) {
+    public List<String> getErrorMessages(ChangeRequestValidationContext context) {
+        List<String> errorMessages = new ArrayList<String>();
+
         // It's fine if it's not set... We aren't going to do anything with it.
         if (!doesCurrentStatusExist(context.getNewChangeRequest())) {
-            return true;
+            return errorMessages;
         }
 
         // Make sure the current status type is is valid
@@ -55,8 +57,8 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
             crStatusTypeDAO.getChangeRequestStatusTypeById(
                     context.getNewChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId());
         } catch (EntityRetrievalException e) {
-            getMessages().add(getErrorMessage("changeRequest.statusType.notExists"));
-            return false;
+            errorMessages.add(getErrorMessage("changeRequest.statusType.notExists"));
+            return errorMessages;
         }
 
 
@@ -65,17 +67,15 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
         if (resourcePermissions.isUserRoleDeveloperAdmin()
                 && !getValidStatusesForDeveloper().contains(statusTypeId)) {
 
-            getMessages().add(getErrorMessage("changeRequest.statusType.invalid"));
-            return false;
+            errorMessages.add(getErrorMessage("changeRequest.statusType.invalid"));
         } else if ((resourcePermissions.isUserRoleAcbAdmin()
                 || resourcePermissions.isUserRoleOnc()
                 || resourcePermissions.isUserRoleAdmin())
                 && !getValidStatusesForChangeRequestAdmin().contains(statusTypeId)) {
 
-            getMessages().add(getErrorMessage("changeRequest.statusType.invalid"));
-            return false;
+            errorMessages.add(getErrorMessage("changeRequest.statusType.invalid"));
         }
-        return true;
+        return errorMessages;
     }
 
     private List<Long> getValidStatusesForDeveloper() {

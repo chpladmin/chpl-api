@@ -13,7 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "attestation", description = "Provides data related to attestations")
+@Tag(name = "attestations", description = "Provides data related to attestations")
 @RestController
 @RequestMapping("/attestations")
 public class AttestationController {

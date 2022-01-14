@@ -8,7 +8,7 @@ import gov.healthit.chpl.manager.rules.ValidationRule;
 public class ComplaintListingValidation extends ValidationRule<ComplaintValidationContext> {
 
     @Override
-    public boolean isValid(ComplaintValidationContext context) {
+    public boolean getErrorMessages(ComplaintValidationContext context) {
         for (ComplaintListingMap complaintListingMap : context.getComplaint().getListings()) {
             // Make sure the listing exists
             try {

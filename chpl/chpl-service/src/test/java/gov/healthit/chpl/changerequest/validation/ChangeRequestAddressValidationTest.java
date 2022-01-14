@@ -32,7 +32,7 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        boolean result = crAddrValidator.isValid(context);
+        boolean result = crAddrValidator.getErrorMessages(context);
         assertTrue(result);
         assertEquals(0, crAddrValidator.getMessages().size());
     }
@@ -47,7 +47,7 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        boolean result = crAddrValidator.isValid(context);
+        boolean result = crAddrValidator.getErrorMessages(context);
         assertTrue(result);
         assertEquals(0, crAddrValidator.getMessages().size());
     }
@@ -62,7 +62,7 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        boolean result = crAddrValidator.isValid(context);
+        boolean result = crAddrValidator.getErrorMessages(context);
         assertTrue(result);
         assertEquals(0, crAddrValidator.getMessages().size());
     }
@@ -77,7 +77,7 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        boolean result = crAddrValidator.isValid(context);
+        boolean result = crAddrValidator.getErrorMessages(context);
         assertFalse(result);
     }
 
@@ -91,7 +91,7 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        boolean result = crAddrValidator.isValid(context);
+        boolean result = crAddrValidator.getErrorMessages(context);
         assertFalse(result);
     }
 
@@ -105,7 +105,7 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        crAddrValidator.isValid(context);
+        crAddrValidator.getErrorMessages(context);
 
         assertEquals(1, crAddrValidator.getMessages().size());
         assertTrue(crAddrValidator.getMessages().contains("Developer street address is required."));
@@ -121,7 +121,7 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        boolean result = crAddrValidator.isValid(context);
+        boolean result = crAddrValidator.getErrorMessages(context);
         assertFalse(result);
     }
 
@@ -135,7 +135,7 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        boolean result = crAddrValidator.isValid(context);
+        boolean result = crAddrValidator.getErrorMessages(context);
         assertFalse(result);
     }
 
@@ -149,7 +149,7 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        crAddrValidator.isValid(context);
+        crAddrValidator.getErrorMessages(context);
 
         assertEquals(1, crAddrValidator.getMessages().size());
         assertTrue(crAddrValidator.getMessages().contains("Developer city is required."));
@@ -165,7 +165,7 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        boolean result = crAddrValidator.isValid(context);
+        boolean result = crAddrValidator.getErrorMessages(context);
         assertFalse(result);
     }
 
@@ -179,7 +179,7 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        boolean result = crAddrValidator.isValid(context);
+        boolean result = crAddrValidator.getErrorMessages(context);
         assertFalse(result);
     }
 
@@ -193,7 +193,7 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        crAddrValidator.isValid(context);
+        crAddrValidator.getErrorMessages(context);
 
         assertEquals(1, crAddrValidator.getMessages().size());
         assertTrue(crAddrValidator.getMessages().contains("Developer state is required."));
@@ -209,7 +209,7 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        boolean result = crAddrValidator.isValid(context);
+        boolean result = crAddrValidator.getErrorMessages(context);
         assertFalse(result);
     }
 
@@ -223,7 +223,7 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        boolean result = crAddrValidator.isValid(context);
+        boolean result = crAddrValidator.getErrorMessages(context);
         assertFalse(result);
     }
 
@@ -237,7 +237,7 @@ public class ChangeRequestAddressValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
 
-        crAddrValidator.isValid(context);
+        crAddrValidator.getErrorMessages(context);
 
         assertEquals(1, crAddrValidator.getMessages().size());
         assertTrue(crAddrValidator.getMessages().contains("Developer zipcode is required."));

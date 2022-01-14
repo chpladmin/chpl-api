@@ -165,7 +165,7 @@ public class ComplaintManager extends SecuredManager {
                 errorMessageUtil, chplProductNumberUtil);
 
         for (ValidationRule<ComplaintValidationContext> rule : rules) {
-            if (!rule.isValid(context)) {
+            if (!rule.getErrorMessages(context)) {
                 errorMessages.addAll(rule.getMessages());
             }
         }

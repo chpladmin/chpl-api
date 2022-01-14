@@ -12,7 +12,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class DeveloperActiveStatusValidation extends ValidationRule<DeveloperValidationContext> {
     @Override
-    public boolean isValid(DeveloperValidationContext context) {
+    public boolean getErrorMessages(DeveloperValidationContext context) {
         ErrorMessageUtil msgUtil = context.getErrorMessageUtil();
         DeveloperDTO developer = context.getDeveloperDTO();
         DeveloperStatusEventDTO currDevStatus = developer.getStatus();

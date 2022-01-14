@@ -28,7 +28,7 @@ public class ChangeRequestSelfDeveloperValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestSelfDeveloper(true), null);
 
-        boolean result = crSelfDevValidator.isValid(context);
+        boolean result = crSelfDevValidator.getErrorMessages(context);
         assertTrue(result);
         assertEquals(0, crSelfDevValidator.getMessages().size());
     }
@@ -42,7 +42,7 @@ public class ChangeRequestSelfDeveloperValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestSelfDeveloper(false), null);
 
-        boolean result = crSelfDevValidator.isValid(context);
+        boolean result = crSelfDevValidator.getErrorMessages(context);
         assertTrue(result);
         assertEquals(0, crSelfDevValidator.getMessages().size());
     }
@@ -56,7 +56,7 @@ public class ChangeRequestSelfDeveloperValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestSelfDeveloper("JUNK"), null);
 
-        boolean result = crSelfDevValidator.isValid(context);
+        boolean result = crSelfDevValidator.getErrorMessages(context);
         assertFalse(result);
         assertEquals(1, crSelfDevValidator.getMessages().size());
     }
@@ -70,7 +70,7 @@ public class ChangeRequestSelfDeveloperValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestSelfDeveloper(null), null);
 
-        boolean result = crSelfDevValidator.isValid(context);
+        boolean result = crSelfDevValidator.getErrorMessages(context);
         assertFalse(result);
         assertEquals(1, crSelfDevValidator.getMessages().size());
     }

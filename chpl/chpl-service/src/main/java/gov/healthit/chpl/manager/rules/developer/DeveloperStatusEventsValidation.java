@@ -11,7 +11,7 @@ import gov.healthit.chpl.manager.rules.ValidationRule;
 
 public class DeveloperStatusEventsValidation extends ValidationRule<DeveloperValidationContext> {
     @Override
-    public boolean isValid(DeveloperValidationContext context) {
+    public boolean getErrorMessages(DeveloperValidationContext context) {
         List<String> errors = validateDeveloperStatusEvents(context.getDeveloperDTO().getStatusEvents(), context);
         if (!errors.isEmpty()) {
             getMessages().addAll(errors);

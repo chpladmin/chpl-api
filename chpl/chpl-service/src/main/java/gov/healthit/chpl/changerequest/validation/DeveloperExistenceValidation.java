@@ -1,5 +1,8 @@
 package gov.healthit.chpl.changerequest.validation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,25 +21,27 @@ public class DeveloperExistenceValidation extends ValidationRule<ChangeRequestVa
     }
 
     @Override
-    public boolean isValid(ChangeRequestValidationContext context) {
+    public List<String> getErrorMessages(ChangeRequestValidationContext context) {
+        List<String> errorMessages = new ArrayList<String>();
+
         // Is the developer null?
         if (context.getNewChangeRequest().getDeveloper() == null
                 || context.getNewChangeRequest().getDeveloper().getDeveloperId() == null) {
-            getMessages().add(getErrorMessage("changeRequest.developer.required"));
-            return false;
+            errorMessages.add(getErrorMessage("changeRequest.developer.required"));
+            return errorMessages;
         }
 
         try {
             developerDAO.getById(context.getNewChangeRequest().getDeveloper().getDeveloperId());
         } catch (EntityRetrievalException e) {
-            getMessages().add(getErrorMessage("changeRequest.developer.invalid"));
-            return false;
+            errorMessages.add(getErrorMessage("changeRequest.developer.invalid"));
+            return errorMessages;
         } catch (Exception e) {
             // This would probably be a NPE, but will be caught by other
             // validators
-            return true;
+            return errorMessages;
         }
-        return true;
+        return errorMessages;
     }
 
 }

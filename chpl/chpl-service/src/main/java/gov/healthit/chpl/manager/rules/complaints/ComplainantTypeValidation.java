@@ -18,7 +18,7 @@ public class ComplainantTypeValidation extends ValidationRule<ComplaintValidatio
     private List<ComplainantType> complainantTypes;
 
     @Override
-    public boolean isValid(ComplaintValidationContext context) {
+    public boolean getErrorMessages(ComplaintValidationContext context) {
         this.context = context;
         try {
             // Get all of the complainant types for validation purposes..

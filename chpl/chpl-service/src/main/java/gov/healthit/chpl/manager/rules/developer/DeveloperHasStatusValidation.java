@@ -12,7 +12,7 @@ public class DeveloperHasStatusValidation extends ValidationRule<DeveloperValida
     private static final Logger LOGGER = LogManager.getLogger(DeveloperHasStatusValidation.class);
 
     @Override
-    public boolean isValid(DeveloperValidationContext context) {
+    public boolean getErrorMessages(DeveloperValidationContext context) {
         ErrorMessageUtil msgUtil = context.getErrorMessageUtil();
         DeveloperDTO beforeDev = context.getBeforeDev();
         DeveloperStatusEventDTO currDevStatus = beforeDev.getStatus();

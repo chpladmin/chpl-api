@@ -28,6 +28,7 @@ public class ChangeRequestValidationService {
     private SelfDeveloperValidation selfDeveloperValidation;
     private AddressValidation addressValidation;
     private ContactValidation contactValidation;
+    private AttestationValidation attestationValidation;
 
     private Long websiteChangeRequestTypeId;
     private Long developerDetailsChangeRequestTypeId;
@@ -51,6 +52,7 @@ public class ChangeRequestValidationService {
             SelfDeveloperValidation selfDeveloperValidation,
             AddressValidation addressValidation,
             ContactValidation contactValidation,
+            AttestationValidation attestationValidation,
             @Value("${changerequest.website}") Long websiteChangeRequestTypeId,
             @Value("${changerequest.developerDetails}") Long developerDetailsChangeRequestTypeId,
             @Value("${changerequest.attestation}") Long attestationChangeRequestTypeId) {
@@ -70,6 +72,7 @@ public class ChangeRequestValidationService {
         this.selfDeveloperValidation = selfDeveloperValidation;
         this.addressValidation = addressValidation;
         this.contactValidation = contactValidation;
+        this.attestationValidation = attestationValidation;
 
         this.websiteChangeRequestTypeId = websiteChangeRequestTypeId;
         this.developerDetailsChangeRequestTypeId = developerDetailsChangeRequestTypeId;
@@ -113,7 +116,8 @@ public class ChangeRequestValidationService {
     }
 
     private List<ValidationRule<ChangeRequestValidationContext>> getAttestationValidations() {
-        return new ArrayList<ValidationRule<ChangeRequestValidationContext>>();
+        return new ArrayList<ValidationRule<ChangeRequestValidationContext>>(Arrays.asList(
+                attestationValidation));
     }
 
     private Boolean isNewChangeRequest(ChangeRequestValidationContext context) {
@@ -144,8 +148,8 @@ public class ChangeRequestValidationService {
         try {
             List<String> errorMessages = new ArrayList<String>();
             for (ValidationRule<ChangeRequestValidationContext> rule : rules) {
-                if (rule != null && !rule.isValid(context)) {
-                    errorMessages.addAll(rule.getMessages());
+                if (rule != null) {
+                    errorMessages.addAll(rule.getErrorMessages(context));
                 }
             }
             return errorMessages;

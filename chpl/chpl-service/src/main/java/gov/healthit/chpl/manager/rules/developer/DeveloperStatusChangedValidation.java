@@ -22,7 +22,7 @@ public class DeveloperStatusChangedValidation extends ValidationRule<DeveloperVa
     }
 
     @Override
-    public boolean isValid(DeveloperValidationContext context) {
+    public boolean getErrorMessages(DeveloperValidationContext context) {
         ErrorMessageUtil msgUtil = context.getErrorMessageUtil();
         DeveloperDTO updatedDev = context.getDeveloperDTO();
         DeveloperDTO beforeDev = context.getBeforeDev();

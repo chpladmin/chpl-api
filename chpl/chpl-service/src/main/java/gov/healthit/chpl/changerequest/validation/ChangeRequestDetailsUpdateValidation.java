@@ -1,6 +1,8 @@
 package gov.healthit.chpl.changerequest.validation;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,16 +26,20 @@ public class ChangeRequestDetailsUpdateValidation extends ValidationRule<ChangeR
     }
 
     @Override
-    public boolean isValid(ChangeRequestValidationContext context) {
+    public List<String> getErrorMessages(ChangeRequestValidationContext context) {
+        List<String> errorMessages = new ArrayList<String>();
+
         if (resourcePermissions.isUserRoleDeveloperAdmin()) {
             if (context.getNewChangeRequest().getDetails() != null) {
                 if (isChangeRequestWebsite(context)) {
-                    return isChangeRequestWebsiteValid((HashMap) context.getNewChangeRequest().getDetails());
+                    if (isChangeRequestWebsiteValid((HashMap) context.getNewChangeRequest().getDetails())) {
+                        errorMessages.add("Change request is not valid.");
+                    }
                 }
             }
         }
 
-        return true;
+        return errorMessages;
     }
 
     private boolean isChangeRequestWebsiteValid(HashMap<String, String> map) {

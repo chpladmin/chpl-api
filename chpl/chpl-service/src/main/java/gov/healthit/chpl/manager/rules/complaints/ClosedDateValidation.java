@@ -9,7 +9,7 @@ import gov.healthit.chpl.manager.rules.ValidationRule;
 public class ClosedDateValidation extends ValidationRule<ComplaintValidationContext> {
 
     @Override
-    public boolean isValid(ComplaintValidationContext context) {
+    public boolean getErrorMessages(ComplaintValidationContext context) {
         if (context.getComplaint().getClosedDate() != null) {
             // Closed Date may not be in the future
             if (context.getComplaint().getClosedDate().isAfter(LocalDate.now())) {
