@@ -322,6 +322,118 @@
 				"description": "GET /search/beta request using IS_ELIGIBLE filter should return 400 status and error"
 			},
 			"response": []
+		},
+		{
+			"name": "POST /search/beta - 200 status using valid rwt  parameters",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"POST /search/beta end point should return 200 status and correct response when valid rwt filters are used\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"        pm.response.to.have.status(200);\r",
+							"        pm.expect(jsonData.results[0]).to.have.property('rwtPlansUrl');\r",
+							"        pm.expect(jsonData.results[0]).to.have.property('rwtResultsUrl');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "API-KEY",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"rwtOptions\": [\r\n       \"HAS_PLANS_URL\",\r\n       \"HAS_RESULTS_URL\" \r\n    ],\r\n    \"rwtOperator\": \"OR\"\r\n}"
+				},
+				"url": {
+					"raw": "{{url}}/rest/search/beta",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"search",
+						"beta"
+					]
+				},
+				"description": "POST /search/beta end point should return 200 status and correct response when valid rwt filters are used"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /search/beta - 200 status for valid rwt parameters",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"GET /search/beta end point should return 200 status and correct response using valid rwt parameters\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"        pm.response.to.have.status(200);\r",
+							"        pm.expect(jsonData.results[0]).to.have.property('rwtPlansUrl');\r",
+							"        pm.expect(jsonData.results[0]).to.have.property('rwtResultsUrl');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/search/beta?rwtOptions=HAS_PLANS_URL&rwtOptions=HAS_RESULTS_URL&rwtOperator=OR",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"search",
+						"beta"
+					],
+					"query": [
+						{
+							"key": "rwtOptions",
+							"value": "HAS_PLANS_URL"
+						},
+						{
+							"key": "rwtOptions",
+							"value": "HAS_RESULTS_URL"
+						},
+						{
+							"key": "rwtOperator",
+							"value": "OR"
+						}
+					]
+				},
+				"description": "GET /search/beta end point should return 200 status and correct response using valid rwt parameters"
+			},
+			"response": []
 		}
 	]
 }
