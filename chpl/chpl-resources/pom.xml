@@ -10,6 +10,26 @@
   <name>chpl-resources</name>
   <description>shared resource files</description>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+      </plugin>
+      <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <dependencies>
+            <dependency>
+              <groupId>com.puppycrawl.tools</groupId>
+              <artifactId>checkstyle</artifactId>
+              <version>${checkstyle.version}</version>
+            </dependency>
+          </dependencies>
+       </plugin>
+    </plugins>
+  </build>
+
     <profiles>
         <profile>
             <id>environment-specific</id>
@@ -28,7 +48,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-resources-plugin</artifactId>
-                        <version>2.7</version>
+                        <version>${mvn.resources.plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>copy-resources</id>
@@ -39,9 +59,8 @@
                                 <configuration>
                                     <outputDirectory>${project.build.outputDirectory}</outputDirectory>
                                     <resources>
-                                        <!-- note the order of the following resource
-                                            elements are important. if there are duplicate files, the first file copied
-                                            will win -->
+                                        <!-- Note the order of the following resource elements are important. 
+                                             If there are duplicate files, the first file copied will win. -->
                                         <resource>
                                             <directory>src/main/resources-${env}</directory>
                                         </resource>
@@ -58,38 +77,17 @@
         </profile>
     </profiles>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-site-plugin</artifactId>
-        <version>3.8.2</version>
-      </plugin>
-      <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>3.1.0</version>
-          <dependencies>
-            <dependency>
-              <groupId>com.puppycrawl.tools</groupId>
-              <artifactId>checkstyle</artifactId>
-              <version>8.29</version>
-            </dependency>
-          </dependencies>
-       </plugin>
-    </plugins>
-  </build>
     <reporting>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
-                <version>2.5</version>
+                <version>${mvn.jxr.plugin.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>${checkstyle.plugin.version}</version>
                 <configuration>
                     <configLocation>../chpl-checkstyle-checks.xml</configLocation>
                 </configuration>
@@ -100,20 +98,6 @@
                         </reports>
                     </reportSet>
                 </reportSets>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>3.0.5</version>
-                <configuration>
-                    <effort>Max</effort>
-                    <threshold>Low</threshold>
-                    <!--<threshold>High</threshold> -->
-                    <xmlOutput>true</xmlOutput>
-                    <failOnError>false</failOnError>
-                    <findbugsXmlOutput>true</findbugsXmlOutput>
-                    <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
-                </configuration>
             </plugin>
         </plugins>
     </reporting>

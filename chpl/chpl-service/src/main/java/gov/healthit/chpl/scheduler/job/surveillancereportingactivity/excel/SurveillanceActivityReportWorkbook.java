@@ -14,23 +14,29 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "surveillanceActivityReportJobLogger")
 public class SurveillanceActivityReportWorkbook {
+    private XSSFWorkbookFactory workbookFactory;
+
+    public SurveillanceActivityReportWorkbook() {
+        workbookFactory = new XSSFWorkbookFactory();
+    }
 
     @SuppressWarnings("resource")
     public File generateWorkbook(List<SurveillanceData> surveillances, List<CertificationBodyDTO> allAcbs) throws IOException {
+        Workbook workbook = null;
         try {
             LOGGER.info("Starting to build the Excel spreadhseet.");
-            Workbook workbook = XSSFWorkbookFactory.create(true);
+            workbook = workbookFactory.create();
 
             SurveillanceDataWorksheet surveillanceDataWorksheet = new SurveillanceDataWorksheet(workbook);
             StatisticsWorksheet statsSheet = new StatisticsWorksheet(workbook, allAcbs);
             ChartsWorksheet chartsSheet = new ChartsWorksheet(workbook, allAcbs);
-
             surveillanceDataWorksheet.generateWorksheet(surveillances);
             statsSheet.generateWorksheet(surveillances);
             chartsSheet.generateWorksheet(surveillances);
             return writeFileToDisk(workbook);
         } finally {
             LOGGER.info("Completed to build the Excel spreadhseet.");
+            workbook.close();
         }
     }
 

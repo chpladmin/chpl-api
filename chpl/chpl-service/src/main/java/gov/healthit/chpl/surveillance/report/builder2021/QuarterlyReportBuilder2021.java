@@ -53,6 +53,7 @@ public class QuarterlyReportBuilder2021 implements QuarterlyReportBuilderXlsx {
         //hide the ListSheet
         workbook.getWorkbook().setSheetHidden(0, true);
         workbook.getWorkbook().setActiveSheet(1);
+        workbook.close();
         return workbook.getWorkbook();
     }
 }

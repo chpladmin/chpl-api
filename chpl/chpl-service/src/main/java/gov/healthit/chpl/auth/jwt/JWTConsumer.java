@@ -44,7 +44,7 @@ public class JWTConsumer {
             return jwtClaims.getClaimsMap();
         } catch (InvalidJwtException e) {
             LOGGER.error("Invalid JWT - " + e.getMessage());
-            throw new InvalidJwtException("Invalid JWT - failed in JWTConsumerRsaJoseJImpl.");
+            throw e;
         }
     }
 }
