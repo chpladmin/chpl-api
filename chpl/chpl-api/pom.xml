@@ -92,7 +92,7 @@
         <dependency>
             <groupId>org.ff4j</groupId>
             <artifactId>ff4j-web</artifactId>
-            <version>1.8</version>
+            <version>${ff4j.version}</version>
         </dependency>
         <!-- javamelody-core -->
         <dependency>
