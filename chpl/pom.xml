@@ -26,7 +26,7 @@
         <commons.csv.version>1.9.0</commons.csv.version>
         <commons.fileupload.version>1.4</commons.fileupload.version>
         <asynchttpclient.version>2.12.3</asynchttpclient.version>
-        <ff4j.version>1.8.12</ff4j.version>
+        <ff4j.version>1.8</ff4j.version>
         <junit.version>5.8.2</junit.version>
         <checkstyle.version>9.2.1</checkstyle.version>
         <checkstyle.plugin.version>3.1.2</checkstyle.plugin.version>
