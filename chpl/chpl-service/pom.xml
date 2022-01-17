@@ -75,10 +75,12 @@
             <artifactId>hibernate-jpa-2.1-api</artifactId>
             <version>1.0.2.Final</version>
         </dependency>
+        <!-- would like to update hibernate-validator to the latest (7.0.1.Final) but we have lots 
+             of validation exceptions that occur at query-time with the new library -->
         <dependency>
-            <groupId>org.hibernate.validator</groupId>
+            <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>7.0.1.Final</version>
+            <version>5.3.6.Final</version>
         </dependency>
         <dependency>
           <groupId>javax.validation</groupId>
