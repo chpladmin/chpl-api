@@ -44,7 +44,6 @@ public class SurveillanceActivityReportWorkbook {
         File saveFile = File.createTempFile("surveillance_activity_report", ".xlsx");
         try (FileOutputStream outputStream = new FileOutputStream(saveFile)) {
             workbook.write(outputStream);
-            workbook.close();
         }
         return saveFile;
     }
