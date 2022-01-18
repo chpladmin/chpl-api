@@ -25,7 +25,7 @@ public class RoleAcbHasMultipleCertificationBodiesValidation extends ValidationR
 
         if (resourcePermissions.isUserRoleAcbAdmin()
                 && resourcePermissions.getAllAcbsForCurrentUser().size() > 1) {
-            errorMessages.add(getErrorMessageFromResource("changeRequest.multipleAcbs"));
+            errorMessages.add(getErrorMessage("changeRequest.multipleAcbs"));
         }
         return errorMessages;
     }

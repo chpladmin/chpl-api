@@ -25,7 +25,7 @@ public class ChangeRequestTypeValidation extends ValidationRule<ChangeRequestVal
 
         if (context.getNewChangeRequest().getChangeRequestType() == null
                 || context.getNewChangeRequest().getChangeRequestType().getId() == null) {
-            errorMessages.add(getErrorMessageFromResource("changeRequest.changeRequestType.required"));
+            errorMessages.add(getErrorMessage("changeRequest.changeRequestType.required"));
             return errorMessages;
         }
 
@@ -33,7 +33,7 @@ public class ChangeRequestTypeValidation extends ValidationRule<ChangeRequestVal
         try {
             crTypeDAO.getChangeRequestTypeById(context.getNewChangeRequest().getChangeRequestType().getId());
         } catch (EntityRetrievalException e) {
-            errorMessages.add(getErrorMessageFromResource("changeRequest.changeRequestType.invalid"));
+            errorMessages.add(getErrorMessage("changeRequest.changeRequestType.invalid"));
         }
 
         return errorMessages;

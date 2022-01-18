@@ -27,25 +27,25 @@ public class ComplainantTypeValidation extends ValidationRule<ComplaintValidatio
             // Complainant type is required
             if (context.getComplaint().getComplainantType() == null
                     || context.getComplaint().getComplainantType().getId() == null) {
-                getMessages().add(getErrorMessageFromResource("complaints.complainantType.required"));
+                getMessages().add(getErrorMessage("complaints.complainantType.required"));
                 return false;
             }
 
             // Complainant type value must exist
             if (!doesComplainantTypeExist(context.getComplaint().getComplainantType().getId())) {
-                getMessages().add(getErrorMessageFromResource("complaints.complainantType.notExists"));
+                getMessages().add(getErrorMessage("complaints.complainantType.notExists"));
                 return false;
             }
 
             // Complainant type other must exist if complaint type = other
             if (isComplainantTypeSetToOther(context.getComplaint().getComplainantType())
                     && StringUtils.isEmpty(context.getComplaint().getComplainantTypeOther())) {
-                getMessages().add(getErrorMessageFromResource("complaints.complainantType.otherMissing"));
+                getMessages().add(getErrorMessage("complaints.complainantType.otherMissing"));
                 return false;
             }
             return true;
         } catch (Exception e) {
-            String error = getErrorMessageFromResource("complaints.error");
+            String error = getErrorMessage("complaints.error");
             LOGGER.error(error, e);
             getMessages().add(error);
             return false;

@@ -18,12 +18,12 @@ public class ComplaintStatusOpen extends ValidationRule<ComplaintValidationConte
             if (context.getComplaint().getClosedDate() == null) {
                 return true;
             } else {
-                getMessages().add(getErrorMessageFromResource("complaints.create.statusOpen"));
+                getMessages().add(getErrorMessage("complaints.create.statusOpen"));
                 return false;
             }
 
         } catch (Exception e) {
-            String error = getErrorMessageFromResource("complaints.error");
+            String error = getErrorMessage("complaints.error");
             LOGGER.error(error, e);
             getMessages().add(error);
             return false;

@@ -8,7 +8,7 @@ public class DeveloperNameValidation extends ValidationRule<DeveloperValidationC
     @Override
     public boolean getErrorMessages(DeveloperValidationContext context) {
         if (StringUtils.isEmpty(context.getDeveloperDTO().getName())) {
-            getMessages().add(getErrorMessageFromResource("developer.nameRequired"));
+            getMessages().add(getErrorMessage("developer.nameRequired"));
             return false;
         }
         return true;

@@ -57,7 +57,7 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
             crStatusTypeDAO.getChangeRequestStatusTypeById(
                     context.getNewChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId());
         } catch (EntityRetrievalException e) {
-            errorMessages.add(getErrorMessageFromResource("changeRequest.statusType.notExists"));
+            errorMessages.add(getErrorMessage("changeRequest.statusType.notExists"));
             return errorMessages;
         }
 
@@ -67,13 +67,13 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
         if (resourcePermissions.isUserRoleDeveloperAdmin()
                 && !getValidStatusesForDeveloper().contains(statusTypeId)) {
 
-            errorMessages.add(getErrorMessageFromResource("changeRequest.statusType.invalid"));
+            errorMessages.add(getErrorMessage("changeRequest.statusType.invalid"));
         } else if ((resourcePermissions.isUserRoleAcbAdmin()
                 || resourcePermissions.isUserRoleOnc()
                 || resourcePermissions.isUserRoleAdmin())
                 && !getValidStatusesForChangeRequestAdmin().contains(statusTypeId)) {
 
-            errorMessages.add(getErrorMessageFromResource("changeRequest.statusType.invalid"));
+            errorMessages.add(getErrorMessage("changeRequest.statusType.invalid"));
         }
         return errorMessages;
     }

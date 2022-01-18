@@ -28,7 +28,7 @@ public class SelfDeveloperValidation extends ValidationRule<ChangeRequestValidat
         if (resourcePermissions.isUserRoleDeveloperAdmin()) {
             HashMap<String, Object> map = (HashMap) context.getNewChangeRequest().getDetails();
             if (map.containsKey("selfDeveloper") && !isChangeRequestSelfDeveloperValid(map)) {
-                errorMessages.add(getErrorMessageFromResource("changeRequest.details.selfDeveloper.invalid"));
+                errorMessages.add(getErrorMessage("changeRequest.details.selfDeveloper.invalid"));
             }
         }
         return errorMessages;

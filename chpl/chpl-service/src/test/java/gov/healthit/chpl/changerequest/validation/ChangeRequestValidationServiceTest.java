@@ -30,60 +30,74 @@ public class ChangeRequestValidationServiceTest {
     private SelfDeveloperValidation selfDeveloperValidation;
     private AddressValidation addressValidation;
     private ContactValidation contactValidation;
-    private AttestationValidation attestationValidation;
 
-    private static final Long WEBSITE_CHANGE_REQUEST_TYPE_ID = 1L;
-    private static final Long DEVELOPER_DETAILS_CHANGE_REQUEST_ID = 2L;
-    private static final Long ATTESTATION_CHANGE_REQUEST_ID = 3L;
+    private Long websiteChangeRequestTypeId = 1L;
+    private Long developerDetailsChangeRequestTypeId = 2L;
+    private Long attestationChangeRequestTypeId = 3L;
 
     private ChangeRequestValidationService changeRequestValidationService;
 
     @Before
     public void setup() {
         changeRequestCreateValidation = Mockito.mock(ChangeRequestCreateValidation.class);
-        Mockito.when(changeRequestCreateValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(Arrays.asList("Error message"));
+        Mockito.when(changeRequestCreateValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(false);
+        Mockito.when(changeRequestCreateValidation.getMessages()).thenReturn(Arrays.asList("Error message"));
 
         changeRequestDetailsUpdateValidation = Mockito.mock(ChangeRequestDetailsUpdateValidation.class);
-        Mockito.when(changeRequestDetailsUpdateValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(Arrays.asList("Error message"));
+        Mockito.when(changeRequestDetailsUpdateValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(false);
+        Mockito.when(changeRequestDetailsUpdateValidation.getMessages()).thenReturn(Arrays.asList("Error message"));
 
         changeRequestTypeValidation = Mockito.mock(ChangeRequestTypeValidation.class);
-        Mockito.when(changeRequestTypeValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(Arrays.asList("Error message"));
+        Mockito.when(changeRequestTypeValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(false);
+        Mockito.when(changeRequestTypeValidation.getMessages()).thenReturn(Arrays.asList("Error message"));
 
         currentStatusValidation = Mockito.mock(CurrentStatusValidation.class);
-        Mockito.when(currentStatusValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(Arrays.asList("Error message"));
+        Mockito.when(currentStatusValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(false);
+        Mockito.when(currentStatusValidation.getMessages()).thenReturn(Arrays.asList("Error message"));
 
         developerExistenceValidation = Mockito.mock(DeveloperExistenceValidation.class);
-        Mockito.when(developerExistenceValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(Arrays.asList("Error message"));
+        Mockito.when(developerExistenceValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(false);
+        Mockito.when(developerExistenceValidation.getMessages()).thenReturn(Arrays.asList("Error message"));
 
         developerActiveValidation = Mockito.mock(DeveloperActiveValidation.class);
-        Mockito.when(developerActiveValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(Arrays.asList("Error message"));
+        Mockito.when(developerActiveValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(false);
+        Mockito.when(developerActiveValidation.getMessages()).thenReturn(Arrays.asList("Error message"));
 
         changeRequestNotUpdatableDueToStatusValidation = Mockito.mock(ChangeRequestNotUpdatableDueToStatusValidation.class);
-        Mockito.when(changeRequestNotUpdatableDueToStatusValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(Arrays.asList("Error message"));
+        Mockito.when(changeRequestNotUpdatableDueToStatusValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(false);
+        Mockito.when(changeRequestNotUpdatableDueToStatusValidation.getMessages()).thenReturn(Arrays.asList("Error message"));
 
         changeRequestTypeInProcessValidation = Mockito.mock(ChangeRequestTypeInProcessValidation.class);
-        Mockito.when(changeRequestTypeInProcessValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(Arrays.asList("Error message"));
+        Mockito.when(changeRequestTypeInProcessValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(false);
+        Mockito.when(changeRequestTypeInProcessValidation.getMessages()).thenReturn(Arrays.asList("Error message"));
 
         changeRequestModificationValidation = Mockito.mock(ChangeRequestModificationValidation.class);
-        Mockito.when(changeRequestModificationValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(Arrays.asList("Error message"));
+        Mockito.when(changeRequestModificationValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(false);
+        Mockito.when(changeRequestModificationValidation.getMessages()).thenReturn(Arrays.asList("Error message"));
 
         commentRequiredValidation = Mockito.mock(CommentRequiredValidation.class);
-        Mockito.when(commentRequiredValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(Arrays.asList("Error message"));
+        Mockito.when(commentRequiredValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(false);
+        Mockito.when(commentRequiredValidation.getMessages()).thenReturn(Arrays.asList("Error message"));
 
         roleAcbHasMultipleCertificationBodiesValidation = Mockito.mock(RoleAcbHasMultipleCertificationBodiesValidation.class);
-        Mockito.when(roleAcbHasMultipleCertificationBodiesValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(Arrays.asList("Error message"));
+        Mockito.when(roleAcbHasMultipleCertificationBodiesValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(false);
+        Mockito.when(roleAcbHasMultipleCertificationBodiesValidation.getMessages()).thenReturn(Arrays.asList("Error message"));
 
         websiteValidation = Mockito.mock(WebsiteValidation.class);
-        Mockito.when(websiteValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(Arrays.asList("Error message"));
+        Mockito.when(websiteValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(false);
+        Mockito.when(websiteValidation.getMessages()).thenReturn(Arrays.asList("Error message"));
 
         selfDeveloperValidation = Mockito.mock(SelfDeveloperValidation.class);
-        Mockito.when(selfDeveloperValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(Arrays.asList("Error message"));
+        Mockito.when(selfDeveloperValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(false);
+        Mockito.when(selfDeveloperValidation.getMessages()).thenReturn(Arrays.asList("Error message"));
 
         addressValidation = Mockito.mock(AddressValidation.class);
-        Mockito.when(addressValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(Arrays.asList("Error message"));
+        Mockito.when(addressValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(false);
+        Mockito.when(addressValidation.getMessages()).thenReturn(Arrays.asList("Error message"));
 
         contactValidation = Mockito.mock(ContactValidation.class);
-        Mockito.when(contactValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(Arrays.asList("Error message"));
+        Mockito.when(contactValidation.getErrorMessages(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(false);
+        Mockito.when(contactValidation.getMessages()).thenReturn(Arrays.asList("Error message"));
 
         changeRequestValidationService = new ChangeRequestValidationService(
                 changeRequestCreateValidation,
@@ -101,10 +115,9 @@ public class ChangeRequestValidationServiceTest {
                 selfDeveloperValidation,
                 addressValidation,
                 contactValidation,
-                attestationValidation,
-                WEBSITE_CHANGE_REQUEST_TYPE_ID,
-                DEVELOPER_DETAILS_CHANGE_REQUEST_ID,
-                ATTESTATION_CHANGE_REQUEST_ID);
+                websiteChangeRequestTypeId,
+                developerDetailsChangeRequestTypeId,
+                attestationChangeRequestTypeId);
     }
 
     @Test
@@ -112,7 +125,7 @@ public class ChangeRequestValidationServiceTest {
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
                 .newChangeRequest(ChangeRequest.builder()
                         .changeRequestType(ChangeRequestType.builder()
-                                .id(WEBSITE_CHANGE_REQUEST_TYPE_ID)
+                                .id(websiteChangeRequestTypeId)
                                 .build())
                         .build())
                 .build();
@@ -127,7 +140,7 @@ public class ChangeRequestValidationServiceTest {
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
                 .newChangeRequest(ChangeRequest.builder()
                         .changeRequestType(ChangeRequestType.builder()
-                                .id(DEVELOPER_DETAILS_CHANGE_REQUEST_ID)
+                                .id(developerDetailsChangeRequestTypeId)
                                 .build())
                         .build())
                 .build();
@@ -142,7 +155,7 @@ public class ChangeRequestValidationServiceTest {
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
                 .newChangeRequest(ChangeRequest.builder()
                         .changeRequestType(ChangeRequestType.builder()
-                                .id(ATTESTATION_CHANGE_REQUEST_ID)
+                                .id(attestationChangeRequestTypeId)
                                 .build())
                         .build())
                 .build();
@@ -157,12 +170,12 @@ public class ChangeRequestValidationServiceTest {
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
                 .newChangeRequest(ChangeRequest.builder()
                         .changeRequestType(ChangeRequestType.builder()
-                                .id(WEBSITE_CHANGE_REQUEST_TYPE_ID)
+                                .id(websiteChangeRequestTypeId)
                                 .build())
                         .build())
                 .origChangeRequest(ChangeRequest.builder()
                         .changeRequestType(ChangeRequestType.builder()
-                                .id(WEBSITE_CHANGE_REQUEST_TYPE_ID)
+                                .id(websiteChangeRequestTypeId)
                                 .build())
                         .build())
                 .build();
@@ -177,12 +190,12 @@ public class ChangeRequestValidationServiceTest {
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
                 .newChangeRequest(ChangeRequest.builder()
                         .changeRequestType(ChangeRequestType.builder()
-                                .id(DEVELOPER_DETAILS_CHANGE_REQUEST_ID)
+                                .id(developerDetailsChangeRequestTypeId)
                                 .build())
                         .build())
                 .origChangeRequest(ChangeRequest.builder()
                         .changeRequestType(ChangeRequestType.builder()
-                                .id(DEVELOPER_DETAILS_CHANGE_REQUEST_ID)
+                                .id(developerDetailsChangeRequestTypeId)
                                 .build())
                         .build())
                 .build();
@@ -197,12 +210,12 @@ public class ChangeRequestValidationServiceTest {
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
                 .newChangeRequest(ChangeRequest.builder()
                         .changeRequestType(ChangeRequestType.builder()
-                                .id(ATTESTATION_CHANGE_REQUEST_ID)
+                                .id(attestationChangeRequestTypeId)
                                 .build())
                         .build())
                 .origChangeRequest(ChangeRequest.builder()
                         .changeRequestType(ChangeRequestType.builder()
-                                .id(ATTESTATION_CHANGE_REQUEST_ID)
+                                .id(attestationChangeRequestTypeId)
                                 .build())
                         .build())
                 .build();

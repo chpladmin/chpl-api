@@ -1,10 +1,10 @@
 package gov.healthit.chpl.changerequest.validation;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
-import java.util.List;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -30,8 +30,9 @@ public class ChangeRequestContactValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestContact(contact), null);
 
-        List<String> result = crContactValidator.getErrorMessages(context);
-        assertEquals(0, result.size());
+        boolean result = crContactValidator.getErrorMessages(context);
+        assertTrue(result);
+        assertEquals(0, crContactValidator.getMessages().size());
     }
 
     @Test
@@ -44,8 +45,9 @@ public class ChangeRequestContactValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestContact(contact), null);
 
-        List<String> result = crContactValidator.getErrorMessages(context);
-        assertEquals(0, result.size());
+        boolean result = crContactValidator.getErrorMessages(context);
+        assertTrue(result);
+        assertEquals(0, crContactValidator.getMessages().size());
     }
 
     @Test
@@ -58,7 +60,8 @@ public class ChangeRequestContactValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestContact(contact), null);
 
-        assertEquals(1, crContactValidator.getErrorMessages(context).size());
+        boolean result = crContactValidator.getErrorMessages(context);
+        assertFalse(result);
     }
 
     @Test
@@ -71,7 +74,8 @@ public class ChangeRequestContactValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestContact(contact), null);
 
-        assertEquals(1, crContactValidator.getErrorMessages(context).size());
+        boolean result = crContactValidator.getErrorMessages(context);
+        assertFalse(result);
     }
 
     @Test
@@ -84,9 +88,9 @@ public class ChangeRequestContactValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestContact(contact), null);
 
-        List<String> errors = crContactValidator.getErrorMessages(context);
-        assertEquals(1, errors.size());
-        assertTrue(errors.contains("Developer contact name is required."));
+        crContactValidator.getErrorMessages(context);
+        assertEquals(1, crContactValidator.getMessages().size());
+        assertTrue(crContactValidator.getMessages().contains("Developer contact name is required."));
     }
 
     @Test
@@ -99,7 +103,8 @@ public class ChangeRequestContactValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestContact(contact), null);
 
-        assertEquals(1, crContactValidator.getErrorMessages(context).size());
+        boolean result = crContactValidator.getErrorMessages(context);
+        assertFalse(result);
     }
 
     @Test
@@ -112,7 +117,8 @@ public class ChangeRequestContactValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestContact(contact), null);
 
-        assertEquals(1, crContactValidator.getErrorMessages(context).size());
+        boolean result = crContactValidator.getErrorMessages(context);
+        assertFalse(result);
     }
 
     @Test
@@ -125,9 +131,9 @@ public class ChangeRequestContactValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestContact(contact), null);
 
-        List<String> errors = crContactValidator.getErrorMessages(context);
-        assertEquals(1, errors.size());
-        assertTrue(errors.contains("Developer contact phone number is required."));
+        crContactValidator.getErrorMessages(context);
+        assertEquals(1, crContactValidator.getMessages().size());
+        assertTrue(crContactValidator.getMessages().contains("Developer contact phone number is required."));
     }
 
     @Test
@@ -140,7 +146,8 @@ public class ChangeRequestContactValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestContact(contact), null);
 
-        assertEquals(1, crContactValidator.getErrorMessages(context).size());
+        boolean result = crContactValidator.getErrorMessages(context);
+        assertFalse(result);
     }
 
     @Test
@@ -153,7 +160,8 @@ public class ChangeRequestContactValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestContact(contact), null);
 
-        assertEquals(1, crContactValidator.getErrorMessages(context).size());
+        boolean result = crContactValidator.getErrorMessages(context);
+        assertFalse(result);
     }
 
     @Test
@@ -166,9 +174,9 @@ public class ChangeRequestContactValidationTest {
         ChangeRequestValidationContext context =
                 new ChangeRequestValidationContext(getChangeRequestContact(contact), null);
 
-        List<String> errors = crContactValidator.getErrorMessages(context);
-        assertEquals(1, errors.size());
-        assertTrue(errors.contains("Developer contact email address is required."));
+        crContactValidator.getErrorMessages(context);
+        assertEquals(1, crContactValidator.getMessages().size());
+        assertTrue(crContactValidator.getMessages().contains("Developer contact email address is required."));
     }
 
     private ChangeRequest getChangeRequestContact(PointOfContact contact) {

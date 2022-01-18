@@ -26,7 +26,7 @@ public class CommentRequiredValidation extends ValidationRule<ChangeRequestValid
         if (ChangeRequestStatusService.doesCurrentStatusExist(context.getNewChangeRequest())) {
             if (isStatusChange(context) && doesNewStatusRequireComment(context)) {
                 if (StringUtils.isEmpty(context.getNewChangeRequest().getCurrentStatus().getComment())) {
-                    errorMessages.add(getErrorMessageFromResource("changeRequest.status.changeRequiresComment"));
+                    errorMessages.add(getErrorMessage("changeRequest.status.changeRequiresComment"));
                 }
             }
         }
