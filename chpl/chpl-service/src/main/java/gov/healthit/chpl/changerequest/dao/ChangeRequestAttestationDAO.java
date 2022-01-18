@@ -28,7 +28,6 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
         ChangeRequestAttestationEntity parent = ChangeRequestAttestationEntity.builder()
                 .changeRequest(getSession().load(ChangeRequestEntity.class, cr.getId()))
                 .period(getAttestationPeriodEntity(crAttestation.getAttestationPeriod().getId()))
-                //.responses(newDeveloperAttestationResponseEntities(crAttestation.getResponses()))
                 .deleted(false)
                 .lastModifiedUser(AuthUtil.getAuditId())
                 .creationDate(new Date())
@@ -57,14 +56,6 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
     public ChangeRequestAttestation getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
         return ChangeRequestConverter.convert(getEntityByChangeRequestId(changeRequestId));
     }
-
-    //public ChangeRequestAttestation update(ChangeRequestAttestation crAttestattion) throws EntityRetrievalException {
-    //    ChangeRequestAttestationEntity entity = getEntity(crAttestattion.getId());
-    //    entity.setAttestation(crAttestattion.getAttestation());
-    //    entity.setLastModifiedUser(AuthUtil.getAuditId());
-    //    update(entity);
-    //    return ChangeRequestConverter.convert(getEntity(entity.getId()));
-    //}
 
     private ChangeRequestAttestationEntity getEntity(Long changeRequestAttestationId) throws EntityRetrievalException {
         String hql = "SELECT DISTINCT crae "

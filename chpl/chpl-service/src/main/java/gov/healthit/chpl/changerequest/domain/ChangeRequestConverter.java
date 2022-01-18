@@ -122,7 +122,7 @@ public final class ChangeRequestConverter {
                         .question(entity.getQuestion().getQuestion())
                         .build())
                 .answer(AttestationAnswer.builder()
-                        .id(entity.getQuestion().getId())
+                        .id(entity.getAnswer().getId())
                         .answer(entity.getAnswer().getAnswer())
                         .build())
                 .build();
