@@ -1,5 +1,8 @@
 package gov.healthit.chpl.manager.auth;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +10,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
@@ -14,17 +18,20 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.auth.ChplAccountStatusException;
 import gov.healthit.chpl.auth.jwt.JWTAuthor;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
+import gov.healthit.chpl.domain.auth.UserInvitation;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.JWTCreationException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
@@ -38,43 +45,72 @@ public class AuthenticationManager {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private UserDetailsChecker userDetailsChecker;
     private ErrorMessageUtil msgUtil;
+    private InvitationManager invitationManager;
+    private Long confirmationWindowInDays;
 
     @Autowired
     public AuthenticationManager(JWTAuthor jwtAuthor, UserManager userManager, UserDAO userDAO,
             BCryptPasswordEncoder bCryptPasswordEncoder,
             @Qualifier("chplAccountStatusChecker") UserDetailsChecker userDetailsChecker,
-            ErrorMessageUtil msgUtil) {
+            ErrorMessageUtil msgUtil, InvitationManager invitationManager,
+            @Value("${resendConfirmationEmailWindowInDays}") Long confirmationWindowInDays) {
         this.jwtAuthor = jwtAuthor;
         this.userManager = userManager;
         this.userDAO = userDAO;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userDetailsChecker = userDetailsChecker;
         this.msgUtil = msgUtil;
+        this.invitationManager = invitationManager;
+        this.confirmationWindowInDays = confirmationWindowInDays;
     }
 
+    @Transactional
     public String authenticate(LoginCredentials credentials)
-            throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
-
-        String jwt = getJWT(credentials);
-        UserDTO user = getUser(credentials);
-        if (user != null && user.isPasswordResetRequired()) {
-            throw new UserRetrievalException(msgUtil.getMessage("auth.changePasswordRequired"));
+            throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException, ChplAccountEmailNotConfirmedException {
+        try {
+            UserDTO user = getUser(credentials);
+            if (user != null && user.isPasswordResetRequired()) {
+                throw new UserRetrievalException(msgUtil.getMessage("auth.changePasswordRequired"));
+            }
+            String jwt = getJWT(credentials);
+            logWhenUsername(credentials, user);
+            return jwt;
+        } catch (ChplAccountEmailNotConfirmedException e) {
+            if (!isConfirmationPeriodExpired(credentials)) {
+                invitationManager.resendConfirmAddressEmailToUser(
+                        userManager.getByNameOrEmailUnsecured(credentials.getUserName()).getId());
+                throw e;
+            } else {
+                throw new ChplAccountStatusException(msgUtil.getMessage("auth.loginNotAllowed"));
+            }
         }
-        logWhenUsername(credentials, user);
-        return jwt;
+    }
+
+    private Boolean isConfirmationPeriodExpired(LoginCredentials credentials) {
+        try {
+            UserDTO user = userDAO.getByNameOrEmail(credentials.getUserName());
+            UserInvitation invitation = invitationManager.getByCreatedUserId(user.getId());
+            LocalDateTime invitationDate = LocalDateTime.ofInstant(invitation.getCreationDate().toInstant(), ZoneId.systemDefault());
+            return Duration.between(invitationDate, LocalDateTime.now()).toDays() > confirmationWindowInDays - 1;
+        } catch (Exception e) {
+            return true;
+        }
     }
 
     public UserDTO getUser(LoginCredentials credentials)
-            throws AccountStatusException, UserRetrievalException, MultipleUserAccountsException {
+            throws AccountStatusException, UserRetrievalException,
+            MultipleUserAccountsException, ChplAccountEmailNotConfirmedException {
+
         UserDTO user = getUserByNameOrEmail(credentials.getUserName());
         if (user != null) {
-            if (user.getSignatureDate() == null) {
-                throw new ChplAccountStatusException(msgUtil.getMessage("auth.accountNotConfirmed", user.getEmail()));
-            }
             if (user.getId() < 0) {
                 throw new ChplAccountStatusException(msgUtil.getMessage("auth.loginNotAllowed"));
             }
             if (checkPassword(credentials.getPassword(), userManager.getEncodedPassword(user))) {
+                if (user.getSignatureDate() == null) {
+                    throw new ChplAccountEmailNotConfirmedException(msgUtil.getMessage("auth.accountNotConfirmed"), credentials.getUserName());
+                }
+
                 userDetailsChecker.check(user);
                 userManager.updateLastLoggedInDate(user);
 
@@ -150,7 +186,7 @@ public class AuthenticationManager {
             user = getUser(credentials);
         } catch (AccountStatusException e1) {
             throw new JWTCreationException(e1.getMessage());
-        } catch (UserRetrievalException | MultipleUserAccountsException e2) {
+        } catch (UserRetrievalException | MultipleUserAccountsException | ChplAccountEmailNotConfirmedException e2) {
             throw new JWTCreationException(e2.getMessage());
         }
 
