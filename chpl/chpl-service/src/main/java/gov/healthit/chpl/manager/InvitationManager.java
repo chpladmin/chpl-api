@@ -171,6 +171,11 @@ public class InvitationManager extends SecuredManager {
     }
 
     @Transactional
+    public UserInvitation getByCreatedUserId(Long createdUserId) {
+        return invitationDao.getByCreatedUserId(createdUserId);
+    }
+
+    @Transactional
     public User createUserFromInvitation(UserInvitation invitation, CreateUserRequest user)
             throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException,
             UserCreationException, MultipleUserAccountsException, EntityCreationException, EntityRetrievalException,
@@ -270,6 +275,23 @@ public class InvitationManager extends SecuredManager {
         }
 
         return userInvitation.getUser();
+    }
+
+    public Boolean resendConfirmAddressEmailToUser(Long userId) {
+        try {
+            UserDTO user = userDao.getById(userId);
+            UserInvitation invitation = getByCreatedUserId(userId);
+            if (user != null && invitation != null) {
+                invitationDao.update(invitation);
+                invitationEmailer.emailNewUser(user, invitation);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (UserRetrievalException e) {
+            LOGGER.error("Could not resend confirmation email to user id: " + userId);
+            return false;
+        }
     }
 
     /**

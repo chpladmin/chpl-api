@@ -14,6 +14,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
@@ -87,7 +88,7 @@ public class MassRequirePasswordChangeJob extends QuartzJob implements Interrupt
             SecurityContextHolder.getContext().setAuthentication(null);
         } catch (BadCredentialsException | AccountStatusException | UserRetrievalException
                 | MultipleUserAccountsException | UserAccountExistsException
-                | JWTCreationException | JWTValidationException e) {
+                | JWTCreationException | JWTValidationException | ChplAccountEmailNotConfirmedException e) {
             LOGGER.debug("Unable to update users {}", e.getLocalizedMessage());
         }
     }

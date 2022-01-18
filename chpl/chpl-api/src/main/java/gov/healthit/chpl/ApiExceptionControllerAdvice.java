@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
+import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.domain.error.ErrorResponse;
 import gov.healthit.chpl.domain.error.ObjectMissingValidationErrorResponse;
 import gov.healthit.chpl.domain.error.ObjectsMissingValidationErrorResponse;
@@ -193,6 +194,14 @@ public class ApiExceptionControllerAdvice {
                 new ErrorResponse(e.getMessage() != null ? e.getMessage()
                         : "A reason is required to perform this action."),
                 HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ChplAccountEmailNotConfirmedException.class)
+    public ResponseEntity<ErrorResponse> exception(ChplAccountEmailNotConfirmedException e) {
+        LOGGER.error(String.format("User's email [%s] is not confirmed. Resent confirm address email.", e.getEmailAddress()));
+        return ResponseEntity
+                .status(ChplHttpStatus.RESENT_USER_CONFIRMATION_EMAIL.value())
+                .body(new ErrorResponse(ChplHttpStatus.RESENT_USER_CONFIRMATION_EMAIL.getReasonPhrase()));
     }
 
     @ExceptionHandler(HttpClientErrorException.class)

@@ -83,6 +83,14 @@ public class InvitationDAO extends BaseDAOImpl {
         return entity.toDomain();
     }
 
+    public UserInvitation getByCreatedUserId(Long createdUserId) {
+        InvitationEntity entity = getEntityByCreatedUserId(createdUserId);
+        if (entity == null) {
+            return null;
+        }
+        return entity.toDomain();
+    }
+
     private InvitationEntity getEntityById(Long id) throws UserRetrievalException {
         Query query = entityManager.createQuery("SELECT i "
                 + "FROM InvitationEntity i "
@@ -131,4 +139,20 @@ public class InvitationDAO extends BaseDAOImpl {
         }
         return result.get(0);
     }
+
+    private InvitationEntity getEntityByCreatedUserId(Long createdUserId) {
+        Query query = entityManager.createQuery("SELECT i "
+                + "FROM InvitationEntity i "
+                + "JOIN FETCH i.permission "
+                + "WHERE (i.deleted = false) "
+                + "AND (i.createdUserId = :createdUserId) ",
+                InvitationEntity.class);
+        query.setParameter("createdUserId", createdUserId);
+        List<InvitationEntity> result = query.getResultList();
+        if (result.size() == 0) {
+            return null;
+        }
+        return result.get(0);
+    }
+
 }
