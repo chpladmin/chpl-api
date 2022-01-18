@@ -54,7 +54,8 @@ public class ChangeRequestManagerTest {
                 .thenReturn(getBasicChangeRequest());
 
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(changeRequestDAO,
-                null, null, null, null, null, null, null, null, null, null, null, ff4j);
+                null, null, null, null, null, null, null, null, null, null, null,
+                null, null, null, ff4j);
 
         // Run
         ChangeRequest cr = changeRequestManager.getChangeRequest(1l);
@@ -73,7 +74,8 @@ public class ChangeRequestManagerTest {
                 .thenThrow(EntityRetrievalException.class);
 
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(changeRequestDAO,
-                null, null, null, null, null, null, null, null, null, null, null, ff4j);
+                null, null, null, null, null, null, null, null, null, null, null,
+                null, null, null, ff4j);
 
         // Run
         changeRequestManager.getChangeRequest(11l);
@@ -90,7 +92,8 @@ public class ChangeRequestManagerTest {
                 .thenReturn(Arrays.asList(getBasicChangeRequest(), getBasicChangeRequest(), getBasicChangeRequest()));
 
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(changeRequestDAO,
-                null, null, null, null, null, null, null, null, null, null, null, ff4j);
+                null, null, null, null, null, null, null, null, null, null, null,
+                null, null, null, ff4j);
 
         // Run
         List<ChangeRequest> crs = changeRequestManager.getAllChangeRequestsForUser();
@@ -128,12 +131,15 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 null,
+                null,
                 crStatusService,
                 crValidationService,
                 crDetailsFactory,
                 null,
                 null,
+                null,
                 resourcePermissions,
+                null,
                 null,
                 ff4j);
 
@@ -163,7 +169,10 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 null,
+                null,
                 crValidationService,
+                null,
+                null,
                 null,
                 null,
                 null,
@@ -207,12 +216,15 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 null,
+                null,
                 crStatusService,
                 crValidationService,
                 crDetailsFactory,
                 null,
                 null,
+                null,
                 resourcePermissions,
+                null,
                 null,
                 ff4j);
 
@@ -253,12 +265,15 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 null,
+                null,
                 crStatusService,
                 crValidationService,
                 crDetailsFactory,
                 null,
                 null,
+                null,
                 resourcePermissions,
+                null,
                 null,
                 ff4j);
 
