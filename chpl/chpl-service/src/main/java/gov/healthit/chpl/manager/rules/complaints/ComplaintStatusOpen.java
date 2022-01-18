@@ -10,7 +10,7 @@ public class ComplaintStatusOpen extends ValidationRule<ComplaintValidationConte
     private ComplaintValidationContext context;
 
     @Override
-    public boolean getErrorMessages(ComplaintValidationContext context) {
+    public boolean isValid(ComplaintValidationContext context) {
         try {
             this.context = context;
 

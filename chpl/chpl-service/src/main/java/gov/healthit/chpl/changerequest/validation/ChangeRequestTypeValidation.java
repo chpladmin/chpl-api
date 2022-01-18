@@ -1,8 +1,5 @@
 package gov.healthit.chpl.changerequest.validation;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,23 +17,22 @@ public class ChangeRequestTypeValidation extends ValidationRule<ChangeRequestVal
     }
 
     @Override
-    public List<String> getErrorMessages(ChangeRequestValidationContext context) {
-        List<String> errorMessages = new ArrayList<String>();
-
+    public boolean isValid(ChangeRequestValidationContext context) {
         if (context.getNewChangeRequest().getChangeRequestType() == null
                 || context.getNewChangeRequest().getChangeRequestType().getId() == null) {
-            errorMessages.add(getErrorMessage("changeRequest.changeRequestType.required"));
-            return errorMessages;
+            getMessages().add(getErrorMessage("changeRequest.changeRequestType.required"));
+            return false;
         }
 
         // Does it exist in the DB?
         try {
             crTypeDAO.getChangeRequestTypeById(context.getNewChangeRequest().getChangeRequestType().getId());
         } catch (EntityRetrievalException e) {
-            errorMessages.add(getErrorMessage("changeRequest.changeRequestType.invalid"));
+            getMessages().add(getErrorMessage("changeRequest.changeRequestType.invalid"));
+            return false;
         }
 
-        return errorMessages;
+        return true;
     }
 
 }

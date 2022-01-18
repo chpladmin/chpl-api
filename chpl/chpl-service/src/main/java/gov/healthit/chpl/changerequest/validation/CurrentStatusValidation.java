@@ -43,12 +43,10 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
     }
 
     @Override
-    public List<String> getErrorMessages(ChangeRequestValidationContext context) {
-        List<String> errorMessages = new ArrayList<String>();
-
+    public boolean isValid(ChangeRequestValidationContext context) {
         // It's fine if it's not set... We aren't going to do anything with it.
         if (!doesCurrentStatusExist(context.getNewChangeRequest())) {
-            return errorMessages;
+            return true;
         }
 
         // Make sure the current status type is is valid
@@ -57,8 +55,8 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
             crStatusTypeDAO.getChangeRequestStatusTypeById(
                     context.getNewChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId());
         } catch (EntityRetrievalException e) {
-            errorMessages.add(getErrorMessage("changeRequest.statusType.notExists"));
-            return errorMessages;
+            getMessages().add(getErrorMessage("changeRequest.statusType.notExists"));
+            return false;
         }
 
 
@@ -67,15 +65,17 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
         if (resourcePermissions.isUserRoleDeveloperAdmin()
                 && !getValidStatusesForDeveloper().contains(statusTypeId)) {
 
-            errorMessages.add(getErrorMessage("changeRequest.statusType.invalid"));
+            getMessages().add(getErrorMessage("changeRequest.statusType.invalid"));
+            return false;
         } else if ((resourcePermissions.isUserRoleAcbAdmin()
                 || resourcePermissions.isUserRoleOnc()
                 || resourcePermissions.isUserRoleAdmin())
                 && !getValidStatusesForChangeRequestAdmin().contains(statusTypeId)) {
 
-            errorMessages.add(getErrorMessage("changeRequest.statusType.invalid"));
+            getMessages().add(getErrorMessage("changeRequest.statusType.invalid"));
+            return false;
         }
-        return errorMessages;
+        return true;
     }
 
     private List<Long> getValidStatusesForDeveloper() {

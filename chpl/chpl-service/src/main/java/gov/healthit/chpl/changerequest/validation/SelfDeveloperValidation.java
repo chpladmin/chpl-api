@@ -1,8 +1,6 @@
 package gov.healthit.chpl.changerequest.validation;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,16 +20,15 @@ public class SelfDeveloperValidation extends ValidationRule<ChangeRequestValidat
     }
 
     @Override
-    public List<String> getErrorMessages(ChangeRequestValidationContext context) {
-        List<String> errorMessages = new ArrayList<String>();
-
+    public boolean isValid(ChangeRequestValidationContext context) {
         if (resourcePermissions.isUserRoleDeveloperAdmin()) {
             HashMap<String, Object> map = (HashMap) context.getNewChangeRequest().getDetails();
             if (map.containsKey("selfDeveloper") && !isChangeRequestSelfDeveloperValid(map)) {
-                errorMessages.add(getErrorMessage("changeRequest.details.selfDeveloper.invalid"));
+                getMessages().add(getErrorMessage("changeRequest.details.selfDeveloper.invalid"));
+                return false;
             }
         }
-        return errorMessages;
+        return true;
     }
 
     private boolean isChangeRequestSelfDeveloperValid(HashMap<String, Object> map) {

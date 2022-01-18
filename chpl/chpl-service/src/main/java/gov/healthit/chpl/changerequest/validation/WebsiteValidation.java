@@ -1,8 +1,6 @@
 package gov.healthit.chpl.changerequest.validation;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +23,7 @@ public class WebsiteValidation extends ValidationRule<ChangeRequestValidationCon
     }
 
     @Override
-    public List<String> getErrorMessages(ChangeRequestValidationContext context) {
-        List<String> errorMessages = new ArrayList<String>();
-
+    public boolean isValid(ChangeRequestValidationContext context) {
         // Only role we update the website for is ROLE_DEVELOPER
         if (resourcePermissions.isUserRoleDeveloperAdmin()) {
             // Is there a website?
@@ -35,11 +31,12 @@ public class WebsiteValidation extends ValidationRule<ChangeRequestValidationCon
                 // Is the website valid?
                 if (!validationUtils.isWellFormedUrl(
                         ((HashMap) context.getNewChangeRequest().getDetails()).get("website").toString())) {
-                    errorMessages.add(getErrorMessage("changeRequest.details.website.invalidFormat"));
+                    getMessages().add(getErrorMessage("changeRequest.details.website.invalidFormat"));
+                    return false;
                 }
             }
         }
-        return errorMessages;
+        return true;
     }
 
     private boolean isChangeRequestWebsiteValid(HashMap<String, Object> map) {

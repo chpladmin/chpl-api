@@ -31,9 +31,7 @@ public class ChangeRequestTypeInProcessValidation extends ValidationRule<ChangeR
     }
 
     @Override
-    public List<String> getErrorMessages(ChangeRequestValidationContext context) {
-        List<String> errorMessages = new ArrayList<String>();
-
+    public boolean isValid(ChangeRequestValidationContext context) {
         try {
             List<ChangeRequest> crs = crDAO.getByDeveloper(context.getNewChangeRequest().getDeveloper().getDeveloperId())
                     .stream()
@@ -41,16 +39,17 @@ public class ChangeRequestTypeInProcessValidation extends ValidationRule<ChangeR
                     .filter(cr -> getInProcessStatuses().stream()
                             .anyMatch(status -> cr.getCurrentStatus().getChangeRequestStatusType().getId()
                                     .equals(status)))
-                    .collect(Collectors.toList());
+                    .collect(Collectors.<ChangeRequest> toList());
             if (crs.size() > 0) {
-                errorMessages.add(getErrorMessage("changeRequest.inProcess"));
+                getMessages().add(getErrorMessage("changeRequest.inProcess"));
+                return false;
             }
         } catch (EntityRetrievalException e) {
             // Not sure what happened here, but we'll assume that another
             // validator catches it
-            return errorMessages;
+            return true;
         }
-        return errorMessages;
+        return true;
     }
 
     private List<Long> getInProcessStatuses() {

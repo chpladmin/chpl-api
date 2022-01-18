@@ -2,12 +2,13 @@ package gov.healthit.chpl.manager.rules;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 public abstract class ValidationRule<T> {
     private static final String DEFAULT_PROPERTIES_FILE = "errors.properties";
-    //private List<String> messages = new ArrayList<String>();
+    private List<String> messages = new ArrayList<String>();
     private Properties props;
 
     public ValidationRule() {
@@ -30,9 +31,9 @@ public abstract class ValidationRule<T> {
         return props.getProperty(key);
     }
 
-    //public List<String> getMessages() {
-    //    return messages;
-    //}
+    public List<String> getMessages() {
+        return messages;
+    }
 
-    public abstract List<String> getErrorMessages(T object);
+    public abstract boolean isValid(T object);
 }

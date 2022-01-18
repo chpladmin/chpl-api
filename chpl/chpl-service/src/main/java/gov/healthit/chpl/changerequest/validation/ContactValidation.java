@@ -1,8 +1,6 @@
 package gov.healthit.chpl.changerequest.validation;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,25 +23,28 @@ public class ContactValidation extends ValidationRule<ChangeRequestValidationCon
     }
 
     @Override
-    public List<String> getErrorMessages(ChangeRequestValidationContext context) {
-        List<String> errorMessages = new ArrayList<String>();
-
+    public boolean isValid(ChangeRequestValidationContext context) {
         if (resourcePermissions.isUserRoleDeveloperAdmin()) {
             HashMap<String, Object> details = (HashMap) context.getNewChangeRequest().getDetails();
             if (details.containsKey("contact")) {
                 PointOfContact crContact = new PointOfContact((HashMap<String, Object>) details.get("contact"));
+                boolean contactComponentsValid = true;
                 if (!isNameValid(crContact)) {
-                    errorMessages.add(getErrorMessage("developer.contact.nameRequired"));
+                    getMessages().add(getErrorMessage("developer.contact.nameRequired"));
+                    contactComponentsValid = false;
                 }
                 if (!isEmailValid(crContact)) {
-                    errorMessages.add(getErrorMessage("developer.contact.emailRequired"));
+                    getMessages().add(getErrorMessage("developer.contact.emailRequired"));
+                    contactComponentsValid = false;
                 }
                 if (!isPhoneNumberValid(crContact)) {
-                    errorMessages.add(getErrorMessage("developer.contact.phoneRequired"));
+                    getMessages().add(getErrorMessage("developer.contact.phoneRequired"));
+                    contactComponentsValid = false;
                 }
+                return contactComponentsValid;
             }
         }
-        return errorMessages;
+        return true;
     }
 
     private boolean isNameValid(PointOfContact contact) {

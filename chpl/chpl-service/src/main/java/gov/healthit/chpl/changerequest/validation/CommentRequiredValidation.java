@@ -20,17 +20,16 @@ public class CommentRequiredValidation extends ValidationRule<ChangeRequestValid
     private Long pendingDeveloperAction;
 
     @Override
-    public List<String> getErrorMessages(ChangeRequestValidationContext context) {
-        List<String> errorMessages = new ArrayList<String>();
-
+    public boolean isValid(ChangeRequestValidationContext context) {
         if (ChangeRequestStatusService.doesCurrentStatusExist(context.getNewChangeRequest())) {
             if (isStatusChange(context) && doesNewStatusRequireComment(context)) {
                 if (StringUtils.isEmpty(context.getNewChangeRequest().getCurrentStatus().getComment())) {
-                    errorMessages.add(getErrorMessage("changeRequest.status.changeRequiresComment"));
+                    getMessages().add(getErrorMessage("changeRequest.status.changeRequiresComment"));
+                    return false;
                 }
             }
         }
-        return errorMessages;
+        return true;
     }
 
     private boolean isStatusChange(ChangeRequestValidationContext context) {

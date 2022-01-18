@@ -678,7 +678,7 @@ public class DeveloperManager extends SecuredManager {
         DeveloperValidationContext context = new DeveloperValidationContext(dto, msgUtil, beforeDev);
 
         for (ValidationRule<DeveloperValidationContext> rule : rules) {
-            if (!rule.getErrorMessages(context)) {
+            if (!rule.isValid(context)) {
                 errorMessages.addAll(rule.getMessages());
             }
         }

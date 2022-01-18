@@ -5,7 +5,7 @@ import gov.healthit.chpl.manager.rules.ValidationRule;
 public class AcbComplaintIdValidation extends ValidationRule<ComplaintValidationContext> {
 
     @Override
-    public boolean getErrorMessages(ComplaintValidationContext context) {
+    public boolean isValid(ComplaintValidationContext context) {
         // Received Date type is required
         if (context.getComplaint().getAcbComplaintId() == null
                 || context.getComplaint().getAcbComplaintId().equals("")) {

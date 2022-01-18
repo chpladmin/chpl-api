@@ -13,7 +13,7 @@ public class DeveloperWebsiteWellFormedValidation extends ValidationRule<Develop
     }
 
     @Override
-    public boolean getErrorMessages(DeveloperValidationContext context) {
+    public boolean isValid(DeveloperValidationContext context) {
         if (!StringUtils.isEmpty(context.getDeveloperDTO().getWebsite())
                 && !urlValidator.isValid(context.getDeveloperDTO().getWebsite())) {
             getMessages().add(context.getErrorMessageUtil().getMessage("developer.websiteIsInvalid"));

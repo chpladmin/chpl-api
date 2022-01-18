@@ -1,8 +1,5 @@
 package gov.healthit.chpl.changerequest.validation;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,14 +17,13 @@ public class RoleAcbHasMultipleCertificationBodiesValidation extends ValidationR
     }
 
     @Override
-    public List<String> getErrorMessages(ChangeRequestValidationContext object) {
-        List<String> errorMessages = new ArrayList<String>();
-
+    public boolean isValid(ChangeRequestValidationContext object) {
         if (resourcePermissions.isUserRoleAcbAdmin()
                 && resourcePermissions.getAllAcbsForCurrentUser().size() > 1) {
-            errorMessages.add(getErrorMessage("changeRequest.multipleAcbs"));
+            getMessages().add(getErrorMessage("changeRequest.multipleAcbs"));
+            return false;
         }
-        return errorMessages;
+        return true;
     }
 
 }

@@ -6,7 +6,7 @@ import gov.healthit.chpl.manager.rules.ValidationRule;
 
 public class DeveloperNameValidation extends ValidationRule<DeveloperValidationContext> {
     @Override
-    public boolean getErrorMessages(DeveloperValidationContext context) {
+    public boolean isValid(DeveloperValidationContext context) {
         if (StringUtils.isEmpty(context.getDeveloperDTO().getName())) {
             getMessages().add(getErrorMessage("developer.nameRequired"));
             return false;

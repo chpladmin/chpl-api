@@ -1,8 +1,6 @@
 package gov.healthit.chpl.changerequest.validation;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,28 +23,32 @@ public class AddressValidation extends ValidationRule<ChangeRequestValidationCon
     }
 
     @Override
-    public List<String> getErrorMessages(ChangeRequestValidationContext context) {
-        List<String> errorMessages = new ArrayList<String>();
-
+    public boolean isValid(ChangeRequestValidationContext context) {
         if (resourcePermissions.isUserRoleDeveloperAdmin()) {
             HashMap<String, Object> details = (HashMap) context.getNewChangeRequest().getDetails();
             if (details.containsKey("address")) {
                 Address crAddress = new Address((HashMap<String, Object>) details.get("address"));
+                boolean addressComponentsValid = true;
                 if (!isStreetValid(crAddress)) {
-                    errorMessages.add(getErrorMessage("developer.address.streetRequired"));
+                    getMessages().add(getErrorMessage("developer.address.streetRequired"));
+                    addressComponentsValid = false;
                 }
                 if (!isCityValid(crAddress)) {
-                    errorMessages.add(getErrorMessage("developer.address.cityRequired"));
+                    getMessages().add(getErrorMessage("developer.address.cityRequired"));
+                    addressComponentsValid = false;
                 }
                 if (!isStateValid(crAddress)) {
-                    errorMessages.add(getErrorMessage("developer.address.stateRequired"));
+                    getMessages().add(getErrorMessage("developer.address.stateRequired"));
+                    addressComponentsValid = false;
                 }
                 if (!isZipValid(crAddress)) {
-                    errorMessages.add(getErrorMessage("developer.address.zipRequired"));
+                    getMessages().add(getErrorMessage("developer.address.zipRequired"));
+                    addressComponentsValid = false;
                 }
+                return addressComponentsValid;
             }
         }
-        return errorMessages;
+        return true;
     }
 
     private boolean isStreetValid(Address address) {

@@ -20,7 +20,7 @@ public class DeveloperPriorStatusActiveValidation extends ValidationRule<Develop
     }
 
     @Override
-    public boolean getErrorMessages(DeveloperValidationContext context) {
+    public boolean isValid(DeveloperValidationContext context) {
         ErrorMessageUtil msgUtil = context.getErrorMessageUtil();
         DeveloperDTO beforeDev = context.getBeforeDev();
         DeveloperStatusEventDTO currDevStatus = beforeDev.getStatus();

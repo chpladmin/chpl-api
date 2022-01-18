@@ -1,8 +1,6 @@
 package gov.healthit.chpl.changerequest.validation;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,28 +17,33 @@ public class ChangeRequestCreateValidation extends ValidationRule<ChangeRequestV
     private Long devDetailsChangeRequestType;
 
     @Override
-    public List<String> getErrorMessages(ChangeRequestValidationContext context) {
-        List<String> errorMessages = new ArrayList<String>();
-
+    public boolean isValid(ChangeRequestValidationContext context) {
         if (context.getNewChangeRequest().getChangeRequestType().getId().equals(websiteChangeRequestType)
                 && (context.getNewChangeRequest().getDetails() == null
                         || !isChangeRequestWebsiteValid((HashMap) context.getNewChangeRequest().getDetails()))) {
-            errorMessages.add(getErrorMessage("changeRequest.details.website.invalid"));
+            getMessages().add(getErrorMessage("changeRequest.details.website.invalid"));
+            return false;
         } else if (context.getNewChangeRequest().getChangeRequestType().getId().equals(devDetailsChangeRequestType)) {
             if (context.getNewChangeRequest().getDetails() == null) {
-                errorMessages.add(getErrorMessage("changeRequest.details.invalid"));
+                getMessages().add(getErrorMessage("changeRequest.details.invalid"));
+                return false;
             } else {
+                boolean areDetailsValid = true;
                 HashMap<String, Object> crDetails = (HashMap) context.getNewChangeRequest().getDetails();
                 if (!isChangeRequestSelfDevloperValid(crDetails)) {
-                    errorMessages.add(getErrorMessage("changeRequest.details.selfDeveloper.missing"));
+                    getMessages().add(getErrorMessage("changeRequest.details.selfDeveloper.missing"));
+                    areDetailsValid = false;
                 } else if (!isChangeRequestAddressValid(crDetails)) {
-                    errorMessages.add(getErrorMessage("changeRequest.details.address.missing"));
+                    getMessages().add(getErrorMessage("changeRequest.details.address.missing"));
+                    areDetailsValid = false;
                 } else if (!isChangeRequestContactValid(crDetails)) {
-                    errorMessages.add(getErrorMessage("changeRequest.details.contact.missing"));
+                    getMessages().add(getErrorMessage("changeRequest.details.contact.missing"));
+                    areDetailsValid = false;
                 }
+                return areDetailsValid;
             }
         }
-        return errorMessages;
+        return true;
     }
 
     private boolean isChangeRequestWebsiteValid(HashMap<String, Object> map) {
