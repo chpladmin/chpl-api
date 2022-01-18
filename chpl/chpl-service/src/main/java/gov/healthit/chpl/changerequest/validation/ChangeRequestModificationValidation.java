@@ -33,9 +33,8 @@ public class ChangeRequestModificationValidation extends ValidationRule<ChangeRe
             return ChangeRequestDeveloperDetails.cast(context.getNewChangeRequest().getDetails()).matches(
                     ChangeRequestDeveloperDetails.cast(context.getOrigChangeRequest().getDetails()));
         } else if (context.getNewChangeRequest().getDetails() instanceof ChangeRequestAttestation) {
-            //return ChangeRequestAttestation.cast(context.getNewChangeRequest().getDetails()).matches(
-            //        ChangeRequestAttestation.cast(context.getOrigChangeRequest().getDetails()));
-            return false;
+            return ChangeRequestAttestation.cast(context.getNewChangeRequest().getDetails()).matches(
+                    ChangeRequestAttestation.cast(context.getOrigChangeRequest().getDetails()));
         } else {
             return false;
         }
