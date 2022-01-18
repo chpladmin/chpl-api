@@ -77,6 +77,12 @@
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
             <version>${commons.fileupload.version}</version>
+            <exclusions>
+              <exclusion>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+              </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -93,6 +99,12 @@
             <groupId>org.ff4j</groupId>
             <artifactId>ff4j-web</artifactId>
             <version>${ff4j.version}</version>
+            <exclusions>
+              <exclusion>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+              </exclusion>
+            </exclusions>
         </dependency>
         <!-- javamelody-core -->
         <dependency>

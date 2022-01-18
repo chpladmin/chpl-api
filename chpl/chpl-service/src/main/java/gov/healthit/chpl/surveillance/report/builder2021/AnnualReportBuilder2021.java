@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -47,7 +46,7 @@ public class AnnualReportBuilder2021 implements AnnualReportBuilderXlsx {
         this.survExprienceWorksheetBuilder = survExprienceWorksheetBuilder;
     }
 
-    public Workbook buildXlsx(AnnualReport annualReport) throws IOException {
+    public SurveillanceReportWorkbookWrapper buildXlsx(AnnualReport annualReport) throws IOException {
         SurveillanceReportWorkbookWrapper workbook = new SurveillanceReportWorkbookWrapper();
 
         listWorksheetBuilder.buildWorksheet(workbook);
@@ -75,7 +74,6 @@ public class AnnualReportBuilder2021 implements AnnualReportBuilderXlsx {
         //hide the ListSheet
         workbook.getWorkbook().setSheetHidden(0, true);
         workbook.getWorkbook().setActiveSheet(1);
-        workbook.close();
-        return workbook.getWorkbook();
+        return workbook;
     }
 }
