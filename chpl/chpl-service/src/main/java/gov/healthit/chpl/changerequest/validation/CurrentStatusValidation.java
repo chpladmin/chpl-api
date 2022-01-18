@@ -4,43 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.rules.ValidationRule;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 
-@Component
 public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidationContext> {
-
-    private ChangeRequestStatusTypeDAO crStatusTypeDAO;
-    private ResourcePermissions resourcePermissions;
-
-    @Value("${changerequest.status.pendingacbaction}")
-    private Long pendingAcbActionStatus;
-
-    @Value("${changerequest.status.pendingdeveloperaction}")
-    private Long pendingDeveloperActionStatus;
-
-    @Value("${changerequest.status.cancelledbyrequester}")
-    private Long cancelledStatus;
-
-    @Value("${changerequest.status.accepted}")
-    private Long acceptedStatus;
-
-    @Value("${changerequest.status.rejected}")
-    private Long rejectedStatus;
-
-    @Autowired
-    public CurrentStatusValidation(final ChangeRequestStatusTypeDAO crStatusTypeDAO,
-            final ResourcePermissions resourcePermissions) {
-        this.crStatusTypeDAO = crStatusTypeDAO;
-        this.resourcePermissions = resourcePermissions;
-    }
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
@@ -52,7 +20,7 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
         // Make sure the current status type is is valid
         // Does it exist in the DB?
         try {
-            crStatusTypeDAO.getChangeRequestStatusTypeById(
+            context.getValidationDAOs().getChangeRequestStatusTypeDAO().getChangeRequestStatusTypeById(
                     context.getNewChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId());
         } catch (EntityRetrievalException e) {
             getMessages().add(getErrorMessage("changeRequest.statusType.notExists"));
@@ -62,15 +30,15 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
 
         Long statusTypeId = context.getNewChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId();
         // Is this a valid status change based on the user's role?
-        if (resourcePermissions.isUserRoleDeveloperAdmin()
-                && !getValidStatusesForDeveloper().contains(statusTypeId)) {
+        if (context.getResourcePermissions().isUserRoleDeveloperAdmin()
+                && !getValidStatusesForDeveloper(context).contains(statusTypeId)) {
 
             getMessages().add(getErrorMessage("changeRequest.statusType.invalid"));
             return false;
-        } else if ((resourcePermissions.isUserRoleAcbAdmin()
-                || resourcePermissions.isUserRoleOnc()
-                || resourcePermissions.isUserRoleAdmin())
-                && !getValidStatusesForChangeRequestAdmin().contains(statusTypeId)) {
+        } else if ((context.getResourcePermissions().isUserRoleAcbAdmin()
+                || context.getResourcePermissions().isUserRoleOnc()
+                || context.getResourcePermissions().isUserRoleAdmin())
+                && !getValidStatusesForChangeRequestAdmin(context).contains(statusTypeId)) {
 
             getMessages().add(getErrorMessage("changeRequest.statusType.invalid"));
             return false;
@@ -78,12 +46,17 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
         return true;
     }
 
-    private List<Long> getValidStatusesForDeveloper() {
-        return new ArrayList<Long>(Arrays.asList(cancelledStatus, pendingAcbActionStatus));
+    private List<Long> getValidStatusesForDeveloper(ChangeRequestValidationContext context) {
+        return new ArrayList<Long>(Arrays.asList(
+                context.getChangeRequestStatusIds().getCancelledStatus(),
+                context.getChangeRequestStatusIds().getPendingAcbActionStatus()));
     }
 
-    private List<Long> getValidStatusesForChangeRequestAdmin() {
-        return new ArrayList<Long>(Arrays.asList(acceptedStatus, rejectedStatus, pendingDeveloperActionStatus));
+    private List<Long> getValidStatusesForChangeRequestAdmin(ChangeRequestValidationContext context) {
+        return new ArrayList<Long>(Arrays.asList(
+                context.getChangeRequestStatusIds().getAcceptedStatus(),
+                context.getChangeRequestStatusIds().getRejectedStatus(),
+                context.getChangeRequestStatusIds().getPendingDeveloperActionStatus()));
     }
 
     private Boolean doesCurrentStatusExist(ChangeRequest cr) {
