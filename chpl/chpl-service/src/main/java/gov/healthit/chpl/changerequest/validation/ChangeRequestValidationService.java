@@ -13,22 +13,6 @@ import gov.healthit.chpl.manager.rules.ValidationRule;
 @Component
 public class ChangeRequestValidationService {
 
-    private ChangeRequestCreateValidation changeRequestCreateValidation;
-    private ChangeRequestDetailsUpdateValidation changeRequestDetailsUpdateValidation;
-    private ChangeRequestTypeValidation changeRequestTypeValidation;
-    private CurrentStatusValidation currentStatusValidation;
-    private DeveloperExistenceValidation developerExistenceValidation;
-    private DeveloperActiveValidation developerActiveValidation;
-    private ChangeRequestNotUpdatableDueToStatusValidation changeRequestNotUpdatableDueToStatusValidation;
-    private ChangeRequestTypeInProcessValidation changeRequestTypeInProcessValidation;
-    private ChangeRequestModificationValidation changeRequestModificationValidation;
-    private CommentRequiredValidation commentRequiredValidation;
-    private RoleAcbHasMultipleCertificationBodiesValidation roleAcbHasMultipleCertificationBodiesValidation;
-    private WebsiteValidation websiteValidation;
-    private SelfDeveloperValidation selfDeveloperValidation;
-    private AddressValidation addressValidation;
-    private ContactValidation contactValidation;
-
     private Long websiteChangeRequestTypeId;
     private Long developerDetailsChangeRequestTypeId;
     private Long attestationChangeRequestTypeId;
@@ -36,40 +20,9 @@ public class ChangeRequestValidationService {
 
     @Autowired
     public ChangeRequestValidationService(
-            ChangeRequestCreateValidation changeRequestCreateValidation,
-            ChangeRequestDetailsUpdateValidation changeRequestDetailsUpdateValidation,
-            ChangeRequestTypeValidation changeRequestTypeValidation,
-            CurrentStatusValidation currentStatusValidation,
-            DeveloperExistenceValidation developerExistenceValidation,
-            DeveloperActiveValidation developerActiveValidation,
-            ChangeRequestNotUpdatableDueToStatusValidation changeRequestNotUpdatableDueToStatusValidation,
-            ChangeRequestTypeInProcessValidation changeRequestTypeInProcessValidation,
-            ChangeRequestModificationValidation changeRequestModificationValidation,
-            CommentRequiredValidation commentRequiredValidation,
-            RoleAcbHasMultipleCertificationBodiesValidation roleAcbHasMultipleCertificationBodiesValidation,
-            WebsiteValidation websiteValidation,
-            SelfDeveloperValidation selfDeveloperValidation,
-            AddressValidation addressValidation,
-            ContactValidation contactValidation,
             @Value("${changerequest.website}") Long websiteChangeRequestTypeId,
             @Value("${changerequest.developerDetails}") Long developerDetailsChangeRequestTypeId,
             @Value("${changerequest.attestation}") Long attestationChangeRequestTypeId) {
-
-        this.changeRequestCreateValidation = changeRequestCreateValidation;
-        this.changeRequestDetailsUpdateValidation = changeRequestDetailsUpdateValidation;
-        this.changeRequestTypeValidation = changeRequestTypeValidation;
-        this.currentStatusValidation = currentStatusValidation;
-        this.developerExistenceValidation = developerExistenceValidation;
-        this.developerActiveValidation = developerActiveValidation;
-        this.changeRequestNotUpdatableDueToStatusValidation = changeRequestNotUpdatableDueToStatusValidation;
-        this.changeRequestTypeInProcessValidation = changeRequestTypeInProcessValidation;
-        this.changeRequestModificationValidation = changeRequestModificationValidation;
-        this.commentRequiredValidation = commentRequiredValidation;
-        this.roleAcbHasMultipleCertificationBodiesValidation = roleAcbHasMultipleCertificationBodiesValidation;
-        this.websiteValidation = websiteValidation;
-        this.selfDeveloperValidation = selfDeveloperValidation;
-        this.addressValidation = addressValidation;
-        this.contactValidation = contactValidation;
 
         this.websiteChangeRequestTypeId = websiteChangeRequestTypeId;
         this.developerDetailsChangeRequestTypeId = developerDetailsChangeRequestTypeId;
@@ -102,14 +55,14 @@ public class ChangeRequestValidationService {
 
     private List<ValidationRule<ChangeRequestValidationContext>> getWebsiteValidations() {
         return new ArrayList<ValidationRule<ChangeRequestValidationContext>>(Arrays.asList(
-                websiteValidation));
+                new WebsiteValidation()));
     }
 
     private List<ValidationRule<ChangeRequestValidationContext>> getDeveloperDetailsValidations() {
         return new ArrayList<ValidationRule<ChangeRequestValidationContext>>(Arrays.asList(
-                selfDeveloperValidation,
-                addressValidation,
-                contactValidation));
+                new SelfDeveloperValidation(),
+                new AddressValidation(),
+                new ContactValidation()));
     }
 
     private List<ValidationRule<ChangeRequestValidationContext>> getAttestationValidations() {
@@ -122,22 +75,22 @@ public class ChangeRequestValidationService {
 
     private List<ValidationRule<ChangeRequestValidationContext>> getCreateValidations() {
         return new ArrayList<ValidationRule<ChangeRequestValidationContext>>(Arrays.asList(
-                changeRequestTypeValidation,
-                changeRequestTypeInProcessValidation,
-                developerExistenceValidation,
-                developerActiveValidation,
-                changeRequestCreateValidation));
+                new ChangeRequestTypeValidation(),
+                new ChangeRequestTypeInProcessValidation(),
+                new DeveloperExistenceValidation(),
+                new DeveloperActiveValidation(),
+                new ChangeRequestCreateValidation()));
     }
 
     private List<ValidationRule<ChangeRequestValidationContext>> getUpdateValidations() {
         return new ArrayList<ValidationRule<ChangeRequestValidationContext>>(Arrays.asList(
-                changeRequestDetailsUpdateValidation,
-                roleAcbHasMultipleCertificationBodiesValidation,
-                developerActiveValidation,
-                currentStatusValidation,
-                changeRequestNotUpdatableDueToStatusValidation,
-                commentRequiredValidation,
-                changeRequestModificationValidation));
+                new ChangeRequestDetailsUpdateValidation(),
+                new RoleAcbHasMultipleCertificationBodiesValidation(),
+                new DeveloperActiveValidation(),
+                new CurrentStatusValidation(),
+                new ChangeRequestNotUpdatableDueToStatusValidation(),
+                new CommentRequiredValidation(),
+                new ChangeRequestModificationValidation()));
     }
 
     private List<String> runValidations(List<ValidationRule<ChangeRequestValidationContext>> rules, ChangeRequestValidationContext context) {
