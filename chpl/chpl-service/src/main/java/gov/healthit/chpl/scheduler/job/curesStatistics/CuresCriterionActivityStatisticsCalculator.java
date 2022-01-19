@@ -50,14 +50,21 @@ public class CuresCriterionActivityStatisticsCalculator {
     }
 
     @Transactional
-    public boolean hasStatisticsForDate(LocalDate statisticDate) {
+    public void setCuresCriterionActivityStatisticsForDate(LocalDate statisticDate) {
+        if (hasStatisticsForDate(statisticDate)) {
+            deleteStatisticsForDate(statisticDate);
+        }
+        List<CuresCriterionUpgradedWithoutOriginalListingStatistic> currentStatistics = calculateCurrentStatistics(statisticDate);
+        save(currentStatistics);
+    }
+
+    private boolean hasStatisticsForDate(LocalDate statisticDate) {
         List<CuresCriterionUpgradedWithoutOriginalListingStatistic> statisticsForDate
             = curesCriterionUpgradedWithoutOriginalStatisticDao.getStatisticsForDate(statisticDate);
         return statisticsForDate != null && statisticsForDate.size() > 0;
     }
 
-    @Transactional
-    public List<CuresCriterionUpgradedWithoutOriginalListingStatistic> calculateCurrentStatistics(LocalDate statisticDate) {
+    private List<CuresCriterionUpgradedWithoutOriginalListingStatistic> calculateCurrentStatistics(LocalDate statisticDate) {
         LOGGER.info("Calculating cures criterion upgrade without original statistics for " + statisticDate);
         Date currentDate = new Date();
         List<CuresCriterionUpgradedWithoutOriginalListingStatistic> results
@@ -91,8 +98,7 @@ public class CuresCriterionActivityStatisticsCalculator {
                 .build();
     }
 
-    @Transactional
-    public void save(List<CuresCriterionUpgradedWithoutOriginalListingStatistic> statistics) {
+    private void save(List<CuresCriterionUpgradedWithoutOriginalListingStatistic> statistics) {
         for (CuresCriterionUpgradedWithoutOriginalListingStatistic statistic : statistics) {
             try {
                 curesCriterionUpgradedWithoutOriginalStatisticDao.create(statistic);
@@ -104,8 +110,7 @@ public class CuresCriterionActivityStatisticsCalculator {
         }
     }
 
-    @Transactional
-    public void deleteStatisticsForDate(LocalDate statisticDate) {
+    private void deleteStatisticsForDate(LocalDate statisticDate) {
         List<CuresCriterionUpgradedWithoutOriginalListingStatistic> statisticsForDate
             = curesCriterionUpgradedWithoutOriginalStatisticDao.getStatisticsForDate(statisticDate);
         for (CuresCriterionUpgradedWithoutOriginalListingStatistic statistic : statisticsForDate) {
