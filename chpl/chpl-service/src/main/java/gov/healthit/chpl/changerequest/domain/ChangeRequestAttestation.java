@@ -8,20 +8,17 @@ import gov.healthit.chpl.attestation.domain.AttestationResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
-public class ChangeRequestAttestation implements Serializable, ChangeRequestDetails{
+public class ChangeRequestAttestation implements Serializable, ChangeRequestDetails {
     private static final long serialVersionUID = 2150025150434933303L;
 
-    @EqualsAndHashCode.Exclude
     private Long id;
-
+    private String signature;
     private AttestationPeriod attestationPeriod;
     private List<AttestationResponse> responses;
 

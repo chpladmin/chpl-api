@@ -260,7 +260,8 @@ public class ChangeRequestManager extends SecurityManager {
             attestationChangeRequest.setChangeRequestType(attestationChangeRequestType);
             attestationChangeRequest.setDeveloper(parentChangeRequest.getDeveloper());
             attestationChangeRequest.setSubmittedDate(parentChangeRequest.getSubmittedDate());
-            attestationChangeRequest.setDetails(extractAttestationsFromDetails(parentChangeRequest));
+            //attestationChangeRequest.setDetails(extractAttestationsFromDetails(parentChangeRequest));
+            attestationChangeRequest.setDetails(parentChangeRequest.getDetails());
             changeRequests.add(attestationChangeRequest);
         }
         return changeRequests;
@@ -359,18 +360,21 @@ public class ChangeRequestManager extends SecurityManager {
         return devDetails;
     }
 
-    private Object extractAttestationsFromDetails(ChangeRequest cr) {
-        // This method will probably need to be changed when the attestation object is defined
-        HashMap<String, Object> devDetails = new HashMap<String, Object>();
-        HashMap<String, Object> crDetails = (HashMap) cr.getDetails();
-        if (crDetails.containsKey("attestationPeriod")) {
-            devDetails.put("attestationPeriod", crDetails.get("attestationPeriod"));
-        }
-        if (crDetails.containsKey("responses")) {
-            devDetails.put("responses", crDetails.get("responses"));
-        }
-        return devDetails;
-    }
+//    private Object extractAttestationsFromDetails(ChangeRequest cr) {
+//        // This method will probably need to be changed when the attestation object is defined
+//        HashMap<String, Object> devDetails = new HashMap<String, Object>();
+//        HashMap<String, Object> crDetails = (HashMap) cr.getDetails();
+//        if (crDetails.containsKey("attestationPeriod")) {
+//            devDetails.put("attestationPeriod", crDetails.get("attestationPeriod"));
+//        }
+//        if (crDetails.containsKey("attestationPeriod")) {
+//            devDetails.put("attestationPeriod", crDetails.get("attestationPeriod"));
+//        }
+//        if (crDetails.containsKey("responses")) {
+//            devDetails.put("responses", crDetails.get("responses"));
+//        }
+//        return devDetails;
+//    }
 
     private ChangeRequest createChangeRequest(ChangeRequest cr)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {

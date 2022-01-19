@@ -66,7 +66,8 @@ public class ChangeRequestValidationService {
     }
 
     private List<ValidationRule<ChangeRequestValidationContext>> getAttestationValidations() {
-        return new ArrayList<ValidationRule<ChangeRequestValidationContext>>();
+        return new ArrayList<ValidationRule<ChangeRequestValidationContext>>(Arrays.asList(
+                new AttestationValidation()));
     }
 
     private Boolean isNewChangeRequest(ChangeRequestValidationContext context) {

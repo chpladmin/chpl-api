@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.attestation.domain.AttestationForm;
@@ -15,6 +16,7 @@ import gov.healthit.chpl.attestation.domain.AttestationQuestion;
 import gov.healthit.chpl.attestation.domain.AttestationResponse;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestation;
 import gov.healthit.chpl.manager.rules.ValidationRule;
+import gov.healthit.chpl.util.AuthUtil;
 
 public class AttestationValidation extends ValidationRule<ChangeRequestValidationContext> {
     private ObjectMapper mapper;
@@ -25,9 +27,11 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
         AttestationForm attestationForm = context.getDomainManagers().getAttestationManager().getAttestationForm();
 
         this.mapper = new ObjectMapper();
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
         ChangeRequestAttestation attestation = getChangeRequestAttestationFromMap((HashMap) context.getNewChangeRequest().getDetails());
 
+        getMessages().addAll(validateSignature(context, attestation));
         getMessages().addAll(validateAttestationPeriod(context, attestation));
 
         getMessages().addAll(getMissingQuestions(attestation, attestationForm).stream()
@@ -40,7 +44,15 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
                         getQuestionText(response.getQuestion().getId(), attestationForm)))
                 .collect(Collectors.toList()));
 
-        return getMessages().size() > 0;
+        return getMessages().size() == 0;
+    }
+
+    private List<String> validateSignature(ChangeRequestValidationContext context, ChangeRequestAttestation attestation) {
+        List<String> errors = new ArrayList<String>();
+        if (attestation.getSignature() == null || !AuthUtil.getCurrentUser().getFullName().equals(attestation.getSignature())) {
+            errors.add(getErrorMessage("changeRequest.attestation.invalidSignature"));
+        }
+        return errors;
     }
 
     private List<String> validateAttestationPeriod(ChangeRequestValidationContext context, ChangeRequestAttestation attestation) {
