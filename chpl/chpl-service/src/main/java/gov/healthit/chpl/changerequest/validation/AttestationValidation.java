@@ -31,7 +31,10 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
 
         ChangeRequestAttestation attestation = getChangeRequestAttestationFromMap((HashMap) context.getNewChangeRequest().getDetails());
 
-        getMessages().addAll(validateSignature(context, attestation));
+        if (isChangeRequestNew(context)) {
+            getMessages().addAll(validateSignature(context, attestation));
+        }
+
         getMessages().addAll(validateAttestationPeriod(context, attestation));
 
         getMessages().addAll(getMissingQuestions(attestation, attestationForm).stream()
@@ -135,4 +138,7 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
                 .collect(Collectors.toList());
     }
 
+    private boolean isChangeRequestNew(ChangeRequestValidationContext context) {
+        return context.getOrigChangeRequest() == null;
+    }
 }
