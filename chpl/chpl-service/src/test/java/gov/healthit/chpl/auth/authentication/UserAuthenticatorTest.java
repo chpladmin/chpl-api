@@ -13,6 +13,7 @@ import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.auth.ChplAccountStatusChecker;
 import gov.healthit.chpl.auth.ChplAccountStatusException;
 import gov.healthit.chpl.auth.jwt.JWTAuthor;
@@ -22,17 +23,20 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.auth.AuthenticationManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class UserAuthenticatorTest {
+    private static final Long RESEND_CONFIRMATION_EMAIL_WINDOW_IN_DAYS = 180L;
     private JWTAuthor jwtAuthor;
     private UserManager userManager;
     private UserDAO userDAO;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private ChplAccountStatusChecker userDetailsChecker;
     private ErrorMessageUtil msgUtil;
+    private InvitationManager invitationManager;
 
     @Before
     public void setup() throws UserRetrievalException, MultipleUserAccountsException, EmailNotSentException {
@@ -42,6 +46,7 @@ public class UserAuthenticatorTest {
         bCryptPasswordEncoder = Mockito.mock(BCryptPasswordEncoder.class);
         userDetailsChecker = Mockito.mock(ChplAccountStatusChecker.class);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
+        invitationManager = Mockito.mock(InvitationManager.class);
 
         Mockito.when(userDAO.getByNameOrEmail(ArgumentMatchers.anyString()))
         .thenReturn(UserDTO.builder()
@@ -75,10 +80,10 @@ public class UserAuthenticatorTest {
 
     @Test()
     public void getUser_ValidLoginCredentials_ReturnValidUserDTO()
-            throws UserRetrievalException, MultipleUserAccountsException {
+            throws UserRetrievalException, MultipleUserAccountsException, AccountStatusException, ChplAccountEmailNotConfirmedException {
         LoginCredentials creds = new LoginCredentials("username", "password");
         AuthenticationManager authenticator = new AuthenticationManager(jwtAuthor, userManager, userDAO, bCryptPasswordEncoder,
-                userDetailsChecker, msgUtil);
+                userDetailsChecker, msgUtil, invitationManager, RESEND_CONFIRMATION_EMAIL_WINDOW_IN_DAYS);
         UserDTO user = authenticator.getUser(creds);
 
         assertNotNull(user);
@@ -86,22 +91,22 @@ public class UserAuthenticatorTest {
 
     @Test(expected = ChplAccountStatusException.class)
     public void getUser_UnknownUserName_ThrowsChplAccountStatusException()
-            throws BadCredentialsException, AccountStatusException, UserRetrievalException, MultipleUserAccountsException {
+            throws BadCredentialsException, AccountStatusException, UserRetrievalException, MultipleUserAccountsException, ChplAccountEmailNotConfirmedException {
 
         Mockito.when(userDAO.getByNameOrEmail(ArgumentMatchers.anyString()))
                 .thenReturn(null);
 
         LoginCredentials creds = new LoginCredentials("username", "password");
-        AuthenticationManager authenticator = new AuthenticationManager(null, null, userDAO, null, null, msgUtil);
+        AuthenticationManager authenticator = new AuthenticationManager(null, null, userDAO, null, null, msgUtil, invitationManager, RESEND_CONFIRMATION_EMAIL_WINDOW_IN_DAYS);
         authenticator.getUser(creds);
 
         fail();
 
     }
 
-    @Test(expected = ChplAccountStatusException.class)
+    @Test(expected = ChplAccountEmailNotConfirmedException.class)
     public void getUser_NoUserSignature_ThrowsChplAccountStatusException()
-            throws BadCredentialsException, AccountStatusException, UserRetrievalException, MultipleUserAccountsException {
+            throws BadCredentialsException, AccountStatusException, UserRetrievalException, MultipleUserAccountsException, ChplAccountEmailNotConfirmedException {
 
         Mockito.when(userDAO.getByNameOrEmail(ArgumentMatchers.anyString()))
                 .thenReturn(UserDTO.builder()
@@ -120,7 +125,7 @@ public class UserAuthenticatorTest {
 
         LoginCredentials creds = new LoginCredentials("username", "password");
         AuthenticationManager authenticator = new AuthenticationManager(jwtAuthor, userManager, userDAO, bCryptPasswordEncoder,
-                userDetailsChecker, msgUtil);
+                userDetailsChecker, msgUtil, invitationManager, RESEND_CONFIRMATION_EMAIL_WINDOW_IN_DAYS);
         authenticator.getUser(creds);
 
         fail();
@@ -128,14 +133,14 @@ public class UserAuthenticatorTest {
 
     @Test(expected = ChplAccountStatusException.class)
     public void getUser_PasswordNotValid_ThrowsChplAccountStatusException()
-            throws BadCredentialsException, AccountStatusException, UserRetrievalException, MultipleUserAccountsException {
+            throws BadCredentialsException, AccountStatusException, UserRetrievalException, MultipleUserAccountsException, ChplAccountEmailNotConfirmedException {
 
         Mockito.when(bCryptPasswordEncoder.matches(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenReturn(false);
 
         LoginCredentials creds = new LoginCredentials("username", "password");
         AuthenticationManager authenticator = new AuthenticationManager(jwtAuthor, userManager, userDAO, bCryptPasswordEncoder,
-                userDetailsChecker, msgUtil);
+                userDetailsChecker, msgUtil, invitationManager, RESEND_CONFIRMATION_EMAIL_WINDOW_IN_DAYS);
         authenticator.getUser(creds);
 
         fail();

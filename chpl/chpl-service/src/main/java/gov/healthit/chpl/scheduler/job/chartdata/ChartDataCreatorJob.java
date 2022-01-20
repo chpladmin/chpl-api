@@ -20,7 +20,6 @@ import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
-import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
 
 /**
  * This is the starting point for populating statistics tables that will be used for the charts. As new tables need to

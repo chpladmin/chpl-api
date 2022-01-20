@@ -112,22 +112,6 @@ public class TestingLabDAO extends BaseDAOImpl {
         return dtos;
     }
 
-    public List<TestingLabDTO> findAllActive() {
-
-        List<TestingLabEntity> entities = entityManager.createQuery(
-                "SELECT atl from TestingLabEntity atl "
-                + "LEFT OUTER JOIN FETCH atl.address "
-                + "WHERE atl.retired = false AND atl.deleted = false", TestingLabEntity.class)
-                    .getResultList();
-        List<TestingLabDTO> dtos = new ArrayList<>();
-
-        for (TestingLabEntity entity : entities) {
-            TestingLabDTO dto = new TestingLabDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
-    }
-
     public TestingLabDTO getById(Long id) throws EntityRetrievalException {
 
         TestingLabEntity entity = getEntityById(id);

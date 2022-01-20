@@ -17,9 +17,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
-import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
+import gov.healthit.chpl.util.Util;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -189,6 +189,7 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
      * The transparency attestation required by 170.523(k)(2). It is applicable for 2014 and 2015 Edition and takes
      * value of Affirmative, Negative, or N/A.
      */
+    @Deprecated
     private TransparencyAttestation transparencyAttestation;
 
     /**
