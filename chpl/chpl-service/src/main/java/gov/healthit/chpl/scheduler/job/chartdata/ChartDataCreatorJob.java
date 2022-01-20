@@ -20,6 +20,13 @@ import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.search.CertifiedProductSearchManager;
 import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
 
+/**
+ * This is the starting point for populating statistics tables that will be used for the charts. As new tables need to
+ * be populated, they will be added here.
+ *
+ * @author TYoung
+ *
+ */
 @DisallowConcurrentExecution
 public final class ChartDataCreatorJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
