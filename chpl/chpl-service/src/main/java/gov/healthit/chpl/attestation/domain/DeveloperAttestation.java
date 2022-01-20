@@ -16,11 +16,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DeveloperAttestation {
+    private Long id;
     private Developer developer;
     private AttestationPeriod period;
     private List<AttestationResponse> responses;
 
     public DeveloperAttestation(DeveloperAttestationEntity entity) {
+        this.id = entity.getId();
         this.developer = new Developer(new DeveloperDTO(entity.getDeveloper()));
         this.period = new AttestationPeriod(entity.getPeriod());
         this.responses = entity.getResponses().stream()

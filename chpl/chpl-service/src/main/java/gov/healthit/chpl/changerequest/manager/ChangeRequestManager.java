@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
@@ -96,8 +95,6 @@ public class ChangeRequestManager extends SecurityManager {
     private ValidationUtils validationUtils;
     private FF4j ff4j;
 
-    private ObjectMapper mapper;
-
     @Autowired
     public ChangeRequestManager(ChangeRequestDAO changeRequestDAO,
             ChangeRequestTypeDAO changeRequestTypeDAO,
@@ -128,9 +125,6 @@ public class ChangeRequestManager extends SecurityManager {
         this.msgUtil = msgUtil;
         this.validationUtils = validationUtils;
         this.ff4j = ff4j;
-
-        this.mapper = new ObjectMapper();
-
     }
 
     @Transactional(readOnly = true)

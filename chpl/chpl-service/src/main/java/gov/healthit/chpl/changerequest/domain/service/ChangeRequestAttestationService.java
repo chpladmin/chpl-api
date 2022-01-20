@@ -15,10 +15,10 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.healthit.chpl.attestation.dao.AttestationDAO;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationResponse;
 import gov.healthit.chpl.attestation.domain.DeveloperAttestation;
+import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestAttestationDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
@@ -38,7 +38,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     private ChangeRequestDAO crDAO;
     private ChangeRequestAttestationDAO crAttesttionDAO;
     private ActivityManager activityManager;
-    private AttestationDAO attestationDAO;
+    private AttestationManager attestationManager;
     private Environment env;
 
     private ObjectMapper mapper;
@@ -63,12 +63,12 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     @Autowired
     public ChangeRequestAttestationService(ChangeRequestDAO crDAO, ChangeRequestAttestationDAO crAttesttionDAO,
-            UserDeveloperMapDAO userDeveloperMapDAO, ActivityManager activityManager, AttestationDAO attestationDAO, Environment env) {
+            UserDeveloperMapDAO userDeveloperMapDAO, ActivityManager activityManager, AttestationManager attestationManager, Environment env) {
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
         this.crAttesttionDAO = crAttesttionDAO;
         this.activityManager = activityManager;
-        this.attestationDAO = attestationDAO;
+        this.attestationManager = attestationManager;
         this.env = env;
 
         this.mapper = new ObjectMapper();
@@ -119,8 +119,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                         .collect(Collectors.toList()))
                 .build();
 
-        attestationDAO.create(developerAttestation);
-        LOGGER.info("Attestation Change Request has been executed.");
+        attestationManager.saveDeveloperAttestation(developerAttestation);
         return cr;
     }
 
@@ -180,7 +179,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     }
 
     private AttestationPeriod getAttestationPeriod(ChangeRequest cr) {
-        return attestationDAO.getAllPeriods().stream()
+        return attestationManager.getAllPeriods().stream()
                 .filter(per -> LocalDate.now().compareTo(per.getSubmissionStart()) >= 0
                         && LocalDate.now().compareTo(per.getSubmissionEnd()) <= 0)
                 .findAny()
