@@ -45,7 +45,7 @@ public class DeveloperAttestationEntity {
     private AttestationPeriodEntity period;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "attestation_category_id")
+    @JoinColumn(name = "developer_attestation_id")
     private Set<DeveloperAttestationResponseEntity> responses;
 
     @Column(name = "last_modified_user", nullable = false)

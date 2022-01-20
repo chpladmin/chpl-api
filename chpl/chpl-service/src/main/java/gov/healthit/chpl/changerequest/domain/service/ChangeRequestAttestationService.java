@@ -17,6 +17,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.attestation.dao.AttestationDAO;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
+import gov.healthit.chpl.attestation.domain.AttestationResponse;
+import gov.healthit.chpl.attestation.domain.DeveloperAttestation;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestAttestationDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
@@ -104,7 +106,20 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     @Override
     protected ChangeRequest execute(ChangeRequest cr) throws EntityRetrievalException, EntityCreationException {
-        attestationDAO.create(getDetailsFromHashMap((HashMap) cr.getDetails()), cr.getDeveloper().getDeveloperId());
+        ChangeRequestAttestation attestation = getDetailsFromHashMap((HashMap) cr.getDetails());
+
+        DeveloperAttestation developerAttestation = DeveloperAttestation.builder()
+                .developer(cr.getDeveloper())
+                .period(attestation.getAttestationPeriod())
+                .responses(attestation.getResponses().stream()
+                        .map(resp -> AttestationResponse.builder()
+                                .answer(resp.getAnswer())
+                                .question(resp.getQuestion())
+                                .build())
+                        .collect(Collectors.toList()))
+                .build();
+
+        attestationDAO.create(developerAttestation);
         LOGGER.info("Attestation Change Request has been executed.");
         return cr;
     }
