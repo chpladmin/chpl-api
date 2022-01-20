@@ -24,6 +24,7 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestation;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
+import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -40,6 +41,8 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     private ActivityManager activityManager;
     private AttestationManager attestationManager;
     private Environment env;
+    @Autowired
+    private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
 
     private ObjectMapper mapper;
 
@@ -63,12 +66,14 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     @Autowired
     public ChangeRequestAttestationService(ChangeRequestDAO crDAO, ChangeRequestAttestationDAO crAttesttionDAO,
-            UserDeveloperMapDAO userDeveloperMapDAO, ActivityManager activityManager, AttestationManager attestationManager, Environment env) {
+            UserDeveloperMapDAO userDeveloperMapDAO, ActivityManager activityManager, AttestationManager attestationManager,
+            ChplHtmlEmailBuilder chplHtmlEmailBuilder, Environment env) {
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
         this.crAttesttionDAO = crAttesttionDAO;
         this.activityManager = activityManager;
         this.attestationManager = attestationManager;
+        this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
         this.env = env;
 
         this.mapper = new ObjectMapper();
@@ -125,15 +130,24 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     @Override
     protected void sendApprovalEmail(ChangeRequest cr) throws EmailNotSentException {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
+
         new EmailBuilder(env)
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.toList()))
                 .subject(approvalEmailSubject)
-                .htmlMessage(String.format(approvalEmailBody, df.format(cr.getSubmittedDate()), getApprovalBody(cr))
-                        + toHtmlString((ChangeRequestAttestation)cr.getDetails()))
+                .htmlMessage(createHtmlMessage(cr))
                 .sendEmail();
+    }
+
+    private String createHtmlMessage(ChangeRequest cr) {
+        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
+        return chplHtmlEmailBuilder.initialize()
+                .heading("Developer Attestation Approved")
+                .paragraph("", String.format(approvalEmailBody, df.format(cr.getSubmittedDate()), getApprovalBody(cr)))
+                .paragraph("Attestation", toHtmlString((ChangeRequestAttestation) cr.getDetails()))
+                .footer(true)
+                .build();
     }
 
     private String toHtmlString(ChangeRequestAttestation attestation) {
