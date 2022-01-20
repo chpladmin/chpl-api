@@ -132,11 +132,15 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                         .map(user -> user.getEmail())
                         .collect(Collectors.toList()))
                 .subject(approvalEmailSubject)
-                .htmlMessage(String.format(approvalEmailBody,
-                        df.format(cr.getSubmittedDate()),
-                        cr.getDeveloper().getWebsite(),
-                        getApprovalBody(cr)))
+                .htmlMessage(String.format(approvalEmailBody, df.format(cr.getSubmittedDate()), getApprovalBody(cr))
+                        + toHtmlString((ChangeRequestAttestation)cr.getDetails()))
                 .sendEmail();
+    }
+
+    private String toHtmlString(ChangeRequestAttestation attestation) {
+        return attestation.getResponses().stream()
+                .map(resp -> String.format("%s <br/> %s <br/><br/>", resp.getQuestion().getQuestion(), resp.getAnswer().getAnswer()))
+                .collect(Collectors.joining());
     }
 
     @Override
