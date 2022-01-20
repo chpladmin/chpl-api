@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.domain.auth.Authority;
@@ -197,7 +198,7 @@ public class UserManagementController {
             produces = "application/json; charset=utf-8")
     public String authorizeUser(@RequestBody AuthorizeCredentials credentials)
             throws InvalidArgumentsException, JWTCreationException, UserRetrievalException,
-            EntityRetrievalException, MultipleUserAccountsException {
+            EntityRetrievalException, MultipleUserAccountsException, ChplAccountEmailNotConfirmedException {
 
         if (StringUtils.isEmpty(credentials.getHash())) {
             throw new InvalidArgumentsException("User key is required.");
