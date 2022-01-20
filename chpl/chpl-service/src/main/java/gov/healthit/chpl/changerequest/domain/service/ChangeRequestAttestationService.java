@@ -1,6 +1,7 @@
 package gov.healthit.chpl.changerequest.domain.service;
 
 import java.text.DateFormat;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
@@ -15,6 +16,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.attestation.dao.AttestationDAO;
+import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestAttestationDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
@@ -80,7 +82,11 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     @Transactional
     public ChangeRequest create(ChangeRequest cr) {
         try {
-            crAttesttionDAO.create(cr, getDetailsFromHashMap((HashMap<String, Object>) cr.getDetails()));
+            ChangeRequestAttestation attestation = getDetailsFromHashMap((HashMap<String, Object>) cr.getDetails());
+
+            attestation.setAttestationPeriod(getAttestationPeriod(cr));
+
+            crAttesttionDAO.create(cr, attestation);
             return crDAO.get(cr.getId());
         } catch (EntityRetrievalException e) {
             throw new RuntimeException(e);
@@ -152,5 +158,13 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     private ChangeRequestAttestation getDetailsFromHashMap(HashMap<String, Object> map) {
         return  mapper.convertValue(map, ChangeRequestAttestation.class);
+    }
+
+    private AttestationPeriod getAttestationPeriod(ChangeRequest cr) {
+        return attestationDAO.getAllPeriods().stream()
+                .filter(per -> LocalDate.now().compareTo(per.getSubmissionStart()) >= 0
+                        && LocalDate.now().compareTo(per.getSubmissionEnd()) <= 0)
+                .findAny()
+                .orElse(null);
     }
 }

@@ -35,7 +35,7 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
             getMessages().addAll(validateSignature(context, attestation));
         }
 
-        getMessages().addAll(validateAttestationPeriod(context, attestation));
+        //getMessages().addAll(validateAttestationPeriod(context, attestation));
 
         getMessages().addAll(getMissingQuestions(attestation, attestationForm).stream()
                 .map(question -> String.format(getErrorMessage("changeRequest.attestation.questionNotAnswered"), question.getQuestion()))

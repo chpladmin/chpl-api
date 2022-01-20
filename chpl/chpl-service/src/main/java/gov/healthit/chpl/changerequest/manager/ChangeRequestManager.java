@@ -260,7 +260,6 @@ public class ChangeRequestManager extends SecurityManager {
             attestationChangeRequest.setChangeRequestType(attestationChangeRequestType);
             attestationChangeRequest.setDeveloper(parentChangeRequest.getDeveloper());
             attestationChangeRequest.setSubmittedDate(parentChangeRequest.getSubmittedDate());
-            //attestationChangeRequest.setDetails(extractAttestationsFromDetails(parentChangeRequest));
             attestationChangeRequest.setDetails(parentChangeRequest.getDetails());
             changeRequests.add(attestationChangeRequest);
         }
@@ -277,7 +276,7 @@ public class ChangeRequestManager extends SecurityManager {
 
     private boolean isDeveloperAttestationChangeRequest(ChangeRequest cr) {
         HashMap<String, Object> crMap = (HashMap) cr.getDetails();
-        return crMap.containsKey("attestationPeriod");
+        return crMap.containsKey("responses");
     }
 
     private boolean isWebsiteChanged(ChangeRequest cr) {

@@ -106,6 +106,8 @@ public final class ChangeRequestConverter {
                         .id(entity.getPeriod().getId())
                         .periodStart(entity.getPeriod().getPeriodStart())
                         .periodEnd(entity.getPeriod().getPeriodEnd())
+                        .submissionEnd(entity.getPeriod().getSubmissionEnd())
+                        .submissionStart(entity.getPeriod().getSubmissionStart())
                         .description(entity.getPeriod().getDescription())
                         .build())
                 .responses(entity.getResponses().stream()

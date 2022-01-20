@@ -28,12 +28,22 @@ public class AttestationPeriod {
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate periodEnd;
 
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    private LocalDate submissionStart;
+
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    private LocalDate submissionEnd;
+
     private String description;
 
     public AttestationPeriod(AttestationPeriodEntity entity) {
         this.id = entity.getId();
         this.periodStart = entity.getPeriodStart();
         this.periodEnd = entity.getPeriodEnd();
+        this.submissionEnd = entity.getSubmissionEnd();
+        this.submissionStart = entity.getSubmissionStart();
         this.description = entity.getDescription();
     }
 }

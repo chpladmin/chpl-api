@@ -38,6 +38,12 @@ public class AttestationPeriodEntity {
     @Column(name = "period_end")
     private LocalDate periodEnd;
 
+    @Column(name = "submission_start")
+    private LocalDate submissionStart;
+
+    @Column(name = "submission_end")
+    private LocalDate submissionEnd;
+
     @Column(name = "description")
     private String description;
 
