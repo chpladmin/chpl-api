@@ -2,7 +2,6 @@ package gov.healthit.chpl.attestation.entity;
 
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,7 +19,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "developer_attestation")
+@Table(name = "developer_attestation_response")
 @Getter
 @Setter
 @ToString
@@ -37,12 +36,12 @@ public class DeveloperAttestationResponseEntity {
     @Column(name = "developer_attestation_id", nullable = false)
     private Long developerAttestationId;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "attestation_question_id", insertable = false, updatable = false)
+    @OneToOne()
+    @JoinColumn(name = "attestation_question_id", insertable = true, updatable = true)
     private AttestationQuestionEntity question;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "attestation_question_id", insertable = false, updatable = false)
+    @OneToOne()
+    @JoinColumn(name = "attestation_answer_id", insertable = true, updatable = true)
     private AttestationAnswerEntity answer;
 
     @Column(name = "last_modified_user", nullable = false)

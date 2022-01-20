@@ -3,7 +3,6 @@ package gov.healthit.chpl.attestation.entity;
 import java.util.Date;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -36,15 +35,15 @@ public class DeveloperAttestationEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne()
     @JoinColumn(name = "developer_id")
     private DeveloperEntity developer;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne()
     @JoinColumn(name = "attestation_period_id")
     private AttestationPeriodEntity period;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany()
     @JoinColumn(name = "developer_attestation_id")
     private Set<DeveloperAttestationResponseEntity> responses;
 

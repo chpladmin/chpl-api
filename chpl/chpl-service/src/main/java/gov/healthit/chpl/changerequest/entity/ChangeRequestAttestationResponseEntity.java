@@ -2,7 +2,6 @@ package gov.healthit.chpl.changerequest.entity;
 
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -39,11 +38,11 @@ public class ChangeRequestAttestationResponseEntity {
     @Column(name = "change_request_attestation_id", insertable = true, nullable = false)
     private Long changeRequestAttestationId;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne()
     @JoinColumn(name = "attestation_question_id", insertable = true, updatable = false)
     private AttestationQuestionEntity question;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne()
     @JoinColumn(name = "attestation_answer_id", insertable = true, updatable = false)
     private AttestationAnswerEntity answer;
 

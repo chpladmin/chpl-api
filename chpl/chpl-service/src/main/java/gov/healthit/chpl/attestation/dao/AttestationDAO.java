@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.attestation.domain.AttestationCategory;
@@ -16,6 +17,7 @@ import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
 import gov.healthit.chpl.attestation.entity.AttestationQuestionEntity;
 import gov.healthit.chpl.attestation.entity.DeveloperAttestationEntity;
 import gov.healthit.chpl.attestation.entity.DeveloperAttestationResponseEntity;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -25,6 +27,12 @@ import lombok.extern.log4j.Log4j2;
 @Repository
 @Log4j2
 public class AttestationDAO extends BaseDAOImpl{
+    private DeveloperDAO developerDAO;
+
+    @Autowired
+    public AttestationDAO(DeveloperDAO developerDAO) {
+        this.developerDAO = developerDAO;
+    }
 
     public List<AttestationPeriod> getAllPeriods() {
         return getAllPeriodEntities().stream()
@@ -161,13 +169,14 @@ public class AttestationDAO extends BaseDAOImpl{
     private DeveloperAttestationEntity getDeveloperAttestationEntity(Long developerAttestationId) throws EntityRetrievalException {
         String hql = "SELECT DISTINCT dae "
                 + "FROM DeveloperAttestationEntity dae "
-                + "JOIN FETCH dae.developer "
-                + "JOIN FETCH dae.responses "
-                + "JOIN FETCH dae.period "
-                + "WHERE (NOT crae.deleted = true) "
-                + "AND (NOT cr.deleted = true) "
+                + "JOIN FETCH dae.developer d "
+                + "JOIN FETCH dae.responses resp "
+                + "JOIN FETCH dae.period per "
+                + "WHERE (NOT dae.deleted = true) "
+                + "AND (NOT d.deleted = true) "
                 + "AND (NOT resp.deleted = true) "
-                + "AND (crae.id = :developerAttestationId) ";
+                + "AND (NOT per.deleted = true) "
+                + "AND (dae.id = :developerAttestationId) ";
 
         List<DeveloperAttestationEntity> result = entityManager
                 .createQuery(hql, DeveloperAttestationEntity.class)

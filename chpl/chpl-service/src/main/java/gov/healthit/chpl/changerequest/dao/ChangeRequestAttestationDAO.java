@@ -44,7 +44,7 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
 
     private ChangeRequestAttestationResponseEntity createAttestationResponse(AttestationResponse response, Long changeRequestAttestationId) {
         try {
-            ChangeRequestAttestationResponseEntity entity = getDeveloperAttestationResponseEntity(response, changeRequestAttestationId);
+            ChangeRequestAttestationResponseEntity entity = getChangeRequestAttestationResponseEntity(response, changeRequestAttestationId);
             create(entity);
             return entity;
         } catch (EntityRetrievalException e) {
@@ -115,7 +115,7 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
         return result.get(0);
     }
 
-    private ChangeRequestAttestationResponseEntity getDeveloperAttestationResponseEntity(
+    private ChangeRequestAttestationResponseEntity getChangeRequestAttestationResponseEntity(
             AttestationResponse response, Long changeRequestAttestationId) throws EntityRetrievalException {
         return ChangeRequestAttestationResponseEntity.builder()
                 .changeRequestAttestationId(changeRequestAttestationId)

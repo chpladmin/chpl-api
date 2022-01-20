@@ -106,7 +106,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     @Override
     protected ChangeRequest execute(ChangeRequest cr) throws EntityRetrievalException, EntityCreationException {
-        ChangeRequestAttestation attestation = getDetailsFromHashMap((HashMap) cr.getDetails());
+        ChangeRequestAttestation attestation = (ChangeRequestAttestation) cr.getDetails();
 
         DeveloperAttestation developerAttestation = DeveloperAttestation.builder()
                 .developer(cr.getDeveloper())
