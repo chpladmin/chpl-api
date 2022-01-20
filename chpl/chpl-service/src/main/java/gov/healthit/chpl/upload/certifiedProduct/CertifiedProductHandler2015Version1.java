@@ -28,7 +28,6 @@ import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
-import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.entity.CQMCriterionEntity;
@@ -39,7 +38,6 @@ import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultOption
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestDataEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestFunctionalityEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestProcedureEntity;
-import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestStandardEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestTaskEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestTaskParticipantEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestToolEntity;

@@ -93,7 +93,7 @@ public class SearchController {
                     + "specified or may have met any one or more of the nonConformityOptions",
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "nonConformityOptionsOperator") @RequestParam(value = "nonConformityOptionsOperator", required = false, defaultValue = "OR") String nonConformityOptionsOperator,
             @Parameter(description = "A comma-separated list of Real World Testing search options. "
-                    + "Valid options are IS_ELIGIBLE, HAS_PLANS_URL, HAS_RESULTS_URL, NOT_ELIGIBLE, NO_PLANS_URL, NO_RESULTS_URL",
+                    + "Valid options are HAS_PLANS_URL, HAS_RESULTS_URL, NO_PLANS_URL, NO_RESULTS_URL",
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "rwtOptions") @RequestParam(value = "rwtOptions", required = false, defaultValue = "") String rwtOptionsDelimited,
             @Parameter(description = "Either AND or OR. Defaults to OR."
                     + "Indicates whether a listing must have met all rwtOptions specified or may have met any one or more of the rwtOptions",
