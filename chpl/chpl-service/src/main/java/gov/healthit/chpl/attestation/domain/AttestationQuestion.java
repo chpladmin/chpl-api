@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 public class AttestationQuestion {
     private Long id;
     private List<AttestationAnswer> answers;
+    private AttestationCategory category;
     private String question;
     private Long sortOrder;
 
@@ -24,6 +25,7 @@ public class AttestationQuestion {
         this.answers = entity.getAnswers().stream()
                 .map(ent -> new AttestationAnswer(ent))
                 .collect(Collectors.toList());
+        this.category = new AttestationCategory(entity.getCategory());
         this.question = entity.getQuestion();
         this.sortOrder = entity.getSortOrder();
     }

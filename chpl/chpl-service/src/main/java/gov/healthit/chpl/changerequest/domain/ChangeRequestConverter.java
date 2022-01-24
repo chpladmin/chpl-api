@@ -3,6 +3,7 @@ package gov.healthit.chpl.changerequest.domain;
 import java.util.stream.Collectors;
 
 import gov.healthit.chpl.attestation.domain.AttestationAnswer;
+import gov.healthit.chpl.attestation.domain.AttestationCategory;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationQuestion;
 import gov.healthit.chpl.attestation.domain.AttestationResponse;
@@ -102,6 +103,7 @@ public final class ChangeRequestConverter {
 
     public static ChangeRequestAttestation convert(ChangeRequestAttestationEntity entity) {
         return ChangeRequestAttestation.builder()
+                .id(entity.getId())
                 .attestationPeriod(AttestationPeriod.builder()
                         .id(entity.getPeriod().getId())
                         .periodStart(entity.getPeriod().getPeriodStart())
@@ -122,6 +124,11 @@ public final class ChangeRequestConverter {
                 .question(AttestationQuestion.builder()
                         .id(entity.getQuestion().getId())
                         .question(entity.getQuestion().getQuestion())
+                        .category(AttestationCategory.builder()
+                                .id(entity.getQuestion().getCategory().getId())
+                                .name(entity.getQuestion().getCategory().getName())
+                                .sortOrder(entity.getQuestion().getCategory().getSortOrder())
+                                .build())
                         .sortOrder(entity.getQuestion().getSortOrder())
                         .build())
                 .answer(AttestationAnswer.builder()

@@ -5,11 +5,13 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -40,6 +42,10 @@ public class AttestationQuestionEntity {
             joinColumns = @JoinColumn(name = "attestation_question_id"),
             inverseJoinColumns = @JoinColumn(name = "attestation_answer_id"))
     private Set<AttestationAnswerEntity> answers;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "attestation_category_id", nullable = false, insertable = false, updatable = false)
+    private AttestationCategoryEntity category;
 
     @Column(name = "question")
     private String question;
