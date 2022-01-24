@@ -3,52 +3,57 @@
 		"name": "search-controller",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
-	"item": [{
+	"item": [
+		{
 			"name": "GET /search/beta - with Compliance filters",
-			"event": [{
-				"listen": "test",
-				"script": {
-					"exec": [
-						"pm.test(\"/search/beta end point should return 200 status with Direct Review fields if connected JIRA is running else response status should be 400\", function () {\r",
-						"    var jsonData = pm.response.json();\r",
-						"    if ((jsonData.directReviewsAvailable) == true){\r",
-						"        pm.response.to.have.status(200);\r",
-						"        pm.expect(jsonData.results.length).not.eql(0);\r",
-						"        pm.expect(jsonData.results[17]).to.have.property('directReviewCount');\r",
-						"        pm.expect(jsonData.results[18]).to.have.property('openDirectReviewNonConformityCount');\r",
-						"        pm.expect(jsonData.results[19]).to.have.property('closedDirectReviewNonConformityCount'); \r",
-						"    }\r",
-						"    else {\r",
-						"         pm.response.to.have.status(400);\r",
-						"    }\r",
-						"          \r",
-						"});\r",
-						"pm.test(\"/search/beta end point response should have existing and renamed Surveillance fields\", function () {\r",
-						"    var jsonData = pm.response.json();\r",
-						"    if ((jsonData.directReviewsAvailable) == true){\r",
-						"        pm.response.to.have.status(200);\r",
-						"        pm.expect(jsonData.results[14]).to.have.property('surveillanceCount');\r",
-						"        pm.expect(jsonData.results[15]).to.have.property('openSurveillanceNonConformityCount');\r",
-						"        pm.expect(jsonData.results[16]).to.have.property('closedSurveillanceNonConformityCount');\r",
-						"        pm.expect(jsonData.results[17]).to.have.property('openSurveillanceCount');\r",
-						"        pm.expect(jsonData.results[18]).to.have.property('closedSurveillanceCount'); \r",
-						"    }\r",
-						"    else {\r",
-						"         pm.response.to.have.status(400);\r",
-						"    }\r",
-						"          \r",
-						"});"
-					],
-					"type": "text/javascript"
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/search/beta end point should return 200 status with Direct Review fields if connected JIRA is running else response status should be 400\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    if ((jsonData.directReviewsAvailable) == true){\r",
+							"        pm.response.to.have.status(200);\r",
+							"        pm.expect(jsonData.results.length).not.eql(0);\r",
+							"        pm.expect(jsonData.results[17]).to.have.property('directReviewCount');\r",
+							"        pm.expect(jsonData.results[18]).to.have.property('openDirectReviewNonConformityCount');\r",
+							"        pm.expect(jsonData.results[19]).to.have.property('closedDirectReviewNonConformityCount'); \r",
+							"    }\r",
+							"    else {\r",
+							"         pm.response.to.have.status(400);\r",
+							"    }\r",
+							"          \r",
+							"});\r",
+							"pm.test(\"/search/beta end point response should have existing and renamed Surveillance fields\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    if ((jsonData.directReviewsAvailable) == true){\r",
+							"        pm.response.to.have.status(200);\r",
+							"        pm.expect(jsonData.results[14]).to.have.property('surveillanceCount');\r",
+							"        pm.expect(jsonData.results[15]).to.have.property('openSurveillanceNonConformityCount');\r",
+							"        pm.expect(jsonData.results[16]).to.have.property('closedSurveillanceNonConformityCount');\r",
+							"        pm.expect(jsonData.results[17]).to.have.property('openSurveillanceCount');\r",
+							"        pm.expect(jsonData.results[18]).to.have.property('closedSurveillanceCount'); \r",
+							"    }\r",
+							"    else {\r",
+							"         pm.response.to.have.status(400);\r",
+							"    }\r",
+							"          \r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
 				}
-			}],
+			],
 			"request": {
 				"method": "GET",
-				"header": [{
-					"key": "API-Key",
-					"value": "{{apiKey}}",
-					"type": "text"
-				}],
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					}
+				],
 				"url": {
 					"raw": "{{url}}/rest/search/beta?hasHadComplianceActivity=true&nonConformityOptionsOperator=OR&nonConformityOptions=OPEN_NONCONFORMITY, CLOSED_NONCONFORMITY",
 					"host": [
@@ -59,7 +64,8 @@
 						"search",
 						"beta"
 					],
-					"query": [{
+					"query": [
+						{
 							"key": "hasHadComplianceActivity",
 							"value": "true"
 						},
@@ -79,31 +85,34 @@
 		},
 		{
 			"name": "POST /search/beta - with Compliance filters",
-			"event": [{
-				"listen": "test",
-				"script": {
-					"exec": [
-						"pm.test(\"/search/beta end point should return 200 status with Direct Review fields if connected JIRA Is running else response status should be 400\", function () {\r",
-						"    var jsonData = pm.response.json();\r",
-						"    if ((jsonData.directReviewsAvailable) == true){\r",
-						"        pm.response.to.have.status(200);\r",
-						"        pm.expect(jsonData.results.length).not.eql(0);\r",
-						"        pm.expect(jsonData.results.directReviewCount).not.eql(0);\r",
-						"        pm.expect(jsonData.results.openDirectReviewNonConformityCount).not.eql(0);\r",
-						"        pm.expect(jsonData.results.closedDirectReviewNonConformityCount).not.eql(0);\r",
-						"    }\r",
-						"    else {\r",
-						"         pm.response.to.have.status(400);\r",
-						"    }\r",
-						"          \r",
-						"});"
-					],
-					"type": "text/javascript"
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/search/beta end point should return 200 status with Direct Review fields if connected JIRA Is running else response status should be 400\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    if ((jsonData.directReviewsAvailable) == true){\r",
+							"        pm.response.to.have.status(200);\r",
+							"        pm.expect(jsonData.results.length).not.eql(0);\r",
+							"        pm.expect(jsonData.results.directReviewCount).not.eql(0);\r",
+							"        pm.expect(jsonData.results.openDirectReviewNonConformityCount).not.eql(0);\r",
+							"        pm.expect(jsonData.results.closedDirectReviewNonConformityCount).not.eql(0);\r",
+							"    }\r",
+							"    else {\r",
+							"         pm.response.to.have.status(400);\r",
+							"    }\r",
+							"          \r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
 				}
-			}],
+			],
 			"request": {
 				"method": "POST",
-				"header": [{
+				"header": [
+					{
 						"key": "API-Key",
 						"value": "{{apiKey}}",
 						"type": "text"
@@ -135,26 +144,33 @@
 		},
 		{
 			"name": "GET /search/beta - with filter parameters other than compliance filters",
-			"event": [{
-				"listen": "test",
-				"script": {
-					"exec": [
-						"pm.test(\"/search/beta end point should return 200 status when filters other than complinace filters are used\", function () {\r",
-						"    var jsonData = pm.response.json();\r",
-						"        pm.response.to.have.status(200);\r",
-						"        pm.expect(jsonData.results.length).not.eql(0);\r",
-						"});"
-					],
-					"type": "text/javascript"
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.test(\"/search/beta end point should return 200 status when filters other than compliance filters are used\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(jsonData.results.length).not.eql(0);\r",
+							"});\r",
+							"pm.test(\"/search/beta end point should not return isRwtEligible field in response\", function () {\r",
+							"    pm.expect(jsonData.results[0]).not.have.property('isRwtEligible');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
 				}
-			}],
+			],
 			"request": {
 				"method": "GET",
-				"header": [{
-					"key": "API-Key",
-					"value": "{{apiKey}}",
-					"type": "text"
-				}],
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					}
+				],
 				"url": {
 					"raw": "{{url}}/rest/search/beta?certificationStatuses=Active&certificationEditions=2015&certificationCriteriaIds=33,53,54,26,27,29,30,31&certificationCriteriaOperator=OR&cqms=CMS122,CMS166,CMS50",
 					"host": [
@@ -165,7 +181,8 @@
 						"search",
 						"beta"
 					],
-					"query": [{
+					"query": [
+						{
 							"key": "certificationStatuses",
 							"value": "Active"
 						},
@@ -193,22 +210,25 @@
 		},
 		{
 			"name": "POST /search/beta - filters other than compliance filters",
-			"event": [{
-				"listen": "test",
-				"script": {
-					"exec": [
-						"pm.test(\"/search/beta end point should return 200 status when filters other than compliance filters are used\", function () {\r",
-						"    var jsonData = pm.response.json();\r",
-						"        pm.response.to.have.status(200);\r",
-						"        pm.expect(jsonData.results.length).not.eql(0);\r",
-						"});"
-					],
-					"type": "text/javascript"
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/search/beta end point should return 200 status when filters other than compliance filters are used\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"        pm.response.to.have.status(200);\r",
+							"        pm.expect(jsonData.results.length).not.eql(0);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
 				}
-			}],
+			],
 			"request": {
 				"method": "POST",
-				"header": [{
+				"header": [
+					{
 						"key": "API-Key",
 						"value": "{{apiKey}}",
 						"type": "text"
@@ -235,6 +255,183 @@
 					]
 				},
 				"description": "POST /search/beta - filters other than compliance filters - should return 200 status"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /search/beta -using IS_ELIGIBLE should return 400 status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"GET /search/beta request using IS_ELIGIBLE filter should return 400 status and error\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-KEY",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/rest/search/beta?rwtOptions=IS_ELIGIBLE&rwtOptions=NOT_ELIGIBLE&rwtOperator=OR",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"search",
+						"beta"
+					],
+					"query": [
+						{
+							"key": "rwtOptions",
+							"value": "IS_ELIGIBLE"
+						},
+						{
+							"key": "rwtOptions",
+							"value": "NOT_ELIGIBLE"
+						},
+						{
+							"key": "rwtOperator",
+							"value": "OR"
+						}
+					]
+				},
+				"description": "GET /search/beta request using IS_ELIGIBLE filter should return 400 status and error"
+			},
+			"response": []
+		},
+		{
+			"name": "POST /search/beta - 200 status using valid rwt  parameters",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"POST /search/beta end point should return 200 status and correct response when valid rwt filters are used\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"        pm.response.to.have.status(200);\r",
+							"        pm.expect(jsonData.results[0]).to.have.property('rwtPlansUrl');\r",
+							"        pm.expect(jsonData.results[0]).to.have.property('rwtResultsUrl');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "API-KEY",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"rwtOptions\": [\r\n       \"HAS_PLANS_URL\",\r\n       \"HAS_RESULTS_URL\" \r\n    ],\r\n    \"rwtOperator\": \"OR\"\r\n}"
+				},
+				"url": {
+					"raw": "{{url}}/rest/search/beta",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"search",
+						"beta"
+					]
+				},
+				"description": "POST /search/beta end point should return 200 status and correct response when valid rwt filters are used"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /search/beta - 200 status for valid rwt parameters",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"GET /search/beta end point should return 200 status and correct response using valid rwt parameters\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"        pm.response.to.have.status(200);\r",
+							"        pm.expect(jsonData.results[0]).to.have.property('rwtPlansUrl');\r",
+							"        pm.expect(jsonData.results[0]).to.have.property('rwtResultsUrl');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/search/beta?rwtOptions=HAS_PLANS_URL&rwtOptions=HAS_RESULTS_URL&rwtOperator=OR",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"search",
+						"beta"
+					],
+					"query": [
+						{
+							"key": "rwtOptions",
+							"value": "HAS_PLANS_URL"
+						},
+						{
+							"key": "rwtOptions",
+							"value": "HAS_RESULTS_URL"
+						},
+						{
+							"key": "rwtOperator",
+							"value": "OR"
+						}
+					]
+				},
+				"description": "GET /search/beta end point should return 200 status and correct response using valid rwt parameters"
 			},
 			"response": []
 		}

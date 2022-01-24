@@ -1033,7 +1033,7 @@ public class SearchRequestValidatorTest {
     public void validate_hasRwtOptionObjectsAndMissingRwtOperator_addsError() {
         SearchRequest request = SearchRequest.builder()
             .rwtOptionsStrings(null)
-            .rwtOptions(Stream.of(RwtSearchOptions.HAS_PLANS_URL, RwtSearchOptions.IS_ELIGIBLE).collect(Collectors.toSet()))
+            .rwtOptions(Stream.of(RwtSearchOptions.HAS_PLANS_URL, RwtSearchOptions.HAS_RESULTS_URL).collect(Collectors.toSet()))
             .build();
         try {
             validator.validate(request);
@@ -1082,12 +1082,10 @@ public class SearchRequestValidatorTest {
     @Test
     public void validate_validRwtOptionsParsedFromString_noErrors() {
         SearchRequest request = SearchRequest.builder()
-            .rwtOptionsStrings(Stream.of("HAS_PLANS_URL", "HAS_RESULTS_URL", "IS_ELIGIBLE",
-                    "NO_PLANS_URL", "NO_RESULTS_URL", "NOT_ELIGIBLE").collect(Collectors.toSet()))
-            .rwtOptions(Stream.of(RwtSearchOptions.HAS_PLANS_URL,
-                    RwtSearchOptions.HAS_RESULTS_URL, RwtSearchOptions.IS_ELIGIBLE,
-                    RwtSearchOptions.NO_PLANS_URL, RwtSearchOptions.NO_RESULTS_URL,
-                    RwtSearchOptions.NOT_ELIGIBLE).collect(Collectors.toSet()))
+            .rwtOptionsStrings(Stream.of("HAS_PLANS_URL", "HAS_RESULTS_URL",
+                    "NO_PLANS_URL", "NO_RESULTS_URL").collect(Collectors.toSet()))
+            .rwtOptions(Stream.of(RwtSearchOptions.HAS_PLANS_URL, RwtSearchOptions.HAS_RESULTS_URL,
+                    RwtSearchOptions.NO_PLANS_URL, RwtSearchOptions.NO_RESULTS_URL).collect(Collectors.toSet()))
             .rwtOperator(SearchSetOperator.OR)
             .build();
         try {
@@ -1095,7 +1093,7 @@ public class SearchRequestValidatorTest {
         } catch (ValidationException ex) {
             fail(ex.getMessage());
         }
-        assertEquals(6, request.getRwtOptions().size());
+        assertEquals(4, request.getRwtOptions().size());
     }
 
     @Test

@@ -19,7 +19,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;

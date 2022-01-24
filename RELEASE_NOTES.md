@@ -1,5 +1,17 @@
 # Release Notes
 
+## Version 33.0.0
+_24 January 2022_
+
+### Breaking Change
+* Remove "IS_ELIGIBLE" as query option for Real World Testing
+
+### Features
+* Re-send confirmation email on login if user hasn't confirmed
+* Deprecate Transparency Attestation field
+
+---
+
 ## Version 32.8.0
 _10 January 2022_
 
