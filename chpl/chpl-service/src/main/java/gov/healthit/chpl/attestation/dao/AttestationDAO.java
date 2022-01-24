@@ -7,12 +7,11 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.attestation.domain.AttestationCategory;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
+import gov.healthit.chpl.attestation.domain.AttestationQuestion;
 import gov.healthit.chpl.attestation.domain.AttestationResponse;
 import gov.healthit.chpl.attestation.domain.DeveloperAttestation;
 import gov.healthit.chpl.attestation.entity.AttestationAnswerEntity;
-import gov.healthit.chpl.attestation.entity.AttestationCategoryEntity;
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
 import gov.healthit.chpl.attestation.entity.AttestationQuestionEntity;
 import gov.healthit.chpl.attestation.entity.DeveloperAttestationEntity;
@@ -40,9 +39,9 @@ public class AttestationDAO extends BaseDAOImpl{
                 .collect(Collectors.toList());
     }
 
-    public List<AttestationCategory> getAttestationForm() {
+    public List<AttestationQuestion> getAttestationForm() {
         return getAttestationFormEntities().stream()
-                .map(ent -> new AttestationCategory(ent))
+                .map(ent -> new AttestationQuestion(ent))
                 .collect(Collectors.toList());
     }
 
@@ -131,16 +130,16 @@ public class AttestationDAO extends BaseDAOImpl{
     }
 
 
-    private List<AttestationCategoryEntity> getAttestationFormEntities() {
-        List<AttestationCategoryEntity> result = entityManager.createQuery(
-                "SELECT DISTINCT ace "
-                + "FROM AttestationCategoryEntity ace "
-                + "JOIN FETCH ace.questions aqe "
+    private List<AttestationQuestionEntity> getAttestationFormEntities() {
+        List<AttestationQuestionEntity> result = entityManager.createQuery(
+                "SELECT DISTINCT aqe "
+                + "FROM AttestationQuestionEntity aqe "
+                + "JOIN FETCH aqe.category ace "
                 + "JOIN FETCH aqe.answers aae "
                 + "WHERE (NOT ace.deleted = true) "
                 + "AND (NOT aqe.deleted = true )"
                 + "AND (NOT aae.deleted = true) ",
-                AttestationCategoryEntity.class)
+                AttestationQuestionEntity.class)
                 .getResultList();
         return result;
     }

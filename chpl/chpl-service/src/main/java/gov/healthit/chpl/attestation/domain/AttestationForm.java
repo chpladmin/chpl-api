@@ -8,9 +8,9 @@ import lombok.Data;
 @Data
 @Builder
 public class AttestationForm {
-    private List<AttestationCategory> categories;
+    private List<AttestationQuestion> questions;
 
-    public AttestationForm(List<AttestationCategory> categories) {
-        this.categories = categories;
+    public AttestationForm(List<AttestationQuestion> questions) {
+        this.questions = questions;
     }
 }

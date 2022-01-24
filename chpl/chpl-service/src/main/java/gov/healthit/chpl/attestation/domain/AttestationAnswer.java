@@ -3,10 +3,14 @@ package gov.healthit.chpl.attestation.domain;
 import gov.healthit.chpl.attestation.entity.AttestationAnswerEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-@Data
+@Getter
+@Setter
+@ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
