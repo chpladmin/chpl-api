@@ -122,10 +122,13 @@ public final class ChangeRequestConverter {
                 .question(AttestationQuestion.builder()
                         .id(entity.getQuestion().getId())
                         .question(entity.getQuestion().getQuestion())
+                        .sortOrder(entity.getQuestion().getSortOrder())
                         .build())
                 .answer(AttestationAnswer.builder()
                         .id(entity.getAnswer().getId())
                         .answer(entity.getAnswer().getAnswer())
+                        .meaning(entity.getAnswer().getMeaning())
+                        .sortOrder(entity.getAnswer().getSortOrder())
                         .build())
                 .build();
     }
