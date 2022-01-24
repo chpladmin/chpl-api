@@ -16,9 +16,6 @@ public class ChplFF4JProvider implements FF4jProvider {
 
     @Override
     public FF4j getFF4j() {
-//        if (ff4j == null) {
-//            ff4j = SpringContext.getBean(FF4j.class);
-//        }
         return ff4j;
     }
 }
