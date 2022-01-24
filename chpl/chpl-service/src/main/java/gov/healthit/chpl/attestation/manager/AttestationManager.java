@@ -47,4 +47,9 @@ public class AttestationManager {
                         });
         return attestationDAO.createDeveloperAttestation(developerAttestation);
     }
+
+    @Transactional
+    public List<DeveloperAttestation> getDeveloperAttestations(Long developerId) {
+        return attestationDAO.getDeveloperAttestationByDeveloper(developerId);
+    }
 }

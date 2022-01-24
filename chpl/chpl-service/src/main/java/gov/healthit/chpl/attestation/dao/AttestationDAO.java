@@ -49,7 +49,13 @@ public class AttestationDAO extends BaseDAOImpl{
         return new DeveloperAttestation(getDeveloperAttestationEntity(developerAttestationId));
     }
 
-    public List<DeveloperAttestation> getDeveloperAttestationByDeveloperAndPeriod(Long developerId, Long periodId) throws EntityRetrievalException {
+    public List<DeveloperAttestation> getDeveloperAttestationByDeveloper(Long developerId) {
+        return getDeveloperAttestationEntityByDeveloper(developerId).stream()
+                .map(ent -> new DeveloperAttestation(ent))
+                .collect(Collectors.toList());
+    }
+
+    public List<DeveloperAttestation> getDeveloperAttestationByDeveloperAndPeriod(Long developerId, Long periodId) {
         return getDeveloperAttestationEntityByDeveloperAndPeriod(developerId, periodId).stream()
                 .map(ent -> new DeveloperAttestation(ent))
                 .collect(Collectors.toList());
@@ -219,7 +225,7 @@ public class AttestationDAO extends BaseDAOImpl{
         return result.get(0);
     }
 
-    private List<DeveloperAttestationEntity> getDeveloperAttestationEntityByDeveloperAndPeriod(Long developerId, Long periodId) throws EntityRetrievalException {
+    private List<DeveloperAttestationEntity> getDeveloperAttestationEntityByDeveloperAndPeriod(Long developerId, Long periodId) {
         String hql = "SELECT DISTINCT dae "
                 + "FROM DeveloperAttestationEntity dae "
                 + "JOIN FETCH dae.developer d "
@@ -236,6 +242,26 @@ public class AttestationDAO extends BaseDAOImpl{
                 .createQuery(hql, DeveloperAttestationEntity.class)
                 .setParameter("developerId", developerId)
                 .setParameter("periodId", periodId)
+                .getResultList();
+
+        return result;
+    }
+
+    private List<DeveloperAttestationEntity> getDeveloperAttestationEntityByDeveloper(Long developerId) {
+        String hql = "SELECT DISTINCT dae "
+                + "FROM DeveloperAttestationEntity dae "
+                + "JOIN FETCH dae.developer d "
+                + "JOIN FETCH dae.responses resp "
+                + "JOIN FETCH dae.period per "
+                + "WHERE (NOT dae.deleted = true) "
+                + "AND (NOT d.deleted = true) "
+                + "AND (NOT resp.deleted = true) "
+                + "AND (NOT per.deleted = true) "
+                + "AND (d.id = :developerId) ";
+
+        List<DeveloperAttestationEntity> result = entityManager
+                .createQuery(hql, DeveloperAttestationEntity.class)
+                .setParameter("developerId", developerId)
                 .getResultList();
 
         return result;

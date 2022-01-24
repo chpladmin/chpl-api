@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.Developer;
@@ -59,6 +60,7 @@ import gov.healthit.chpl.service.DirectReviewCachingService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
+import gov.healthit.chpl.web.controller.results.DeveloperAttestationResults;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -74,6 +76,7 @@ public class DeveloperController {
     private DeveloperManager developerManager;
     private ErrorMessageUtil msgUtil;
     private UserPermissionsManager userPermissionsManager;
+    private AttestationManager attestationManager;
     private DirectReviewCachingService directReviewService;
     private FF4j ff4j;
 
@@ -81,11 +84,13 @@ public class DeveloperController {
     public DeveloperController(DeveloperManager developerManager,
             CertifiedProductManager cpManager,
             UserPermissionsManager userPermissionsManager,
+            AttestationManager attestationManager,
             ErrorMessageUtil msgUtil,
             DirectReviewCachingService directReviewService,
             FF4j ff4j) {
         this.developerManager = developerManager;
         this.userPermissionsManager = userPermissionsManager;
+        this.attestationManager = attestationManager;
         this.msgUtil = msgUtil;
         this.directReviewService = directReviewService;
         this.ff4j = ff4j;
@@ -311,6 +316,21 @@ public class DeveloperController {
         UsersResponse results = new UsersResponse();
         results.setUsers(domainUsers);
         return results;
+    }
+
+    @Operation(summary = "List attestations for a developer.",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ACB, or have administrative "
+                    + "authority on the specified developer.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/{developerId}/attestations", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody DeveloperAttestationResults getAttestations(@PathVariable("developerId") Long developerId) throws InvalidArgumentsException, EntityRetrievalException {
+        if (!ff4j.check(FeatureList.ROLE_DEVELOPER)) {
+            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
+        }
+        return new DeveloperAttestationResults(attestationManager.getDeveloperAttestations(developerId));
     }
 
     private DeveloperDTO toDto(Developer developer) {
