@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -52,13 +53,13 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     @Value("${changeRequest.attestation.rejected.subject}")
     private String rejectedEmailSubject;
 
-    @Value("${changeRequest.attestatiion.rejected.body}")
+    @Value("${changeRequest.attestation.rejected.body}")
     private String rejectedEmailBody;
 
-    @Value("${changeRequest.attestatiion.pendingDeveloperAction.subject}")
+    @Value("${changeRequest.attestation.pendingDeveloperAction.subject}")
     private String pendingDeveloperActionEmailSubject;
 
-    @Value("${changeRequest.attestatiion.pendingDeveloperAction.body}")
+    @Value("${changeRequest.attestation.pendingDeveloperAction.body}")
     private String pendingDeveloperActionEmailBody;
 
     @Autowired
@@ -126,21 +127,46 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     @Override
     protected void sendApprovalEmail(ChangeRequest cr) throws EmailNotSentException {
-
         new EmailBuilder(env)
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.toList()))
                 .subject(approvalEmailSubject)
-                .htmlMessage(createHtmlMessage(cr))
+                .htmlMessage(createAcceptedHtmlMessage(cr))
                 .sendEmail();
     }
 
-    private String createHtmlMessage(ChangeRequest cr) {
+    @Override
+    protected void sendPendingDeveloperActionEmail(ChangeRequest cr) throws EmailNotSentException {
+        throw new NotImplementedException("Pending Developer Atcion Email is not implemented.");
+    }
+
+    @Override
+    protected void sendRejectedEmail(ChangeRequest cr) throws EmailNotSentException {
+        new EmailBuilder(env)
+                .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
+                        .map(user -> user.getEmail())
+                        .collect(Collectors.toList()))
+                .subject(rejectedEmailSubject)
+                .htmlMessage(createRejectedHtmlMessage(cr))
+                .sendEmail();
+    }
+
+    private String createAcceptedHtmlMessage(ChangeRequest cr) {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         return chplHtmlEmailBuilder.initialize()
                 .heading("Developer Attestation Approved")
-                .paragraph("", String.format(approvalEmailBody, df.format(cr.getSubmittedDate()), getApprovalBody(cr)))
+                .paragraph("", String.format(rejectedEmailBody, df.format(cr.getSubmittedDate()), getApprovalBody(cr)))
+                .paragraph("Attestation", toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails()))
+                .footer(true)
+                .build();
+    }
+
+    private String createRejectedHtmlMessage(ChangeRequest cr) {
+        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
+        return chplHtmlEmailBuilder.initialize()
+                .heading("Developer Attestation Rejected")
+                .paragraph("", String.format(rejectedEmailBody, df.format(cr.getSubmittedDate()), getApprovalBody(cr), cr.getCurrentStatus().getComment()))
                 .paragraph("Attestation", toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails()))
                 .footer(true)
                 .build();
@@ -154,27 +180,6 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                         resp.getAttestation().getDescription(),
                         resp.getResponse().getResponse()))
                 .collect(Collectors.joining());
-    }
-
-    @Override
-    protected void sendPendingDeveloperActionEmail(ChangeRequest cr) throws EmailNotSentException {
-
-    }
-
-    @Override
-    protected void sendRejectedEmail(ChangeRequest cr) throws EmailNotSentException {
-//        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
-//        new EmailBuilder(env)
-//                .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
-//                        .map(user -> user.getEmail())
-//                        .collect(Collectors.toList()))
-//                .subject(rejectedEmailSubject)
-//                .htmlMessage(String.format(rejectedEmailBody,
-//                        df.format(cr.getSubmittedDate()),
-//                        ((ChangeRequestAttestation) cr.getDetails()).getAttestation(),
-//                        getApprovalBody(cr),
-//                        cr.getCurrentStatus().getComment()))
-//                .sendEmail();
     }
 
     private ChangeRequestAttestationSubmission getDetailsFromHashMap(HashMap<String, Object> map) {
