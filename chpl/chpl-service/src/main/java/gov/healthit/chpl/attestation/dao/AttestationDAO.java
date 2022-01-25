@@ -4,19 +4,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import gov.healthit.chpl.attestation.domain.Attestation;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
-import gov.healthit.chpl.attestation.domain.AttestationQuestion;
-import gov.healthit.chpl.attestation.domain.AttestationResponse;
-import gov.healthit.chpl.attestation.domain.DeveloperAttestation;
-import gov.healthit.chpl.attestation.entity.AttestationAnswerEntity;
+import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
+import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
+import gov.healthit.chpl.attestation.entity.AttestationEntity;
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
-import gov.healthit.chpl.attestation.entity.AttestationQuestionEntity;
-import gov.healthit.chpl.attestation.entity.DeveloperAttestationEntity;
+import gov.healthit.chpl.attestation.entity.AttestationValidResponseEntity;
 import gov.healthit.chpl.attestation.entity.DeveloperAttestationResponseEntity;
-import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.attestation.entity.DeveloperAttestationSubmissionEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -26,12 +24,6 @@ import lombok.extern.log4j.Log4j2;
 @Repository
 @Log4j2
 public class AttestationDAO extends BaseDAOImpl{
-    private DeveloperDAO developerDAO;
-
-    @Autowired
-    public AttestationDAO(DeveloperDAO developerDAO) {
-        this.developerDAO = developerDAO;
-    }
 
     public List<AttestationPeriod> getAllPeriods() {
         return getAllPeriodEntities().stream()
@@ -39,35 +31,35 @@ public class AttestationDAO extends BaseDAOImpl{
                 .collect(Collectors.toList());
     }
 
-    public List<AttestationQuestion> getAttestationForm() {
+    public List<Attestation> getAttestationForm() {
         return getAttestationFormEntities().stream()
-                .map(ent -> new AttestationQuestion(ent))
+                .map(ent -> new Attestation(ent))
                 .collect(Collectors.toList());
     }
 
-    public DeveloperAttestation getDeveloperAttestation(Long developerAttestationId) throws EntityRetrievalException {
-        return new DeveloperAttestation(getDeveloperAttestationEntity(developerAttestationId));
+    public DeveloperAttestationSubmission getDeveloperAttestationSubmission(Long developerAttestationSubmissionId) throws EntityRetrievalException {
+        return new DeveloperAttestationSubmission(getDeveloperAttestationSubmissionEntity(developerAttestationSubmissionId));
     }
 
-    public List<DeveloperAttestation> getDeveloperAttestationByDeveloper(Long developerId) {
-        return getDeveloperAttestationEntityByDeveloper(developerId).stream()
-                .map(ent -> new DeveloperAttestation(ent))
+    public List<DeveloperAttestationSubmission> getDeveloperAttestationSubmissionsByDeveloper(Long developerId) {
+        return getDeveloperAttestationSubmissionEntitiesByDeveloper(developerId).stream()
+                .map(ent -> new DeveloperAttestationSubmission(ent))
                 .collect(Collectors.toList());
     }
 
-    public List<DeveloperAttestation> getDeveloperAttestationByDeveloperAndPeriod(Long developerId, Long periodId) {
-        return getDeveloperAttestationEntityByDeveloperAndPeriod(developerId, periodId).stream()
-                .map(ent -> new DeveloperAttestation(ent))
+    public List<DeveloperAttestationSubmission> getDeveloperAttestationSubmissionsByDeveloperAndPeriod(Long developerId, Long periodId) {
+        return getDeveloperAttestationSubmissionEntitiesByDeveloperAndPeriod(developerId, periodId).stream()
+                .map(ent -> new DeveloperAttestationSubmission(ent))
                 .collect(Collectors.toList());
     }
 
-    public DeveloperAttestation createDeveloperAttestation(DeveloperAttestation attestation) throws EntityRetrievalException {
-        DeveloperAttestationEntity entity = DeveloperAttestationEntity.builder()
+    public DeveloperAttestationSubmission createDeveloperAttestationSubmission(DeveloperAttestationSubmission developerAttestationSubmission) throws EntityRetrievalException {
+        DeveloperAttestationSubmissionEntity entity = DeveloperAttestationSubmissionEntity.builder()
                 .developer(DeveloperEntity.builder()
-                        .id(attestation.getDeveloper().getDeveloperId())
+                        .id(developerAttestationSubmission.getDeveloper().getDeveloperId())
                         .build())
                 .period(AttestationPeriodEntity.builder()
-                        .id(attestation.getPeriod().getId())
+                        .id(developerAttestationSubmission.getPeriod().getId())
                         .build())
                 .deleted(false)
                 .lastModifiedUser(AuthUtil.getAuditId())
@@ -77,14 +69,14 @@ public class AttestationDAO extends BaseDAOImpl{
 
         create(entity);
 
-        attestation.getResponses().stream()
-                .forEach(resp -> createAttestationResponse(resp, entity.getId()));
+        developerAttestationSubmission.getResponses().stream()
+                .forEach(resp -> createDeveloperAttestationResponse(resp, entity.getId()));
 
-        return new DeveloperAttestation(getDeveloperAttestationEntity(entity.getId()));
+        return new DeveloperAttestationSubmission(getDeveloperAttestationSubmissionEntity(entity.getId()));
     }
 
-    public void deleteDeveloperAttestation(Long developerAttestationId) throws EntityRetrievalException {
-        DeveloperAttestationEntity attestation = getDeveloperAttestationEntity(developerAttestationId);
+    public void deleteDeveloperAttestationSubmission(Long developerAttestationId) throws EntityRetrievalException {
+        DeveloperAttestationSubmissionEntity attestation = getDeveloperAttestationSubmissionEntity(developerAttestationId);
 
         attestation.setDeleted(true);
         update(attestation);
@@ -96,12 +88,12 @@ public class AttestationDAO extends BaseDAOImpl{
                 });
     }
 
-    private DeveloperAttestationResponseEntity createAttestationResponse(AttestationResponse response, Long developerAttestationId) {
+    private DeveloperAttestationResponseEntity createDeveloperAttestationResponse(AttestationSubmittedResponse response, Long developerAttestationId) {
         try {
             DeveloperAttestationResponseEntity entity = DeveloperAttestationResponseEntity.builder()
-                    .developerAttestationId(developerAttestationId)
-                    .answer(getAttestationAnswerEntity(response.getAnswer().getId()))
-                    .question(getAttestationQuestionEntity(response.getQuestion().getId()))
+                    .developerAttestationSubmissionId(developerAttestationId)
+                    .validResponse(getAttestationValidResponseEntity(response.getResponse().getId()))
+                    .attestation(getAttestationEntity(response.getAttestation().getId()))
                     .deleted(false)
                     .lastModifiedUser(AuthUtil.getAuditId())
                     .creationDate(new Date())
@@ -115,15 +107,15 @@ public class AttestationDAO extends BaseDAOImpl{
         }
     }
 
-    private DeveloperAttestationResponseEntity getDeveloperAttestationResponseEntity(AttestationResponse response, Long lastModifiedUserId) {
+    private DeveloperAttestationResponseEntity getDeveloperAttestationResponseEntity(AttestationSubmittedResponse response) {
         return DeveloperAttestationResponseEntity.builder()
-                .answer(AttestationAnswerEntity.builder()
-                        .id(response.getAnswer().getId())
+                .validResponse(AttestationValidResponseEntity.builder()
+                        .id(response.getResponse().getId())
                         .build())
-                .question(AttestationQuestionEntity.builder()
-                        .id(response.getQuestion().getId())
+                .attestation(AttestationEntity.builder()
+                        .id(response.getAttestation().getId())
                         .build())
-                .lastModifiedUser(lastModifiedUserId)
+                .lastModifiedUser(AuthUtil.getAuditId())
                 .build();
     }
 
@@ -136,34 +128,34 @@ public class AttestationDAO extends BaseDAOImpl{
     }
 
 
-    private List<AttestationQuestionEntity> getAttestationFormEntities() {
-        List<AttestationQuestionEntity> result = entityManager.createQuery(
-                "SELECT DISTINCT aqe "
-                + "FROM AttestationQuestionEntity aqe "
-                + "JOIN FETCH aqe.category ace "
-                + "JOIN FETCH aqe.answers aae "
-                + "WHERE (NOT ace.deleted = true) "
-                + "AND (NOT aqe.deleted = true )"
-                + "AND (NOT aae.deleted = true) ",
-                AttestationQuestionEntity.class)
+    private List<AttestationEntity> getAttestationFormEntities() {
+        List<AttestationEntity> result = entityManager.createQuery(
+                "SELECT DISTINCT ae "
+                + "FROM AttestationEntity ae "
+                + "JOIN FETCH ae.condition c "
+                + "JOIN FETCH ae.validResponses vr "
+                + "WHERE (NOT ae.deleted = true) "
+                + "AND (NOT c.deleted = true )"
+                + "AND (NOT vr.deleted = true) ",
+                AttestationEntity.class)
                 .getResultList();
         return result;
     }
 
-    private AttestationQuestionEntity getAttestationQuestionEntity(Long id) throws EntityRetrievalException {
-        List<AttestationQuestionEntity> result = entityManager.createQuery(
-                "FROM AttestationQuestionEntity aqe "
-                + "WHERE (NOT aqe.deleted = true) "
-                + "AND aqe.id = :attestationQuestionId", AttestationQuestionEntity.class)
-                .setParameter("attestationQuestionId", id)
+    private AttestationEntity getAttestationEntity(Long id) throws EntityRetrievalException {
+        List<AttestationEntity> result = entityManager.createQuery(
+                "FROM AttestationEntity ae "
+                + "WHERE (NOT ae.deleted = true) "
+                + "AND ae.id = :attestationId", AttestationEntity.class)
+                .setParameter("attestationId", id)
                 .getResultList();
 
         if (result == null || result.size() == 0) {
             throw new EntityRetrievalException(
-                    "Data error. Attestation Question not found in database.");
+                    "Data error. Attestation not found in database.");
         } else if (result.size() > 1) {
             throw new EntityRetrievalException(
-                    "Data error. Duplicate Attestation Question in database.");
+                    "Data error. Duplicate Question in database.");
         }
 
         if (result.size() == 0) {
@@ -172,20 +164,20 @@ public class AttestationDAO extends BaseDAOImpl{
         return result.get(0);
     }
 
-    private AttestationAnswerEntity getAttestationAnswerEntity(Long id) throws EntityRetrievalException {
-        List<AttestationAnswerEntity> result = entityManager.createQuery(
-                "FROM AttestationAnswerEntity aae "
-                + "WHERE (NOT aae.deleted = true) "
-                + "AND aae.id = :attestationAnswerId", AttestationAnswerEntity.class)
-                .setParameter("attestationAnswerId", id)
+    private AttestationValidResponseEntity getAttestationValidResponseEntity(Long id) throws EntityRetrievalException {
+        List<AttestationValidResponseEntity> result = entityManager.createQuery(
+                "FROM AttestationValidResponseEntity vr "
+                + "WHERE (NOT vr.deleted = true) "
+                + "AND vr.id = :attestationValidResponseId", AttestationValidResponseEntity.class)
+                .setParameter("attestationValidResponseId", id)
                 .getResultList();
 
         if (result == null || result.size() == 0) {
             throw new EntityRetrievalException(
-                    "Data error. Attestation Answernot found in database.");
+                    "Data error. Attestation Valid Response not found in database.");
         } else if (result.size() > 1) {
             throw new EntityRetrievalException(
-                    "Data error. Duplicate Attestation Answer in database.");
+                    "Data error. Duplicate Attestation Valid Response in database.");
         }
 
         if (result.size() == 0) {
@@ -194,29 +186,29 @@ public class AttestationDAO extends BaseDAOImpl{
         return result.get(0);
     }
 
-    private DeveloperAttestationEntity getDeveloperAttestationEntity(Long developerAttestationId) throws EntityRetrievalException {
-        String hql = "SELECT DISTINCT dae "
-                + "FROM DeveloperAttestationEntity dae "
-                + "JOIN FETCH dae.developer d "
-                + "JOIN FETCH dae.responses resp "
-                + "JOIN FETCH dae.period per "
-                + "WHERE (NOT dae.deleted = true) "
+    private DeveloperAttestationSubmissionEntity getDeveloperAttestationSubmissionEntity(Long developerAttestationSubmissionId) throws EntityRetrievalException {
+        String hql = "SELECT DISTINCT dase "
+                + "FROM DeveloperAttestationSubmissionEntity dase "
+                + "JOIN FETCH dase.developer d "
+                + "JOIN FETCH dase.responses resp "
+                + "JOIN FETCH dase.period per "
+                + "WHERE (NOT dase.deleted = true) "
                 + "AND (NOT d.deleted = true) "
                 + "AND (NOT resp.deleted = true) "
                 + "AND (NOT per.deleted = true) "
-                + "AND (dae.id = :developerAttestationId) ";
+                + "AND (dase.id = :developerAttestationSubmissionId) ";
 
-        List<DeveloperAttestationEntity> result = entityManager
-                .createQuery(hql, DeveloperAttestationEntity.class)
-                .setParameter("developerAttestationId", developerAttestationId)
+        List<DeveloperAttestationSubmissionEntity> result = entityManager
+                .createQuery(hql, DeveloperAttestationSubmissionEntity.class)
+                .setParameter("developerAttestationSubmissionId", developerAttestationSubmissionId)
                 .getResultList();
 
         if (result == null || result.size() == 0) {
             throw new EntityRetrievalException(
-                    "Data error. Developer attestation not found in database.");
+                    "Data error. Developer submission attestation not found in database.");
         } else if (result.size() > 1) {
             throw new EntityRetrievalException(
-                    "Data error. Duplicate developer attestation in database.");
+                    "Data error. Duplicate developer submission attestation in database.");
         }
 
         if (result.size() == 0) {
@@ -225,21 +217,21 @@ public class AttestationDAO extends BaseDAOImpl{
         return result.get(0);
     }
 
-    private List<DeveloperAttestationEntity> getDeveloperAttestationEntityByDeveloperAndPeriod(Long developerId, Long periodId) {
-        String hql = "SELECT DISTINCT dae "
-                + "FROM DeveloperAttestationEntity dae "
-                + "JOIN FETCH dae.developer d "
-                + "JOIN FETCH dae.responses resp "
-                + "JOIN FETCH dae.period per "
-                + "WHERE (NOT dae.deleted = true) "
+    private List<DeveloperAttestationSubmissionEntity> getDeveloperAttestationSubmissionEntitiesByDeveloperAndPeriod(Long developerId, Long periodId) {
+        String hql = "SELECT DISTINCT dase "
+                + "FROM DeveloperAttestationSubmissionEntity dase "
+                + "JOIN FETCH dase.developer d "
+                + "JOIN FETCH dase.responses resp "
+                + "JOIN FETCH dase.period per "
+                + "WHERE (NOT dase.deleted = true) "
                 + "AND (NOT d.deleted = true) "
                 + "AND (NOT resp.deleted = true) "
                 + "AND (NOT per.deleted = true) "
                 + "AND (d.id = :developerId) "
                 + "AND (per.id = :periodId) ";
 
-        List<DeveloperAttestationEntity> result = entityManager
-                .createQuery(hql, DeveloperAttestationEntity.class)
+        List<DeveloperAttestationSubmissionEntity> result = entityManager
+                .createQuery(hql, DeveloperAttestationSubmissionEntity.class)
                 .setParameter("developerId", developerId)
                 .setParameter("periodId", periodId)
                 .getResultList();
@@ -247,20 +239,20 @@ public class AttestationDAO extends BaseDAOImpl{
         return result;
     }
 
-    private List<DeveloperAttestationEntity> getDeveloperAttestationEntityByDeveloper(Long developerId) {
-        String hql = "SELECT DISTINCT dae "
-                + "FROM DeveloperAttestationEntity dae "
-                + "JOIN FETCH dae.developer d "
-                + "JOIN FETCH dae.responses resp "
-                + "JOIN FETCH dae.period per "
-                + "WHERE (NOT dae.deleted = true) "
+    private List<DeveloperAttestationSubmissionEntity> getDeveloperAttestationSubmissionEntitiesByDeveloper(Long developerId) {
+        String hql = "SELECT DISTINCT dase "
+                + "FROM DeveloperAttestationSubmissionEntity dase "
+                + "JOIN FETCH dase.developer d "
+                + "JOIN FETCH dase.responses resp "
+                + "JOIN FETCH dase.period per "
+                + "WHERE (NOT dase.deleted = true) "
                 + "AND (NOT d.deleted = true) "
                 + "AND (NOT resp.deleted = true) "
                 + "AND (NOT per.deleted = true) "
                 + "AND (d.id = :developerId) ";
 
-        List<DeveloperAttestationEntity> result = entityManager
-                .createQuery(hql, DeveloperAttestationEntity.class)
+        List<DeveloperAttestationSubmissionEntity> result = entityManager
+                .createQuery(hql, DeveloperAttestationSubmissionEntity.class)
                 .setParameter("developerId", developerId)
                 .getResultList();
 

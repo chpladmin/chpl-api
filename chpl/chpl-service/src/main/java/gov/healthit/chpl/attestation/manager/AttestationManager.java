@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.attestation.dao.AttestationDAO;
 import gov.healthit.chpl.attestation.domain.AttestationForm;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
-import gov.healthit.chpl.attestation.domain.DeveloperAttestation;
+import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import lombok.extern.log4j.Log4j2;
 
@@ -32,24 +32,24 @@ public class AttestationManager {
     }
 
     @Transactional
-    public DeveloperAttestation saveDeveloperAttestation(DeveloperAttestation developerAttestation) throws EntityRetrievalException {
-        attestationDAO.getDeveloperAttestationByDeveloperAndPeriod(
+    public DeveloperAttestationSubmission saveDeveloperAttestation(DeveloperAttestationSubmission developerAttestation) throws EntityRetrievalException {
+        attestationDAO.getDeveloperAttestationSubmissionsByDeveloperAndPeriod(
                 developerAttestation.getDeveloper().getDeveloperId(),
                 developerAttestation.getPeriod().getId())
                 .stream()
                         .forEach(da -> {
                             try {
-                                attestationDAO.deleteDeveloperAttestation(da.getId());
+                                attestationDAO.deleteDeveloperAttestationSubmission(da.getId());
                             } catch (EntityRetrievalException e) {
                                 LOGGER.catching(e);
                                 throw new RuntimeException(e);
                             }
                         });
-        return attestationDAO.createDeveloperAttestation(developerAttestation);
+        return attestationDAO.createDeveloperAttestationSubmission(developerAttestation);
     }
 
     @Transactional
-    public List<DeveloperAttestation> getDeveloperAttestations(Long developerId) {
-        return attestationDAO.getDeveloperAttestationByDeveloper(developerId);
+    public List<DeveloperAttestationSubmission> getDeveloperAttestations(Long developerId) {
+        return attestationDAO.getDeveloperAttestationSubmissionsByDeveloper(developerId);
     }
 }

@@ -16,13 +16,13 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
-import gov.healthit.chpl.attestation.domain.AttestationResponse;
-import gov.healthit.chpl.attestation.domain.DeveloperAttestation;
+import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
+import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestAttestationDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestation;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.EmailBuilder;
@@ -35,7 +35,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2
-public class ChangeRequestAttestationService extends ChangeRequestDetailsService<ChangeRequestAttestation> {
+public class ChangeRequestAttestationService extends ChangeRequestDetailsService<ChangeRequestAttestationSubmission> {
     private ChangeRequestDAO crDAO;
     private ChangeRequestAttestationDAO crAttesttionDAO;
     private ActivityManager activityManager;
@@ -81,7 +81,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     }
 
     @Override
-    public ChangeRequestAttestation getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
+    public ChangeRequestAttestationSubmission getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
         return crAttesttionDAO.getByChangeRequestId(changeRequestId);
     }
 
@@ -89,7 +89,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     @Transactional
     public ChangeRequest create(ChangeRequest cr) {
         try {
-            ChangeRequestAttestation attestation = getDetailsFromHashMap((HashMap<String, Object>) cr.getDetails());
+            ChangeRequestAttestationSubmission attestation = getDetailsFromHashMap((HashMap<String, Object>) cr.getDetails());
 
             attestation.setAttestationPeriod(getAttestationPeriod(cr));
 
@@ -111,15 +111,15 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     @Override
     protected ChangeRequest execute(ChangeRequest cr) throws EntityRetrievalException, EntityCreationException {
-        ChangeRequestAttestation attestation = (ChangeRequestAttestation) cr.getDetails();
+        ChangeRequestAttestationSubmission attestationSubmission = (ChangeRequestAttestationSubmission) cr.getDetails();
 
-        DeveloperAttestation developerAttestation = DeveloperAttestation.builder()
+        DeveloperAttestationSubmission developerAttestation = DeveloperAttestationSubmission.builder()
                 .developer(cr.getDeveloper())
-                .period(attestation.getAttestationPeriod())
-                .responses(attestation.getResponses().stream()
-                        .map(resp -> AttestationResponse.builder()
-                                .answer(resp.getAnswer())
-                                .question(resp.getQuestion())
+                .period(attestationSubmission.getAttestationPeriod())
+                .responses(attestationSubmission.getResponses().stream()
+                        .map(resp -> AttestationSubmittedResponse.builder()
+                                .attestation(resp.getAttestation())
+                                .response(resp.getResponse())
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -145,14 +145,14 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         return chplHtmlEmailBuilder.initialize()
                 .heading("Developer Attestation Approved")
                 .paragraph("", String.format(approvalEmailBody, df.format(cr.getSubmittedDate()), getApprovalBody(cr)))
-                .paragraph("Attestation", toHtmlString((ChangeRequestAttestation) cr.getDetails()))
+                .paragraph("Attestation", toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails()))
                 .footer(true)
                 .build();
     }
 
-    private String toHtmlString(ChangeRequestAttestation attestation) {
-        return attestation.getResponses().stream()
-                .map(resp -> String.format("%s <br/> %s <br/><br/>", resp.getQuestion().getQuestion(), resp.getAnswer().getAnswer()))
+    private String toHtmlString(ChangeRequestAttestationSubmission attestationSubmission) {
+        return attestationSubmission.getResponses().stream()
+                .map(resp -> String.format("%s <br/> %s <br/><br/>", resp.getAttestation().getDescription(), resp.getResponse().getResponse()))
                 .collect(Collectors.joining());
     }
 
@@ -188,8 +188,8 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 //                .sendEmail();
     }
 
-    private ChangeRequestAttestation getDetailsFromHashMap(HashMap<String, Object> map) {
-        return  mapper.convertValue(map, ChangeRequestAttestation.class);
+    private ChangeRequestAttestationSubmission getDetailsFromHashMap(HashMap<String, Object> map) {
+        return  mapper.convertValue(map, ChangeRequestAttestationSubmission.class);
     }
 
     private AttestationPeriod getAttestationPeriod(ChangeRequest cr) {

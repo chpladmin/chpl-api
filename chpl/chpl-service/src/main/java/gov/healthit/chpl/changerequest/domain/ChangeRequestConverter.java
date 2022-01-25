@@ -2,13 +2,13 @@ package gov.healthit.chpl.changerequest.domain;
 
 import java.util.stream.Collectors;
 
-import gov.healthit.chpl.attestation.domain.AttestationAnswer;
-import gov.healthit.chpl.attestation.domain.AttestationCategory;
+import gov.healthit.chpl.attestation.domain.Attestation;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
-import gov.healthit.chpl.attestation.domain.AttestationQuestion;
-import gov.healthit.chpl.attestation.domain.AttestationResponse;
-import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationEntity;
+import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
+import gov.healthit.chpl.attestation.domain.AttestationValidResponse;
+import gov.healthit.chpl.attestation.domain.Condition;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationResponseEntity;
+import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationSubmissionEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestDeveloperDetailsEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusEntity;
@@ -101,8 +101,8 @@ public final class ChangeRequestConverter {
         return crDev;
     }
 
-    public static ChangeRequestAttestation convert(ChangeRequestAttestationEntity entity) {
-        return ChangeRequestAttestation.builder()
+    public static ChangeRequestAttestationSubmission convert(ChangeRequestAttestationSubmissionEntity entity) {
+        return ChangeRequestAttestationSubmission.builder()
                 .id(entity.getId())
                 .attestationPeriod(AttestationPeriod.builder()
                         .id(entity.getPeriod().getId())
@@ -118,24 +118,25 @@ public final class ChangeRequestConverter {
                 .build();
     }
 
-    private static AttestationResponse convert(ChangeRequestAttestationResponseEntity entity) {
-        return AttestationResponse.builder()
+    private static AttestationSubmittedResponse convert(ChangeRequestAttestationResponseEntity entity) {
+
+        return AttestationSubmittedResponse.builder()
                 .id(entity.getId())
-                .question(AttestationQuestion.builder()
-                        .id(entity.getQuestion().getId())
-                        .question(entity.getQuestion().getQuestion())
-                        .category(AttestationCategory.builder()
-                                .id(entity.getQuestion().getCategory().getId())
-                                .name(entity.getQuestion().getCategory().getName())
-                                .sortOrder(entity.getQuestion().getCategory().getSortOrder())
+                .attestation(Attestation.builder()
+                        .id(entity.getAttestation().getId())
+                        .description(entity.getAttestation().getDescription())
+                        .condition(Condition.builder()
+                                .id(entity.getAttestation().getCondition().getId())
+                                .name(entity.getAttestation().getCondition().getName())
+                                .sortOrder(entity.getAttestation().getCondition().getSortOrder())
                                 .build())
-                        .sortOrder(entity.getQuestion().getSortOrder())
+                        .sortOrder(entity.getAttestation().getSortOrder())
                         .build())
-                .answer(AttestationAnswer.builder()
-                        .id(entity.getAnswer().getId())
-                        .answer(entity.getAnswer().getAnswer())
-                        .meaning(entity.getAnswer().getMeaning())
-                        .sortOrder(entity.getAnswer().getSortOrder())
+                .response(AttestationValidResponse.builder()
+                        .id(entity.getValidResponse().getId())
+                        .response(entity.getValidResponse().getResponse())
+                        .meaning(entity.getValidResponse().getMeaning())
+                        .sortOrder(entity.getValidResponse().getSortOrder())
                         .build())
                 .build();
     }

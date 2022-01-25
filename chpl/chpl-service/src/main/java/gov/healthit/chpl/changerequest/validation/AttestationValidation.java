@@ -9,10 +9,10 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.healthit.chpl.attestation.domain.Attestation;
 import gov.healthit.chpl.attestation.domain.AttestationForm;
-import gov.healthit.chpl.attestation.domain.AttestationQuestion;
-import gov.healthit.chpl.attestation.domain.AttestationResponse;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestation;
+import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.util.AuthUtil;
 
@@ -27,26 +27,26 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
         this.mapper = new ObjectMapper();
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
-        ChangeRequestAttestation attestation = getChangeRequestAttestationFromMap((HashMap) context.getNewChangeRequest().getDetails());
+        ChangeRequestAttestationSubmission attestation = getChangeRequestAttestationFromMap((HashMap) context.getNewChangeRequest().getDetails());
 
         if (isChangeRequestNew(context)) {
             getMessages().addAll(validateSignature(context, attestation));
         }
 
-        getMessages().addAll(getMissingQuestions(attestation, attestationForm).stream()
-                .map(question -> String.format(getErrorMessage("changeRequest.attestation.questionNotAnswered"), question.getQuestion()))
-                .collect(Collectors.toList()));
+        //getMessages().addAll(getMissingAttestations(attestation, attestationForm).stream()
+        //        .map(question -> String.format(getErrorMessage("changeRequest.attestation.questionNotAnswered"), question.getQuestion()))
+        //        .collect(Collectors.toList()));
 
-        getMessages().addAll(getInvalidResponses(attestation, attestationForm).stream()
-                .map(response -> String.format(getErrorMessage("changeRequest.attestation.invalidResponse"),
-                        getAnswerText(response.getAnswer().getId(), attestationForm),
-                        getQuestionText(response.getQuestion().getId(), attestationForm)))
-                .collect(Collectors.toList()));
+        //getMessages().addAll(getInvalidResponses(attestation, attestationForm).stream()
+        //        .map(response -> String.format(getErrorMessage("changeRequest.attestation.invalidResponse"),
+        //                getValidResponseText(response.getAnswer().getId(), attestationForm),
+        //                getQuestionText(response.getQuestion().getId(), attestationForm)))
+        //        .collect(Collectors.toList()));
 
         return getMessages().size() == 0;
     }
 
-    private List<String> validateSignature(ChangeRequestValidationContext context, ChangeRequestAttestation attestation) {
+    private List<String> validateSignature(ChangeRequestValidationContext context, ChangeRequestAttestationSubmission attestation) {
         List<String> errors = new ArrayList<String>();
         if (attestation.getSignature() == null || !AuthUtil.getCurrentUser().getFullName().equals(attestation.getSignature())) {
             errors.add(getErrorMessage("changeRequest.attestation.invalidSignature"));
@@ -54,53 +54,53 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
         return errors;
     }
 
-    private List<AttestationQuestion> getMissingQuestions(ChangeRequestAttestation attestation, AttestationForm attestationForm) {
+    private List<Attestation> getMissingAttestations(ChangeRequestAttestationSubmission attestationSubmission, AttestationForm attestationForm) {
 
-        List<AttestationQuestion> submittedQuestions = attestation.getResponses().stream()
-                .map(resp -> resp.getQuestion())
+        List<Attestation> submittedAttestations = attestationSubmission.getResponses().stream()
+                .map(resp -> resp.getAttestation())
                 .collect(Collectors.toList());
 
-        return subtractListsOfAttestationQuestions(attestationForm.getQuestions(), submittedQuestions);
+        return subtractListsOfAttestationQuestions(attestationForm.getAttestations(), submittedAttestations);
     }
 
-    private List<AttestationResponse> getInvalidResponses(ChangeRequestAttestation attestation, AttestationForm attestationForm) {
+    private List<AttestationSubmittedResponse> getInvalidResponses(ChangeRequestAttestationSubmission attestation, AttestationForm attestationForm) {
         return attestation.getResponses().stream()
                 .filter(response -> !isResponseValid(response, attestationForm))
                 .collect(Collectors.toList());
     }
 
-    private Boolean isResponseValid(AttestationResponse response, AttestationForm attestationForm) {
-        return attestationForm.getQuestions().stream()
-                .filter(ques -> ques.getId().equals(response.getQuestion().getId()))
-                .flatMap(ques -> ques.getAnswers().stream())
-                .filter(answer -> answer.getId().equals(response.getAnswer().getId()))
+    private Boolean isResponseValid(AttestationSubmittedResponse response, AttestationForm attestationForm) {
+        return attestationForm.getAttestations().stream()
+                .filter(att -> att.getId().equals(response.getAttestation().getId()))
+                .flatMap(resp -> resp.getValidResponses().stream())
+                .filter(resp -> resp.getId().equals(response.getResponse().getId()))
                 .findAny()
                 .isPresent();
     }
 
-    private String getQuestionText(Long questionId, AttestationForm attestationForm) {
-        return attestationForm.getQuestions().stream()
-                .filter(ques -> ques.getId().equals(questionId))
-                .map(ques -> ques.getQuestion())
+    private String getAttestationText(Long attestationId, AttestationForm attestationForm) {
+        return attestationForm.getAttestations().stream()
+                .filter(att -> att.getId().equals(attestationId))
+                .map(att -> att.getDescription())
                 .findAny()
                 .orElse("Not Found");
     }
 
-    private String getAnswerText(Long answerId, AttestationForm attestationForm) {
-        return attestationForm.getQuestions().stream()
-                .flatMap(ques -> ques.getAnswers().stream())
-                .filter(ans -> ans.getId().equals(answerId))
-                .map(ans -> ans.getAnswer())
+    private String getValidResponseText(Long responseId, AttestationForm attestationForm) {
+        return attestationForm.getAttestations().stream()
+                .flatMap(att -> att.getValidResponses().stream())
+                .filter(resp -> resp.getId().equals(responseId))
+                .map(resp -> resp.getResponse())
                 .findAny()
                 .orElse("Not Found");
     }
 
-    private ChangeRequestAttestation getChangeRequestAttestationFromMap(HashMap<String, Object> map) {
-        return  mapper.convertValue(map, ChangeRequestAttestation.class);
+    private ChangeRequestAttestationSubmission getChangeRequestAttestationFromMap(HashMap<String, Object> map) {
+        return  mapper.convertValue(map, ChangeRequestAttestationSubmission.class);
     }
 
-    private List<AttestationQuestion> subtractListsOfAttestationQuestions(List<AttestationQuestion> listA, List<AttestationQuestion> listB) {
-        Predicate<AttestationQuestion> notInListB = questionFromA -> !listB.stream()
+    private List<Attestation> subtractListsOfAttestationQuestions(List<Attestation> listA, List<Attestation> listB) {
+        Predicate<Attestation> notInListB = questionFromA -> !listB.stream()
                 .anyMatch(question -> questionFromA.getId().equals(question.getId()));
 
         return listA.stream()

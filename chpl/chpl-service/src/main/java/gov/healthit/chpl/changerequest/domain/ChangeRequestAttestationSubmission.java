@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
-import gov.healthit.chpl.attestation.domain.AttestationResponse;
+import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,13 +14,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChangeRequestAttestation implements Serializable, ChangeRequestDetails {
+public class ChangeRequestAttestationSubmission implements Serializable, ChangeRequestDetails {
     private static final long serialVersionUID = 2150025150434933303L;
 
     private Long id;
     private String signature;
     private AttestationPeriod attestationPeriod;
-    private List<AttestationResponse> responses;
+    private List<AttestationSubmittedResponse> responses;
 
     @Override
     public boolean matches(Object obj) {

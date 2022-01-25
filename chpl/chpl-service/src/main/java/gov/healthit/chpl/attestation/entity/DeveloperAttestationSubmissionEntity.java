@@ -22,14 +22,14 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "developer_attestation")
+@Table(name = "developer_attestation_submission")
 @Getter
 @Setter
 @ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DeveloperAttestationEntity {
+public class DeveloperAttestationSubmissionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -44,7 +44,7 @@ public class DeveloperAttestationEntity {
     private AttestationPeriodEntity period;
 
     @OneToMany()
-    @JoinColumn(name = "developer_attestation_id")
+    @JoinColumn(name = "developer_attestation_submission_id")
     private Set<DeveloperAttestationResponseEntity> responses;
 
     @Column(name = "last_modified_user", nullable = false)

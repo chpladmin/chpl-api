@@ -11,8 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.attestation.entity.AttestationAnswerEntity;
-import gov.healthit.chpl.attestation.entity.AttestationQuestionEntity;
+import gov.healthit.chpl.attestation.entity.AttestationEntity;
+import gov.healthit.chpl.attestation.entity.AttestationValidResponseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,16 +35,16 @@ public class ChangeRequestAttestationResponseEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "change_request_attestation_id", insertable = true, nullable = false)
-    private Long changeRequestAttestationId;
+    @Column(name = "change_request_attestation_submission_id", insertable = true, nullable = false)
+    private Long changeRequestAttestationSubmissionId;
 
     @OneToOne()
-    @JoinColumn(name = "attestation_question_id", insertable = true, updatable = false)
-    private AttestationQuestionEntity question;
+    @JoinColumn(name = "attestation_id", insertable = true, updatable = false)
+    private AttestationEntity attestation;
 
     @OneToOne()
-    @JoinColumn(name = "attestation_answer_id", insertable = true, updatable = false)
-    private AttestationAnswerEntity answer;
+    @JoinColumn(name = "attestation_valid_response_id", insertable = true, updatable = false)
+    private AttestationValidResponseEntity validResponse;
 
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;

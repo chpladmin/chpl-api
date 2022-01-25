@@ -1,18 +1,12 @@
 package gov.healthit.chpl.attestation.entity;
 
 import java.util.Date;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -22,35 +16,25 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@Entity
-@Table(name = "attestation_question")
 @Getter
 @Setter
 @ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AttestationQuestionEntity {
+@Entity
+@Table(name = "attestation_condition")
+public class AttestationConditionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @OneToMany
-    @JoinTable(name = "attestation_form",
-            joinColumns = @JoinColumn(name = "attestation_question_id"),
-            inverseJoinColumns = @JoinColumn(name = "attestation_answer_id"))
-    private Set<AttestationAnswerEntity> answers;
+    @Column(name = "name", nullable = false)
+    private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "attestation_category_id", nullable = false, insertable = false, updatable = false)
-    private AttestationCategoryEntity category;
-
-    @Column(name = "question")
-    private String question;
-
-    @Column(name = "sort_order")
+    @Column(name = "sort_order", nullable = false)
     private Long sortOrder;
 
     @Column(name = "last_modified_user", nullable = false)

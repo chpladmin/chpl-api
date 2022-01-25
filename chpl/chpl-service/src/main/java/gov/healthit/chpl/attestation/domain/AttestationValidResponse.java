@@ -1,6 +1,6 @@
 package gov.healthit.chpl.attestation.domain;
 
-import gov.healthit.chpl.attestation.entity.AttestationAnswerEntity;
+import gov.healthit.chpl.attestation.entity.AttestationValidResponseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,15 +14,15 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AttestationAnswer {
+public class AttestationValidResponse {
     private Long id;
-    private String answer;
+    private String response;
     private String meaning;
     private Long sortOrder;
 
-    public AttestationAnswer(AttestationAnswerEntity entity) {
+    public AttestationValidResponse(AttestationValidResponseEntity entity) {
         this.id = entity.getId();
-        this.answer = entity.getAnswer();
+        this.response = entity.getResponse();
         this.meaning = entity.getMeaning();
         this.sortOrder = entity.getSortOrder();
     }

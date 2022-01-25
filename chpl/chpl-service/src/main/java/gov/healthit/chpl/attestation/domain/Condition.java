@@ -1,6 +1,6 @@
 package gov.healthit.chpl.attestation.domain;
 
-import gov.healthit.chpl.attestation.entity.AttestationCategoryEntity;
+import gov.healthit.chpl.attestation.entity.AttestationConditionEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,12 +10,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AttestationCategory {
+public class Condition {
     private Long id;
     private String name;
     private Long sortOrder;
 
-    public AttestationCategory(AttestationCategoryEntity entity) {
+    public Condition(AttestationConditionEntity entity) {
         this.id = entity.getId();
         this.name = entity.getName();
         this.sortOrder = entity.getSortOrder();

@@ -33,16 +33,16 @@ public class DeveloperAttestationResponseEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "developer_attestation_id", nullable = false)
-    private Long developerAttestationId;
+    @Column(name = "developer_attestation_submission_id", nullable = false)
+    private Long developerAttestationSubmissionId;
 
     @OneToOne()
-    @JoinColumn(name = "attestation_question_id", insertable = true, updatable = true)
-    private AttestationQuestionEntity question;
+    @JoinColumn(name = "attestation_id", insertable = true, updatable = true)
+    private AttestationEntity attestation;
 
     @OneToOne()
-    @JoinColumn(name = "attestation_answer_id", insertable = true, updatable = true)
-    private AttestationAnswerEntity answer;
+    @JoinColumn(name = "attestation_valid_response_id", insertable = true, updatable = true)
+    private AttestationValidResponseEntity validResponse;
 
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;

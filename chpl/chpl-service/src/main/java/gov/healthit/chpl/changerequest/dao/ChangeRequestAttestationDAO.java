@@ -5,15 +5,15 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.attestation.domain.AttestationResponse;
-import gov.healthit.chpl.attestation.entity.AttestationAnswerEntity;
+import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
+import gov.healthit.chpl.attestation.entity.AttestationEntity;
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
-import gov.healthit.chpl.attestation.entity.AttestationQuestionEntity;
+import gov.healthit.chpl.attestation.entity.AttestationValidResponseEntity;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestation;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestConverter;
-import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationResponseEntity;
+import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationSubmissionEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -24,10 +24,10 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ChangeRequestAttestationDAO extends BaseDAOImpl{
 
-    public ChangeRequestAttestation create(ChangeRequest cr, ChangeRequestAttestation crAttestation) throws EntityRetrievalException {
-        ChangeRequestAttestationEntity parent = ChangeRequestAttestationEntity.builder()
+    public ChangeRequestAttestationSubmission create(ChangeRequest cr, ChangeRequestAttestationSubmission changeRequestAttestationSubmission) throws EntityRetrievalException {
+        ChangeRequestAttestationSubmissionEntity parent = ChangeRequestAttestationSubmissionEntity.builder()
                 .changeRequest(getSession().load(ChangeRequestEntity.class, cr.getId()))
-                .period(getAttestationPeriodEntity(crAttestation.getAttestationPeriod().getId()))
+                .period(getAttestationPeriodEntity(changeRequestAttestationSubmission.getAttestationPeriod().getId()))
                 .deleted(false)
                 .lastModifiedUser(AuthUtil.getAuditId())
                 .creationDate(new Date())
@@ -36,15 +36,15 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
 
         create(parent);
 
-        crAttestation.getResponses().stream()
+        changeRequestAttestationSubmission.getResponses().stream()
                 .forEach(resp -> createAttestationResponse(resp, parent.getId()));
         return ChangeRequestConverter.convert(getEntity(parent.getId()));
     }
 
 
-    private ChangeRequestAttestationResponseEntity createAttestationResponse(AttestationResponse response, Long changeRequestAttestationId) {
+    private ChangeRequestAttestationResponseEntity createAttestationResponse(AttestationSubmittedResponse response, Long changeRequestAttestationSubmissionId) {
         try {
-            ChangeRequestAttestationResponseEntity entity = getChangeRequestAttestationResponseEntity(response, changeRequestAttestationId);
+            ChangeRequestAttestationResponseEntity entity = getChangeRequestAttestationResponseEntity(response, changeRequestAttestationSubmissionId);
             create(entity);
             return entity;
         } catch (EntityRetrievalException e) {
@@ -53,34 +53,34 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
         }
     }
 
-    public ChangeRequestAttestation getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
+    public ChangeRequestAttestationSubmission getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
         return ChangeRequestConverter.convert(getEntityByChangeRequestId(changeRequestId));
     }
 
-    private ChangeRequestAttestationEntity getEntity(Long changeRequestAttestationId) throws EntityRetrievalException {
-        String hql = "SELECT DISTINCT crae "
-                + "FROM ChangeRequestAttestationEntity crae "
-                + "JOIN FETCH crae.changeRequest cr "
-                + "JOIN FETCH crae.responses resp "
-                + "JOIN FETCH resp.question ques "
-                + "JOIN FETCH ques.category cat "
-                + "JOIN FETCH resp.answer ans "
-                + "WHERE (NOT crae.deleted = true) "
+    private ChangeRequestAttestationSubmissionEntity getEntity(Long changeRequestSubmissionAttestationId) throws EntityRetrievalException {
+        String hql = "SELECT DISTINCT crase "
+                + "FROM ChangeRequestAttestationSubmissionEntity crase "
+                + "JOIN FETCH crase.changeRequest cr "
+                + "JOIN FETCH crase.responses resp "
+                + "JOIN FETCH resp.attestation att "
+                + "JOIN FETCH att.condition cond "
+                + "JOIN FETCH resp.validResponse vr "
+                + "WHERE (NOT crase.deleted = true) "
                 + "AND (NOT cr.deleted = true) "
                 + "AND (NOT resp.deleted = true) "
-                + "AND (crae.id = :changeRequestAttestationId) ";
+                + "AND (crase.id = :changeRequestAttestationSubmissionId) ";
 
-        List<ChangeRequestAttestationEntity> result = entityManager
-                .createQuery(hql, ChangeRequestAttestationEntity.class)
-                .setParameter("changeRequestAttestationId", changeRequestAttestationId)
+        List<ChangeRequestAttestationSubmissionEntity> result = entityManager
+                .createQuery(hql, ChangeRequestAttestationSubmissionEntity.class)
+                .setParameter("changeRequestAttestationSubmissionId", changeRequestSubmissionAttestationId)
                 .getResultList();
 
         if (result == null || result.size() == 0) {
             throw new EntityRetrievalException(
-                    "Data error. Change request attestation not found in database.");
+                    "Data error. Change request attestation submission not found in database.");
         } else if (result.size() > 1) {
             throw new EntityRetrievalException(
-                    "Data error. Duplicate change request attestation in database.");
+                    "Data error. Duplicate change request attestation submission in database.");
         }
 
         if (result.size() == 0) {
@@ -89,30 +89,30 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
         return result.get(0);
     }
 
-    private ChangeRequestAttestationEntity getEntityByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
-        String hql = "SELECT DISTINCT crae "
-                + "FROM ChangeRequestAttestationEntity crae "
-                + "JOIN FETCH crae.changeRequest cr "
-                + "JOIN FETCH crae.responses resp "
-                + "JOIN FETCH resp.question ques "
-                + "JOIN FETCH ques.category cat "
-                + "JOIN FETCH resp.answer ans "
-                + "WHERE (NOT crae.deleted = true) "
+    private ChangeRequestAttestationSubmissionEntity getEntityByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
+        String hql = "SELECT DISTINCT crase "
+                + "FROM ChangeRequestAttestationSubmissionEntity crase "
+                + "JOIN FETCH crase.changeRequest cr "
+                + "JOIN FETCH crase.responses resp "
+                + "JOIN FETCH resp.attestation att "
+                + "JOIN FETCH att.condition cond "
+                + "JOIN FETCH resp.validResponse vr "
+                + "WHERE (NOT crase.deleted = true) "
                 + "AND (NOT cr.deleted = true) "
                 + "AND (NOT resp.deleted = true) "
                 + "AND (cr.id = :changeRequestId) ";
 
-        List<ChangeRequestAttestationEntity> result = entityManager
-                .createQuery(hql, ChangeRequestAttestationEntity.class)
+        List<ChangeRequestAttestationSubmissionEntity> result = entityManager
+                .createQuery(hql, ChangeRequestAttestationSubmissionEntity.class)
                 .setParameter("changeRequestId", changeRequestId)
                 .getResultList();
 
         if (result == null || result.size() == 0) {
             throw new EntityRetrievalException(
-                    "Data error. Change request attestation not found in database.");
+                    "Data error. Change request attestation submission not found in database.");
         } else if (result.size() > 1) {
             throw new EntityRetrievalException(
-                    "Data error. Duplicate change request attestation in database.");
+                    "Data error. Duplicate change request attestation submission in database.");
         }
 
         if (result.size() == 0) {
@@ -122,24 +122,16 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
     }
 
     private ChangeRequestAttestationResponseEntity getChangeRequestAttestationResponseEntity(
-            AttestationResponse response, Long changeRequestAttestationId) throws EntityRetrievalException {
+            AttestationSubmittedResponse response, Long changeRequestAttestatioSubmissionId) throws EntityRetrievalException {
         return ChangeRequestAttestationResponseEntity.builder()
-                .changeRequestAttestationId(changeRequestAttestationId)
-                .answer(getAttestationAnswerEntity(response.getAnswer().getId()))
-                .question(getAttestationQuestionEntity(response.getQuestion().getId()))
+                .changeRequestAttestationSubmissionId(changeRequestAttestatioSubmissionId)
+                .validResponse(getAttestationValidResponseEntity(response.getResponse().getId()))
+                .attestation(getAttestationEntity(response.getAttestation().getId()))
                 .deleted(false)
                 .lastModifiedUser(AuthUtil.getAuditId())
                 .creationDate(new Date())
                 .lastModifiedDate(new Date())
                 .build();
-    }
-
-    private List<AttestationPeriodEntity> getAllPeriodEntities() {
-        List<AttestationPeriodEntity> result = entityManager.createQuery(
-                "FROM AttestationPeriodEntity ape "
-                + "WHERE (NOT ape.deleted = true)",
-                AttestationPeriodEntity.class).getResultList();
-        return result;
     }
 
     private AttestationPeriodEntity getAttestationPeriodEntity(Long id) throws EntityRetrievalException {
@@ -164,20 +156,20 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
         return result.get(0);
     }
 
-    private AttestationQuestionEntity getAttestationQuestionEntity(Long id) throws EntityRetrievalException {
-        List<AttestationQuestionEntity> result = entityManager.createQuery(
-                "FROM AttestationQuestionEntity aqe "
-                + "WHERE (NOT aqe.deleted = true) "
-                + "AND aqe.id = :attestationQuestionId", AttestationQuestionEntity.class)
-                .setParameter("attestationQuestionId", id)
+    private AttestationEntity getAttestationEntity(Long id) throws EntityRetrievalException {
+        List<AttestationEntity> result = entityManager.createQuery(
+                "FROM AttestationEntity ae "
+                + "WHERE (NOT ae.deleted = true) "
+                + "AND ae.id = :attestationId", AttestationEntity.class)
+                .setParameter("attestationId", id)
                 .getResultList();
 
         if (result == null || result.size() == 0) {
             throw new EntityRetrievalException(
-                    "Data error. Attestation Question not found in database.");
+                    "Data error. Attestation not found in database.");
         } else if (result.size() > 1) {
             throw new EntityRetrievalException(
-                    "Data error. Duplicate Attestation Question in database.");
+                    "Data error. Duplicate Attestation in database.");
         }
 
         if (result.size() == 0) {
@@ -186,12 +178,12 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
         return result.get(0);
     }
 
-    private AttestationAnswerEntity getAttestationAnswerEntity(Long id) throws EntityRetrievalException {
-        List<AttestationAnswerEntity> result = entityManager.createQuery(
-                "FROM AttestationAnswerEntity aae "
-                + "WHERE (NOT aae.deleted = true) "
-                + "AND aae.id = :attestationAnswerId", AttestationAnswerEntity.class)
-                .setParameter("attestationAnswerId", id)
+    private AttestationValidResponseEntity getAttestationValidResponseEntity(Long id) throws EntityRetrievalException {
+        List<AttestationValidResponseEntity> result = entityManager.createQuery(
+                "FROM AttestationValidResponseEntity vr "
+                + "WHERE (NOT vr.deleted = true) "
+                + "AND vr.id = :attestationValidResponseId", AttestationValidResponseEntity.class)
+                .setParameter("attestationValidResponseId", id)
                 .getResultList();
 
         if (result == null || result.size() == 0) {

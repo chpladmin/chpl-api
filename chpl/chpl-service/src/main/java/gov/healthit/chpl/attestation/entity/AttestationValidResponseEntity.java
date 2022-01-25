@@ -1,20 +1,14 @@
-package gov.healthit.chpl.changerequest.entity;
+package gov.healthit.chpl.attestation.entity;
 
 import java.util.Date;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,31 +17,27 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "change_request_attestation")
+@Table(name = "attestation_valid_response")
 @Getter
 @Setter
 @ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChangeRequestAttestationEntity {
+public class AttestationValidResponseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @OneToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "change_request_id", nullable = false, insertable = true,
-            updatable = false)
-    private ChangeRequestEntity changeRequest;
+    @Column(name = "response")
+    private String response;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "attestation_period_id")
-    private AttestationPeriodEntity period;
+    @Column(name = "meaning")
+    private String meaning;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "change_request_attestation_id")
-    private Set<ChangeRequestAttestationResponseEntity> responses;
+    @Column(name = "sort_order")
+    private Long sortOrder;
 
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;

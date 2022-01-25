@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AttestationResponse {
+public class AttestationSubmittedResponse {
     private Long id;
-    private AttestationQuestion question;
-    private AttestationAnswer answer;
+    private Attestation attestation;
+    private AttestationValidResponse response;
 }
