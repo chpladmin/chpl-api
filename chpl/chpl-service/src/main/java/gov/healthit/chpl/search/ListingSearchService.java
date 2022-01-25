@@ -293,14 +293,6 @@ public class ListingSearchService {
             return true;
         }
 
-        Boolean matchesIsEligibleFilter = null;
-        if (rwtOptions.contains(RwtSearchOptions.IS_ELIGIBLE)) {
-            matchesIsEligibleFilter = listing.getIsRwtEligible();
-        }
-        Boolean matchesNotEligibleFilter = null;
-        if (rwtOptions.contains(RwtSearchOptions.NOT_ELIGIBLE)) {
-            matchesNotEligibleFilter = BooleanUtils.isFalse(listing.getIsRwtEligible());
-        }
         Boolean matchesHasPlansFilter = null;
         if (rwtOptions.contains(RwtSearchOptions.HAS_PLANS_URL)) {
             matchesHasPlansFilter = StringUtils.isNotBlank(listing.getRwtPlansUrl());
@@ -318,7 +310,7 @@ public class ListingSearchService {
             matchesNoResultsFilter = StringUtils.isBlank(listing.getRwtResultsUrl());
         }
 
-        boolean matchesRwtFilter = applyOperation(rwtOperator, matchesIsEligibleFilter, matchesNotEligibleFilter,
+        boolean matchesRwtFilter = applyOperation(rwtOperator,
                 matchesHasPlansFilter, matchesNoPlansFilter, matchesResultsFilter,
                 matchesNoResultsFilter);
         return matchesRwtFilter;

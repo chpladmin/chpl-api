@@ -687,6 +687,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/ics_relationships", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    @DeprecatedResponseFields(responseClass = IcsFamilyTreeNode.class)
     public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeById(
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
         List<IcsFamilyTreeNode> familyTree = cpManager.getIcsFamilyTree(certifiedProductId);
@@ -705,11 +706,11 @@ public class CertifiedProductController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
-            + "{addlSoftwareCode}.{certDateCode}/ics_relationships",
+    @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/ics_relationships",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    @DeprecatedResponseFields(responseClass = IcsFamilyTreeNode.class)
     public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeByChplProductNumber(
             @PathVariable("year") String year,
             @PathVariable("testingLab") String testingLab,
@@ -738,6 +739,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{chplPrefix}-{identifier}/ics_relationships", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    @DeprecatedResponseFields(responseClass = IcsFamilyTreeNode.class)
     public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeByChplProductNumber(
             @PathVariable("chplPrefix") String chplPrefix,
             @PathVariable("identifier") String identifier) throws EntityRetrievalException {
@@ -812,6 +814,7 @@ public class CertifiedProductController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @Deprecated
     @RequestMapping(value = "/pending/metadata", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @DeprecatedResponseFields(responseClass = PendingCertifiedProductMetadata.class)
     public @ResponseBody List<PendingCertifiedProductMetadata> getPendingCertifiedProductMetadata()
             throws AccessDeniedException {
         List<PendingCertifiedProductMetadataDTO> metadataDtos = pcpManager.getAllPendingCertifiedProductMetadata();

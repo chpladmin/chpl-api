@@ -538,12 +538,12 @@ public class SearchRequestNormalizerTest {
     @Test
     public void normalize_rwtOptionsValid_trimsCorrectly() {
         SearchRequest searchRequest = SearchRequest.builder()
-                .rwtOptionsStrings(Stream.of("IS_eliGIBle ", " HAS_PLANS_URL ", null, " ", "").collect(Collectors.toSet()))
+                .rwtOptionsStrings(Stream.of("HAS_resULts_url  ", " HAS_PLANS_URL ", null, " ", "").collect(Collectors.toSet()))
                 .build();
         normalizer.normalize(searchRequest);
 
         assertEquals(2, searchRequest.getRwtOptions().size());
-        assertTrue(searchRequest.getRwtOptions().contains(RwtSearchOptions.IS_ELIGIBLE));
+        assertTrue(searchRequest.getRwtOptions().contains(RwtSearchOptions.HAS_RESULTS_URL));
         assertTrue(searchRequest.getRwtOptions().contains(RwtSearchOptions.HAS_PLANS_URL));
         assertEquals(5, searchRequest.getRwtOptionsStrings().size());
     }

@@ -88,6 +88,7 @@ public class Developer implements Serializable {
      * Transparency attestations between each certification body and the developer.
      */
     @XmlElement(required = false, nillable = true)
+    @Deprecated
     private List<TransparencyAttestationMap> transparencyAttestations;
 
     /**
