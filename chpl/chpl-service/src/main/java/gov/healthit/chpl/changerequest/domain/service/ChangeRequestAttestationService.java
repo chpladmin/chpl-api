@@ -30,7 +30,6 @@ import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.manager.ActivityManager;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -38,10 +37,8 @@ import lombok.extern.log4j.Log4j2;
 public class ChangeRequestAttestationService extends ChangeRequestDetailsService<ChangeRequestAttestationSubmission> {
     private ChangeRequestDAO crDAO;
     private ChangeRequestAttestationDAO crAttesttionDAO;
-    private ActivityManager activityManager;
     private AttestationManager attestationManager;
     private Environment env;
-    @Autowired
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
 
     private ObjectMapper mapper;
@@ -66,12 +63,11 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     @Autowired
     public ChangeRequestAttestationService(ChangeRequestDAO crDAO, ChangeRequestAttestationDAO crAttesttionDAO,
-            UserDeveloperMapDAO userDeveloperMapDAO, ActivityManager activityManager, AttestationManager attestationManager,
+            UserDeveloperMapDAO userDeveloperMapDAO, AttestationManager attestationManager,
             ChplHtmlEmailBuilder chplHtmlEmailBuilder, Environment env) {
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
         this.crAttesttionDAO = crAttesttionDAO;
-        this.activityManager = activityManager;
         this.attestationManager = attestationManager;
         this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
         this.env = env;
@@ -152,24 +148,17 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     private String toHtmlString(ChangeRequestAttestationSubmission attestationSubmission) {
         return attestationSubmission.getResponses().stream()
-                .map(resp -> String.format("%s <br/> %s <br/><br/>", resp.getAttestation().getDescription(), resp.getResponse().getResponse()))
+                .sorted((r1, r2) -> r1.getAttestation().getCondition().getSortOrder().compareTo(r2.getAttestation().getCondition().getSortOrder()))
+                .map(resp -> String.format("<strong>%s</strong><br/>%s<br/><li>%s</li><br/><br/>",
+                        resp.getAttestation().getCondition().getName(),
+                        resp.getAttestation().getDescription(),
+                        resp.getResponse().getResponse()))
                 .collect(Collectors.joining());
     }
 
     @Override
     protected void sendPendingDeveloperActionEmail(ChangeRequest cr) throws EmailNotSentException {
-//        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
-//        new EmailBuilder(env)
-//                .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
-//                        .map(user -> user.getEmail())
-//                        .collect(Collectors.toList()))
-//                .subject(pendingDeveloperActionEmailSubject)
-//                .htmlMessage(String.format(pendingDeveloperActionEmailBody,
-//                        df.format(cr.getSubmittedDate()),
-//                        ((ChangeRequestAttestation) cr.getDetails()).getAttestation(),
-//                        getApprovalBody(cr),
-//                        cr.getCurrentStatus().getComment()))
-//                .sendEmail();
+
     }
 
     @Override
