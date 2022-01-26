@@ -47,7 +47,9 @@ public class SedReviewer {
         listing.getCertificationResults().stream()
             .filter(certResult -> certResult.getCriterion() != null && certResult.getCriterion().getId() != null
                 && validationUtils.isEligibleForErrors(certResult))
-        .forEach(certResult -> reviewCriteriaCanHaveSed(listing, certResult));
+            .forEach(certResult -> reviewCriteriaCanHaveSed(listing, certResult));
+        listing.getCertificationResults().stream()
+            .forEach(certResult -> removeSedIfNotApplicable(certResult));
     }
 
     private void reviewCriteriaCanHaveSed(CertifiedProductSearchDetails listing, CertificationResult certResult) {
@@ -56,6 +58,11 @@ public class SedReviewer {
                 listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.sedNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
+        }
+    }
+
+    private void removeSedIfNotApplicable(CertificationResult certResult) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.SED)) {
             certResult.setSed(null);
         }
     }

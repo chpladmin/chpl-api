@@ -91,6 +91,9 @@ public class CertificationResultReviewer {
                         && validationUtils.isEligibleForErrors(certResult))
             .forEach(certResult -> reviewCertResultFields(listing, certResult));
 
+        listing.getCertificationResults().stream()
+            .forEach(certResult -> removeCertResultFieldsNotApplicable(certResult));
+
         criteriaReviewer.review(listing);
         privacyAndSecurityFrameworkReviewer.review(listing);
         additionalSoftwareReviewer.review(listing);
@@ -120,7 +123,28 @@ public class CertificationResultReviewer {
         }
     }
 
-    public void reviewCertResultFields(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    private void removeCertResultFieldsNotApplicable(CertificationResult certResult) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.GAP)) {
+            certResult.setGap(null);
+        }
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.ATTESTATION_ANSWER)) {
+            certResult.setAttestationAnswer(null);
+        }
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
+            certResult.setApiDocumentation(null);
+        }
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.EXPORT_DOCUMENTATION)) {
+            certResult.setExportDocumentation(null);
+        }
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.USE_CASES)) {
+            certResult.setUseCases(null);
+        }
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.SERVICE_BASE_URL_LIST)) {
+            certResult.setServiceBaseUrlList(null);
+        }
+    }
+
+    private void reviewCertResultFields(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         reviewGap(listing, certResult);
         reviewAdditionalSoftwareString(listing, certResult);
         reviewAttestationAnswer(listing, certResult);
@@ -146,7 +170,6 @@ public class CertificationResultReviewer {
                 listing.getWarningMessages().add(
                         msgUtil.getMessage("listing.criteria.gapNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
-            certResult.setGap(null);
         }
     }
 
@@ -178,7 +201,6 @@ public class CertificationResultReviewer {
                 listing.getWarningMessages().add(
                         msgUtil.getMessage("listing.criteria.attestationAnswerNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
-            certResult.setAttestationAnswer(null);
         }
     }
 
@@ -192,7 +214,6 @@ public class CertificationResultReviewer {
                 listing.getWarningMessages().add(
                         msgUtil.getMessage("listing.criteria.apiDocumentationNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
-            certResult.setApiDocumentation(null);
         }
     }
 
@@ -206,7 +227,6 @@ public class CertificationResultReviewer {
                 listing.getWarningMessages().add(
                         msgUtil.getMessage("listing.criteria.exportDocumentationNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
-            certResult.setExportDocumentation(null);
         }
     }
 
@@ -227,7 +247,6 @@ public class CertificationResultReviewer {
                 listing.getWarningMessages().add(
                         msgUtil.getMessage("listing.criteria.useCasesNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
-            certResult.setUseCases(null);
         }
     }
 
@@ -241,7 +260,6 @@ public class CertificationResultReviewer {
                 listing.getWarningMessages().add(
                         msgUtil.getMessage("listing.criteria.serviceBaseUrlListNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
-            certResult.setServiceBaseUrlList(null);
         }
     }
 }

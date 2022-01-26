@@ -38,6 +38,8 @@ public class TestProcedureReviewer {
         listing.getCertificationResults().stream()
             .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
             .forEach(certResult -> review(listing, certResult));
+        listing.getCertificationResults().stream()
+            .forEach(certResult -> removeTestProceduresIfNotApplicable(certResult));
     }
 
     private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
@@ -56,6 +58,11 @@ public class TestProcedureReviewer {
                 listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.testProcedureNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
+        }
+    }
+
+    private void removeTestProceduresIfNotApplicable(CertificationResult certResult) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_PROCEDURE)) {
             certResult.setTestProcedures(null);
         }
     }

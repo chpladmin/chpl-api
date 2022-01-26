@@ -32,6 +32,8 @@ public class AdditionalSoftwareReviewer {
             .filter(certResult -> certResult.getCriterion() != null && certResult.getCriterion().getId() != null
                 && validationUtils.isEligibleForErrors(certResult))
             .forEach(certResult -> review(listing, certResult));
+        listing.getCertificationResults().stream()
+            .forEach(certResult -> removeAdditionalSoftwareIfNotApplicable(certResult));
     }
 
     private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
@@ -47,6 +49,11 @@ public class AdditionalSoftwareReviewer {
                 listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.additionalSoftwareNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
+        }
+    }
+
+    private void removeAdditionalSoftwareIfNotApplicable(CertificationResult certResult) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
             certResult.setAdditionalSoftware(null);
         }
     }
