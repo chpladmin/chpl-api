@@ -33,10 +33,12 @@ public class AttestationManager {
     }
 
     @Transactional
-    public DeveloperAttestationSubmission saveDeveloperAttestation(DeveloperAttestationSubmission developerAttestation) throws EntityRetrievalException {
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ATTESTATION, "
+            + "T(gov.healthit.chpl.permissions.domains.AttestationDomainPermissions).CREATE, #developerAttestationSubmission)")
+    public DeveloperAttestationSubmission saveDeveloperAttestation(DeveloperAttestationSubmission developerAttestationSubmission) throws EntityRetrievalException {
         attestationDAO.getDeveloperAttestationSubmissionsByDeveloperAndPeriod(
-                developerAttestation.getDeveloper().getDeveloperId(),
-                developerAttestation.getPeriod().getId())
+                developerAttestationSubmission.getDeveloper().getDeveloperId(),
+                developerAttestationSubmission.getPeriod().getId())
                 .stream()
                         .forEach(da -> {
                             try {
@@ -46,7 +48,7 @@ public class AttestationManager {
                                 throw new RuntimeException(e);
                             }
                         });
-        return attestationDAO.createDeveloperAttestationSubmission(developerAttestation);
+        return attestationDAO.createDeveloperAttestationSubmission(developerAttestationSubmission);
     }
 
     @Transactional
