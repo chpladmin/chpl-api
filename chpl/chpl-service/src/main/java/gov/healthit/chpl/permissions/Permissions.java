@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.permissions.domains.ActivityDomainPermissions;
 import gov.healthit.chpl.permissions.domains.AnnouncementDomainPermissions;
+import gov.healthit.chpl.permissions.domains.AttestationDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertificationResultsDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions;
@@ -62,6 +63,7 @@ public class Permissions {
     public static final String CHANGE_REQUEST = "CHANGE_REQUEST";
     public static final String REAL_WORLD_TESTING = "REAL_WORLD_TESTING";
     public static final String SVAP = "SVAP";
+    public static final String ATTESTATION = "ATTESTATION";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
@@ -91,7 +93,8 @@ public class Permissions {
             AnnouncementDomainPermissions announcementDomainPermissions,
             ChangeRequestDomainPermissions changeRequestDomainPermissions,
             RealWorldTestingDomainPermissions realWorldTestingDomainPermissions,
-            SvapDomainPermissions svapDomainPermissions) {
+            SvapDomainPermissions svapDomainPermissions,
+            AttestationDomainPermissions attestationDomainPermissions) {
 
         domainPermissions.put(PENDING_SURVEILLANCE, pendingSurveillanceDomainPermissions);
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
@@ -118,6 +121,7 @@ public class Permissions {
         domainPermissions.put(CHANGE_REQUEST, changeRequestDomainPermissions);
         domainPermissions.put(REAL_WORLD_TESTING, realWorldTestingDomainPermissions);
         domainPermissions.put(SVAP, svapDomainPermissions);
+        domainPermissions.put(ATTESTATION, attestationDomainPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {
