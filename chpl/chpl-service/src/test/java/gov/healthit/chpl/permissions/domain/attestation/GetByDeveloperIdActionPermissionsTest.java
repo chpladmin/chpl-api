@@ -12,19 +12,17 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
-import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
-import gov.healthit.chpl.permissions.domains.attestation.CreateActionPermissions;
+import gov.healthit.chpl.permissions.domains.attestation.GetByDeveloperIdActionPermissions;
 
-public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
+public class GetByDeveloperIdActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
     private ResourcePermissions resourcePermissions;
 
     @InjectMocks
-    private CreateActionPermissions permissions;
+    private GetByDeveloperIdActionPermissions permissions;
 
     @Before
     public void setup() {
@@ -42,7 +40,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         // Not used
         assertFalse(permissions.hasAccess());
 
-        assertFalse(permissions.hasAccess(new DeveloperAttestationSubmission()));
+        assertTrue(permissions.hasAccess(1L));
     }
 
     @Override
@@ -53,8 +51,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         // Not used
         assertFalse(permissions.hasAccess());
 
-        // Not used
-        assertFalse(permissions.hasAccess(new DeveloperAttestationSubmission()));
+        assertTrue(permissions.hasAccess(1L));
     }
 
     @Override
@@ -65,7 +62,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         // Not used
         assertFalse(permissions.hasAccess());
 
-        assertFalse(permissions.hasAccess(new DeveloperAttestationSubmission()));
+        assertTrue(permissions.hasAccess(1L));
     }
 
     @Override
@@ -76,18 +73,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         // Not used
         assertFalse(permissions.hasAccess());
 
-
-        assertTrue(permissions.hasAccess(DeveloperAttestationSubmission.builder()
-                .developer(Developer.builder()
-                        .developerId(1L)
-                        .build())
-                .build()));
-
-        assertFalse(permissions.hasAccess(DeveloperAttestationSubmission.builder()
-                .developer(Developer.builder()
-                        .developerId(2L)
-                        .build())
-                .build()));
+        assertTrue(permissions.hasAccess(1L));
     }
 
     @Override
@@ -98,8 +84,9 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         // Not used
         assertFalse(permissions.hasAccess());
 
-        assertFalse(permissions.hasAccess(new DeveloperAttestationSubmission()));
+        assertTrue(permissions.hasAccess(1L));
 
+        assertFalse(permissions.hasAccess(2L));
     }
 
     @Override
@@ -110,7 +97,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         // Not used
         assertFalse(permissions.hasAccess());
 
-        assertFalse(permissions.hasAccess(new DeveloperAttestationSubmission()));
+        assertFalse(permissions.hasAccess(1L));
     }
 
     @Override
@@ -121,7 +108,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         // Not used
         assertFalse(permissions.hasAccess());
 
-        assertFalse(permissions.hasAccess(new DeveloperAttestationSubmission()));
+        assertFalse(permissions.hasAccess(1L));
     }
 
     @Override
@@ -132,8 +119,6 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         // Not used
         assertFalse(permissions.hasAccess());
 
-        assertFalse(permissions.hasAccess(new DeveloperAttestationSubmission()));
+        assertFalse(permissions.hasAccess(1L));
     }
-
-
 }
