@@ -135,7 +135,7 @@ public class ChangeRequestValidationContext {
             this.acceptedStatus = acceptedStatus;
             this.rejectedStatus = rejectedStatus;
             this.pendingAcbActionStatus = pendingAcbActionStatus;
-            this.pendingDeveloperActionStatus = pendingAcbActionStatus;
+            this.pendingDeveloperActionStatus = pendingDeveloperActionStatus;
         }
 
         public Long getCancelledStatus() {
