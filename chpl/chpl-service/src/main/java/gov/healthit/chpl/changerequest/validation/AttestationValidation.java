@@ -57,6 +57,7 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
     private List<Attestation> getMissingAttestations(ChangeRequestAttestationSubmission attestationSubmission, AttestationForm attestationForm) {
 
         List<Attestation> submittedAttestations = attestationSubmission.getAttestationResponses().stream()
+                .filter(resp -> resp.getAttestation() != null)
                 .map(resp -> resp.getAttestation())
                 .collect(Collectors.toList());
 
