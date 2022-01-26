@@ -60,8 +60,8 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
     }
 
     private Boolean doesCurrentStatusExist(ChangeRequest cr) {
-        return cr.getCurrentStatus() == null
-                || cr.getCurrentStatus().getChangeRequestStatusType() == null
-                || cr.getCurrentStatus().getChangeRequestStatusType().getId() == null;
+        return cr.getCurrentStatus() != null
+                && cr.getCurrentStatus().getChangeRequestStatusType() != null
+                && cr.getCurrentStatus().getChangeRequestStatusType().getId() != null;
     }
 }
