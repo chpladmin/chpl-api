@@ -27,21 +27,21 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
         this.mapper = new ObjectMapper();
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
-        ChangeRequestAttestationSubmission attestation = getChangeRequestAttestationFromMap((HashMap) context.getNewChangeRequest().getDetails());
+        ChangeRequestAttestationSubmission attestationSubmission = getChangeRequestAttestationFromMap((HashMap) context.getNewChangeRequest().getDetails());
 
         if (isChangeRequestNew(context)) {
-            getMessages().addAll(validateSignature(context, attestation));
+            getMessages().addAll(validateSignature(context, attestationSubmission));
         }
 
-        //getMessages().addAll(getMissingAttestations(attestation, attestationForm).stream()
-        //        .map(question -> String.format(getErrorMessage("changeRequest.attestation.questionNotAnswered"), question.getQuestion()))
-        //        .collect(Collectors.toList()));
+        getMessages().addAll(getMissingAttestations(attestationSubmission, attestationForm).stream()
+                .map(att -> String.format(getErrorMessage("changeRequest.attestation.attestationNotAnswered"), att.getDescription()))
+                .collect(Collectors.toList()));
 
-        //getMessages().addAll(getInvalidResponses(attestation, attestationForm).stream()
-        //        .map(response -> String.format(getErrorMessage("changeRequest.attestation.invalidResponse"),
-        //                getValidResponseText(response.getAnswer().getId(), attestationForm),
-        //                getQuestionText(response.getQuestion().getId(), attestationForm)))
-        //        .collect(Collectors.toList()));
+        getMessages().addAll(getInvalidResponses(attestationSubmission, attestationForm).stream()
+                .map(resp -> String.format(getErrorMessage("changeRequest.attestation.invalidResponse"),
+                        getValidResponseText(resp.getResponse().getId(), attestationForm),
+                        getAttestationText(resp.getAttestation().getId(), attestationForm)))
+                .collect(Collectors.toList()));
 
         return getMessages().size() == 0;
     }
@@ -63,8 +63,8 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
         return subtractListsOfAttestationQuestions(attestationForm.getAttestations(), submittedAttestations);
     }
 
-    private List<AttestationSubmittedResponse> getInvalidResponses(ChangeRequestAttestationSubmission attestation, AttestationForm attestationForm) {
-        return attestation.getResponses().stream()
+    private List<AttestationSubmittedResponse> getInvalidResponses(ChangeRequestAttestationSubmission attestationSubmission, AttestationForm attestationForm) {
+        return attestationSubmission.getResponses().stream()
                 .filter(response -> !isResponseValid(response, attestationForm))
                 .collect(Collectors.toList());
     }
