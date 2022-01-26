@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +21,14 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.RealWorldTestingEligibility;
+import gov.healthit.chpl.service.RealWorldTestingEligiblityReason;
 import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityService;
 import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityServiceFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Service
 public class RealWorldTestingReportService {
+    private static final String ICS_REASON = " due to ICS ";
 
     private CertifiedProductDAO certifiedProductDAO;
     private ErrorMessageUtil errorMsg;
@@ -112,6 +115,8 @@ public class RealWorldTestingReportService {
                 .developerName(listing.getDeveloper().getName())
                 .developerId(listing.getDeveloper().getId())
                 .rwtEligibilityYear(rwtElig.getEligibilityYear() != null ? rwtElig.getEligibilityYear() : null)
+                .ics(rwtElig.getReason().equals(RealWorldTestingEligiblityReason.ICS)
+                        || rwtElig.getReason().equals(RealWorldTestingEligiblityReason.SELF_AND_ICS))
                 .rwtPlansUrl(listing.getRwtPlansUrl())
                 .rwtPlansCheckDate(listing.getRwtPlansCheckDate())
                 .rwtResultsUrl(listing.getRwtResultsUrl())
@@ -131,10 +136,12 @@ public class RealWorldTestingReportService {
             if (arePlansLateWarning(report.getRwtEligibilityYear())) {
                 report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.missingPlansWarning",
                         report.getRwtEligibilityYear().toString(),
+                        BooleanUtils.isTrue(report.getIcs()) ? ICS_REASON : "",
                         getPlansLateDate(report.getRwtEligibilityYear()).toString()));
             } else if (arePlansLateError(report.getRwtEligibilityYear())) {
                 report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.missingPlansError",
                         report.getRwtEligibilityYear().toString(),
+                        BooleanUtils.isTrue(report.getIcs()) ? ICS_REASON : "",
                         getPlansLateDate(report.getRwtEligibilityYear()).toString()));
             }
         }
@@ -142,10 +149,12 @@ public class RealWorldTestingReportService {
             if (areResultsLateWarning(report.getRwtEligibilityYear())) {
                 report.setRwtResultsMessage(errorMsg.getMessage("realWorldTesting.report.missingResultsWarning",
                         report.getRwtEligibilityYear().toString(),
+                        BooleanUtils.isTrue(report.getIcs()) ? ICS_REASON : "",
                         getResultsLateDate(report.getRwtEligibilityYear()).toString()));
             } else if (areResultsLateError(report.getRwtEligibilityYear())) {
                 report.setRwtResultsMessage(errorMsg.getMessage("realWorldTesting.report.missingResultsError",
                         report.getRwtEligibilityYear().toString(),
+                        BooleanUtils.isTrue(report.getIcs()) ? ICS_REASON : "",
                         getResultsLateDate(report.getRwtEligibilityYear()).toString()));
             }
         }
