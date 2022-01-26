@@ -36,7 +36,7 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
 
         create(parent);
 
-        changeRequestAttestationSubmission.getResponses().stream()
+        changeRequestAttestationSubmission.getAttestationResponses().stream()
                 .forEach(resp -> createAttestationResponse(resp, parent.getId()));
         return ChangeRequestConverter.convert(getEntity(parent.getId()));
     }

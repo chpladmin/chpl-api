@@ -20,7 +20,7 @@ public class ChangeRequestAttestationSubmission implements Serializable, ChangeR
     private Long id;
     private String signature;
     private AttestationPeriod attestationPeriod;
-    private List<AttestationSubmittedResponse> responses;
+    private List<AttestationSubmittedResponse> attestationResponses;
 
     @Override
     public boolean matches(Object obj) {

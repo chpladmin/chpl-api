@@ -112,7 +112,7 @@ public final class ChangeRequestConverter {
                         .submissionStart(entity.getPeriod().getSubmissionStart())
                         .description(entity.getPeriod().getDescription())
                         .build())
-                .responses(entity.getResponses().stream()
+                .attestationResponses(entity.getResponses().stream()
                         .map(resp -> convert(resp))
                         .collect(Collectors.toList()))
                 .build();

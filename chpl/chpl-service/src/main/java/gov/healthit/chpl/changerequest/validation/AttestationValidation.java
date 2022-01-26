@@ -56,15 +56,15 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
 
     private List<Attestation> getMissingAttestations(ChangeRequestAttestationSubmission attestationSubmission, AttestationForm attestationForm) {
 
-        List<Attestation> submittedAttestations = attestationSubmission.getResponses().stream()
+        List<Attestation> submittedAttestations = attestationSubmission.getAttestationResponses().stream()
                 .map(resp -> resp.getAttestation())
                 .collect(Collectors.toList());
 
-        return subtractListsOfAttestationQuestions(attestationForm.getAttestations(), submittedAttestations);
+        return subtractListsOfAttestations(attestationForm.getAttestations(), submittedAttestations);
     }
 
     private List<AttestationSubmittedResponse> getInvalidResponses(ChangeRequestAttestationSubmission attestationSubmission, AttestationForm attestationForm) {
-        return attestationSubmission.getResponses().stream()
+        return attestationSubmission.getAttestationResponses().stream()
                 .filter(response -> !isResponseValid(response, attestationForm))
                 .collect(Collectors.toList());
     }
@@ -99,9 +99,9 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
         return  mapper.convertValue(map, ChangeRequestAttestationSubmission.class);
     }
 
-    private List<Attestation> subtractListsOfAttestationQuestions(List<Attestation> listA, List<Attestation> listB) {
-        Predicate<Attestation> notInListB = questionFromA -> !listB.stream()
-                .anyMatch(question -> questionFromA.getId().equals(question.getId()));
+    private List<Attestation> subtractListsOfAttestations(List<Attestation> listA, List<Attestation> listB) {
+        Predicate<Attestation> notInListB = attestationFromA -> !listB.stream()
+                .anyMatch(attestation -> attestationFromA.getId().equals(attestation.getId()));
 
         return listA.stream()
                 .filter(notInListB)

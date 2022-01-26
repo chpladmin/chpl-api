@@ -113,7 +113,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         DeveloperAttestationSubmission developerAttestation = DeveloperAttestationSubmission.builder()
                 .developer(cr.getDeveloper())
                 .period(attestationSubmission.getAttestationPeriod())
-                .responses(attestationSubmission.getResponses().stream()
+                .responses(attestationSubmission.getAttestationResponses().stream()
                         .map(resp -> AttestationSubmittedResponse.builder()
                                 .attestation(resp.getAttestation())
                                 .response(resp.getResponse())
@@ -173,7 +173,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     }
 
     private String toHtmlString(ChangeRequestAttestationSubmission attestationSubmission) {
-        return attestationSubmission.getResponses().stream()
+        return attestationSubmission.getAttestationResponses().stream()
                 .sorted((r1, r2) -> r1.getAttestation().getCondition().getSortOrder().compareTo(r2.getAttestation().getCondition().getSortOrder()))
                 .map(resp -> String.format("<strong>%s</strong><br/>%s<br/><li>%s</li><br/><br/>",
                         resp.getAttestation().getCondition().getName(),

@@ -270,7 +270,7 @@ public class ChangeRequestManager extends SecurityManager {
 
     private boolean isDeveloperAttestationChangeRequest(ChangeRequest cr) {
         HashMap<String, Object> crMap = (HashMap) cr.getDetails();
-        return crMap.containsKey("responses");
+        return crMap.containsKey("attestationResponses");
     }
 
     private boolean isWebsiteChanged(ChangeRequest cr) {
