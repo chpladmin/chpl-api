@@ -60,7 +60,7 @@ import gov.healthit.chpl.service.DirectReviewCachingService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
-import gov.healthit.chpl.web.controller.results.DeveloperAttestationResults;
+import gov.healthit.chpl.web.controller.results.DeveloperAttestationSubmissionResults;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -326,11 +326,11 @@ public class DeveloperController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/{developerId}/attestations", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody DeveloperAttestationResults getAttestations(@PathVariable("developerId") Long developerId) throws InvalidArgumentsException, EntityRetrievalException {
+    public @ResponseBody DeveloperAttestationSubmissionResults getAttestations(@PathVariable("developerId") Long developerId) throws InvalidArgumentsException, EntityRetrievalException {
         if (!ff4j.check(FeatureList.ROLE_DEVELOPER)) {
             throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
-        return new DeveloperAttestationResults(attestationManager.getDeveloperAttestations(developerId));
+        return new DeveloperAttestationSubmissionResults(attestationManager.getDeveloperAttestations(developerId));
     }
 
     private DeveloperDTO toDto(Developer developer) {
