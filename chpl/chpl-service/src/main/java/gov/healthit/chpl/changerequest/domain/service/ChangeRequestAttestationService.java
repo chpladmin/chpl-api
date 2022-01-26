@@ -156,7 +156,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         return chplHtmlEmailBuilder.initialize()
                 .heading("Developer Attestation Approved")
-                .paragraph("", String.format(rejectedEmailBody, df.format(cr.getSubmittedDate()), getApprovalBody(cr)))
+                .paragraph("", String.format(approvalEmailBody, df.format(cr.getSubmittedDate()), getApprovalBody(cr)))
                 .paragraph("Attestation", toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails()))
                 .footer(true)
                 .build();
