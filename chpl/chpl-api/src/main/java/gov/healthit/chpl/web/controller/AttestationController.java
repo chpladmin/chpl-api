@@ -25,7 +25,7 @@ public class AttestationController {
     }
 
     @Operation(summary = "Get all of the Attestation Periods",
-            description = "",
+            description = "Attestation Periods define the time period which an Attestion applies.",
             security = {@SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/periods",
             method = RequestMethod.GET,
@@ -34,8 +34,8 @@ public class AttestationController {
         return new AttestationPeriodResults(attestationManager.getAllPeriods());
     }
 
-    @Operation(summary = "Get the list of Attestation Questions and allowed Answers",
-            description = "",
+    @Operation(summary = "Get the list of Attestation Conditions, Attestations, and Valid Responses",
+            description = "Can be used to dynamically generate the Attestion form.",
             security = {@SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/form",
             method = RequestMethod.GET,
