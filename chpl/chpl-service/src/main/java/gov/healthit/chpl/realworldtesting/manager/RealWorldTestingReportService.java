@@ -28,7 +28,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Service
 public class RealWorldTestingReportService {
-    private static final String ICS_REASON = " due to ICS ";
+    private static final String ICS_REASON = " due to Inherited Certification Status";
 
     private CertifiedProductDAO certifiedProductDAO;
     private ErrorMessageUtil errorMsg;
