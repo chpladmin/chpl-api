@@ -13,9 +13,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
+
 import gov.healthit.chpl.activity.history.ListingActivityUtil;
 import gov.healthit.chpl.activity.history.explorer.RealWorldTestingEligibilityActivityExplorer;
 import gov.healthit.chpl.activity.history.query.RealWorldTestingEligibilityQuery;
+import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
@@ -38,19 +40,22 @@ public class RealWorldTestingEligiblityService {
     private Integer rwtProgramFirstEligibilityYear;
     private CertificationCriterionService certificationCriterionService;
     private RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer;
+    private CertificationStatusEventsService certStatusService;
     private ListingActivityUtil listingActivityUtil;
     private CertifiedProductDAO certifiedProductDAO;
 
     private Map<Long, RealWorldTestingEligibility> memo = new HashMap<Long, RealWorldTestingEligibility>();
 
     public RealWorldTestingEligiblityService(CertificationCriterionService certificationCriterionService,
-            RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer, ListingActivityUtil listingActivityUtil,
+            RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer,
+            CertificationStatusEventsService certStatusService, ListingActivityUtil listingActivityUtil,
             CertifiedProductDAO certifiedProductDAO, String[] eligibleCriteriaKeys, LocalDate rwtProgramStartDate, Integer rwtProgramFirstEligibilityYear) {
         this.certificationCriterionService = certificationCriterionService;
         this.realWorldTestingEligibilityActivityExplorer = realWorldTestingEligibilityActivityExplorer;
         this.listingActivityUtil = listingActivityUtil;
         this.certifiedProductDAO = certifiedProductDAO;
         this.eligibleCriteriaKeys = eligibleCriteriaKeys;
+        this.certStatusService = certStatusService;
         this.rwtProgramStartDate = rwtProgramStartDate;
         this.rwtProgramFirstEligibilityYear = rwtProgramFirstEligibilityYear;
     }
@@ -124,15 +129,16 @@ public class RealWorldTestingEligiblityService {
                     for (CertifiedProduct cpParent : listing.get().getIcs().getParents()) {
                         //Need a "details" object for the icsCode
                         CertifiedProductDTO cpParentDto = certifiedProductDAO.getById(cpParent.getId());
-
                         //This helps break any ics "loops" that may exist
                         if (Integer.valueOf(cpParentDto.getIcsCode()) >= Integer.valueOf(cpChild.getIcsCode())) {
                             continue;
                         }
-                        //Get the eligiblity year for the parent...  Uh-oh - possible recursion...
-                        RealWorldTestingEligibility parentEligibility = getRwtEligibilityYearForListing(cpParent.getId(), logger);
-                        if (parentEligibility.getEligibilityYear() != null) {
-                            parentEligibilityYears.add(parentEligibility.getEligibilityYear());
+                        if (listingIsInStatus(cpParentDto, CertificationStatusType.WithdrawnByDeveloper, logger)) {
+                            //If parent is withdrawn continue with calculating its eligibility year.... Uh-oh - possible recursion...
+                            RealWorldTestingEligibility parentEligibility = getRwtEligibilityYearForListing(cpParent.getId(), logger);
+                            if (parentEligibility.getEligibilityYear() != null) {
+                                parentEligibilityYears.add(parentEligibility.getEligibilityYear());
+                            }
                         }
                     }
                     if (parentEligibilityYears.size() > 0) {
@@ -146,6 +152,19 @@ public class RealWorldTestingEligiblityService {
         } catch (EntityRetrievalException e) {
             return null;
         }
+    }
+
+    private boolean listingIsInStatus(CertifiedProductDTO listing, CertificationStatusType certificationStatus, Logger logger) {
+        boolean result = false;
+        try {
+            CertificationStatusEvent currentStatusEvent = certStatusService.getCurrentCertificationStatusEvent(listing.getId());
+            logger.debug("Listing " + listing.getId() + " has current certification status of " + currentStatusEvent.getStatus().getName());
+            result = currentStatusEvent != null && currentStatusEvent.getStatus().getName().equals(certificationStatus.getName());
+        } catch (EntityRetrievalException ex) {
+            logger.error("Unable to get current certification status event for listing  " + listing.getId(), ex);
+            return result;
+        }
+        return result;
     }
 
     private Optional<CertifiedProductSearchDetails> getListingAsOfDate(Long listingId, LocalDate asOfDate) {
