@@ -49,6 +49,7 @@ public class AdditionalSoftwareReviewer {
                 listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.additionalSoftwareNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
+            certResult.setAdditionalSoftware(null);
         }
     }
 

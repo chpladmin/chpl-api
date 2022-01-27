@@ -170,6 +170,7 @@ public class CertificationResultReviewer {
                 listing.getWarningMessages().add(
                         msgUtil.getMessage("listing.criteria.gapNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
+            certResult.setGap(null);
         }
     }
 
@@ -179,7 +180,6 @@ public class CertificationResultReviewer {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.invalidHasAdditionalSoftware",
                     Util.formatCriteriaNumber(certResult.getCriterion()),
                     certResult.getHasAdditionalSoftwareStr()));
-
         }
     }
 
@@ -201,6 +201,7 @@ public class CertificationResultReviewer {
                 listing.getWarningMessages().add(
                         msgUtil.getMessage("listing.criteria.attestationAnswerNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
+            certResult.setAttestationAnswer(null);
         }
     }
 
@@ -214,6 +215,7 @@ public class CertificationResultReviewer {
                 listing.getWarningMessages().add(
                         msgUtil.getMessage("listing.criteria.apiDocumentationNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
+            certResult.setApiDocumentation(null);
         }
     }
 
@@ -227,6 +229,7 @@ public class CertificationResultReviewer {
                 listing.getWarningMessages().add(
                         msgUtil.getMessage("listing.criteria.exportDocumentationNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
+            certResult.setExportDocumentation(null);
         }
     }
 
@@ -247,6 +250,7 @@ public class CertificationResultReviewer {
                 listing.getWarningMessages().add(
                         msgUtil.getMessage("listing.criteria.useCasesNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
+            certResult.setUseCases(null);
         }
     }
 
@@ -260,6 +264,7 @@ public class CertificationResultReviewer {
                 listing.getWarningMessages().add(
                         msgUtil.getMessage("listing.criteria.serviceBaseUrlListNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
+            certResult.setServiceBaseUrlList(null);
         }
     }
 }

@@ -42,6 +42,7 @@ public class TestStandardReviewer implements Reviewer {
                 listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.testStandardsNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
+            certResult.setTestStandards(null);
         } else if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.STANDARDS_TESTED)
             && !CollectionUtils.isEmpty(certResult.getTestStandards())) {
             listing.getWarningMessages().add(msgUtil.getMessage(

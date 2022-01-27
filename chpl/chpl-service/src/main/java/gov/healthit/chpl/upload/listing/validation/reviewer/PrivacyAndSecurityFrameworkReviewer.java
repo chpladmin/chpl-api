@@ -47,6 +47,7 @@ public class PrivacyAndSecurityFrameworkReviewer {
                 listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.privacyAndSecurityFrameworkNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
+            certResult.setPrivacySecurityFramework(null);
         }
     }
 

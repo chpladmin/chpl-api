@@ -60,6 +60,7 @@ public class TestDataReviewer {
                 listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.testDataNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
+            certResult.setTestDataUsed(null);
         }
     }
 

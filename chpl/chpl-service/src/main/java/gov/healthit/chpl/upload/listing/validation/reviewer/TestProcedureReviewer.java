@@ -58,6 +58,7 @@ public class TestProcedureReviewer {
                 listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.testProcedureNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
+            certResult.setTestProcedures(null);
         }
     }
 

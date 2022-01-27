@@ -62,6 +62,7 @@ public class TestFunctionalityReviewer {
                 listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.testFunctionalityNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
+            certResult.setTestFunctionality(null);
         }
     }
 

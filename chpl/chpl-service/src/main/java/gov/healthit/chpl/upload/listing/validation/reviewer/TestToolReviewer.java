@@ -65,6 +65,7 @@ public class TestToolReviewer {
                 listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.testToolsNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
+            certResult.setTestToolsUsed(null);
         }
     }
 

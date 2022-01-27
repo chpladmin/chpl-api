@@ -70,6 +70,7 @@ public class OptionalStandardReviewer implements Reviewer {
             if (!CollectionUtils.isEmpty(certResult.getOptionalStandards())) {
                 listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.optionalStandardsNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+                certResult.setOptionalStandards(null);
             }
         }
     }
