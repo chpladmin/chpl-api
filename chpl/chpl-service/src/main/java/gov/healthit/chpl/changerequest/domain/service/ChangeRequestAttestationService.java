@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -138,7 +137,13 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     @Override
     protected void sendPendingDeveloperActionEmail(ChangeRequest cr) throws EmailNotSentException {
-        throw new NotImplementedException("Pending Developer Atcion Email is not implemented.");
+        new EmailBuilder(env)
+                .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
+                        .map(user -> user.getEmail())
+                        .collect(Collectors.toList()))
+                .subject(pendingDeveloperActionEmailSubject)
+                .htmlMessage(createPendingDeveloperActionHtmlMessage(cr))
+                .sendEmail();
     }
 
     @Override
@@ -157,6 +162,16 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         return chplHtmlEmailBuilder.initialize()
                 .heading("Developer Attestation Approved")
                 .paragraph("", String.format(approvalEmailBody, df.format(cr.getSubmittedDate()), getApprovalBody(cr)))
+                .paragraph("Attestation", toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails()))
+                .footer(true)
+                .build();
+    }
+
+    private String createPendingDeveloperActionHtmlMessage(ChangeRequest cr) {
+        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
+        return chplHtmlEmailBuilder.initialize()
+                .heading("Developer Attestation Requires Developer Action")
+                .paragraph("", String.format(pendingDeveloperActionEmailBody, df.format(cr.getSubmittedDate()), getApprovalBody(cr), cr.getCurrentStatus().getComment()))
                 .paragraph("Attestation", toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails()))
                 .footer(true)
                 .build();
