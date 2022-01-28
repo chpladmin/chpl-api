@@ -1,6 +1,7 @@
 package gov.healthit.chpl.changerequest.validation;
 
 import gov.healthit.chpl.attestation.manager.AttestationManager;
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
@@ -18,6 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChangeRequestValidationContext {
+    private User currentUser;
     private ChangeRequest newChangeRequest;
     private ChangeRequest origChangeRequest;
     private ValidationDAOs validationDAOs;
@@ -27,7 +29,8 @@ public class ChangeRequestValidationContext {
     private ChangeRequestTypeIds changeRequestTypeIds;
     private ChangeRequestStatusIds changeRequestStatusIds;
 
-    public ChangeRequestValidationContext(ChangeRequest newChangeRequest,
+    public ChangeRequestValidationContext(User user,
+            ChangeRequest newChangeRequest,
             ChangeRequest origChangeRequest,
             ResourcePermissions resourcePermissions,
             ValidationUtils validationUtils,
@@ -44,6 +47,7 @@ public class ChangeRequestValidationContext {
             Long pendingAcbActionStatus,
             Long pendingDeveloperActionStatus) {
 
+        this.currentUser = user;
         this.newChangeRequest = newChangeRequest;
         this.origChangeRequest = origChangeRequest;
         this.resourcePermissions = resourcePermissions;
@@ -109,7 +113,7 @@ public class ChangeRequestValidationContext {
             this.acceptedStatus = acceptedStatus;
             this.rejectedStatus = rejectedStatus;
             this.pendingAcbActionStatus = pendingAcbActionStatus;
-            this.pendingDeveloperActionStatus = pendingAcbActionStatus;
+            this.pendingDeveloperActionStatus = pendingDeveloperActionStatus;
         }
     }
 }

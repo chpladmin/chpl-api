@@ -13,9 +13,9 @@ public class DeveloperActiveValidation extends ValidationRule<ChangeRequestValid
 
         // Is this a new or existing CR?
         ChangeRequest crToTest = null;
-        if (context.getNewChangeRequest() != null && context.getNewChangeRequest().getId() != null) {
+        if (context.getOrigChangeRequest() != null && context.getOrigChangeRequest().getId() != null) {
             try {
-                crToTest = context.getValidationDAOs().getChangeRequestDAO().get(context.getNewChangeRequest().getId());
+                crToTest = context.getValidationDAOs().getChangeRequestDAO().get(context.getOrigChangeRequest().getId());
             } catch (EntityRetrievalException e) {
                 // This should be caught be ChangeRequestExistenceValidation
                 return true;
@@ -26,7 +26,7 @@ public class DeveloperActiveValidation extends ValidationRule<ChangeRequestValid
 
         DeveloperDTO devDTO;
         try {
-            devDTO = context.getValidationDAOs().getDeveloperDAO().getById(context.getNewChangeRequest().getDeveloper().getDeveloperId());
+            devDTO = context.getValidationDAOs().getDeveloperDAO().getById(crToTest.getDeveloper().getDeveloperId());
         } catch (Exception e) {
             // This should be caught be DeveloperExistenceValidation
             return true;

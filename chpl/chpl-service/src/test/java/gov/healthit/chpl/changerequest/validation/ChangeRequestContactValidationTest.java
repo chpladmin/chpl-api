@@ -221,7 +221,8 @@ public class ChangeRequestContactValidationTest {
     }
 
     private ChangeRequestValidationContext getValidationContext(PointOfContact contact, ResourcePermissions resourcePermissions) {
-        return new ChangeRequestValidationContext(getChangeRequestContact(contact),
+        return new ChangeRequestValidationContext(null,
+                        getChangeRequestContact(contact),
                         null,
                         resourcePermissions,
                         null,

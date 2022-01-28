@@ -17,11 +17,13 @@ public class GetByDeveloperIdActionPermissions extends ActionPermissions {
         if (!(obj instanceof Long)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
-                || getResourcePermissions().isUserRoleOncStaff()) {
+                || getResourcePermissions().isUserRoleAcbAdmin() || getResourcePermissions().isUserRoleOncStaff()) {
             return true;
-        } else {
+        } else if (getResourcePermissions().isUserRoleDeveloperAdmin()) {
             Long developerId = (Long) obj;
             return isDeveloperValidForCurrentUser(developerId);
+        } else {
+            return false;
         }
     }
 
