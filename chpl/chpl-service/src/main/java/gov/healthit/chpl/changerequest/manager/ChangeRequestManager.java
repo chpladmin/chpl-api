@@ -130,6 +130,9 @@ public class ChangeRequestManager extends SecurityManager {
     @Transactional(readOnly = true)
     public Set<KeyValueModel> getChangeRequestTypes() {
         return changeRequestTypeDAO.getChangeRequestTypes().stream()
+                .filter(entity -> (entity.getName().equals("Developer Attestation Change Request") && ff4j.check(FeatureList.ATTESTATIONS))
+                        || (entity.getName().equals("Developer Details Change Request") && ff4j.check(FeatureList.DEMOGRAPHIC_CHANGE_REQUEST))
+                        || (entity.getName().equals("Website Change Request") && ff4j.check(FeatureList.DEMOGRAPHIC_CHANGE_REQUEST)))
                 .map(crType -> new KeyValueModel(crType.getId(), crType.getName()))
                 .collect(Collectors.<KeyValueModel>toSet());
     }
@@ -138,7 +141,7 @@ public class ChangeRequestManager extends SecurityManager {
     public Set<KeyValueModel> getChangeRequestStatusTypes() {
         return changeRequestStatusTypeDAO.getChangeRequestStatusTypes().stream()
                 .map(crStatusType -> new KeyValueModel(crStatusType.getId(), crStatusType.getName()))
-                .collect(Collectors.<KeyValueModel>toSet());
+                .collect(Collectors.toSet());
     }
 
     @Transactional
