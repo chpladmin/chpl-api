@@ -107,7 +107,8 @@ public class ChangeRequestSelfDeveloperValidationTest {
     }
 
     private ChangeRequestValidationContext getValidationContext(Object selfDeveloperValue, ResourcePermissions resourcePermissions) {
-        return new ChangeRequestValidationContext(getChangeRequestSelfDeveloper(selfDeveloperValue),
+        return new ChangeRequestValidationContext(null,
+                        getChangeRequestSelfDeveloper(selfDeveloperValue),
                         null,
                         resourcePermissions,
                         null,

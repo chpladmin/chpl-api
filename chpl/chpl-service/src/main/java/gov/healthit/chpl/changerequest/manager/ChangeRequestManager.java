@@ -48,6 +48,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 import lombok.extern.log4j.Log4j2;
@@ -385,6 +386,7 @@ public class ChangeRequestManager extends SecurityManager {
 
     private ChangeRequestValidationContext getNewValidationContext(ChangeRequest newChangeRequest, ChangeRequest originalChangeRequest) {
         return new ChangeRequestValidationContext(
+                AuthUtil.getCurrentUser(),
                 newChangeRequest,
                 originalChangeRequest,
                 resourcePermissions,

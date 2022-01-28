@@ -14,7 +14,6 @@ import gov.healthit.chpl.attestation.domain.AttestationForm;
 import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.manager.rules.ValidationRule;
-import gov.healthit.chpl.util.AuthUtil;
 
 public class AttestationValidation extends ValidationRule<ChangeRequestValidationContext> {
     private ObjectMapper mapper;
@@ -48,7 +47,7 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
 
     private List<String> validateSignature(ChangeRequestValidationContext context, ChangeRequestAttestationSubmission attestation) {
         List<String> errors = new ArrayList<String>();
-        if (attestation.getSignature() == null || !AuthUtil.getCurrentUser().getFullName().equals(attestation.getSignature())) {
+        if (attestation.getSignature() == null || !context.getCurrentUser().getFullName().equals(attestation.getSignature())) {
             errors.add(getErrorMessage("changeRequest.attestation.invalidSignature"));
         }
         return errors;

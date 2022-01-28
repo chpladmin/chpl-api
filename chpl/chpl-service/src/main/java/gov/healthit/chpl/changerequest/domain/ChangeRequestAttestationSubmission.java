@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Singular;
 
 @Data
 @Builder
@@ -20,6 +21,7 @@ public class ChangeRequestAttestationSubmission implements Serializable, ChangeR
     private Long id;
     private String signature;
     private AttestationPeriod attestationPeriod;
+    @Singular
     private List<AttestationSubmittedResponse> attestationResponses;
 
     @Override
