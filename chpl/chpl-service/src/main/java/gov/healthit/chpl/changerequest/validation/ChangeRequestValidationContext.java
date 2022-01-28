@@ -54,7 +54,7 @@ public class ChangeRequestValidationContext {
         this.changeRequestTypeIds = new ChangeRequestTypeIds(websiteChangeRequestType, developerDetailsChangeRequestTypeId);
     }
 
-
+    @Data
     public static class ValidationDAOs {
         private DeveloperDAO developerDAO;
         private ChangeRequestDAO changeRequestDAO;
@@ -70,37 +70,18 @@ public class ChangeRequestValidationContext {
             this.changeRequestStatusTypeDAO = changeRequestStatusTypeDAO;
             this.changeRequestTypeDAO = changeRequestTypeDAO;
         }
-
-        public DeveloperDAO getDeveloperDAO() {
-            return developerDAO;
-        }
-
-        public ChangeRequestDAO getChangeRequestDAO() {
-            return changeRequestDAO;
-        }
-
-        public ChangeRequestStatusTypeDAO getChangeRequestStatusTypeDAO() {
-            return changeRequestStatusTypeDAO;
-        }
-
-        public ChangeRequestTypeDAO getChangeRequestTypeDAO() {
-            return changeRequestTypeDAO;
-        }
-
     }
 
+    @Data
     public static class DomainManagers {
+        private AttestationManager attestationManager;
+
         public DomainManagers(AttestationManager attestationManager) {
             this.attestationManager = attestationManager;
         }
-
-        private AttestationManager attestationManager;
-
-        public AttestationManager getAttestationManager() {
-            return attestationManager;
-        }
     }
 
+    @Data
     public static class ChangeRequestTypeIds {
         private Long websiteChangeRequestType;
         private Long developerDetailsChangeRequestTypeId;
@@ -109,16 +90,9 @@ public class ChangeRequestValidationContext {
             this.websiteChangeRequestType = websiteChangeRequestType;
             this.developerDetailsChangeRequestTypeId = developerDetailsChangeRequestTypeId;
         }
-
-        public Long getWebsiteChangeRequestType() {
-            return websiteChangeRequestType;
-        }
-
-        public Long getDeveloperDetailsChangeRequestTypeId() {
-            return developerDetailsChangeRequestTypeId;
-        }
     }
 
+    @Data
     public static class ChangeRequestStatusIds {
         private Long cancelledStatus;
         private Long acceptedStatus;
@@ -136,26 +110,6 @@ public class ChangeRequestValidationContext {
             this.rejectedStatus = rejectedStatus;
             this.pendingAcbActionStatus = pendingAcbActionStatus;
             this.pendingDeveloperActionStatus = pendingAcbActionStatus;
-        }
-
-        public Long getCancelledStatus() {
-            return cancelledStatus;
-        }
-
-        public Long getAcceptedStatus() {
-            return acceptedStatus;
-        }
-
-        public Long getRejectedStatus() {
-            return rejectedStatus;
-        }
-
-        public Long getPendingAcbActionStatus() {
-            return pendingAcbActionStatus;
-        }
-
-        public Long getPendingDeveloperActionStatus() {
-            return pendingDeveloperActionStatus;
         }
     }
 }
