@@ -327,7 +327,7 @@ public class DeveloperController {
             })
     @RequestMapping(value = "/{developerId}/attestations", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody DeveloperAttestationSubmissionResults getAttestations(@PathVariable("developerId") Long developerId) throws InvalidArgumentsException, EntityRetrievalException {
-        if (!ff4j.check(FeatureList.ROLE_DEVELOPER)) {
+        if (!ff4j.check(FeatureList.ATTESTATIONS)) {
             throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
         return new DeveloperAttestationSubmissionResults(attestationManager.getDeveloperAttestations(developerId));
