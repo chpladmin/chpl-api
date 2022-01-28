@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.FeatureList;
-import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.svap.manager.SvapManager;
@@ -36,7 +35,6 @@ public class DownloadableResourceController {
     private Environment env;
     private ErrorMessageUtil msgUtil;
     private SurveillanceManager survManager;
-    private CertifiedProductDAO cpDao;
     private SvapManager svapManager;
     private FF4j ff4j;
     private FileUtils fileUtils;
@@ -54,14 +52,12 @@ public class DownloadableResourceController {
     public DownloadableResourceController(Environment env,
             ErrorMessageUtil msgUtil,
             SurveillanceManager survManager,
-            CertifiedProductDAO cpDao,
             SvapManager svapManager,
             FF4j ff4j,
             FileUtils fileUtils) {
         this.env = env;
         this.msgUtil = msgUtil;
         this.survManager = survManager;
-        this.cpDao = cpDao;
         this.svapManager = svapManager;
         this.ff4j = ff4j;
         this.fileUtils = fileUtils;
@@ -114,12 +110,8 @@ public class DownloadableResourceController {
             } else if (edition.equals("2014")) {
                 toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2014Name"));
             } else if (edition.equals("2015")) {
-                if (ff4j.check(FeatureList.RWT_ENABLED)) {
-                    if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_18_MONTHS)) {
-                        toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015NamePostERDPlus18M"));
-                    } else {
-                        toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015NameWithRWT"));
-                    }
+                if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_18_MONTHS)) {
+                    toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015NamePostERDPlus18M"));
                 } else {
                     toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015Name"));
                 }
