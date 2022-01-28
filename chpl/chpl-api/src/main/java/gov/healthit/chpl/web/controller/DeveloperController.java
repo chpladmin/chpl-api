@@ -3,9 +3,7 @@ package gov.healthit.chpl.web.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
-import org.ff4j.FF4j;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -22,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.Developer;
@@ -75,20 +72,17 @@ public class DeveloperController {
     private ErrorMessageUtil msgUtil;
     private UserPermissionsManager userPermissionsManager;
     private DirectReviewCachingService directReviewService;
-    private FF4j ff4j;
 
     @Autowired
     public DeveloperController(DeveloperManager developerManager,
             CertifiedProductManager cpManager,
             UserPermissionsManager userPermissionsManager,
             ErrorMessageUtil msgUtil,
-            DirectReviewCachingService directReviewService,
-            FF4j ff4j) {
+            DirectReviewCachingService directReviewService) {
         this.developerManager = developerManager;
         this.userPermissionsManager = userPermissionsManager;
         this.msgUtil = msgUtil;
         this.directReviewService = directReviewService;
-        this.ff4j = ff4j;
     }
 
     @Operation(summary = "List all developers in the system.",
@@ -276,10 +270,6 @@ public class DeveloperController {
     public PermissionDeletedResponse deleteUserFromDeveloper(
             @PathVariable Long developerId, @PathVariable Long userId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-        if (!ff4j.check(FeatureList.ROLE_DEVELOPER)) {
-            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
-        }
-
         // delete all permissions on that developer
         userPermissionsManager.deleteDeveloperPermission(developerId, userId);
         PermissionDeletedResponse response = new PermissionDeletedResponse();
@@ -298,9 +288,6 @@ public class DeveloperController {
             produces = "application/json; charset=utf-8")
     public @ResponseBody UsersResponse getUsers(@PathVariable("developerId") Long developerId)
             throws InvalidArgumentsException, EntityRetrievalException {
-        if (!ff4j.check(FeatureList.ROLE_DEVELOPER)) {
-            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
-        }
         List<UserDTO> users = developerManager.getAllUsersOnDeveloper(developerId);
         List<User> domainUsers = new ArrayList<User>(users.size());
         for (UserDTO userDto : users) {
