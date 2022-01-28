@@ -17,9 +17,11 @@ public class CreateActionPermissions extends ActionPermissions {
     public boolean hasAccess(Object obj) {
         if (!(obj instanceof DeveloperAttestationSubmission)) {
             return false;
+        } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
+            return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
-            DeveloperAttestationSubmission developerAttestationSubmission = (DeveloperAttestationSubmission) obj;
-            return isDeveloperValidForCurrentUser(developerAttestationSubmission.getDeveloper().getDeveloperId());
+            DeveloperAttestationSubmission das = (DeveloperAttestationSubmission) obj;
+            return isCurrentAcbUserAssociatedWithDeveloper(das.getDeveloper().getDeveloperId());
         } else {
             return false;
         }
