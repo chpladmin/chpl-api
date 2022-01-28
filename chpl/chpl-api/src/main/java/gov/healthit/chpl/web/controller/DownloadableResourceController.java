@@ -6,7 +6,6 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.svap.manager.SvapManager;
@@ -36,7 +34,6 @@ public class DownloadableResourceController {
     private ErrorMessageUtil msgUtil;
     private SurveillanceManager survManager;
     private SvapManager svapManager;
-    private FF4j ff4j;
     private FileUtils fileUtils;
 
     @Value("${directReviewsReportName}")
@@ -53,13 +50,11 @@ public class DownloadableResourceController {
             ErrorMessageUtil msgUtil,
             SurveillanceManager survManager,
             SvapManager svapManager,
-            FF4j ff4j,
             FileUtils fileUtils) {
         this.env = env;
         this.msgUtil = msgUtil;
         this.survManager = survManager;
         this.svapManager = svapManager;
-        this.ff4j = ff4j;
         this.fileUtils = fileUtils;
     }
 
@@ -83,7 +78,6 @@ public class DownloadableResourceController {
         String edition = editionInput;
         String format = formatInput;
         String responseType = "text/csv";
-        String filenameToStream = null;
 
         if (!StringUtils.isEmpty(edition)) {
             // make sure it's a 4 character year
@@ -110,12 +104,7 @@ public class DownloadableResourceController {
             } else if (edition.equals("2014")) {
                 toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2014Name"));
             } else if (edition.equals("2015")) {
-                if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_18_MONTHS)) {
-                    toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015NamePostERDPlus18M"));
-                } else {
-                    toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015Name"));
-                }
-                filenameToStream = env.getProperty("schemaCsv2015Name");
+                toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015Name"));
             }
 
             if (!toDownload.exists()) {
@@ -135,11 +124,7 @@ public class DownloadableResourceController {
         }
 
         LOGGER.info("Downloading " + toDownload.getName());
-        if (filenameToStream != null) {
-            fileUtils.streamFileAsResponse(toDownload, responseType, response, filenameToStream);
-        } else {
-            fileUtils.streamFileAsResponse(toDownload, responseType, response);
-        }
+        fileUtils.streamFileAsResponse(toDownload, responseType, response);
     }
 
     @Operation(summary = "Download a summary of SVAP activity as a CSV.",
