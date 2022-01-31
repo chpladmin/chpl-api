@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -64,8 +66,16 @@ public class CuresCriteriaStatisticsByAcbCalculator {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public void setCuresStatisticsByAcbForDate(LocalDate statisticDate) {
+        if (hasStatisticsForDate(statisticDate)) {
+            deleteStatisticsForDate(statisticDate);
+        }
+        List<CuresCriteriaStatisticsByAcb> stats = calculate(statisticDate);
+        save(stats);
+    }
 
-    public List<CuresCriteriaStatisticsByAcb> calculate(LocalDate statisticsDate) {
+    private List<CuresCriteriaStatisticsByAcb> calculate(LocalDate statisticsDate) {
         List<CuresCriteriaStatisticsByAcb> curesCriteriaUpdateByAcbs = new ArrayList<CuresCriteriaStatisticsByAcb>();
         for (CuresCriteriaUpdate curesCriteriaUpdate : curesCriteriaUpdates) {
 
@@ -99,12 +109,12 @@ public class CuresCriteriaStatisticsByAcbCalculator {
         return curesCriteriaUpdateByAcbs;
     }
 
-    public boolean hasStatisticsForDate(LocalDate statisticDate) {
+    private boolean hasStatisticsForDate(LocalDate statisticDate) {
         List<CuresCriteriaStatisticsByAcb> statisticsForDate = curesStatisticsByAcbDAO.getStatisticsForDate(statisticDate);
         return statisticsForDate != null && statisticsForDate.size() > 0;
     }
 
-    public void deleteStatisticsForDate(LocalDate statisticDate) {
+    private void deleteStatisticsForDate(LocalDate statisticDate) {
         List<CuresCriteriaStatisticsByAcb> statisticsForDate = curesStatisticsByAcbDAO.getStatisticsForDate(statisticDate);
         for (CuresCriteriaStatisticsByAcb statistic : statisticsForDate) {
             try {
@@ -115,7 +125,7 @@ public class CuresCriteriaStatisticsByAcbCalculator {
         }
     }
 
-    public void save(List<CuresCriteriaStatisticsByAcb> statistics) {
+    private void save(List<CuresCriteriaStatisticsByAcb> statistics) {
         statistics.stream()
             .forEach(stat -> stat.setLastModifiedUser(User.SYSTEM_USER_ID));
 

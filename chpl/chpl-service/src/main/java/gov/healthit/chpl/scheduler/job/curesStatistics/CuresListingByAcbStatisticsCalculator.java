@@ -8,6 +8,8 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -61,7 +63,16 @@ public class CuresListingByAcbStatisticsCalculator {
                 .collect(Collectors.toList());
     }
 
-    public List<CuresListingStatisticByAcb> calculate(LocalDate statisticDate) {
+    @Transactional
+    public void setCuresListingStatisticsForDate(LocalDate statisticDate) {
+        if (hasStatisticsForDate(statisticDate)) {
+            deleteStatisticsForDate(statisticDate);
+        }
+        List<CuresListingStatisticByAcb> stats = calculate(statisticDate);
+        save(stats);
+    }
+
+    private List<CuresListingStatisticByAcb> calculate(LocalDate statisticDate) {
         List<CertificationBody> activeAcbs = certificationBodyDAO.findAllActive().stream()
                 .map(dto -> new CertificationBody(dto))
                 .collect(Collectors.toList());
@@ -80,12 +91,12 @@ public class CuresListingByAcbStatisticsCalculator {
 
     }
 
-    public Boolean hasStatisticsForDate(LocalDate statisticDate) {
+    private Boolean hasStatisticsForDate(LocalDate statisticDate) {
         List<CuresListingStatisticByAcb> statisticsForDate = curesListingStatisticsByAcbDAO.getStatisticsForDate(statisticDate);
         return statisticsForDate != null && statisticsForDate.size() > 0;
     }
 
-    public void deleteStatisticsForDate(LocalDate statisticDate) {
+    private void deleteStatisticsForDate(LocalDate statisticDate) {
         List<CuresListingStatisticByAcb> statisticsForDate = curesListingStatisticsByAcbDAO.getStatisticsForDate(statisticDate);
         for (CuresListingStatisticByAcb statistic : statisticsForDate) {
             try {
@@ -96,7 +107,7 @@ public class CuresListingByAcbStatisticsCalculator {
         }
     }
 
-    public void save(List<CuresListingStatisticByAcb> statistics) {
+    private void save(List<CuresListingStatisticByAcb> statistics) {
         statistics.stream()
             .forEach(stat -> stat.setLastModifiedUser(User.SYSTEM_USER_ID));
 

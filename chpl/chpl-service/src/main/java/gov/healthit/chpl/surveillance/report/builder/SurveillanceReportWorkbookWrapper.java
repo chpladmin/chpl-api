@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineBreakMeasurer;
 import java.awt.font.TextAttribute;
+import java.io.Closeable;
 import java.io.IOException;
 import java.text.AttributedString;
 
@@ -27,13 +28,14 @@ import org.springframework.util.StringUtils;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-public class SurveillanceReportWorkbookWrapper {
+public class SurveillanceReportWorkbookWrapper implements Closeable {
     public static final int DEFAULT_MAX_COLUMN = 16384;
     private static final int WORKSHEET_FONT_POINTS  = 10;
     private static final int WORKSHEET_LARGE_FONT_POINTS = 12;
     private static final int POI_WIDTH_FACTOR = 256;
     private static final int FONT_UNIT_FACTOR = 5;
 
+    private XSSFWorkbookFactory workbookFactory;
     private Workbook workbook;
     private Font boldFont, smallFont, boldSmallFont, italicSmallFont, boldItalicSmallFont,
     italicUnderlinedSmallFont;
@@ -42,9 +44,20 @@ public class SurveillanceReportWorkbookWrapper {
     rightAlignedTableHeadingStyle, leftAlignedTableHeadingStyle, wrappedTableHeadingStyle, tableSubheadingStyle;
 
     public SurveillanceReportWorkbookWrapper() throws IOException {
-        this.workbook = XSSFWorkbookFactory.create(true);
+        workbookFactory = new XSSFWorkbookFactory();
+        this.workbook = workbookFactory.create();
         initializeFonts();
         initializeStyles();
+    }
+
+    public void close() {
+        if (this.workbook != null) {
+            try {
+                this.workbook.close();
+            } catch (IOException ex) {
+                LOGGER.error("Closing workbook exception.", ex);
+            }
+        }
     }
 
     public Sheet getSheet(String sheetName, int lastDataColumn) {
