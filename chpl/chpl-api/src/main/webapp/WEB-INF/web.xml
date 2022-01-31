@@ -65,7 +65,7 @@
     </context-param>
     <context-param>
         <param-name>quartz:start-on-load</param-name>
-        <param-value>true</param-value>
+        <param-value>false</param-value>
     </context-param>
     <listener>
         <listener-class>org.quartz.ee.servlet.QuartzInitializerListener</listener-class>

@@ -7,7 +7,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.poi.ss.usermodel.Workbook;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -38,6 +37,7 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
 import gov.healthit.chpl.surveillance.report.builder.AnnualReportBuilderXlsx;
 import gov.healthit.chpl.surveillance.report.builder.ReportBuilderFactory;
+import gov.healthit.chpl.surveillance.report.builder.SurveillanceReportWorkbookWrapper;
 import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
@@ -105,12 +105,12 @@ public class AnnualReportGenerationJob implements Job {
                     }
 
                     if (report != null) {
-                        Workbook workbook = createWorkbook(report);
-                        if (workbook == null) {
+                        SurveillanceReportWorkbookWrapper workbookWrapper = createWorkbook(report);
+                        if (workbookWrapper == null) {
                             sendEmail(user.getEmail(), env.getProperty("surveillance.annualReport.failure.subject"),
                                     env.getProperty("surveillance.annualReport.fileError.htmlBody"), null);
                         } else {
-                            File writtenFile = writeWorkbookAsFile(report, workbook);
+                            File writtenFile = writeWorkbookAsFile(report, workbookWrapper);
                             if (writtenFile == null) {
                                 sendEmail(user.getEmail(), env.getProperty("surveillance.annualReport.failure.subject"),
                                         env.getProperty("surveillance.annualReport.fileError.htmlBody"), null);
@@ -130,6 +130,7 @@ public class AnnualReportGenerationJob implements Job {
                                 }
                             }
                         }
+                        workbookWrapper.close();
                     }
                 }
             });
@@ -159,8 +160,8 @@ public class AnnualReportGenerationJob implements Job {
         return isValid;
     }
 
-    private Workbook createWorkbook(AnnualReport report) {
-        Workbook workbook = null;
+    private SurveillanceReportWorkbookWrapper createWorkbook(AnnualReport report) {
+        SurveillanceReportWorkbookWrapper workbook = null;
         try {
                 AnnualReportBuilderXlsx reportBuilder = reportBuilderFactory.getReportBuilder(report);
                 if (reportBuilder != null) {
@@ -180,7 +181,7 @@ public class AnnualReportGenerationJob implements Job {
         return workbook;
     }
 
-    private File writeWorkbookAsFile(AnnualReport report, Workbook workbook) {
+    private File writeWorkbookAsFile(AnnualReport report, SurveillanceReportWorkbookWrapper workbookWrapper) {
         File writtenFile = null;
         String filename = getFilename(report);
         //write out the workbook contents to this file
@@ -189,7 +190,7 @@ public class AnnualReportGenerationJob implements Job {
             writtenFile = File.createTempFile(filename, ".xlsx");
             outputStream = new FileOutputStream(writtenFile);
             LOGGER.info("Writing annual report file to " + writtenFile.getAbsolutePath());
-            workbook.write(outputStream);
+            workbookWrapper.getWorkbook().write(outputStream);
         } catch (Exception ex) {
             String msg = msgUtil.getMessage("report.annualSurveillance.export.writeError");
             LOGGER.error(msg, ex);

@@ -21,6 +21,7 @@ import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.util.UrlPathHelper;
 
 import gov.healthit.chpl.api.ApiKeyManager;
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedApi;
@@ -47,6 +48,7 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
     private DeprecatedApiUsageDao deprecatedApiUsageDao;
     private DeprecatedResponseFieldApiUsageDao deprecatedResponseFieldApiUsageDao;
     private RequestMappingHandlerMapping requestMappingHandlerMapping;
+    private UrlPathHelper urlPathHelper;
 
     @Autowired
     public DeprecatedEndpointUsageFilter(ApiKeyManager apiKeyManager,
@@ -57,6 +59,7 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
         this.deprecatedApiUsageDao = deprecatedApiUsageDao;
         this.deprecatedResponseFieldApiUsageDao = deprecatedResponseFieldApiUsageDao;
         this.requestMappingHandlerMapping = requestMappingHandlerMapping;
+        this.urlPathHelper = new UrlPathHelper();
     }
 
     @Override
@@ -70,6 +73,7 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
             return;
         }
 
+        urlPathHelper.resolveAndCacheLookupPath(request);
         RequestMappingInfo requestMapping = getRequestMappingForHttpServletRequest(request);
         if (requestMapping != null) {
             HandlerMethod handlerMethod = requestMappingHandlerMapping.getHandlerMethods().get(requestMapping);
