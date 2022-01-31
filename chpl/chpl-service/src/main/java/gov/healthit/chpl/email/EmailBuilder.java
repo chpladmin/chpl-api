@@ -6,28 +6,31 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
-import javax.mail.Authenticator;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
-import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
-import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import org.quartz.JobDataMap;
+import org.quartz.SchedulerException;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.domain.schedule.ChplJob;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.exception.EmailNotSentException;
+import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.SchedulerManager;
+import gov.healthit.chpl.scheduler.job.SendEmailJob;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -53,40 +56,24 @@ public class EmailBuilder {
     private String htmlFooter = "";
     private List<File> fileAttachments = null;
     private Environment env = null;
+    private SchedulerManager schedulerManager;
 
-    /**
-     * @param env - Spring Environment
-     */
-    public EmailBuilder(Environment env) {
+    public EmailBuilder(Environment env, SchedulerManager scheduleManager) {
         this.env = env;
+        this.schedulerManager = scheduleManager;
     }
 
 
-    /**
-     * Sets the list of recipients for the email.
-     * @param addresses - List of Strings representing email addresses
-     * @return EmailBuilder (this)
-     */
     public EmailBuilder recipients(List<String> addresses) {
         this.recipients = addresses;
         return this;
     }
 
-    /**
-     * Sets the list of recipients for the email.
-     * @param addresses - array of Strings representing email addresses
-     * @return EmailBuilder (this)
-     */
     public EmailBuilder recipients(String[] addresses) {
         this.recipients = Arrays.asList(addresses);
         return this;
     }
 
-    /**
-     * Set a single recipient for the email.
-     * @param addresses
-     * @return
-     */
     public EmailBuilder recipient(String address) {
         if (this.recipients == null) {
             this.recipients = new ArrayList<String>();
@@ -96,11 +83,6 @@ public class EmailBuilder {
         return this;
     }
 
-    /**
-     * Sets the subject of the email.
-     * @param val - the subject
-     * @return EmailBuilder (this)
-     */
     public EmailBuilder subject(String val) {
         subject = val;
         //Add the environment to the subject
@@ -112,11 +94,6 @@ public class EmailBuilder {
         return this;
     }
 
-    /**
-     * Sets the message of the email.
-     * @param val - message in HTML form
-     * @return EmailBuilder (this)
-     */
     public EmailBuilder htmlMessage(String val) {
         htmlBody = val;
         return this;
@@ -146,11 +123,6 @@ public class EmailBuilder {
         return this;
     }
 
-    /**
-     * Sets the files to send as attachments with the email.
-     * @param val - List of File objects
-     * @return EmailBuilder (this)
-     */
     public EmailBuilder fileAttachments(List<File> val) {
         fileAttachments = val;
         return this;
@@ -160,7 +132,8 @@ public class EmailBuilder {
     //this method is private and is called from sendEmail()
     private EmailBuilder build() throws AddressException, MessagingException {
         EmailOverrider overrider = new EmailOverrider(env);
-        Session session = Session.getInstance(getProperties(), getAuthenticator(getProperties()));
+        //Session session = Session.getInstance(getProperties(), getAuthenticator(getProperties()));
+        Session session = null;
         message = new MimeMessage(session);
 
         message.addRecipients(RecipientType.TO, overrider.getRecipients(recipients));
@@ -188,26 +161,45 @@ public class EmailBuilder {
     }
 
     public void sendEmail() throws EmailNotSentException {
-       try {
-           build();
-           Transport.send(message);
-       } catch (Exception ex) {
-           String failureMessage = "Email could not be sent to " + recipients.stream().collect(Collectors.joining(",")) + ".";
-           //exception logged here so we can create an alert in DataDog
-           LOGGER.fatal(failureMessage, ex);
-           throw new EmailNotSentException(failureMessage);
-       }
+//       try {
+//           build();
+//           Transport.send(message);
+//       } catch (Exception ex) {
+//           String failureMessage = "Email could not be sent to " + recipients.stream().collect(Collectors.joining(",")) + ".";
+//           //exception logged here so we can create an alert in DataDog
+//           LOGGER.fatal(failureMessage, ex);
+//           throw new EmailNotSentException(failureMessage);
+//       }
+
+        ChplOneTimeTrigger sendEmailTrigger = new ChplOneTimeTrigger();
+        ChplJob sendEmailJob = new ChplJob();
+        sendEmailJob.setName(SendEmailJob.JOB_NAME);
+        sendEmailJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put(SendEmailJob.MIME_MESSAGE_KEY, message);
+        sendEmailJob.setJobDataMap(jobDataMap);
+        sendEmailTrigger.setJob(sendEmailJob);
+        sendEmailTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
+        try {
+            sendEmailTrigger = schedulerManager.createBackgroundJobTrigger(sendEmailTrigger);
+        } catch (SchedulerException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ValidationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
-    private Authenticator getAuthenticator(Properties properties) {
-        return new Authenticator() {
-            @Override
-            public PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(properties.getProperty("smtpUsername"),
-                        properties.getProperty("smtpPassword"));
-            }
-        };
-    }
+//    private Authenticator getAuthenticator(Properties properties) {
+//        return new Authenticator() {
+//            @Override
+//            public PasswordAuthentication getPasswordAuthentication() {
+//                return new PasswordAuthentication(properties.getProperty("smtpUsername"),
+//                        properties.getProperty("smtpPassword"));
+//            }
+//        };
+//    }
 
     private Properties getProperties() {
         // sets SMTP server properties
