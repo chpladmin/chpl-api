@@ -7,13 +7,17 @@ import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
@@ -22,6 +26,9 @@ import gov.healthit.chpl.permissions.domains.attestation.CreateActionPermissions
 public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
     private ResourcePermissions resourcePermissions;
+
+    @Mock
+    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
 
     @InjectMocks
     private CreateActionPermissions permissions;
@@ -32,6 +39,12 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
 
         Mockito.when(resourcePermissions.getAllDevelopersForCurrentUser()).thenReturn(
                 Arrays.asList(DeveloperDTO.builder().id(1L).build()));
+
+        Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(
+                Arrays.asList(CertificationBodyDTO.builder().id(1L).build()));
+
+        Mockito.when(developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(ArgumentMatchers.anyLong())).thenReturn(
+                Arrays.asList(CertificationBody.builder().id(1L).build()));
     }
 
     @Override
@@ -42,7 +55,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         // Not used
         assertFalse(permissions.hasAccess());
 
-        assertFalse(permissions.hasAccess(new DeveloperAttestationSubmission()));
+        assertTrue(permissions.hasAccess(new DeveloperAttestationSubmission()));
     }
 
     @Override
@@ -54,7 +67,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         // Not used
-        assertFalse(permissions.hasAccess(new DeveloperAttestationSubmission()));
+        assertTrue(permissions.hasAccess(new DeveloperAttestationSubmission()));
     }
 
     @Override
@@ -83,6 +96,9 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
                         .build())
                 .build()));
 
+        Mockito.when(developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(ArgumentMatchers.anyLong())).thenReturn(
+                Arrays.asList(CertificationBody.builder().id(2L).build()));
+
         assertFalse(permissions.hasAccess(DeveloperAttestationSubmission.builder()
                 .developer(Developer.builder()
                         .developerId(2L)
@@ -99,7 +115,6 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         assertFalse(permissions.hasAccess(new DeveloperAttestationSubmission()));
-
     }
 
     @Override
