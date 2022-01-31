@@ -22,14 +22,21 @@ public class ListingCuresStatusStatisticsCalculator {
     }
 
     @Transactional
-    public boolean hasStatisticsForDate(LocalDate statisticDate) {
+    public void setListingCuresStatusStatisticsForDate(LocalDate statisticDate) {
+        if (hasStatisticsForDate(statisticDate)) {
+            deleteStatisticsForDate(statisticDate);
+        }
+        ListingCuresStatusStatistic currentStatistic = calculateCurrentStatistics(statisticDate);
+        save(currentStatistic);
+    }
+
+    private boolean hasStatisticsForDate(LocalDate statisticDate) {
         List<ListingCuresStatusStatistic> statisticsForDate
             = listingCuresStatusStatisticsDao.getStatisticsForDate(statisticDate);
         return statisticsForDate != null && statisticsForDate.size() > 0;
     }
 
-    @Transactional
-    public ListingCuresStatusStatistic calculateCurrentStatistics(LocalDate statisticDate) {
+    private ListingCuresStatusStatistic calculateCurrentStatistics(LocalDate statisticDate) {
         LOGGER.info("Calculating cures status statistics for " + statisticDate);
         Long curesListingsCount = listingCuresStatusStatisticsDao.getListingCountWithCuresUpdateStatus();
         LOGGER.info("Found " + curesListingsCount + " listings with Cures designation.");
@@ -43,8 +50,7 @@ public class ListingCuresStatusStatisticsCalculator {
                 .build();
     }
 
-    @Transactional
-    public void save(ListingCuresStatusStatistic statistic) {
+    private void save(ListingCuresStatusStatistic statistic) {
         try {
             listingCuresStatusStatisticsDao.create(statistic);
         } catch (Exception ex) {
@@ -54,8 +60,7 @@ public class ListingCuresStatusStatisticsCalculator {
         }
     }
 
-    @Transactional
-    public void deleteStatisticsForDate(LocalDate statisticDate) {
+    private void deleteStatisticsForDate(LocalDate statisticDate) {
         List<ListingCuresStatusStatistic> statisticsForDate = listingCuresStatusStatisticsDao.getStatisticsForDate(statisticDate);
         for (ListingCuresStatusStatistic statistic : statisticsForDate) {
             try {
