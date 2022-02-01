@@ -106,7 +106,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      * The ID used by ONC-ACBs for internal tracking for 2014 and 2015 Certification Edition. It is a string variable
      * that does not have any restrictions on formatting or values.
      */
-    @XmlElement(required = true)
+    @XmlElement(required = false, nillable = true)
     private String acbCertificationId;
 
     /**
