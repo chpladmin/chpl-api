@@ -36,7 +36,7 @@ public class SendEmailJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
-        LOGGER.info("********* Starting the API Key Del job. *********");
+        LOGGER.info("********* Starting the Send Email job. *********");
 
         MimeMessage messageWithoutSession = getMimeMessageFromMap(context);
         MimeMessage message = null;
@@ -85,7 +85,7 @@ public class SendEmailJob implements Job {
 
 
 
-        LOGGER.info("********* Completed the API Key Deletion job. *********");
+        LOGGER.info("********* Completed the Send Email job. *********");
     }
 
     private MimeMessage getMimeMessageFromMap(JobExecutionContext context) {

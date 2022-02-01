@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
-import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.scheduler.job.curesStatistics.email.spreadsheet.CuresStatisticsChartSpreadsheet;
@@ -50,6 +50,9 @@ public class CuresStatisticsEmailJob  extends QuartzJob {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -108,8 +111,8 @@ public class CuresStatisticsEmailJob  extends QuartzJob {
     private void sendEmail(JobExecutionContext context, List<File> attachments) throws EmailNotSentException {
         String emailAddress = context.getMergedJobDataMap().getString(JOB_DATA_KEY_EMAIL);
         LOGGER.info("Sending email to: " + emailAddress);
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipient(emailAddress)
+        chplEmailFactory.emailBuilder()
+                .recipient(emailAddress)
                 .subject(env.getProperty("curesStatisticsReport.subject"))
                 .htmlMessage(createHtmlMessage())
                 .fileAttachments(attachments)

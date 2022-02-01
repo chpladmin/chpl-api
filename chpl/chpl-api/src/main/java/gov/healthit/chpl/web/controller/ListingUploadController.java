@@ -40,7 +40,7 @@ import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.ListingUpload;
-import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -75,14 +75,17 @@ public class ListingUploadController {
     private ErrorMessageUtil msgUtil;
     private FF4j ff4j;
     private Environment env;
+    private ChplEmailFactory chplEmailFactory;
+
 
     @Autowired
-    public ListingUploadController(ListingUploadManager listingUploadManager,
-            ErrorMessageUtil msgUtil, FF4j ff4j, Environment env) {
+    public ListingUploadController(ListingUploadManager listingUploadManager, ErrorMessageUtil msgUtil, FF4j ff4j, 
+            Environment env, ChplEmailFactory chplEmailFactory) {
         this.listingUploadManager = listingUploadManager;
         this.msgUtil = msgUtil;
         this.ff4j = ff4j;
         this.env = env;
+        this.chplEmailFactory = chplEmailFactory;
     }
 
     @Operation(summary = "Get all uploaded listings to which the current user has access.",
@@ -294,12 +297,12 @@ public class ListingUploadController {
 
         //build and send the email
         try {
-            EmailBuilder emailBuilder = new EmailBuilder(env);
-            emailBuilder.recipients(recipients)
-            .subject(uploadErrorEmailSubject)
-            .fileAttachments(attachments)
-            .htmlMessage(htmlBody)
-            .sendEmail();
+            chplEmailFactory.emailBuilder()
+                    .recipients(recipients)
+                    .subject(uploadErrorEmailSubject)
+                    .fileAttachments(attachments)
+                    .htmlMessage(htmlBody)
+                    .sendEmail();
         } catch (EmailNotSentException msgEx) {
             LOGGER.error("Could not send email about failed listing upload: " + msgEx.getMessage(), msgEx);
         }

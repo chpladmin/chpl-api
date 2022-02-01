@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.api.ApiKeyManager;
 import gov.healthit.chpl.api.domain.ApiKey;
 import gov.healthit.chpl.api.domain.ApiKeyRegistration;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -47,6 +48,9 @@ public class ApiKeyController {
 
     @Autowired
     private Environment env;
+    
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
 
     @Operation(summary = "Sign up for a new API key.",
             description = "Anyone wishing to access the methods listed in this API must have an API key. This service "
@@ -154,7 +158,7 @@ public class ApiKeyController {
                 email
         };
 
-        EmailBuilder emailBuilder = new EmailBuilder(env);
+        EmailBuilder emailBuilder = chplEmailFactory.emailBuilder();
         emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
                 .subject(subject)
                 .htmlMessage(htmlMessage)

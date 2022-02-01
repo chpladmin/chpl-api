@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.changerequest.dao.ChangeRequestAttestationDAO;
@@ -16,7 +15,7 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestation;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -30,9 +29,9 @@ import lombok.extern.log4j.Log4j2;
 public class ChangeRequestAttestationService extends ChangeRequestDetailsService<ChangeRequestAttestation> {
     private ChangeRequestDAO crDAO;
     private ChangeRequestAttestationDAO crAttesttionDAO;
-    private DeveloperManager developerManager;
     private ActivityManager activityManager;
-    private Environment env;
+    private ChplEmailFactory chplEmailFactory;
+
 
     @Value("${changeRequest.attestation.approval.subject}")
     private String approvalEmailSubject;
@@ -55,13 +54,12 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     @Autowired
     public ChangeRequestAttestationService(ChangeRequestDAO crDAO, ChangeRequestAttestationDAO crAttesttionDAO,
             DeveloperManager developerManager, UserDeveloperMapDAO userDeveloperMapDAO,
-            ActivityManager activityManager, Environment env) {
+            ActivityManager activityManager, ChplEmailFactory chplEmailFactory) {
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
         this.crAttesttionDAO = crAttesttionDAO;
-        this.developerManager = developerManager;
         this.activityManager = activityManager;
-        this.env = env;
+        this.chplEmailFactory = chplEmailFactory;
     }
 
     @Override
@@ -117,7 +115,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     @Override
     protected void sendApprovalEmail(ChangeRequest cr) throws EmailNotSentException {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
-        new EmailBuilder(env)
+        chplEmailFactory.emailBuilder()
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.toList()))
@@ -132,7 +130,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     @Override
     protected void sendPendingDeveloperActionEmail(ChangeRequest cr) throws EmailNotSentException {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
-        new EmailBuilder(env)
+        chplEmailFactory.emailBuilder()
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.toList()))
@@ -148,7 +146,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     @Override
     protected void sendRejectedEmail(ChangeRequest cr) throws EmailNotSentException {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
-        new EmailBuilder(env)
+        chplEmailFactory.emailBuilder()
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.toList()))

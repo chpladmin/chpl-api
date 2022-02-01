@@ -31,8 +31,8 @@ import gov.healthit.chpl.activity.history.query.ListingOnDateActivityQuery;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
-import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.DownloadableResourceCreatorJob;
@@ -65,6 +65,9 @@ public class ListingsSnapshotCsvCreatorJob extends DownloadableResourceCreatorJo
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
 
     public ListingsSnapshotCsvCreatorJob() throws Exception {
         super(LOGGER);
@@ -193,8 +196,8 @@ public class ListingsSnapshotCsvCreatorJob extends DownloadableResourceCreatorJo
     private void sendEmail(JobExecutionContext context, List<File> attachments) throws EmailNotSentException {
         String emailAddress = context.getMergedJobDataMap().getString(JOB_DATA_KEY_EMAIL);
         LOGGER.info("Sending email to: " + emailAddress);
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipient(emailAddress)
+        chplEmailFactory.emailBuilder()
+                .recipient(emailAddress)
                 .subject(env.getProperty("listingsSnapshot.subject"))
                 .htmlMessage(createHtmlMessage())
                 .fileAttachments(attachments)

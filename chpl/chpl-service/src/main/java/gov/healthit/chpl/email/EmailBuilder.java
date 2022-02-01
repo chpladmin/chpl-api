@@ -1,11 +1,15 @@
 package gov.healthit.chpl.email;
 
+import static org.quartz.TriggerBuilder.newTrigger;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -21,7 +25,9 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import org.quartz.JobDataMap;
+import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.SimpleTrigger;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
@@ -56,11 +62,13 @@ public class EmailBuilder {
     private String htmlFooter = "";
     private List<File> fileAttachments = null;
     private Environment env = null;
-    private SchedulerManager schedulerManager;
+    //private SchedulerManager schedulerManager;
+    private Scheduler scheduler;
 
-    public EmailBuilder(Environment env, SchedulerManager scheduleManager) {
+    public EmailBuilder(Environment env, Scheduler scheduler) {
         this.env = env;
-        this.schedulerManager = scheduleManager;
+        //this.schedulerManager = scheduleManager;
+        this.scheduler = scheduler;
     }
 
 
@@ -161,34 +169,34 @@ public class EmailBuilder {
     }
 
     public void sendEmail() throws EmailNotSentException {
-//       try {
-//           build();
-//           Transport.send(message);
-//       } catch (Exception ex) {
-//           String failureMessage = "Email could not be sent to " + recipients.stream().collect(Collectors.joining(",")) + ".";
-//           //exception logged here so we can create an alert in DataDog
-//           LOGGER.fatal(failureMessage, ex);
-//           throw new EmailNotSentException(failureMessage);
-//       }
+       try {
+           build();
 
-        ChplOneTimeTrigger sendEmailTrigger = new ChplOneTimeTrigger();
-        ChplJob sendEmailJob = new ChplJob();
-        sendEmailJob.setName(SendEmailJob.JOB_NAME);
-        sendEmailJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
-        JobDataMap jobDataMap = new JobDataMap();
-        jobDataMap.put(SendEmailJob.MIME_MESSAGE_KEY, message);
-        sendEmailJob.setJobDataMap(jobDataMap);
-        sendEmailTrigger.setJob(sendEmailJob);
-        sendEmailTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
-        try {
-            sendEmailTrigger = schedulerManager.createBackgroundJobTrigger(sendEmailTrigger);
-        } catch (SchedulerException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ValidationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+           ChplOneTimeTrigger sendEmailTrigger = new ChplOneTimeTrigger();
+           ChplJob sendEmailJob = new ChplJob();
+           sendEmailJob.setName(SendEmailJob.JOB_NAME);
+           //TODO : s/b a background job
+           sendEmailJob.setGroup(SchedulerManager.SYSTEM_JOBS_KEY);
+           JobDataMap jobDataMap = new JobDataMap();
+           jobDataMap.put(SendEmailJob.MIME_MESSAGE_KEY, message);
+           sendEmailJob.setJobDataMap(jobDataMap);
+           sendEmailTrigger.setJob(sendEmailJob);
+           sendEmailTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
+           try {
+               createOneTimeTrigger(sendEmailTrigger);
+           } catch (SchedulerException e) {
+               // TODO Auto-generated catch block
+               e.printStackTrace();
+           } catch (ValidationException e) {
+               // TODO Auto-generated catch block
+               e.printStackTrace();
+           }
+       } catch (Exception ex) {
+           String failureMessage = "Email could not be sent to " + recipients.stream().collect(Collectors.joining(",")) + ".";
+           //exception logged here so we can create an alert in DataDog
+           LOGGER.fatal(failureMessage, ex);
+           throw new EmailNotSentException(failureMessage);
+       }
     }
 
 //    private Authenticator getAuthenticator(Properties properties) {
@@ -214,4 +222,32 @@ public class EmailBuilder {
 
         return properties;
     }
+
+    public ChplOneTimeTrigger createOneTimeTrigger(ChplOneTimeTrigger chplTrigger)
+            throws SchedulerException, ValidationException {
+        SimpleTrigger trigger = (SimpleTrigger) newTrigger()
+                .withIdentity(createTriggerName(chplTrigger), createTriggerGroup(chplTrigger.getJob()))
+                .startAt(new Date(chplTrigger.getRunDateMillis()))
+                .forJob(chplTrigger.getJob().getName(), chplTrigger.getJob().getGroup())
+                .usingJobData(chplTrigger.getJob().getJobDataMap()).build();
+
+        scheduler.scheduleJob(trigger);
+
+        return chplTrigger;
+    }
+
+    private String createTriggerName(ChplOneTimeTrigger trigger) {
+        return UUID.randomUUID().toString();
+    }
+
+    private String createTriggerGroup(ChplJob job) {
+        return createTriggerGroup(job.getName());
+    }
+
+    private String createTriggerGroup(String triggerName) {
+        String group = triggerName.replaceAll(" ", "");
+        group += "Trigger";
+        return group;
+    }
+
 }

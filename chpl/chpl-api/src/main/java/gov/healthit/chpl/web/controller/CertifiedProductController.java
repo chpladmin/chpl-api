@@ -17,7 +17,6 @@ import javax.persistence.EntityNotFoundException;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,7 +50,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMetadataDTO;
-import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.exception.DeprecatedUploadTemplateException;
 import gov.healthit.chpl.exception.EmailNotSentException;
@@ -71,7 +70,6 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.PendingValidator;
@@ -112,11 +110,12 @@ public class CertifiedProductController {
     private PendingCertifiedProductManager pcpManager;
     private ActivityManager activityManager;
     private ListingValidatorFactory validatorFactory;
-    private Environment env;
     private ErrorMessageUtil msgUtil;
-    private FileUtils fileUtils;
     private ChplProductNumberUtil chplProductNumberUtil;
     private DeveloperManager developerManager;
+    private ChplEmailFactory chplEmailFactory;
+
+
 
     @SuppressWarnings({
             "checkstyle:parameternumber"
@@ -126,8 +125,8 @@ public class CertifiedProductController {
             CertifiedProductDetailsManager cpdManager, CertifiedProductManager cpManager,
             ResourcePermissions resourcePermissions, PendingCertifiedProductManager pcpManager,
             ActivityManager activityManager, ListingValidatorFactory validatorFactory,
-            Environment env, ErrorMessageUtil msgUtil, FileUtils fileUtils,
-            ChplProductNumberUtil chplProductNumberUtil, DeveloperManager developerManager) {
+            ErrorMessageUtil msgUtil, ChplProductNumberUtil chplProductNumberUtil, DeveloperManager developerManager,
+            ChplEmailFactory chplEmailFactory) {
         this.uploadManager = uploadManager;
         this.cpdManager = cpdManager;
         this.cpManager = cpManager;
@@ -135,11 +134,10 @@ public class CertifiedProductController {
         this.pcpManager = pcpManager;
         this.activityManager = activityManager;
         this.validatorFactory = validatorFactory;
-        this.env = env;
         this.msgUtil = msgUtil;
-        this.fileUtils = fileUtils;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.developerManager = developerManager;
+        this.chplEmailFactory = chplEmailFactory;
     }
 
     @Operation(summary = "List all certified products",
@@ -1141,8 +1139,7 @@ public class CertifiedProductController {
 
         // build and send the email
         try {
-            EmailBuilder emailBuilder = new EmailBuilder(env);
-            emailBuilder.recipients(recipients)
+            chplEmailFactory.emailBuilder().recipients(recipients)
                     .subject(uploadErrorEmailSubject)
                     .fileAttachments(attachments)
                     .htmlMessage(htmlBody)

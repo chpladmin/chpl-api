@@ -814,12 +814,21 @@
         </job>
 
         <job>
-          <name>inviteDevelopersJob</name>
-          <group>systemJobs</group>
-          <description>Send account invitations to POCs of any Developers that do not have accounts associated with them.</description>
-          <job-class>gov.healthit.chpl.scheduler.job.onetime.InviteDevelopersJob</job-class>
-          <durability>true</durability>
-          <recover>false</recover>
+            <name>inviteDevelopersJob</name>
+            <group>systemJobs</group>
+            <description>Send account invitations to POCs of any Developers that do not have accounts associated with them.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.InviteDevelopersJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
         </job>
+        <job>
+            <name>sendEmailJob</name>
+            <group>chplBackgroundJobs</group>
+            <description>Sends email and provides retry capability if send fails.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.SendEmailJob</job-class>
+            <durability>true</durability>
+            <recover>true</recover>
+        </job>
+        
     </schedule>
 </job-scheduling-data>

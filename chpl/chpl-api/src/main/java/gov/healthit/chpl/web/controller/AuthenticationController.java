@@ -31,7 +31,7 @@ import gov.healthit.chpl.domain.auth.UpdatePasswordResponse;
 import gov.healthit.chpl.domain.auth.UserResetPasswordRequest;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserResetTokenDTO;
-import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.JWTCreationException;
 import gov.healthit.chpl.exception.JWTValidationException;
@@ -68,6 +68,10 @@ public class AuthenticationController {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
+
 
     @Operation(summary = "Log in.",
             description = "Call this method to authenticate a user. The value returned is that user's "
@@ -244,8 +248,7 @@ public class AuthenticationController {
                 userInfo.getEmail()
         };
 
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
+        chplEmailFactory.emailBuilder().recipients(new ArrayList<String>(Arrays.asList(toEmails)))
                 .subject(env.getProperty("user.resetPassword.subject"))
                 .htmlMessage(htmlMessage)
                 .publicHtmlFooter()
