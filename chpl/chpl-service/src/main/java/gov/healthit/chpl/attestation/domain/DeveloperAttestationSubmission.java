@@ -20,11 +20,15 @@ public class DeveloperAttestationSubmission {
     private Developer developer;
     private AttestationPeriod period;
     private List<AttestationSubmittedResponse> responses;
+    private String signature;
+    private String signatureEmail;
 
     public DeveloperAttestationSubmission(DeveloperAttestationSubmissionEntity entity) {
         this.id = entity.getId();
         this.developer = new Developer(new DeveloperDTO(entity.getDeveloper()));
         this.period = new AttestationPeriod(entity.getPeriod());
+        this.signature = entity.getSignature();
+        this.signatureEmail = entity.getSignatureEmail();
         this.responses = entity.getResponses().stream()
                 .map(ent -> AttestationSubmittedResponse.builder()
                         .id(ent.getId())

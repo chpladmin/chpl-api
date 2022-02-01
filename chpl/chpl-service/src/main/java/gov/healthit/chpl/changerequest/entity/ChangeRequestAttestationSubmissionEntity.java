@@ -49,6 +49,12 @@ public class ChangeRequestAttestationSubmissionEntity {
     @JoinColumn(name = "change_request_attestation_submission_id")
     private Set<ChangeRequestAttestationResponseEntity> responses;
 
+    @Column(name = "signature", nullable = false)
+    private String signature;
+
+    @Column(name = "signature_email", nullable = false)
+    private String signatureEmail;
+
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 

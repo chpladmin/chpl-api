@@ -115,6 +115,8 @@ public final class ChangeRequestConverter {
                 .attestationResponses(entity.getResponses().stream()
                         .map(resp -> convert(resp))
                         .collect(Collectors.toList()))
+                .signature(entity.getSignature())
+                .signatureEmail(entity.getSignatureEmail())
                 .build();
     }
 

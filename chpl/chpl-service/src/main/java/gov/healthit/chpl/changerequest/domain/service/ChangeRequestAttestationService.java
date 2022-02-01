@@ -24,12 +24,16 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
+import gov.healthit.chpl.dao.auth.UserDAO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -40,6 +44,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     private AttestationManager attestationManager;
     private Environment env;
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
+    private UserDAO userDAO;
 
     private ObjectMapper mapper;
 
@@ -64,13 +69,14 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     @Autowired
     public ChangeRequestAttestationService(ChangeRequestDAO crDAO, ChangeRequestAttestationDAO crAttesttionDAO,
             UserDeveloperMapDAO userDeveloperMapDAO, AttestationManager attestationManager,
-            ChplHtmlEmailBuilder chplHtmlEmailBuilder, Environment env) {
+            ChplHtmlEmailBuilder chplHtmlEmailBuilder,  UserDAO userDAO, Environment env) {
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
         this.crAttesttionDAO = crAttesttionDAO;
         this.attestationManager = attestationManager;
         this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
         this.env = env;
+        this.userDAO = userDAO;
 
         this.mapper = new ObjectMapper();
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
@@ -87,11 +93,13 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         try {
             ChangeRequestAttestationSubmission attestation = getDetailsFromHashMap((HashMap<String, Object>) cr.getDetails());
 
+            attestation.setSignatureEmail(getUserById(AuthUtil.getCurrentUser().getId()).getEmail());
+
             attestation.setAttestationPeriod(getAttestationPeriod(cr));
 
             crAttesttionDAO.create(cr, attestation);
             return crDAO.get(cr.getId());
-        } catch (EntityRetrievalException e) {
+        } catch (EntityRetrievalException | UserRetrievalException e) {
             throw new RuntimeException(e);
         }
     }
@@ -112,6 +120,8 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         DeveloperAttestationSubmission developerAttestation = DeveloperAttestationSubmission.builder()
                 .developer(cr.getDeveloper())
                 .period(attestationSubmission.getAttestationPeriod())
+                .signature(attestationSubmission.getSignature())
+                .signatureEmail(attestationSubmission.getSignatureEmail())
                 .responses(attestationSubmission.getAttestationResponses().stream()
                         .map(resp -> AttestationSubmittedResponse.builder()
                                 .attestation(resp.getAttestation())
@@ -207,5 +217,9 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                         && LocalDate.now().compareTo(per.getSubmissionEnd()) <= 0)
                 .findAny()
                 .orElse(null);
+    }
+
+    private UserDTO getUserById(Long userId) throws UserRetrievalException {
+        return userDAO.getById(userId);
     }
 }

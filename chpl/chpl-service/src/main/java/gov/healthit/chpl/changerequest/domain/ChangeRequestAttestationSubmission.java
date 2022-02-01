@@ -23,6 +23,7 @@ public class ChangeRequestAttestationSubmission implements Serializable, ChangeR
     private AttestationPeriod attestationPeriod;
     @Singular
     private List<AttestationSubmittedResponse> attestationResponses;
+    private String signatureEmail;
 
     @Override
     public boolean matches(Object obj) {

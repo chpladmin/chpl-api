@@ -28,6 +28,8 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
         ChangeRequestAttestationSubmissionEntity parent = ChangeRequestAttestationSubmissionEntity.builder()
                 .changeRequest(getSession().load(ChangeRequestEntity.class, cr.getId()))
                 .period(getAttestationPeriodEntity(changeRequestAttestationSubmission.getAttestationPeriod().getId()))
+                .signature(changeRequestAttestationSubmission.getSignature())
+                .signatureEmail(changeRequestAttestationSubmission.getSignatureEmail())
                 .deleted(false)
                 .lastModifiedUser(AuthUtil.getAuditId())
                 .creationDate(new Date())

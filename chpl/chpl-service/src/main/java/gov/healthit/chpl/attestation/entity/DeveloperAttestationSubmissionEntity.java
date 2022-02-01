@@ -47,6 +47,12 @@ public class DeveloperAttestationSubmissionEntity {
     @JoinColumn(name = "developer_attestation_submission_id")
     private Set<DeveloperAttestationResponseEntity> responses;
 
+    @Column(name = "signature", nullable = false)
+    private String signature;
+
+    @Column(name = "signature_email", nullable = false)
+    private String signatureEmail;
+
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 

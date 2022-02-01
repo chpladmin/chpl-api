@@ -61,6 +61,8 @@ public class AttestationDAO extends BaseDAOImpl{
                 .period(AttestationPeriodEntity.builder()
                         .id(developerAttestationSubmission.getPeriod().getId())
                         .build())
+                .signature(developerAttestationSubmission.getSignature())
+                .signatureEmail(developerAttestationSubmission.getSignatureEmail())
                 .deleted(false)
                 .lastModifiedUser(AuthUtil.getAuditId())
                 .creationDate(new Date())
