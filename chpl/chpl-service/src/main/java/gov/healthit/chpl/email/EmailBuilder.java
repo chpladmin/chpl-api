@@ -125,92 +125,39 @@ public class EmailBuilder {
     //where it all comes together
     //this method is private and is called from sendEmail()
     private EmailBuilder build() throws AddressException, MessagingException {
-        EmailOverrider overrider = new EmailOverrider(env);
-        //Session session = Session.getInstance(getProperties(), getAuthenticator(getProperties()));
-        Session session = null;
-        message = new MimeMessage(session);
-
-        message.addRecipients(RecipientType.TO, overrider.getRecipients(recipients));
-        message.setFrom(new InternetAddress(getProperties().getProperty("smtpFrom")));
-        message.setSubject(this.subject);
-        message.setSentDate(new Date());
-
-        Multipart multipart = new MimeMultipart();
-
-        multipart.addBodyPart(overrider.getBody(htmlBody + htmlFooter, recipients));
-
-        if (fileAttachments != null) {
-            // Add file attachments to email
-            for (File file : fileAttachments) {
-                MimeBodyPart messageBodyPart = new MimeBodyPart();
-                DataSource source = new FileDataSource(file);
-                messageBodyPart.setDataHandler(new DataHandler(source));
-                messageBodyPart.setFileName(file.getName());
-                multipart.addBodyPart(messageBodyPart);
-            }
-        }
-        message.setContent(multipart, "text/html; charset=UTF-8");
-
+        message = new ChplEmailMessage();
+        message.setFileAttachments(fileAttachments);
+        message.setBody(htmlBody + htmlFooter);
+        message.setSubject(subject);
+        message.setRecipients(recipients);
         return this;
     }
 
     public void sendEmail() throws EmailNotSentException {
        try {
            build();
-
-           ChplOneTimeTrigger sendEmailTrigger = new ChplOneTimeTrigger();
-           ChplJob sendEmailJob = new ChplJob();
-           sendEmailJob.setName(SendEmailJob.JOB_NAME);
-           //TODO : s/b a background job
-           sendEmailJob.setGroup(SchedulerManager.SYSTEM_JOBS_KEY);
-           JobDataMap jobDataMap = new JobDataMap();
-           jobDataMap.put(SendEmailJob.MIME_MESSAGE_KEY, message);
-           sendEmailJob.setJobDataMap(jobDataMap);
-           sendEmailTrigger.setJob(sendEmailJob);
-           sendEmailTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
-           try {
-               createOneTimeTrigger(sendEmailTrigger);
-           } catch (SchedulerException e) {
-               // TODO Auto-generated catch block
-               e.printStackTrace();
-           } catch (ValidationException e) {
-               // TODO Auto-generated catch block
-               e.printStackTrace();
-           }
+           scheduleOneTimeTrigger(getOneTimeTrigger());
        } catch (Exception ex) {
            String failureMessage = "Email could not be sent to " + recipients.stream().collect(Collectors.joining(",")) + ".";
-           //exception logged here so we can create an alert in DataDog
            LOGGER.fatal(failureMessage, ex);
            throw new EmailNotSentException(failureMessage);
        }
     }
 
-//    private Authenticator getAuthenticator(Properties properties) {
-//        return new Authenticator() {
-//            @Override
-//            public PasswordAuthentication getPasswordAuthentication() {
-//                return new PasswordAuthentication(properties.getProperty("smtpUsername"),
-//                        properties.getProperty("smtpPassword"));
-//            }
-//        };
-//    }
-
-    private Properties getProperties() {
-        // sets SMTP server properties
-        Properties properties = new Properties();
-        properties.put("mail.smtp.host", env.getProperty("smtpHost"));
-        properties.put("mail.smtp.port", env.getProperty("smtpPort"));
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.starttls.enable", "true");
-        properties.put("smtpUsername", env.getProperty("smtpUsername"));
-        properties.put("smtpPassword", env.getProperty("smtpPassword"));
-        properties.put("smtpFrom", env.getProperty("smtpFrom"));
-
-        return properties;
+    public ChplOneTimeTrigger getOneTimeTrigger() {
+        ChplOneTimeTrigger sendEmailTrigger = new ChplOneTimeTrigger();
+        ChplJob sendEmailJob = new ChplJob();
+        sendEmailJob.setName(SendEmailJob.JOB_NAME);
+        sendEmailJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put(SendEmailJob.MESSAGE_KEY, message);
+        sendEmailJob.setJobDataMap(jobDataMap);
+        sendEmailTrigger.setJob(sendEmailJob);
+        sendEmailTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
+        return sendEmailTrigger;
     }
 
-    public ChplOneTimeTrigger createOneTimeTrigger(ChplOneTimeTrigger chplTrigger)
-            throws SchedulerException, ValidationException {
+    public ChplOneTimeTrigger scheduleOneTimeTrigger(ChplOneTimeTrigger chplTrigger) throws SchedulerException, ValidationException {
         SimpleTrigger trigger = (SimpleTrigger) newTrigger()
                 .withIdentity(createTriggerName(chplTrigger), createTriggerGroup(chplTrigger.getJob()))
                 .startAt(new Date(chplTrigger.getRunDateMillis()))
