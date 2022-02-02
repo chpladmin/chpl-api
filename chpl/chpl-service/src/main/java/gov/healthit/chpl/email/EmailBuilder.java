@@ -7,22 +7,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
-import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Session;
 import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 
 import org.quartz.JobDataMap;
 import org.quartz.Scheduler;
@@ -51,26 +40,23 @@ import lombok.extern.log4j.Log4j2;
  * @author TYoung
  *
  */
-@Log4j2
+@Log4j2(topic = "sendEmailJobLogger")
 public class EmailBuilder {
-    private MimeMessage message;
-    private List<String> recipients;
+    private ChplEmailMessage message;
 
-    //optional parameters set to default
+    private List<String> recipients;
     private String subject = "";
     private String htmlBody = "";
     private String htmlFooter = "";
     private List<File> fileAttachments = null;
+
     private Environment env = null;
-    //private SchedulerManager schedulerManager;
     private Scheduler scheduler;
 
     public EmailBuilder(Environment env, Scheduler scheduler) {
         this.env = env;
-        //this.schedulerManager = scheduleManager;
         this.scheduler = scheduler;
     }
-
 
     public EmailBuilder recipients(List<String> addresses) {
         this.recipients = addresses;
@@ -232,7 +218,6 @@ public class EmailBuilder {
                 .usingJobData(chplTrigger.getJob().getJobDataMap()).build();
 
         scheduler.scheduleJob(trigger);
-
         return chplTrigger;
     }
 
@@ -249,5 +234,4 @@ public class EmailBuilder {
         group += "Trigger";
         return group;
     }
-
 }
