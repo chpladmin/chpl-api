@@ -1,8 +1,14 @@
 package gov.healthit.chpl.scheduler.job;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -23,6 +29,7 @@ import javax.mail.internet.MimeMultipart;
 
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
+import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
@@ -158,8 +165,55 @@ public class SendEmailJob implements Job {
     }
 
     private Date getRetryTime() {
+        Integer retryInterval = Integer.valueOf(env.getProperty("emailRetryIntervalInMinutes"));
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.MINUTE, 1);
+        cal.add(Calendar.MINUTE, retryInterval);
         return cal.getTime();
+    }
+
+    private Integer getMaxRetryAttempts() {
+        return Integer.valueOf(env.getProperty("emailRetryAttempts"));
+    }
+
+    private List<File> copyFilesOnFirstReschedule(ChplEmailMessage message) {
+        if (message.getRetryAttempts().equals(1) && message.getFileAttachments() != null) {
+            if (message.getFileAttachments() == null || message.getFileAttachments().size() == 0) {
+                LOGGER.info("No files to move.");
+            }
+            return  message.getFileAttachments().stream()
+                    .map(file -> copyTempFileToPermanentLocation(file))
+                    .collect(Collectors.toList());
+        } else {
+            return message.getFileAttachments();
+        }
+
+    }
+
+    private File copyTempFileToPermanentLocation(File originalFile) {
+        Path newPath = Paths.get(env.getProperty("downloadFolderPath") + File.separator + originalFile.getName());
+        Path origPath = originalFile.toPath();
+        try {
+            Files.copy(origPath, newPath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (Exception e) {
+            LOGGER.info("Could not copy original file: " + origPath.toString());
+            LOGGER.catching(e);
+        }
+        LOGGER.info("Copied " + origPath.toString() + " to " + newPath.toString() );
+        return newPath.toFile();
+    }
+
+    private void deleteFiles(ChplEmailMessage message) {
+        if (message.getFileAttachments() != null) {
+            message.getFileAttachments().stream()
+                    .forEach(file -> {
+                        try {
+                            Files.deleteIfExists(file.toPath());
+                            LOGGER.info("Deleting file: " + file.getPath());
+                        } catch (IOException e) {
+                            LOGGER.info("Could not delete file after sending: " + file.getPath());
+                            LOGGER.catching(e);;
+                        }
+                    });
+        }
     }
 }
