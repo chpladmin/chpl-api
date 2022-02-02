@@ -1,33 +1,46 @@
 package gov.healthit.chpl.scheduler.job;
 
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
+import java.io.File;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import javax.mail.Address;
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.mail.Authenticator;
-import javax.mail.Message;
+import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
+import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
+import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.quartz.SchedulerException;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.email.ChplEmailMessage;
+import gov.healthit.chpl.email.EmailOverrider;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
+@DisallowConcurrentExecution
 public class SendEmailJob implements Job {
     public static final String JOB_NAME = "sendEmailJob";
-    public static final String MIME_MESSAGE_KEY = "mimeMessageKey";
+    public static final String MESSAGE_KEY = "messageKey";
 
     @Autowired
     private Environment env;
@@ -38,58 +51,44 @@ public class SendEmailJob implements Job {
 
         LOGGER.info("********* Starting the Send Email job. *********");
 
-        MimeMessage messageWithoutSession = getMimeMessageFromMap(context);
-        MimeMessage message = null;
-        try (InputStream stream = messageWithoutSession.getInputStream()){
-            Session session = Session.getInstance(getProperties(), getAuthenticator(getProperties()));
-            message = new MimeMessage(session, stream);
-
-            Transport.send(message);
+        ChplEmailMessage message = (ChplEmailMessage) context.getMergedJobDataMap().get(MESSAGE_KEY);
+        try {
+            MimeMessage mimeMessage = getMimeMessage(message);
+            Transport.send(mimeMessage);
             LOGGER.info("Email successfully sent to: "
-                    + getRecipientAddresses(message).stream().
+                    + message.getRecipients().stream().
                             map(addr -> addr.toString())
                             .collect(Collectors.joining(", ")));
+            LOGGER.info("With subject: " + message.getSubject());
         } catch (Exception ex) {
             String failureMessage;
-            try {
-                failureMessage = "Email could not be sent to "
-                        + getRecipientAddresses(message).stream()
-                                .map(addr -> addr.toString())
-                                .collect(Collectors.joining(", "));
-                //exception logged here so we can create an alert in DataDog
-                //LOGGER.fatal(failureMessage, ex);
-                //Calendar cal = Calendar.getInstance();
-                //cal.add(Calendar.MINUTE, 5);
+            failureMessage = "Email could not be sent to "
+                    + message.getRecipients().stream()
+                            .map(addr -> addr.toString())
+                            .collect(Collectors.joining(", "));
+            LOGGER.info(failureMessage);
+            LOGGER.info("With subject: " + message.getSubject());
+            LOGGER.error(ex);
 
-                //SimpleTriggerImpl retryTrigger = new SimpleTriggerImpl(Guid.NewGuid().ToString());
-                //retryTrigger.setDescription("Retry" + context.getJobDetail().getKey().getName());
-                //retryTrigger.setRepeatCount(0);
-                //retryTrigger.setJobKey(context.getJobDetail().getKey());   // connect trigger with current job
-                //retryTrigger.setStartTime(cal.getTime());
-                //context.getScheduler().scheduleJob(retryTrigger);   // schedule the trigger
-
-                //JobExecutionException ee = new JobExecutionException();
-                //ee.setRefireImmediately(refire);
-
-                //context.
-                //context.getScheduler().rescheduleJob(triggerKey, newTrigger)
-
-
-
-            } catch (MessagingException e) {
-                LOGGER.error("Return could retreive list of recipients for this email.  We are not going to retruy sending this email.");
-            }
+            rescheduleEmailToBeSent(context);
         }
-
-
-
-
-
         LOGGER.info("********* Completed the Send Email job. *********");
     }
 
-    private MimeMessage getMimeMessageFromMap(JobExecutionContext context) {
-        return (MimeMessage) context.getMergedJobDataMap().get("mimeMessage");
+    private void rescheduleEmailToBeSent(JobExecutionContext context) {
+        Trigger retryTrigger = TriggerBuilder.newTrigger()
+                .withDescription("Retry Email Trigger")
+                .forJob(context.getJobDetail().getKey())
+                .usingJobData(context.getMergedJobDataMap())
+                .startAt(getRetryTime())
+                .build();
+
+        try {
+            context.getScheduler().scheduleJob(retryTrigger);
+        } catch (SchedulerException e) {
+            LOGGER.error("Could not reschedule trigger due to exception:");
+            LOGGER.catching(e);
+        }
     }
 
     private Authenticator getAuthenticator(Properties properties) {
@@ -116,22 +115,36 @@ public class SendEmailJob implements Job {
         return properties;
     }
 
-    private List<Address> getRecipientAddresses(MimeMessage message) throws MessagingException {
-        return Arrays.asList(message.getRecipients(Message.RecipientType.TO)).stream()
-                    .collect(Collectors.toList());
+    private MimeMessage getMimeMessage(ChplEmailMessage message) throws MessagingException {
+
+        EmailOverrider overrider = new EmailOverrider(env);
+        Session session = Session.getInstance(getProperties(), getAuthenticator(getProperties()));
+
+        MimeMessage mimeMessage = new MimeMessage(session);
+        mimeMessage.addRecipients(RecipientType.TO, overrider.getRecipients(message.getRecipients()));
+        mimeMessage.setFrom(new InternetAddress(getProperties().getProperty("smtpFrom")));
+        mimeMessage.setSubject(message.getSubject());
+        mimeMessage.setSentDate(new Date());
+
+        Multipart multipart = new MimeMultipart();
+        multipart.addBodyPart(overrider.getBody(message.getBody(), message.getRecipients()));
+        if (message.getFileAttachments() != null && message.getFileAttachments().size() > 0) {
+            // Add file attachments to email
+            for (File file : message.getFileAttachments()) {
+                MimeBodyPart messageBodyPart = new MimeBodyPart();
+                DataSource source = new FileDataSource(file);
+                messageBodyPart.setDataHandler(new DataHandler(source));
+                messageBodyPart.setFileName(file.getName());
+                multipart.addBodyPart(messageBodyPart);
+            }
+        }
+        mimeMessage.setContent(multipart, "text/html; charset=UTF-8");
+        return mimeMessage;
     }
 
-//    private Object createOneTimeTriggerToResendEmail() {
-//        ChplOneTimeTrigger sendEmailTrigger = new ChplOneTimeTrigger();
-//        ChplJob sendEmailJob = new ChplJob();
-//        sendEmailJob.setName(JOB_NAME);
-//        sendEmailJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
-//        JobDataMap jobDataMap = new JobDataMap();
-//
-//        mergeDeveloperJob.setJobDataMap(jobDataMap);
-//        mergeDeveloperTrigger.setJob(mergeDeveloperJob);
-//        mergeDeveloperTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
-//        mergeDeveloperTrigger = schedulerManager.createBackgroundJobTrigger(mergeDeveloperTrigger);
-//        return mergeDeveloperTrigger;
-//    }
+    private Date getRetryTime() {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.MINUTE, 1);
+        return cal.getTime();
+    }
 }
