@@ -198,7 +198,7 @@ public class SendEmailJob implements Job {
             LOGGER.info("Could not copy original file: " + origPath.toString());
             LOGGER.catching(e);
         }
-        LOGGER.info("Copied " + origPath.toString() + " to " + newPath.toString() );
+        LOGGER.info("Copied " + origPath.toString() + " to " + newPath.toString());
         return newPath.toFile();
     }
 
@@ -211,7 +211,7 @@ public class SendEmailJob implements Job {
                             LOGGER.info("Deleting file: " + file.getPath());
                         } catch (IOException e) {
                             LOGGER.info("Could not delete file after sending: " + file.getPath());
-                            LOGGER.catching(e);;
+                            LOGGER.catching(e);
                         }
                     });
         }
