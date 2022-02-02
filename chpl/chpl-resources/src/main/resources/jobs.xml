@@ -829,6 +829,5 @@
             <durability>true</durability>
             <recover>true</recover>
         </job>
-        
     </schedule>
 </job-scheduling-data>
