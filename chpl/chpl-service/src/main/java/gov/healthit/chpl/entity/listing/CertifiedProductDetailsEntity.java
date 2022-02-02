@@ -14,7 +14,6 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 
-import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.ProductEntity;
 import lombok.Data;
 

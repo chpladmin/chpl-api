@@ -83,13 +83,6 @@ public class Developer implements Serializable {
     private Boolean deleted;
 
     /**
-     * Transparency attestations between each certification body and the developer.
-     */
-    @XmlElement(required = false, nillable = true)
-    @Deprecated
-    private List<TransparencyAttestationMap> transparencyAttestations;
-
-    /**
      * Status changes that have occurred on the developer.
      */
     @XmlElementWrapper(name = "statusEvents", nillable = true, required = false)
@@ -125,7 +118,6 @@ public class Developer implements Serializable {
     private PointOfContact userEnteredPointOfContact;
 
     public Developer() {
-        this.transparencyAttestations = new ArrayList<TransparencyAttestationMap>();
         this.statusEvents = new ArrayList<DeveloperStatusEvent>();
     }
 

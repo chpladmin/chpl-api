@@ -20,24 +20,18 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
-import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
-import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.ContactEntity;
 import gov.healthit.chpl.entity.UserDeveloperMapEntity;
-import gov.healthit.chpl.entity.developer.DeveloperACBMapEntity;
-import gov.healthit.chpl.entity.developer.DeveloperACBTransparencyMapEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntitySimple;
 import gov.healthit.chpl.entity.developer.DeveloperStatusEntity;
 import gov.healthit.chpl.entity.developer.DeveloperStatusEventEntity;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
-import gov.healthit.chpl.entity.developer.DeveloperTransparencyEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.listing.ListingsFromBannedDevelopersEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -182,23 +176,6 @@ public class DeveloperDAO extends BaseDAOImpl {
         }
     }
 
-    public DeveloperACBMapDTO createTransparencyMapping(DeveloperACBMapDTO dto) {
-        DeveloperACBMapEntity mapping = new DeveloperACBMapEntity();
-        mapping.getDeveloperId(dto.getDeveloperId());
-        mapping.setCertificationBodyId(dto.getAcbId());
-        if (dto.getTransparencyAttestation() != null && dto.getTransparencyAttestation().getTransparencyAttestation() != null) {
-            mapping.setTransparencyAttestation(
-                    AttestationType.getValue(dto.getTransparencyAttestation().getTransparencyAttestation()));
-        }
-        mapping.setCreationDate(new Date());
-        mapping.setDeleted(false);
-        mapping.setLastModifiedDate(new Date());
-        mapping.setLastModifiedUser(AuthUtil.getAuditId());
-        entityManager.persist(mapping);
-        entityManager.flush();
-        return new DeveloperACBMapDTO(mapping);
-    }
-
     public DeveloperDTO update(DeveloperDTO dto) throws EntityRetrievalException, EntityCreationException {
         DeveloperEntity entity = this.getEntityById(dto.getId());
         if (entity == null) {
@@ -336,21 +313,6 @@ public class DeveloperDAO extends BaseDAOImpl {
         }
     }
 
-    public DeveloperACBMapDTO updateTransparencyMapping(DeveloperACBMapDTO dto) {
-        DeveloperACBMapEntity mapping = getTransparencyMappingEntity(dto.getDeveloperId(), dto.getAcbId());
-        if (mapping == null || mapping.getTransparencyAttestation() == null) {
-            return null;
-        }
-
-        mapping.setTransparencyAttestation(
-                AttestationType.getValue(dto.getTransparencyAttestation().getTransparencyAttestation()));
-        mapping.setLastModifiedDate(new Date());
-        mapping.setLastModifiedUser(AuthUtil.getAuditId());
-        entityManager.persist(mapping);
-        entityManager.flush();
-        return new DeveloperACBMapDTO(mapping);
-    }
-
     @Transactional
     public void delete(Long id) throws EntityRetrievalException {
         DeveloperEntity toDelete = getEntityById(id);
@@ -360,17 +322,6 @@ public class DeveloperDAO extends BaseDAOImpl {
             toDelete.setLastModifiedDate(new Date());
             toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             update(toDelete);
-        }
-    }
-
-    public void deleteTransparencyMapping(Long developerId, Long acbId) {
-        DeveloperACBMapEntity toDelete = getTransparencyMappingEntity(developerId, acbId);
-        if (toDelete != null) {
-            toDelete.setDeleted(true);
-            toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
-            entityManager.persist(toDelete);
-            entityManager.flush();
         }
     }
 
@@ -407,53 +358,6 @@ public class DeveloperDAO extends BaseDAOImpl {
 
         for (DeveloperEntity entity : entities) {
             DeveloperDTO dto = new DeveloperDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
-    }
-
-    public List<DeveloperTransparency> getAllDevelopersWithTransparencies() {
-        Query query = entityManager.createQuery("SELECT dt " + "FROM DeveloperTransparencyEntity dt ",
-                DeveloperTransparencyEntity.class);
-
-        @SuppressWarnings("unchecked") List<DeveloperTransparencyEntity> entityResults = query.getResultList();
-        List<DeveloperTransparency> domainResults = new ArrayList<DeveloperTransparency>();
-        for (DeveloperTransparencyEntity entity : entityResults) {
-            DeveloperTransparency domain = new DeveloperTransparency();
-            domain.setId(entity.getId());
-            domain.setName(entity.getName());
-            domain.setStatus(entity.getStatus());
-            domain.getListingCounts().setActive(entity.getCountActiveListings());
-            domain.getListingCounts().setRetired(entity.getCountRetiredListings());
-            domain.getListingCounts().setPending(entity.getCountPendingListings());
-            domain.getListingCounts().setSuspendedByOncAcb(entity.getCountSuspendedByOncAcbListings());
-            domain.getListingCounts().setSuspendedByOnc(entity.getCountSuspendedByOncListings());
-            domain.getListingCounts().setTerminatedByOnc(entity.getCountTerminatedByOncListings());
-            domain.getListingCounts().setWithdrawnByDeveloper(entity.getCountWithdrawnByDeveloperListings());
-            domain.getListingCounts().setWithdrawnByDeveloperUnderSurveillance(
-                    entity.getCountWithdrawnByDeveloperUnderSurveillanceListings());
-            domain.getListingCounts().setWithdrawnByOncAcb(entity.getCountWithdrawnByOncAcbListings());
-            domain.setAcbAttestations(entity.getAcbAttestations());
-            domain.setMandatoryDisclosures(entity.getMandatoryDisclosures());
-            domainResults.add(domain);
-        }
-        return domainResults;
-    }
-
-    public DeveloperACBMapDTO getTransparencyMapping(Long developerId, Long acbId) {
-        DeveloperACBMapEntity mapping = getTransparencyMappingEntity(developerId, acbId);
-        if (mapping == null) {
-            return null;
-        }
-        return new DeveloperACBMapDTO(mapping);
-    }
-
-    public List<DeveloperACBMapDTO> getAllTransparencyMappings() {
-        List<DeveloperACBTransparencyMapEntity> entities = getTransparencyMappingEntities();
-        List<DeveloperACBMapDTO> dtos = new ArrayList<>();
-
-        for (DeveloperACBTransparencyMapEntity entity : entities) {
-            DeveloperACBMapDTO dto = new DeveloperACBMapDTO(entity);
             dtos.add(dto);
         }
         return dtos;
@@ -798,31 +702,6 @@ public class DeveloperDAO extends BaseDAOImpl {
         }
 
         return entity;
-    }
-
-    private DeveloperACBMapEntity getTransparencyMappingEntity(final Long developerId, final Long acbId) {
-        Query query = entityManager.createQuery("SELECT map "
-                + "FROM DeveloperACBMapEntity map "
-                + "LEFT OUTER JOIN FETCH map.certificationBody "
-                + "WHERE (NOT map.deleted = true) "
-                + "AND map.developerId = :developerId "
-                + "AND map.certificationBodyId = :acbId",
-                DeveloperACBMapEntity.class);
-        query.setParameter("developerId", developerId);
-        query.setParameter("acbId", acbId);
-
-        @SuppressWarnings("unchecked") List<DeveloperACBMapEntity> results = query.getResultList();
-        if (results != null && results.size() > 0) {
-            return results.get(0);
-        }
-        return null;
-    }
-
-    private List<DeveloperACBTransparencyMapEntity> getTransparencyMappingEntities() {
-        List<DeveloperACBTransparencyMapEntity> result = entityManager
-                .createQuery("FROM DeveloperACBTransparencyMapEntity", DeveloperACBTransparencyMapEntity.class)
-                .getResultList();
-        return result;
     }
 
     private DeveloperStatusEntity getStatusByName(final String statusName) {
