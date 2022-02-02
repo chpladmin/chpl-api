@@ -40,7 +40,7 @@ import lombok.extern.log4j.Log4j2;
  * @author TYoung
  *
  */
-@Log4j2(topic = "sendEmailJobLogger")
+@Log4j2
 public class EmailBuilder {
     private ChplEmailMessage message;
 

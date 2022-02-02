@@ -14,4 +14,5 @@ public class ChplEmailMessage implements Serializable {
     private String subject = "";
     private String body = "";
     private List<File> fileAttachments = null;
+    private Integer retryAttempts = 0;
 }

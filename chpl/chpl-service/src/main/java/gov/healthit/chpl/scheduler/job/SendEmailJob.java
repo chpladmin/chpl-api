@@ -36,11 +36,12 @@ import gov.healthit.chpl.email.ChplEmailMessage;
 import gov.healthit.chpl.email.EmailOverrider;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "sendEmailJobLogger")
 @DisallowConcurrentExecution
 public class SendEmailJob implements Job {
     public static final String JOB_NAME = "sendEmailJob";
     public static final String MESSAGE_KEY = "messageKey";
+    private static final Integer UNLIMITED_RETRY_ATTEMPTS = -1;
 
     @Autowired
     private Environment env;
@@ -52,6 +53,7 @@ public class SendEmailJob implements Job {
         LOGGER.info("********* Starting the Send Email job. *********");
 
         ChplEmailMessage message = (ChplEmailMessage) context.getMergedJobDataMap().get(MESSAGE_KEY);
+        message.setRetryAttempts(message.getRetryAttempts() + 1);
         try {
             MimeMessage mimeMessage = getMimeMessage(message);
             Transport.send(mimeMessage);
@@ -60,26 +62,39 @@ public class SendEmailJob implements Job {
                             map(addr -> addr.toString())
                             .collect(Collectors.joining(", ")));
             LOGGER.info("With subject: " + message.getSubject());
+            deleteFiles(message);
         } catch (Exception ex) {
-            String failureMessage;
-            failureMessage = "Email could not be sent to "
+            String failureMessage = "Email could not be sent to "
                     + message.getRecipients().stream()
                             .map(addr -> addr.toString())
                             .collect(Collectors.joining(", "));
             LOGGER.info(failureMessage);
             LOGGER.info("With subject: " + message.getSubject());
-            LOGGER.error(ex);
+            LOGGER.info("Number of attempts: " + message.getRetryAttempts());
+            LOGGER.catching(ex);
 
-            rescheduleEmailToBeSent(context);
+            if (getMaxRetryAttempts().equals(UNLIMITED_RETRY_ATTEMPTS)
+                    || message.getRetryAttempts() < getMaxRetryAttempts()) {
+                rescheduleEmailToBeSent(context, message);
+            } else {
+                deleteFiles(message);
+            }
         }
         LOGGER.info("********* Completed the Send Email job. *********");
     }
 
-    private void rescheduleEmailToBeSent(JobExecutionContext context) {
+
+
+    private void rescheduleEmailToBeSent(JobExecutionContext context, ChplEmailMessage message) {
+        message.setFileAttachments(copyFilesOnFirstReschedule(message));
+
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put(SendEmailJob.MESSAGE_KEY, message);
+
         Trigger retryTrigger = TriggerBuilder.newTrigger()
                 .withDescription("Retry Email Trigger")
                 .forJob(context.getJobDetail().getKey())
-                .usingJobData(context.getMergedJobDataMap())
+                .usingJobData(jobDataMap)
                 .startAt(getRetryTime())
                 .build();
 
