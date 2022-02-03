@@ -15,7 +15,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.domain.contact.PointOfContact;
-import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import lombok.AllArgsConstructor;
@@ -140,18 +139,6 @@ public class Developer implements Serializable {
             this.lastModifiedDate = dto.getLastModifiedDate().getTime() + "";
         }
 
-        if (dto.getTransparencyAttestationMappings() != null && dto.getTransparencyAttestationMappings().size() > 0) {
-            for (DeveloperACBMapDTO map : dto.getTransparencyAttestationMappings()) {
-                TransparencyAttestationMap toAdd = new TransparencyAttestationMap();
-                toAdd.setAcbId(map.getAcbId());
-                toAdd.setAcbName(map.getAcbName());
-                if (map.getTransparencyAttestation() != null) {
-                    toAdd.setAttestation(new TransparencyAttestation(map.getTransparencyAttestation()));
-                }
-                this.transparencyAttestations.add(toAdd);
-            }
-        }
-
         if (dto.getStatusEvents() != null && dto.getStatusEvents().size() > 0) {
             for (DeveloperStatusEventDTO historyItem : dto.getStatusEvents()) {
                 DeveloperStatusEvent toAdd = new DeveloperStatusEvent(historyItem);
@@ -224,14 +211,6 @@ public class Developer implements Serializable {
 
     public void setContact(PointOfContact contact) {
         this.contact = contact;
-    }
-
-    public List<TransparencyAttestationMap> getTransparencyAttestations() {
-        return transparencyAttestations;
-    }
-
-    public void setTransparencyAttestations(List<TransparencyAttestationMap> transparencyAttestations) {
-        this.transparencyAttestations = transparencyAttestations;
     }
 
     public Boolean getDeleted() {

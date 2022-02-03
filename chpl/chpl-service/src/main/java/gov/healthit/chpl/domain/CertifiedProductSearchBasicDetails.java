@@ -186,13 +186,6 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
     private String productAdditionalSoftware;
 
     /**
-     * The transparency attestation required by 170.523(k)(2). It is applicable for 2014 and 2015 Edition and takes
-     * value of Affirmative, Negative, or N/A.
-     */
-    @Deprecated
-    private TransparencyAttestation transparencyAttestation;
-
-    /**
      * A hyperlink to the mandatory disclosures required by 170.523(k)(1) for the Health IT Module
      */
     @Deprecated

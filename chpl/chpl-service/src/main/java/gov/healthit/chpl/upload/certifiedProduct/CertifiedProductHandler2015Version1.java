@@ -240,7 +240,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
         parseCertificationDate(pendingCertifiedProduct, record);
         parseSed(pendingCertifiedProduct, record);
         parseHasIcs(pendingCertifiedProduct, record);
-        parseTransparencyAttestation(pendingCertifiedProduct, record);
+        parseMandatoryDisclosures(pendingCertifiedProduct, record);
 
         // accessibility certified
         String isAccessibilityCertified = record.get(getColumnIndexMap().getAccessibilityCertifiedIndex()).trim();

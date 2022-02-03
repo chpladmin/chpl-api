@@ -71,7 +71,6 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.PendingValidator;
@@ -114,7 +113,6 @@ public class CertifiedProductController {
     private ListingValidatorFactory validatorFactory;
     private Environment env;
     private ErrorMessageUtil msgUtil;
-    private FileUtils fileUtils;
     private ChplProductNumberUtil chplProductNumberUtil;
     private DeveloperManager developerManager;
 
@@ -126,7 +124,7 @@ public class CertifiedProductController {
             CertifiedProductDetailsManager cpdManager, CertifiedProductManager cpManager,
             ResourcePermissions resourcePermissions, PendingCertifiedProductManager pcpManager,
             ActivityManager activityManager, ListingValidatorFactory validatorFactory,
-            Environment env, ErrorMessageUtil msgUtil, FileUtils fileUtils,
+            Environment env, ErrorMessageUtil msgUtil,
             ChplProductNumberUtil chplProductNumberUtil, DeveloperManager developerManager) {
         this.uploadManager = uploadManager;
         this.cpdManager = cpdManager;
@@ -137,7 +135,6 @@ public class CertifiedProductController {
         this.validatorFactory = validatorFactory;
         this.env = env;
         this.msgUtil = msgUtil;
-        this.fileUtils = fileUtils;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.developerManager = developerManager;
     }
@@ -1209,7 +1206,6 @@ public class CertifiedProductController {
                 .surveillance(e.getSurveillance())
                 .targetedUsers(e.getTargetedUsers())
                 .testingLabs(e.getTestingLabs())
-                .transparencyAttestation(e.getTransparencyAttestation())
                 .transparencyAttestationUrl(e.getTransparencyAttestationUrl())
                 .version(e.getVersion())
                 .build();

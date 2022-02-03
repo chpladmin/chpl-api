@@ -64,7 +64,6 @@ import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
-import gov.healthit.chpl.domain.TransparencyAttestation;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
@@ -336,10 +335,6 @@ public class CertifiedProductManagerTest {
                         .testingLabCode("04")
                         .testingLabId(1L)
                         .testingLabName("Drummond Group")
-                        .build())
-                .transparencyAttestation(TransparencyAttestation.builder()
-                        .removed(true)
-                        .transparencyAttestation("http://www.standingstoneinc.com/")
                         .build())
                 .version(ProductVersion.builder()
                         .versionId(1L)
