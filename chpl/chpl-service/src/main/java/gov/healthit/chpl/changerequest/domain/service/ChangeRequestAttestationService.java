@@ -2,6 +2,7 @@ package gov.healthit.chpl.changerequest.domain.service;
 
 import java.text.DateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,6 +50,12 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     private UserDAO userDAO;
 
     private ObjectMapper mapper;
+
+    @Value("${changeRequest.attestation.submitted.subject}")
+    private String submittedEmailSubject;
+
+    @Value("${changeRequest.attestation.submitted.body}")
+    private String submittedEmailBody;
 
     @Value("${changeRequest.attestation.approval.subject}")
     private String approvalEmailSubject;
@@ -100,7 +107,15 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
             attestation.setAttestationPeriod(getAttestationPeriod(cr));
 
             crAttesttionDAO.create(cr, attestation);
-            return crDAO.get(cr.getId());
+            ChangeRequest newCr = crDAO.get(cr.getId());
+
+            try {
+                sendSubmittedEmail(newCr);
+            } catch (EmailNotSentException e) {
+                LOGGER.error(e);
+            }
+
+            return newCr;
         } catch (EntityRetrievalException | UserRetrievalException e) {
             throw new RuntimeException(e);
         }
@@ -136,6 +151,16 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         return cr;
     }
 
+    private void sendSubmittedEmail(ChangeRequest cr) throws EmailNotSentException {
+        new EmailBuilder(env)
+                .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
+                        .map(user -> user.getEmail())
+                        .collect(Collectors.toList()))
+                .subject(submittedEmailSubject)
+                .htmlMessage(createSubmittedHtmlMessage(cr))
+                .sendEmail();
+    }
+
     @Override
     protected void sendApprovalEmail(ChangeRequest cr) throws EmailNotSentException {
         new EmailBuilder(env)
@@ -167,6 +192,18 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                 .subject(rejectedEmailSubject)
                 .htmlMessage(createRejectedHtmlMessage(cr))
                 .sendEmail();
+    }
+
+    private String createSubmittedHtmlMessage(ChangeRequest cr) {
+        ChangeRequestAttestationSubmission details = (ChangeRequestAttestationSubmission) cr.getDetails();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
+        String period = formatter.format(details.getAttestationPeriod().getPeriodStart()) + " - " + formatter.format(details.getAttestationPeriod().getPeriodEnd());
+        return chplHtmlEmailBuilder.initialize()
+                .heading("Developer Attestation Submitted")
+                .paragraph("", String.format(submittedEmailBody, cr.getDeveloper().getName(), period))
+                .paragraph("Attestations submitted for " + cr.getDeveloper().getName(), toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails()))
+                .footer(true)
+                .build();
     }
 
     private String createAcceptedHtmlMessage(ChangeRequest cr) {
@@ -202,7 +239,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     private String toHtmlString(ChangeRequestAttestationSubmission attestationSubmission) {
         return attestationSubmission.getAttestationResponses().stream()
                 .sorted((r1, r2) -> r1.getAttestation().getCondition().getSortOrder().compareTo(r2.getAttestation().getCondition().getSortOrder()))
-                .map(resp -> String.format("<strong>%s</strong><br/>%s<br/><li>%s</li><br/><br/>",
+                .map(resp -> String.format("<strong>%s</strong><br/>%s<br/><ul><li>%s</li></ul><br/><br/>",
                         resp.getAttestation().getCondition().getName(),
                         convertPsuedoMarkdownToHtmlLink(resp.getAttestation().getDescription()),
                         resp.getResponse().getResponse()))
