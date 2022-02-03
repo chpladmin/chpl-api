@@ -26,6 +26,7 @@ import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
+import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.ContactEntity;
 import gov.healthit.chpl.entity.UserDeveloperMapEntity;
@@ -233,13 +234,17 @@ public class DeveloperDAO extends BaseDAOImpl {
 
         if (dto.getAddress() != null) {
             try {
-                entity.setAddress(addressDao.saveAddress(dto.getAddress()));
-            } catch (final EntityCreationException ex) {
+                AddressEntity address = addressDao.saveAddress(dto.getAddress());
+                entity.setAddress(address);
+                entity.setAddressId(address.getId());
+            } catch (EntityCreationException ex) {
                 LOGGER.error("Could not create new address in the database.", ex);
                 entity.setAddress(null);
+                entity.setAddressId(null);
             }
         } else {
             entity.setAddress(null);
+            entity.setAddressId(null);
         }
 
         if (dto.getContact() != null) {
