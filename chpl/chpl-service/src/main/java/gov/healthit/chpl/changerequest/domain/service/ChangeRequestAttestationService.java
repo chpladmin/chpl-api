@@ -196,7 +196,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     private String createSubmittedHtmlMessage(ChangeRequest cr) {
         ChangeRequestAttestationSubmission details = (ChangeRequestAttestationSubmission) cr.getDetails();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, YYYY");
         String period = formatter.format(details.getAttestationPeriod().getPeriodStart()) + " - " + formatter.format(details.getAttestationPeriod().getPeriodEnd());
         return chplHtmlEmailBuilder.initialize()
                 .heading("Developer Attestation Submitted")
