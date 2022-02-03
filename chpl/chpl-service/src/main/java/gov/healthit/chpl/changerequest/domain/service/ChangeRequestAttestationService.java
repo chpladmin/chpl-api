@@ -3,6 +3,8 @@ package gov.healthit.chpl.changerequest.domain.service;
 import java.text.DateFormat;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -202,9 +204,23 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                 .sorted((r1, r2) -> r1.getAttestation().getCondition().getSortOrder().compareTo(r2.getAttestation().getCondition().getSortOrder()))
                 .map(resp -> String.format("<strong>%s</strong><br/>%s<br/><li>%s</li><br/><br/>",
                         resp.getAttestation().getCondition().getName(),
-                        resp.getAttestation().getDescription(),
+                        convertPsuedoMarkdownToHtmlLink(resp.getAttestation().getDescription()),
                         resp.getResponse().getResponse()))
                 .collect(Collectors.joining());
+    }
+
+    private String convertPsuedoMarkdownToHtmlLink(String toConvert) {
+        String regex = "^(.*)\\[(.*)\\]\\((.*)\\)(.*)$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(toConvert);
+        String converted = "";
+
+        if (matcher.find() && matcher.groupCount() == 4) {
+            converted = matcher.group(1) + "<a href=" + matcher.group(3) + ">" + matcher.group(2) + "</a>" + matcher.group(4);
+        } else {
+          converted = toConvert;
+        }
+        return converted;
     }
 
     private ChangeRequestAttestationSubmission getDetailsFromHashMap(HashMap<String, Object> map) {
