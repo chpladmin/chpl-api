@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -78,6 +79,11 @@ public class SendEmailJob implements Job {
             LOGGER.info(failureMessage);
             LOGGER.info("With subject: " + message.getSubject());
             LOGGER.info("Number of attempts: " + message.getRetryAttempts());
+            LOGGER.info("Max number of attempts: " + (getMaxRetryAttempts() == -1 ? "unlimited" : getMaxRetryAttempts().toString()));
+
+            if (getMaxRetryAttempts() == -1) {
+
+            }
             LOGGER.catching(ex);
 
             if (getMaxRetryAttempts().equals(UNLIMITED_RETRY_ATTEMPTS)
@@ -98,15 +104,19 @@ public class SendEmailJob implements Job {
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(SendEmailJob.MESSAGE_KEY, message);
 
+        Date retryTime = getRetryTime();
         Trigger retryTrigger = TriggerBuilder.newTrigger()
                 .withDescription("Retry Email Trigger")
                 .forJob(context.getJobDetail().getKey())
                 .usingJobData(jobDataMap)
-                .startAt(getRetryTime())
+                .startAt(retryTime)
                 .build();
 
+        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
+        LOGGER.info("Email rescheduled to be sent at: " + df.format(retryTime));
         try {
             context.getScheduler().scheduleJob(retryTrigger);
+            LOGGER.error("Could not reschedule trigger due to exception:");
         } catch (SchedulerException e) {
             LOGGER.error("Could not reschedule trigger due to exception:");
             LOGGER.catching(e);
