@@ -29,14 +29,21 @@ public class CriterionListingStatisticsCalculator {
     }
 
     @Transactional
-    public boolean hasStatisticsForDate(LocalDate statisticDate) {
+    public void setCriterionListingCountStatisticsForDate(LocalDate statisticDate) {
+        if (hasStatisticsForDate(statisticDate)) {
+            deleteStatisticsForDate(statisticDate);
+        }
+        List<CriterionListingCountStatistic> currentStatistics = calculateCurrentStatistics(statisticDate);
+        save(currentStatistics);
+    }
+
+    private boolean hasStatisticsForDate(LocalDate statisticDate) {
         List<CriterionListingCountStatistic> statisticsForDate
             = criterionListingStatisticsDao.getStatisticsForDate(statisticDate);
         return statisticsForDate != null && statisticsForDate.size() > 0;
     }
 
-    @Transactional
-    public List<CriterionListingCountStatistic> calculateCurrentStatistics(LocalDate statisticDate) {
+    private List<CriterionListingCountStatistic> calculateCurrentStatistics(LocalDate statisticDate) {
         List<CertificationCriterionDTO> allCriteria = criteriaDao.findByCertificationEditionYear(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
         return allCriteria.stream()
             .map(criterion -> getStatisticForCriterion(criterion, statisticDate))
@@ -53,8 +60,7 @@ public class CriterionListingStatisticsCalculator {
                 .build();
     }
 
-    @Transactional
-    public void save(List<CriterionListingCountStatistic> statistics) {
+    private void save(List<CriterionListingCountStatistic> statistics) {
         for (CriterionListingCountStatistic statistic : statistics) {
             try {
                 criterionListingStatisticsDao.create(statistic);
@@ -66,8 +72,7 @@ public class CriterionListingStatisticsCalculator {
         }
     }
 
-    @Transactional
-    public void deleteStatisticsForDate(LocalDate statisticDate) {
+    private void deleteStatisticsForDate(LocalDate statisticDate) {
         List<CriterionListingCountStatistic> statisticsForDate = criterionListingStatisticsDao.getStatisticsForDate(statisticDate);
         for (CriterionListingCountStatistic statistic : statisticsForDate) {
             try {

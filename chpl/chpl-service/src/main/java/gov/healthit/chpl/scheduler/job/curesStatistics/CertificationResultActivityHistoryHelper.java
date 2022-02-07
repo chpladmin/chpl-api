@@ -3,8 +3,6 @@ package gov.healthit.chpl.scheduler.job.curesStatistics;
 import java.util.Date;
 import java.util.List;
 
-import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +28,6 @@ public class CertificationResultActivityHistoryHelper {
         this.activityUtil = activityUtil;
     }
 
-    @Transactional
     public boolean didListingRemoveAttestationToCriterionDuringTimeInterval(Long listingId, CertificationCriterion criterion, Date startDate, Date endDate) {
         List<ActivityDTO> listingActivities = activityDao.findByObjectId(listingId, ActivityConcept.CERTIFIED_PRODUCT, startDate, endDate);
         for (ActivityDTO listingActivity : listingActivities) {
