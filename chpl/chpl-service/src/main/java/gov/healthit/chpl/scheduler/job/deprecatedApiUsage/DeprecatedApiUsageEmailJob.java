@@ -11,8 +11,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -30,10 +28,10 @@ import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.util.DateUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2(topic = "deprecatedApiUsageEmailJobLogger")
 public class DeprecatedApiUsageEmailJob implements Job {
-    private static final Logger LOGGER = LogManager.getLogger("deprecatedApiUsageEmailJobLogger");
-
     @Autowired
     private DeprecatedApiUsageDao deprecatedApiUsageDao;
 

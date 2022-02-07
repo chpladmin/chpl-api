@@ -22,14 +22,21 @@ public class PrivacyAndSecurityListingStatisticsCalculator {
     }
 
     @Transactional
-    public boolean hasStatisticsForDate(LocalDate statisticDate) {
+    public void setPrivacyAndSecurityListingStatisticsForDate(LocalDate statisticDate) {
+        if (hasStatisticsForDate(statisticDate)) {
+            deleteStatisticsForDate(statisticDate);
+        }
+        PrivacyAndSecurityListingStatistic currentStatistic = calculateCurrentStatistics(statisticDate);
+        save(currentStatistic);
+    }
+
+    private boolean hasStatisticsForDate(LocalDate statisticDate) {
         List<PrivacyAndSecurityListingStatistic> statisticsForDate
             = privacyAndSecurityListingStatisticsDao.getStatisticsForDate(statisticDate);
         return statisticsForDate != null && statisticsForDate.size() > 0;
     }
 
-    @Transactional
-    public PrivacyAndSecurityListingStatistic calculateCurrentStatistics(LocalDate statisticDate) {
+    private PrivacyAndSecurityListingStatistic calculateCurrentStatistics(LocalDate statisticDate) {
         LOGGER.info("Calculating privacy and security statistics for " + statisticDate);
         Long hasPrivacyAndSecurityCriteriaCount = privacyAndSecurityListingStatisticsDao.getListingCountWithPrivacyAndSecurityCriteria();
         LOGGER.info("Found " + hasPrivacyAndSecurityCriteriaCount + " listings with P&S criteria.");
@@ -43,8 +50,7 @@ public class PrivacyAndSecurityListingStatisticsCalculator {
                 .build();
     }
 
-    @Transactional
-    public void save(PrivacyAndSecurityListingStatistic statistic) {
+    private void save(PrivacyAndSecurityListingStatistic statistic) {
         try {
             privacyAndSecurityListingStatisticsDao.create(statistic);
         } catch (Exception ex) {
@@ -54,8 +60,7 @@ public class PrivacyAndSecurityListingStatisticsCalculator {
         }
     }
 
-    @Transactional
-    public void deleteStatisticsForDate(LocalDate statisticDate) {
+    private void deleteStatisticsForDate(LocalDate statisticDate) {
         List<PrivacyAndSecurityListingStatistic> statisticsForDate = privacyAndSecurityListingStatisticsDao.getStatisticsForDate(statisticDate);
         for (PrivacyAndSecurityListingStatistic statistic : statisticsForDate) {
             try {

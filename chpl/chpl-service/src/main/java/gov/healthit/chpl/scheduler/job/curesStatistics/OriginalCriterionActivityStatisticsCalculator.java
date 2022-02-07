@@ -51,14 +51,21 @@ public class OriginalCriterionActivityStatisticsCalculator {
     }
 
     @Transactional
-    public boolean hasStatisticsForDate(LocalDate statisticDate) {
+    public void setOriginalCriterionActivityStatisticsForDate(LocalDate statisticDate) {
+        if (hasStatisticsForDate(statisticDate)) {
+            deleteStatisticsForDate(statisticDate);
+        }
+        List<CriterionUpgradedToCuresFromOriginalListingStatistic> currentStatistics = calculateCurrentStatistics(statisticDate);
+        save(currentStatistics);
+    }
+
+    private boolean hasStatisticsForDate(LocalDate statisticDate) {
         List<CriterionUpgradedToCuresFromOriginalListingStatistic> statisticsForDate
             = criterionUpgradedToCuresFromOriginalStatisticsDao.getStatisticsForDate(statisticDate);
         return statisticsForDate != null && statisticsForDate.size() > 0;
     }
 
-    @Transactional
-    public List<CriterionUpgradedToCuresFromOriginalListingStatistic> calculateCurrentStatistics(LocalDate statisticDate) {
+    private List<CriterionUpgradedToCuresFromOriginalListingStatistic> calculateCurrentStatistics(LocalDate statisticDate) {
         LOGGER.info("Calculating original criteria upgraded to cures statistics for " + statisticDate);
         Date currentDate = new Date();
         List<CriterionUpgradedToCuresFromOriginalListingStatistic> results
@@ -77,6 +84,7 @@ public class OriginalCriterionActivityStatisticsCalculator {
             } else {
                 LOGGER.debug("No listings attest to criterion ID " + curesCriterion.getId());
             }
+
             for (Long listingId : listingIdsAttestingToCriterion) {
                 LOGGER.debug("Checking if listing ID " + listingId
                         + " removed attestation to original criterion ID " + originalCriterion.getId()
@@ -103,8 +111,7 @@ public class OriginalCriterionActivityStatisticsCalculator {
                 .build();
     }
 
-    @Transactional
-    public void save(List<CriterionUpgradedToCuresFromOriginalListingStatistic> statistics) {
+    private void save(List<CriterionUpgradedToCuresFromOriginalListingStatistic> statistics) {
         for (CriterionUpgradedToCuresFromOriginalListingStatistic statistic : statistics) {
             try {
                 criterionUpgradedToCuresFromOriginalStatisticsDao.create(statistic);
@@ -116,8 +123,7 @@ public class OriginalCriterionActivityStatisticsCalculator {
         }
     }
 
-    @Transactional
-    public void deleteStatisticsForDate(LocalDate statisticDate) {
+    private void deleteStatisticsForDate(LocalDate statisticDate) {
         List<CriterionUpgradedToCuresFromOriginalListingStatistic> statisticsForDate
             = criterionUpgradedToCuresFromOriginalStatisticsDao.getStatisticsForDate(statisticDate);
         for (CriterionUpgradedToCuresFromOriginalListingStatistic statistic : statisticsForDate) {

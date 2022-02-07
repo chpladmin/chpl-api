@@ -54,14 +54,14 @@ public class ListingCriterionForCuresAchievementStatisticsCalculator {
         this.b6Id = certService.get(Criteria2015.B_6).getId();
         if (!StringUtils.isEmpty(privacyAndSecurityCriteriaIdList)) {
             privacyAndSecurityCriteriaIds = Stream.of(privacyAndSecurityCriteriaIdList.split(","))
-                .map(criterionId -> new Long(criterionId))
+                .map(criterionId -> Long.valueOf(criterionId))
                 .collect(Collectors.toList());
         } else {
             LOGGER.error("No value found for privacyAndSecurityCriteria property");
         }
         if (!StringUtils.isEmpty(privacyAndSecurityRequiredCriteriaIdList)) {
             privacyAndSecurityRequiredCriteriaIds = Stream.of(privacyAndSecurityRequiredCriteriaIdList.split(","))
-                    .map(criterionId -> new Long(criterionId))
+                    .map(criterionId -> Long.valueOf(criterionId))
                     .collect(Collectors.toList());
         } else {
             LOGGER.error("No value found for privacyAndSecurityRequiredCriteria property");
@@ -69,14 +69,21 @@ public class ListingCriterionForCuresAchievementStatisticsCalculator {
     }
 
     @Transactional
-    public boolean hasStatisticsForDate(LocalDate statisticDate) {
+    public void setCriteriaNeededToAchieveCuresStatisticsForDate(LocalDate statisticDate) {
+        if (hasStatisticsForDate(statisticDate)) {
+            deleteStatisticsForDate(statisticDate);
+        }
+        List<ListingToCriterionForCuresAchievementStatistic> currentStatistics = calculateCurrentStatistics(statisticDate);
+        save(currentStatistics);
+    }
+
+    private boolean hasStatisticsForDate(LocalDate statisticDate) {
         List<ListingToCriterionForCuresAchievementStatistic> statisticsForDate
             = listingToCuresAchievementDao.getStatisticsForDate(statisticDate);
         return statisticsForDate != null && statisticsForDate.size() > 0;
     }
 
-    @Transactional
-    public List<ListingToCriterionForCuresAchievementStatistic> calculateCurrentStatistics(LocalDate statisticDate) {
+    private List<ListingToCriterionForCuresAchievementStatistic> calculateCurrentStatistics(LocalDate statisticDate) {
         List<Long> listingIdsWithoutCuresUpdate = listingToCuresAchievementDao.getListingIdsWithoutCuresUpdateStatus();
         LOGGER.info("There are " + listingIdsWithoutCuresUpdate.size() + " Active listings without cures update status.");
 
@@ -180,8 +187,7 @@ public class ListingCriterionForCuresAchievementStatisticsCalculator {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
-    public void save(List<ListingToCriterionForCuresAchievementStatistic> statistics) {
+    private void save(List<ListingToCriterionForCuresAchievementStatistic> statistics) {
         for (ListingToCriterionForCuresAchievementStatistic statistic : statistics) {
             try {
                 listingToCuresAchievementDao.create(statistic);
@@ -193,8 +199,7 @@ public class ListingCriterionForCuresAchievementStatisticsCalculator {
         }
     }
 
-    @Transactional
-    public void deleteStatisticsForDate(LocalDate statisticDate) {
+    private void deleteStatisticsForDate(LocalDate statisticDate) {
         List<ListingToCriterionForCuresAchievementStatistic> statisticsForDate = listingToCuresAchievementDao.getStatisticsForDate(statisticDate);
         for (ListingToCriterionForCuresAchievementStatistic statistic : statisticsForDate) {
             try {

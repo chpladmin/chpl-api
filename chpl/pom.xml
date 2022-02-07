@@ -16,9 +16,28 @@
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <org.springframework.version>5.2.10.RELEASE</org.springframework.version>
-        <org.springboot.version>2.2.11.RELEASE</org.springboot.version>
+        <org.springframework.version>5.3.15</org.springframework.version>
+        <org.springsecurity.version>5.6.1</org.springsecurity.version>
+        <org.springboot.version>2.6.2</org.springboot.version>
+        <java.version>17</java.version>
+        <lombok.version>1.18.22</lombok.version>
+        <log4j2.version>2.17.1</log4j2.version>
+        <aspectj.version>1.9.8.RC3</aspectj.version>
+        <commons.csv.version>1.9.0</commons.csv.version>
+        <commons.fileupload.version>1.4</commons.fileupload.version>
+        <asynchttpclient.version>2.12.3</asynchttpclient.version>
+        <ff4j.version>1.8</ff4j.version>
+        <junit.version>5.8.2</junit.version>
+        <checkstyle.version>9.2.1</checkstyle.version>
+        <checkstyle.plugin.version>3.1.2</checkstyle.plugin.version>
+        <mvn.site.plugin.version>3.10.0</mvn.site.plugin.version>
+        <mvn.resources.plugin.version>3.2.0</mvn.resources.plugin.version>
+        <mvn.compiler.plugin.version>3.9.0</mvn.compiler.plugin.version>
+        <mvn.jar.plugin.version>3.2.1</mvn.jar.plugin.version>
+        <mvn.war.plugin.version>3.3.2</mvn.war.plugin.version>
+        <mvn.jxr.plugin.version>3.1.1</mvn.jxr.plugin.version>
     </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -31,7 +50,7 @@
             <dependency>
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-bom</artifactId>
-                <version>${org.springframework.version}</version>
+                <version>${org.springsecurity.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -42,54 +61,127 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.17.1</version>
+            <version>${log4j2.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.17.1</version>
+            <version>${log4j2.version}</version>
         </dependency>
     </dependencies>
 
     <build>
+        <pluginManagement>
+          <plugins>
+            <!-- Ensures the build environment is using a certain version of maven, java, or OS.
+                 Added to ensure repeatable builds in all environments -->
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-enforcer-plugin</artifactId>
+              <version>3.0.0</version>
+            </plugin>
+            <!-- The below few plugins are implicitly used by maven and do not need to be declared,
+                 but it is best practice to put them here with the versions we want to use to ensure
+                 repeatable builds in all environments. -->
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-clean-plugin</artifactId>
+              <version>3.1.0</version>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-deploy-plugin</artifactId>
+              <version>3.0.0-M2</version>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-install-plugin</artifactId>
+              <version>3.0.0-M1</version>
+            </plugin>
+            <!-- Checkstyle and JXR are used to generate an HTML report showing code style violations
+                 according to our project style definition -->
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-checkstyle-plugin</artifactId>
+              <version>${checkstyle.plugin.version}</version>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-jxr-plugin</artifactId>
+              <version>${mvn.jxr.plugin.version}</version>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <version>${mvn.compiler.plugin.version}</version>
+            </plugin>
+            <!-- used in generating reports like checkstyle -->
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-site-plugin</artifactId>
+              <version>3.10.0</version>
+            </plugin>
+            <!-- use the resources sub-project -->
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-resources-plugin</artifactId>
+              <version>${mvn.resources.plugin.version}</version>
+            </plugin>
+            <!-- create jars/wars in sub-projects -->
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-jar-plugin</artifactId>
+              <version>${mvn.jar.plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>${mvn.war.plugin.version}</version>
+            </plugin>
+            <!-- run unit tests -->
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-surefire-plugin</artifactId>
+              <version>3.0.0-M5</version>
+             </plugin>
+          </plugins>
+        </pluginManagement>
+
         <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-enforcer-plugin</artifactId>
+              <executions>
+                <execution>
+                  <id>enforce-versions</id>
+                  <goals>
+                    <goal>enforce</goal>
+                  </goals>
+                  <configuration>
+                    <rules>
+                      <!-- TODO: put this back in -->
+                      <!-- dependencyConvergence / -->
+                      <requireMavenVersion>
+                        <version>3.6.0</version>
+                      </requireMavenVersion>
+                      <requireJavaVersion>
+                        <version>${java.version}</version>
+                      </requireJavaVersion>
+                    </rules>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.1.0</version>
                 <dependencies>
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>8.29</version>
+                        <version>${checkstyle.version}</version>
                     </dependency>
                 </dependencies>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.3</version>
-                <configuration>
-                    <excludes>
-                        <exclude>org/apache/**/*</exclude>
-                        <exclude>org/chpl/etl/**/*</exclude>
-                        <exclude>**/*Test.*</exclude>
-                    </excludes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>report</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
@@ -101,12 +193,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
-                <version>2.5</version>
+                <version>${mvn.jxr.plugin.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>${checkstyle.plugin.version}</version>
                 <configuration>
                     <configLocation>chpl-checkstyle-checks.xml</configLocation>
                 </configuration>
@@ -117,19 +209,6 @@
                         </reports>
                     </reportSet>
                 </reportSets>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>3.0.5</version>
-                <configuration>
-                    <effort>Max</effort>
-                    <threshold>Low</threshold>
-                    <xmlOutput>true</xmlOutput>
-                    <failOnError>false</failOnError>
-                    <findbugsXmlOutput>true</findbugsXmlOutput>
-                    <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
-                </configuration>
             </plugin>
         </plugins>
     </reporting>
