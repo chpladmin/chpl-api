@@ -3,7 +3,9 @@ package gov.healthit.chpl.changerequest.domain.service;
 import java.text.DateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -201,7 +203,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         return chplHtmlEmailBuilder.initialize()
                 .heading("Developer Attestation Submitted")
                 .paragraph("", String.format(submittedEmailBody, cr.getDeveloper().getName(), period))
-                .paragraph("Attestations submitted for " + cr.getDeveloper().getName(), toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails()))
+                .paragraph("Attestation Responses submitted for " + cr.getDeveloper().getName(), toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails(), chplHtmlEmailBuilder))
                 .footer(true)
                 .build();
     }
@@ -209,9 +211,9 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     private String createAcceptedHtmlMessage(ChangeRequest cr) {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         return chplHtmlEmailBuilder.initialize()
-                .heading("Developer Attestation Approved")
+                .heading("Developer Attestation Accepted")
                 .paragraph("", String.format(approvalEmailBody, df.format(cr.getSubmittedDate()), getApprovalBody(cr)))
-                .paragraph("Attestation", toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails()))
+                .paragraph("Attestation Responses submitted for " + cr.getDeveloper().getName(), toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails(), chplHtmlEmailBuilder))
                 .footer(true)
                 .build();
     }
@@ -221,7 +223,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         return chplHtmlEmailBuilder.initialize()
                 .heading("Developer Attestation Requires Developer Action")
                 .paragraph("", String.format(pendingDeveloperActionEmailBody, df.format(cr.getSubmittedDate()), getApprovalBody(cr), cr.getCurrentStatus().getComment()))
-                .paragraph("Attestation", toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails()))
+                .paragraph("Attestation Responses submitted for " + cr.getDeveloper().getName(), toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails(), chplHtmlEmailBuilder))
                 .footer(true)
                 .build();
     }
@@ -231,19 +233,23 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         return chplHtmlEmailBuilder.initialize()
                 .heading("Developer Attestation Rejected")
                 .paragraph("", String.format(rejectedEmailBody, df.format(cr.getSubmittedDate()), getApprovalBody(cr), cr.getCurrentStatus().getComment()))
-                .paragraph("Attestation", toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails()))
+                .paragraph("Attestation Responses submitted for " + cr.getDeveloper().getName(), toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails(), chplHtmlEmailBuilder))
                 .footer(true)
                 .build();
     }
 
-    private String toHtmlString(ChangeRequestAttestationSubmission attestationSubmission) {
-        return attestationSubmission.getAttestationResponses().stream()
-                .sorted((r1, r2) -> r1.getAttestation().getCondition().getSortOrder().compareTo(r2.getAttestation().getCondition().getSortOrder()))
-                .map(resp -> String.format("<strong>%s</strong><br/>%s<br/><ul><li>%s</li></ul><br/><br/>",
+    private String toHtmlString(ChangeRequestAttestationSubmission attestationSubmission, ChplHtmlEmailBuilder htmlBuilder) {
+        List<String> headings = Arrays.asList("Condition", "Attestation", "Response");
+
+        List<List<String>> rows = attestationSubmission.getAttestationResponses().stream()
+                .sorted((r1, r2) -> r1.getAttestation().getSortOrder().compareTo(r2.getAttestation().getSortOrder()))
+                .map(resp -> Arrays.asList(
                         resp.getAttestation().getCondition().getName(),
                         convertPsuedoMarkdownToHtmlLink(resp.getAttestation().getDescription()),
                         resp.getResponse().getResponse()))
-                .collect(Collectors.joining());
+                .collect(Collectors.toList());
+
+        return htmlBuilder.getTableHtml(headings, rows, "");
     }
 
     private String convertPsuedoMarkdownToHtmlLink(String toConvert) {
