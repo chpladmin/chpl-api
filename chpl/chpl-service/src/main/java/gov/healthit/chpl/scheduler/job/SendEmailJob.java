@@ -116,10 +116,8 @@ public class SendEmailJob implements Job {
         LOGGER.info("Email rescheduled to be sent at: " + df.format(retryTime));
         try {
             context.getScheduler().scheduleJob(retryTrigger);
-            LOGGER.error("Could not reschedule trigger due to exception:");
         } catch (SchedulerException e) {
-            LOGGER.error("Could not reschedule trigger due to exception:");
-            LOGGER.catching(e);
+            LOGGER.error("Could not reschedule trigger due to exception: ", e);
         }
     }
 
