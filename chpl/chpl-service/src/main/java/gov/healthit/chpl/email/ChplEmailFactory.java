@@ -25,10 +25,6 @@ public class ChplEmailFactory {
     }
 
     private Scheduler getScheduler() {
-        //try {
-            return chplScheduler.getScheduler();
-        //} catch (SchedulerException e) {
-            //return null;
-        //}
+        return chplScheduler.getScheduler();
     }
 }

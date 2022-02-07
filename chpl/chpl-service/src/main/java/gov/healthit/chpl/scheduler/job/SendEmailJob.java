@@ -81,9 +81,6 @@ public class SendEmailJob implements Job {
             LOGGER.info("Number of attempts: " + message.getRetryAttempts());
             LOGGER.info("Max number of attempts: " + (getMaxRetryAttempts() == -1 ? "unlimited" : getMaxRetryAttempts().toString()));
 
-            if (getMaxRetryAttempts() == -1) {
-
-            }
             LOGGER.catching(ex);
 
             if (getMaxRetryAttempts().equals(UNLIMITED_RETRY_ATTEMPTS)
