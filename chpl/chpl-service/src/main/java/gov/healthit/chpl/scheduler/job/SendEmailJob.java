@@ -72,7 +72,7 @@ public class SendEmailJob implements Job {
             LOGGER.info("With subject: " + message.getSubject());
             deleteFiles(message);
         } catch (Exception ex) {
-            String failureMessage = "Email could not be sent to "
+            String failureMessage = "Error sending email to "
                     + message.getRecipients().stream()
                             .map(addr -> addr.toString())
                             .collect(Collectors.joining(", "));
@@ -87,6 +87,12 @@ public class SendEmailJob implements Job {
                     || message.getRetryAttempts() < getMaxRetryAttempts()) {
                 rescheduleEmailToBeSent(context, message);
             } else {
+                // This should trigger a Datadog alert
+                String error = "Email could not be sent to "
+                        + message.getRecipients().stream()
+                                .map(addr -> addr.toString())
+                                .collect(Collectors.joining(", "));
+                LOGGER.error(error);
                 deleteFiles(message);
             }
         }
