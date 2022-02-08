@@ -282,10 +282,6 @@ public class DeveloperController {
     public PermissionDeletedResponse deleteUserFromDeveloper(
             @PathVariable Long developerId, @PathVariable Long userId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-        if (!ff4j.check(FeatureList.ROLE_DEVELOPER)) {
-            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
-        }
-
         // delete all permissions on that developer
         userPermissionsManager.deleteDeveloperPermission(developerId, userId);
         PermissionDeletedResponse response = new PermissionDeletedResponse();
@@ -304,9 +300,6 @@ public class DeveloperController {
             produces = "application/json; charset=utf-8")
     public @ResponseBody UsersResponse getUsers(@PathVariable("developerId") Long developerId)
             throws InvalidArgumentsException, EntityRetrievalException {
-        if (!ff4j.check(FeatureList.ROLE_DEVELOPER)) {
-            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
-        }
         List<UserDTO> users = developerManager.getAllUsersOnDeveloper(developerId);
         List<User> domainUsers = new ArrayList<User>(users.size());
         for (UserDTO userDto : users) {
