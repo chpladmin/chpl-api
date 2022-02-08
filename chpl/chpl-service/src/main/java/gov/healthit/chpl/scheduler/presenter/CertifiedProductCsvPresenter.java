@@ -11,6 +11,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.BooleanUtils;
@@ -18,9 +19,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.ff4j.FF4j;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -36,7 +35,6 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
     private List<CertificationCriterionDTO> applicableCriteria = new ArrayList<CertificationCriterionDTO>();
     private OutputStreamWriter writer = null;
     private CSVPrinter csvPrinter = null;
-    private FF4j ff4j;
 
     /**
      * Required to setCriteriaNames before calling this function.
@@ -79,10 +77,6 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         return logger;
     }
 
-    public void setFf4j(FF4j ff4j) {
-        this.ff4j = ff4j;
-    }
-
     protected List<String> generateHeaderValues() {
         List<String> result = new ArrayList<String>();
         result.add("Certification Edition");
@@ -110,10 +104,8 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         result.add("Product Database ID");
         result.add("Version");
         result.add("Version Database ID");
-        if (ff4j.check(FeatureList.RWT_ENABLED)) {
-            result.add("Real World Testing Plans URL");
-            result.add("Real World Testing Results URL");
-        }
+        result.add("Real World Testing Plans URL");
+        result.add("Real World Testing Results URL");
         result.add("Total Surveillance Activities");
         result.add("Total Surveillance Non-conformities");
         result.add("Open Surveillance Non-conformities");
@@ -156,10 +148,8 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         result.add(listing.getVersion() != null ? listing.getVersion().getVersion() : UNKNOWN_VALUE);
         result.add(ObjectUtils.allNotNull(listing.getVersion(), listing.getVersion().getVersionId())
                 ? listing.getVersion().getVersionId().toString() : UNKNOWN_VALUE);
-        if (ff4j.check(FeatureList.RWT_ENABLED)) {
-            result.add(listing.getRwtPlansUrl());
-            result.add(listing.getRwtResultsUrl());
-        }
+        result.add(listing.getRwtPlansUrl());
+        result.add(listing.getRwtResultsUrl());
         result.add(listing.getCountSurveillance() != null ? listing.getCountSurveillance().toString() : UNKNOWN_VALUE);
         result.add(ObjectUtils.allNotNull(listing.getCountOpenNonconformities(), listing.getCountClosedNonconformities())
                 ? (listing.getCountOpenNonconformities() + listing.getCountClosedNonconformities()) + "" : UNKNOWN_VALUE);
