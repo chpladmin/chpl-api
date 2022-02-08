@@ -9,12 +9,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.mail.Authenticator;
+import javax.mail.Message.RecipientType;
+import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.Message.RecipientType;
-import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -25,7 +25,6 @@ import javax.transaction.Transactional;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
-import org.ff4j.FF4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -36,7 +35,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
@@ -73,18 +71,10 @@ public class InviteDevelopersJob implements Job {
     @Autowired
     private UserDeveloperMapDAO userDeveloperMapDao;
 
-    @Autowired
-    private FF4j ff4j;
-
     @SuppressWarnings("checkstyle:linelength")
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        if (!ff4j.check(FeatureList.ROLE_DEVELOPER)) {
-            LOGGER.fatal("The " + FeatureList.ROLE_DEVELOPER + " flag is OFF. Exiting job.");
-            return;
-        }
-
         LOGGER.info("********* Starting the Invite Developers job *********");
         setSecurityContext();
         try {
