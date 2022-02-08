@@ -17,7 +17,6 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.ff4j.FF4j;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -50,9 +49,6 @@ public class ListingsSnapshotCsvCreatorJob extends DownloadableResourceCreatorJo
 
     @Autowired
     private CertificationCriterionService criterionService;
-
-    @Autowired
-    private FF4j ff4j;
 
     @Autowired
     private ListingActivityUtil listingActivityUtil;
@@ -160,7 +156,6 @@ public class ListingsSnapshotCsvCreatorJob extends DownloadableResourceCreatorJo
     private void initializeWritingToFiles(CertifiedProductCsvPresenter csvPresenter, File csvFile)
             throws IOException {
         csvPresenter.setLogger(LOGGER);
-        csvPresenter.setFf4j(ff4j);
         List<CertificationCriterionDTO> criteria = getCriteriaDao().findByCertificationEditionYear(edition)
                 .stream()
                 .sorted((crA, crB) -> criterionService.sortCriteria(crA, crB))
