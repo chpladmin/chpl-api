@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
@@ -22,14 +22,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.attestation.dao.AttestationDAO;
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
+import gov.healthit.chpl.domain.PublicAttestation;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.concept.PublicAttestationStatus;
 import gov.healthit.chpl.domain.developer.hierarchy.DeveloperTree;
 import gov.healthit.chpl.domain.developer.hierarchy.ProductTree;
 import gov.healthit.chpl.domain.developer.hierarchy.SimpleListing;
@@ -76,7 +78,6 @@ public class DeveloperManager extends SecuredManager {
     private ProductVersionManager versionManager;
     private UserManager userManager;
     private CertificationBodyManager acbManager;
-    private CertificationBodyDAO certificationBodyDao;
     private CertifiedProductDAO certifiedProductDao;
     private ChplProductNumberUtil chplProductNumberUtil;
     private ActivityManager activityManager;
@@ -85,21 +86,21 @@ public class DeveloperManager extends SecuredManager {
     private DeveloperValidationFactory developerValidationFactory;
     private ValidationUtils validationUtils;
     private SchedulerManager schedulerManager;
+    private AttestationDAO attestationDAO;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
     public DeveloperManager(DeveloperDAO developerDao, ProductManager productManager, ProductVersionManager versionManager,
-            UserManager userManager, CertificationBodyManager acbManager, CertificationBodyDAO certificationBodyDao,
+            UserManager userManager, CertificationBodyManager acbManager,
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
             ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
             DeveloperValidationFactory developerValidationFactory, ValidationUtils validationUtils,
-            SchedulerManager schedulerManager) {
+            SchedulerManager schedulerManager, AttestationDAO attestationDAO) {
         this.developerDao = developerDao;
         this.productManager = productManager;
         this.versionManager = versionManager;
         this.userManager = userManager;
         this.acbManager = acbManager;
-        this.certificationBodyDao = certificationBodyDao;
         this.certifiedProductDao = certifiedProductDAO;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.activityManager = activityManager;
@@ -108,6 +109,7 @@ public class DeveloperManager extends SecuredManager {
         this.developerValidationFactory = developerValidationFactory;
         this.validationUtils = validationUtils;
         this.schedulerManager = schedulerManager;
+        this.attestationDAO = attestationDAO;
     }
 
     @Transactional(readOnly = true)
@@ -256,12 +258,12 @@ public class DeveloperManager extends SecuredManager {
 
         for (DeveloperStatusEventPair toUpdate : statusEventsToUpdate) {
             boolean hasChanged = false;
-            if (!ObjectUtils.equals(toUpdate.getOrig().getStatusDate(), toUpdate.getUpdated().getStatusDate())
-                    || !ObjectUtils.equals(toUpdate.getOrig().getStatus().getId(),
+            if (!Objects.equals(toUpdate.getOrig().getStatusDate(), toUpdate.getUpdated().getStatusDate())
+                    || !Objects.equals(toUpdate.getOrig().getStatus().getId(),
                             toUpdate.getUpdated().getStatus().getId())
-                    || !ObjectUtils.equals(toUpdate.getOrig().getStatus().getStatusName(),
+                    || !Objects.equals(toUpdate.getOrig().getStatus().getStatusName(),
                             toUpdate.getUpdated().getStatus().getStatusName())
-                    || !ObjectUtils.equals(toUpdate.getOrig().getReason(), toUpdate.getUpdated().getReason())) {
+                    || !Objects.equals(toUpdate.getOrig().getReason(), toUpdate.getUpdated().getReason())) {
                 hasChanged = true;
             }
 
@@ -567,6 +569,17 @@ public class DeveloperManager extends SecuredManager {
             }
         }
         return errorMessages;
+    }
+
+    @Transactional
+    public List<PublicAttestation> getDeveloperPublicAttestations(Long developerId) {
+        return attestationDAO.getDeveloperAttestationSubmissionsByDeveloper(developerId).stream()
+                .map(att -> PublicAttestation.builder()
+                        .id(att.getId())
+                        .attestationPeriod(att.getPeriod())
+                        .status(PublicAttestationStatus.ATTESTATIONS_SUBMITTED)
+                        .build())
+                .collect(Collectors.toList());
     }
 
     public static String getNewDeveloperCode() {
