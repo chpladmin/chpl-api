@@ -15,6 +15,6 @@ public class PostgresListingUploadStatus extends PostgresEnumType {
         if (rs.wasNull()) {
             return null;
         }
-        return ListingUploadStatus.getValue(name);
+        return ListingUploadStatus.valueOf(name);
     }
 }

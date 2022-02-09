@@ -36,24 +36,26 @@ public class ListingMeasureDAO extends BaseDAOImpl {
             + "JOIN FETCH allowedCC.certificationEdition "
             + "WHERE listingMeasureMap.deleted = false ";
 
-    public void createCertifiedProductMeasureMapping(Long listingId, ListingMeasure mm)
-            throws EntityCreationException {
+    public void createCertifiedProductMeasureMapping(Long listingId, ListingMeasure mm) throws EntityCreationException {
+        try {
+            ListingMeasureEntity mmEntity = new ListingMeasureEntity();
+            mmEntity.setDeleted(false);
+            mmEntity.setLastModifiedUser(AuthUtil.getAuditId());
+            mmEntity.setListingId(listingId);
+            mmEntity.setMeasureId(mm.getMeasure().getId());
+            mmEntity.setTypeId(mm.getMeasureType().getId());
+            create(mmEntity);
 
-        ListingMeasureEntity mmEntity = new ListingMeasureEntity();
-        mmEntity.setDeleted(false);
-        mmEntity.setLastModifiedUser(AuthUtil.getAuditId());
-        mmEntity.setListingId(listingId);
-        mmEntity.setMeasureId(mm.getMeasure().getId());
-        mmEntity.setTypeId(mm.getMeasureType().getId());
-        create(mmEntity);
-
-        for (CertificationCriterion associatedCriterion : mm.getAssociatedCriteria()) {
-            ListingMeasureCriterionMapEntity mmCriterionEntity = new ListingMeasureCriterionMapEntity();
-            mmCriterionEntity.setCertificationCriterionId(associatedCriterion.getId());
-            mmCriterionEntity.setListingMeasureMapId(mmEntity.getId());
-            mmCriterionEntity.setDeleted(false);
-            mmCriterionEntity.setLastModifiedUser(AuthUtil.getAuditId());
-            create(mmCriterionEntity);
+            for (CertificationCriterion associatedCriterion : mm.getAssociatedCriteria()) {
+                ListingMeasureCriterionMapEntity mmCriterionEntity = new ListingMeasureCriterionMapEntity();
+                mmCriterionEntity.setCertificationCriterionId(associatedCriterion.getId());
+                mmCriterionEntity.setListingMeasureMapId(mmEntity.getId());
+                mmCriterionEntity.setDeleted(false);
+                mmCriterionEntity.setLastModifiedUser(AuthUtil.getAuditId());
+                create(mmCriterionEntity);
+            }
+        } catch(Exception ex) {
+            throw new EntityCreationException(ex);
         }
     }
 

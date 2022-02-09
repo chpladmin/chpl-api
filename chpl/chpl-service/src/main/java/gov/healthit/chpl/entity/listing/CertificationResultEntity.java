@@ -15,7 +15,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import lombok.Getter;
@@ -104,31 +103,17 @@ public class CertificationResultEntity implements Serializable {
     @JoinColumn(name = "certification_criterion_id", nullable = false, insertable = false, updatable = false)
     private CertificationCriterionEntity certificationCriterion;
 
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false, updatable = false, insertable = false)
-    protected Date creationDate;
-
     //marked as updatable false to avoid running the soft delete triggers in the db
     //adding and removing certification results is done through the success flag
-    @Basic(optional = false)
-    @Column(nullable = false, updatable = false, insertable = false)
-    protected Boolean deleted;
+    @Column(name = "deleted", insertable = false, updatable = false)
+    private Boolean deleted;
 
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false, updatable = false, insertable = false)
-    protected Date lastModifiedDate;
+    @Column(name = "last_modified_user")
+    private Long lastModifiedUser;
 
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    protected Long lastModifiedUser;
+    @Column(name = "creation_date", insertable = false, updatable = false)
+    private Date creationDate;
 
-
-    public CertificationResultEntity(Long id) {
-        this.id = id;
-    }
-
-    @Transient
-    public Class<?> getClassType() {
-        return CertificationResultEntity.class;
-    }
+    @Column(name = "last_modified_date", insertable = false, updatable = false)
+    private Date lastModifiedDate;
 }

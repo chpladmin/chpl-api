@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.domain.contact.PointOfContact;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -51,19 +52,26 @@ public class ContactEntity implements Serializable {
     @Column(length = TITLE_LENGTH)
     private String title;
 
-    @Basic(optional = false)
-    @Column(nullable = false)
+    @Column(name = "deleted", insertable = false)
     private Boolean deleted;
 
     @Basic(optional = false)
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
-    @Basic(optional = false)
     @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
     private Date creationDate;
 
-    @Basic(optional = false)
     @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
     private Date lastModifiedDate;
+
+    public PointOfContact toDomain() {
+        return PointOfContact.builder()
+                .contactId(this.getId())
+                .email(this.getEmail())
+                .fullName(this.getFullName())
+                .phoneNumber(this.getPhoneNumber())
+                .title(this.getTitle())
+        .build();
+    }
 }

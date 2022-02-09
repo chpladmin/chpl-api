@@ -18,6 +18,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.input.BOMInputStream;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
@@ -36,6 +37,7 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.ConfirmListingRequest;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.auth.User;
@@ -45,6 +47,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -73,6 +76,7 @@ public class ListingUploadManager {
     private ListingUploadValidator listingUploadValidator;
     private CertificationBodyDAO acbDao;
     private UserDAO userDao;
+    private ListingConfirmationManager listingConfirmationManager;
     private SchedulerManager schedulerManager;
     private ActivityManager activityManager;
     private ErrorMessageUtil msgUtil;
@@ -85,7 +89,9 @@ public class ListingUploadManager {
             ListingUploadValidator listingUploadValidator,
             ListingUploadHandlerUtil uploadUtil, ChplProductNumberUtil chplProductNumberUtil,
             ListingUploadDao listingUploadDao, CertificationBodyDAO acbDao, UserDAO userDao,
-            SchedulerManager schedulerManager, ActivityManager activityManager, ErrorMessageUtil msgUtil) {
+            ListingConfirmationManager listingConfirmationManager,
+            SchedulerManager schedulerManager,
+            ActivityManager activityManager, ErrorMessageUtil msgUtil) {
         this.listingDetailsHandler = listingDetailsHandler;
         this.certDateHandler = certDateHandler;
         this.listingNormalizer = listingNormalizer;
@@ -95,6 +101,7 @@ public class ListingUploadManager {
         this.listingUploadDao = listingUploadDao;
         this.acbDao = acbDao;
         this.userDao = userDao;
+        this.listingConfirmationManager= listingConfirmationManager;
         this.schedulerManager = schedulerManager;
         this.activityManager = activityManager;
         this.msgUtil = msgUtil;
@@ -155,8 +162,8 @@ public class ListingUploadManager {
             + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).GET_ALL)")
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
             + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).GET_ALL, filterObject)")
-    public List<ListingUpload> getAll() {
-        return listingUploadDao.getAll();
+    public List<ListingUpload> getAllProcessingAndAvailable() {
+        return listingUploadDao.getAllProcessingAndAvailable();
     }
 
     @Transactional
@@ -220,40 +227,87 @@ public class ListingUploadManager {
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
+            + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).CONFIRM, #id)")
+    public CertifiedProductSearchDetails confirm(Long id, ConfirmListingRequest confirmListingRequest)
+        throws InvalidArgumentsException, JsonProcessingException, EntityRetrievalException, EntityCreationException,
+        ValidationException {
+        //Is listing already processing?
+        if (!listingUploadDao.isAvailableForProcessing(id)) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("pendingListing.alreadyProcessing"));
+        } else {
+            CertifiedProductSearchDetails confirmedListing = null;
+            listingUploadDao.updateStatus(id, ListingUploadStatus.CONFIRMATION_PROCESSING);
+            try {
+                CertifiedProductSearchDetails listing = confirmListingRequest.getListing();
+                checkForErrorsOrUnacknowledgedWarnings(listing, confirmListingRequest.isAcknowledgeWarnings());
+                confirmedListing = listingConfirmationManager.create(listing);
+            } catch (ValidationException ex) {
+                listingUploadDao.updateStatus(id, ListingUploadStatus.UPLOAD_SUCCESS);
+                LOGGER.error("Could not confirm pending listing " + id + " due to validation error.");
+                throw ex;
+            } catch (Exception ex) {
+                listingUploadDao.updateStatus(id, ListingUploadStatus.UPLOAD_SUCCESS);
+                LOGGER.error("Could not confirm pending listing " + id, ex);
+                throw ex;
+            }
+            listingUploadDao.updateStatus(id, ListingUploadStatus.CONFIRMED);
+            listingUploadDao.updateConfirmedListingId(id, confirmedListing.getId());
+            return confirmedListing;
+        }
+    }
+
+    private void checkForErrorsOrUnacknowledgedWarnings(CertifiedProductSearchDetails listing,
+            boolean acknowledgeWarnings) throws ValidationException {
+        listingNormalizer.normalize(listing);
+        LOGGER.debug("Normalized listing for confirmation: " + listing.getChplProductNumber());
+        listingUploadValidator.review(listing);
+        LOGGER.debug("Validated listing for confirmation: " + listing.getChplProductNumber());
+
+        if (listing.getErrorMessages() != null && listing.getErrorMessages().size() > 0
+                || (listing.getWarningMessages() != null && listing.getWarningMessages().size() > 0
+                        && !acknowledgeWarnings)) {
+            throw new ValidationException(listing.getErrorMessages(), listing.getWarningMessages());
+        }
+    }
+
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
             + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).DELETE, #id)")
-    public void delete(Long id)
+    public void reject(Long id)
             throws EntityRetrievalException, EntityNotFoundException, EntityCreationException, AccessDeniedException,
             JsonProcessingException, ObjectMissingValidationException {
-        if (isListingUploadAvailableForDelete(id)) {
+        if (isListingUploadAvailableForRejection(id)) {
             ListingUpload listingUploadBeforeDelete = listingUploadDao.getById(id);
-            listingUploadDao.delete(id);
+            listingUploadDao.updateStatus(id, ListingUploadStatus.REJECTED);
             String activityMsg = "Listing upload " + listingUploadBeforeDelete.getChplProductNumber() + " has been rejected.";
             activityManager.addActivity(ActivityConcept.LISTING_UPLOAD, listingUploadBeforeDelete.getId(),
                     activityMsg, listingUploadBeforeDelete, null);
         }
     }
 
-    private boolean isListingUploadAvailableForDelete(Long id)
+    private boolean isListingUploadAvailableForRejection(Long id)
             throws EntityRetrievalException, ObjectMissingValidationException {
 
         ListingUploadEntity entity = listingUploadDao.getEntityByIdIncludingDeleted(id);
-        if (entity.getDeleted()) {
-            ObjectMissingValidationException alreadyDeletedEx = new ObjectMissingValidationException();
-            alreadyDeletedEx.getErrorMessages()
+        if (entity.getStatus().equals(ListingUploadStatus.CONFIRMED)
+                || entity.getStatus().equals(ListingUploadStatus.REJECTED)
+                || BooleanUtils.isTrue(entity.getDeleted())) {
+            ObjectMissingValidationException alreadyHandledEx = new ObjectMissingValidationException();
+            alreadyHandledEx.getErrorMessages()
                     .add("This pending certified product has already been confirmed or rejected by another user.");
-            alreadyDeletedEx.setObjectId(entity.getChplProductNumber());
+            alreadyHandledEx.setObjectId(entity.getChplProductNumber());
             try {
                 UserDTO lastModifiedUserDto = userDao.getById(entity.getLastModifiedUser());
                 if (lastModifiedUserDto != null) {
                     User lastModifiedUser = new User(lastModifiedUserDto);
-                    alreadyDeletedEx.setUser(lastModifiedUser);
+                    alreadyHandledEx.setUser(lastModifiedUser);
                 } else {
-                    alreadyDeletedEx.setUser(null);
+                    alreadyHandledEx.setUser(null);
                 }
-            } catch (final UserRetrievalException ex) {
-                alreadyDeletedEx.setUser(null);
+            } catch (UserRetrievalException ex) {
+                alreadyHandledEx.setUser(null);
             }
-            throw alreadyDeletedEx;
+            throw alreadyHandledEx;
         } else {
             return true;
         }

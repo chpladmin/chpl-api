@@ -10,22 +10,22 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.CertifiedProductUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class ChplProductNumberUniqueReviewerTest {
     private static final String CHPL_NUMBER_NOT_UNIQUE = "The expected CHPL Product Number %s must be unique among all other certified products but one already exists with this value.";
 
-    private ChplProductNumberUtil chplProductNumberUtil;
+    private CertifiedProductUtil certifiedProductUtil;
     private ErrorMessageUtil errorMessageUtil;
     private ChplNumberUniqueReviewer reviewer;
 
     @Before
     public void setup() {
-        chplProductNumberUtil =  Mockito.mock(ChplProductNumberUtil.class);
+        certifiedProductUtil =  Mockito.mock(CertifiedProductUtil.class);
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
 
-        reviewer = new ChplNumberUniqueReviewer(chplProductNumberUtil, errorMessageUtil);
+        reviewer = new ChplNumberUniqueReviewer(certifiedProductUtil, errorMessageUtil);
     }
 
     @Test
@@ -53,7 +53,7 @@ public class ChplProductNumberUniqueReviewerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.chplProductNumber.notUnique"), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(CHPL_NUMBER_NOT_UNIQUE, i.getArgument(1), ""));
 
-        Mockito.when(chplProductNumberUtil.getListing(ArgumentMatchers.eq("bad.format")))
+        Mockito.when(certifiedProductUtil.getListing(ArgumentMatchers.eq("bad.format")))
             .thenReturn(null);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -71,7 +71,7 @@ public class ChplProductNumberUniqueReviewerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.chplProductNumber.notUnique"), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(CHPL_NUMBER_NOT_UNIQUE, i.getArgument(1), ""));
 
-        Mockito.when(chplProductNumberUtil.getListing(ArgumentMatchers.eq(badChplProductNumber)))
+        Mockito.when(certifiedProductUtil.getListing(ArgumentMatchers.eq(badChplProductNumber)))
         .thenReturn(CertifiedProduct.builder()
                 .id(1L)
                 .chplProductNumber(badChplProductNumber)
@@ -94,7 +94,7 @@ public class ChplProductNumberUniqueReviewerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.chplProductNumber.notUnique"), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(CHPL_NUMBER_NOT_UNIQUE, i.getArgument(1), ""));
 
-        Mockito.when(chplProductNumberUtil.getListing(ArgumentMatchers.eq(badChplProductNumber)))
+        Mockito.when(certifiedProductUtil.getListing(ArgumentMatchers.eq(badChplProductNumber)))
         .thenReturn(null);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -113,7 +113,7 @@ public class ChplProductNumberUniqueReviewerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.chplProductNumber.notUnique"), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(CHPL_NUMBER_NOT_UNIQUE, i.getArgument(1), ""));
 
-        Mockito.when(chplProductNumberUtil.getListing(ArgumentMatchers.eq(badChplProductNumber)))
+        Mockito.when(certifiedProductUtil.getListing(ArgumentMatchers.eq(badChplProductNumber)))
         .thenReturn(CertifiedProduct.builder()
                 .id(1L)
                 .chplProductNumber(badChplProductNumber)

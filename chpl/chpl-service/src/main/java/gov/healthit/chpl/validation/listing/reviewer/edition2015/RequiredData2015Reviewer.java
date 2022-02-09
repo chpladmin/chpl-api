@@ -302,10 +302,10 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                         if (crTestData.getTestData() == null
                                 || (crTestData.getTestData() != null && crTestData.getTestData().getId() == null
                                         && StringUtils.isEmpty(crTestData.getTestData().getName()))) {
-                            listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.missingTestDataName",
-                                    Util.formatCriteriaNumber(cert.getCriterion()), TestDataDTO.DEFALUT_TEST_DATA));
+                            listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.missingTestDataNameReplaced",
+                                    Util.formatCriteriaNumber(cert.getCriterion()), TestDataDTO.DEFAULT_TEST_DATA));
                             TestDataDTO foundTestData = testDataDao.getByCriterionAndValue(cert.getCriterion().getId(),
-                                    TestDataDTO.DEFALUT_TEST_DATA);
+                                    TestDataDTO.DEFAULT_TEST_DATA);
                             TestData foundTestDataDomain = new TestData(foundTestData.getId(), foundTestData.getName());
                             crTestData.setTestData(foundTestDataDomain);
                         } else if (crTestData.getTestData() != null && crTestData.getTestData().getId() == null
@@ -316,9 +316,9 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                 listing.getWarningMessages()
                                 .add(msgUtil.getMessage("listing.criteria.badTestDataName",
                                         crTestData.getTestData().getName(),  Util.formatCriteriaNumber(cert.getCriterion()),
-                                        TestDataDTO.DEFALUT_TEST_DATA));
+                                        TestDataDTO.DEFAULT_TEST_DATA));
                                 foundTestData = testDataDao.getByCriterionAndValue(cert.getCriterion().getId(),
-                                        TestDataDTO.DEFALUT_TEST_DATA);
+                                        TestDataDTO.DEFAULT_TEST_DATA);
                                 crTestData.getTestData().setId(foundTestData.getId());
                             } else {
                                 crTestData.getTestData().setId(foundTestData.getId());

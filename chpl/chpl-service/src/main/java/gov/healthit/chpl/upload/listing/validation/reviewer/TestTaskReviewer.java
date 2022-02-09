@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -174,7 +175,7 @@ public class TestTaskReviewer {
 
     private void reviewTaskCriteria(CertifiedProductSearchDetails listing, TestTask testTask) {
         if (CollectionUtils.isEmpty(testTask.getCriteria())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingTestTaskCriteria", formatTaskRef(testTask)));
+            listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.missingTestTaskCriteria", formatTaskRef(testTask)));
         }
     }
 

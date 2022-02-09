@@ -68,7 +68,6 @@ public class TestDataUploadHandlerTest {
         CertificationResultTestData td = parsedTestDatas.get(0);
         assertNotNull(td.getTestData());
         assertEquals("ONC Test Data", td.getTestData().getName());
-        assertEquals("ONC Test Data", td.getUserEnteredName());
         assertNull(td.getTestData().getId());
         assertEquals("1.0", td.getVersion());
         assertNull(td.getAlteration());
@@ -88,7 +87,6 @@ public class TestDataUploadHandlerTest {
         CertificationResultTestData td = parsedTestDatas.get(0);
         assertNotNull(td.getTestData());
         assertEquals("ONC Test Data", td.getTestData().getName());
-        assertEquals("ONC Test Data", td.getUserEnteredName());
         assertNull(td.getTestData().getId());
         assertEquals("1.0", td.getVersion());
         assertEquals("An alteration", td.getAlteration());
@@ -122,11 +120,9 @@ public class TestDataUploadHandlerTest {
             assertNull(td.getId());
             assertNotNull(td.getTestData());
             if (td.getTestData().getName().equals("TD 1")) {
-                assertEquals("TD 1", td.getUserEnteredName());
                 assertEquals("1.0", td.getVersion());
                 assertEquals("Alteration", td.getAlteration());
             } else if (td.getTestData().getName().equals("TD 2")) {
-                assertEquals("TD 2", td.getUserEnteredName());
                 assertEquals("4", td.getVersion());
                 assertEquals("Alteration 2", td.getAlteration());
             } else {
@@ -149,7 +145,6 @@ public class TestDataUploadHandlerTest {
         CertificationResultTestData td = parsedTestDatas.get(0);
         assertNotNull(td.getTestData());
         assertEquals("ONC Test Data", td.getTestData().getName());
-        assertEquals("ONC Test Data", td.getUserEnteredName());
         assertNull(td.getTestData().getId());
         assertEquals("5", td.getVersion());
         assertEquals("An alteration", td.getAlteration());

@@ -45,6 +45,8 @@ public class TestToolReviewer {
         listing.getCertificationResults().stream()
             .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
             .forEach(certResult -> review(listing, certResult));
+        listing.getCertificationResults().stream()
+            .forEach(certResult -> removeTestToolsIfNotApplicable(certResult));
     }
 
     private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
@@ -63,6 +65,12 @@ public class TestToolReviewer {
                 listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.testToolsNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
+            certResult.setTestToolsUsed(null);
+        }
+    }
+
+    private void removeTestToolsIfNotApplicable(CertificationResult certResult) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_TOOLS_USED)) {
             certResult.setTestToolsUsed(null);
         }
     }

@@ -46,7 +46,7 @@ public class CertificationResultConformanceMethodEntity {
     @Column(name = "creation_date", nullable = false, updatable = false, insertable = false)
     private Date creationDate;
 
-    @Column(nullable = false)
+    @Column(nullable = false, insertable = false)
     private Boolean deleted;
 
     @Column(name = "last_modified_date", nullable = false, updatable = false, insertable = false)

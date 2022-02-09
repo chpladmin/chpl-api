@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -355,7 +356,7 @@ public class TestTaskReviewerTest {
     }
 
     @Test
-    public void review_CriteriaNull_hasError() {
+    public void review_CriteriaNull_hasWarning() {
         String errMsg = "A test task with uniqueId %s is missing associated criteria.";
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.missingTestTaskCriteria"),
                 ArgumentMatchers.anyString()))
@@ -369,13 +370,13 @@ public class TestTaskReviewerTest {
         listing.getSed().getTestTasks().get(0).setCriteria(null);
         reviewer.review(listing);
 
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(errMsg, "tt1")));
+        assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(errMsg, "tt1")));
     }
 
     @Test
-    public void review_CriteriaEmpty_hasError() {
+    public void review_CriteriaEmpty_hasWarning() {
         String errMsg = "A test task with uniqueId %s is missing associated criteria.";
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.missingTestTaskCriteria"),
                 ArgumentMatchers.anyString()))
@@ -388,9 +389,9 @@ public class TestTaskReviewerTest {
                 buildValidTestTask("tt1", new ArrayList<CertificationCriterion>()));
         reviewer.review(listing);
 
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(errMsg, "tt1")));
+        assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(errMsg, "tt1")));
     }
 
     @Test

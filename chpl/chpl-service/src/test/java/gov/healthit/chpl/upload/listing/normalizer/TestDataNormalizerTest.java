@@ -29,10 +29,10 @@ public class TestDataNormalizerTest {
     @SuppressWarnings("checkstyle:magicnumber")
     public void setup() {
         testDataDao = Mockito.mock(TestDataDAO.class);
-        Mockito.when(testDataDao.getByCriterionAndValue(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(TestDataDTO.DEFALUT_TEST_DATA)))
+        Mockito.when(testDataDao.getByCriterionAndValue(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(TestDataDTO.DEFAULT_TEST_DATA)))
             .thenReturn(TestDataDTO.builder()
                     .id(5L)
-                    .name(TestDataDTO.DEFALUT_TEST_DATA)
+                    .name(TestDataDTO.DEFAULT_TEST_DATA)
                     .build());
         normalizer = new TestDataNormalizer(testDataDao);
     }
@@ -68,7 +68,6 @@ public class TestDataNormalizerTest {
                         .name("a name")
                         .build())
                 .version("1.1")
-                .userEnteredName("a name")
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -97,14 +96,13 @@ public class TestDataNormalizerTest {
 
     @Test
     @SuppressWarnings("checkstyle:magicnumber")
-    public void normalize_testDataNameNotFound_fillsInDefaultTestDataNameAndId() {
+    public void normalize_testDataNameNotFound_doesNotFillInData() {
         List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
         testData.add(CertificationResultTestData.builder()
                 .testData(TestData.builder()
                         .name("c name")
                         .build())
                 .version("1.1")
-                .userEnteredName("c name")
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -129,21 +127,19 @@ public class TestDataNormalizerTest {
         normalizer.normalize(listing);
         assertEquals(1, listing.getCertificationResults().get(0).getTestDataUsed().size());
         CertificationResultTestData normalizedTestData = listing.getCertificationResults().get(0).getTestDataUsed().get(0);
-        assertEquals("c name", normalizedTestData.getUserEnteredName());
-        assertEquals(5, normalizedTestData.getTestData().getId());
-        assertEquals(TestDataDTO.DEFALUT_TEST_DATA, normalizedTestData.getTestData().getName());
+        assertNull(normalizedTestData.getTestData().getId());
+        assertEquals("c name", normalizedTestData.getTestData().getName());
     }
 
     @Test
     @SuppressWarnings("checkstyle:magicnumber")
-    public void normalize_testDataNameEmpty_fillsInDefaultTestDataNameAndId() {
+    public void normalize_testDataNameEmpty_doesNotFillInData() {
         List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
         testData.add(CertificationResultTestData.builder()
                 .testData(TestData.builder()
                         .name("")
                         .build())
                 .version("1.1")
-                .userEnteredName("")
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -157,15 +153,14 @@ public class TestDataNormalizerTest {
         List<TestDataDTO> foundTestData = new ArrayList<TestDataDTO>();
         foundTestData.add(TestDataDTO.builder()
                 .id(5L)
-                .name(TestDataDTO.DEFALUT_TEST_DATA)
+                .name(TestDataDTO.DEFAULT_TEST_DATA)
                 .build());
         Mockito.when(testDataDao.getByCriterionId(ArgumentMatchers.eq(1L))).thenReturn(foundTestData);
 
         normalizer.normalize(listing);
         assertEquals(1, listing.getCertificationResults().get(0).getTestDataUsed().size());
         CertificationResultTestData normalizedTestData = listing.getCertificationResults().get(0).getTestDataUsed().get(0);
-        assertEquals("", normalizedTestData.getUserEnteredName());
-        assertEquals(5, normalizedTestData.getTestData().getId());
-        assertEquals(TestDataDTO.DEFALUT_TEST_DATA, normalizedTestData.getTestData().getName());
+        assertNull(normalizedTestData.getTestData().getId());
+        assertEquals("1.1", normalizedTestData.getVersion());
     }
 }
