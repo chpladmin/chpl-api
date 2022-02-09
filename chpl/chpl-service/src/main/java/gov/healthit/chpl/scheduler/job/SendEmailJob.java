@@ -50,6 +50,7 @@ public class SendEmailJob implements Job {
     public static final String JOB_NAME = "sendEmailJob";
     public static final String MESSAGE_KEY = "messageKey";
     private static final Integer UNLIMITED_RETRY_ATTEMPTS = -1;
+    private static final String EMAIL_FILES_DIRECTORY = "emailFiles";
 
     @Autowired
     private Environment env;
@@ -201,7 +202,7 @@ public class SendEmailJob implements Job {
     }
 
     private File copyTempFileToPermanentLocation(File originalFile) {
-        Path newPath = Paths.get(env.getProperty("downloadFolderPath") + File.separator + "emailFiles" + File.separator + originalFile.getName());
+        Path newPath = Paths.get(env.getProperty("downloadFolderPath") + File.separator + EMAIL_FILES_DIRECTORY + File.separator + originalFile.getName());
         Path origPath = originalFile.toPath();
         try {
             Files.createDirectories(newPath.getParent());
