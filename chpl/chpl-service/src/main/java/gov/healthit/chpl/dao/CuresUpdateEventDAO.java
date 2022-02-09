@@ -17,28 +17,18 @@ import gov.healthit.chpl.util.AuthUtil;
 @Repository("curesUpdateEventDAO")
 public class CuresUpdateEventDAO  extends BaseDAOImpl {
 
-    public CuresUpdateEventDTO create(CuresUpdateEventDTO dto)
-            throws EntityCreationException, EntityRetrievalException {
-        CuresUpdateEventEntity entity = null;
+    public Long create(CuresUpdateEventDTO curesUpdateEvent) throws EntityCreationException {
         try {
-            if (dto.getId() != null) {
-                entity = this.getEntityById(dto.getId());
-            }
-        } catch (final EntityRetrievalException e) {
-            throw new EntityCreationException(e);
-        }
-
-        if (entity != null) {
-            throw new EntityCreationException("An entity with this ID already exists.");
-        } else {
-            entity = new CuresUpdateEventEntity();
-            entity.setCertifiedProductId(dto.getCertifiedProductId());
-            entity.setCuresUpdate(dto.getCuresUpdate());
-            entity.setEventDate(dto.getEventDate());
+            CuresUpdateEventEntity entity = new CuresUpdateEventEntity();
+            entity.setCertifiedProductId(curesUpdateEvent.getCertifiedProductId());
+            entity.setCuresUpdate(curesUpdateEvent.getCuresUpdate());
+            entity.setEventDate(curesUpdateEvent.getEventDate());
             entity.setLastModifiedUser(AuthUtil.getAuditId());
             entity.setDeleted(false);
             create(entity);
-            return new CuresUpdateEventDTO(entity);
+            return entity.getId();
+        } catch (Exception ex) {
+            throw new EntityCreationException(ex);
         }
     }
 

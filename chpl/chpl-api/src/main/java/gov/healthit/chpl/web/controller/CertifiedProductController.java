@@ -809,10 +809,10 @@ public class CertifiedProductController {
             description = "Pending listings are created via CSV file upload and are left in the 'pending' state "
                     + " until validated and confirmed.  Security Restrictions: ROLE_ADMIN, ROLE_ACB and have "
                     + "administrative authority on the ACB that uploaded the product.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @Deprecated
     @RequestMapping(value = "/pending/metadata", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @DeprecatedResponseFields(responseClass = PendingCertifiedProductMetadata.class)
     public @ResponseBody List<PendingCertifiedProductMetadata> getPendingCertifiedProductMetadata()
@@ -869,11 +869,10 @@ public class CertifiedProductController {
     @Operation(summary = "List a specific pending certified product.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ACB and administrative authority "
                     + "on the ACB for each pending certified product is required.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @DeprecatedResponseFields(responseClass = PendingCertifiedProductDetails.class)
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @Deprecated
     @RequestMapping(value = "/pending/{pcpId:^-?\\d+$}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody PendingCertifiedProductDetails getPendingCertifiedProductById(
@@ -894,10 +893,10 @@ public class CertifiedProductController {
     @Operation(summary = "Reject a pending certified product.",
             description = "Essentially deletes a pending certified product. Security Restrictions: ROLE_ADMIN or have ROLE_ACB "
                     + "and administrative authority on the ACB for each pending certified product is required.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @Deprecated
     @RequestMapping(value = "/pending/{pcpId:^-?\\d+$}", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingCertifiedProduct(@PathVariable("pcpId") Long pcpId)
@@ -910,10 +909,10 @@ public class CertifiedProductController {
     @Operation(summary = "Reject several pending certified products.",
             description = "Marks a list of pending certified products as deleted. ROLE_ADMIN or ROLE_ACB "
                     + " and administrative authority on the ACB for each pending certified product is required.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @Deprecated
     @RequestMapping(value = "/pending", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingCertifiedProducts(@RequestBody IdListContainer idList)
@@ -976,13 +975,12 @@ public class CertifiedProductController {
                     + "to check for errors, then a new certified product is created, and the old pending certified"
                     + "product will be removed. Security Restrictions:  ROLE_ADMIN or have ROLE_ACB and "
                     + "administrative authority on the ACB for each pending certified product is required.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/pending/{pcpId:^-?\\d+$}/beta/confirm", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = CertifiedProductSearchDetails.class)
+    @Deprecated
     public ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProductRequest(
             @RequestBody(required = true) ConfirmCertifiedProductRequest request)
             throws InvalidArgumentsException, ValidationException,
@@ -1056,11 +1054,10 @@ public class CertifiedProductController {
             description = "Accepts a CSV file with very specific fields to create pending certified products. "
                     + "Security Restrictions: ROLE_ADMIN or user uploading the file must have ROLE_ACB "
                     + "and administrative authority on the ACB(s) specified in the file.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @DeprecatedResponseFields(responseClass = PendingCertifiedProductResults.class)
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @Deprecated
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<PendingCertifiedProductResults> upload(@RequestParam("file") MultipartFile file)
             throws ValidationException, JsonProcessingException, InvalidArgumentsException, MaxUploadSizeExceededException {

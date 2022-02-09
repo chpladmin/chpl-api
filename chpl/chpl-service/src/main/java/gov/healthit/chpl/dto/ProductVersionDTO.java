@@ -33,7 +33,7 @@ public class ProductVersionDTO implements Serializable {
         if (entity != null) {
             this.id = entity.getId();
             this.creationDate = entity.getCreationDate();
-            this.deleted = entity.isDeleted();
+            this.deleted = entity.getDeleted();
             this.lastModifiedDate = entity.getLastModifiedDate();
             this.lastModifiedUser = entity.getLastModifiedUser();
             this.version = entity.getVersion();

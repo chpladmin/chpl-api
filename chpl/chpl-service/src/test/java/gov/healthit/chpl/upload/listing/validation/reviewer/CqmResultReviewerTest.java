@@ -96,7 +96,7 @@ public class CqmResultReviewerTest {
     }
 
     @Test
-    public void review_NullCmsIdWithCriterion_hasError() {
+    public void review_NullCmsIdWithCriterion_hasWarningAndRemovesCqm() {
         CQMResultDetails cqmResult = CQMResultDetails.builder()
                 .success(true)
                 .cmsId(null)
@@ -111,13 +111,14 @@ public class CqmResultReviewerTest {
                 .build();
 
         reviewer.review(listing);
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(MISSING_CMS_ID));
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(MISSING_CMS_ID));
+        assertEquals(0, listing.getCqmResults().size());
     }
 
     @Test
-    public void review_EmptyCmsIdWithCriterion_hasError() {
+    public void review_EmptyCmsIdWithCriterion_hasWarningAndRemovesCqm() {
         CQMResultDetails cqmResult = CQMResultDetails.builder()
                 .success(true)
                 .cmsId("")
@@ -132,13 +133,14 @@ public class CqmResultReviewerTest {
                 .build();
 
         reviewer.review(listing);
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(MISSING_CMS_ID));
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(MISSING_CMS_ID));
+        assertEquals(0, listing.getCqmResults().size());
     }
 
     @Test
-    public void review_NullCmsIdWithSuccessVersion_hasError() {
+    public void review_NullCmsIdWithSuccessVersion_hasWarningAndRemovesCqm() {
         CQMResultDetails cqmResult = CQMResultDetails.builder()
                 .success(true)
                 .cmsId(null)
@@ -150,13 +152,14 @@ public class CqmResultReviewerTest {
                 .build();
 
         reviewer.review(listing);
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(MISSING_CMS_ID));
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(MISSING_CMS_ID));
+        assertEquals(0, listing.getCqmResults().size());
     }
 
     @Test
-    public void review_EmptyCmsIdWithSuccessVersion_hasError() {
+    public void review_EmptyCmsIdWithSuccessVersion_hasWarningAndRemovesCqm() {
         CQMResultDetails cqmResult = CQMResultDetails.builder()
                 .success(true)
                 .cmsId("")
@@ -168,13 +171,14 @@ public class CqmResultReviewerTest {
                 .build();
 
         reviewer.review(listing);
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(MISSING_CMS_ID));
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(MISSING_CMS_ID));
+        assertEquals(0, listing.getCqmResults().size());
     }
 
     @Test
-    public void review_UnattestedCqmInvalidCmsIdWithSuccessVersion_hasError() {
+    public void review_UnattestedCqmInvalidCmsIdWithSuccessVersion_hasWarningAndRemovesCQM() {
         CQMResultDetails cqmResult = CQMResultDetails.builder()
                 .success(false)
                 .cmsId("CMS1")
@@ -187,13 +191,14 @@ public class CqmResultReviewerTest {
                 .build();
 
         reviewer.review(listing);
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_CMS_ID, "CMS1")));
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(INVALID_CMS_ID, "CMS1")));
+        assertEquals(0, listing.getCqmResults().size());
     }
 
     @Test
-    public void review_InvalidCmsIdWithSuccessVersion_hasError() {
+    public void review_InvalidCmsIdWithSuccessVersion_hasWarningAndRemovesCQM() {
         CQMResultDetails cqmResult = CQMResultDetails.builder()
                 .success(true)
                 .cmsId("CMS1")
@@ -206,9 +211,10 @@ public class CqmResultReviewerTest {
                 .build();
 
         reviewer.review(listing);
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_CMS_ID, "CMS1")));
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(INVALID_CMS_ID, "CMS1")));
+        assertEquals(0, listing.getCqmResults().size());
     }
 
     @Test

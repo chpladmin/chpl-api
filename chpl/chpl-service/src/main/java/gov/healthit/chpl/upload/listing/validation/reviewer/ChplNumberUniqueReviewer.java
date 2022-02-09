@@ -6,19 +6,19 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.CertifiedProductUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
 @Component("chplNumberUniqueReviewer")
 public class ChplNumberUniqueReviewer implements Reviewer {
-    private ChplProductNumberUtil chplProductNumberUtil;
+    private CertifiedProductUtil certifiedProductUtil;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public ChplNumberUniqueReviewer(ChplProductNumberUtil chplProductNumberUtil,
+    public ChplNumberUniqueReviewer(CertifiedProductUtil certifiedProductUtil,
             ErrorMessageUtil msgUtil) {
-        this.chplProductNumberUtil = chplProductNumberUtil;
+        this.certifiedProductUtil = certifiedProductUtil;
         this.msgUtil = msgUtil;
     }
 
@@ -28,7 +28,7 @@ public class ChplNumberUniqueReviewer implements Reviewer {
             return;
         }
 
-        CertifiedProduct listingWithThisChplProductNumber = chplProductNumberUtil.getListing(chplProductNumber);
+        CertifiedProduct listingWithThisChplProductNumber = certifiedProductUtil.getListing(chplProductNumber);
         if (listingWithThisChplProductNumber != null && listingWithThisChplProductNumber.getId() != listing.getId()) {
             listing.getErrorMessages().add(msgUtil.getMessage(
                     "listing.chplProductNumber.notUnique", chplProductNumber));

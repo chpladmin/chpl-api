@@ -26,9 +26,9 @@ import gov.healthit.chpl.util.ValidationUtils;
 
 public class TestDataReviewerTest {
     private static final String TEST_DATA_NOT_APPLICABLE = "Test data is not applicable for the criterion %s. It has been removed.";
-    private static final String TEST_DATA_NAME_INVALID = "Test data '%s' is invalid for certification %s. %s will be used instead.";
+    private static final String TEST_DATA_NAME_INVALID = "Test data '%s' is invalid for the criterion %s and has been removed from the listing.";
     private static final String TEST_DATA_REQUIRED = "Test data is required for certification %s.";
-    private static final String MISSING_TEST_DATA_NAME = "Test data was not provided for certification %s. %s will be used.";
+    private static final String MISSING_TEST_DATA_NAME = "Test data name was not provided for certification %s.";
     private static final String MISSING_TEST_DATA_VERSION = "Test data version is required for certification %s.";
 
     private CertificationResultRules certResultRules;
@@ -56,15 +56,15 @@ public class TestDataReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testDataNotApplicable"),
                 ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(TEST_DATA_NOT_APPLICABLE, i.getArgument(1), ""));
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.badTestDataName"),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-            .thenAnswer(i -> String.format(TEST_DATA_NAME_INVALID, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.invalidTestDataRemoved"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(TEST_DATA_NAME_INVALID, i.getArgument(1), i.getArgument(2)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testDataRequired"),
                 ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(TEST_DATA_REQUIRED, i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.missingTestDataName"),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-            .thenAnswer(i -> String.format(MISSING_TEST_DATA_NAME, i.getArgument(1), i.getArgument(2)));
+                ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(MISSING_TEST_DATA_NAME, i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.missingTestDataVersion"),
                 ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(MISSING_TEST_DATA_VERSION, i.getArgument(1), ""));
@@ -179,10 +179,9 @@ public class TestDataReviewerTest {
             .thenReturn(false);
         List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
         testData.add(CertificationResultTestData.builder()
-                .userEnteredName(TestDataDTO.DEFALUT_TEST_DATA)
                 .testData(TestData.builder()
                         .id(1L)
-                        .name(TestDataDTO.DEFALUT_TEST_DATA)
+                        .name(TestDataDTO.DEFAULT_TEST_DATA)
                         .build())
                 .version("1")
                 .build());
@@ -216,10 +215,9 @@ public class TestDataReviewerTest {
             .thenReturn(false);
         List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
         testData.add(CertificationResultTestData.builder()
-                .userEnteredName(TestDataDTO.DEFALUT_TEST_DATA)
                 .testData(TestData.builder()
                         .id(1L)
-                        .name(TestDataDTO.DEFALUT_TEST_DATA)
+                        .name(TestDataDTO.DEFAULT_TEST_DATA)
                         .build())
                 .version("1")
                 .build());
@@ -242,22 +240,20 @@ public class TestDataReviewerTest {
     }
 
     @Test
-    public void review_testDataNameReplaced_hasWarning() {
+    public void review_testDataNameInvalid_hasWarning() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(true);
         List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
         testData.add(CertificationResultTestData.builder()
-                .userEnteredName("bad name")
                 .testData(TestData.builder()
-                        .id(1L)
-                        .name(TestDataDTO.DEFALUT_TEST_DATA)
+                        .id(null)
+                        .name("bad test data")
                         .build())
                 .version("1")
                 .build());
         testData.add(CertificationResultTestData.builder()
-                .userEnteredName("Valid Test Data")
                 .testData(TestData.builder()
                         .id(2L)
                         .name("Valid Test Data")
@@ -276,32 +272,31 @@ public class TestDataReviewerTest {
                         .testDataUsed(testData)
                         .build())
                 .build();
+        assertEquals(2, listing.getCertificationResults().get(0).getTestDataUsed().size());
         reviewer.review(listing);
 
-        assertEquals(2, listing.getCertificationResults().get(0).getTestDataUsed().size());
-        assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(1, listing.getCertificationResults().get(0).getTestDataUsed().size());
         assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
         assertTrue(listing.getWarningMessages().contains(
-                String.format(TEST_DATA_NAME_INVALID, "bad name", "170.315 (a)(1)", TestDataDTO.DEFALUT_TEST_DATA)));
+                String.format(TEST_DATA_NAME_INVALID, "bad test data", "170.315 (a)(1)")));
     }
 
     @Test
-    public void review_testDataNameInvalidForRemovedCriteria_noWarning() {
+    public void review_testDataNameInvalidForRemovedCriteria_noError() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(true);
         List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
         testData.add(CertificationResultTestData.builder()
-                .userEnteredName("bad name")
                 .testData(TestData.builder()
-                        .id(1L)
-                        .name(TestDataDTO.DEFALUT_TEST_DATA)
+                        .id(null)
+                        .name("bad name")
                         .build())
                 .version("1")
                 .build());
         testData.add(CertificationResultTestData.builder()
-                .userEnteredName("Valid Test Data")
                 .testData(TestData.builder()
                         .id(2L)
                         .name("Valid Test Data")
@@ -327,22 +322,20 @@ public class TestDataReviewerTest {
     }
 
     @Test
-    public void review_testDataEmptyNameReplaced_hasWarning() {
+    public void review_testDataEmptyName_hasError() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(true);
         List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
         testData.add(CertificationResultTestData.builder()
-                .userEnteredName("")
                 .testData(TestData.builder()
-                        .id(1L)
-                        .name(TestDataDTO.DEFALUT_TEST_DATA)
+                        .id(null)
+                        .name("")
                         .build())
                 .version("1")
                 .build());
         testData.add(CertificationResultTestData.builder()
-                .userEnteredName("Valid Test Data")
                 .testData(TestData.builder()
                         .id(2L)
                         .name("Valid Test Data")
@@ -364,29 +357,27 @@ public class TestDataReviewerTest {
         reviewer.review(listing);
 
         assertEquals(2, listing.getCertificationResults().get(0).getTestDataUsed().size());
-        assertEquals(1, listing.getWarningMessages().size());
-        assertEquals(0, listing.getErrorMessages().size());
-        assertTrue(listing.getWarningMessages().contains(
-                String.format(MISSING_TEST_DATA_NAME, "170.315 (a)(1)", TestDataDTO.DEFALUT_TEST_DATA)));
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(
+                String.format(MISSING_TEST_DATA_NAME, "170.315 (a)(1)")));
     }
 
     @Test
-    public void review_testDataEmptyNameRemovedCriteria_noWarning() {
+    public void review_testDataEmptyNameRemovedCriteria_noError() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(true);
         List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
         testData.add(CertificationResultTestData.builder()
-                .userEnteredName("")
                 .testData(TestData.builder()
-                        .id(1L)
-                        .name(TestDataDTO.DEFALUT_TEST_DATA)
+                        .id(null)
+                        .name("")
                         .build())
                 .version("1")
                 .build());
         testData.add(CertificationResultTestData.builder()
-                .userEnteredName("Valid Test Data")
                 .testData(TestData.builder()
                         .id(2L)
                         .name("Valid Test Data")
@@ -419,7 +410,6 @@ public class TestDataReviewerTest {
             .thenReturn(true);
         List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
         testData.add(CertificationResultTestData.builder()
-                .userEnteredName("Valid Test Data")
                 .testData(TestData.builder()
                         .id(2L)
                         .name("Valid Test Data")
@@ -455,7 +445,6 @@ public class TestDataReviewerTest {
             .thenReturn(true);
         List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
         testData.add(CertificationResultTestData.builder()
-                .userEnteredName("Valid Test Data")
                 .testData(TestData.builder()
                         .id(2L)
                         .name("Valid Test Data")
@@ -488,7 +477,6 @@ public class TestDataReviewerTest {
             .thenReturn(true);
         List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
         testData.add(CertificationResultTestData.builder()
-                .userEnteredName("Valid Test Data")
                 .testData(TestData.builder()
                         .id(2L)
                         .name("Valid Test Data")
@@ -524,7 +512,6 @@ public class TestDataReviewerTest {
             .thenReturn(true);
         List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
         testData.add(CertificationResultTestData.builder()
-                .userEnteredName("Valid Test Data")
                 .testData(TestData.builder()
                         .id(2L)
                         .name("Valid Test Data")
@@ -699,10 +686,9 @@ public class TestDataReviewerTest {
             .thenReturn(true);
         List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
         testData.add(CertificationResultTestData.builder()
-                .userEnteredName(TestDataDTO.DEFALUT_TEST_DATA)
                 .testData(TestData.builder()
                         .id(1L)
-                        .name(TestDataDTO.DEFALUT_TEST_DATA)
+                        .name(TestDataDTO.DEFAULT_TEST_DATA)
                         .build())
                 .version("1")
                 .build());

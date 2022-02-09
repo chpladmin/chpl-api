@@ -27,7 +27,7 @@ import gov.healthit.chpl.util.ValidationUtils;
 
 public class TestProcedureReviewerTest {
     private static final String TEST_PROCEDURE_NOT_APPLICABLE = "Test procedures are not applicable for the criterion %s. They have been removed.";
-    private static final String TEST_PROCEDURE_NAME_INVALID = "Certification %s contains an invalid test procedure name: '%s'.";
+    private static final String TEST_PROCEDURE_NAME_INVALID = "Certification %s contains an invalid test procedure name: '%s' and it has been removed from the listing.";
     private static final String TEST_PROCEDURE_REQUIRED = "Test procedures are required for certification criteria %s.";
     private static final String MISSING_TEST_PROCEDURE_NAME = "Test procedure name is missing for certification %s.";
     private static final String MISSING_TEST_PROCEDURE_VERSION = "Test procedure version is required for certification %s.";
@@ -49,7 +49,7 @@ public class TestProcedureReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.missingTestProcedure"),
                 ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(TEST_PROCEDURE_REQUIRED, i.getArgument(1), ""));
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.badTestProcedureName"),
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.badTestProcedureNameRemoved"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(TEST_PROCEDURE_NAME_INVALID, i.getArgument(1), i.getArgument(2)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.missingTestProcedureName"),
@@ -287,7 +287,7 @@ public class TestProcedureReviewerTest {
     }
 
     @Test
-    public void review_testProcedureNullId_hasError() {
+    public void review_testProcedureNullId_hasWarning() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(true);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_PROCEDURE)))
@@ -312,12 +312,13 @@ public class TestProcedureReviewerTest {
                         .testProcedures(testProcedures)
                         .build())
                 .build();
+        assertEquals(1, listing.getCertificationResults().get(0).getTestProcedures().size());
         reviewer.review(listing);
 
-        assertEquals(1, listing.getCertificationResults().get(0).getTestProcedures().size());
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(
+        assertEquals(0, listing.getCertificationResults().get(0).getTestProcedures().size());
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(
                 String.format(TEST_PROCEDURE_NAME_INVALID, "170.315 (a)(1)", "bad name")));
     }
 
