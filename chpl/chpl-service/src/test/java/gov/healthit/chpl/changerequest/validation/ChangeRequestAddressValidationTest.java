@@ -13,8 +13,6 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
-import gov.healthit.chpl.changerequest.validation.AddressValidation;
-import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationContext;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
@@ -28,9 +26,8 @@ public class ChangeRequestAddressValidationTest {
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, "Street", "Suite 6", "City", "MD", "11111", "USA");
 
-        AddressValidation crAddrValidator = new AddressValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
+        ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
+        AddressValidation crAddrValidator = new AddressValidation();
 
         boolean result = crAddrValidator.isValid(context);
         assertTrue(result);
@@ -43,9 +40,8 @@ public class ChangeRequestAddressValidationTest {
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, "Street", null, "City", "MD", "11111", "USA");
 
-        AddressValidation crAddrValidator = new AddressValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
+        ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
+        AddressValidation crAddrValidator = new AddressValidation();
 
         boolean result = crAddrValidator.isValid(context);
         assertTrue(result);
@@ -58,9 +54,8 @@ public class ChangeRequestAddressValidationTest {
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, "Street", "Suite 6", "City", "MD", "11111", null);
 
-        AddressValidation crAddrValidator = new AddressValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
+        ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
+        AddressValidation crAddrValidator = new AddressValidation();
 
         boolean result = crAddrValidator.isValid(context);
         assertTrue(result);
@@ -73,9 +68,8 @@ public class ChangeRequestAddressValidationTest {
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, null, null, "City", "MD", "11111", "USA");
 
-        AddressValidation crAddrValidator = new AddressValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
+        ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
+        AddressValidation crAddrValidator = new AddressValidation();
 
         boolean result = crAddrValidator.isValid(context);
         assertFalse(result);
@@ -87,9 +81,8 @@ public class ChangeRequestAddressValidationTest {
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, "", null, "City", "MD", "11111", "USA");
 
-        AddressValidation crAddrValidator = new AddressValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
+        ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
+        AddressValidation crAddrValidator = new AddressValidation();
 
         boolean result = crAddrValidator.isValid(context);
         assertFalse(result);
@@ -101,9 +94,8 @@ public class ChangeRequestAddressValidationTest {
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, null, null, "City", "MD", "11111", "USA");
 
-        AddressValidation crAddrValidator = new AddressValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
+        ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
+        AddressValidation crAddrValidator = new AddressValidation();
 
         crAddrValidator.isValid(context);
 
@@ -117,9 +109,8 @@ public class ChangeRequestAddressValidationTest {
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, "Line 1", null, null, "MD", "11111", "USA");
 
-        AddressValidation crAddrValidator = new AddressValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
+        ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
+        AddressValidation crAddrValidator = new AddressValidation();
 
         boolean result = crAddrValidator.isValid(context);
         assertFalse(result);
@@ -131,9 +122,8 @@ public class ChangeRequestAddressValidationTest {
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, "Line 1", null, "", "MD", "11111", "USA");
 
-        AddressValidation crAddrValidator = new AddressValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
+        ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
+        AddressValidation crAddrValidator = new AddressValidation();
 
         boolean result = crAddrValidator.isValid(context);
         assertFalse(result);
@@ -145,9 +135,8 @@ public class ChangeRequestAddressValidationTest {
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, "Street", null, null, "MD", "11111", "USA");
 
-        AddressValidation crAddrValidator = new AddressValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
+        ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
+        AddressValidation crAddrValidator = new AddressValidation();
 
         crAddrValidator.isValid(context);
 
@@ -161,9 +150,8 @@ public class ChangeRequestAddressValidationTest {
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, "Line 1", null, "City", null, "11111", "USA");
 
-        AddressValidation crAddrValidator = new AddressValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
+        ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
+        AddressValidation crAddrValidator = new AddressValidation();
 
         boolean result = crAddrValidator.isValid(context);
         assertFalse(result);
@@ -175,9 +163,8 @@ public class ChangeRequestAddressValidationTest {
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, "Line 1", null, "City", "", "11111", "USA");
 
-        AddressValidation crAddrValidator = new AddressValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
+        ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
+        AddressValidation crAddrValidator = new AddressValidation();
 
         boolean result = crAddrValidator.isValid(context);
         assertFalse(result);
@@ -189,9 +176,8 @@ public class ChangeRequestAddressValidationTest {
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, "Street", null, "City", null, "11111", "USA");
 
-        AddressValidation crAddrValidator = new AddressValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
+        ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
+        AddressValidation crAddrValidator = new AddressValidation();
 
         crAddrValidator.isValid(context);
 
@@ -205,9 +191,8 @@ public class ChangeRequestAddressValidationTest {
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, "Line 1", null, "City", "MD", null, "USA");
 
-        AddressValidation crAddrValidator = new AddressValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
+        ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
+        AddressValidation crAddrValidator = new AddressValidation();
 
         boolean result = crAddrValidator.isValid(context);
         assertFalse(result);
@@ -219,9 +204,8 @@ public class ChangeRequestAddressValidationTest {
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, "Line 1", null, "City", "MD", "", "USA");
 
-        AddressValidation crAddrValidator = new AddressValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
+        ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
+        AddressValidation crAddrValidator = new AddressValidation();
 
         boolean result = crAddrValidator.isValid(context);
         assertFalse(result);
@@ -233,9 +217,8 @@ public class ChangeRequestAddressValidationTest {
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, "Street", null, "City", "MD", null, "USA");
 
-        AddressValidation crAddrValidator = new AddressValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestAddress(address), null);
+        ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
+        AddressValidation crAddrValidator = new AddressValidation();
 
         crAddrValidator.isValid(context);
 
@@ -296,5 +279,24 @@ public class ChangeRequestAddressValidationTest {
         address.setZipcode(zipcode);
         address.setCountry(country);
         return address;
+    }
+
+    private ChangeRequestValidationContext getValidationContext(Address address, ResourcePermissions resourcePermissions) {
+        return new ChangeRequestValidationContext(null, getChangeRequestAddress(address),
+                        null,
+                        resourcePermissions,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null);
     }
 }
