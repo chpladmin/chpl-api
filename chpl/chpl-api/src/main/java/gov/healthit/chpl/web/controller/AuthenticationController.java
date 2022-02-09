@@ -3,8 +3,6 @@ package gov.healthit.chpl.web.controller;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
@@ -47,31 +45,30 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.log4j.Log4j2;
 
 @Tag(name = "auth", description = "User authentication operations including login.")
 @RestController
 @RequestMapping("/auth")
+@Log4j2
 public class AuthenticationController {
-    private static final Logger LOGGER = LogManager.getLogger(AuthenticationController.class);
-
-    @Autowired
     private AuthenticationManager authenticationManager;
-
-    @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    @Autowired
     private UserManager userManager;
-
-    @Autowired
     private JWTUserConverter userConverter;
-
-    @Autowired
     private Environment env;
-
-    @Autowired
     private ChplEmailFactory chplEmailFactory;
 
+    @Autowired
+    public AuthenticationController(AuthenticationManager authenticationManager, BCryptPasswordEncoder bCryptPasswordEncoder,
+            UserManager userManager, JWTUserConverter userConverter, Environment env, ChplEmailFactory chplEmailFactory) {
+        this.authenticationManager = authenticationManager;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.userManager = userManager;
+        this.userConverter = userConverter;
+        this.env = env;
+        this.chplEmailFactory = chplEmailFactory;
+    }
 
     @Operation(summary = "Log in.",
             description = "Call this method to authenticate a user. The value returned is that user's "
