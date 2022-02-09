@@ -6,9 +6,9 @@ The CHPL api
 
 ## Install required software
 
-* Java 1.8.0
+* Java 17
 * Postgres 10.15
-* mvn 3.3.3
+* mvn 3.6.3 or higher
 * Tomcat 8.5.x -- latest version
 * Eclipse (latest)
 

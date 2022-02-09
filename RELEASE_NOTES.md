@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 33.1.0
+_7 February 2022_
+
+### Features
+* Upgrade to Java 17; upgrade as many compiled plugins as possible; upgrade/declare all maven plugins
+
+---
+
 ## Version 33.0.0
 _24 January 2022_
 

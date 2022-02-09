@@ -2,29 +2,16 @@ package gov.healthit.chpl.changerequest.validation;
 
 import java.util.HashMap;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.manager.rules.ValidationRule;
-import gov.healthit.chpl.permissions.ResourcePermissions;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
-@Component
 public class ContactValidation extends ValidationRule<ChangeRequestValidationContext> {
-
-    private ResourcePermissions resourcePermissions;
-
-    @Autowired
-    public ContactValidation(final ResourcePermissions resourcePermissions) {
-        this.resourcePermissions = resourcePermissions;
-    }
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
-        if (resourcePermissions.isUserRoleDeveloperAdmin()) {
+        if (context.getResourcePermissions().isUserRoleDeveloperAdmin()) {
             HashMap<String, Object> details = (HashMap) context.getNewChangeRequest().getDetails();
             if (details.containsKey("contact")) {
                 PointOfContact crContact = new PointOfContact((HashMap<String, Object>) details.get("contact"));

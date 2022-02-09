@@ -21,15 +21,10 @@ import gov.healthit.chpl.entity.ActivityEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.UserMapper;
+import lombok.extern.log4j.Log4j2;
 
-/**
- * Data access for Activity. Generally activity should only be created and
- * retrieved and not changed in any way once inserted.
- *
- * @author kekey
- *
- */
 @Repository("activityDAO")
+@Log4j2
 public class ActivityDAO extends BaseDAOImpl {
 
     private UserMapper userMapper;
@@ -90,16 +85,17 @@ public class ActivityDAO extends BaseDAOImpl {
     }
 
 
-    public List<ActivityDTO> findByObjectId(final Long objectId, final ActivityConcept concept,
-            final Date startDate, final Date endDate) {
-
+    public List<ActivityDTO> findByObjectId(Long objectId, ActivityConcept concept, Date startDate, Date endDate) {
         List<ActivityEntity> entities = this.getEntitiesByObjectId(objectId, concept, startDate, endDate);
-        List<ActivityDTO> activities = new ArrayList<>();
-
+        List<ActivityDTO> activities = new ArrayList<ActivityDTO>();
         for (ActivityEntity entity : entities) {
             ActivityDTO result = mapEntityToDto(entity);
             activities.add(result);
         }
+
+        //Added during OCD-3759 so that curesStatisticsCreator does not run out of memory.
+        //Related to the Java 17 upgrade, the ActivityEntity objects fill up available memory.
+        entityManager.clear();
         return activities;
     }
 

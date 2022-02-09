@@ -26,9 +26,8 @@ public class ChangeRequestContactValidationTest {
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         PointOfContact contact = buildContact(1L, "First M. Last", "Mr.", "444-444-4444", "first@gmail.com");
 
-        ContactValidation crContactValidator = new ContactValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestContact(contact), null);
+        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissions);
+        ContactValidation crContactValidator = new ContactValidation();
 
         boolean result = crContactValidator.isValid(context);
         assertTrue(result);
@@ -41,9 +40,8 @@ public class ChangeRequestContactValidationTest {
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         PointOfContact contact = buildContact(1L, "First M. Last", null, "444-444-4444", "first@gmail.com");
 
-        ContactValidation crContactValidator = new ContactValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestContact(contact), null);
+        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissions);
+        ContactValidation crContactValidator = new ContactValidation();
 
         boolean result = crContactValidator.isValid(context);
         assertTrue(result);
@@ -56,9 +54,8 @@ public class ChangeRequestContactValidationTest {
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         PointOfContact contact = buildContact(1L, null, null, "444-444-4444", "first@gmail.com");
 
-        ContactValidation crContactValidator = new ContactValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestContact(contact), null);
+        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissions);
+        ContactValidation crContactValidator = new ContactValidation();
 
         boolean result = crContactValidator.isValid(context);
         assertFalse(result);
@@ -70,9 +67,8 @@ public class ChangeRequestContactValidationTest {
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         PointOfContact contact = buildContact(1L, "", null, "444-444-4444", "first@gmail.com");
 
-        ContactValidation crContactValidator = new ContactValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestContact(contact), null);
+        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissions);
+        ContactValidation crContactValidator = new ContactValidation();
 
         boolean result = crContactValidator.isValid(context);
         assertFalse(result);
@@ -84,9 +80,8 @@ public class ChangeRequestContactValidationTest {
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         PointOfContact contact = buildContact(1L, null, null, "444-444-4444", "first@gmail.com");
 
-        ContactValidation crContactValidator = new ContactValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestContact(contact), null);
+        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissions);
+        ContactValidation crContactValidator = new ContactValidation();
 
         crContactValidator.isValid(context);
         assertEquals(1, crContactValidator.getMessages().size());
@@ -99,9 +94,8 @@ public class ChangeRequestContactValidationTest {
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         PointOfContact contact = buildContact(1L, "First M. Last", null, null, "test@gmail.com");
 
-        ContactValidation crContactValidator = new ContactValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestContact(contact), null);
+        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissions);
+        ContactValidation crContactValidator = new ContactValidation();
 
         boolean result = crContactValidator.isValid(context);
         assertFalse(result);
@@ -113,9 +107,8 @@ public class ChangeRequestContactValidationTest {
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         PointOfContact contact = buildContact(1L, "First M. Last", null, "", "test@gmail.com");
 
-        ContactValidation crContactValidator = new ContactValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestContact(contact), null);
+        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissions);
+        ContactValidation crContactValidator = new ContactValidation();
 
         boolean result = crContactValidator.isValid(context);
         assertFalse(result);
@@ -127,9 +120,8 @@ public class ChangeRequestContactValidationTest {
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         PointOfContact contact = buildContact(1L, "First M. Last", null, null, "test@gmail.com");
 
-        ContactValidation crContactValidator = new ContactValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestContact(contact), null);
+        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissions);
+        ContactValidation crContactValidator = new ContactValidation();
 
         crContactValidator.isValid(context);
         assertEquals(1, crContactValidator.getMessages().size());
@@ -142,9 +134,8 @@ public class ChangeRequestContactValidationTest {
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         PointOfContact contact = buildContact(1L, "First M. Last", null, "444-444-4444", null);
 
-        ContactValidation crContactValidator = new ContactValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestContact(contact), null);
+        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissions);
+        ContactValidation crContactValidator = new ContactValidation();
 
         boolean result = crContactValidator.isValid(context);
         assertFalse(result);
@@ -156,9 +147,8 @@ public class ChangeRequestContactValidationTest {
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         PointOfContact contact = buildContact(1L, "First M. Last", null, "444-444-4444", "");
 
-        ContactValidation crContactValidator = new ContactValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestContact(contact), null);
+        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissions);
+        ContactValidation crContactValidator = new ContactValidation();
 
         boolean result = crContactValidator.isValid(context);
         assertFalse(result);
@@ -170,9 +160,9 @@ public class ChangeRequestContactValidationTest {
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         PointOfContact contact = buildContact(1L, "First M. Last", null, "444-444-4444", null);
 
-        ContactValidation crContactValidator = new ContactValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestContact(contact), null);
+
+        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissions);
+        ContactValidation crContactValidator = new ContactValidation();
 
         crContactValidator.isValid(context);
         assertEquals(1, crContactValidator.getMessages().size());
@@ -228,5 +218,25 @@ public class ChangeRequestContactValidationTest {
         contact.setPhoneNumber(phoneNumber);
         contact.setEmail(email);
         return contact;
+    }
+
+    private ChangeRequestValidationContext getValidationContext(PointOfContact contact, ResourcePermissions resourcePermissions) {
+        return new ChangeRequestValidationContext(null,
+                        getChangeRequestContact(contact),
+                        null,
+                        resourcePermissions,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null);
     }
 }
