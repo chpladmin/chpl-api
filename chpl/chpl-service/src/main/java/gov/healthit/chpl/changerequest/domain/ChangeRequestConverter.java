@@ -1,6 +1,14 @@
 package gov.healthit.chpl.changerequest.domain;
 
-import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationEntity;
+import java.util.stream.Collectors;
+
+import gov.healthit.chpl.attestation.domain.Attestation;
+import gov.healthit.chpl.attestation.domain.AttestationPeriod;
+import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
+import gov.healthit.chpl.attestation.domain.AttestationValidResponse;
+import gov.healthit.chpl.attestation.domain.Condition;
+import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationResponseEntity;
+import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationSubmissionEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestDeveloperDetailsEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusEntity;
@@ -93,11 +101,45 @@ public final class ChangeRequestConverter {
         return crDev;
     }
 
-    public static ChangeRequestAttestation convert(ChangeRequestAttestationEntity entity) {
-        ChangeRequestAttestation crAttestation = new ChangeRequestAttestation();
-        crAttestation.setId(entity.getId());
-        crAttestation.setAttestation(entity.getAttestation());
-        return crAttestation;
+    public static ChangeRequestAttestationSubmission convert(ChangeRequestAttestationSubmissionEntity entity) {
+        return ChangeRequestAttestationSubmission.builder()
+                .id(entity.getId())
+                .attestationPeriod(AttestationPeriod.builder()
+                        .id(entity.getPeriod().getId())
+                        .periodStart(entity.getPeriod().getPeriodStart())
+                        .periodEnd(entity.getPeriod().getPeriodEnd())
+                        .submissionEnd(entity.getPeriod().getSubmissionEnd())
+                        .submissionStart(entity.getPeriod().getSubmissionStart())
+                        .description(entity.getPeriod().getDescription())
+                        .build())
+                .attestationResponses(entity.getResponses().stream()
+                        .map(resp -> convert(resp))
+                        .collect(Collectors.toList()))
+                .signature(entity.getSignature())
+                .signatureEmail(entity.getSignatureEmail())
+                .build();
     }
 
+    private static AttestationSubmittedResponse convert(ChangeRequestAttestationResponseEntity entity) {
+
+        return AttestationSubmittedResponse.builder()
+                .id(entity.getId())
+                .attestation(Attestation.builder()
+                        .id(entity.getAttestation().getId())
+                        .description(entity.getAttestation().getDescription())
+                        .condition(Condition.builder()
+                                .id(entity.getAttestation().getCondition().getId())
+                                .name(entity.getAttestation().getCondition().getName())
+                                .sortOrder(entity.getAttestation().getCondition().getSortOrder())
+                                .build())
+                        .sortOrder(entity.getAttestation().getSortOrder())
+                        .build())
+                .response(AttestationValidResponse.builder()
+                        .id(entity.getValidResponse().getId())
+                        .response(entity.getValidResponse().getResponse())
+                        .meaning(entity.getValidResponse().getMeaning())
+                        .sortOrder(entity.getValidResponse().getSortOrder())
+                        .build())
+                .build();
+    }
 }

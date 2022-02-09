@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
@@ -32,6 +33,7 @@ import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationContext
 import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationService;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.KeyValueModel;
@@ -46,7 +48,9 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ValidationUtils;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -56,8 +60,17 @@ public class ChangeRequestManager extends SecurityManager {
     @Value("${changerequest.status.pendingacbaction}")
     private Long pendingAcbActionStatus;
 
+    @Value("${changerequest.status.pendingdeveloperaction}")
+    private Long pendingDeveloperActionStatus;
+
     @Value("${changerequest.status.accepted}")
     private Long acceptedStatus;
+
+    @Value("${changerequest.status.cancelledbyrequester}")
+    private Long cancelledStatus;
+
+    @Value("${changerequest.status.rejected}")
+    private Long rejectedStatus;
 
     @Value("${changerequest.website}")
     private Long websiteChangeRequestTypeId;
@@ -71,40 +84,56 @@ public class ChangeRequestManager extends SecurityManager {
     private ChangeRequestDAO changeRequestDAO;
     private ChangeRequestTypeDAO changeRequestTypeDAO;
     private ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO;
+    private DeveloperDAO developerDAO;
     private ChangeRequestStatusService crStatusService;
     private ChangeRequestValidationService crValidationService;
     private ChangeRequestDetailsFactory crDetailsFactory;
     private DeveloperManager devManager;
     private ActivityManager activityManager;
+    private AttestationManager attestationManager;
     private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil msgUtil;
+    private ValidationUtils validationUtils;
     private FF4j ff4j;
 
     @Autowired
     public ChangeRequestManager(ChangeRequestDAO changeRequestDAO,
             ChangeRequestTypeDAO changeRequestTypeDAO,
             ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO,
-            CertifiedProductDAO certifiedProductDAO, CertificationBodyDAO certificationBodyDAO,
+            CertifiedProductDAO certifiedProductDAO,
+            CertificationBodyDAO certificationBodyDAO,
+            DeveloperDAO developerDAO,
             ChangeRequestStatusService crStatusHelper,
             ChangeRequestValidationService crValidationService,
             ChangeRequestDetailsFactory crDetailsFactory, DeveloperManager devManager,
-            ActivityManager activityManager, ResourcePermissions resourcePermissions, ErrorMessageUtil msgUtil, FF4j ff4j) {
+            ActivityManager activityManager,
+            AttestationManager attestationManager,
+            ResourcePermissions resourcePermissions,
+            ErrorMessageUtil msgUtil,
+            ValidationUtils validationUtils,
+            FF4j ff4j) {
         this.changeRequestDAO = changeRequestDAO;
         this.changeRequestTypeDAO = changeRequestTypeDAO;
         this.changeRequestStatusTypeDAO = changeRequestStatusTypeDAO;
+        this.developerDAO = developerDAO;
         this.crStatusService = crStatusHelper;
         this.crValidationService = crValidationService;
         this.crDetailsFactory = crDetailsFactory;
         this.devManager = devManager;
         this.activityManager = activityManager;
+        this.attestationManager = attestationManager;
         this.resourcePermissions = resourcePermissions;
         this.msgUtil = msgUtil;
+        this.validationUtils = validationUtils;
         this.ff4j = ff4j;
     }
 
     @Transactional(readOnly = true)
     public Set<KeyValueModel> getChangeRequestTypes() {
         return changeRequestTypeDAO.getChangeRequestTypes().stream()
+                .filter(entity -> (entity.getName().equals("Developer Attestation Change Request") && ff4j.check(FeatureList.ATTESTATIONS))
+                        || (entity.getName().equals("Developer Details Change Request") && ff4j.check(FeatureList.DEMOGRAPHIC_CHANGE_REQUEST))
+                        || (entity.getName().equals("Website Change Request") && ff4j.check(FeatureList.DEMOGRAPHIC_CHANGE_REQUEST)))
                 .map(crType -> new KeyValueModel(crType.getId(), crType.getName()))
                 .collect(Collectors.<KeyValueModel>toSet());
     }
@@ -113,7 +142,7 @@ public class ChangeRequestManager extends SecurityManager {
     public Set<KeyValueModel> getChangeRequestStatusTypes() {
         return changeRequestStatusTypeDAO.getChangeRequestStatusTypes().stream()
                 .map(crStatusType -> new KeyValueModel(crStatusType.getId(), crStatusType.getName()))
-                .collect(Collectors.<KeyValueModel>toSet());
+                .collect(Collectors.toSet());
     }
 
     @Transactional
@@ -168,7 +197,7 @@ public class ChangeRequestManager extends SecurityManager {
 
         ChangeRequest crFromDb = getChangeRequest(cr.getId());
 
-        ChangeRequestValidationContext crValidationContext = new ChangeRequestValidationContext(cr, crFromDb);
+        ChangeRequestValidationContext crValidationContext = getNewValidationContext(cr, crFromDb);
         ValidationException validationException = new ValidationException();
         validationException.getErrorMessages().addAll(crValidationService.validate(crValidationContext));
         if (validationException.getErrorMessages().size() > 0) {
@@ -229,7 +258,7 @@ public class ChangeRequestManager extends SecurityManager {
             attestationChangeRequest.setChangeRequestType(attestationChangeRequestType);
             attestationChangeRequest.setDeveloper(parentChangeRequest.getDeveloper());
             attestationChangeRequest.setSubmittedDate(parentChangeRequest.getSubmittedDate());
-            attestationChangeRequest.setDetails(extractAttestationsFromDetails(parentChangeRequest));
+            attestationChangeRequest.setDetails(parentChangeRequest.getDetails());
             changeRequests.add(attestationChangeRequest);
         }
         return changeRequests;
@@ -244,10 +273,8 @@ public class ChangeRequestManager extends SecurityManager {
     }
 
     private boolean isDeveloperAttestationChangeRequest(ChangeRequest cr) {
-        // This needs to be able to identify an attestation "details" object.
-        // This will probably need to be changed when the attestation object is defined
         HashMap<String, Object> crMap = (HashMap) cr.getDetails();
-        return crMap.containsKey("attestation");
+        return crMap.containsKey("attestationResponses");
     }
 
     private boolean isWebsiteChanged(ChangeRequest cr) {
@@ -330,20 +357,10 @@ public class ChangeRequestManager extends SecurityManager {
         return devDetails;
     }
 
-    private Object extractAttestationsFromDetails(ChangeRequest cr) {
-        // This method will probably need to be changed when the attestation object is defined
-        HashMap<String, Object> devDetails = new HashMap<String, Object>();
-        HashMap<String, Object> crDetails = (HashMap) cr.getDetails();
-        if (crDetails.containsKey("attestation")) {
-            devDetails.put("attestation", crDetails.get("attestation"));
-        }
-        return devDetails;
-    }
-
     private ChangeRequest createChangeRequest(ChangeRequest cr)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
 
-        ChangeRequestValidationContext crValidationContext = new ChangeRequestValidationContext(cr, null);
+        ChangeRequestValidationContext crValidationContext = getNewValidationContext(cr, null);
         ValidationException validationException = new ValidationException();
         validationException.getErrorMessages().addAll(crValidationService.validate(crValidationContext));
         if (validationException.getErrorMessages().size() > 0) {
@@ -368,5 +385,26 @@ public class ChangeRequestManager extends SecurityManager {
         ChangeRequest newCr = changeRequestDAO.create(cr);
         newCr.getStatuses().add(crStatusService.saveInitialStatus(newCr));
         return newCr;
+    }
+
+    private ChangeRequestValidationContext getNewValidationContext(ChangeRequest newChangeRequest, ChangeRequest originalChangeRequest) {
+        return new ChangeRequestValidationContext(
+                AuthUtil.getCurrentUser(),
+                newChangeRequest,
+                originalChangeRequest,
+                resourcePermissions,
+                validationUtils,
+                developerDAO,
+                changeRequestDAO,
+                changeRequestStatusTypeDAO,
+                changeRequestTypeDAO,
+                attestationManager,
+                websiteChangeRequestTypeId,
+                developerDetailsChangeRequestTypeId,
+                cancelledStatus,
+                acceptedStatus,
+                rejectedStatus,
+                pendingAcbActionStatus,
+                pendingDeveloperActionStatus);
     }
 }

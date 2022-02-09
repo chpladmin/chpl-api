@@ -24,9 +24,8 @@ public class ChangeRequestSelfDeveloperValidationTest {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
 
-        SelfDeveloperValidation crSelfDevValidator = new SelfDeveloperValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestSelfDeveloper(true), null);
+        ChangeRequestValidationContext context = getValidationContext(true, resourcePermissions);
+        SelfDeveloperValidation crSelfDevValidator = new SelfDeveloperValidation();
 
         boolean result = crSelfDevValidator.isValid(context);
         assertTrue(result);
@@ -38,9 +37,8 @@ public class ChangeRequestSelfDeveloperValidationTest {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
 
-        SelfDeveloperValidation crSelfDevValidator = new SelfDeveloperValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestSelfDeveloper(false), null);
+        ChangeRequestValidationContext context = getValidationContext(false, resourcePermissions);
+        SelfDeveloperValidation crSelfDevValidator = new SelfDeveloperValidation();
 
         boolean result = crSelfDevValidator.isValid(context);
         assertTrue(result);
@@ -52,9 +50,8 @@ public class ChangeRequestSelfDeveloperValidationTest {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
 
-        SelfDeveloperValidation crSelfDevValidator = new SelfDeveloperValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestSelfDeveloper("JUNK"), null);
+        ChangeRequestValidationContext context = getValidationContext("JUNK", resourcePermissions);
+        SelfDeveloperValidation crSelfDevValidator = new SelfDeveloperValidation();
 
         boolean result = crSelfDevValidator.isValid(context);
         assertFalse(result);
@@ -66,9 +63,8 @@ public class ChangeRequestSelfDeveloperValidationTest {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
 
-        SelfDeveloperValidation crSelfDevValidator = new SelfDeveloperValidation(resourcePermissions);
-        ChangeRequestValidationContext context =
-                new ChangeRequestValidationContext(getChangeRequestSelfDeveloper(null), null);
+        ChangeRequestValidationContext context = getValidationContext(null, resourcePermissions);
+        SelfDeveloperValidation crSelfDevValidator = new SelfDeveloperValidation();
 
         boolean result = crSelfDevValidator.isValid(context);
         assertFalse(result);
@@ -108,5 +104,25 @@ public class ChangeRequestSelfDeveloperValidationTest {
         HashMap<String, Object> details = new HashMap<String, Object>();
         details.put("selfDeveloper", selfDeveloper);
         return details;
+    }
+
+    private ChangeRequestValidationContext getValidationContext(Object selfDeveloperValue, ResourcePermissions resourcePermissions) {
+        return new ChangeRequestValidationContext(null,
+                        getChangeRequestSelfDeveloper(selfDeveloperValue),
+                        null,
+                        resourcePermissions,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null);
     }
 }
