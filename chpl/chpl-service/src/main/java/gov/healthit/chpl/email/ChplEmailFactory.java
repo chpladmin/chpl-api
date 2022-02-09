@@ -9,13 +9,11 @@ import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 
 @Component
 public class ChplEmailFactory {
-    //private SchedulerManager schedulerManager;
     private Environment env;
     private ChplSchedulerReference chplScheduler;
 
     @Autowired
     public ChplEmailFactory(ChplSchedulerReference chplSchedulerReference, Environment env) {
-        //this.schedulerManager = schedulerManager;
         this.chplScheduler = chplSchedulerReference;
         this.env = env;
     }
