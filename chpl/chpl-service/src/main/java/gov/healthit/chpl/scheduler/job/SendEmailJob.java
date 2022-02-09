@@ -201,9 +201,10 @@ public class SendEmailJob implements Job {
     }
 
     private File copyTempFileToPermanentLocation(File originalFile) {
-        Path newPath = Paths.get(env.getProperty("downloadFolderPath") + File.separator + originalFile.getName());
+        Path newPath = Paths.get(env.getProperty("downloadFolderPath") + File.separator + "emailFiles" + File.separator + originalFile.getName());
         Path origPath = originalFile.toPath();
         try {
+            Files.createDirectories(newPath.getParent());
             Files.copy(origPath, newPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
             LOGGER.info("Could not copy original file: " + origPath.toString());
