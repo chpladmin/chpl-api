@@ -1,5 +1,7 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import java.util.Iterator;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,10 +38,13 @@ public class TestProcedureReviewer {
         listing.getCertificationResults().stream()
             .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
             .forEach(certResult -> review(listing, certResult));
+        listing.getCertificationResults().stream()
+            .forEach(certResult -> removeTestProceduresIfNotApplicable(certResult));
     }
 
     private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         reviewCriteriaCanHaveTestProcedures(listing, certResult);
+        removeTestProceduresWithoutIds(listing, certResult);
         reviewTestProceduresRequiredWhenCertResultIsNotGap(listing, certResult);
         if (!CollectionUtils.isEmpty(certResult.getTestProcedures())) {
             certResult.getTestProcedures().stream()
@@ -54,6 +59,29 @@ public class TestProcedureReviewer {
                     "listing.criteria.testProcedureNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
             certResult.setTestProcedures(null);
+        }
+    }
+
+    private void removeTestProceduresIfNotApplicable(CertificationResult certResult) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_PROCEDURE)) {
+            certResult.setTestProcedures(null);
+        }
+    }
+
+    private void removeTestProceduresWithoutIds(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        if (CollectionUtils.isEmpty(certResult.getTestProcedures())) {
+            return;
+        }
+        Iterator<CertificationResultTestProcedure> testProcedureIter = certResult.getTestProcedures().iterator();
+        while (testProcedureIter.hasNext()) {
+            CertificationResultTestProcedure testProcedure = testProcedureIter.next();
+            if (testProcedure.getTestProcedure() != null && testProcedure.getTestProcedure().getId() == null
+                    && !StringUtils.isEmpty(testProcedure.getTestProcedure().getName())) {
+                testProcedureIter.remove();
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.badTestProcedureNameRemoved",
+                        Util.formatCriteriaNumber(certResult.getCriterion()),
+                        testProcedure.getTestProcedure().getName()));
+            }
         }
     }
 
@@ -78,7 +106,6 @@ public class TestProcedureReviewer {
     private void reviewTestProcedureFields(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultTestProcedure testProcedure) {
         reviewByFlag(listing, certResult, testProcedure);
-        reviewIdRequired(listing, certResult, testProcedure);
         reviewNameRequired(listing, certResult, testProcedure);
         reviewVersionRequired(listing, certResult, testProcedure);
     }
@@ -91,15 +118,6 @@ public class TestProcedureReviewer {
         if (testProcedure.getTestProcedure() != null && testProcedure.getTestProcedure().getId() == null) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.testProcedureNotApplicable",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
-        }
-    }
-
-    private void reviewIdRequired(CertifiedProductSearchDetails listing,
-            CertificationResult certResult, CertificationResultTestProcedure testProcedure) {
-        if (testProcedure.getTestProcedure() != null && testProcedure.getTestProcedure().getId() == null) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.badTestProcedureName",
-                    Util.formatCriteriaNumber(certResult.getCriterion()),
-                    testProcedure.getTestProcedure().getName()));
         }
     }
 

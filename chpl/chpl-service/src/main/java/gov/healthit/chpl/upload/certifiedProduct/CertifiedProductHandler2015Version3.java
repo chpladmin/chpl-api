@@ -85,7 +85,7 @@ public class CertifiedProductHandler2015Version3 extends CertifiedProductHandler
 
             if (!StringUtils.isEmpty(tdName) || !StringUtils.isEmpty(tdVersion) || !StringUtils.isEmpty(tdAlteration)) {
                 if (StringUtils.isEmpty(tdName)) {
-                    tdName = TestDataDTO.DEFALUT_TEST_DATA;
+                    tdName = TestDataDTO.DEFAULT_TEST_DATA;
                 }
 
                 PendingCertificationResultTestDataEntity tdEntity = new PendingCertificationResultTestDataEntity();

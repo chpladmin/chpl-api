@@ -2,7 +2,11 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -11,7 +15,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -328,30 +332,55 @@ public class TestTask implements Serializable {
         return hashCode;
     }
 
-    public boolean matches(final TestTask anotherTask) {
+    public boolean matches(TestTask anotherTask) {
         boolean result = false;
         if (this.getId() != null && anotherTask.getId() != null
                 && this.getId().longValue() == anotherTask.getId().longValue()) {
             result = true;
         } else if (StringUtils.equals(this.getDescription(), anotherTask.getDescription())
-                && ObjectUtils.equals(this.getTaskErrors(), anotherTask.getTaskErrors())
-                && ObjectUtils.equals(this.getTaskErrorsStddev(), anotherTask.getTaskErrorsStddev())
-                && ObjectUtils.equals(this.getTaskPathDeviationObserved(), anotherTask.getTaskPathDeviationObserved())
-                && ObjectUtils.equals(this.getTaskPathDeviationOptimal(), anotherTask.getTaskPathDeviationOptimal())
-                && ObjectUtils.equals(this.getTaskRating(), anotherTask.getTaskRating())
+                && Objects.equals(this.getTaskErrors(), anotherTask.getTaskErrors())
+                && Objects.equals(this.getTaskErrorsStddev(), anotherTask.getTaskErrorsStddev())
+                && Objects.equals(this.getTaskPathDeviationObserved(), anotherTask.getTaskPathDeviationObserved())
+                && Objects.equals(this.getTaskPathDeviationOptimal(), anotherTask.getTaskPathDeviationOptimal())
+                && Objects.equals(this.getTaskRating(), anotherTask.getTaskRating())
                 && StringUtils.equals(this.getTaskRatingScale(), anotherTask.getTaskRatingScale())
-                && ObjectUtils.equals(this.getTaskRatingStddev(), anotherTask.getTaskRatingStddev())
-                && ObjectUtils.equals(this.getTaskSuccessAverage(), anotherTask.getTaskSuccessAverage())
-                && ObjectUtils.equals(this.getTaskSuccessStddev(), anotherTask.getTaskSuccessStddev())
-                && ObjectUtils.equals(this.getTaskTimeAvg(), anotherTask.getTaskTimeAvg())
-                && ObjectUtils.equals(this.getTaskTimeDeviationObservedAvg(),
+                && Objects.equals(this.getTaskRatingStddev(), anotherTask.getTaskRatingStddev())
+                && Objects.equals(this.getTaskSuccessAverage(), anotherTask.getTaskSuccessAverage())
+                && Objects.equals(this.getTaskSuccessStddev(), anotherTask.getTaskSuccessStddev())
+                && Objects.equals(this.getTaskTimeAvg(), anotherTask.getTaskTimeAvg())
+                && Objects.equals(this.getTaskTimeDeviationObservedAvg(),
                         anotherTask.getTaskTimeDeviationObservedAvg())
-                && ObjectUtils.equals(this.getTaskTimeDeviationOptimalAvg(),
+                && Objects.equals(this.getTaskTimeDeviationOptimalAvg(),
                         anotherTask.getTaskTimeDeviationOptimalAvg())
-                && ObjectUtils.equals(this.getTaskTimeStddev(), anotherTask.getTaskTimeStddev())) {
-            result = true;
+                && Objects.equals(this.getTaskTimeStddev(), anotherTask.getTaskTimeStddev())) {
+            result = doAllParticipantsMatch(anotherTask);
         }
         return result;
+    }
+
+    public boolean doAllParticipantsMatch(TestTask anotherTask) {
+        if (CollectionUtils.isEmpty(anotherTask.getTestParticipants())
+                && !CollectionUtils.isEmpty(this.getTestParticipants())) {
+            return false;
+        } else if (!CollectionUtils.isEmpty(anotherTask.getTestParticipants())
+                && CollectionUtils.isEmpty(this.getTestParticipants())) {
+            return false;
+        } else if (CollectionUtils.isEmpty(anotherTask.getTestParticipants())
+                && CollectionUtils.isEmpty(this.getTestParticipants())) {
+            return true;
+        } else {
+            return CollectionUtils.isEmpty(subtractSets(this.getTestParticipants(), anotherTask.getTestParticipants()))
+                    && CollectionUtils.isEmpty(subtractSets(anotherTask.getTestParticipants(), this.getTestParticipants()));
+        }
+    }
+
+    private List<TestParticipant> subtractSets(Set<TestParticipant> listA, Set<TestParticipant> listB) {
+        Predicate<TestParticipant> notInListB = certFromA -> !listB.stream()
+                .anyMatch(cert -> certFromA.matches(cert));
+
+        return listA.stream()
+                .filter(notInListB)
+                .collect(Collectors.toList());
     }
 
     public Long getId() {

@@ -22,6 +22,7 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -130,6 +131,33 @@ public class ProductManager extends SecuredManager {
         return createProduct(dto);
     }
 
+    @Transactional(readOnly = false)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).CREATE)")
+    @CacheEvict(value = {
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES
+    }, allEntries = true)
+    public Long create(Long developerId, Product product)
+            throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+        DeveloperDTO dev = devDao.getById(developerId);
+        if (dev == null) {
+            throw new EntityRetrievalException("Cannot find developer with id " + developerId);
+        }
+        DeveloperStatusEventDTO currDevStatus = dev.getStatus();
+        if (currDevStatus == null || currDevStatus.getStatus() == null) {
+            String msg = "The product " + product.getName() + " cannot be created since the status of developer "
+                    + dev.getName() + " cannot be determined.";
+            LOGGER.error(msg);
+            throw new EntityCreationException(msg);
+        }
+
+        Long productId = productDao.create(developerId, product);
+        product.setProductId(productId);
+        ProductDTO createdProductDto = productDao.getById(productId);
+        String activityMsg = "Product " + product.getName() + " was created.";
+        activityManager.addActivity(ActivityConcept.PRODUCT, productId, activityMsg, null, createdProductDto);
+        return productId;
+    }
 
     @Transactional(readOnly = false)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "

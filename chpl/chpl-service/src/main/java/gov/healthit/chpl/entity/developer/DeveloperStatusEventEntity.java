@@ -14,14 +14,20 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.util.Util;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-/**
- * Developer status entity.
- * @author alarned
- *
- */
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
 @Table(name = "vendor_status_history")
 public class DeveloperStatusEventEntity implements Serializable {
     private static final long serialVersionUID = 1730728043307135377L;
@@ -51,7 +57,8 @@ public class DeveloperStatusEventEntity implements Serializable {
 
     @Column(name = "status_date")
     private Date statusDate;
-    @Column(name = "deleted")
+
+    @Column(name = "deleted", insertable = false)
     private Boolean deleted;
 
     @Column(name = "last_modified_user")
@@ -63,46 +70,6 @@ public class DeveloperStatusEventEntity implements Serializable {
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Long getDeveloperId() {
-        return developerId;
-    }
-
-    public void setDeveloperId(final Long developerId) {
-        this.developerId = developerId;
-    }
-
-    public DeveloperEntity getDeveloper() {
-        return developer;
-    }
-
-    public void setDeveloper(final DeveloperEntity developer) {
-        this.developer = developer;
-    }
-
-    public Long getDeveloperStatusId() {
-        return developerStatusId;
-    }
-
-    public void setDeveloperStatusId(final Long developerStatusId) {
-        this.developerStatusId = developerStatusId;
-    }
-
-    public DeveloperStatusEntity getDeveloperStatus() {
-        return developerStatus;
-    }
-
-    public void setDeveloperStatus(final DeveloperStatusEntity developerStatus) {
-        this.developerStatus = developerStatus;
-    }
-
     public Date getStatusDate() {
         return Util.getNewDate(statusDate);
     }
@@ -111,53 +78,13 @@ public class DeveloperStatusEventEntity implements Serializable {
         this.statusDate = Util.getNewDate(statusDate);
     }
 
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(final String reason) {
-        this.reason = reason;
-    }
-
-    @Override
-    public String toString() {
-        return "Developer Status Event Entity: ["
-                + "[Developer: " + this.developer.getName() + "] "
-                + "[Status Date: " + this.statusDate.toString() + "] "
-                + "[Status: " + this.developerStatus.getName() + "] "
-                + "[Reason: " + this.reason + "]"
-                + "]";
+    public DeveloperStatusEvent toDomain() {
+        return DeveloperStatusEvent.builder()
+                .developerId(this.getDeveloperId())
+                .id(this.getId())
+                .reason(this.getReason())
+                .status(this.getDeveloperStatus() != null ? this.getDeveloperStatus().toDomain() : null)
+                .statusDate(this.getStatusDate())
+                .build();
     }
 }

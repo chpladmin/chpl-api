@@ -2,7 +2,9 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -52,12 +54,12 @@ public class CertifiedProductSed implements Serializable {
     @JsonIgnore
     @XmlTransient
     @Builder.Default
-    private List<String> unusedTestTaskUniqueIds = new ArrayList<String>();
+    private Set<String> unusedTestTaskUniqueIds = new LinkedHashSet<String>();
 
     @JsonIgnore
     @XmlTransient
     @Builder.Default
-    private List<String> unusedTestParticipantUniqueIds = new ArrayList<String>();
+    private Set<String> unusedTestParticipantUniqueIds = new LinkedHashSet<String>();
 
     public CertifiedProductSed() {
         super();
@@ -81,19 +83,19 @@ public class CertifiedProductSed implements Serializable {
         this.testTasks = testTasks;
     }
 
-    public List<String> getUnusedTestTaskUniqueIds() {
+    public Set<String> getUnusedTestTaskUniqueIds() {
         return unusedTestTaskUniqueIds;
     }
 
-    public void setUnusedTestTaskUniqueIds(List<String> unusedTestTaskUniqueIds) {
+    public void setUnusedTestTaskUniqueIds(Set<String> unusedTestTaskUniqueIds) {
         this.unusedTestTaskUniqueIds = unusedTestTaskUniqueIds;
     }
 
-    public List<String> getUnusedTestParticipantUniqueIds() {
+    public Set<String> getUnusedTestParticipantUniqueIds() {
         return unusedTestParticipantUniqueIds;
     }
 
-    public void setUnusedTestParticipantUniqueIds(List<String> unusedTestParticipantUniqueIds) {
+    public void setUnusedTestParticipantUniqueIds(Set<String> unusedTestParticipantUniqueIds) {
         this.unusedTestParticipantUniqueIds = unusedTestParticipantUniqueIds;
     }
 }

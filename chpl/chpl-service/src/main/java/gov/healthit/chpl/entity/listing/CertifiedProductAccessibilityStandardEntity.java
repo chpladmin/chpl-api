@@ -14,9 +14,16 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.AccessibilityStandardEntity;
-import gov.healthit.chpl.util.Util;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
 @Table(name = "certified_product_accessibility_standard")
 public class CertifiedProductAccessibilityStandardEntity {
 
@@ -40,83 +47,15 @@ public class CertifiedProductAccessibilityStandardEntity {
             updatable = false)
     private AccessibilityStandardEntity accessibilityStandard;
 
-    public Long getId() {
-        return id;
-    }
+    @Column(name = "deleted", insertable = false)
+    private Boolean deleted;
 
-    public void setId(final Long id) {
-        this.id = id;
-    }
+    @Column(name = "last_modified_user")
+    private Long lastModifiedUser;
 
-    public Long getCertifiedProductId() {
-        return certifiedProductId;
-    }
+    @Column(name = "creation_date", insertable = false, updatable = false)
+    private Date creationDate;
 
-    public void setCertifiedProductId(final Long certifiedProductId) {
-        this.certifiedProductId = certifiedProductId;
-    }
-
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
-    protected Date creationDate;
-
-    @Basic(optional = false)
-    @Column(name = "deleted", nullable = false)
-    protected Boolean deleted;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
-    protected Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    protected Long lastModifiedUser;
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Long getAccessibilityStandardId() {
-        return accessibilityStandardId;
-    }
-
-    public void setAccessibilityStandardId(final Long accessibilityStandardId) {
-        this.accessibilityStandardId = accessibilityStandardId;
-    }
-
-    public AccessibilityStandardEntity getAccessibilityStandard() {
-        return accessibilityStandard;
-    }
-
-    public void setAccessibilityStandard(final AccessibilityStandardEntity accessibilityStandard) {
-        this.accessibilityStandard = accessibilityStandard;
-    }
+    @Column(name = "last_modified_date", insertable = false, updatable = false)
+    private Date lastModifiedDate;
 }

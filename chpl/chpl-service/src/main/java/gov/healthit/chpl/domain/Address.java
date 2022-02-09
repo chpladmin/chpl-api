@@ -6,12 +6,15 @@ import java.util.HashMap;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.entity.AddressEntity;
@@ -25,6 +28,10 @@ import lombok.Builder;
 public class Address implements Serializable {
     private static final long serialVersionUID = 7978604053959537664L;
     private static final Logger LOGGER = LogManager.getLogger(Address.class);
+
+    @XmlTransient
+    @JsonIgnore
+    public static final String DEFAULT_COUNTRY = "US";
 
     /**
      * Address internal ID.

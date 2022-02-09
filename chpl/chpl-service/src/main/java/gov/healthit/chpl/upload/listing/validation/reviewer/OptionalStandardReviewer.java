@@ -53,6 +53,8 @@ public class OptionalStandardReviewer implements Reviewer {
         listing.getCertificationResults().stream()
             .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
             .forEach(certResult -> reviewCertificationResult(listing, certResult));
+        listing.getCertificationResults().stream()
+            .forEach(certResult -> removeOptionalStandardsIfNotApplicable(certResult));
     }
 
     private void reviewCertificationResult(CertifiedProductSearchDetails listing, CertificationResult certResult) {
@@ -68,7 +70,13 @@ public class OptionalStandardReviewer implements Reviewer {
             if (!CollectionUtils.isEmpty(certResult.getOptionalStandards())) {
                 listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.optionalStandardsNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+                certResult.setOptionalStandards(null);
             }
+        }
+    }
+
+    private void removeOptionalStandardsIfNotApplicable(CertificationResult certResult) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.OPTIONAL_STANDARD)) {
             certResult.setOptionalStandards(null);
         }
     }

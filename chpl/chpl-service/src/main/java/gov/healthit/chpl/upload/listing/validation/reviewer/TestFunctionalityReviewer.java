@@ -42,6 +42,8 @@ public class TestFunctionalityReviewer {
         listing.getCertificationResults().stream()
             .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
             .forEach(certResult -> review(listing, certResult));
+        listing.getCertificationResults().stream()
+            .forEach(certResult -> removeTestFunctionalityIfNotApplicable(certResult));
     }
 
     private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
@@ -60,6 +62,12 @@ public class TestFunctionalityReviewer {
                 listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.testFunctionalityNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
+            certResult.setTestFunctionality(null);
+        }
+    }
+
+    private void removeTestFunctionalityIfNotApplicable(CertificationResult certResult) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
             certResult.setTestFunctionality(null);
         }
     }

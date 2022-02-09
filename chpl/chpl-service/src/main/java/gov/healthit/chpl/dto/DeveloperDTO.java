@@ -77,20 +77,20 @@ public class DeveloperDTO implements Serializable {
         }
 
         this.creationDate = entity.getCreationDate();
-        this.deleted = entity.isDeleted();
+        this.deleted = entity.getDeleted();
         this.lastModifiedDate = entity.getLastModifiedDate();
         this.lastModifiedUser = entity.getLastModifiedUser();
         this.name = entity.getName();
         this.website = entity.getWebsite();
         this.selfDeveloper = entity.getSelfDeveloper();
-        if (entity.getDeveloperCertificationStatusesEntity() != null) {
-            this.statuses = new Statuses(entity.getDeveloperCertificationStatusesEntity().getActive(),
-                    entity.getDeveloperCertificationStatusesEntity().getRetired(),
-                    entity.getDeveloperCertificationStatusesEntity().getWithdrawnByDeveloper(),
-                    entity.getDeveloperCertificationStatusesEntity().getWithdrawnByAcb(),
-                    entity.getDeveloperCertificationStatusesEntity().getSuspendedByAcb(),
-                    entity.getDeveloperCertificationStatusesEntity().getSuspendedByOnc(),
-                    entity.getDeveloperCertificationStatusesEntity().getTerminatedByOnc());
+        if (entity.getDeveloperCertificationStatuses() != null) {
+            this.statuses = new Statuses(entity.getDeveloperCertificationStatuses().getActive(),
+                    entity.getDeveloperCertificationStatuses().getRetired(),
+                    entity.getDeveloperCertificationStatuses().getWithdrawnByDeveloper(),
+                    entity.getDeveloperCertificationStatuses().getWithdrawnByAcb(),
+                    entity.getDeveloperCertificationStatuses().getSuspendedByAcb(),
+                    entity.getDeveloperCertificationStatuses().getSuspendedByOnc(),
+                    entity.getDeveloperCertificationStatuses().getTerminatedByOnc());
         }
     }
 

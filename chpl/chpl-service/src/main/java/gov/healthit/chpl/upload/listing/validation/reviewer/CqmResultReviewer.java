@@ -1,6 +1,8 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
 import java.util.Collection;
+import java.util.function.Predicate;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +38,9 @@ public class CqmResultReviewer implements Reviewer {
             listing.getCqmResults().stream()
                 .filter(cqmResult -> BooleanUtils.isTrue(cqmResult.isSuccess()))
                 .forEach(cqmResult -> reviewCqmResultRequiredFields(listing, cqmResult));
+
+            Predicate<CQMResultDetails> shouldRemove = cqm -> isMissingCmsIdButHasOtherData(cqm) || isMissingCqmCriterionId(cqm);
+            listing.getCqmResults().removeIf(shouldRemove);
         }
 
         cqmAttestedCriteriaReviewer.review(listing);
@@ -43,12 +48,11 @@ public class CqmResultReviewer implements Reviewer {
     }
 
     private void reviewCqmResultRequiredFields(CertifiedProductSearchDetails listing, CQMResultDetails cqmResult) {
-        if (StringUtils.isEmpty(cqmResult.getCmsId())
-                && (!CollectionUtils.isEmpty(cqmResult.getSuccessVersions()) || !CollectionUtils.isEmpty(cqmResult.getCriteria()))) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.cqm.missingCmsId"));
+        if (isMissingCmsIdButHasOtherData(cqmResult)) {
+            listing.getWarningMessages().add(msgUtil.getMessage("listing.cqm.missingCmsId"));
         } else if (!StringUtils.isEmpty(cqmResult.getCmsId())) {
-            if (cqmResult.getCqmCriterionId() == null) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.cqm.invalidCmsId", cqmResult.getCmsId()));
+            if (isMissingCqmCriterionId(cqmResult)) {
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.cqm.invalidCmsId", cqmResult.getCmsId()));
             } else {
                 if (CollectionUtils.isEmpty(cqmResult.getSuccessVersions())) {
                     listing.getErrorMessages().add(msgUtil.getMessage("listing.cqm.missingVersion", cqmResult.getCmsId()));
@@ -57,6 +61,15 @@ public class CqmResultReviewer implements Reviewer {
                 }
             }
         }
+    }
+
+    private boolean isMissingCmsIdButHasOtherData(CQMResultDetails cqmResult) {
+        return StringUtils.isEmpty(cqmResult.getCmsId())
+                && (!CollectionUtils.isEmpty(cqmResult.getSuccessVersions()) || !CollectionUtils.isEmpty(cqmResult.getCriteria()));
+    }
+
+    private boolean isMissingCqmCriterionId(CQMResultDetails cqmResult) {
+        return cqmResult.getCqmCriterionId() == null;
     }
 
     private void reviewSuccessVersions(CertifiedProductSearchDetails listing, CQMResultDetails cqmResult) {

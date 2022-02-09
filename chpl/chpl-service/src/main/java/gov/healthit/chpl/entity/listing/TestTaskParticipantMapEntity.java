@@ -18,9 +18,14 @@ import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.entity.TestParticipantEntity;
 import gov.healthit.chpl.entity.TestTaskEntity;
-import gov.healthit.chpl.util.Util;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
+@Getter
+@Setter
+@ToString
 @Table(name = "test_task_participant_map")
 public class TestTaskParticipantMapEntity implements Serializable {
     private static final long serialVersionUID = -1114257207589782550L;
@@ -51,91 +56,15 @@ public class TestTaskParticipantMapEntity implements Serializable {
     @Where(clause = "deleted <> 'true'")
     private TestParticipantEntity testParticipant;
 
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
-    protected Date creationDate;
+    @Column(name = "deleted", insertable = false)
+    private Boolean deleted;
 
-    @Basic(optional = false)
-    @Column(nullable = false)
-    protected Boolean deleted;
+    @Column(name = "last_modified_user")
+    private Long lastModifiedUser;
 
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
-    protected Date lastModifiedDate;
+    @Column(name = "creation_date", insertable = false, updatable = false)
+    private Date creationDate;
 
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    protected Long lastModifiedUser;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Long getTestParticipantId() {
-        return testParticipantId;
-    }
-
-    public void setTestParticipantId(final Long testParticipantId) {
-        this.testParticipantId = testParticipantId;
-    }
-
-    public TestParticipantEntity getTestParticipant() {
-        return testParticipant;
-    }
-
-    public void setTestParticipant(final TestParticipantEntity testParticipantEntity) {
-        this.testParticipant = testParticipantEntity;
-    }
-
-    public Long getTestTaskId() {
-        return testTaskId;
-    }
-
-    public void setTestTaskId(final Long testTaskId) {
-        this.testTaskId = testTaskId;
-    }
-
-    public TestTaskEntity getTestTask() {
-        return testTask;
-    }
-
-    public void setTestTask(final TestTaskEntity testTask) {
-        this.testTask = testTask;
-    }
+    @Column(name = "last_modified_date", insertable = false, updatable = false)
+    private Date lastModifiedDate;
 }

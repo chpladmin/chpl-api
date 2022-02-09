@@ -34,6 +34,7 @@ public class ProductOwner implements Serializable {
     private Long transferDate;
 
     public ProductOwner() {
+
     }
 
     public ProductOwner(ProductOwnerDTO dto) {
@@ -80,28 +81,37 @@ public class ProductOwner implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         ProductOwner other = (ProductOwner) obj;
         if (developer == null) {
-            if (other.developer != null)
+            if (other.developer != null) {
                 return false;
-        } else if (!developer.getDeveloperId().equals(other.developer.getDeveloperId()))
+            }
+        } else if (!developer.getDeveloperId().equals(other.developer.getDeveloperId())) {
             return false;
+        }
         if (id == null) {
-            if (other.id != null)
+            if (other.id != null) {
                 return false;
-        } else if (!id.equals(other.id))
+            }
+        } else if (!id.equals(other.id)) {
             return false;
+        }
         if (transferDate == null) {
-            if (other.transferDate != null)
+            if (other.transferDate != null) {
                 return false;
-        } else if (!transferDate.equals(other.transferDate))
+            }
+        } else if (!transferDate.equals(other.transferDate)) {
             return false;
+        }
         return true;
     }
 
