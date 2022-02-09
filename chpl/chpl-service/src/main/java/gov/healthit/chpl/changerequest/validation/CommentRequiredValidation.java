@@ -5,19 +5,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestStatusService;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
-@Component
 public class CommentRequiredValidation extends ValidationRule<ChangeRequestValidationContext> {
-    @Value("${changerequest.status.rejected}")
-    private Long rejectedStatus;
-
-    @Value("${changerequest.status.pendingdeveloperaction}")
-    private Long pendingDeveloperAction;
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
@@ -39,8 +31,9 @@ public class CommentRequiredValidation extends ValidationRule<ChangeRequestValid
     }
 
     private boolean doesNewStatusRequireComment(ChangeRequestValidationContext context) {
-        List<Long> statusesRequiringComment = new ArrayList<Long>(
-                Arrays.asList(rejectedStatus, pendingDeveloperAction));
+        List<Long> statusesRequiringComment = new ArrayList<Long>(Arrays.asList(
+                context.getChangeRequestStatusIds().getRejectedStatus(),
+                context.getChangeRequestStatusIds().getPendingDeveloperActionStatus()));
 
         return statusesRequiringComment.stream()
                 .anyMatch(status -> status

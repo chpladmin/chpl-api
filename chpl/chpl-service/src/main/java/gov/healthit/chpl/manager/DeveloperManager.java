@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.attestation.dao.AttestationDAO;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -32,7 +33,9 @@ import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperTransparency;
+import gov.healthit.chpl.domain.PublicAttestation;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.concept.PublicAttestationStatus;
 import gov.healthit.chpl.domain.developer.hierarchy.DeveloperTree;
 import gov.healthit.chpl.domain.developer.hierarchy.ProductTree;
 import gov.healthit.chpl.domain.developer.hierarchy.SimpleListing;
@@ -92,6 +95,7 @@ public class DeveloperManager extends SecuredManager {
     private ValidationUtils validationUtils;
     private TransparencyAttestationManager transparencyAttestationManager;
     private SchedulerManager schedulerManager;
+    private AttestationDAO attestationDAO;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
@@ -100,8 +104,8 @@ public class DeveloperManager extends SecuredManager {
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
             ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
             DeveloperValidationFactory developerValidationFactory, ValidationUtils validationUtils,
-            TransparencyAttestationManager transparencyAttestationManager,
-            SchedulerManager schedulerManager) {
+            TransparencyAttestationManager transparencyAttestationManager, SchedulerManager schedulerManager,
+            AttestationDAO attestationDAO) {
         this.developerDao = developerDao;
         this.productManager = productManager;
         this.versionManager = versionManager;
@@ -117,6 +121,7 @@ public class DeveloperManager extends SecuredManager {
         this.validationUtils = validationUtils;
         this.transparencyAttestationManager = transparencyAttestationManager;
         this.schedulerManager = schedulerManager;
+        this.attestationDAO = attestationDAO;
     }
 
     @Transactional(readOnly = true)
@@ -701,6 +706,17 @@ public class DeveloperManager extends SecuredManager {
             }
         }
         return errorMessages;
+    }
+
+    @Transactional
+    public List<PublicAttestation> getDeveloperPublicAttestations(Long developerId) {
+        return attestationDAO.getDeveloperAttestationSubmissionsByDeveloper(developerId).stream()
+                .map(att -> PublicAttestation.builder()
+                        .id(att.getId())
+                        .attestationPeriod(att.getPeriod())
+                        .status(PublicAttestationStatus.ATTESTATIONS_SUBMITTED)
+                        .build())
+                .collect(Collectors.toList());
     }
 
     public static String getNewDeveloperCode() {

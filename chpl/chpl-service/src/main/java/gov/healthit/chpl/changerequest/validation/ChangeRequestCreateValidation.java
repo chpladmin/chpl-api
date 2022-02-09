@@ -3,27 +3,19 @@ package gov.healthit.chpl.changerequest.validation;
 import java.util.HashMap;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
-@Component
 public class ChangeRequestCreateValidation extends ValidationRule<ChangeRequestValidationContext> {
-    @Value("${changerequest.website}")
-    private Long websiteChangeRequestType;
-
-    @Value("${changerequest.developerDetails}")
-    private Long devDetailsChangeRequestType;
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
-        if (context.getNewChangeRequest().getChangeRequestType().getId().equals(websiteChangeRequestType)
+        if (context.getNewChangeRequest().getChangeRequestType().getId().equals(context.getChangeRequestTypeIds().getWebsiteChangeRequestType())
                 && (context.getNewChangeRequest().getDetails() == null
                         || !isChangeRequestWebsiteValid((HashMap) context.getNewChangeRequest().getDetails()))) {
             getMessages().add(getErrorMessage("changeRequest.details.website.invalid"));
             return false;
-        } else if (context.getNewChangeRequest().getChangeRequestType().getId().equals(devDetailsChangeRequestType)) {
+        } else if (context.getNewChangeRequest().getChangeRequestType().getId().equals(context.getChangeRequestTypeIds().getDeveloperDetailsChangeRequestTypeId())) {
             if (context.getNewChangeRequest().getDetails() == null) {
                 getMessages().add(getErrorMessage("changeRequest.details.invalid"));
                 return false;
