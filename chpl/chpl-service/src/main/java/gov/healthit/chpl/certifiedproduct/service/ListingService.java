@@ -164,7 +164,6 @@ public class ListingService {
                 .rwtResultsCheckDate(dto.getRwtResultsCheckDate())
                 .svapNoticeUrl(dto.getSvapNoticeUrl())
                 .sed(new CertifiedProductSed())
-                .testingLabs(getTestingLabs(dto.getId()))
                 .build();
 
         List<PromotingInteroperabilityUser> promotingInteroperabilityUserHistory = piuService.getPromotingInteroperabilityUserHistory(dto.getId());

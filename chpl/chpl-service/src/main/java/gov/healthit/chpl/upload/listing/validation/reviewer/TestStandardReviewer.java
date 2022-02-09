@@ -3,6 +3,7 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.CertificationResultRules;
@@ -31,6 +32,8 @@ public class TestStandardReviewer implements Reviewer {
         listing.getCertificationResults().stream()
             .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
             .forEach(certResult -> review(listing, certResult));
+        listing.getCertificationResults().stream()
+            .forEach(certResult -> removeTestStandardsIfNotApplicable(certResult));
     }
 
     private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
@@ -45,6 +48,12 @@ public class TestStandardReviewer implements Reviewer {
             listing.getWarningMessages().add(msgUtil.getMessage(
                 "listing.criteria.testStandardsNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             certResult.getTestStandards().clear();
+        }
+    }
+
+    private void removeTestStandardsIfNotApplicable(CertificationResult certResult) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.STANDARDS_TESTED)) {
+            certResult.setTestStandards(null);
         }
     }
 }

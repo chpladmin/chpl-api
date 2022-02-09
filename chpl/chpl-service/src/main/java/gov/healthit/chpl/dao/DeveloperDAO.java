@@ -19,12 +19,12 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
+import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.entity.ContactEntity;
 import gov.healthit.chpl.entity.UserDeveloperMapEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
@@ -59,6 +59,32 @@ public class DeveloperDAO extends BaseDAOImpl {
        this.msgUtil = msgUtil;
     }
 
+    public Long create(Developer developer) throws EntityCreationException {
+        try {
+            DeveloperEntity developerEntity = new DeveloperEntity();
+            Long addressId = addressDao.create(developer.getAddress());
+            developerEntity.setAddressId(addressId);
+            Long contactId = contactDao.create(developer.getContact());
+            developerEntity.setContactId(contactId);
+            developerEntity.setName(developer.getName());
+            developerEntity.setWebsite(developer.getWebsite());
+            developerEntity.setSelfDeveloper(developer.getSelfDeveloper());
+            developerEntity.setLastModifiedUser(AuthUtil.getAuditId());
+            create(developerEntity);
+
+            DeveloperStatusEventEntity initialStatusEntity = new DeveloperStatusEventEntity();
+            initialStatusEntity.setDeveloperId(developerEntity.getId());
+            DeveloperStatusEntity defaultStatus = getStatusByName(DEFAULT_STATUS.toString());
+            initialStatusEntity.setDeveloperStatusId(defaultStatus.getId());
+            initialStatusEntity.setStatusDate(new Date());
+            initialStatusEntity.setLastModifiedUser(AuthUtil.getAuditId());
+            create(initialStatusEntity);
+            return developerEntity.getId();
+        } catch (Exception ex) {
+            throw new EntityCreationException(ex);
+        }
+    }
+
     public DeveloperDTO create(DeveloperDTO dto) throws EntityCreationException, EntityRetrievalException {
 
         DeveloperEntity entity = null;
@@ -77,6 +103,7 @@ public class DeveloperDAO extends BaseDAOImpl {
 
             if (dto.getAddress() != null) {
                 entity.setAddress(addressDao.saveAddress(dto.getAddress()));
+                entity.setAddressId(entity.getAddress().getId());
             }
             if (dto.getContact() != null) {
                 if (dto.getContact().getId() != null) {
@@ -184,13 +211,17 @@ public class DeveloperDAO extends BaseDAOImpl {
 
         if (dto.getAddress() != null) {
             try {
-                entity.setAddress(addressDao.saveAddress(dto.getAddress()));
-            } catch (final EntityCreationException ex) {
+                AddressEntity address = addressDao.saveAddress(dto.getAddress());
+                entity.setAddress(address);
+                entity.setAddressId(address.getId());
+            } catch (EntityCreationException ex) {
                 LOGGER.error("Could not create new address in the database.", ex);
                 entity.setAddress(null);
+                entity.setAddressId(null);
             }
         } else {
             entity.setAddress(null);
+            entity.setAddressId(null);
         }
 
         if (dto.getContact() != null) {
@@ -242,8 +273,6 @@ public class DeveloperDAO extends BaseDAOImpl {
         }
 
         update(entity);
-
-        entityManager.clear();
         return getById(dto.getId());
     }
 
@@ -363,7 +392,12 @@ public class DeveloperDAO extends BaseDAOImpl {
         return dtos;
     }
 
-    public DeveloperDTO getById(final Long id) throws EntityRetrievalException {
+    public Developer findById(Long id) throws EntityRetrievalException {
+        DeveloperEntity entity = getEntityById(id, false);
+        return entity.toDomain();
+    }
+
+    public DeveloperDTO getById(Long id) throws EntityRetrievalException {
         return getById(id, false);
     }
 
@@ -475,7 +509,6 @@ public class DeveloperDAO extends BaseDAOImpl {
             if (decertifiedDevelopers.size() > 0) {
                 for (DecertifiedDeveloperResult currDev : decertifiedDevelopers) {
                     if (currDev.getDeveloper().getDeveloperId().equals(currListing.getDeveloperId())) {
-                        currDev.getDeveloper().setStatus(DeveloperStatus.builder().status(currListing.getDeveloperStatusName()).build());
                         currDev.setDecertificationDate(currListing.getDeveloperStatusDate());
                         if (!currDev.refersToAcbId(currListing.getCertificationBodyId())) {
                             currDev.getCertifyingBody().add(CertificationBody.builder()
@@ -514,7 +547,6 @@ public class DeveloperDAO extends BaseDAOImpl {
                         .build());
                 Developer developer = Developer.builder()
                         .developerId(currListing.getDeveloperId())
-                        .status(DeveloperStatus.builder().status(currListing.getDeveloperStatusName()).build())
                         .name(currListing.getDeveloperName())
                         .developerCode(currListing.getDeveloperCode())
                         .selfDeveloper(currListing.getSelfDeveloper())

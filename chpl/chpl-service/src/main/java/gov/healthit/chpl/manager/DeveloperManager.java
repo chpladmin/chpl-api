@@ -29,6 +29,7 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.PublicAttestation;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.concept.PublicAttestationStatus;
@@ -282,6 +283,23 @@ public class DeveloperManager extends SecuredManager {
         for (DeveloperStatusEventDTO toRemove : statusEventsToRemove) {
             developerDao.deleteDeveloperStatusEvent(toRemove);
         }
+    }
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
+            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).CREATE)")
+    @Transactional(readOnly = false)
+    @CacheEvict(value = {
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED
+    }, allEntries = true)
+    public Long create(Developer developer)
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+        Long developerId = developerDao.create(developer);
+        developer.setDeveloperId(developerId);
+
+        DeveloperDTO createdDevloperDto = developerDao.getById(developerId);
+        activityManager.addActivity(ActivityConcept.DEVELOPER, developerId,
+                "Developer " + developer.getName() + " has been created.", null, createdDevloperDto);
+        return developerId;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "

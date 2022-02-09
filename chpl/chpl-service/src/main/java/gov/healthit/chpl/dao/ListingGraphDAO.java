@@ -8,6 +8,7 @@ import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
@@ -26,6 +27,19 @@ public class ListingGraphDAO extends BaseDAOImpl {
     @Autowired
     public ListingGraphDAO(ErrorMessageUtil msgUtil) {
         this.msgUtil = msgUtil;
+    }
+
+    public Long createListingMap(Long childId, Long parentId) throws EntityCreationException {
+        try {
+            ListingToListingMapEntity entity = new ListingToListingMapEntity();
+            entity.setChildId(childId);
+            entity.setParentId(parentId);
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
+            create(entity);
+            return entity.getId();
+        } catch (Exception ex) {
+            throw new EntityCreationException(ex);
+        }
     }
 
     public ListingToListingMapDTO createListingMap(ListingToListingMapDTO toCreate) throws EntityCreationException {

@@ -419,6 +419,7 @@ public class CertifiedProductManager extends SecuredManager {
         return familyTree;
     }
 
+    @Deprecated
     @SuppressWarnings({"checkstyle:linelength", "checkstyle:methodlength"})
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).CREATE_FROM_PENDING, #pendingCp)")

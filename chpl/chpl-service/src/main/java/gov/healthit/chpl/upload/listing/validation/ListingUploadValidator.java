@@ -11,6 +11,7 @@ import gov.healthit.chpl.upload.listing.validation.reviewer.AdditionalSoftwareCo
 import gov.healthit.chpl.upload.listing.validation.reviewer.CSVHeaderReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.CertificationBodyCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.CertificationBodyReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.CertificationIdReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.CertificationResultReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.CertifiedDateCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.ChplNumberFormatReviewer;
@@ -46,6 +47,7 @@ public class ListingUploadValidator {
     private IcsCodeReviewer icsCodeReviewer;
     private AdditionalSoftwareCodeReviewer additionalSoftwareCodeReviewer;
     private CertifiedDateCodeReviewer certifiedDateCodeReviewer;
+    private CertificationIdReviewer certificationIdReviewer;
 
     private ChplNumberUniqueReviewer chplNumberUniqueReviewer;
     private EditionReviewer editionReviewer;
@@ -84,6 +86,7 @@ public class ListingUploadValidator {
             ProductReviewer productReviewer,
             VersionReviewer versionReviewer,
             CertifiedDateCodeReviewer certifiedDateCodeReviewer,
+            CertificationIdReviewer certificationIdReviewer,
             CertificationDateReviewer certDateReviewer,
             ChplNumberUniqueReviewer chplNumberUniqueReviewer,
             InheritanceReviewer inheritanceReviewer,
@@ -106,6 +109,7 @@ public class ListingUploadValidator {
         this.icsCodeReviewer = icsCodeReviewer;
         this.additionalSoftwareCodeReviewer = additionalSoftwareCodeReviewer;
         this.certifiedDateCodeReviewer = certifiedDateCodeReviewer;
+        this.certificationIdReviewer = certificationIdReviewer;
         this.editionReviewer = editionReviewer;
         this.atlReviewer = atlReviewer;
         this.acbReviewer = acbReviewer;
@@ -129,6 +133,10 @@ public class ListingUploadValidator {
 
     public void review(ListingUpload uploadedMetadata, CertifiedProductSearchDetails listing) {
         csvHeaderReviewer.review(uploadedMetadata, listing);
+        review(listing);
+    }
+
+    public void review(CertifiedProductSearchDetails listing) {
         chplNumberFormatReviewer.review(listing);
         chplNumberUniqueReviewer.review(listing);
         editionCodeReviewer.review(listing);
@@ -146,6 +154,7 @@ public class ListingUploadValidator {
         additionalSoftwareCodeReviewer.review(listing);
         certifiedDateCodeReviewer.review(listing);
         certDateReviewer.review(listing);
+        certificationIdReviewer.review(listing);
         duplicateDataReviewer.review(listing);
         qmsReviewer.review(listing);
         accStdReviewer.review(listing);

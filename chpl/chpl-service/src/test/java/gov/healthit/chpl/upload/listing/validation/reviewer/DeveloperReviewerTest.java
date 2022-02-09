@@ -3,6 +3,8 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Date;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -12,6 +14,7 @@ import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
+import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
@@ -31,6 +34,7 @@ public class DeveloperReviewerTest {
     private static final String MISSING_CITY = "Developer city is required.";
     private static final String MISSING_STATE = "Developer state is required.";
     private static final String MISSING_ZIP = "Developer zipcode is required.";
+    private static final String MISSING_COUNTRY = "Developer country is required.";
     private static final String MISSING_CONTACT = "A contact is required for the developer.";
     private static final String MISSING_EMAIL = "Developer contact email address is required.";
     private static final String MISSING_PHONE_NUMBER = "Developer contact phone number is required.";
@@ -69,6 +73,8 @@ public class DeveloperReviewerTest {
             .thenReturn(MISSING_STATE);
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("developer.address.zipRequired")))
             .thenReturn(MISSING_ZIP);
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("developer.address.countryRequired"), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(MISSING_COUNTRY, i.getArgument(1), ""));
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("developer.contactRequired")))
             .thenReturn(MISSING_CONTACT);
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("developer.contact.emailRequired")))
@@ -610,6 +616,36 @@ public class DeveloperReviewerTest {
     }
 
     @Test
+    public void review_newDeveloperWithNullCountry_hasWarning() {
+        Developer developer = buildNewDeveloper();
+        developer.getAddress().setCountry(null);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(MISSING_COUNTRY, Address.DEFAULT_COUNTRY)));
+    }
+
+    @Test
+    public void review_newDeveloperWithEmptyCountry_hasWarning() {
+        Developer developer = buildNewDeveloper();
+        developer.getAddress().setCountry("");
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
+                .developer(developer)
+                .build();
+
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(MISSING_COUNTRY, Address.DEFAULT_COUNTRY)));
+    }
+
+    @Test
     public void review_newDeveloperWithNullContact_hasError() {
         Developer developer = buildNewDeveloper();
         developer.setContact(null);
@@ -815,7 +851,7 @@ public class DeveloperReviewerTest {
     @Test
     public void review_newDeveloperWithNoCurrentStatus_noError() {
         Developer developer = buildNewDeveloper();
-        developer.setStatus(null);
+        developer.setStatusEvents(null);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
                 .developer(developer)
@@ -828,7 +864,7 @@ public class DeveloperReviewerTest {
     @Test
     public void review_systemDeveloperWithNoCurrentStatus_hasError() {
         Developer developer = buildSystemDeveloper();
-        developer.setStatus(null);
+        developer.setStatusEvents(null);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
                 .build();
@@ -1091,14 +1127,20 @@ public class DeveloperReviewerTest {
                         .city("test")
                         .state("test")
                         .zipcode("12345")
+                        .country("US")
                         .build())
                 .contact(PointOfContact.builder()
                         .fullName("test")
                         .email("test@test.com")
                         .phoneNumber("123-456-7890")
                         .build())
-                .status(DeveloperStatus.builder()
-                        .status(DeveloperStatusType.Active.getName())
+                .statusEvent(DeveloperStatusEvent.builder()
+                        .developerId(id)
+                        .id(1L)
+                        .status(DeveloperStatus.builder()
+                            .status(DeveloperStatusType.Active.getName())
+                            .build())
+                        .statusDate(new Date())
                         .build())
                 .build();
     }

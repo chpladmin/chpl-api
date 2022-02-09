@@ -11,6 +11,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -89,14 +90,6 @@ public class UcdProcessReviewer {
                 .filter(ucdProcess -> !CollectionUtils.isEmpty(ucdProcess.getCriteria()))
                 .flatMap(ucdProcess -> ucdProcess.getCriteria().stream())
                 .filter(ucdCriterion -> !certResultRules.hasCertOption(ucdCriterion.getNumber(), CertificationResultRules.UCD_FIELDS))
-                .filter(ucdCriterion -> BooleanUtils.isFalse(ucdCriterion.getRemoved()))
-                .forEach(notAllowedUcdCriterion ->
-                    listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.ucdProcessNotApplicable", Util.formatCriteriaNumber(notAllowedUcdCriterion))));
-
-            listing.getSed().getUcdProcesses().stream()
-                .filter(ucdProcess -> !CollectionUtils.isEmpty(ucdProcess.getCriteria()))
-                .flatMap(ucdProcess -> ucdProcess.getCriteria().stream())
-                .filter(ucdCriterion -> !doesListingAttestToCriterion(listing, ucdCriterion))
                 .filter(ucdCriterion -> BooleanUtils.isFalse(ucdCriterion.getRemoved()))
                 .forEach(notAllowedUcdCriterion ->
                     listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.ucdProcessNotApplicable", Util.formatCriteriaNumber(notAllowedUcdCriterion))));

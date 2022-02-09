@@ -11,6 +11,8 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -89,13 +91,6 @@ public class Developer implements Serializable {
     @Singular
     private List<DeveloperStatusEvent> statusEvents;
 
-    /**
-     * The status of a developer with certified Health IT. Allowable values are "Active", "Suspended by ONC", or "Under
-     * Certification Ban by ONC"
-     */
-    @XmlElement(required = false, nillable = true)
-    private DeveloperStatus status;
-
     @XmlTransient
     @JsonIgnore
     private String userEnteredName;
@@ -144,8 +139,6 @@ public class Developer implements Serializable {
                 DeveloperStatusEvent toAdd = new DeveloperStatusEvent(historyItem);
                 this.statusEvents.add(toAdd);
             }
-
-            this.status = new DeveloperStatus(dto.getStatus().getStatus());
         }
     }
 
@@ -221,12 +214,23 @@ public class Developer implements Serializable {
         this.deleted = deleted;
     }
 
+    /**
+     * The status of a developer with certified Health IT. Allowable values are "Active", "Suspended by ONC", or "Under
+     * Certification Ban by ONC"
+     */
+    @XmlElement(required = false, nillable = true)
     public DeveloperStatus getStatus() {
-        return status;
-    }
+        if (CollectionUtils.isEmpty(this.getStatusEvents())) {
+            return null;
+        }
 
-    public void setStatus(DeveloperStatus status) {
-        this.status = status;
+        DeveloperStatusEvent newest = this.getStatusEvents().get(0);
+        for (DeveloperStatusEvent event : this.getStatusEvents()) {
+            if (event.getStatusDate().after(newest.getStatusDate())) {
+                newest = event;
+            }
+        }
+        return newest.getStatus();
     }
 
     public List<DeveloperStatusEvent> getStatusEvents() {
