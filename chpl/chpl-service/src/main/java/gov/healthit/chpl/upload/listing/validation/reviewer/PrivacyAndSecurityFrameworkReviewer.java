@@ -31,6 +31,8 @@ public class PrivacyAndSecurityFrameworkReviewer {
         listing.getCertificationResults().stream()
             .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
             .forEach(certResult -> review(listing, certResult));
+        listing.getCertificationResults().stream()
+            .forEach(certResult -> removePrivacyAndSecurityFrameworkIfNotApplicable(certResult));
     }
 
     private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
@@ -45,6 +47,12 @@ public class PrivacyAndSecurityFrameworkReviewer {
                 listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.privacyAndSecurityFrameworkNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
+            certResult.setPrivacySecurityFramework(null);
+        }
+    }
+
+    private void removePrivacyAndSecurityFrameworkIfNotApplicable(CertificationResult certResult) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.PRIVACY_SECURITY)) {
             certResult.setPrivacySecurityFramework(null);
         }
     }

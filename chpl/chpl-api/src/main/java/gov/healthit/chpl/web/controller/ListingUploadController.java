@@ -21,6 +21,7 @@ import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -37,7 +38,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.ConfirmListingRequest;
 import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.email.ChplEmailFactory;
@@ -98,7 +101,7 @@ public class ListingUploadController {
         if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
             throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
-        return listingUploadManager.getAll();
+        return listingUploadManager.getAllProcessingAndAvailable();
     }
 
     @Operation(summary = "Get the details of an uploaded listing.",
@@ -107,7 +110,7 @@ public class ListingUploadController {
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @DeprecatedResponseFields(responseClass = CertifiedProductSearchDetails.class)
-    @RequestMapping(value = "/pending/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/pending/{id:^-?\\d+$}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public CertifiedProductSearchDetails geById(@PathVariable("id") Long id)
             throws ValidationException, EntityRetrievalException {
         if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
@@ -202,12 +205,42 @@ public class ListingUploadController {
             .collect(Collectors.toSet());
     }
 
+    @Operation(summary = "Confirm a previously uploaded listing.",
+            description = "Creates a new live listing on the CHPL based on the listing information passed in. "
+                    + "Security Restrictions: ROLE_ADMIN or ROLE_ACB "
+                    + "and administrative authority on the ONC-ACB for the potentially confirmed listing is required.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @RequestMapping(value = "/pending/{id:^-?\\d+$}", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+    public ResponseEntity<CertifiedProductSearchDetails> confirmLisitngUpload(@PathVariable("id") Long id,
+            @RequestBody(required = true) ConfirmListingRequest confirmListingRequest)
+                    throws ValidationException, EntityCreationException, EntityRetrievalException,
+                    JsonProcessingException, InvalidArgumentsException {
+        CertifiedProductSearchDetails createdListing = listingUploadManager.confirm(id, confirmListingRequest);
+
+        //note - once all collections pages are converted to use the search/beta endpoint instead of the
+        //collections endpoint i don't think we need the Cache-cleared header added and we can just
+        //return the listing (won't show the toaster in the UI either)
+        ResponseEntity<CertifiedProductSearchDetails> response = getConfirmResponse(createdListing);
+        return response;
+    }
+
+    private ResponseEntity<CertifiedProductSearchDetails> getConfirmResponse(CertifiedProductSearchDetails createdListing) {
+        if (createdListing != null) {
+            HttpHeaders responseHeaders = new HttpHeaders();
+            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+            return new ResponseEntity<CertifiedProductSearchDetails>(createdListing, responseHeaders, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<CertifiedProductSearchDetails>(null, null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @Operation(summary = "Reject an uploaded listing.",
             description = "Deletes an uploaded listing. Security Restrictions: ROLE_ADMIN or have ROLE_ACB "
                     + "and administrative authority on the ONC-ACB for each uploaded listing is required.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
-    @RequestMapping(value = "/pending/{id}", method = RequestMethod.DELETE,
+    @RequestMapping(value = "/pending/{id:^-?\\d+$}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
     public void rejectListingUpload(@PathVariable("id") Long id)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
@@ -219,7 +252,7 @@ public class ListingUploadController {
         //call the GET to return bad request if the id is not something that can be deleted
         listingUploadManager.getById(id);
         //perform delete
-        listingUploadManager.delete(id);
+        listingUploadManager.reject(id);
     }
 
     @Operation(summary = "Reject several uploaded listings.",
@@ -246,7 +279,7 @@ public class ListingUploadController {
                 //call the GET to return bad request if the id is not something that can be deleted
                 listingUploadManager.getById(id);
                 //perform delete
-                listingUploadManager.delete(id);
+                listingUploadManager.reject(id);
             } catch (ObjectMissingValidationException ex) {
                 possibleExceptions.getExceptions().add(ex);
             }

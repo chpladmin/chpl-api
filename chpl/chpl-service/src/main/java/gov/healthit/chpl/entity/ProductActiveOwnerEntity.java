@@ -14,10 +14,20 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.domain.ProductOwner;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
-import gov.healthit.chpl.util.Util;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "product_active_owner_history_map")
 public class ProductActiveOwnerEntity implements ProductOwnerEntity, Serializable {
     private static final long serialVersionUID = -8325348768063869639L;
@@ -54,76 +64,11 @@ public class ProductActiveOwnerEntity implements ProductOwnerEntity, Serializabl
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
-    public Long getId() {
-        return id;
+    public ProductOwner toDomain() {
+        ProductOwner domain = new ProductOwner();
+        domain.setDeveloper(this.getDeveloper() != null ? this.getDeveloper().toDomain() : null);
+        domain.setId(this.getId());
+        domain.setTransferDate(this.getTransferDate().getTime());
+        return domain;
     }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Long getDeveloperId() {
-        return developerId;
-    }
-
-    public void setDeveloperId(final Long developerId) {
-        this.developerId = developerId;
-    }
-
-    public Long getProductId() {
-        return productId;
-    }
-
-    public void setProductId(final Long productId) {
-        this.productId = productId;
-    }
-
-    public Date getTransferDate() {
-        return Util.getNewDate(transferDate);
-    }
-
-    public void setTransferDate(final Date transferDate) {
-        this.transferDate = Util.getNewDate(transferDate);
-    }
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public DeveloperEntity getDeveloper() {
-        return developer;
-    }
-
-    public void setDeveloper(final DeveloperEntity developer) {
-        this.developer = developer;
-    }
-
 }

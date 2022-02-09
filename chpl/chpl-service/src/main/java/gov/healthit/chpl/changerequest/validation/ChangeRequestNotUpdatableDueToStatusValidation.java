@@ -1,35 +1,23 @@
 package gov.healthit.chpl.changerequest.validation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
 @Component
 public class ChangeRequestNotUpdatableDueToStatusValidation extends ValidationRule<ChangeRequestValidationContext> {
 
-    @Value("${changerequest.status.cancelledbyrequester}")
-    private Long cancelledStatus;
-
-    @Value("${changerequest.status.accepted}")
-    private Long acceptedStatus;
-
-    @Value("${changerequest.status.rejected}")
-    private Long rejectedStatus;
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
-        // We need to check the current status from the DB - not what the user
-        // has passed in
         try {
-            ChangeRequest crFromDb = context.getOrigChangeRequest();
-            if (getNonUpdatableStatuses().contains(crFromDb.getCurrentStatus().getChangeRequestStatusType().getId())) {
-                getMessages().add(getErrorMessage(crFromDb.getCurrentStatus().getChangeRequestStatusType()));
+            if (getNonUpdatableStatuses(context).contains(context.getOrigChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId())) {
+                getMessages().add(getErrorMessage(context, context.getOrigChangeRequest().getCurrentStatus().getChangeRequestStatusType()));
                 return false;
             } else {
                 return true;
@@ -40,20 +28,19 @@ public class ChangeRequestNotUpdatableDueToStatusValidation extends ValidationRu
         }
     }
 
-    private List<Long> getNonUpdatableStatuses() {
-        List<Long> statuses = new ArrayList<Long>();
-        statuses.add(acceptedStatus);
-        statuses.add(cancelledStatus);
-        statuses.add(rejectedStatus);
-        return statuses;
+    private List<Long> getNonUpdatableStatuses(ChangeRequestValidationContext context) {
+        return new ArrayList<Long>(Arrays.asList(
+                context.getChangeRequestStatusIds().getAcceptedStatus(),
+                context.getChangeRequestStatusIds().getCancelledStatus(),
+                context.getChangeRequestStatusIds().getRejectedStatus()));
     }
 
-    private String getErrorMessage(ChangeRequestStatusType changeRequestStatusType) {
-        if (changeRequestStatusType.getId().equals(cancelledStatus)) {
+    private String getErrorMessage(ChangeRequestValidationContext context, ChangeRequestStatusType changeRequestStatusType) {
+        if (changeRequestStatusType.getId().equals(context.getChangeRequestStatusIds().getCancelledStatus())) {
             return getErrorMessage("changeRequest.status.cancelled");
-        } else if (changeRequestStatusType.getId().equals(acceptedStatus)) {
+        } else if (changeRequestStatusType.getId().equals(context.getChangeRequestStatusIds().getAcceptedStatus())) {
             return getErrorMessage("changeRequest.status.approved");
-        } else if (changeRequestStatusType.getId().equals(rejectedStatus)) {
+        } else if (changeRequestStatusType.getId().equals(context.getChangeRequestStatusIds().getRejectedStatus())) {
             return getErrorMessage("changeRequest.status.rejected");
         } else {
             return "";

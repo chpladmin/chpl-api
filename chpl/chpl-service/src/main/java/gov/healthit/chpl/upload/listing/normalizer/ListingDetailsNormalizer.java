@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +11,7 @@ public class ListingDetailsNormalizer {
     private CertificationEditionNormalizer editionNormalizer;
     private CertificationBodyNormalizer acbNormalizer;
     private TestingLabNormalizer atlNormalizer;
-    private DeveloperDetailsNormalizer developerNormalizer;
+    private DeveloperNormalizer developerNormalizer;
     private ProductAndVersionNormalizer productVersionNormalizer;
     private IcsNormalizer icsNormalizer;
     private AccessibilityStandardNormalizer accessibilityStandardNormalizer;
@@ -26,7 +27,7 @@ public class ListingDetailsNormalizer {
     public ListingDetailsNormalizer(CertificationEditionNormalizer editionNormalizer,
         CertificationBodyNormalizer acbNormalizer,
         TestingLabNormalizer atlNormalizer,
-        DeveloperDetailsNormalizer developerNormalizer,
+        DeveloperNormalizer developerNormalizer,
         ProductAndVersionNormalizer productVersionNormalizer,
         IcsNormalizer icsNormalizer,
         AccessibilityStandardNormalizer accessibilityStandardNormalizer,
@@ -65,6 +66,12 @@ public class ListingDetailsNormalizer {
         this.cqmNormalizer.normalize(listing);
         this.measureNormalizer.normalize(listing);
         this.sedNormalizer.normalize(listing);
+        if (CollectionUtils.isNotEmpty(listing.getErrorMessages())) {
+            listing.getErrorMessages().clear();
+        }
+        if (CollectionUtils.isNotEmpty(listing.getWarningMessages())) {
+            listing.getWarningMessages().clear();
+        }
     }
 
 }

@@ -28,9 +28,33 @@ public class TestParticipantNoramlizer {
                 && listing.getSed().getTestTasks().size() > 0) {
             listing.getSed().getTestTasks().stream()
                 .forEach(testTask -> {
+                    //The "set to null if negative" code is done because of a complicated issue
+                    //with React/Angular using negative IDs to track task and particpants.
+                    //The "set to null if negative" code could potentially be removed in the future with OCD-2838
+                    setTestTaskIdToNullIfNegative(testTask);
+                    setTestParticipantIdsNullIfNegative(testTask);
                     populateTestParticipantAges(testTask);
                     populateTestParticipantEducationTypes(testTask);
                 });
+        }
+    }
+
+    private void setTestTaskIdToNullIfNegative(TestTask testTask) {
+        if (testTask.getId() != null && testTask.getId() < 0) {
+            testTask.setId(null);
+        }
+    }
+
+    private void setTestParticipantIdsNullIfNegative(TestTask testTask) {
+        if (testTask.getTestParticipants() != null && testTask.getTestParticipants().size() > 0) {
+            testTask.getTestParticipants().stream()
+                .forEach(participant -> setTestParticipantIdToNullIfNegative(participant));
+        }
+    }
+
+    private void setTestParticipantIdToNullIfNegative(TestParticipant testParticipant) {
+        if (testParticipant.getId() != null && testParticipant.getId() < 0) {
+            testParticipant.setId(null);
         }
     }
 

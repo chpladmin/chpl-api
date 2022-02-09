@@ -1,5 +1,7 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import java.util.Iterator;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -38,12 +40,14 @@ public class TestDataReviewer {
         listing.getCertificationResults().stream()
             .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
             .forEach(certResult -> review(listing, certResult));
+        listing.getCertificationResults().stream()
+            .forEach(certResult -> removeTestDataIfNotApplicable(certResult));
     }
 
     private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         reviewCriteriaCanHaveTestData(listing, certResult);
+        removeTestDataWithoutIds(listing, certResult);
         reviewTestDataRequiredForG1AndG2WhenCertResultIsNotGap(listing, certResult);
-        reviewTestDataForReplacements(listing, certResult);
         if (certResult.getTestDataUsed() != null && certResult.getTestDataUsed().size() > 0) {
             certResult.getTestDataUsed().stream()
                 .forEach(testData -> reviewTestDataFields(listing, certResult, testData));
@@ -60,23 +64,27 @@ public class TestDataReviewer {
         }
     }
 
-    private void reviewTestDataForReplacements(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    private void removeTestDataIfNotApplicable(CertificationResult certResult) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_DATA)) {
+            certResult.setTestDataUsed(null);
+        }
+    }
+
+    private void removeTestDataWithoutIds(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (CollectionUtils.isEmpty(certResult.getTestDataUsed())) {
             return;
         }
-        certResult.getTestDataUsed().stream()
-            .filter(testData -> !StringUtils.isEmpty(testData.getUserEnteredName())
-                    && !testData.getTestData().getName().equals(testData.getUserEnteredName()))
-            .forEach(testData -> addWarningMessageForTestDataReplacement(listing, certResult, testData));
-    }
-
-    private void addWarningMessageForTestDataReplacement(CertifiedProductSearchDetails listing,
-            CertificationResult certResult, CertificationResultTestData testData) {
-        listing.getWarningMessages().add(
-                msgUtil.getMessage("listing.criteria.badTestDataName",
-                        testData.getUserEnteredName(),
-                        Util.formatCriteriaNumber(certResult.getCriterion()),
-                        testData.getTestData().getName()));
+        Iterator<CertificationResultTestData> testDataIter = certResult.getTestDataUsed().iterator();
+        while (testDataIter.hasNext()) {
+            CertificationResultTestData testData = testDataIter.next();
+            if (testData.getTestData() != null && testData.getTestData().getId() == null
+                    && !StringUtils.isEmpty(testData.getTestData().getName())) {
+                testDataIter.remove();
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.invalidTestDataRemoved",
+                        testData.getTestData().getName(),
+                        Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
+        }
     }
 
     private void reviewTestDataRequiredForG1AndG2WhenCertResultIsNotGap(CertifiedProductSearchDetails listing, CertificationResult certResult) {
@@ -108,11 +116,10 @@ public class TestDataReviewer {
 
     private void reviewNameRequired(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultTestData testData) {
-        if (testData.getTestData() != null && StringUtils.isEmpty(testData.getUserEnteredName())
-                && !StringUtils.isEmpty(testData.getTestData().getName())) {
-            listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.missingTestDataName",
-                    Util.formatCriteriaNumber(certResult.getCriterion()),
-                    testData.getTestData().getName()));
+        if (testData.getTestData() != null && !StringUtils.isEmpty(testData.getVersion())
+                && StringUtils.isEmpty(testData.getTestData().getName())) {
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingTestDataName",
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
 

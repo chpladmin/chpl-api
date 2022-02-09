@@ -33,8 +33,8 @@ public class CQMResultDTO implements Serializable {
         this.creationDate = entity.getCreationDate();
         this.lastModifiedDate = entity.getLastModifiedDate();
         this.lastModifiedUser = entity.getLastModifiedUser();
-        this.success = entity.isSuccess();
-        this.deleted = entity.isDeleted();
+        this.success = entity.getSuccess();
+        this.deleted = entity.getDeleted();
     }
 
     public Long getCqmCriterionId() {
