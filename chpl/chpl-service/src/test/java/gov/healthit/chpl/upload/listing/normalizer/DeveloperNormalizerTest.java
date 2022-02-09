@@ -17,6 +17,7 @@ import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
+import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.ContactDTO;
@@ -31,13 +32,13 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class DeveloperNormalizerTest {
 
     private DeveloperDAO developerDao;
-    private DeveloperDetailsNormalizer normalizer;
+    private DeveloperNormalizer normalizer;
 
     @Before
     public void setup() {
         developerDao = Mockito.mock(DeveloperDAO.class);
         ErrorMessageUtil msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        normalizer = new DeveloperDetailsNormalizer(developerDao, new ChplProductNumberUtil(),
+        normalizer = new DeveloperNormalizer(developerDao, new ChplProductNumberUtil(),
                 new ListingUploadHandlerUtil(msgUtil));
     }
 
@@ -250,8 +251,13 @@ public class DeveloperNormalizerTest {
                         .email("test@test.com")
                         .phoneNumber("123-456-7890")
                         .build())
-                .status(DeveloperStatus.builder()
-                        .status(DeveloperStatusType.Active.getName())
+                .statusEvent(DeveloperStatusEvent.builder()
+                        .developerId(id)
+                        .id(1L)
+                        .status(DeveloperStatus.builder()
+                            .status(DeveloperStatusType.Active.getName())
+                            .build())
+                        .statusDate(new Date())
                         .build())
                 .build();
     }

@@ -113,14 +113,14 @@ public class CqmNormalizer {
             return;
         }
         List<String> criterionLookupKeys = new ArrayList<String>();
-        if (criterionNumber.equalsIgnoreCase("c1") || criterionNumber.equalsIgnoreCase("(c)(1)")) {
+        if (criterionNumber.equalsIgnoreCase("c1") || criterionNumber.contains("(c)(1)")) {
             criterionLookupKeys.add(Criteria2015.C_1);
-        } else if (criterionNumber.equalsIgnoreCase("c2") || criterionNumber.equalsIgnoreCase("(c)(2)")) {
+        } else if (criterionNumber.equalsIgnoreCase("c2") || criterionNumber.contains("(c)(2)")) {
             criterionLookupKeys.add(Criteria2015.C_2);
-        } else if (criterionNumber.equalsIgnoreCase("c3") || criterionNumber.equalsIgnoreCase("(c)(3)")) {
+        } else if (criterionNumber.equalsIgnoreCase("c3") || criterionNumber.contains("(c)(3)")) {
             criterionLookupKeys.add(Criteria2015.C_3_OLD);
             criterionLookupKeys.add(Criteria2015.C_3_CURES);
-        } else if (criterionNumber.equalsIgnoreCase("c4") || criterionNumber.equalsIgnoreCase("(c)(4)")) {
+        } else if (criterionNumber.equalsIgnoreCase("c4") || criterionNumber.contains("(c)(4)")) {
             criterionLookupKeys.add(Criteria2015.C_4);
         }
 

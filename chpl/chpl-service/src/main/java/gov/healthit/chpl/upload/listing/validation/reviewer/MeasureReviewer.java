@@ -1,12 +1,12 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -44,18 +44,19 @@ public class MeasureReviewer implements Reviewer {
         if (CollectionUtils.isEmpty(listing.getMeasures())) {
             return;
         }
-
-        for (ListingMeasure measure : listing.getMeasures()) {
-            reviewMeasureTypeExists(listing, measure);
-            reviewMeasureExists(listing, measure);
-            if (measure != null && measure.getMeasure() != null
-                    && measure.getMeasure().getId() != null) {
-                //ICS + Removed check is only done for uploaded listings
-                reviewIcsAndRemovedMeasures(listing, measure);
-                reviewMeasureHasAssociatedCriteria(listing, measure);
-                reviewMeasureHasOnlyAllowedCriteria(listing, measure);
-                if (BooleanUtils.isFalse(measure.getMeasure().getRequiresCriteriaSelection())) {
-                    reviewMeasureHasAllAllowedCriteria(listing, measure);
+        removeMeasuresThatDoNotExist(listing);
+        if (!CollectionUtils.isEmpty(listing.getMeasures())) {
+            for (ListingMeasure measure : listing.getMeasures()) {
+                reviewMeasureTypeExists(listing, measure);
+                if (measure != null && measure.getMeasure() != null
+                        && measure.getMeasure().getId() != null) {
+                    //ICS + Removed check is only done for uploaded listings
+                    reviewIcsAndRemovedMeasures(listing, measure);
+                    reviewMeasureHasAssociatedCriteria(listing, measure);
+                    reviewMeasureHasOnlyAllowedCriteria(listing, measure);
+                    if (BooleanUtils.isFalse(measure.getMeasure().getRequiresCriteriaSelection())) {
+                        reviewMeasureHasAllAllowedCriteria(listing, measure);
+                    }
                 }
             }
         }
@@ -192,19 +193,25 @@ public class MeasureReviewer implements Reviewer {
         }
     }
 
-    private void reviewMeasureExists(CertifiedProductSearchDetails listing, ListingMeasure measure) {
-        if (measure == null) {
+    private void removeMeasuresThatDoNotExist(CertifiedProductSearchDetails listing) {
+        if (CollectionUtils.isEmpty(listing.getMeasures())) {
             return;
         }
 
-        if (measure != null && measure.getMeasure() != null
-                && measure.getMeasure().getId() == null
-                && !StringUtils.isEmpty(measure.getMeasure().getLegacyMacraMeasureValue())) {
-            String typeName = measure.getMeasureType() == null ? "?" : measure.getMeasureType().getName();
-            listing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.measureNotFound", typeName,
-                            measure.getMeasure().getLegacyMacraMeasureValue(),
-                            measure.getAssociatedCriteria().stream().map(crit -> Util.formatCriteriaNumber(crit)).collect(Collectors.joining(", "))));
+        Iterator<ListingMeasure> measureIter = listing.getMeasures().iterator();
+        while (measureIter.hasNext()) {
+            ListingMeasure measure = measureIter.next();
+            if (measure != null && measure.getMeasure() != null
+                    && measure.getMeasure().getId() == null) {
+                measureIter.remove();
+
+                String typeName = measure.getMeasureType() == null ? "?" : measure.getMeasureType().getName();
+                String measureName = measure.getMeasure().getLegacyMacraMeasureValue() == null ? "?" : measure.getMeasure().getLegacyMacraMeasureValue();
+                listing.getWarningMessages().add(
+                        msgUtil.getMessage("listing.measureNotFoundAndRemoved", typeName,
+                                measureName,
+                                measure.getAssociatedCriteria().stream().map(crit -> Util.formatCriteriaNumber(crit)).collect(Collectors.joining(", "))));
+            }
         }
     }
 }

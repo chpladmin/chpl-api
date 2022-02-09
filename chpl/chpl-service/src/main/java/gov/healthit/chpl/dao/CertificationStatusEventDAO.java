@@ -21,22 +21,9 @@ import gov.healthit.chpl.util.AuthUtil;
 @Repository("certificationStatusEventDAO")
 public class CertificationStatusEventDAO extends BaseDAOImpl {
 
-    public CertificationStatusEvent create(Long listingId, CertificationStatusEvent cse)
-            throws EntityCreationException, EntityRetrievalException {
-
-        CertificationStatusEventEntity entity = null;
+    public Long create(Long listingId, CertificationStatusEvent cse) throws EntityCreationException {
         try {
-            if (cse.getId() != null) {
-                entity = this.getEntityById(cse.getId());
-            }
-        } catch (final EntityRetrievalException e) {
-            throw new EntityCreationException(e);
-        }
-
-        if (entity != null) {
-            throw new EntityCreationException("An entity with this ID already exists.");
-        } else {
-            entity = new CertificationStatusEventEntity();
+            CertificationStatusEventEntity entity = new CertificationStatusEventEntity();
             entity.setCertifiedProductId(listingId);
             entity.setCertificationStatusId(cse.getStatus().getId());
             entity.setEventDate(new Date(cse.getEventDate()));
@@ -44,7 +31,9 @@ public class CertificationStatusEventDAO extends BaseDAOImpl {
             entity.setLastModifiedUser(AuthUtil.getAuditId());
             entity.setDeleted(false);
             create(entity);
-            return entity.toDomain();
+            return entity.getId();
+        } catch (Exception ex) {
+            throw new EntityCreationException(ex);
         }
     }
 
