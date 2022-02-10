@@ -324,7 +324,10 @@ public class DeveloperController {
         if (!ff4j.check(FeatureList.ATTESTATIONS)) {
             throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
-        return new DeveloperAttestationSubmissionResults(attestationManager.getDeveloperAttestations(developerId));
+        return DeveloperAttestationSubmissionResults.builder()
+                .developerAttestations(attestationManager.getDeveloperAttestations(developerId))
+                .canSubmitAttestationChangeRequest(attestationManager.canDeveloperSubmitChangeRequest(developerId))
+                .build();
     }
 
     @Operation(summary = "List public attestation information for a developer.",

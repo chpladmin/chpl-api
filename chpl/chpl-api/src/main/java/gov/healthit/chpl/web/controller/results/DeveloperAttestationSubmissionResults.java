@@ -4,15 +4,20 @@ import java.io.Serializable;
 import java.util.List;
 
 import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
+@AllArgsConstructor
 public class DeveloperAttestationSubmissionResults implements Serializable {
     private static final long serialVersionUID = -3345114923797354483L;
 
     private List<DeveloperAttestationSubmission> developerAttestations;
+    private Boolean canSubmitAttestationChangeRequest = false;
 
-    public DeveloperAttestationSubmissionResults(List<DeveloperAttestationSubmission> developerAttestations) {
-        this.developerAttestations = developerAttestations;
-    }
+    //public DeveloperAttestationSubmissionResults(List<DeveloperAttestationSubmission> developerAttestations) {
+    //    this.developerAttestations = developerAttestations;
+    //}
 }
