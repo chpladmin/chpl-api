@@ -8,9 +8,11 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.attestation.domain.Attestation;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
+import gov.healthit.chpl.attestation.domain.AttestationPeriodDeveloperException;
 import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
 import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
 import gov.healthit.chpl.attestation.entity.AttestationEntity;
+import gov.healthit.chpl.attestation.entity.AttestationPeriodDeveloperExceptionEntity;
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
 import gov.healthit.chpl.attestation.entity.AttestationValidResponseEntity;
 import gov.healthit.chpl.attestation.entity.DeveloperAttestationResponseEntity;
@@ -88,6 +90,32 @@ public class AttestationDAO extends BaseDAOImpl{
                     resp.setDeleted(true);
                     update(resp);
                 });
+    }
+
+    public List<AttestationPeriodDeveloperException> getAttestationPeriodDeveloperExceptions(Long developerId, Long attestationPeriodId) {
+        return getAttestationPeriodDeveloperExceptionEntities(developerId, attestationPeriodId).stream()
+                .map(entity -> new AttestationPeriodDeveloperException(entity))
+                .collect(Collectors.toList());
+    }
+
+    public AttestationPeriodDeveloperException createAttestationPeriodDeveloperException(AttestationPeriodDeveloperException adpe) throws EntityRetrievalException {
+        AttestationPeriodDeveloperExceptionEntity entity = AttestationPeriodDeveloperExceptionEntity.builder()
+                .developer(DeveloperEntity.builder()
+                        .id(adpe.getDeveloper().getDeveloperId())
+                        .build())
+                .period(AttestationPeriodEntity.builder()
+                        .id(adpe.getPeriod().getId())
+                        .build())
+                .exceptionEnd(adpe.getExceptionEnd())
+                .creationDate(new Date())
+                .lastModifiedDate(new Date())
+                .lastModifiedUser(AuthUtil.getAuditId())
+                .deleted(false)
+                .build();
+
+        create(entity);
+
+        return new AttestationPeriodDeveloperException(getAttestationPeriodDeveloperExceptionEntity(entity.getId()));
     }
 
     private DeveloperAttestationResponseEntity createDeveloperAttestationResponse(AttestationSubmittedResponse response, Long developerAttestationId) {
@@ -259,6 +287,52 @@ public class AttestationDAO extends BaseDAOImpl{
                 .getResultList();
 
         return result;
+    }
+
+    private List<AttestationPeriodDeveloperExceptionEntity> getAttestationPeriodDeveloperExceptionEntities(Long developerId, Long attestationPeriodId) {
+        String hql = "SELECT apde "
+                + "FROM AttestationPeriodDeveloperExceptionEntity apde "
+                + "JOIN FETCH adpe.developer d "
+                + "JOIN FETCH adpe.period p "
+                + "WHERE d.id = :developerId "
+                + "AND p.id = :attestationPeriodId "
+                + "AND adpe.deleted = false ";
+
+        List<AttestationPeriodDeveloperExceptionEntity> result = entityManager
+                .createQuery(hql, AttestationPeriodDeveloperExceptionEntity.class)
+                .setParameter("developerId", developerId)
+                .setParameter("attestationPeriodId", attestationPeriodId)
+                .getResultList();
+
+        return result;
+    }
+
+    private AttestationPeriodDeveloperExceptionEntity getAttestationPeriodDeveloperExceptionEntity(Long id) throws EntityRetrievalException {
+        String hql = "SELECT apde "
+                + "FROM AttestationPeriodDeveloperExceptionEntity apde "
+                + "JOIN FETCH adpe.developer d "
+                + "JOIN FETCH adpe.period p "
+                + "WHERE apde.id = :id "
+                + "AND adpe.deleted = false ";
+
+        List<AttestationPeriodDeveloperExceptionEntity> result = entityManager
+                .createQuery(hql, AttestationPeriodDeveloperExceptionEntity.class)
+                .setParameter("id", id)
+                .getResultList();
+
+        if (result == null || result.size() == 0) {
+            throw new EntityRetrievalException(
+                    "Data error. Attestation Period Developer Exception not found in database.");
+        } else if (result.size() > 1) {
+            throw new EntityRetrievalException(
+                    "Data error. Duplicate Attestation Period Developer Exception in database.");
+        }
+
+        if (result.size() == 0) {
+            return null;
+        }
+        return result.get(0);
+
     }
 
 }
