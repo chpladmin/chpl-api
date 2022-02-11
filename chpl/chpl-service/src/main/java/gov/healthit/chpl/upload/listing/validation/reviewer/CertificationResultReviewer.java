@@ -1,10 +1,10 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -116,7 +116,7 @@ public class CertificationResultReviewer {
     }
 
     private void reviewSuccessField(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (certResult.isSuccess() == null && !StringUtils.isEmpty(certResult.getSuccessStr())) {
+        if (certResult.isSuccess() == null && !ObjectUtils.isEmpty(certResult.getSuccessStr())) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.invalidSuccess",
                     Util.formatCriteriaNumber(certResult.getCriterion()),
                     certResult.getSuccessStr()));
@@ -157,7 +157,7 @@ public class CertificationResultReviewer {
     private void reviewGap(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.GAP)
                 && certResult.isGap() == null) {
-            if (!StringUtils.isEmpty(certResult.getGapStr())) {
+            if (!ObjectUtils.isEmpty(certResult.getGapStr())) {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.invalidGap",
                         Util.formatCriteriaNumber(certResult.getCriterion()),
                         certResult.getGapStr()));
@@ -166,7 +166,7 @@ public class CertificationResultReviewer {
                         Util.formatCriteriaNumber(certResult.getCriterion())));
             }
         } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.GAP)) {
-            if (certResult.isGap() != null | !StringUtils.isEmpty(certResult.getGapStr())) {
+            if (certResult.isGap() != null | !ObjectUtils.isEmpty(certResult.getGapStr())) {
                 listing.getWarningMessages().add(
                         msgUtil.getMessage("listing.criteria.gapNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
@@ -175,7 +175,7 @@ public class CertificationResultReviewer {
     }
 
     private void reviewAdditionalSoftwareString(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (!StringUtils.isEmpty(certResult.getHasAdditionalSoftwareStr())
+        if (!ObjectUtils.isEmpty(certResult.getHasAdditionalSoftwareStr())
                 && certResult.getHasAdditionalSoftware() == null) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.invalidHasAdditionalSoftware",
                     Util.formatCriteriaNumber(certResult.getCriterion()),
@@ -186,7 +186,7 @@ public class CertificationResultReviewer {
     private void reviewAttestationAnswer(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.ATTESTATION_ANSWER)
                 && certResult.getAttestationAnswer() == null) {
-            if (!StringUtils.isEmpty(certResult.getAttestationAnswerStr())) {
+            if (!ObjectUtils.isEmpty(certResult.getAttestationAnswerStr())) {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.invalidAttestationAnswer",
                         Util.formatCriteriaNumber(certResult.getCriterion()),
                         certResult.getAttestationAnswerStr()));
@@ -196,8 +196,8 @@ public class CertificationResultReviewer {
                         Util.formatCriteriaNumber(certResult.getCriterion())));
             }
         } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.ATTESTATION_ANSWER)) {
-            if (!StringUtils.isEmpty(certResult.getAttestationAnswer())
-                    || !StringUtils.isEmpty(certResult.getAttestationAnswerStr())) {
+            if (!ObjectUtils.isEmpty(certResult.getAttestationAnswer())
+                    || !ObjectUtils.isEmpty(certResult.getAttestationAnswerStr())) {
                 listing.getWarningMessages().add(
                         msgUtil.getMessage("listing.criteria.attestationAnswerNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
@@ -207,11 +207,11 @@ public class CertificationResultReviewer {
 
     private void reviewApiDocumentation(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.API_DOCUMENTATION)
-                && StringUtils.isEmpty(certResult.getApiDocumentation())) {
+                && ObjectUtils.isEmpty(certResult.getApiDocumentation())) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingApiDocumentation",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
-            if (!StringUtils.isEmpty(certResult.getApiDocumentation())) {
+            if (!ObjectUtils.isEmpty(certResult.getApiDocumentation())) {
                 listing.getWarningMessages().add(
                         msgUtil.getMessage("listing.criteria.apiDocumentationNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
@@ -221,11 +221,11 @@ public class CertificationResultReviewer {
 
     private void reviewExportDocumentation(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.EXPORT_DOCUMENTATION)
-                && StringUtils.isEmpty(certResult.getExportDocumentation())) {
+                && ObjectUtils.isEmpty(certResult.getExportDocumentation())) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingExportDocumentation",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.EXPORT_DOCUMENTATION)) {
-            if (!StringUtils.isEmpty(certResult.getExportDocumentation())) {
+            if (!ObjectUtils.isEmpty(certResult.getExportDocumentation())) {
                 listing.getWarningMessages().add(
                         msgUtil.getMessage("listing.criteria.exportDocumentationNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
@@ -235,18 +235,18 @@ public class CertificationResultReviewer {
 
     private void reviewUseCases(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.USE_CASES)
-                && StringUtils.isEmpty(certResult.getUseCases())
+                && ObjectUtils.isEmpty(certResult.getUseCases())
                 && certResult.getAttestationAnswer() != null && certResult.getAttestationAnswer().equals(Boolean.TRUE)) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingUseCases",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         } else if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.USE_CASES)
-                && !StringUtils.isEmpty(certResult.getUseCases())
+                && !ObjectUtils.isEmpty(certResult.getUseCases())
                 && (certResult.getAttestationAnswer() == null || certResult.getAttestationAnswer().equals(Boolean.FALSE))) {
             listing.getWarningMessages().add(
                     msgUtil.getMessage("listing.criteria.useCasesWithoutAttestation",
                             Util.formatCriteriaNumber(certResult.getCriterion())));
         } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.USE_CASES)) {
-            if (!StringUtils.isEmpty(certResult.getUseCases())) {
+            if (!ObjectUtils.isEmpty(certResult.getUseCases())) {
                 listing.getWarningMessages().add(
                         msgUtil.getMessage("listing.criteria.useCasesNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
@@ -256,11 +256,11 @@ public class CertificationResultReviewer {
 
     private void reviewServiceBaseUrlList(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.SERVICE_BASE_URL_LIST)
-                && StringUtils.isEmpty(certResult.getServiceBaseUrlList())) {
+                && ObjectUtils.isEmpty(certResult.getServiceBaseUrlList())) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingServiceBaseUrlList",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.SERVICE_BASE_URL_LIST)) {
-            if (!StringUtils.isEmpty(certResult.getServiceBaseUrlList())) {
+            if (!ObjectUtils.isEmpty(certResult.getServiceBaseUrlList())) {
                 listing.getWarningMessages().add(
                         msgUtil.getMessage("listing.criteria.serviceBaseUrlListNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
