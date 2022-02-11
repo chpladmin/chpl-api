@@ -292,11 +292,11 @@ public class AttestationDAO extends BaseDAOImpl{
     private List<AttestationPeriodDeveloperExceptionEntity> getAttestationPeriodDeveloperExceptionEntities(Long developerId, Long attestationPeriodId) {
         String hql = "SELECT apde "
                 + "FROM AttestationPeriodDeveloperExceptionEntity apde "
-                + "JOIN FETCH adpe.developer d "
-                + "JOIN FETCH adpe.period p "
+                + "JOIN FETCH apde.developer d "
+                + "JOIN FETCH apde.period p "
                 + "WHERE d.id = :developerId "
                 + "AND p.id = :attestationPeriodId "
-                + "AND adpe.deleted = false ";
+                + "AND apde.deleted = false ";
 
         List<AttestationPeriodDeveloperExceptionEntity> result = entityManager
                 .createQuery(hql, AttestationPeriodDeveloperExceptionEntity.class)
@@ -310,10 +310,10 @@ public class AttestationDAO extends BaseDAOImpl{
     private AttestationPeriodDeveloperExceptionEntity getAttestationPeriodDeveloperExceptionEntity(Long id) throws EntityRetrievalException {
         String hql = "SELECT apde "
                 + "FROM AttestationPeriodDeveloperExceptionEntity apde "
-                + "JOIN FETCH adpe.developer d "
-                + "JOIN FETCH adpe.period p "
+                + "JOIN FETCH apde.developer d "
+                + "JOIN FETCH apde.period p "
                 + "WHERE apde.id = :id "
-                + "AND adpe.deleted = false ";
+                + "AND apde.deleted = false ";
 
         List<AttestationPeriodDeveloperExceptionEntity> result = entityManager
                 .createQuery(hql, AttestationPeriodDeveloperExceptionEntity.class)

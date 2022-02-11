@@ -1,6 +1,7 @@
 package gov.healthit.chpl.attestation.manager;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.attestation.dao.AttestationDAO;
 import gov.healthit.chpl.attestation.domain.AttestationForm;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
+import gov.healthit.chpl.attestation.domain.AttestationPeriodDeveloperException;
 import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -72,7 +74,7 @@ public class AttestationManager {
     }
 
     private boolean isCurrentDateWithAttestationPeriod(LocalDate periodExceptionDate) {
-        AttestationPeriod mostRecentPeriod = getMostRecentPeriod();
+        AttestationPeriod mostRecentPeriod = getMostRecentPastPeriod();
         if (mostRecentPeriod == null) {
             return false;
         }
@@ -86,20 +88,39 @@ public class AttestationManager {
                 && (mostRecentPeriod.getSubmissionEnd().equals(now) || mostRecentPeriod.getSubmissionEnd().isAfter(now));
     }
 
-    private AttestationPeriod getMostRecentPeriod() {
+    private AttestationPeriod getMostRecentPastPeriod() {
         List<AttestationPeriod> periods = getAllPeriods();
         if (periods == null || periods.size() < 0) {
             return null;
         }
 
-        periods.sort((p1, p2) -> p1.getPeriodEnd().compareTo(p2.getPeriodEnd()));
+        periods = periods.stream()
+                .sorted(Comparator.comparing(AttestationPeriod::getPeriodEnd).reversed())
+                .filter(per -> per.getPeriodEnd().isBefore(LocalDate.now()))
+                .toList();
 
-        return periods.get(periods.size() - 1);
+        if (periods == null || periods.size() < 0) {
+            return null;
+        }
+
+        return periods.get(0);
     }
 
     //TODO: Need to implement
     private LocalDate getMostRecentPeriodExceptionDateForDeveloper(Long developerId) {
-        return null;
+        AttestationPeriod period = getMostRecentPastPeriod();
+        List<AttestationPeriodDeveloperException> periodExceptions =
+                attestationDAO.getAttestationPeriodDeveloperExceptions(developerId, period.getId());
+
+        if (periodExceptions == null || periodExceptions.size() == 0) {
+            return null;
+        }
+
+        return periodExceptions.stream()
+                .sorted(Comparator.comparing(AttestationPeriodDeveloperException::getExceptionEnd).reversed())
+                .toList()
+                .get(0)
+                .getExceptionEnd();
     }
 
     private boolean doesPendingAttestationChangeRequestForDeveloperExist(Long developerId) throws EntityRetrievalException {
