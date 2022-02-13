@@ -12,6 +12,7 @@ import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
+import gov.healthit.chpl.validation.listing.reviewer.ConformanceMethodReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.GapAllowedReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.OldCriteriaWithoutIcsReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
@@ -26,6 +27,7 @@ public class CertificationResultReviewer {
     private TestToolReviewer testToolReviewer;
     private TestDataReviewer testDataReviewer;
     private TestProcedureReviewer testProcedureReviewer;
+    private ConformanceMethodReviewer conformanceMethodReviewer;
     private TestFunctionalityReviewer testFunctionalityReviewer;
     private TestStandardReviewer testStandardReviewer;
     private OptionalStandardReviewer optionalStandardReviewer;
@@ -47,6 +49,7 @@ public class CertificationResultReviewer {
             @Qualifier("listingUploadTestToolReviewer") TestToolReviewer testToolReviewer,
             @Qualifier("listingUploadTestDataReviewer") TestDataReviewer testDataReviewer,
             @Qualifier("listingUploadTestProcedureReviewer") TestProcedureReviewer testProcedureReviewer,
+            @Qualifier("conformanceMethodReviewer") ConformanceMethodReviewer conformanceMethodReviewer,
             @Qualifier("listingUploadTestFunctionalityReviewer") TestFunctionalityReviewer testFunctionalityReviewer,
             @Qualifier("listingUploadTestStandardReviewer") TestStandardReviewer testStandardReviewer,
             @Qualifier("listingUploadOptionalStandardReviewer") OptionalStandardReviewer optionalStandardReviewer,
@@ -63,6 +66,7 @@ public class CertificationResultReviewer {
         this.testToolReviewer = testToolReviewer;
         this.testDataReviewer = testDataReviewer;
         this.testProcedureReviewer = testProcedureReviewer;
+        this.conformanceMethodReviewer = conformanceMethodReviewer;
         this.testFunctionalityReviewer = testFunctionalityReviewer;
         this.testStandardReviewer = testStandardReviewer;
         this.optionalStandardReviewer = optionalStandardReviewer;
@@ -101,6 +105,7 @@ public class CertificationResultReviewer {
         testToolReviewer.review(listing);
         testDataReviewer.review(listing);
         testProcedureReviewer.review(listing);
+        conformanceMethodReviewer.review(listing);
         testFunctionalityReviewer.review(listing);
         testStandardReviewer.review(listing);
         optionalStandardReviewer.review(listing);

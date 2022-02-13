@@ -2,6 +2,7 @@ package gov.healthit.chpl.validation.listing.reviewer;
 
 import java.util.Optional;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,20 +15,28 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.util.ValidationUtils;
 
 @Component("conformanceMethodReviewer")
 public class ConformanceMethodReviewer extends PermissionBasedReviewer {
     private ConformanceMethodDAO conformanceMethodDAO;
+    private ValidationUtils validationUtils;
+    private CertificationResultRules certResultRules;
     private FF4j ff4j;
     private static final String CM_MUST_NOT_HAVE_OTHER_DATA = "Attestation";
 
     @Autowired
-    public ConformanceMethodReviewer(ConformanceMethodDAO conformanceMethodDAO, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions, FF4j ff4j) {
+    public ConformanceMethodReviewer(ConformanceMethodDAO conformanceMethodDAO, ErrorMessageUtil msgUtil,
+            ValidationUtils validationUtils, CertificationResultRules certResultRules,
+            ResourcePermissions resourcePermissions, FF4j ff4j) {
         super(msgUtil, resourcePermissions);
         this.conformanceMethodDAO = conformanceMethodDAO;
         this.msgUtil = msgUtil;
+        this.validationUtils = validationUtils;
+        this.certResultRules = certResultRules;
         this.resourcePermissions = resourcePermissions;
         this.ff4j = ff4j;
     }
@@ -41,23 +50,45 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
             listing.getErrorMessages().add("Conformance Methods are not implemented yet");
         } else {
             listing.getCertificationResults().stream()
-                    .filter(cr -> cr.isSuccess() && cr.getConformanceMethods() != null && cr.getConformanceMethods().size() > 0)
-                    .forEach(cert -> cert.getConformanceMethods().stream()
-                            .forEach(conformanceMethod -> reviewConformanceMethod(listing, cert, conformanceMethod)));
+                    .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
+                    .forEach(certResult -> reviewCertificationResult(listing, certResult));
+            listing.getCertificationResults().stream()
+                .forEach(certResult -> removeConformanceMethodsIfNotApplicable(certResult));
         }
     }
 
-    private void reviewConformanceMethod(CertifiedProductSearchDetails listing, CertificationResult certResult,
-            CertificationResultConformanceMethod conformanceMethod) {
+    private void reviewCertificationResult(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        reviewCriteriaCanHaveConformanceMethods(listing, certResult);
+        if (!CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
+            certResult.getConformanceMethods().stream()
+                .forEach(conformanceMethod -> reviewConformanceMethodFields(listing, certResult, conformanceMethod));
+        }
+    }
 
+    private void reviewCriteriaCanHaveConformanceMethods(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.CONFORMANCE_METHOD)) {
+            if (!CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
+                listing.getWarningMessages().add(msgUtil.getMessage(
+                    "listing.criteria.conformanceMethodNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
+        }
+    }
+
+    private void removeConformanceMethodsIfNotApplicable(CertificationResult certResult) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.CONFORMANCE_METHOD)) {
+            certResult.setConformanceMethods(null);
+        }
+    }
+
+    private void reviewConformanceMethodFields(CertifiedProductSearchDetails listing, CertificationResult certResult,
+            CertificationResultConformanceMethod conformanceMethod) {
         checkIfConformanceMethodIsAllowed(listing, certResult, conformanceMethod);
         checkIfConformanceMethodVersionRequirements(listing, certResult, conformanceMethod);
     }
 
     private void checkIfConformanceMethodIsAllowed(CertifiedProductSearchDetails listing, CertificationResult certResult,
             CertificationResultConformanceMethod conformanceMethod) {
-        Optional<ConformanceMethod> allowedConformanceMethod
-        = conformanceMethodDAO.getByCriterionId(certResult.getCriterion().getId()).stream()
+        Optional<ConformanceMethod> allowedConformanceMethod = conformanceMethodDAO.getByCriterionId(certResult.getCriterion().getId()).stream()
             .filter(cm -> cm.getId().equals(conformanceMethod.getConformanceMethod().getId()))
             .findAny();
         if (!allowedConformanceMethod.isPresent()) {
