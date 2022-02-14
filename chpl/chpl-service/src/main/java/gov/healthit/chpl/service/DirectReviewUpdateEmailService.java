@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import lombok.extern.log4j.Log4j2;
 
@@ -37,11 +37,15 @@ public class DirectReviewUpdateEmailService {
 
     private DirectReviewCachingService directReviewService;
     private Environment env;
+    private ChplEmailFactory chplEmailFactory;
+
 
     @Autowired
-    public DirectReviewUpdateEmailService(DirectReviewCachingService directReviewService, Environment env) {
+    public DirectReviewUpdateEmailService(DirectReviewCachingService directReviewService, Environment env,
+            ChplEmailFactory chplEmailFactory) {
         this.directReviewService = directReviewService;
         this.env = env;
+        this.chplEmailFactory = chplEmailFactory;
     }
 
     /**
@@ -112,8 +116,7 @@ public class DirectReviewUpdateEmailService {
             + "<ul>" + chplProductNumberChangedHtml + "</ul>";
         }
 
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipients(recipients)
+        chplEmailFactory.emailBuilder().recipients(recipients)
                 .subject(env.getProperty("directReview.chplChanges.emailSubject"))
                 .htmlMessage(htmlMessage)
                 .sendEmail();
@@ -142,8 +145,7 @@ public class DirectReviewUpdateEmailService {
             + "<ul>" + chplProductNumberChangedHtml + "</ul>";
         }
 
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipients(recipients)
+        chplEmailFactory.emailBuilder().recipients(recipients)
                 .subject(env.getProperty("directReview.unknownChanges.emailSubject"))
                 .htmlMessage(htmlMessage)
                 .sendEmail();

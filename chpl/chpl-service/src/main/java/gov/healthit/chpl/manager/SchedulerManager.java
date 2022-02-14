@@ -25,6 +25,7 @@ import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -60,14 +61,16 @@ public class SchedulerManager extends SecuredManager {
     private ChplSchedulerReference chplScheduler;
     private ResourcePermissions resourcePermissions;
     private ChplRepeatableTriggerChangeEmailer emailer;
+    private Environment env;
 
     @Autowired
     public SchedulerManager(ChplSchedulerReference chplScheduler, ResourcePermissions resourcePermissions,
-            ChplRepeatableTriggerChangeEmailer emailer) {
+            ChplRepeatableTriggerChangeEmailer emailer, Environment env) {
 
         this.chplScheduler = chplScheduler;
         this.resourcePermissions = resourcePermissions;
         this.emailer = emailer;
+        this.env = env;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
@@ -109,7 +112,7 @@ public class SchedulerManager extends SecuredManager {
 
             ChplRepeatableTrigger newTrigger = new ChplRepeatableTrigger((CronTrigger) scheduler.getTrigger(triggerId));
             try {
-                emailer.sendEmail(newTrigger, trigger.getJob(),  ADDED);
+                emailer.sendEmail(newTrigger, trigger.getJob(), ADDED);
             } catch (Exception ignore) {
             }
             return newTrigger;

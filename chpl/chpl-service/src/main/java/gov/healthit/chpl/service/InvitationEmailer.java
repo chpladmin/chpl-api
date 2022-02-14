@@ -2,14 +2,15 @@ package gov.healthit.chpl.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+
 import gov.healthit.chpl.domain.auth.UserInvitation;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
-import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import lombok.extern.log4j.Log4j2;
 
@@ -30,12 +31,12 @@ public class InvitationEmailer {
     private String accountConfirmationTitle;
     private String accountConfirmationBody;
     private String accountConfirmationLink;
-    private Environment env;
+    private ChplEmailFactory chplEmailFactory;
+
 
     @Autowired
     @SuppressWarnings({"checkstyle:parameternumber"})
-    public InvitationEmailer(ChplHtmlEmailBuilder htmlEmailBuilder,
-            Environment env,
+    public InvitationEmailer(ChplHtmlEmailBuilder htmlEmailBuilder, ChplEmailFactory chplEmailFactory,
             @Value("${account.invitation.title}") String accountInvitationTitle,
             @Value("${account.invitation.heading}") String accountInvitationHeading,
             @Value("${account.invitation.paragraph1}") String accountInvitationParagraph1,
@@ -50,7 +51,7 @@ public class InvitationEmailer {
             @Value("${chpl.email.greeting}") String chplEmailGreeting,
             @Value("${chpl.email.valediction}") String chplEmailValediction) {
         this.htmlEmailBuilder = htmlEmailBuilder;
-        this.env = env;
+        this.chplEmailFactory = chplEmailFactory;
 
         this.accountInvitationTitle = accountInvitationTitle;
         this.accountInvitationHeading = accountInvitationHeading;
@@ -81,9 +82,8 @@ public class InvitationEmailer {
         };
         LOGGER.info("Created HTML Message for " + invitation.getEmailAddress());
         try {
-            EmailBuilder emailBuilder = new EmailBuilder(env);
             LOGGER.info("Created new email builder");
-            emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
+            chplEmailFactory.emailBuilder().recipients(new ArrayList<String>(Arrays.asList(toEmails)))
                 .subject(accountInvitationTitle)
                 .htmlMessage(htmlMessage)
                 .sendEmail();
@@ -106,11 +106,11 @@ public class InvitationEmailer {
                 newUser.getEmail()
         };
         try {
-            EmailBuilder emailBuilder = new EmailBuilder(env);
-            emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
-            .subject(accountConfirmationTitle)
-            .htmlMessage(htmlMessage)
-            .sendEmail();
+            chplEmailFactory.emailBuilder()
+                    .recipients(new ArrayList<String>(Arrays.asList(toEmails)))
+                    .subject(accountConfirmationTitle)
+                    .htmlMessage(htmlMessage)
+                    .sendEmail();
         } catch (EmailNotSentException ex) {
             LOGGER.error(ex.getMessage(), ex);
         }

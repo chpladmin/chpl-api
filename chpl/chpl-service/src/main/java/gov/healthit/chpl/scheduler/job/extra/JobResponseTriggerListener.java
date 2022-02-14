@@ -10,6 +10,8 @@ import org.quartz.Trigger.CompletedExecutionInstruction;
 import org.quartz.TriggerListener;
 import org.springframework.core.env.Environment;
 
+import gov.healthit.chpl.email.ChplEmailFactory;
+
 public class JobResponseTriggerListener implements TriggerListener {
     private static final String TRIGGER_LISTENER_NAME = "UpdateSingleListingTriggerListener";
     private Logger logger;
@@ -20,10 +22,11 @@ public class JobResponseTriggerListener implements TriggerListener {
     private String emailSubject;
     private Integer statusInterval;
     private Environment env;
+    private ChplEmailFactory chplEmailFactory;
 
-    public JobResponseTriggerListener(List<JobResponseTriggerWrapper> triggerWrappers, final String emailAddress,
-            final String emailFilename, final String emailSubject, final Integer statusInterval, final Environment env,
-            final Logger logger) {
+    public JobResponseTriggerListener(List<JobResponseTriggerWrapper> triggerWrappers, String emailAddress,
+            String emailFilename, String emailSubject, Integer statusInterval, Environment env,
+            Logger logger, ChplEmailFactory chplEmailFactory) {
         this.triggerWrappers = triggerWrappers;
         this.emailAddress = emailAddress;
         this.emailFileName = emailFilename;
@@ -31,6 +34,7 @@ public class JobResponseTriggerListener implements TriggerListener {
         this.statusInterval = statusInterval;
         this.env = env;
         this.logger = logger;
+        this.chplEmailFactory = chplEmailFactory;
     }
 
     @Override
@@ -92,7 +96,8 @@ public class JobResponseTriggerListener implements TriggerListener {
                     trigger.getJobKey().getName(),
                     Long.valueOf(triggerWrappers.size()),
                     triggerWrappers.stream().filter(trig -> trig.isCompleted()).count(),
-                    logger);
+                    logger,
+                    chplEmailFactory);
 
             logger.info("----------------------------Completed " + completedJobsCount + " out of "
                     + triggerWrappers.size() + " jobs----------------------------");
@@ -104,7 +109,7 @@ public class JobResponseTriggerListener implements TriggerListener {
     }
 
     private void sendEmail() {
-        (new JobResponseEmail()).sendEmail(env, emailAddress, emailFileName, emailSubject, triggerWrappers, logger);
+        (new JobResponseEmail()).sendEmail(env, emailAddress, emailFileName, emailSubject, triggerWrappers, logger, chplEmailFactory);
     }
 
 }
