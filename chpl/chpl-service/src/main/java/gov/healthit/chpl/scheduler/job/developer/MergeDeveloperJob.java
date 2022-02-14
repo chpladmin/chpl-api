@@ -28,7 +28,7 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import lombok.extern.log4j.Log4j2;
@@ -52,6 +52,9 @@ public class MergeDeveloperJob implements Job {
 
     @Autowired
     private DeveloperDAO devDao;
+
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
 
     private List<DeveloperDTO> preMergeDevelopers;
     private DeveloperDTO postMergeDeveloper;
@@ -168,8 +171,7 @@ public class MergeDeveloperJob implements Job {
         LOGGER.info("Sending email to: " + recipientEmail);
         LOGGER.info("Message to be sent: " + htmlMessage);
 
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipient(recipientEmail)
+        chplEmailFactory.emailBuilder().recipient(recipientEmail)
                 .subject(subject)
                 .htmlMessage(htmlMessage)
                 .acbAtlHtmlFooter()

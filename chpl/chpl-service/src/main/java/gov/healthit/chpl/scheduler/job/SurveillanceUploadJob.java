@@ -29,7 +29,7 @@ import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
@@ -50,18 +50,27 @@ public class SurveillanceUploadJob implements Job {
 
     @Autowired
     private Environment env;
+
     @Autowired
     private ErrorMessageUtil errorMessageUtil;
+
     @Autowired
     private CertifiedProductManager cpManager;
+
     @Autowired
     private PendingSurveillanceManager pendingSurvManager;
+
     @Autowired
     private SurveillanceUploadManager survUploadManager;
+
     @Autowired
     private SurveillanceUploadHandlerFactory uploadHandlerFactory;
+
     @Autowired
     private CertificationBodyDAO acbDAO;
+
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
 
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
@@ -210,8 +219,8 @@ public class SurveillanceUploadJob implements Job {
         LOGGER.info("Sending email to: " + recipientEmail);
         LOGGER.info("Message to be sent: " + htmlMessage);
 
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipient(recipientEmail)
+        chplEmailFactory.emailBuilder()
+                .recipient(recipientEmail)
                 .subject(subject)
                 .htmlMessage(htmlMessage)
                 .sendEmail();

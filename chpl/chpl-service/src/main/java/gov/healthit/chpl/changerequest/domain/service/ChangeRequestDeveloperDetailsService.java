@@ -9,7 +9,6 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -26,7 +25,7 @@ import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -42,7 +41,8 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
     private ChangeRequestDeveloperDetailsDAO crDeveloperDetailsDao;
     private DeveloperManager developerManager;
     private ActivityManager activityManager;
-    private Environment env;
+    private ChplEmailFactory chplEmailFactory;
+
 
     @Value("${changeRequest.developerDetails.approval.subject}")
     private String approvalEmailSubject;
@@ -65,13 +65,13 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
     @Autowired
     public ChangeRequestDeveloperDetailsService(ChangeRequestDAO crDAO, ChangeRequestDeveloperDetailsDAO crDeveloperDetailsDao,
             DeveloperManager developerManager, UserDeveloperMapDAO userDeveloperMapDAO,
-            ActivityManager activityManager, Environment env) {
+            ActivityManager activityManager, ChplEmailFactory chplEmailFactory) {
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
         this.crDeveloperDetailsDao = crDeveloperDetailsDao;
         this.developerManager = developerManager;
         this.activityManager = activityManager;
-        this.env = env;
+        this.chplEmailFactory = chplEmailFactory;
     }
 
     @Override
@@ -103,7 +103,7 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
             cr.setDetails(crDevDetails);
 
             if (!((ChangeRequestDeveloperDetails) cr.getDetails())
-                    .equals(((ChangeRequestDeveloperDetails) crFromDb.getDetails()))) {
+                    .equals((crFromDb.getDetails()))) {
                 cr.setDetails(crDeveloperDetailsDao.update((ChangeRequestDeveloperDetails) cr.getDetails()));
 
                 activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, cr.getId(),
@@ -156,7 +156,7 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
     @Override
     protected void sendApprovalEmail(ChangeRequest cr) throws EmailNotSentException {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
-        new EmailBuilder(env)
+        chplEmailFactory.emailBuilder()
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String>toList()))
@@ -171,7 +171,7 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
     @Override
     protected void sendPendingDeveloperActionEmail(ChangeRequest cr) throws EmailNotSentException {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
-        new EmailBuilder(env)
+        chplEmailFactory.emailBuilder()
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String>toList()))
@@ -187,7 +187,7 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
     @Override
     protected void sendRejectedEmail(ChangeRequest cr) throws EmailNotSentException {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
-        new EmailBuilder(env)
+        chplEmailFactory.emailBuilder()
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String>toList()))

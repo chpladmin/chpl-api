@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -20,7 +19,7 @@ import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -36,7 +35,8 @@ public class ChangeRequestWebsiteService extends ChangeRequestDetailsService<Cha
     private ChangeRequestWebsiteDAO crWebsiteDAO;
     private DeveloperManager developerManager;
     private ActivityManager activityManager;
-    private Environment env;
+    private ChplEmailFactory chplEmailFactory;
+
 
     @Value("${changeRequest.website.approval.subject}")
     private String approvalEmailSubject;
@@ -59,13 +59,13 @@ public class ChangeRequestWebsiteService extends ChangeRequestDetailsService<Cha
     @Autowired
     public ChangeRequestWebsiteService(ChangeRequestDAO crDAO, ChangeRequestWebsiteDAO crWebsiteDAO,
             DeveloperManager developerManager, UserDeveloperMapDAO userDeveloperMapDAO,
-            ActivityManager activityManager, Environment env) {
+            ActivityManager activityManager, ChplEmailFactory chplEmailFactory) {
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
         this.crWebsiteDAO = crWebsiteDAO;
         this.developerManager = developerManager;
         this.activityManager = activityManager;
-        this.env = env;
+        this.chplEmailFactory = chplEmailFactory;
     }
 
     @Override
@@ -130,7 +130,7 @@ public class ChangeRequestWebsiteService extends ChangeRequestDetailsService<Cha
     @Override
     protected void sendApprovalEmail(ChangeRequest cr) throws EmailNotSentException {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
-        new EmailBuilder(env)
+        chplEmailFactory.emailBuilder()
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String> toList()))
@@ -145,7 +145,7 @@ public class ChangeRequestWebsiteService extends ChangeRequestDetailsService<Cha
     @Override
     protected void sendPendingDeveloperActionEmail(ChangeRequest cr) throws EmailNotSentException {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
-        new EmailBuilder(env)
+        chplEmailFactory.emailBuilder()
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String> toList()))
@@ -161,7 +161,7 @@ public class ChangeRequestWebsiteService extends ChangeRequestDetailsService<Cha
     @Override
     protected void sendRejectedEmail(ChangeRequest cr) throws EmailNotSentException {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
-        new EmailBuilder(env)
+        chplEmailFactory.emailBuilder()
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String> toList()))
