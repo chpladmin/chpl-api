@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -23,6 +24,8 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationContext.DomainManagers;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public class AttestationValidationTest {
 
@@ -30,9 +33,10 @@ public class AttestationValidationTest {
     private AttestationManager attestationManager;
 
     @Before
-    public void setup() {
+    public void setup() throws EntityRetrievalException {
         attestationManager = Mockito.mock(AttestationManager.class);
         Mockito.when(attestationManager.getAttestationForm()).thenReturn(getAttestationForm());
+        Mockito.when(attestationManager.canDeveloperSubmitChangeRequest(ArgumentMatchers.anyLong())).thenReturn(true);
 
 
         validator = new AttestationValidation();
@@ -41,6 +45,9 @@ public class AttestationValidationTest {
     @Test
     public void isValid_AttestationSubmissionIsValid_ReturnsTrue() {
         ChangeRequest cr = ChangeRequest.builder()
+                .developer(Developer.builder()
+                        .developerId(1l)
+                        .build())
                 .details(convertToMap(createChangeRequestAttestationSubmission()))
                 .build();
 
@@ -61,6 +68,9 @@ public class AttestationValidationTest {
         details.setSignature(null);
 
         ChangeRequest cr = ChangeRequest.builder()
+                .developer(Developer.builder()
+                        .developerId(1l)
+                        .build())
                 .details(convertToMap(details))
                 .build();
 
@@ -82,6 +92,9 @@ public class AttestationValidationTest {
         details.setSignature("Another User");
 
         ChangeRequest cr = ChangeRequest.builder()
+                .developer(Developer.builder()
+                        .developerId(1l)
+                        .build())
                 .details(convertToMap(details))
                 .build();
 
@@ -104,6 +117,9 @@ public class AttestationValidationTest {
         details.getAttestationResponses().remove(0);
 
         ChangeRequest cr = ChangeRequest.builder()
+                .developer(Developer.builder()
+                        .developerId(1l)
+                        .build())
                 .details(convertToMap(details))
                 .build();
 
@@ -126,6 +142,9 @@ public class AttestationValidationTest {
         details.getAttestationResponses().get(0).setResponse(AttestationValidResponse.builder().id(5L).build());
 
         ChangeRequest cr = ChangeRequest.builder()
+                .developer(Developer.builder()
+                        .developerId(1l)
+                        .build())
                 .details(convertToMap(details))
                 .build();
 

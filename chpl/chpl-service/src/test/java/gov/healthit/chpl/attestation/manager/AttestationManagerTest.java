@@ -56,7 +56,7 @@ public class AttestationManagerTest {
         Mockito.when(attestationDAO.createDeveloperAttestationSubmission(ArgumentMatchers.any())).thenReturn(
                 DeveloperAttestationSubmission.builder().build());
 
-        manager = new AttestationManager(attestationDAO, null);
+        manager = new AttestationManager(attestationDAO, null, null);
     }
 
     @Test
