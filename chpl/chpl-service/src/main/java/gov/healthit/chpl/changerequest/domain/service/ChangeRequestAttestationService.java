@@ -1,7 +1,6 @@
 package gov.healthit.chpl.changerequest.domain.service;
 
 import java.text.DateFormat;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -271,11 +270,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     }
 
     private AttestationPeriod getAttestationPeriod(ChangeRequest cr) {
-        return attestationManager.getAllPeriods().stream()
-                .filter(per -> LocalDate.now().compareTo(per.getSubmissionStart()) >= 0
-                        && LocalDate.now().compareTo(per.getSubmissionEnd()) <= 0)
-                .findAny()
-                .orElse(null);
+        return attestationManager.getMostRecentOrCurrentAttestationPeriodForDeveloperWrtExceptions(cr.getDeveloper().getDeveloperId());
     }
 
     private UserDTO getUserById(Long userId) throws UserRetrievalException {
