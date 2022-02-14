@@ -32,7 +32,7 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserResetTokenDTO;
-import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -59,17 +59,20 @@ public class UserManager extends SecuredManager {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private ErrorMessageUtil errorMessageUtil;
     private ActivityManager activityManager;
+    private ChplEmailFactory chplEmailFactory;
+
 
     @Autowired
     public UserManager(Environment env, UserDAO userDAO,
             UserResetTokenDAO userResetTokenDAO, BCryptPasswordEncoder bCryptPasswordEncoder,
-            ErrorMessageUtil errorMessageUtil, ActivityManager activityManager) {
+            ErrorMessageUtil errorMessageUtil, ActivityManager activityManager, ChplEmailFactory chplEmailFactory) {
         this.env = env;
         this.userDAO = userDAO;
         this.userResetTokenDAO = userResetTokenDAO;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.errorMessageUtil = errorMessageUtil;
         this.activityManager = activityManager;
+        this.chplEmailFactory = chplEmailFactory;
     }
 
     @Transactional
@@ -310,8 +313,8 @@ public class UserManager extends SecuredManager {
                 user.getEmail()
         };
 
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
+        chplEmailFactory.emailBuilder()
+            .recipients(new ArrayList<String>(Arrays.asList(toEmails)))
             .subject(subject)
             .htmlMessage(htmlMessage)
             .publicHtmlFooter()

@@ -28,8 +28,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
-import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -75,6 +75,9 @@ public class QuarterlyReportGenerationJob implements Job {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
 
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
@@ -228,8 +231,8 @@ public class QuarterlyReportGenerationJob implements Job {
         LOGGER.info("Message to be sent: " + htmlContent);
 
         try {
-            EmailBuilder emailBuilder = new EmailBuilder(env);
-            emailBuilder.recipient(recipientEmail)
+            chplEmailFactory.emailBuilder()
+                    .recipient(recipientEmail)
                     .subject(subject)
                     .htmlMessage(chplHtmlEmailBuilder.initialize()
                             .heading(subject)
