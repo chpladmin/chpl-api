@@ -5,14 +5,13 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
-import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.HtmlEmailTemplate;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -23,27 +22,27 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ChplRepeatableTriggerChangeEmailer {
 
-    private Environment environment;
     private CertificationBodyDAO certificationBodyDao;
     private String emailSubject;
     private String emailBody;
     private String emailStyles;
+    private ChplEmailFactory chplEmailFactory;
 
     @Autowired
-    public ChplRepeatableTriggerChangeEmailer(Environment environment,
-            CertificationBodyDAO certificationBodyDao, @Value("${job.change.subject}") String emailSubject,
+    public ChplRepeatableTriggerChangeEmailer(CertificationBodyDAO certificationBodyDao, ChplEmailFactory chplEmailFactory,
+            @Value("${job.change.subject}") String emailSubject,
             @Value("${job.change.body}") String emailBody, @Value("${email_styles}") String emailStyles) {
 
-        this.environment = environment;
         this.certificationBodyDao = certificationBodyDao;
+        this.chplEmailFactory = chplEmailFactory;
         this.emailSubject = emailSubject;
         this.emailBody = emailBody;
         this.emailStyles = emailStyles;
     }
 
     public void sendEmail(ChplRepeatableTrigger trigger, ChplJob job, String action) throws EmailNotSentException {
-        EmailBuilder email = new EmailBuilder(environment);
-        email.recipient(trigger.getEmail())
+        chplEmailFactory.emailBuilder()
+                .recipient(trigger.getEmail())
                 .subject(emailSubject)
                 .htmlMessage(getEmailText(trigger, job, action))
                 .sendEmail();

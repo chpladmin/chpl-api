@@ -22,8 +22,8 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
-import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
@@ -41,6 +41,9 @@ public class TriggerDeveloperBanJob implements Job {
 
     @Autowired
     private ChplHtmlEmailBuilder htmlEmailBuilder;
+
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
 
     @Value("${triggerDeveloperBan.subject}")
     private String emailSubject;
@@ -113,8 +116,8 @@ public class TriggerDeveloperBanJob implements Job {
             throws EmailNotSentException {
         LOGGER.info("Sending email to: " + recipientEmail + " about listing " + updatedListing.getChplProductNumber()
             + (" (ID: " + updatedListing.getId() + ")"));
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipient(recipientEmail)
+        chplEmailFactory.emailBuilder()
+                .recipient(recipientEmail)
                 .subject(subject)
                 .htmlMessage(htmlMessage)
                 .sendEmail();

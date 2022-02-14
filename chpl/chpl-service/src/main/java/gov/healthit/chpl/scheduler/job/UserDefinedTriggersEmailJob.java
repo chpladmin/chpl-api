@@ -28,7 +28,7 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
-import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
@@ -47,6 +47,9 @@ public class UserDefinedTriggersEmailJob extends QuartzJob {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
 
     public UserDefinedTriggersEmailJob() throws Exception {
         super();
@@ -150,13 +153,13 @@ public class UserDefinedTriggersEmailJob extends QuartzJob {
         LOGGER.info("Sending email to {} with contents {} and a total of {} user triggers",
                 getEmailRecipients(jobContext).get(0), getHtmlMessage(csvRows.size()));
 
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipients(getEmailRecipients(jobContext))
-        .subject(getSubject(jobContext))
-        .htmlMessage(getHtmlMessage(csvRows.size()))
-        .fileAttachments(getAttachments(csvRows))
-        .acbAtlHtmlFooter()
-        .sendEmail();
+        chplEmailFactory.emailBuilder()
+                .recipients(getEmailRecipients(jobContext))
+                .subject(getSubject(jobContext))
+                .htmlMessage(getHtmlMessage(csvRows.size()))
+                .fileAttachments(getAttachments(csvRows))
+                .acbAtlHtmlFooter()
+                .sendEmail();
     }
 
     private String getSubject(JobExecutionContext jobContext) {

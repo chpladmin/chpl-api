@@ -207,4 +207,9 @@
         <AppenderRef ref="inviteDevelopersJob" />
         <AppenderRef ref="inviteDevelopersJobJson" />
     </Logger>
+    <Logger name="sendEmailJobLogger" level="INFO"
+        additivity="false">
+        <AppenderRef ref="sendEmailJob" />
+        <AppenderRef ref="sendEmailJobJson" />
+    </Logger>
 </Loggers>

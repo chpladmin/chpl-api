@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.entity.statistics.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -54,6 +54,9 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
 
     private List<CertificationBodyDTO> activeAcbs;
 
@@ -88,8 +91,8 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         List<String> addresses = new ArrayList<String>();
         addresses.add(address);
 
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipients(addresses)
+        chplEmailFactory.emailBuilder()
+                .recipients(addresses)
                 .subject(subject).htmlMessage(message)
                 .fileAttachments(getSummaryStatisticsFile())
                 .sendEmail();

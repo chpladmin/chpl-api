@@ -14,7 +14,6 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -31,8 +30,8 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
-import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -46,8 +45,8 @@ import lombok.extern.log4j.Log4j2;
 public class ChangeRequestAttestationService extends ChangeRequestDetailsService<ChangeRequestAttestationSubmission> {
     private ChangeRequestDAO crDAO;
     private ChangeRequestAttestationDAO crAttesttionDAO;
+    private ChplEmailFactory chplEmailFactory;
     private AttestationManager attestationManager;
-    private Environment env;
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
     private UserDAO userDAO;
 
@@ -80,14 +79,16 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     @Autowired
     public ChangeRequestAttestationService(ChangeRequestDAO crDAO, ChangeRequestAttestationDAO crAttesttionDAO,
             UserDeveloperMapDAO userDeveloperMapDAO, AttestationManager attestationManager,
-            ChplHtmlEmailBuilder chplHtmlEmailBuilder,  UserDAO userDAO, Environment env) {
+            ChplEmailFactory chplEmailFactory, ChplHtmlEmailBuilder chplHtmlEmailBuilder,
+            UserDAO userDAO) {
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
         this.crAttesttionDAO = crAttesttionDAO;
         this.attestationManager = attestationManager;
+        this.chplEmailFactory = chplEmailFactory;
         this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
-        this.env = env;
         this.userDAO = userDAO;
+
 
         this.mapper = new ObjectMapper();
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
@@ -154,7 +155,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     }
 
     private void sendSubmittedEmail(ChangeRequest cr) throws EmailNotSentException {
-        new EmailBuilder(env)
+        chplEmailFactory.emailBuilder()
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.toList()))
@@ -165,7 +166,8 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     @Override
     protected void sendApprovalEmail(ChangeRequest cr) throws EmailNotSentException {
-        new EmailBuilder(env)
+        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
+        chplEmailFactory.emailBuilder()
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.toList()))
@@ -176,7 +178,8 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     @Override
     protected void sendPendingDeveloperActionEmail(ChangeRequest cr) throws EmailNotSentException {
-        new EmailBuilder(env)
+        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
+        chplEmailFactory.emailBuilder()
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.toList()))
@@ -187,7 +190,8 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     @Override
     protected void sendRejectedEmail(ChangeRequest cr) throws EmailNotSentException {
-        new EmailBuilder(env)
+        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
+        chplEmailFactory.emailBuilder()
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.toList()))
