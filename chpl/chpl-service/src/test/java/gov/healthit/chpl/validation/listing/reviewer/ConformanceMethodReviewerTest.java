@@ -30,6 +30,7 @@ import gov.healthit.chpl.util.ValidationUtils;
 
 public class ConformanceMethodReviewerTest {
     private static final String CM_NOT_APPLICABLE_MSG = "Conformance Methods are not applicable for the criterion %s. They has been removed.";
+    private static final String CM_REQUIRED_MSG = "Conformance Methods are required for certification criteria %s.";
     private static final String MISSING_CM_VERSION_MSG = "Conformance Method Version is required for certification %s with Conformance Method \"%s\".";
     private static final String UNALLOWED_CM_VERSION_MSG = "Conformance Method Version is not allowed for certification %s with Conformance Method \"%s\".";
     private static final String INVALID_CRITERIA_MSG = "Conformance Method \"%s\" is not valid for criteria %s.";
@@ -49,6 +50,8 @@ public class ConformanceMethodReviewerTest {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethodNotApplicable"), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(CM_NOT_APPLICABLE_MSG, i.getArgument(1), ""));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethod.missingConformanceMethod"), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(CM_REQUIRED_MSG, i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethod.missingConformanceMethodVersion"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(MISSING_CM_VERSION_MSG, i.getArgument(1), i.getArgument(2)));
@@ -71,6 +74,46 @@ public class ConformanceMethodReviewerTest {
         conformanceMethodReviewer = new ConformanceMethodReviewer(conformanceMethodDAO, msgUtil,
                 new ValidationUtils(), certResultRules,
                 resourcePermissions, ff4j);
+    }
+
+    @Test
+    public void review_conformanceMethodsRequiredButNull_hasError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (a)(1)")
+                                .id(1L)
+                                .build())
+                        .conformanceMethods(null)
+                        .build())
+                .certificationEdition(get2015CertificationEdition())
+                .build();
+        conformanceMethodReviewer.review(listing);
+
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CM_REQUIRED_MSG, "170.315 (a)(1)")));
+    }
+
+    @Test
+    public void review_conformanceMethodsRequiredButEmpty_hasError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (a)(1)")
+                                .id(1L)
+                                .build())
+                        .build())
+                .certificationEdition(get2015CertificationEdition())
+                .build();
+        listing.getCertificationResults().get(0).setConformanceMethods(new ArrayList<CertificationResultConformanceMethod>());
+        conformanceMethodReviewer.review(listing);
+
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CM_REQUIRED_MSG, "170.315 (a)(1)")));
     }
 
     @Test
@@ -145,7 +188,7 @@ public class ConformanceMethodReviewerTest {
     }
 
     @Test
-    public void review_invalidConformanceMethodForCriterion_hasError() {
+    public void review_invalidConformanceMethodForCriterion_hasWarningAndRemovesConformanceMethod() {
         CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
                 .conformanceMethod(ConformanceMethod.builder()
                         .id(3L)
@@ -171,9 +214,11 @@ public class ConformanceMethodReviewerTest {
 
         conformanceMethodReviewer.review(listing);
 
-        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(INVALID_CRITERIA_MSG, "bad CM", "170.315 (a)(1)")));
+        assertEquals(0, listing.getCertificationResults().get(0).getConformanceMethods().size());
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_CRITERIA_MSG, "bad CM", "170.315 (a)(1)")));
+        assertTrue(listing.getErrorMessages().contains(String.format(CM_REQUIRED_MSG, "170.315 (a)(1)")));
     }
 
     @Test

@@ -1,5 +1,6 @@
 package gov.healthit.chpl.validation.listing.reviewer;
 
+import java.util.Iterator;
 import java.util.Optional;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -59,6 +60,8 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
 
     private void reviewCertificationResult(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         reviewCriteriaCanHaveConformanceMethods(listing, certResult);
+        removeConformanceMethodsInvalidForCriterion(listing, certResult);
+        reviewConformanceMethodsRequired(listing, certResult);
         if (!CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
             certResult.getConformanceMethods().stream()
                 .forEach(conformanceMethod -> reviewConformanceMethodFields(listing, certResult, conformanceMethod));
@@ -74,6 +77,38 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
         }
     }
 
+    private void removeConformanceMethodsInvalidForCriterion(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        if (CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
+            return;
+        }
+        Iterator<CertificationResultConformanceMethod> conformanceMethodIter = certResult.getConformanceMethods().iterator();
+        while (conformanceMethodIter.hasNext()) {
+            CertificationResultConformanceMethod conformanceMethod = conformanceMethodIter.next();
+            if (!isConformanceMethodAllowed(certResult, conformanceMethod)) {
+                conformanceMethodIter.remove();
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.conformanceMethod.invalidCriteria",
+                        conformanceMethod.getConformanceMethod().getName(),
+                        Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
+        }
+    }
+
+    private boolean isConformanceMethodAllowed(CertificationResult certResult, CertificationResultConformanceMethod conformanceMethod) {
+        Optional<ConformanceMethod> allowedConformanceMethod = conformanceMethodDAO.getByCriterionId(certResult.getCriterion().getId()).stream()
+            .filter(cm -> cm.getId().equals(conformanceMethod.getConformanceMethod().getId()))
+            .findAny();
+        return allowedConformanceMethod.isPresent();
+    }
+
+    private void reviewConformanceMethodsRequired(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        if (ff4j.check(FeatureList.CONFORMANCE_METHOD)
+                && certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.CONFORMANCE_METHOD)
+                && CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
+            addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.conformanceMethod.missingConformanceMethod",
+                    Util.formatCriteriaNumber(certResult.getCriterion()));
+        }
+    }
+
     private void removeConformanceMethodsIfNotApplicable(CertificationResult certResult) {
         if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.CONFORMANCE_METHOD)) {
             certResult.setConformanceMethods(null);
@@ -82,24 +117,10 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
 
     private void reviewConformanceMethodFields(CertifiedProductSearchDetails listing, CertificationResult certResult,
             CertificationResultConformanceMethod conformanceMethod) {
-        checkIfConformanceMethodIsAllowed(listing, certResult, conformanceMethod);
-        checkIfConformanceMethodVersionRequirements(listing, certResult, conformanceMethod);
+        reviewConformanceMethodVersionRequirements(listing, certResult, conformanceMethod);
     }
 
-    private void checkIfConformanceMethodIsAllowed(CertifiedProductSearchDetails listing, CertificationResult certResult,
-            CertificationResultConformanceMethod conformanceMethod) {
-        Optional<ConformanceMethod> allowedConformanceMethod = conformanceMethodDAO.getByCriterionId(certResult.getCriterion().getId()).stream()
-            .filter(cm -> cm.getId().equals(conformanceMethod.getConformanceMethod().getId()))
-            .findAny();
-        if (!allowedConformanceMethod.isPresent()) {
-            addCriterionErrorOrWarningByPermission(listing, certResult,
-                    "listing.criteria.conformanceMethod.invalidCriteria",
-                    conformanceMethod.getConformanceMethod().getName(),
-                    Util.formatCriteriaNumber(certResult.getCriterion()));
-        }
-    }
-
-    private void checkIfConformanceMethodVersionRequirements(CertifiedProductSearchDetails listing, CertificationResult certResult,
+    private void reviewConformanceMethodVersionRequirements(CertifiedProductSearchDetails listing, CertificationResult certResult,
             CertificationResultConformanceMethod conformanceMethod) {
             if (conformanceMethod.getConformanceMethod() != null
                     && !StringUtils.isEmpty(conformanceMethod.getConformanceMethod().getName())
