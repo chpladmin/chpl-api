@@ -198,7 +198,7 @@ public class CertificationResult implements Serializable {
      */
     @XmlElementWrapper(name = "conformanceMethods", nillable = true, required = false)
     @XmlElement(name = "conformanceMethod")
-    private List<CertificationResultConformanceMethod> conformanceMethods= new ArrayList<CertificationResultConformanceMethod>();
+    private List<CertificationResultConformanceMethod> conformanceMethods = new ArrayList<CertificationResultConformanceMethod>();
 
     /**
      * The test procedures used for the certification criteria
