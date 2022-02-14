@@ -33,7 +33,7 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.scheduler.BrokenSurveillanceRulesDAO;
 import gov.healthit.chpl.domain.surveillance.SurveillanceOversightRule;
 import gov.healthit.chpl.dto.scheduler.BrokenSurveillanceRulesDTO;
-import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
@@ -51,6 +51,9 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
 
     private static final String TRIGGER_DESCRIPTIONS = "<h4>Description of Surveillance Rules</h4>" + "<ol>" + "<li>"
             + SurveillanceOversightRule.LONG_SUSPENSION.getTitle() + ": "
@@ -110,12 +113,11 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
             List<String> addresses = new ArrayList<String>();
             addresses.add(to);
 
-            EmailBuilder emailBuilder = new EmailBuilder(env);
-            emailBuilder.recipients(addresses)
-            .subject(subject)
-            .htmlMessage(htmlMessage)
-            .fileAttachments(files)
-            .sendEmail();
+            chplEmailFactory.emailBuilder().recipients(addresses)
+                    .subject(subject)
+                    .htmlMessage(htmlMessage)
+                    .fileAttachments(files)
+                    .sendEmail();
         } catch (EmailNotSentException e) {
             LOGGER.error(e);
         }

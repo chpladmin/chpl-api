@@ -38,7 +38,7 @@ import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -82,6 +82,9 @@ public class SplitDeveloperJob implements Job {
 
     @Autowired
     private DirectReviewUpdateEmailService directReviewEmailService;
+
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
 
     private DeveloperDTO preSplitDeveloper;
     private DeveloperDTO postSplitDeveloper;
@@ -276,8 +279,7 @@ public class SplitDeveloperJob implements Job {
         LOGGER.info("Sending email to: " + recipientEmail);
         LOGGER.info("Message to be sent: " + htmlMessage);
 
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipient(recipientEmail)
+        chplEmailFactory.emailBuilder().recipient(recipientEmail)
                 .subject(subject)
                 .htmlMessage(htmlMessage)
                 .acbAtlHtmlFooter()

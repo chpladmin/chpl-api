@@ -39,8 +39,8 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityProductDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityTriggerDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityVersionDTO;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
-import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.Util;
@@ -68,6 +68,9 @@ public class QuestionableActivityEmailJob extends QuartzJob {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
 
     private static final int NUM_REPORT_COLS = 14;
     private static final int ACB_COL = 0;
@@ -141,8 +144,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             List<String> recipients = new ArrayList<String>();
             recipients.add(to);
 
-            EmailBuilder emailBuilder = new EmailBuilder(env);
-            emailBuilder.recipients(recipients)
+            chplEmailFactory.emailBuilder()
+                .recipients(recipients)
                 .subject(emailSubject)
                 .htmlMessage(htmlMessage)
                 .fileAttachments(attachments)

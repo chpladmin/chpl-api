@@ -18,7 +18,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.excel.SurveillanceActivityReportWorkbook;
@@ -40,6 +40,9 @@ public class SurveillanceReportingActivityJob implements Job {
 
     @Autowired
     private CertificationBodyDAO certificationBodyDAO;
+
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
 
     private DateTimeFormatter emailDateFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
@@ -70,8 +73,8 @@ public class SurveillanceReportingActivityJob implements Job {
     }
 
     private void sendSuccessEmail(File excelFile, JobExecutionContext context) throws EmailNotSentException, UserRetrievalException {
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipient(getUserEmail(context))
+        chplEmailFactory.emailBuilder()
+                .recipient(getUserEmail(context))
                 .fileAttachments(Arrays.asList(excelFile))
                 .subject(env.getProperty("surveillanceActivityReport.subject"))
                 .htmlMessage(String.format(env.getProperty("surveillanceActivityReport.htmlBody"),
@@ -82,8 +85,8 @@ public class SurveillanceReportingActivityJob implements Job {
 
     private void sendErrorEmail(JobExecutionContext context) {
         try {
-            EmailBuilder emailBuilder = new EmailBuilder(env);
-            emailBuilder.recipient(getUserEmail(context))
+            chplEmailFactory.emailBuilder()
+                    .recipient(getUserEmail(context))
                     .subject(env.getProperty("surveillanceActivityReport.subject"))
                     .htmlMessage(String.format(env.getProperty("surveillanceActivityReport.htmlBody.error"),
                             emailDateFormatter.format(getStartDate(context)),

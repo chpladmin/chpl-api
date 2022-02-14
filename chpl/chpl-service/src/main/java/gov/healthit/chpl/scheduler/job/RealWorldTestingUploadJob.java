@@ -27,7 +27,7 @@ import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.HtmlEmailTemplate;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -53,6 +53,9 @@ public class RealWorldTestingUploadJob implements Job {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
 
     @SuppressWarnings("checkstyle:linelength")
     @Override
@@ -222,8 +225,7 @@ public class RealWorldTestingUploadJob implements Job {
         RwtEmail rwtEmail = new RwtEmail(env);
         List<String> addresses = new ArrayList<String>(Arrays.asList(address));
 
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipients(addresses).subject("Real World Testing Upload Results")
+        chplEmailFactory.emailBuilder().recipients(addresses).subject("Real World Testing Upload Results")
                 .htmlMessage(rwtEmail.getEmail(rwts)).sendEmail();
     }
 

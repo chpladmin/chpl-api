@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.api.ApiKeyManager;
 import gov.healthit.chpl.api.dao.ApiKeyDAO;
 import gov.healthit.chpl.api.domain.ApiKey;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -37,6 +38,9 @@ private static final Logger LOGGER = LogManager.getLogger("apiKeyDeleteJobLogger
 
     @Autowired
     private ApiKeyManager apiKeyManager;
+
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
 
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
@@ -71,7 +75,7 @@ private static final Logger LOGGER = LogManager.getLogger("apiKeyDeleteJobLogger
         List<String> recipients = new ArrayList<String>();
         recipients.add(apiKey.getEmail());
 
-        EmailBuilder emailBuilder = new EmailBuilder(env);
+        EmailBuilder emailBuilder = chplEmailFactory.emailBuilder();
         emailBuilder.recipients(recipients)
                         .subject(getSubject())
                         .htmlMessage(getHtmlMessage(apiKey))

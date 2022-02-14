@@ -22,8 +22,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
-import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
@@ -45,6 +45,9 @@ public class RealWorldTestingReportEmailJob implements Job {
 
     @Autowired
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
+
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
 
     private List<Long> acbIds = new ArrayList<Long>();
 
@@ -72,8 +75,8 @@ public class RealWorldTestingReportEmailJob implements Job {
 
     private void sendEmail(JobExecutionContext context, List<RealWorldTestingReport> rows) throws EmailNotSentException {
         LOGGER.info("Sending email to: " + context.getMergedJobDataMap().getString("email"));
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipient(context.getMergedJobDataMap().getString("email"))
+        chplEmailFactory.emailBuilder()
+                .recipient(context.getMergedJobDataMap().getString("email"))
                 .subject(env.getProperty("rwt.report.subject"))
                 .htmlMessage(createHtmlMessage(context))
                 .fileAttachments(new ArrayList<File>(Arrays.asList(generateCsvFile(context, rows))))

@@ -21,32 +21,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 
-/**
- * Job run by Scheduler to send email when the cache is "too old".
- *
- * @author alarned
- *
- */
 public class CacheStatusAgeJob implements Job {
     private static final Logger LOGGER = LogManager.getLogger("cacheStatusAgeJobLogger");
 
     @Autowired
     private Environment env;
 
-    /**
-     * Main method. Checks to see if the cache is old, then, if it is, sends email messages to subscribers of that
-     * notification.
-     *
-     * @param jobContext
-     *            for context of the job
-     * @throws JobExecutionException
-     *             if necessary
-     */
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
+
     @Override
-    public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Cache Status Age job. *********");
         try {
@@ -105,8 +93,7 @@ public class CacheStatusAgeJob implements Job {
         List<String> addresses = new ArrayList<String>();
         addresses.add(recipient);
 
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipients(addresses)
+        chplEmailFactory.emailBuilder().recipients(addresses)
                 .subject(subject)
                 .htmlMessage(htmlMessage)
                 .sendEmail();
