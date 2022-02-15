@@ -270,7 +270,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     }
 
     private AttestationPeriod getAttestationPeriod(ChangeRequest cr) {
-        return attestationManager.getMostRecentOrCurrentAttestationPeriodForDeveloperWrtExceptions(cr.getDeveloper().getDeveloperId());
+        return attestationManager.getMostRecentPastAttestationPeriod();
     }
 
     private UserDTO getUserById(Long userId) throws UserRetrievalException {

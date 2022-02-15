@@ -16,6 +16,5 @@ public class DeveloperAttestationSubmissionResults implements Serializable {
 
     private List<DeveloperAttestationSubmission> developerAttestations;
     private Boolean canSubmitAttestationChangeRequest = false;
-    private Boolean canAcbAddException = false;
-    private Boolean canOncAddException = false;
+    private Boolean canCreateException = false;
 }

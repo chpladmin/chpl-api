@@ -1,7 +1,6 @@
 package gov.healthit.chpl.attestation.manager;
 
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,18 +24,20 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class AttestationManager {
     private AttestationDAO attestationDAO;
+    private AttestationPeriodService attestationPeriodService;
     private ChangeRequestDAO changeRequestDAO;
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public AttestationManager(AttestationDAO attestationDAO, ChangeRequestDAO changeRequestDAO, ErrorMessageUtil errorMessageUtil) {
+    public AttestationManager(AttestationDAO attestationDAO, AttestationPeriodService attestationPeriodService, ChangeRequestDAO changeRequestDAO, ErrorMessageUtil errorMessageUtil) {
         this.attestationDAO = attestationDAO;
+        this.attestationPeriodService = attestationPeriodService;
         this.changeRequestDAO = changeRequestDAO;
         this.errorMessageUtil = errorMessageUtil;
     }
 
     public List<AttestationPeriod> getAllPeriods() {
-        return attestationDAO.getAllPeriods();
+        return attestationPeriodService.getAllPeriods();
     }
 
     public AttestationForm getAttestationForm() {
@@ -73,122 +74,36 @@ public class AttestationManager {
     //@PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ATTESTATION, "
     //        + "T(gov.healthit.chpl.permissions.domains.AttestationDomainPermissions).GET_BY_DEVELOPER_ID, #developerId)")
     public Boolean canDeveloperSubmitChangeRequest(Long developerId) throws EntityRetrievalException {
-        LocalDate exceptionDate = getMostRecentPeriodExceptionDateForDeveloper(developerId);
+        LocalDate exceptionDate = attestationPeriodService.getMostRecentPeriodExceptionDateForDeveloper(developerId);
 
         return (!doesPendingAttestationChangeRequestForDeveloperExist(developerId))
-                && isCurrentDateWithAttestationPeriod(developerId, exceptionDate);
+                && attestationPeriodService.isDateWithinSubmissionPeriodForDeveloper(developerId, LocalDate.now());
     }
 
     @Transactional
-    public Boolean canAcbAddException(Long developerId) {
-        LocalDate exceptionDate = getMostRecentPeriodExceptionDateForDeveloper(developerId);
-        AttestationPeriod mostRecentPastPeriod = getMostRecentPastPeriod();
+    public Boolean canCreateException(Long developerId) {
+        LocalDate exceptionDate = attestationPeriodService.getMostRecentPeriodExceptionDateForDeveloper(developerId);
+        AttestationPeriod mostRecentPastPeriod = attestationPeriodService.getMostRecentPastAttestationPeriod();
 
-        return (isCurrentDateWithAttestationPeriod(developerId, exceptionDate))
-                && isCurrentDateBeforeReviewEnd(mostRecentPastPeriod);
-    }
-
-    @Transactional
-    public Boolean canOncAddException(Long developerId) {
-        LocalDate exceptionDate = getMostRecentPeriodExceptionDateForDeveloper(developerId);
-        AttestationPeriod currentPeriod = getCurrentPeriod();
-
-        return (isCurrentDateWithAttestationPeriod(developerId, exceptionDate))
-                && isCurrentDateBeforePeriodEnd(currentPeriod);
-    }
-
-    private Boolean isCurrentDateBeforePeriodEnd(AttestationPeriod period) {
-        return LocalDate.now().equals(period.getPeriodEnd())
-                || LocalDate.now().isBefore(period.getPeriodEnd());
-    }
-
-
-    private Boolean isCurrentDateBeforeReviewEnd(AttestationPeriod period) {
-        return LocalDate.now().equals(period.getReviewEnd())
-                || LocalDate.now().isBefore(period.getReviewEnd());
-    }
-
-    public AttestationPeriod getMostRecentOrCurrentAttestationPeriodForDeveloperWrtExceptions(Long developerId) {
-        AttestationPeriod mostRecentPeriod = getMostRecentPastPeriod();
-        if (mostRecentPeriod == null) {
-            return null;
-        }
-
-        LocalDate periodExceptionDate = getMostRecentPeriodExceptionDateForDeveloper(developerId);
-        if (periodExceptionDate != null) {
-            mostRecentPeriod.setSubmissionEnd(periodExceptionDate);
-        }
-
-        return mostRecentPeriod;
+        return (attestationPeriodService.isDateWithinSubmissionPeriodForDeveloper(developerId, LocalDate.now()));
+                // && isCurrentDateBeforeReviewEnd(mostRecentPastPeriod);
     }
 
     @Transactional
     public AttestationPeriodDeveloperException createAttestationPeriodDeveloperException(Long developerId, LocalDate exceptionEnd) throws EntityRetrievalException, ValidationException{
-        AttestationPeriod mostRecentPastPeriod =
-                getMostRecentOrCurrentAttestationPeriodForDeveloperWrtExceptions(developerId);
-
-        if (mostRecentPastPeriod.getSubmissionEnd().isAfter(exceptionEnd)) {
-            throw new ValidationException("Invalid exception date!");
-        }
-
         return attestationDAO.createAttestationPeriodDeveloperException(AttestationPeriodDeveloperException.builder()
                 .developer(Developer.builder()
                         .developerId(developerId)
                         .build())
-                .period(getMostRecentPastPeriod())
+                .period(getMostRecentPastAttestationPeriod())
                 .exceptionEnd(exceptionEnd)
                 .build());
 
     }
 
-    private boolean isCurrentDateWithAttestationPeriod(Long developerId, LocalDate periodExceptionDate) {
-
-        AttestationPeriod mostRecentPeriod = getMostRecentOrCurrentAttestationPeriodForDeveloperWrtExceptions(developerId);
-        LocalDate now = LocalDate.now();
-        return (mostRecentPeriod.getSubmissionStart().equals(now) || mostRecentPeriod.getSubmissionStart().isBefore(now))
-                && (mostRecentPeriod.getSubmissionEnd().equals(now) || mostRecentPeriod.getSubmissionEnd().isAfter(now));
-    }
-
-    private AttestationPeriod getCurrentPeriod() {
-        return attestationDAO.getAllPeriods().stream()
-                .filter(period -> (LocalDate.now().equals(period.getPeriodStart()) || LocalDate.now().isAfter(period.getPeriodStart()))
-                        && (LocalDate.now().equals(period.getPeriodEnd()) || LocalDate.now().isBefore(period.getPeriodEnd())))
-                .findFirst()
-                .get();
-    }
-
-    private AttestationPeriod getMostRecentPastPeriod() {
-        List<AttestationPeriod> periods = getAllPeriods();
-        if (periods == null || periods.size() == 0) {
-            return null;
-        }
-
-        periods = periods.stream()
-                .sorted(Comparator.comparing(AttestationPeriod::getPeriodEnd).reversed())
-                 .filter(per -> per.getPeriodEnd().isBefore(LocalDate.now()))
-                .toList();
-
-        if (periods == null || periods.size() == 0) {
-            return null;
-        }
-
-        return periods.get(0);
-    }
-
-    private LocalDate getMostRecentPeriodExceptionDateForDeveloper(Long developerId) {
-        AttestationPeriod period = getMostRecentPastPeriod();
-        List<AttestationPeriodDeveloperException> periodExceptions =
-                attestationDAO.getAttestationPeriodDeveloperExceptions(developerId, period.getId());
-
-        if (periodExceptions == null || periodExceptions.size() == 0) {
-            return null;
-        }
-
-        return periodExceptions.stream()
-                .sorted(Comparator.comparing(AttestationPeriodDeveloperException::getExceptionEnd).reversed())
-                .toList()
-                .get(0)
-                .getExceptionEnd();
+    @Transactional
+    public AttestationPeriod getMostRecentPastAttestationPeriod() {
+        return attestationPeriodService.getMostRecentPastAttestationPeriod();
     }
 
     private boolean doesPendingAttestationChangeRequestForDeveloperExist(Long developerId) throws EntityRetrievalException {
@@ -198,5 +113,10 @@ public class AttestationManager {
                         && (cr.getCurrentStatus().getChangeRequestStatusType().getName().equals("Pending Developer Action")
                                 || cr.getCurrentStatus().getChangeRequestStatusType().getName().equals("Pending ONC-ACB Action")))
                 .count() > 0;
+    }
+
+    private Boolean isCurrentDateBeforePeriodEnd(AttestationPeriod period) {
+        return LocalDate.now().equals(period.getPeriodEnd())
+                || LocalDate.now().isBefore(period.getPeriodEnd());
     }
 }
