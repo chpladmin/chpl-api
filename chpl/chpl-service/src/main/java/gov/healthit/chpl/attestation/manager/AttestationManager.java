@@ -74,31 +74,24 @@ public class AttestationManager {
     //@PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ATTESTATION, "
     //        + "T(gov.healthit.chpl.permissions.domains.AttestationDomainPermissions).GET_BY_DEVELOPER_ID, #developerId)")
     public Boolean canDeveloperSubmitChangeRequest(Long developerId) throws EntityRetrievalException {
-        LocalDate exceptionDate = attestationPeriodService.getMostRecentPeriodExceptionDateForDeveloper(developerId);
-
         return (!doesPendingAttestationChangeRequestForDeveloperExist(developerId))
                 && attestationPeriodService.isDateWithinSubmissionPeriodForDeveloper(developerId, LocalDate.now());
     }
 
     @Transactional
     public Boolean canCreateException(Long developerId) {
-        LocalDate exceptionDate = attestationPeriodService.getMostRecentPeriodExceptionDateForDeveloper(developerId);
-        AttestationPeriod mostRecentPastPeriod = attestationPeriodService.getMostRecentPastAttestationPeriod();
-
-        return (attestationPeriodService.isDateWithinSubmissionPeriodForDeveloper(developerId, LocalDate.now()));
-                // && isCurrentDateBeforeReviewEnd(mostRecentPastPeriod);
+        return !attestationPeriodService.isDateWithinSubmissionPeriodForDeveloper(developerId, LocalDate.now());
     }
 
     @Transactional
-    public AttestationPeriodDeveloperException createAttestationPeriodDeveloperException(Long developerId, LocalDate exceptionEnd) throws EntityRetrievalException, ValidationException{
+    public AttestationPeriodDeveloperException createAttestationPeriodDeveloperException(Long developerId) throws EntityRetrievalException, ValidationException{
         return attestationDAO.createAttestationPeriodDeveloperException(AttestationPeriodDeveloperException.builder()
                 .developer(Developer.builder()
                         .developerId(developerId)
                         .build())
                 .period(getMostRecentPastAttestationPeriod())
-                .exceptionEnd(exceptionEnd)
+                .exceptionEnd(getNewExceptionDate())
                 .build());
-
     }
 
     @Transactional
@@ -115,8 +108,12 @@ public class AttestationManager {
                 .count() > 0;
     }
 
-    private Boolean isCurrentDateBeforePeriodEnd(AttestationPeriod period) {
-        return LocalDate.now().equals(period.getPeriodEnd())
-                || LocalDate.now().isBefore(period.getPeriodEnd());
+    private LocalDate getNewExceptionDate() {
+        LocalDate exceptionDate = LocalDate.now().plusDays(7);
+        AttestationPeriod currentAttestationPeriod = attestationPeriodService.getCurrentAttestationPeriod();
+        if (currentAttestationPeriod.getPeriodEnd().isBefore(exceptionDate)) {
+            exceptionDate = currentAttestationPeriod.getPeriodEnd();
+        }
+        return exceptionDate;
     }
 }

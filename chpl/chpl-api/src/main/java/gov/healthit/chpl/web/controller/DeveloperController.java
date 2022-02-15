@@ -356,7 +356,7 @@ public class DeveloperController {
         if (!ff4j.check(FeatureList.ATTESTATIONS)) {
             throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
-        return attestationManager.createAttestationPeriodDeveloperException(apde.getDeveloper().getDeveloperId(), apde.getExceptionEnd());
+        return attestationManager.createAttestationPeriodDeveloperException(apde.getDeveloper().getDeveloperId());
     }
 
     private DeveloperDTO toDto(Developer developer) {
