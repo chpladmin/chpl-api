@@ -75,8 +75,8 @@ public class AttestationManager {
     }
 
     @Transactional
-    //@PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ATTESTATION, "
-    //        + "T(gov.healthit.chpl.permissions.domains.AttestationDomainPermissions).GET_BY_DEVELOPER_ID, #developerId)")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ATTESTATION, "
+            + "T(gov.healthit.chpl.permissions.domains.AttestationDomainPermissions).GET_BY_DEVELOPER_ID, #developerId)")
     public Boolean canDeveloperSubmitChangeRequest(Long developerId) throws EntityRetrievalException {
         return (!doesPendingAttestationChangeRequestForDeveloperExist(developerId))
                 && attestationPeriodService.isDateWithinSubmissionPeriodForDeveloper(developerId, LocalDate.now());
@@ -88,10 +88,16 @@ public class AttestationManager {
     }
 
     @Transactional
-    public AttestationPeriodDeveloperException createAttestationPeriodDeveloperException(Long developerId) throws EntityRetrievalException, ValidationException {
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ATTESTATION, "
+            + "T(gov.healthit.chpl.permissions.domains.AttestationDomainPermissions).CREATE_EXCEPTION, #apde)")
+    public AttestationPeriodDeveloperException createAttestationPeriodDeveloperException(AttestationPeriodDeveloperException apde) throws EntityRetrievalException, ValidationException {
+        if (!canCreateException(apde.getDeveloper().getDeveloperId())) {
+            throw new ValidationException(errorMessageUtil.getMessage("attestation.submissionPeriodException.cannotCreate"));
+        }
+
         return attestationDAO.createAttestationPeriodDeveloperException(AttestationPeriodDeveloperException.builder()
                 .developer(Developer.builder()
-                        .developerId(developerId)
+                        .developerId(apde.getDeveloper().getDeveloperId())
                         .build())
                 .period(getMostRecentPastAttestationPeriod())
                 .exceptionEnd(getNewExceptionDate())
