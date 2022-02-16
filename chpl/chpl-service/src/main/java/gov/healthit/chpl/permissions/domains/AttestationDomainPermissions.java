@@ -18,7 +18,7 @@ public class AttestationDomainPermissions extends DomainPermissions {
     public AttestationDomainPermissions(
             @Qualifier("attestationGetByDeveloperIdActionPermissions") GetByDeveloperIdActionPermissions getByDeveloperActionPermissions,
             @Qualifier("attestationCreateActionPermissions") CreateActionPermissions createActionPermissions,
-            @Qualifier("attestationExceptionCreateActionPermissions") CreateExceptionActionPermissions createExceptionActionPermissions) {
+            @Qualifier("attestationCreateExceptionActionPermissions") CreateExceptionActionPermissions createExceptionActionPermissions) {
 
         getActionPermissions().put(GET_BY_DEVELOPER_ID, getByDeveloperActionPermissions);
         getActionPermissions().put(CREATE, createActionPermissions);

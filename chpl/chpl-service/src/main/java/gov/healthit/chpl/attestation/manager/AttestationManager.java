@@ -89,7 +89,7 @@ public class AttestationManager {
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ATTESTATION, "
-            + "T(gov.healthit.chpl.permissions.domains.AttestationDomainPermissions).CREATE_EXCEPTION, #apde)")
+            + "T(gov.healthit.chpl.permissions.domains.AttestationDomainPermissions).CREATE_EXCEPTION, #developerId)")
     public AttestationPeriodDeveloperException createAttestationPeriodDeveloperException(Long developerId) throws EntityRetrievalException, ValidationException {
         if (!canCreateException(developerId)) {
             throw new ValidationException(errorMessageUtil.getMessage("attestation.submissionPeriodException.cannotCreate"));
