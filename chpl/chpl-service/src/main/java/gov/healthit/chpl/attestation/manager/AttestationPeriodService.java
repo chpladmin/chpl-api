@@ -24,20 +24,6 @@ public class AttestationPeriodService {
         return attestationDAO.getAllPeriods();
     }
 
-    public AttestationPeriod getMostRecentPastAttestationPeriodForDeveloperWrtExceptions(Long developerId) {
-        AttestationPeriod mostRecentPeriod = getMostRecentPastAttestationPeriod();
-        if (mostRecentPeriod == null) {
-            return null;
-        }
-
-        LocalDate periodExceptionDate = getMostRecentPeriodExceptionDateForDeveloper(developerId);
-        if (periodExceptionDate != null) {
-            mostRecentPeriod.setSubmissionEnd(periodExceptionDate);
-        }
-
-        return mostRecentPeriod;
-    }
-
     public Boolean isDateWithinSubmissionPeriodForDeveloper(Long developerId, LocalDate dateToCheck) {
         AttestationPeriod mostRecentPeriod = getMostRecentPastAttestationPeriodForDeveloperWrtExceptions(developerId);
         return (mostRecentPeriod.getSubmissionStart().equals(dateToCheck) || mostRecentPeriod.getSubmissionStart().isBefore(dateToCheck))
@@ -70,7 +56,7 @@ public class AttestationPeriodService {
         return periods.get(0);
     }
 
-    public LocalDate getMostRecentPeriodExceptionDateForDeveloper(Long developerId) {
+    private LocalDate getMostRecentPeriodExceptionDateForDeveloper(Long developerId) {
         AttestationPeriod period = getMostRecentPastAttestationPeriod();
         List<AttestationPeriodDeveloperException> periodExceptions =
                 attestationDAO.getAttestationPeriodDeveloperExceptions(developerId, period.getId());
@@ -86,4 +72,17 @@ public class AttestationPeriodService {
                 .getExceptionEnd();
     }
 
+    private AttestationPeriod getMostRecentPastAttestationPeriodForDeveloperWrtExceptions(Long developerId) {
+        AttestationPeriod mostRecentPeriod = getMostRecentPastAttestationPeriod();
+        if (mostRecentPeriod == null) {
+            return null;
+        }
+
+        LocalDate periodExceptionDate = getMostRecentPeriodExceptionDateForDeveloper(developerId);
+        if (periodExceptionDate != null) {
+            mostRecentPeriod.setSubmissionEnd(periodExceptionDate);
+        }
+
+        return mostRecentPeriod;
+    }
 }
