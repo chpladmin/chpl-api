@@ -90,14 +90,14 @@ public class AttestationManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ATTESTATION, "
             + "T(gov.healthit.chpl.permissions.domains.AttestationDomainPermissions).CREATE_EXCEPTION, #apde)")
-    public AttestationPeriodDeveloperException createAttestationPeriodDeveloperException(AttestationPeriodDeveloperException apde) throws EntityRetrievalException, ValidationException {
-        if (!canCreateException(apde.getDeveloper().getDeveloperId())) {
+    public AttestationPeriodDeveloperException createAttestationPeriodDeveloperException(Long developerId) throws EntityRetrievalException, ValidationException {
+        if (!canCreateException(developerId)) {
             throw new ValidationException(errorMessageUtil.getMessage("attestation.submissionPeriodException.cannotCreate"));
         }
 
         return attestationDAO.createAttestationPeriodDeveloperException(AttestationPeriodDeveloperException.builder()
                 .developer(Developer.builder()
-                        .developerId(apde.getDeveloper().getDeveloperId())
+                        .developerId(developerId)
                         .build())
                 .period(getMostRecentPastAttestationPeriod())
                 .exceptionEnd(getNewExceptionDate())

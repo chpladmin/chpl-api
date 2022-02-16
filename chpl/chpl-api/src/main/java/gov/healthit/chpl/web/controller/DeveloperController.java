@@ -351,12 +351,12 @@ public class DeveloperController {
             })
     @RequestMapping(value = "/{developerId}/attestations/exception", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public AttestationPeriodDeveloperException createAttestationPeriodDeveloperException(@RequestBody AttestationPeriodDeveloperException apde)
+    public AttestationPeriodDeveloperException createAttestationPeriodDeveloperException(@PathVariable("developerId") Long developerId)
             throws EntityRetrievalException, ValidationException {
         if (!ff4j.check(FeatureList.ATTESTATIONS)) {
             throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
-        return attestationManager.createAttestationPeriodDeveloperException(apde.getDeveloper().getDeveloperId());
+        return attestationManager.createAttestationPeriodDeveloperException(developerId);
     }
 
     private DeveloperDTO toDto(Developer developer) {
