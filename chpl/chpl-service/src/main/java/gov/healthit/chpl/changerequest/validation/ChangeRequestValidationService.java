@@ -99,8 +99,7 @@ public class ChangeRequestValidationService {
                 new DeveloperActiveValidation(),
                 new CurrentStatusValidation(),
                 new ChangeRequestNotUpdatableDueToStatusValidation(),
-                new CommentRequiredValidation(),
-                new ChangeRequestModificationValidation()));
+                new CommentRequiredValidation()));
     }
 
     private List<String> runValidations(List<ValidationRule<ChangeRequestValidationContext>> rules, ChangeRequestValidationContext context) {
