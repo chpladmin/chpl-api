@@ -32,7 +32,7 @@ public class AttestationManager {
 
     @Autowired
     public AttestationManager(AttestationDAO attestationDAO, AttestationPeriodService attestationPeriodService, ChangeRequestDAO changeRequestDAO,
-            ErrorMessageUtil errorMessageUtil, @Value("${server.environment}") Integer attestationExceptionWindowInDays) {
+            ErrorMessageUtil errorMessageUtil, @Value("${attestationExceptionWindowInDays}") Integer attestationExceptionWindowInDays) {
         this.attestationDAO = attestationDAO;
         this.attestationPeriodService = attestationPeriodService;
         this.changeRequestDAO = changeRequestDAO;
