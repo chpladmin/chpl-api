@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,13 +28,16 @@ public class AttestationManager {
     private AttestationPeriodService attestationPeriodService;
     private ChangeRequestDAO changeRequestDAO;
     private ErrorMessageUtil errorMessageUtil;
+    private Integer attestationExceptionWindowInDays;
 
     @Autowired
-    public AttestationManager(AttestationDAO attestationDAO, AttestationPeriodService attestationPeriodService, ChangeRequestDAO changeRequestDAO, ErrorMessageUtil errorMessageUtil) {
+    public AttestationManager(AttestationDAO attestationDAO, AttestationPeriodService attestationPeriodService, ChangeRequestDAO changeRequestDAO,
+            ErrorMessageUtil errorMessageUtil, @Value("${server.environment}") Integer attestationExceptionWindowInDays) {
         this.attestationDAO = attestationDAO;
         this.attestationPeriodService = attestationPeriodService;
         this.changeRequestDAO = changeRequestDAO;
         this.errorMessageUtil = errorMessageUtil;
+        this.attestationExceptionWindowInDays = attestationExceptionWindowInDays;
     }
 
     public List<AttestationPeriod> getAllPeriods() {
@@ -84,7 +88,7 @@ public class AttestationManager {
     }
 
     @Transactional
-    public AttestationPeriodDeveloperException createAttestationPeriodDeveloperException(Long developerId) throws EntityRetrievalException, ValidationException{
+    public AttestationPeriodDeveloperException createAttestationPeriodDeveloperException(Long developerId) throws EntityRetrievalException, ValidationException {
         return attestationDAO.createAttestationPeriodDeveloperException(AttestationPeriodDeveloperException.builder()
                 .developer(Developer.builder()
                         .developerId(developerId)
@@ -109,7 +113,7 @@ public class AttestationManager {
     }
 
     private LocalDate getNewExceptionDate() {
-        LocalDate exceptionDate = LocalDate.now().plusDays(7);
+        LocalDate exceptionDate = LocalDate.now().plusDays(attestationExceptionWindowInDays);
         AttestationPeriod currentAttestationPeriod = attestationPeriodService.getCurrentAttestationPeriod();
         if (currentAttestationPeriod.getPeriodEnd().isBefore(exceptionDate)) {
             exceptionDate = currentAttestationPeriod.getPeriodEnd();
