@@ -25,6 +25,14 @@ public class ChangeRequestAttestationSubmission implements Serializable, ChangeR
     private List<AttestationSubmittedResponse> attestationResponses;
     private String signatureEmail;
 
+    public static ChangeRequestAttestationSubmission cast(Object obj) {
+        if (obj instanceof ChangeRequestAttestationSubmission) {
+            return (ChangeRequestAttestationSubmission) obj;
+        } else {
+            throw new RuntimeException("Could not cast object as type ChangeRequestAttestationSubmission");
+        }
+    }
+
     @Override
     public boolean matches(Object obj) {
         return equals(obj);

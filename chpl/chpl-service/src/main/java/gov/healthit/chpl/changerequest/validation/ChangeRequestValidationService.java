@@ -48,6 +48,9 @@ public class ChangeRequestValidationService {
             rules.addAll(getDeveloperDetailsValidations());
         } else if (context.getNewChangeRequest().getChangeRequestType().getId().equals(attestationChangeRequestTypeId)) {
             rules.addAll(getAttestationValidations());
+            if (!isNewChangeRequest(context)) {
+                rules.addAll(getAttestationUpdateValidations());
+            }
         }
 
         return rules;
@@ -68,6 +71,12 @@ public class ChangeRequestValidationService {
     private List<ValidationRule<ChangeRequestValidationContext>> getAttestationValidations() {
         return new ArrayList<ValidationRule<ChangeRequestValidationContext>>(Arrays.asList(
                 new AttestationValidation()));
+    }
+
+    private List<ValidationRule<ChangeRequestValidationContext>> getAttestationUpdateValidations() {
+        return new ArrayList<ValidationRule<ChangeRequestValidationContext>>(Arrays.asList(
+                new AttestationModificationValidation(),
+                new AttestationStatusUpdateValidation()));
     }
 
     private Boolean isNewChangeRequest(ChangeRequestValidationContext context) {
