@@ -7,12 +7,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import javax.validation.ValidationException;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,12 +18,9 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.CertifiedProductSed;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
-import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 
@@ -114,7 +109,6 @@ public class ListingDetailsUploadHandler {
 
             CertificationResult certResult = certResultHandler.parseAsCertificationResult(certHeadingRecord,
                     parsedCertResultRecords.subList(1, parsedCertResultRecords.size()));
-            certResult.setSed(sedExists(listing.getSed(), certResult.getCriterion()));
             certResultList.add(certResult);
 
             prevCertResultIndex = nextCertResultIndex;
@@ -247,28 +241,6 @@ public class ListingDetailsUploadHandler {
 
     private String parseSedTestingDateStr(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         return uploadUtil.parseSingleRowField(Headings.SED_TESTING_DATE, headingRecord, listingRecords);
-    }
-
-    private boolean sedExists(CertifiedProductSed sed, CertificationCriterion criterion) {
-        if (sed == null || (CollectionUtils.isEmpty(sed.getUcdProcesses())
-                && CollectionUtils.isEmpty(sed.getTestTasks()))) {
-            return false;
-        }
-
-        Optional<UcdProcess> ucdWithCriterion = null;
-        Optional<TestTask> taskWithCriterion = null;
-        if (sed.getUcdProcesses() != null) {
-            ucdWithCriterion = sed.getUcdProcesses().stream()
-                .filter(ucdProcess -> containsCriterion(ucdProcess.getCriteria(), criterion))
-                .findAny();
-        }
-        if (sed.getTestTasks() != null) {
-            taskWithCriterion = sed.getTestTasks().stream()
-                .filter(testTask -> containsCriterion(testTask.getCriteria(), criterion))
-                .findAny();
-        }
-        return (ucdWithCriterion != null && ucdWithCriterion.isPresent())
-                || (taskWithCriterion != null && taskWithCriterion.isPresent());
     }
 
     private boolean containsCriterion(Set<CertificationCriterion> criteriaList, CertificationCriterion criterion) {
