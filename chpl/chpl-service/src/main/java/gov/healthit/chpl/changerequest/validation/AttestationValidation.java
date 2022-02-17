@@ -49,13 +49,12 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
 
     private List<String> canDeveloperSubmitChangeRequest(ChangeRequestValidationContext context) {
         List<String> errors = new ArrayList<String>();
-        //TODO
         try {
-        if (!context.getDomainManagers().getAttestationManager().canDeveloperSubmitChangeRequest(context.getNewChangeRequest().getDeveloper().getDeveloperId())) {
-            errors.add("Developer does not have a valid submission window");
-        }
+            if (!context.getDomainManagers().getAttestationManager().canDeveloperSubmitChangeRequest(context.getNewChangeRequest().getDeveloper().getDeveloperId())) {
+                errors.add(getErrorMessage("changeRequest.attestation.submissionWindow"));
+            }
         } catch (EntityRetrievalException e) {
-            errors.add("Could not determine submission window for developer");
+            errors.add(getErrorMessage("changeRequest.attestation.submissionWindow"));
         }
         return errors;
     }
