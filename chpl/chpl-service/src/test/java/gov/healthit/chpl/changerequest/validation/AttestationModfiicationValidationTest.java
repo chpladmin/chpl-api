@@ -48,7 +48,15 @@ public class AttestationModfiicationValidationTest {
 
     @Test
     public void isValid_AttestationUpdateDetailsMatch_ReturnsTrue() {
-        ChangeRequest cr = ChangeRequest.builder()
+        ChangeRequest crOrig = ChangeRequest.builder()
+                .details(convertToMap(createChangeRequestAttestationSubmission()))
+                .currentStatus(ChangeRequestStatus.builder()
+                        .changeRequestStatusType(ChangeRequestStatusType.builder()
+                                .id(PENDING_ACB_ACTION)
+                                .build())
+                        .build())
+                .build();
+        ChangeRequest crNew = ChangeRequest.builder()
                 .details(convertToMap(createChangeRequestAttestationSubmission()))
                 .currentStatus(ChangeRequestStatus.builder()
                         .changeRequestStatusType(ChangeRequestStatusType.builder()
@@ -59,8 +67,113 @@ public class AttestationModfiicationValidationTest {
 
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
                 .currentUser(new CurrentUser())
-                .newChangeRequest(cr)
-                .origChangeRequest(cr)
+                .newChangeRequest(crNew)
+                .origChangeRequest(crOrig)
+                .domainManagers(new DomainManagers(attestationManager))
+                .changeRequestStatusIds(new ChangeRequestStatusIds(CANCELLED_BY_REQUESTER, ACCEPTED, REJECTED, PENDING_ACB_ACTION, PENDING_DEVELOPER_ACTION))
+                .build();
+
+        Boolean isValid = validator.isValid(context);
+        assertTrue(isValid);
+    }
+
+    @Test
+    public void isValid_AttestationUpdateDetailsMatchExceptOneIsHashMap_ReturnsTrue() {
+        ChangeRequest crOrig = ChangeRequest.builder()
+                .details(convertToMap(createChangeRequestAttestationSubmission()))
+                .currentStatus(ChangeRequestStatus.builder()
+                        .changeRequestStatusType(ChangeRequestStatusType.builder()
+                                .id(PENDING_ACB_ACTION)
+                                .build())
+                        .build())
+                .build();
+        ChangeRequest crNew = ChangeRequest.builder()
+                .details(createChangeRequestAttestationSubmission())
+                .currentStatus(ChangeRequestStatus.builder()
+                        .changeRequestStatusType(ChangeRequestStatusType.builder()
+                                .id(PENDING_ACB_ACTION)
+                                .build())
+                        .build())
+                .build();
+
+        ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
+                .currentUser(new CurrentUser())
+                .newChangeRequest(crNew)
+                .origChangeRequest(crOrig)
+                .domainManagers(new DomainManagers(attestationManager))
+                .changeRequestStatusIds(new ChangeRequestStatusIds(CANCELLED_BY_REQUESTER, ACCEPTED, REJECTED, PENDING_ACB_ACTION, PENDING_DEVELOPER_ACTION))
+                .build();
+
+        Boolean isValid = validator.isValid(context);
+        assertTrue(isValid);
+    }
+
+    @Test
+    public void isValid_AttestationUpdateDetailsMatchAttestationResponsesInDifferentOrder_ReturnsTrue() {
+        ChangeRequest crOrig = ChangeRequest.builder()
+                .details(convertToMap(createChangeRequestAttestationSubmission()))
+                .currentStatus(ChangeRequestStatus.builder()
+                        .changeRequestStatusType(ChangeRequestStatusType.builder()
+                                .id(PENDING_ACB_ACTION)
+                                .build())
+                        .build())
+                .build();
+        ChangeRequestAttestationSubmission submission = ChangeRequestAttestationSubmission.builder()
+                .signature("Test User")
+                .attestationResponse(AttestationSubmittedResponse.builder()
+                        .attestation(Attestation.builder()
+                                .id(2L)
+                                .build())
+                        .response(AttestationValidResponse.builder()
+                                .id(2L)
+                                .build())
+                        .build())
+                .attestationResponse(AttestationSubmittedResponse.builder()
+                        .attestation(Attestation.builder()
+                                .id(1L)
+                                .build())
+                        .response(AttestationValidResponse.builder()
+                                .id(1L)
+                                .build())
+                        .build())
+                .attestationResponse(AttestationSubmittedResponse.builder()
+                        .attestation(Attestation.builder()
+                                .id(3L)
+                                .build())
+                        .response(AttestationValidResponse.builder()
+                                .id(1L)
+                                .build())
+                        .build())
+                .attestationResponse(AttestationSubmittedResponse.builder()
+                        .attestation(Attestation.builder()
+                                .id(4L)
+                                .build())
+                        .response(AttestationValidResponse.builder()
+                                .id(5L)
+                                .build())
+                        .build())
+                .attestationResponse(AttestationSubmittedResponse.builder()
+                        .attestation(Attestation.builder()
+                                .id(5L)
+                                .build())
+                        .response(AttestationValidResponse.builder()
+                                .id(1L)
+                                .build())
+                        .build())
+                .build();
+        ChangeRequest crNew = ChangeRequest.builder()
+                .details(submission)
+                .currentStatus(ChangeRequestStatus.builder()
+                        .changeRequestStatusType(ChangeRequestStatusType.builder()
+                                .id(PENDING_ACB_ACTION)
+                                .build())
+                        .build())
+                .build();
+
+        ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
+                .currentUser(new CurrentUser())
+                .newChangeRequest(crNew)
+                .origChangeRequest(crOrig)
                 .domainManagers(new DomainManagers(attestationManager))
                 .changeRequestStatusIds(new ChangeRequestStatusIds(CANCELLED_BY_REQUESTER, ACCEPTED, REJECTED, PENDING_ACB_ACTION, PENDING_DEVELOPER_ACTION))
                 .build();
@@ -153,6 +266,105 @@ public class AttestationModfiicationValidationTest {
         ChangeRequestAttestationSubmission details = createChangeRequestAttestationSubmission();
         details.setSignatureEmail("different@email.com");
         crNew.setDetails(convertToMap(details));
+
+        ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
+                .currentUser(new CurrentUser())
+                .newChangeRequest(crNew)
+                .origChangeRequest(crOrig)
+                .domainManagers(new DomainManagers(attestationManager))
+                .changeRequestStatusIds(new ChangeRequestStatusIds(CANCELLED_BY_REQUESTER, ACCEPTED, REJECTED, PENDING_ACB_ACTION, PENDING_DEVELOPER_ACTION))
+                .build();
+
+        Boolean isValid = validator.isValid(context);
+        assertFalse(isValid);
+    }
+
+    @Test
+    public void isValid_AttestationUpdateDetailsMissingAttestationResponse_ReturnsFalse() {
+        ChangeRequest crOrig = ChangeRequest.builder()
+                .details(convertToMap(createChangeRequestAttestationSubmission()))
+                .currentStatus(ChangeRequestStatus.builder()
+                        .changeRequestStatusType(ChangeRequestStatusType.builder()
+                                .id(PENDING_ACB_ACTION)
+                                .build())
+                        .build())
+                .build();
+        ChangeRequestAttestationSubmission submission = ChangeRequestAttestationSubmission.builder()
+                .signature("Test User")
+                .attestationResponse(AttestationSubmittedResponse.builder()
+                        .attestation(Attestation.builder()
+                                .id(2L)
+                                .build())
+                        .response(AttestationValidResponse.builder()
+                                .id(2L)
+                                .build())
+                        .build())
+                .attestationResponse(AttestationSubmittedResponse.builder()
+                        .attestation(Attestation.builder()
+                                .id(3L)
+                                .build())
+                        .response(AttestationValidResponse.builder()
+                                .id(1L)
+                                .build())
+                        .build())
+                .attestationResponse(AttestationSubmittedResponse.builder()
+                        .attestation(Attestation.builder()
+                                .id(4L)
+                                .build())
+                        .response(AttestationValidResponse.builder()
+                                .id(5L)
+                                .build())
+                        .build())
+                .attestationResponse(AttestationSubmittedResponse.builder()
+                        .attestation(Attestation.builder()
+                                .id(5L)
+                                .build())
+                        .response(AttestationValidResponse.builder()
+                                .id(1L)
+                                .build())
+                        .build())
+                .build();
+        ChangeRequest crNew = ChangeRequest.builder()
+                .details(submission)
+                .currentStatus(ChangeRequestStatus.builder()
+                        .changeRequestStatusType(ChangeRequestStatusType.builder()
+                                .id(PENDING_ACB_ACTION)
+                                .build())
+                        .build())
+                .build();
+
+        ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
+                .currentUser(new CurrentUser())
+                .newChangeRequest(crNew)
+                .origChangeRequest(crOrig)
+                .domainManagers(new DomainManagers(attestationManager))
+                .changeRequestStatusIds(new ChangeRequestStatusIds(CANCELLED_BY_REQUESTER, ACCEPTED, REJECTED, PENDING_ACB_ACTION, PENDING_DEVELOPER_ACTION))
+                .build();
+
+        Boolean isValid = validator.isValid(context);
+        assertFalse(isValid);
+    }
+
+    @Test
+    public void isValid_AttestationUpdateDetailsChangedAttestationResponse_ReturnsFalse() {
+        ChangeRequest crOrig = ChangeRequest.builder()
+                .details(convertToMap(createChangeRequestAttestationSubmission()))
+                .currentStatus(ChangeRequestStatus.builder()
+                        .changeRequestStatusType(ChangeRequestStatusType.builder()
+                                .id(PENDING_ACB_ACTION)
+                                .build())
+                        .build())
+                .build();
+        ChangeRequestAttestationSubmission submission = createChangeRequestAttestationSubmission();
+        submission.getAttestationResponses().get(0).getResponse().setId(500L);
+        ChangeRequest crNew = ChangeRequest.builder()
+                .details(submission)
+                .currentStatus(ChangeRequestStatus.builder()
+                        .changeRequestStatusType(ChangeRequestStatusType.builder()
+                                .id(PENDING_ACB_ACTION)
+                                .build())
+                        .build())
+                .build();
 
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
                 .currentUser(new CurrentUser())

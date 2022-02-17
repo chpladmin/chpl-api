@@ -7,6 +7,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
@@ -36,16 +37,23 @@ public class AttestationModificationValidation extends ValidationRule<ChangeRequ
 
     private Boolean changeRequestDetailsEquals(ChangeRequestValidationContext context) {
         if (ObjectUtils.allNotNull(context, context.getOrigChangeRequest(), context.getNewChangeRequest(),
-                context.getOrigChangeRequest().getDetails(), context.getNewChangeRequest().getDetails())
-                && context.getOrigChangeRequest().getDetails() instanceof HashMap
-                && context.getNewChangeRequest().getDetails() instanceof HashMap) {
-            ChangeRequestAttestationSubmission newChangeRequest = getDetailsFromHashMap((HashMap) context.getNewChangeRequest().getDetails());
-            ChangeRequestAttestationSubmission origChangeRequest = getDetailsFromHashMap((HashMap) context.getOrigChangeRequest().getDetails());
+                context.getOrigChangeRequest().getDetails(), context.getNewChangeRequest().getDetails())) {
+            ChangeRequestAttestationSubmission origChangeRequest = getDetails(context.getOrigChangeRequest());
+            ChangeRequestAttestationSubmission newChangeRequest = getDetails(context.getNewChangeRequest());
             if (newChangeRequest != null && origChangeRequest != null) {
                 return newChangeRequest.matches(origChangeRequest);
             }
         }
         return false;
+    }
+
+    private ChangeRequestAttestationSubmission getDetails(ChangeRequest changeRequest) {
+        if (changeRequest.getDetails() instanceof ChangeRequestAttestationSubmission) {
+            return (ChangeRequestAttestationSubmission) changeRequest.getDetails();
+        } else if (changeRequest.getDetails() instanceof HashMap) {
+            return getDetailsFromHashMap((HashMap) changeRequest.getDetails());
+        }
+        return null;
     }
 
     private ChangeRequestAttestationSubmission getDetailsFromHashMap(HashMap<String, Object> map) {
