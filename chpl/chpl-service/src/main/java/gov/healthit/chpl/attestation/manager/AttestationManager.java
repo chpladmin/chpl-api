@@ -45,7 +45,8 @@ public class AttestationManager {
     }
 
     public AttestationForm getAttestationForm() {
-        return new AttestationForm(attestationDAO.getAttestationForm());
+        AttestationPeriod period = attestationPeriodService.getMostRecentPastAttestationPeriod();
+        return new AttestationForm(attestationDAO.getAttestationForm(), period);
     }
 
     @Transactional
