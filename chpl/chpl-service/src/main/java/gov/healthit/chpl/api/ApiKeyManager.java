@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +20,7 @@ import gov.healthit.chpl.api.domain.ApiKeyRequest;
 import gov.healthit.chpl.dao.ApiKeyActivityDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ApiKeyActivityDTO;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -38,7 +38,9 @@ public class ApiKeyManager {
     private ActivityManager activityManager;
     private ApiKeyRequestDAO apiKeyRequestDAO;
     private ErrorMessageUtil errorMessages;
-    private Environment env;
+    private ChplEmailFactory chplEmailFactory;
+
+
     private String requestEmailSubject;
     private String requestEmailBody;
     private String confirmEmailSubject;
@@ -48,7 +50,7 @@ public class ApiKeyManager {
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
     public ApiKeyManager(ApiKeyDAO apiKeyDAO, ApiKeyActivityDAO apiKeyActivityDAO, ActivityManager activityManager, ApiKeyRequestDAO apiKeyRequestDAO,
-            Environment env, ErrorMessageUtil errorMessages,
+            ErrorMessageUtil errorMessages, ChplEmailFactory chplEmailFactory,
             @Value("${apiKey.request.email.subject}") String requestEmailSubject,
             @Value("${apiKey.request.email.body}") String requestEmailBody,
             @Value("${apiKey.confirm.email.subject}") String confirmEmailSubject,
@@ -59,8 +61,8 @@ public class ApiKeyManager {
         this.apiKeyActivityDAO = apiKeyActivityDAO;
         this.activityManager = activityManager;
         this.apiKeyRequestDAO = apiKeyRequestDAO;
-        this.env = env;
         this.errorMessages = errorMessages;
+        this.chplEmailFactory = chplEmailFactory;
         this.requestEmailSubject = requestEmailSubject;
         this.requestEmailBody = requestEmailBody;
         this.confirmEmailSubject = confirmEmailSubject;
@@ -75,7 +77,7 @@ public class ApiKeyManager {
         }
 
         ApiKeyRequest apiKeyRequest = getApiKeyRequest(apiKeyRegistration);
-        EmailBuilder emailBuilder = new EmailBuilder(env);
+        EmailBuilder emailBuilder = chplEmailFactory.emailBuilder();
         emailBuilder.recipient(apiKeyRequest.getEmail())
             .subject(requestEmailSubject)
             .htmlMessage(String.format(requestEmailBody, apiKeyRequest.getNameOrganization(), chplUrl, apiKeyRequest.getApiRequestToken()))
@@ -107,7 +109,7 @@ public class ApiKeyManager {
 
         apiKey = createKey(apiKey);
 
-        (new EmailBuilder(env))
+        chplEmailFactory.emailBuilder()
             .recipient(apiKey.getEmail())
             .subject(confirmEmailSubject)
             .htmlMessage(String.format(confirmEmailBody, apiKey.getName(), apiKey.getKey(), chplUrl))

@@ -14,8 +14,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
-import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
@@ -39,6 +39,9 @@ public class ListingValidatorEmailJob  implements Job {
     @Autowired
     private ListingValidationReportCsvCreator listingValidationReportCsvCreator;
 
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
+
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
@@ -61,8 +64,8 @@ public class ListingValidatorEmailJob  implements Job {
 
     private void sendEmail(JobExecutionContext context, List<ListingValidationReport> rows) throws EmailNotSentException, IOException {
         LOGGER.info("Sending email to: " + context.getMergedJobDataMap().getString("email"));
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipient(context.getMergedJobDataMap().getString("email"))
+        chplEmailFactory.emailBuilder()
+                .recipient(context.getMergedJobDataMap().getString("email"))
                 .subject(env.getProperty("listingValidationReport.subject"))
                 .htmlMessage(createHtmlMessage(context, rows.size()))
                 .fileAttachments(Arrays.asList(listingValidationReportCsvCreator.createCsvFile(rows)))

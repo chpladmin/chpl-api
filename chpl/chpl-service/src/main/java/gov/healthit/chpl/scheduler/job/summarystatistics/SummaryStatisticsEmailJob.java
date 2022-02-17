@@ -2,6 +2,9 @@ package gov.healthit.chpl.scheduler.job.summarystatistics;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -26,7 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.entity.statistics.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -54,6 +57,9 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
 
     private List<CertificationBodyDTO> activeAcbs;
 
@@ -88,21 +94,38 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         List<String> addresses = new ArrayList<String>();
         addresses.add(address);
 
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipients(addresses)
+        chplEmailFactory.emailBuilder()
+                .recipients(addresses)
                 .subject(subject).htmlMessage(message)
-                .fileAttachments(getSummaryStatisticsFile())
+                .fileAttachments(getAttachments())
                 .sendEmail();
     }
 
-    private List<File> getSummaryStatisticsFile() throws IOException {
+    private List<File> getAttachments() throws IOException {
         List<File> files = new ArrayList<File>();
-        File file = new File(env.getProperty("downloadFolderPath") + File.separator
-                + env.getProperty("summaryEmailName", "summaryStatistics.csv"));
-        files.add(file);
-
-        files.add(summaryStatisticsPdf.generate(file));
+        files.add(getCopyOfSummaryStatisticsCsvFile());
+        files.add(summaryStatisticsPdf.generate(getSummaryStatisticsFile()));
         return files;
+    }
+
+    private File getCopyOfSummaryStatisticsCsvFile() throws IOException {
+        File origCsvFile = getSummaryStatisticsFile();
+        Path newPath = Files.createTempFile("SummaryStatistics_", ".csv");
+        Path origPath = origCsvFile.toPath();
+        try {
+            Files.createDirectories(newPath.getParent());
+            Files.copy(origPath, newPath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (Exception e) {
+            LOGGER.info("Could not copy original file: " + origPath.toString());
+            LOGGER.catching(e);
+        }
+        LOGGER.info("Copied " + origPath.toString() + " to " + newPath.toString());
+        return newPath.toFile();
+    }
+
+    private File getSummaryStatisticsFile() {
+        return new File(env.getProperty("downloadFolderPath") + File.separator
+                + env.getProperty("summaryEmailName", "summaryStatistics.csv"));
     }
 
     private EmailStatistics getStatistics(SummaryStatisticsEntity summaryStatistics)

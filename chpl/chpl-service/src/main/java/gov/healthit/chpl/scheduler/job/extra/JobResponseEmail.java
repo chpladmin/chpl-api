@@ -10,15 +10,15 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.Logger;
 import org.springframework.core.env.Environment;
 
-import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.ChplEmailFactory;
 
 public class JobResponseEmail {
 
-    public void sendEmail(final Environment env, final String emailAddress, final String emailFilename,
-            final String emailSubject,
-            final List<JobResponseTriggerWrapper> triggerWrappers, final Logger logger) {
+    public void sendEmail(Environment env, String emailAddress, String emailFilename,
+            String emailSubject, List<JobResponseTriggerWrapper> triggerWrappers, Logger logger,
+            ChplEmailFactory chplEmailFactory) {
         try {
-            new EmailBuilder(env)
+            chplEmailFactory.emailBuilder()
                     .recipients(new ArrayList<String>(Arrays.asList(emailAddress)))
                     .subject(emailSubject)
                     .htmlMessage(buildEmail(triggerWrappers))
