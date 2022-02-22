@@ -349,8 +349,7 @@ public class DeveloperController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @RequestMapping(value = "/{developerId}/attestations/exception", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/{developerId}/attestations/exception", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public AttestationPeriodDeveloperException createAttestationPeriodDeveloperException(@PathVariable("developerId") Long developerId)
             throws EntityRetrievalException, ValidationException {
         if (!ff4j.check(FeatureList.ATTESTATIONS)) {

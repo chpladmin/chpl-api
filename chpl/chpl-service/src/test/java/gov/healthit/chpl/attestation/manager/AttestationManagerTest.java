@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -23,28 +22,14 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public class AttestationManagerTest {
-
+    private static final Integer DEFAULT_EXCEPTION_WINDOW = 3;
     private AttestationManager manager;
     private AttestationDAO attestationDAO;
+    private AttestationPeriodService attestationPeriodService;
 
     @Before
     public void setup() throws EntityRetrievalException {
         attestationDAO = Mockito.mock(AttestationDAO.class);
-        Mockito.when(attestationDAO.getAllPeriods()).thenReturn(
-                Arrays.asList(AttestationPeriod.builder()
-                        .id(1L)
-                        .periodEnd(LocalDate.of(2022, 3, 31))
-                        .periodStart(LocalDate.of(2020, 7, 1))
-                        .submissionEnd(LocalDate.of(2022, 4, 1))
-                        .submissionStart(LocalDate.of(2022, 4, 30))
-                        .build(),
-                        AttestationPeriod.builder()
-                        .id(2L)
-                        .periodEnd(LocalDate.of(2022, 4, 1))
-                        .periodStart(LocalDate.of(2022, 9, 30))
-                        .submissionEnd(LocalDate.of(2022, 10, 1))
-                        .submissionStart(LocalDate.of(2022, 10, 31))
-                        .build()));
 
         Mockito.when(attestationDAO.getAttestationForm()).thenReturn(
                 Arrays.asList(Attestation.builder().build(),
@@ -57,10 +42,38 @@ public class AttestationManagerTest {
         Mockito.when(attestationDAO.createDeveloperAttestationSubmission(ArgumentMatchers.any())).thenReturn(
                 DeveloperAttestationSubmission.builder().build());
 
-        manager = new AttestationManager(attestationDAO, null, null, null, 3);
+        attestationPeriodService = Mockito.mock(AttestationPeriodService.class);
+        Mockito.when(attestationPeriodService.getMostRecentPastAttestationPeriod()).thenReturn(
+                AttestationPeriod.builder()
+                        .id(1L)
+                        .periodStart(LocalDate.of(2021, 1, 1))
+                        .periodEnd(LocalDate.of(2022, 1, 31))
+                        .submissionStart(LocalDate.of(2022, 2, 1))
+                        .submissionEnd(LocalDate.of(2022, 2, 28))
+                        .description("First Period")
+                        .build());
+
+        Mockito.when(attestationPeriodService.getAllPeriods()).thenReturn(
+                Arrays.asList(AttestationPeriod.builder()
+                        .id(1L)
+                        .periodStart(LocalDate.of(2021, 1, 1))
+                        .periodEnd(LocalDate.of(2022, 1, 31))
+                        .submissionStart(LocalDate.of(2022, 2, 1))
+                        .submissionEnd(LocalDate.of(2022, 2, 28))
+                        .description("First Period")
+                        .build(),
+                        AttestationPeriod.builder()
+                        .id(2L)
+                        .periodStart(LocalDate.of(2022, 2, 1))
+                        .periodEnd(LocalDate.of(2022, 9, 30))
+                        .submissionStart(LocalDate.of(2022, 10, 1))
+                        .submissionEnd(LocalDate.of(2022, 10, 30))
+                        .description("First Period")
+                        .build()));
+
+        manager = new AttestationManager(attestationDAO, attestationPeriodService, null, null, DEFAULT_EXCEPTION_WINDOW);
     }
 
-    @Ignore
     @Test
     public void getAllPeriods_Success_Returns2Periods() {
         List<AttestationPeriod> periods = manager.getAllPeriods();
@@ -72,7 +85,7 @@ public class AttestationManagerTest {
     public void getAttestationForm_Success_ReturnsAttestationForm() {
         AttestationForm form = manager.getAttestationForm();
 
-        assertNotNull(form);
+        assertNotNull(form.getAttestations());
     }
 
     @Test

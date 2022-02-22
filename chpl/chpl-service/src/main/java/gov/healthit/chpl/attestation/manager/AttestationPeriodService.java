@@ -56,7 +56,7 @@ public class AttestationPeriodService {
         return periods.get(0);
     }
 
-    private LocalDate getMostRecentPeriodExceptionDateForDeveloper(Long developerId) {
+    public LocalDate getMostRecentPeriodExceptionDateForDeveloper(Long developerId) {
         AttestationPeriod period = getMostRecentPastAttestationPeriod();
         List<AttestationPeriodDeveloperException> periodExceptions =
                 attestationDAO.getAttestationPeriodDeveloperExceptions(developerId, period.getId());
